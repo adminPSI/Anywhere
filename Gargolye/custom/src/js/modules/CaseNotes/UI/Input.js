@@ -101,6 +101,19 @@
    * @param {String | Number} value
    */
   Input.prototype.setValue = function (value) {
+    if (this.options.attributes.type === 'date') {
+      if (!value) {
+        this.input.value = '';
+      }
+
+      value = value.split(' ')[0];
+
+      const dateformat = dates.checkFormat(value);
+      if (dateformat !== 'iso') {
+        value = dates.formateToISO(value);
+      }
+    }
+
     this.input.value = value;
   };
 

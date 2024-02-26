@@ -20,12 +20,21 @@ const WaitingListAssessment = (() => {
   let contributingCircumstancesWrap;
   let needsWrap;
   let tocLinks;
+  let doucmentsList;
   //--------------------------
   // UI INSTANCES
   //--------------------------
   let wlForms;
+
   let participantsTable;
+
   let sendEmailButton;
+  let sendEmailPopup;
+  let sendEmailForm;
+
+  let documentsButton;
+  let documentsForm;
+  let documentsPopup;
 
   const sections = {
     waitingListInfo: {
@@ -392,7 +401,6 @@ const WaitingListAssessment = (() => {
           id: 'additionalCommentsForUnavailable',
           fullscreen: true,
           type: 'textarea',
-          disabled: true,
           required: true,
         },
       ],
@@ -848,7 +856,7 @@ const WaitingListAssessment = (() => {
         },
         {
           type: 'radiogroup',
-          id: 'rwfNeedsServiceNotMetOOD',
+          id: 'rwfNeedsServicesNotMetOOD',
           required: true,
           groupLabel:
             'Are the needed services beyond what is available to the individual through Vocational Rehabilitation / Opportunities for Ohioans with Disabilities or other resources?',
@@ -1211,14 +1219,14 @@ const WaitingListAssessment = (() => {
       childProtectionAgency: {
         cpaDetermination: assessmentData.cpaDetermination,
         cpaIsReleasedNext12Months: assessmentData.cpaIsReleasedNext12Months,
-        cpaAnticipatedDate: assessmentData.cpaAnticipatedDate,
+        cpaAnticipatedDate: assessmentData.cpaAnticipatedDate ? assessmentData.cpaAnticipatedDate.split(' ')[0] : '',
         cpaHasUnaddressableNeeds: assessmentData.cpaHasUnaddressableNeeds,
       },
       adultDayEmployment: {
         rwfWaiverFundingRequired: assessmentData.rwfWaiverFundingRequired,
         rwfNeedsMoreFrequency: assessmentData.rwfNeedsMoreFrequency,
         rwfNeedsServiceNotMetIDEA: assessmentData.rwfNeedsServiceNotMetIDEA,
-        rwfNeedsServiceNotMetOOD: assessmentData.rwfNeedsServiceNotMetOOD,
+        rwfNeedsServicesNotMetOOD: assessmentData.rwfNeedsServicesNotMetOOD,
       },
       dischargePlan: {
         dischargeDetermination: assessmentData.dischargeDetermination,
@@ -1391,7 +1399,7 @@ const WaitingListAssessment = (() => {
   async function insertUpdateAssessment({ value, name, type, formName }) {
     // set radio/checkbox value
     if (type === 'radio' || type === 'checkbox') {
-      value = value === 'yes' ? 1 : 0;
+      value = value === 'yes' || value === 'on' ? 1 : 0;
     }
 
     // determine if we use wlLinkID or wlCircID or wlNeedID
@@ -1588,7 +1596,7 @@ const WaitingListAssessment = (() => {
     const data = [
       wlForms['adultDayEmployment'].inputs['rwfNeedsMoreFrequency'].getValue('rwfNeedsMoreFrequencyyes'),
       wlForms['adultDayEmployment'].inputs['rwfNeedsServiceNotMetIDEA'].getValue('rwfNeedsServiceNotMetIDEAyes'),
-      wlForms['adultDayEmployment'].inputs['rwfNeedsServiceNotMetOOD'].getValue('rwfNeedsServiceNotMetOODyes'),
+      wlForms['adultDayEmployment'].inputs['rwfNeedsServicesNotMetOOD'].getValue('rwfNeedsServiceNotMetOODyes'),
     ];
 
     const allHaveCheck = data.every(element => element === true);
@@ -1684,27 +1692,14 @@ const WaitingListAssessment = (() => {
     },
     //* primaryCaregiver
     isPrimaryCaregiverUnavailable: ({ name, value }) => {
-      // ENABLE [unavailableDocumentation]   IF [isPrimaryCaregiverUnavailable] === "Yes"
-      // ENABLE [isActionRequiredIn30Days]   IF [isPrimaryCaregiverUnavailable] === "Yes"
-      // ENABLE [isIndividualSkillsDeclined] IF [isPrimaryCaregiverUnavailable] === "No"
-
       wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(value === 'no' ? false : true);
     },
     isActionRequiredIn30Days: ({ name, value }) => {
-      // (ENABLE) [actionRequiredDescription] "Describe action required." textbox (IF) [isActionRequiredIn30Days] "Is action required..." question is "Yes"
-
-      const isYesChecked =
-        wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].getValue('isActionRequiredIn30Daysyes');
-      wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(!isYesChecked);
+      wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(value === 'yes' ? false : true);
     },
     isIndividualSkillsDeclined: ({ name, value }) => {
-      // (ENABLE) [declinedSkillsDocumentation] "List documentation used to verify presence..." textbox (IF)
-      // [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
-      // (ENABLE) [declinedSkillsDescription] "Describe decline." textbox (IF)
-      // [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
-
       const isYesChecked = wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].getValue(
         'isIndividualSkillsDeclinedyes',
       );
@@ -1725,16 +1720,26 @@ const WaitingListAssessment = (() => {
       // There is at least one checkbox checked in first two groups of checkboxes
       const risksIsRiskToSelfInputId = hasCheck && hasCheckDocs ? 'risksIsRiskToSelfyes' : 'risksIsRiskToSelfno';
       wlForms['behavioral'].inputs['risksIsRiskToSelf'].setValue(risksIsRiskToSelfInputId);
+      insertUpdateAssessment({
+        value: hasCheck && hasCheckDocs ? 'yes' : 'no',
+        name: 'risksIsRiskToSelf',
+        type: 'radio',
+        formName: 'behavioral',
+      });
 
       if (hasCheck) {
-        wlForms['behavioral'].inputs['risksIsNone'].toggleRequired(!hasCheck);
-        wlForms['behavioral'].inputs['risksIsPhysicalAggression'].toggleRequired(!hasCheck);
-        wlForms['behavioral'].inputs['risksIsSelfInjury'].toggleRequired(!hasCheck);
-        wlForms['behavioral'].inputs['risksIsFireSetting'].toggleRequired(!hasCheck);
-        wlForms['behavioral'].inputs['risksIsElopement'].toggleRequired(!hasCheck);
-        wlForms['behavioral'].inputs['risksIsSexualOffending'].toggleRequired(!hasCheck);
-        wlForms['behavioral'].inputs['risksIsOther'].toggleRequired(!hasCheck);
+        wlForms['behavioral'].inputs['risksIsNone'].setValue(false);
       }
+
+      const isNotAppChecked = wlForms['behavioral'].inputs['risksIsNone'].getValue();
+      const isRequired = hasCheck || isNotAppChecked ? false : true;
+      wlForms['behavioral'].inputs['risksIsNone'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsPhysicalAggression'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsSelfInjury'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsFireSetting'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsElopement'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsSexualOffending'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsOther'].toggleRequired(isRequired);
 
       needsOtherCheck();
     },
@@ -1746,32 +1751,70 @@ const WaitingListAssessment = (() => {
       // There is at least one checkbox checked in first two groups of checkboxes
       const risksIsRiskToSelfInputId = hasCheck && hasCheckDocs ? 'risksIsRiskToSelfyes' : 'risksIsRiskToSelfno';
       wlForms['behavioral'].inputs['risksIsRiskToSelf'].setValue(risksIsRiskToSelfInputId);
+      insertUpdateAssessment({
+        value: hasCheck && hasCheckDocs ? 'yes' : 'no',
+        name: 'risksIsRiskToSelf',
+        type: 'radio',
+        formName: 'behavioral',
+      });
 
       if (hasCheckDocs) {
-        wlForms['behavioral'].inputs['risksHasNoDocument'].toggleRequired(!hasCheck);
-        wlForms['behavioral'].inputs['risksHasPoliceReport'].toggleRequired(!hasCheck);
-        wlForms['behavioral'].inputs['risksHasIncidentReport'].toggleRequired(!hasCheck);
-        wlForms['behavioral'].inputs['risksHasBehaviorTracking'].toggleRequired(!hasCheck);
-        wlForms['behavioral'].inputs['risksHasPsychologicalAssessment'].toggleRequired(!hasCheck);
-        wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleRequired(!hasCheck);
+        wlForms['behavioral'].inputs['risksHasNoDocument'].setValue(false);
       }
+
+      const isNotAppChecked = wlForms['behavioral'].inputs['risksHasNoDocument'].getValue();
+      const isRequired = hasCheckDocs || isNotAppChecked ? false : true;
+      wlForms['behavioral'].inputs['risksHasNoDocument'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksHasPoliceReport'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksHasIncidentReport'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksHasBehaviorTracking'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksHasPsychologicalAssessment'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleRequired(isRequired);
 
       needsOtherCheck();
     },
     risksIsNone: ({ value }) => {
-      wlForms['behavioral'].inputs['risksIsPhysicalAggression'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['behavioral'].inputs['risksIsSelfInjury'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['behavioral'].inputs['risksIsFireSetting'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['behavioral'].inputs['risksIsElopement'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['behavioral'].inputs['risksIsSexualOffending'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['behavioral'].inputs['risksIsOther'].toggleDisabled(value === 'on' ? true : false);
+      [
+        'risksIsPhysicalAggression',
+        'risksIsSelfInjury',
+        'risksIsFireSetting',
+        'risksIsElopement',
+        'risksIsSexualOffending',
+        'risksIsOther',
+      ].forEach(inputId => {
+        wlForms['behavioral'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
+
+        if (value === 'on') {
+          wlForms['behavioral'].inputs[inputId].setValue(false);
+          insertUpdateAssessment({
+            value: 'off',
+            name: inputId,
+            type: 'checkbox',
+            formName: 'behavioral',
+          });
+        }
+      });
     },
     risksHasNoDocument: ({ value }) => {
-      wlForms['behavioral'].inputs['risksHasPoliceReport'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['behavioral'].inputs['risksHasIncidentReport'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['behavioral'].inputs['risksHasBehaviorTracking'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['behavioral'].inputs['risksHasPsychologicalAssessment'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleDisabled(value === 'on' ? true : false);
+      [
+        'risksHasPoliceReport',
+        'risksHasIncidentReport',
+        'risksHasBehaviorTracking',
+        'risksHasPsychologicalAssessment',
+        'risksHasOtherDocument',
+      ].forEach(inputId => {
+        wlForms['behavioral'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
+
+        if (value === 'on') {
+          wlForms['behavioral'].inputs[inputId].setValue(false);
+          insertUpdateAssessment({
+            value: 'off',
+            name: inputId,
+            type: 'checkbox',
+            formName: 'behavioral',
+          });
+        }
+      });
     },
     risksHasOtherDocument: ({ name, value }) => {
       // (ENABLE) [risksOtherDocumentDescription] the second textbox (under the second group of checkboxes" as long as the
@@ -1795,20 +1838,42 @@ const WaitingListAssessment = (() => {
       wlForms['physical'].inputs['physicalNeedsIsPhysicalCareNeeded'].setValue(
         physicalNeedsIsPhysicalCareNeededInputId,
       );
+      insertUpdateAssessment({
+        value: hasCheck ? 'yes' : 'no',
+        name: 'physicalNeedsIsPhysicalCareNeeded',
+        type: 'radio',
+        formName: 'physical',
+      });
 
       if (hasCheck) {
-        wlForms['physical'].inputs['physicalNeedsIsNone'].toggleRequired(!hasCheck);
-        wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].toggleRequired(!hasCheck);
-        wlForms['physical'].inputs['physicalNeedsIsRiskDuringPhysicalCare'].toggleRequired(!hasCheck);
-        wlForms['physical'].inputs['physicalNeedsIsOther'].toggleRequired(!hasCheck);
+        wlForms['physical'].inputs['physicalNeedsIsNone'].setValue(false);
       }
+
+      const isNotAppChecked = wlForms['physical'].inputs['physicalNeedsIsNone'].getValue();
+      const isRequired = hasCheck || isNotAppChecked ? false : true;
+      wlForms['physical'].inputs['physicalNeedsIsNone'].toggleRequired(isRequired);
+      wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].toggleRequired(isRequired);
+      wlForms['physical'].inputs['physicalNeedsIsRiskDuringPhysicalCare'].toggleRequired(isRequired);
+      wlForms['physical'].inputs['physicalNeedsIsOther'].toggleRequired(isRequired);
 
       needsOtherCheck();
     },
     physicalNeedsIsNone: ({ value }) => {
-      wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['physical'].inputs['physicalNeedsIsRiskDuringPhysicalCare'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['physical'].inputs['physicalNeedsIsOther'].toggleDisabled(value === 'on' ? true : false);
+      ['physicalNeedsIsPersonalCareNeeded', 'physicalNeedsIsRiskDuringPhysicalCare', 'physicalNeedsIsOther'].forEach(
+        inputId => {
+          wlForms['physical'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
+
+          if (value === 'on') {
+            wlForms['physical'].inputs[inputId].setValue(false);
+            insertUpdateAssessment({
+              value: 'off',
+              name: inputId,
+              type: 'checkbox',
+              formName: 'physical',
+            });
+          }
+        },
+      );
     },
     //* medical
     medicalNeeds: ({ name, value }) => {
@@ -1822,31 +1887,53 @@ const WaitingListAssessment = (() => {
       // There is at least one checkbox checked in the fourth group of checkboxes NOT including the "Not applicable…" checkboxes
       const inputId = hasCheck ? 'medicalNeedsIsLifeThreateningyes' : 'medicalNeedsIsLifeThreateningno';
       wlForms['medical'].inputs['medicalNeedsIsLifeThreatening'].setValue(inputId);
+      insertUpdateAssessment({
+        value: hasCheck ? 'yes' : 'no',
+        name: 'medicalNeedsIsLifeThreatening',
+        type: 'radio',
+        formName: 'medical',
+      });
 
       if (hasCheck) {
-        wlForms['medical'].inputs['medicalNeedsIsNone'].toggleRequired(!hasCheck);
-        wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].toggleRequired(!hasCheck);
-        wlForms['medical'].inputs['medicalNeedsIsOngoingMedicalCare'].toggleRequired(!hasCheck);
-        wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].toggleRequired(!hasCheck);
-        wlForms['medical'].inputs['medicalNeedsIsOther'].toggleRequired(!hasCheck);
+        wlForms['physical'].inputs['physicalNeedsIsNone'].setValue(false);
       }
+
+      const isNotAppChecked = wlForms['medical'].inputs['medicalNeedsIsNone'].getValue();
+      const isRequired = hasCheck || isNotAppChecked ? false : true;
+      wlForms['medical'].inputs['medicalNeedsIsNone'].toggleRequired(isRequired);
+      wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].toggleRequired(isRequired);
+      wlForms['medical'].inputs['medicalNeedsIsOngoingMedicalCare'].toggleRequired(isRequired);
+      wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].toggleRequired(isRequired);
+      wlForms['medical'].inputs['medicalNeedsIsOther'].toggleRequired(isRequired);
 
       needsOtherCheck();
     },
     medicalNeedsIsNone: ({ value }) => {
-      wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['medical'].inputs['medicalNeedsIsOngoingMedicalCare'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].toggleDisabled(
-        value === 'on' ? true : false,
-      );
-      wlForms['medical'].inputs['medicalNeedsIsOther'].toggleDisabled(value === 'on' ? true : false);
+      [
+        'medicalNeedsIsFrequentEmergencyVisit',
+        'medicalNeedsIsOngoingMedicalCare',
+        'medicalNeedsIsSpecializedCareGiveNeeded',
+        'medicalNeedsIsOther',
+      ].forEach(inputId => {
+        wlForms['medical'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
+
+        if (value === 'on') {
+          wlForms['medical'].inputs[inputId].setValue(false);
+          insertUpdateAssessment({
+            value: 'off',
+            name: inputId,
+            type: 'checkbox',
+            formName: 'medical',
+          });
+        }
+      });
     },
     //* other
     needsIsActionRequiredRequiredIn30Days: ({ value }) => {
       const isNeedsActionRequiredYes = value === 'yes' ? true : false;
       wlForms['other'].inputs['needsIsContinuousSupportRequired'].toggleDisabled(isNeedsActionRequiredYes);
-      wlForms['riskMitigation'].form.parentElement.classList.toggle('hiddenPage', !isNeedsActionRequiredYes);
-      tocLinks['riskMitigation'].classList.toggle('hiddenPage', !isNeedsActionRequiredYes);
+      wlForms['riskMitigation'].form.parentElement.classList.toggle('hiddenPage', isNeedsActionRequiredYes);
+      tocLinks['riskMitigation'].classList.toggle('hiddenPage', isNeedsActionRequiredYes);
 
       const isRisksActionRequired = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
       const showCurrentNeeds = !isNeedsActionRequiredYes || isRisksActionRequired === 'rMIsActionRequiredIn3oDaysno';
@@ -1876,33 +1963,48 @@ const WaitingListAssessment = (() => {
       wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!isRMChecked);
 
       if (isRMChecked) {
-        wlForms['riskMitigation'].inputs['rMIsNone'].toggleRequired(!isRMChecked);
-        wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].toggleRequired(!isRMChecked);
-        wlForms['riskMitigation'].inputs['rMIsCountyBoardInvestigation'].toggleRequired(!isRMChecked);
-        wlForms['riskMitigation'].inputs['rMIsLawEnforcementInvestigation'].toggleRequired(!isRMChecked);
-        wlForms['riskMitigation'].inputs['rMIsOtherInvestigation'].toggleRequired(!isRMChecked);
+        wlForms['physical'].inputs['physicalNeedsIsNone'].setValue(false);
       }
+
+      const isNotAppChecked = wlForms['riskMitigation'].inputs['rMIsNone'].getValue() === false;
+      const isRequired = isRMChecked || isNotAppChecked ? false : true;
+      wlForms['riskMitigation'].inputs['rMIsNone'].toggleRequired(isRequired);
+      wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].toggleRequired(isRequired);
+      wlForms['riskMitigation'].inputs['rMIsCountyBoardInvestigation'].toggleRequired(isRequired);
+      wlForms['riskMitigation'].inputs['rMIsLawEnforcementInvestigation'].toggleRequired(isRequired);
+      wlForms['riskMitigation'].inputs['rMIsOtherInvestigation'].toggleRequired(isRequired);
 
       // AI FIELD ??
       // (SET) [immNeedsRequired] "Is there an immediate need..." to YES
       // only when the page is enabled. Otherwise, set it to NO
-
       const inputId = showImmediateNeeds ? 'immNeedsRequiredyes' : 'immNeedsRequiredno';
       wlForms['immediateNeeds'].inputs['immNeedsRequired'].setValue(inputId);
       insertUpdateAssessment({
-        value: allHaveCheck ? 'yes' : 'no',
+        value: showImmediateNeeds ? 'yes' : 'no',
         name: 'immNeedsRequired',
         type: 'radio',
         formName: 'immediateNeeds',
       });
     },
     rMIsNone: ({ value }) => {
-      wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].toggleDisabled(
-        value === 'on' ? true : false,
-      );
-      wlForms['riskMitigation'].inputs['rMIsCountyBoardInvestigation'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['riskMitigation'].inputs['rMIsLawEnforcementInvestigation'].toggleDisabled(value === 'on' ? true : false);
-      wlForms['riskMitigation'].inputs['rMIsOtherInvestigation'].toggleDisabled(value === 'on' ? true : false);
+      [
+        'rMIsAdultProtectiveServiceInvestigation',
+        'rMIsCountyBoardInvestigation',
+        'rMIsLawEnforcementInvestigation',
+        'rMIsOtherInvestigation',
+      ].forEach(inputId => {
+        wlForms['riskMitigation'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
+
+        if (value === 'on') {
+          wlForms['riskMitigation'].inputs[inputId].setValue(false);
+          insertUpdateAssessment({
+            value: 'off',
+            name: inputId,
+            type: 'checkbox',
+            formName: 'riskMitigation',
+          });
+        }
+      });
     },
     rMIsActionRequiredIn3oDays: ({ value }) => {
       const isRisksActionRequired = value === 'yes' ? true : false;
@@ -1931,7 +2033,7 @@ const WaitingListAssessment = (() => {
       const inputId = isRisksActionRequired ? 'rMIsSupportNeededyes' : 'rMIsSupportNeededno';
       wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue(inputId);
       insertUpdateAssessment({
-        value: allHaveCheck ? 'yes' : 'no',
+        value: isRisksActionRequired ? 'yes' : 'no',
         name: 'rMIsSupportNeeded',
         type: 'radio',
         formName: 'riskMitigation',
@@ -1946,21 +2048,15 @@ const WaitingListAssessment = (() => {
     intSupIsStayingLivingArrangement: intermittentSupportsDetermination,
     intSupIsActionRequiredIn30Days: intermittentSupportsDetermination,
     //* childProtectionAgency
-    cpaIsReleasedNext12Months: ({ name, value, formName }) => {
-      // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only
-      // (IF) [cpaIsReleasedNext12Months] "Is individual being released..." is answered "Yes".
-
-      const isYesChecked =
-        wlForms[formName].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes');
-
-      wlForms[formName].inputs['cpaAnticipatedDate'].toggleDisabled(!isYesChecked);
+    cpaIsReleasedNext12Months: ({ name, value }) => {
+      wlForms['childProtectionAgency'].inputs['cpaAnticipatedDate'].toggleDisabled(value === 'yes' ? false : true);
+      childProtectionAgencyDetermination();
     },
-    cpaIsReleasedNext12Months: childProtectionAgencyDetermination,
     cpaHasUnaddressableNeeds: childProtectionAgencyDetermination,
     //* adultDayEmployment
     rwfNeedsMoreFrequency: adultDayEmploymentDetermination,
     rwfNeedsServiceNotMetIDEA: adultDayEmploymentDetermination,
-    rwfNeedsServiceNotMetOOD: adultDayEmploymentDetermination,
+    rwfNeedsServicesNotMetOOD: adultDayEmploymentDetermination,
     //* dischargePlan
     dischargeIsICFResident: dischargePlanDetermination,
     dischargeIsInterestedInMoving: dischargePlanDetermination,
@@ -2042,6 +2138,10 @@ const WaitingListAssessment = (() => {
           wlNeedID = '';
         }
 
+        setConclusionUnmetNeeds();
+        setConclusionWaiverFunded12Months();
+        setConclusionNotEligibleForWaiver();
+
         return;
       }
 
@@ -2095,79 +2195,43 @@ const WaitingListAssessment = (() => {
       setConclusionWaiverFunded12Months();
       setConclusionNotEligibleForWaiver();
     },
-    behavioral: ({ name, value }) => {
-      // do stuff maybe?
-    },
-    physical: ({ name, value }) => {
-      // do stuff maybe?
-    },
-    medical: ({ name, value }) => {
-      // do stuff maybe?
-    },
-    other: ({ name, value }) => {
-      // do stuff maybe?
-    },
-    riskMitigation: ({ name, value }) => {
-      // do stuff maybe?
-    },
   };
-  function onFormChange(form) {
-    const formName = form;
+  async function onFormChange(event) {
+    const type = event.target.type;
+    const value = event.target.value;
+    const name = event.target.name;
+    const id = event.target.id;
+    const formName = event.target.form.name;
 
-    return async function inputChange(event) {
-      const value = event.target.value;
-      const name = event.target.name;
-      const id = event.target.id;
-      const type = event.target.type;
-      const formId = event.target.form.id;
+    await insertUpdateAssessment({ value, name, type, formName });
 
-      await insertUpdateAssessment({ value, name, type, formName });
+    if (onChangeCallbacks[name]) {
+      onChangeCallbacks[name]({ value, name });
+    }
 
-      if (onChangeCallbacks[name]) {
-        onChangeCallbacks[name]({ value, name });
+    if (type === 'checkbox') {
+      const checkboxGroupId = event.target.closest('fieldset')?.id;
+      if (onChangeCallbacks[checkboxGroupId]) {
+        onChangeCallbacks[checkboxGroupId]({ value: event.target.checked ? 'on' : 'off', name });
       }
+    }
 
-      if (type === 'checkbox') {
-        const checkboxGroupId = event.target.closest('fieldset')?.id;
-        if (onChangeCallbacks[checkboxGroupId]) {
-          onChangeCallbacks[checkboxGroupId]({ value, name });
-        }
-      }
-
-      if (onChangeCallbacksFormWatch[formId]) {
-        onChangeCallbacksFormWatch[formId]({
-          value,
-          name,
-          formId,
-        });
-      }
-    };
+    if (onChangeCallbacksFormWatch[formName]) {
+      onChangeCallbacksFormWatch[formName]({
+        value,
+        name,
+        formName,
+      });
+    }
   }
 
   // MAIN
   //--------------------------------------------------
   function attachEvents() {
     sendEmailButton.onClick(async () => {
-      const emailPopup = new Dialog({ className: 'wlEmailPopup' });
-      const emailForm = new Form({
-        fields: [
-          {
-            type: 'text',
-            label: 'Email Header',
-            id: 'emailHeader',
-          },
-          {
-            type: 'text',
-            label: 'Email Body',
-            id: 'emailBody',
-          },
-        ],
-      });
-      emailForm.renderTo(emailPopup.dialog);
-      emailPopup.renderTo(_DOM.ACTIONCENTER);
-      emailPopup.show();
+      sendEmailPopup.show();
 
-      emailForm.onSubmit(async (data, submitter) => {
+      sendEmailForm.onSubmit(async (data, submitter) => {
         const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
           waitingListId: wlLinkID,
         });
@@ -2179,41 +2243,17 @@ const WaitingListAssessment = (() => {
           body: data['emailBody'],
         });
 
-        emailPopup.close();
-        emailPopup.dialog.remove();
+        sendEmailPopup.close();
       });
-      emailForm.onReset(() => {
-        emailPopup.close();
-        emailPopup.dialog.remove();
+      sendEmailForm.onReset(() => {
+        sendEmailPopup.close();
       });
     });
 
     documentsButton.onClick(() => {
-      const docPopup = new Dialog({ className: 'wlDocumentPopup' });
-      const docForm = new Form({
-        fields: [
-          { type: 'file', id: 'test', label: 'Document Upload' },
-          { type: 'checkbox', id: 'email', label: 'Include in email?' },
-        ],
-      });
-      const docTable = new Table({
-        headings: [
-          {
-            text: 'Name',
-            type: 'string',
-          },
-          {
-            text: 'Type',
-            type: 'string',
-          },
-        ],
-      });
-      docTable.renderTo(docPopup.dialog);
-      docForm.renderTo(docPopup.dialog);
-      docPopup.renderTo(_DOM.ACTIONCENTER);
-      docPopup.show();
+      documentsPopup.show();
 
-      docForm.onSubmit(async data => {
+      documentsForm.onSubmit(async (data, submitter, formId) => {
         const attachDetails = await _DOM.getAttachmentDetails(data['test']);
 
         const resp = await _UTIL.fetchData('addWlSupportingDocument', {
@@ -2223,49 +2263,86 @@ const WaitingListAssessment = (() => {
           attachmentType: attachDetails.type,
           attachment: attachDetails.attachment,
         });
+        const documentId = _UTIL.autoIncrementId('documentID');
 
-        wlDocuments.push({
+        const fileName = _UTIL.truncateFilename(attachDetails.description, 10);
+        wlDocuments[documentId] = {
           id: 'test',
-          values: [_UTIL.truncateFilename(attachDetails.description, 10), attachDetails.type],
+          values: [fileName, attachDetails.type],
+        };
+
+        const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
+        //const deleteIcon = Icon.getIcon('delete');
+        //documentItem.appendChild(deleteIcon);
+        doucmentsList.appendChild(documentItem);
+        documentItem.addEventListener('click', e => {
+          if (e.target === deleteIcon) {
+            return;
+          }
         });
 
-        docForm.clear();
-        docTable.clear();
-        docTable.populate(wlDocuments);
+        documentsForm.clear();
       });
-      docForm.onReset(() => {
-        docPopup.close();
-        docPopup.dialog.remove();
+      documentsForm.onReset(() => {
+        documentsPopup.close();
       });
     });
 
-    participantsForm.onSubmit(async (data, submitter) => {
-      // save particpants
-      const newParticiapntID = await insertAssessmentData({
-        id: 0,
-        linkId: wlLinkID,
-        propertyName: 'participants',
-        value: data.participantName,
-        valueTwo: data.participantRelationship,
-      });
+    participantsForm.onSubmit(async (data, submitter, formId) => {
+      if (formId) {
+        await updateAssessmentData({
+          id: formId,
+          linkId: wlLinkID,
+          propertyName: 'participants',
+          value: data.participantName,
+          valueTwo: data.participantRelationship,
+        });
+        wlParticipants[formId].values = [data.participantName, data.participantRelationship];
+      } else {
+        const resp = await insertAssessmentData({
+          id: 0,
+          linkId: wlLinkID,
+          propertyName: 'participants',
+          value: data.participantName,
+          valueTwo: data.participantRelationship,
+        });
+        const participantId = resp[0].newRecordId;
 
-      wlParticipants.push({
-        id: newParticiapntID,
-        values: [data.participantName, data.participantRelationship],
-      });
+        wlParticipants[participantId] = {
+          id: participantId,
+          values: [data.participantName, data.participantRelationship],
+        };
+      }
 
       // clear form
       participantsForm.clear();
 
       // repop table
       participantsTable.clear();
-      participantsTable.populate(wlParticipants);
+      participantsTable.populate(Object.values(wlParticipants));
+    });
+    participantsTable.onRowClick(rowId => {
+      const rowData = wlParticipants[rowId];
+      participantsForm.populate(
+        {
+          participantName: rowData.values[0],
+          participantRelationship: rowData.values[1],
+        },
+        rowId,
+      );
     });
   }
   function loadPage() {
     // Header
     sendEmailButton.renderTo(moduleHeader);
     documentsButton.renderTo(moduleHeader);
+
+    sendEmailForm.renderTo(sendEmailPopup.dialog);
+    sendEmailPopup.renderTo(_DOM.ACTIONCENTER);
+
+    documentsPopup.dialog.appendChild(doucmentsList);
+    documentsForm.renderTo(documentsPopup.dialog);
+    documentsPopup.renderTo(_DOM.ACTIONCENTER);
 
     // Assessment
     for (section in sections) {
@@ -2292,7 +2369,9 @@ const WaitingListAssessment = (() => {
 
       // Build Form
       const sectionWrap = _DOM.createElement('div', { id: section, class: 'wlPage' });
-      const sectionHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(section) });
+      const sectionHeader = _DOM.createElement('h2', {
+        text: section === 'icfDischarge' ? 'ICF Discharge' : _UTIL.convertCamelCaseToTitle(section),
+      });
       sectionWrap.appendChild(sectionHeader);
       sectionWrap.classList.toggle('hiddenPage', !sections[section].enabled);
 
@@ -2318,7 +2397,7 @@ const WaitingListAssessment = (() => {
         });
 
         wlForms[section].renderTo(sectionWrap);
-        wlForms[section].onChange(onFormChange(section));
+        wlForms[section].onChange(onFormChange);
         wlFormInfo[section].id = '';
       }
 
@@ -2337,6 +2416,7 @@ const WaitingListAssessment = (() => {
 
     tableOfContents = _DOM.createElement('div', { class: 'waitingListTableOFContents' });
     assessmentWrap = _DOM.createElement('div', { class: 'waitingListAssessment' });
+    doucmentsList = _DOM.createElement('div', { class: 'docList' });
 
     moduleBody.appendChild(tableOfContents);
     moduleBody.appendChild(assessmentWrap);
@@ -2368,6 +2448,7 @@ const WaitingListAssessment = (() => {
     };
   }
   function initComponents() {
+    // Participants
     participantsTable = new Table({
       columnSortable: true,
       headings: [
@@ -2387,40 +2468,59 @@ const WaitingListAssessment = (() => {
           type: 'text',
           label: 'Name of Participant',
           id: 'participantName',
+          required: true,
         },
         {
           type: 'text',
           label: 'Relationship to Individual',
           id: 'participantRelationship',
+          required: true,
         },
       ],
     });
+
+    // Reports
     sendEmailButton = new Button({
       text: 'Send Report',
       style: 'primary',
       styleType: 'contained',
     });
     sendEmailForm = new Form({
-      hideAllButtons: true,
       fields: [
         {
-          label: 'Document',
-          type: 'file',
+          type: 'text',
+          label: 'Email Header',
+          id: 'emailHeader',
+        },
+        {
+          type: 'text',
+          label: 'Email Body',
+          id: 'emailBody',
         },
       ],
     });
+    sendEmailPopup = new Dialog({ className: 'wlEmailPopup' });
+
+    // Documents
     documentsButton = new Button({
       text: 'Add New Documentation',
       style: 'primary',
       styleType: 'contained',
     });
+    documentsForm = new Form({
+      fields: [
+        { type: 'file', id: 'test', label: 'Document Upload' },
+        { type: 'checkbox', id: 'email', label: 'Include in email?' },
+      ],
+    });
+    documentsPopup = new Dialog({ className: 'wlDocumentPopup' });
   }
 
   async function init(opts) {
     wlForms = {};
     tocLinks = {};
     wlDocuments = [];
-    wlParticipants = [];
+    wlParticipants = {};
     wlFormInfo = initFormInfo();
     wlData = mapDataBySection(opts.wlData);
     selectedConsumer = opts.selectedConsumer;
@@ -2442,6 +2542,12 @@ const WaitingListAssessment = (() => {
       }
 
       wlForms['conclusion'].inputs['fundingSourceId'].populate(fundingSources, wlData['conclusion'].fundingSourceId);
+
+      setConclusionUnmetNeeds();
+      setConclusionWaiverFunded12Months();
+      setConclusionDoesNotRequireWaiver();
+      setConclusionNotEligibleForWaiver();
+
       return;
     }
 

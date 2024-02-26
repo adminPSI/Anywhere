@@ -997,11 +997,16 @@ const csTeamMember = (() => {
       //*------------------------------
       if ($.session.planInsertNewTeamMember) {
         const checkIfDateBefore1900 = isDateBefore1900(dateOfBirthInput.value);
-        if (selectedMemberData.dateOfBirth !== '' && !checkIfDateBefore1900) {
-          dateOfBirthInput.classList.remove('error');
+        if (selectedMemberData.teamMember === 'Guardian' || selectedMemberData.teamMember === 'Parent/Guardian' || selectedMemberData.teamMember === 'Case Manager') {
+          dateOfBirthInput.classList.remove('error');            
         } else {
-          dateOfBirthInput.classList.add('error');
+          if (selectedMemberData.dateOfBirth !== '' && !checkIfDateBefore1900) {
+            dateOfBirthInput.classList.remove('error');
+          } else {
+            dateOfBirthInput.classList.add('error');
+          }
         }
+
         // email input not currently required
         // if (selectedMemberData.email) {
         //   emailInput.classList.remove('error');

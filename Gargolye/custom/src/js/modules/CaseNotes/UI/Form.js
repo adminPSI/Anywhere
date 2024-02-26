@@ -32,6 +32,8 @@
     this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
     this.inputs = {};
     this.buttons = {};
+    this.formData = null;
+    this.formId = null;
 
     // DOM Ref
     this.form = null;
@@ -46,7 +48,7 @@
    * @function
    */
   Form.prototype._build = function () {
-    this.form = _DOM.createElement('form', { name: this.options.formName, id: this.options.formName });
+    this.form = _DOM.createElement('form', { name: this.options.formName });
 
     // Build form input fields
     this.options.fields.forEach(ele => {
@@ -191,7 +193,7 @@
       const entries = formData.entries();
       const data = Object.fromEntries(entries);
 
-      cbFunc(data, e.submitter);
+      cbFunc(data, e.submitter, this.formId);
     });
   };
 
@@ -235,7 +237,7 @@
    */
   Form.prototype.onChange = function (cbFunc) {
     this.form.addEventListener('onChange', e => {
-      cbFunc(e.detail);
+      cbFunc(e.detail, this.formId);
     });
   };
 
@@ -272,6 +274,9 @@
    * @function
    */
   Form.prototype.clear = function () {
+    this.formData = null;
+    this.formId = null;
+
     // clear all values from form inputs
     for (inputName in this.inputs) {
       this.inputs[inputName].clear();
@@ -299,10 +304,11 @@
    * @function
    * @param {Object} data
    */
-  Form.prototype.populate = function (data) {
+  Form.prototype.populate = function (data, formId) {
     this.clear();
 
     this.formData = data;
+    this.formId = formId;
 
     for (inputName in data) {
       this.inputs[inputName].setValue(data[inputName]);
