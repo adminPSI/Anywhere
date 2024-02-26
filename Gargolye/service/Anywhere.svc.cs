@@ -2833,6 +2833,11 @@ namespace Anywhere
             return wlw.getWLSupportingDocumentList(token, waitingListInformationId);
         }
 
+        public string deleteSupportingDocument(string token, string attachmentId)
+        {
+            return wlw.deleteSupportingDocument(token, attachmentId);
+        }
+
         public MemoryStream viewSupportingDocInBrowser(string token, long supportingDocumentId)
         {
             return wlw.viewSupportingDocInBrowser(token, supportingDocumentId);

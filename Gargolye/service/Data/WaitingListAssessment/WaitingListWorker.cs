@@ -18,6 +18,10 @@ namespace Anywhere.service.Data.WaitingListAssessment
         WaitingListDataGetter dg = new WaitingListDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
 
+        public string deleteSupportingDocument(string token, string attachmentId)
+        {
+            return dg.deleteSupportingDocument(token, attachmentId);
+        }
         public LandingPageInfo[] getLandingPageForConsumer(string token, double consumerId)
         {
             string landingPageInfo = "";

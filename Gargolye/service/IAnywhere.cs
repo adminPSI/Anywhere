@@ -4053,6 +4053,14 @@ namespace Anywhere
            UriTemplate = "/deleteFromWaitingList/")]
         string deleteFromWaitingList(string[] properties);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/deleteSupportingDocument/")]
+        string deleteSupportingDocument(string token, string attachmentId);
+
         [WebInvoke(Method = "POST",
           BodyStyle = WebMessageBodyStyle.Wrapped,
           ResponseFormat = WebMessageFormat.Json,
