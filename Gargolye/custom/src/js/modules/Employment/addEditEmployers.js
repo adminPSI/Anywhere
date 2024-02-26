@@ -21,6 +21,7 @@ const addEditEmployers = (() => {
     let cancelBtn;
     let openedPage;
     let redirectInformation = {};
+    let BtnEventType;
 
     async function init() {
         DOM.clearActionCenter();
@@ -32,8 +33,11 @@ const addEditEmployers = (() => {
             text: 'Add New Employer',
             style: 'secondary',
             type: 'contained',
-            classNames: !$.session.OODInsert ? ['caseNoteSave', 'disabled'] : ['caseNoteSave'],
-            callback: async () => { buildEmployerPopUp({}, 'insert', 'employer', null) },
+            callback: async () => {
+                if (!addNewEmployerBtn.classList.contains('disabled')) {
+                    buildEmployerPopUp({}, 'insert', 'employer', null)
+                }
+            },
         });
 
         rtnOODMainPageBtn = button.build({
@@ -48,7 +52,10 @@ const addEditEmployers = (() => {
 
         var headingWrap = document.createElement('div');
         headingWrap.classList.add('employmentBtnWrap');
-        headingWrap.appendChild(addNewEmployerBtn);
+        if (!$.session.InsertEmployers) {
+            addNewEmployerBtn.classList.add('disabled');
+        }
+        headingWrap.appendChild(addNewEmployerBtn); 
         headingWrap.appendChild(rtnOODMainPageBtn);
         container.appendChild(headingWrap);
         container.appendChild(LineBr);
@@ -72,7 +79,7 @@ const addEditEmployers = (() => {
         let tableData = filteredActiveEmployers.map((employer) => ({
             values: [employer.employerName, employer.address1 + ' ' + employer.address2, employer.city, employer.state, employer.zipcode],
             attributes: [{ key: 'employerId', value: employer.employerId }],
-            endIcon: ((employer.isEmployerIdReferenced == '0') && $.session.OODDelete) ? `${icons['delete']}` : ' ',
+            endIcon: '',//((employer.isEmployerIdReferenced == '0') && $.session.OODDelete) ? `${icons['delete']}` : ' ',
             id: employer.employerId,
             endIconCallback: e => {
                 e.stopPropagation();
@@ -85,11 +92,9 @@ const addEditEmployers = (() => {
                 }
             },
             onClick: (e) => {
-                if ($.session.OODUpdate) {
                     OODAjax.getEmployer(employer.employerId, function (results) {
                         buildEmployerPopUp(results, 'update', 'employer', null);
                     });
-                }
             },
 
         }));
@@ -119,6 +124,7 @@ const addEditEmployers = (() => {
             employerstate = employerdata[0].state;
             employerzipcode = employerdata[0].zipcode;
             headingEmployer = 'Edit this Employer';
+            BtnEventType = 'Update';
         } else {
             employerId = '';
             employerName = '';
@@ -128,6 +134,7 @@ const addEditEmployers = (() => {
             employerstate = '';
             employerzipcode = '';
             headingEmployer = 'Add Employer';
+            BtnEventType = 'Add';
         } 
 
         let editEmployerPopup = POPUP.build({
@@ -173,7 +180,11 @@ const addEditEmployers = (() => {
             type: "contained",
             style: "secondary",
             classNames: 'disabled',
-            callback: () => editEmployerPopupDoneBtn(postType)
+            callback: () => {
+                if (!saveBtn.classList.contains('disabled')) { 
+                    editEmployerPopupDoneBtn(postType)
+                }
+            }
         });
 
         cancelBtn = button.build({
@@ -247,11 +258,11 @@ const addEditEmployers = (() => {
             saveBtn.classList.remove('disabled');
         }
 
-        if ($.session.OODInsert || $.session.OODUpdate) {
+        if (($.session.UpdateEmployers && BtnEventType == 'Update') || ($.session.InsertEmployers && BtnEventType == 'Add')) {
             saveBtn.classList.remove('disabled');
         } else {
             saveBtn.classList.add('disabled');
-        }
+        } 
     }
 
     // Event for Done BTN on the Edit Employer Popup Window

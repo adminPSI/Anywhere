@@ -239,7 +239,9 @@ const EmploymentInformation = (() => {
                     consumersName: selectedConsumersName,
                     consumersId: consumersID
                 };
-                addEditEmployers.buildEmployerPopUp({}, 'insert', 'employmentInfo', redirectInfo);
+                if (!addEmployerBtn.classList.contains('disabled')) { 
+                    addEditEmployers.buildEmployerPopUp({}, 'insert', 'employmentInfo', redirectInfo);
+                }
             },
         });
 
@@ -291,6 +293,9 @@ const EmploymentInformation = (() => {
         employerBtnWrap.classList.add('employmentBtnWrap');
         employerDropdown.style.width = '80%';
         addEmployerBtn.style.width = '19%';
+        if (!$.session.InsertEmployers) {
+            addEmployerBtn.classList.add('disabled');
+        } 
         employerBtnWrap.appendChild(employerDropdown);
         employerBtnWrap.appendChild(addEmployerBtn);
 
