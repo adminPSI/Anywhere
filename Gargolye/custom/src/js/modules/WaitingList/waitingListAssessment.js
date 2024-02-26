@@ -2338,7 +2338,7 @@ const WaitingListAssessment = (() => {
       );
     });
   }
-  function loadPage() {
+  function loadPage(isReview) {
     // Header
     sendEmailButton.renderTo(moduleHeader);
     documentsButton.renderTo(moduleHeader);
@@ -2404,7 +2404,6 @@ const WaitingListAssessment = (() => {
 
         wlForms[section].renderTo(sectionWrap);
         wlForms[section].onChange(onFormChange);
-        wlFormInfo[section].id = '';
       }
 
       if (isContributingCircumstancesSubSection) {
@@ -2449,7 +2448,6 @@ const WaitingListAssessment = (() => {
       physical: { dbtable: 'WLA_Physical_Needs' },
       medical: { dbtable: 'WLA_Medical_Needs' },
       other: { dbtable: 'WLA_Needs' },
-      //------
       conclusion: { dbtable: 'WLA_Waiting_List_Information' },
     };
   }
