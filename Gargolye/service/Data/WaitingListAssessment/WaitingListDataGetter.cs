@@ -155,6 +155,24 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
+        public string deleteSupportingDocument(string token, string attachmentId)
+        {
+            if (tokenValidator(token) == false) return null;
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_WaitingList_DeleteDocument(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("5WL", ex.Message + "ANYW_WaitingList_DeleteDocument(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "5WL: error ANYW_WaitingList_DeleteDocument";
+            }
+        }
+
         public MemoryStream viewSupportingDocInBrowser(string token, long attachmentId)
         {
             logger.debug("viewSupportingDocInBrowser " + attachmentId);
