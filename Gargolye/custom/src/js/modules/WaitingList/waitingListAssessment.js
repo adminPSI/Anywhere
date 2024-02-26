@@ -2270,7 +2270,7 @@ const WaitingListAssessment = (() => {
           attachmentType: attachDetails.type,
           attachment: attachDetails.attachment,
         });
-        const documentId = resp[0].supportingDocumentId;
+        const documentId = resp.addWLSupportingDocumentResult[0].supportingDocumentId;
 
         const fileName = _UTIL.truncateFilename(attachDetails.description, 10);
         wlDocuments[documentId] = {
@@ -2288,7 +2288,7 @@ const WaitingListAssessment = (() => {
             return;
           }
 
-          await _UTIL.fetchData('viewSupportingDocInBrowser', { attachmentId: documentId });
+          const viewDocResp = await _UTIL.fetchData('viewSupportingDocInBrowser', { attachmentId: documentId });
         });
 
         documentsForm.clear();
