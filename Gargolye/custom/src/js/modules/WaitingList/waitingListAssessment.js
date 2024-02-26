@@ -2325,7 +2325,6 @@ const WaitingListAssessment = (() => {
       participantsForm.clear();
 
       // repop table
-      participantsTable.clear();
       participantsTable.populate(Object.values(wlParticipants));
     });
     participantsTable.onRowClick(rowId => {
@@ -2547,6 +2546,8 @@ const WaitingListAssessment = (() => {
       for (section in wlData) {
         wlForms[section].populate(wlData[section]);
       }
+
+      participantsTable.populate(Object.values(wlParticipants));
 
       wlForms['conclusion'].inputs['fundingSourceId'].populate(fundingSources, wlData['conclusion'].fundingSourceId);
 

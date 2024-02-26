@@ -279,10 +279,21 @@
   };
 
   /**
+   * Clears table body
+   *
+   * @function
+   */
+  Table.prototype.clear = function () {
+    this.table.tBodies[0].innerHTML = '';
+  };
+
+  /**
    * @function
    * @param {Array} data
    */
   Table.prototype.populate = function (data) {
+    this.clear();
+
     //* populate table body
     data.forEach((row, i) => {
       const rowEle = _DOM.createElement('tr', { ...row.attributes, id: row.id });
@@ -299,15 +310,6 @@
 
       this.table.tBodies[0].appendChild(rowEle);
     });
-  };
-
-  /**
-   * Clears table body
-   *
-   * @function
-   */
-  Table.prototype.clear = function () {
-    this.table.tBodies[0].innerHTML = '';
   };
 
   /**
