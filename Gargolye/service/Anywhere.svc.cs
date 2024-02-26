@@ -2054,6 +2054,18 @@ namespace Anywhere
             anywhereAttachmentWorker.viewCaseNoteAttachment(token, attachmentId);
         }
 
+        public void viewWaitingListAttachment(System.IO.Stream testInput)
+        {
+            string token;
+            string attachmentId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            attachmentId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            anywhereAttachmentWorker.viewWaitingListAttachment(token, attachmentId);
+        }
+
         //public void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         //{
         //    dpra.viewISPReportAndAttachments(token, userId, assessmentID, versionID, extraSpace, isp);
@@ -2838,7 +2850,7 @@ namespace Anywhere
             return wlw.deleteSupportingDocument(token, attachmentId);
         }
 
-        public MemoryStream viewSupportingDocInBrowser(string token, long supportingDocumentId)
+        public MemoryStream viewSupportingDocInBrowser(string token, string supportingDocumentId)
         {
             return wlw.viewSupportingDocInBrowser(token, supportingDocumentId);
         }

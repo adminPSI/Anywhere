@@ -196,7 +196,7 @@
       caseManagerId,
     });
     this.caseManagerReview = data.getReviewRequiredForCaseManagerResult[0];
-    this.reviewRequired = !this.caseManagerReview.reviewrequired ? 'N' : 'Y';
+    this.reviewRequired = this.caseManagerReview.reviewrequired === '' || this.caseManagerReview.reviewrequired === 'N' ? 'N' : 'Y';
     this.defaultServiceCode = this.caseManagerReview.serviceid;
 
     return this;
