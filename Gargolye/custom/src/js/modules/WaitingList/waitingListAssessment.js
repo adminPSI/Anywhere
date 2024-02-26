@@ -1404,6 +1404,9 @@ const WaitingListAssessment = (() => {
 
     doucmentsList.appendChild(documentItem);
   }
+  function updateFormCompletionStatus(formName) {
+    console.log(wlForms[formName].inputs);
+  }
 
   // DATA
   //--------------------------------------------------
@@ -2189,6 +2192,8 @@ const WaitingListAssessment = (() => {
         contributingCircumstancesWrap.classList.add('hiddenPage');
         needsWrap.classList.add('hiddenPage');
 
+        toggleTocLinksDisabledStatus(['contributingCircumstances', 'needs'], true);
+
         if (formsToDelete.length) {
           await _UTIL.fetchData('deleteFromWaitingList', { properties: formsToDelete });
           wlCircID = '';
@@ -2259,18 +2264,21 @@ const WaitingListAssessment = (() => {
     const name = event.target.name;
     const id = event.target.id;
     const formName = event.target.form.name;
+    let checkboxGroupId;
+
+    if (type === 'checkbox') {
+      value = event.target.checked ? 'on' : 'off';
+      checkboxGroupId = event.target.closest('fieldset')?.id;
+    }
 
     await insertUpdateAssessment({ value, name, type, formName });
 
     if (onChangeCallbacks[name]) {
-      onChangeCallbacks[name]({ value, name });
+      onChangeCallbacks[name]({ value: event.target.checked ? 'on' : 'off', name });
     }
 
-    if (type === 'checkbox') {
-      const checkboxGroupId = event.target.closest('fieldset')?.id;
-      if (onChangeCallbacks[checkboxGroupId]) {
-        onChangeCallbacks[checkboxGroupId]({ value: event.target.checked ? 'on' : 'off', name });
-      }
+    if (onChangeCallbacks[checkboxGroupId]) {
+      onChangeCallbacks[checkboxGroupId]({ value: event.target.checked ? 'on' : 'off', name });
     }
 
     if (onChangeCallbacksFormWatch[formName]) {
@@ -2280,6 +2288,8 @@ const WaitingListAssessment = (() => {
         formName,
       });
     }
+
+    updateFormCompletionStatus(formName);
   }
 
   // MAIN
