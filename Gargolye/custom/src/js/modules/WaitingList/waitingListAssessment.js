@@ -2237,24 +2237,23 @@ const WaitingListAssessment = (() => {
   function attachEvents() {
     sendEmailButton.onClick(async () => {
       sendEmailPopup.show();
-
-      sendEmailForm.onSubmit(async (data, submitter) => {
-        const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
-          waitingListId: wlLinkID,
-        });
-
-        if (resp !== '1') return;
-
-        const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
-          header: data['emailHeader'],
-          body: data['emailBody'],
-        });
-
-        sendEmailPopup.close();
+    });
+    sendEmailForm.onSubmit(async (data, submitter) => {
+      const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
+        waitingListId: wlLinkID,
       });
-      sendEmailForm.onReset(() => {
-        sendEmailPopup.close();
+
+      if (resp !== '1') return;
+
+      const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
+        header: data['emailHeader'],
+        body: data['emailBody'],
       });
+
+      sendEmailPopup.close();
+    });
+    sendEmailForm.onReset(() => {
+      sendEmailPopup.close();
     });
 
     documentsButton.onClick(() => {
@@ -2288,7 +2287,7 @@ const WaitingListAssessment = (() => {
           return;
         }
 
-        const viewDocResp = await _UTIL.fetchData('viewSupportingDocInBrowser', { attachmentId: documentId });
+        const viewDocResp = await _UTIL.fetchData('viewSupportingDocInBrowser', { supportingDocumentId: documentId });
         var arr = viewDocResp.viewSupportingDocInBrowserResult._buffer;
         var byteArray = new Uint8Array(arr);
         var blob = new Blob([byteArray], { type: 'application/pdf' });
