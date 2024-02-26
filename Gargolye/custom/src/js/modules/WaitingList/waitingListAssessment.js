@@ -1364,6 +1364,46 @@ const WaitingListAssessment = (() => {
       tocLinks['immediateNeeds'].classList.remove('hiddenPage');
     }
   }
+  function addNewDocumentToList({ documentId, fileName }) {
+    const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
+    const deleteIcon = Icon.getIcon('delete');
+    documentItem.appendChild(deleteIcon);
+
+    documentItem.addEventListener('click', async e => {
+      if (e.target === deleteIcon) {
+        await _UTIL.fetchData('deleteSupportingDocument', { attachmentId: documentId });
+        return;
+      }
+
+      var form = document.createElement('form');
+      form.setAttribute(
+        'action',
+        `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/viewWaitingListAttachment/`,
+      );
+      form.setAttribute('method', 'POST');
+      form.setAttribute('target', '_blank');
+      form.setAttribute('enctype', 'application/json');
+      form.setAttribute('success', () => {});
+      var tokenInput = document.createElement('input');
+      tokenInput.setAttribute('name', 'token');
+      tokenInput.setAttribute('value', $.session.Token);
+      tokenInput.id = 'token';
+      var attachmentInput = document.createElement('input');
+      attachmentInput.setAttribute('name', 'attachmentId');
+      attachmentInput.setAttribute('value', documentId);
+      attachmentInput.id = 'attachmentId';
+
+      form.appendChild(tokenInput);
+      form.appendChild(attachmentInput);
+      form.style.position = 'absolute';
+      form.style.opacity = '0';
+      document.body.appendChild(form);
+
+      form.submit();
+    });
+
+    doucmentsList.appendChild(documentItem);
+  }
 
   // DATA
   //--------------------------------------------------
@@ -1460,6 +1500,16 @@ const WaitingListAssessment = (() => {
         text: fs.description,
       };
     });
+  }
+  async function saveDocument(attachDetails) {
+    const resp = await _UTIL.fetchData('addWlSupportingDocument', {
+      waitingListInformationId: wlLinkID,
+      description: attachDetails.description,
+      includeOnEmail: data['email'] === 'on' ? 'Y' : 'N',
+      attachmentType: attachDetails.type,
+      attachment: attachDetails.attachment,
+    });
+    return resp.addWLSupportingDocumentResult[0].supportingDocumentId;
   }
 
   // EVENTS
@@ -2262,57 +2312,15 @@ const WaitingListAssessment = (() => {
     documentsForm.onSubmit(async (data, submitter, formId) => {
       const attachDetails = await _DOM.getAttachmentDetails(data['test']);
 
-      const resp = await _UTIL.fetchData('addWlSupportingDocument', {
-        waitingListInformationId: wlLinkID,
-        description: attachDetails.description,
-        includeOnEmail: data['email'] === 'on' ? 'Y' : 'N',
-        attachmentType: attachDetails.type,
-        attachment: attachDetails.attachment,
-      });
-      const documentId = resp.addWLSupportingDocumentResult[0].supportingDocumentId;
+      const documentId = await saveDocument(attachDetails);
 
       const fileName = _UTIL.truncateFilename(attachDetails.description, 10);
       wlDocuments[documentId] = {
-        id: 'test',
+        id: documentId,
         values: [fileName, attachDetails.type],
       };
 
-      const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
-      const deleteIcon = Icon.getIcon('delete');
-      documentItem.appendChild(deleteIcon);
-      doucmentsList.appendChild(documentItem);
-      documentItem.addEventListener('click', async e => {
-        if (e.target === deleteIcon) {
-          await _UTIL.fetchData('deleteSupportingDocument', { attachmentId: documentId });
-          return;
-        }
-
-        var form = document.createElement('form');
-        form.setAttribute(
-          'action',
-          `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/viewWaitingListAttachment/`,
-        );
-        form.setAttribute('method', 'POST');
-        form.setAttribute('target', '_blank');
-        form.setAttribute('enctype', 'application/json');
-        form.setAttribute('success', () => {});
-        var tokenInput = document.createElement('input');
-        tokenInput.setAttribute('name', 'token');
-        tokenInput.setAttribute('value', $.session.Token);
-        tokenInput.id = 'token';
-        var attachmentInput = document.createElement('input');
-        attachmentInput.setAttribute('name', 'attachmentId');
-        attachmentInput.setAttribute('value', documentId);
-        attachmentInput.id = 'attachmentId';
-
-        form.appendChild(tokenInput);
-        form.appendChild(attachmentInput);
-        form.style.position = 'absolute';
-        form.style.opacity = '0';
-        document.body.appendChild(form);
-
-        form.submit();
-      });
+      addNewDocumentToList({ documentId, fileName });
 
       documentsForm.clear();
     });
@@ -2371,6 +2379,7 @@ const WaitingListAssessment = (() => {
     sendEmailForm.renderTo(sendEmailPopup.dialog);
     sendEmailPopup.renderTo(_DOM.ACTIONCENTER);
 
+    doucmentsList = _DOM.createElement('div', { class: 'docList' });
     documentsPopup.dialog.appendChild(doucmentsList);
     documentsForm.renderTo(documentsPopup.dialog);
     documentsPopup.renderTo(_DOM.ACTIONCENTER);
@@ -2446,7 +2455,6 @@ const WaitingListAssessment = (() => {
 
     tableOfContents = _DOM.createElement('div', { class: 'waitingListTableOFContents' });
     assessmentWrap = _DOM.createElement('div', { class: 'waitingListAssessment' });
-    doucmentsList = _DOM.createElement('div', { class: 'docList' });
 
     moduleBody.appendChild(tableOfContents);
     moduleBody.appendChild(assessmentWrap);
@@ -2545,7 +2553,7 @@ const WaitingListAssessment = (() => {
     documentsPopup = new Dialog({ className: 'wlDocumentPopup' });
   }
 
-  async function init(opts) {
+  async function init(opts, isReview = false) {
     wlForms = {};
     tocLinks = {};
     wlDocuments = [];
@@ -2578,6 +2586,18 @@ const WaitingListAssessment = (() => {
       setConclusionWaiverFunded12Months();
       setConclusionDoesNotRequireWaiver();
       setConclusionNotEligibleForWaiver();
+
+      const docResp = await _UTIL.fetchData('getWLSupportingDocumentList', { waitingListInformationId: wlLinkID });
+
+      for (const doc of docResp.getWLSupportingDocumentListResult) {
+        const fileName = _UTIL.truncateFilename(doc.description, 10);
+        wlDocuments[doc.supportingDocumentId] = {
+          id: doc.supportingDocumentId,
+          values: [fileName, doc.type],
+        };
+
+        addNewDocumentToList({ documentId: doc.supportingDocumentId, fileName });
+      }
 
       return;
     }

@@ -72,7 +72,7 @@ const WaitingListOverview = (() => {
   }
   function attachEvents() {
     newAssessmentBtn.onClick(() => {
-      WaitingListAssessment.init({ selectedConsumer, moduleHeaderEle, moduleBodyEle });
+      WaitingListAssessment.init({ selectedConsumer, moduleHeaderEle, moduleBodyEle }, true);
     });
 
     rosterPicker.onConsumerSelect(onConsumerSelect);
