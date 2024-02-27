@@ -583,7 +583,7 @@ const widgetSettings = (function () {
                 sectionWrap.appendChild(sectionBody);
                 widgetsContainer.appendChild(sectionWrap);
             }
-        }       
+        }
         widgetSettingsPage.appendChild(widgetsContainer);
     }
 
@@ -625,7 +625,16 @@ const widgetSettings = (function () {
             });
 
             const tableData = sortedProducts.map(m => {
-                let name = m.name;
+                let name;
+                let IsBuild = 'false';
+                if (sections[m.id].build) {                 
+                    name = m.name + '  ' + `${icons['Gear']}`;
+                    IsBuild = 'true';
+                }
+                else {
+                    IsBuild = 'false';
+                    name = m.name;
+                }
                 const activeCheckbox = input.buildCheckbox({
                     id: `chk-${m.id}`,
                     text: 'show',
@@ -662,7 +671,7 @@ const widgetSettings = (function () {
                     if ($.session.activeModule == 'home')
                         dashboard.load();
                 };
-                tableOBJ.attributes = [{ key: 'data-signed', value: m.id }];
+                tableOBJ.attributes = [{ key: 'data-signed', value: m.id }, { key: 'data-plan-active', value: IsBuild }];
                 return tableOBJ;
             });
 

@@ -447,12 +447,6 @@ const WorkSchedule = (() => {
 
         ]);
         dayOfWeekDropdownData.unshift({ id: null, value: '', text: '' });
-        if (nameOfEvent == 'Copy') {
-            const index = dayOfWeekDropdownData.findIndex(x => x.value == toRemoveWeekName);
-            if (index > -1) {
-                dayOfWeekDropdownData.splice(index, 1);
-            }
-        }
         dropdown.populate("dayOfWeekDropdown", dayOfWeekDropdownData, dayOfWeek);
     }
 

@@ -129,7 +129,7 @@ namespace Anywhere.service.Data
             public string MedicareNumber { get; set; }
             public string ResidentNumber { get; set; }
             public string consumerNumber { get; set; }
-            public string localId { get; set; }
+            public string localID { get; set; }
 
             public string County { get; set; }
             public string orgName { get; set; }
@@ -175,6 +175,7 @@ namespace Anywhere.service.Data
             public string city { get; set; }
             public string state { get; set; }
             public string zipcode { get; set; }
+            public string email { get; set; }
         }
 
     }
