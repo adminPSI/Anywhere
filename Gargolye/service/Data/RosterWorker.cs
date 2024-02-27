@@ -175,6 +175,7 @@ namespace Anywhere.service.Data
             public string city { get; set; }
             public string state { get; set; }
             public string zipcode { get; set; }
+            public string email { get; set; }
         }
 
     }
