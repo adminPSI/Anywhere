@@ -82,6 +82,8 @@
    * @param {String | Number} value
    */
   Checkbox.prototype.setValue = function (value) {
+    if (value === '') return;
+    
     this.input.checked = value;
   };
 

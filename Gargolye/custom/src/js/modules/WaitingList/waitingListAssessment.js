@@ -1277,7 +1277,7 @@ const WaitingListAssessment = (() => {
         const fieldType = findFieldTypeById(sections[d].formElements, dd);
 
         if (fieldType === 'radiogroup') {
-          if (data[d][dd] === '' || data[d][dd] === '0') {
+          if (data[d][dd] === '0') {
             data[d][dd] = `${dd}no`;
           }
 
@@ -1421,7 +1421,15 @@ const WaitingListAssessment = (() => {
     doucmentsList.appendChild(documentItem);
   }
   function updateFormCompletionStatus(formName) {
-    console.log(wlForms[formName].inputs);
+    const isFormComplete = [
+      ...wlForms[formName].form.querySelectorAll('input:required, select:required, textarea:required'),
+    ]
+      .map(input => {
+        return input.checkValidity();
+      })
+      .every(isValid => isValid === true);
+
+    tocLinks[formName].classList.toggle('formComplete', isFormComplete);
   }
 
   // DATA
@@ -2385,6 +2393,8 @@ const WaitingListAssessment = (() => {
 
       // repop table
       participantsTable.populate(Object.values(wlParticipants));
+
+      tocLinks['participants'].classList.toggle('formComplete', Object.values(wlParticipants).length);
     });
     participantsTable.onRowClick(rowId => {
       const rowData = wlParticipants[rowId];
@@ -2426,9 +2436,11 @@ const WaitingListAssessment = (() => {
 
       // Build TOC
       const className = isContributingCircumstancesSubSection ? 'subsection' : 'section';
-      const tocSection = _DOM.createElement('p', { class: className });
+      const tocSection = _DOM.createElement('p', { class: [className, section] });
       const tocSectionLink = _DOM.createElement('a', { href: `#${section}`, text: sections[section].name });
+      const statusIcon = Icon.getIcon('error');
       tocSection.appendChild(tocSectionLink);
+      tocSection.appendChild(statusIcon);
       tableOfContents.appendChild(tocSection);
       tocSection.classList.toggle('hiddenPage', !sections[section].enabled);
       tocLinks[section] = tocSection;
@@ -2602,9 +2614,11 @@ const WaitingListAssessment = (() => {
 
       for (section in wlData) {
         wlForms[section].populate(wlData[section]);
+        updateFormCompletionStatus(section);
       }
 
       participantsTable.populate(Object.values(wlParticipants));
+      tocLinks['participants'].classList.toggle('formComplete', Object.values(wlParticipants).length);
 
       wlForms['conclusion'].inputs['fundingSourceId'].populate(fundingSources, wlData['conclusion'].fundingSourceId);
 
@@ -2614,7 +2628,6 @@ const WaitingListAssessment = (() => {
       setConclusionNotEligibleForWaiver();
 
       const docResp = await _UTIL.fetchData('getWLSupportingDocumentList', { waitingListInformationId: wlLinkID });
-
       for (const doc of docResp.getWLSupportingDocumentListResult) {
         const fileName = _UTIL.truncateFilename(doc.description, 10);
         wlDocuments[doc.supportingDocumentId] = {

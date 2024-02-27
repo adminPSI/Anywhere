@@ -104,12 +104,13 @@
     if (this.options.attributes.type === 'date') {
       if (!value) {
         this.input.value = '';
+        return;
       }
 
       value = value.split(' ')[0];
 
       const dateformat = dates.checkFormat(value);
-      if (dateformat !== 'iso') {
+      if (dateformat === 'standard') {
         value = dates.formateToISO(value);
       }
     }

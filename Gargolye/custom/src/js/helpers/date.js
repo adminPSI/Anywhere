@@ -253,11 +253,11 @@ const dates = (function () {
     const standardFormatPattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
 
     if (isoFormatPattern.test(dateString)) {
-      return 'ISO';
+      return 'iso';
     } else if (standardFormatPattern.test(dateString)) {
-      return 'Standard';
+      return 'standard';
     } else {
-      return 'Unknown format';
+      return '';
     }
   }
   function formatISO(dirtyDate, dirtyOptions) {
