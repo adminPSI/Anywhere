@@ -1139,6 +1139,8 @@
       gridActionRow.appendChild(cancelDeleteRowsBtn);
       grid.appendChild(gridActionRow);
 
+      let currentRowOrder;
+
       grid.addEventListener('click', async e => {
         const gridRows = [...grid.querySelectorAll('.grid__body .grid__row')];
 
@@ -1166,11 +1168,13 @@
         }
 
         if (target === addRowBtn) {
+          const gridBody = target.closest('.grid').querySelector('.grid__body');
           const planId = plan.getCurrentPlanId();
           const newRowData = await assessment.insertAssessmentGridRowAnswers(planId, questionSetId);
           const gridRow = document.createElement('div');
           gridRow.classList.add('grid__row');
-          gridRow.id = `roworder${rowOrderKeys.length + 1}`;
+          currentRowOrder = gridBody.querySelectorAll('.grid__row').length + 1;
+          gridRow.id = `roworder${currentRowOrder}`;
 
           if (isSortable) {
             var cell = document.createElement('div');
@@ -1183,12 +1187,12 @@
           newRowData.forEach((nrd, index) => {
             let { answerId, answerRow, answerText, answerStyle, questionId, hideOnAssessment, skipped } = nrd;
             const isAnswered = answerText && answerText !== '' ? true : false;
-            const questionRowId = `${questionId}${rowOrderKeys.length + 1}`;
+            const questionRowId = `${questionId}${currentRowOrder}`;
             if (hideOnAssessment === '1') return;
 
             sectionQuestionCount[sectionId][questionSetId][questionRowId] = {
               answered: false,
-              rowOrder: rowOrderKeys.length + 1,
+              rowOrder:currentRowOrder,
               leaveblank: skipped === 'N' ? false : true,
             };
 
@@ -1346,6 +1350,7 @@
           }
           }
 
+          currentRowOrder = gridBody.querySelectorAll('.grid__row').length + 1;
           deleteRowsActive = !deleteRowsActive;
 
           if (deleteRowsActive) {
