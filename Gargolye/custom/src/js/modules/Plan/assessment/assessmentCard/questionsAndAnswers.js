@@ -1324,7 +1324,7 @@
         }
         if (target === deleteRowsBtn) {
           if (deleteRowsActive) {
-            deleteSelectedRows(grid, gridBody, questionSetId);
+            await deleteSelectedRows(grid, gridBody, questionSetId);
 
             questionIds.forEach(qId => {
               const key = `${qId}${selectedRow.id}`;
