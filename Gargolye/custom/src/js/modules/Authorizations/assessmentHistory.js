@@ -804,8 +804,9 @@ const assessmentHistory = (() => {
     function populateFilterDropdown() {
         const methData = ([
             { id: 1, value: 'D', text: 'Day Services' },
-            { id: 2, value: 'S', text: 'Self Waiver' },
-            { id: 3, value: 'W', text: 'Waiver Reimbursement' },
+            { id: 2, value: 'L', text: 'Level One Waiver' },
+            { id: 3, value: 'S', text: 'Self Waiver' },
+            { id: 4, value: 'W', text: 'Waiver Reimbursement' },
         ]);
         methData.unshift({ id: '%', value: '%', text: 'ALL' });
         dropdown.populate("methodologyDropdown", methData, filterValues.methodology);
