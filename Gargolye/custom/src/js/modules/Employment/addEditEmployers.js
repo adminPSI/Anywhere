@@ -71,7 +71,7 @@ const addEditEmployers = (() => {
             plain: false,
             tableId: 'OODEmployersTable',
             columnHeadings: ['Employer', 'Address', 'City', 'State', 'Zip Code'],
-            endIcon: true,
+            endIcon: false, 
         };
         const { getActiveEmployersResult: activeEmployers } = await OODAjax.getActiveEmployersAsync();
         var filteredActiveEmployers = activeEmployers.filter((x) => x.employerId != 0);
@@ -79,26 +79,13 @@ const addEditEmployers = (() => {
         let tableData = filteredActiveEmployers.map((employer) => ({
             values: [employer.employerName, employer.address1 + ' ' + employer.address2, employer.city, employer.state, employer.zipcode],
             attributes: [{ key: 'employerId', value: employer.employerId }],
-            endIcon: '',//((employer.isEmployerIdReferenced == '0') && $.session.OODDelete) ? `${icons['delete']}` : ' ',
-            id: employer.employerId,
-            endIconCallback: e => {
-                e.stopPropagation();
-                try {
-                    let tableRow = document.getElementById(employer.employerId)
-                    deleteConfirmation(employer.employerId, tableRow);
-                    return;
-                } catch (err) {
-                    console.error("error: ", err);
-                }
-            },
+            id: employer.employerId,       
             onClick: (e) => {
                     OODAjax.getEmployer(employer.employerId, function (results) {
                         buildEmployerPopUp(results, 'update', 'employer', null);
                     });
             },
-
         }));
-
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
         return oTable;
