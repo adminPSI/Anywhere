@@ -146,7 +146,7 @@ const demographics = (function () {
             name === 'medicaidNumber' ||
             name === 'medicareNumber' ||
             name === 'residentNumber' ||
-            name === 'localId' 
+            name === 'localID' 
            // name === 'consumerNumber'
         ) {
             input.type = 'number';
@@ -178,6 +178,9 @@ const demographics = (function () {
     function formatLabelText(text) {
         if (text.toLowerCase() === 'ssn') {
             return text.toUpperCase();
+        }
+        if (text.toLowerCase() === 'localid') {
+            return 'Local ID';
         }
 
         const splitText = text
@@ -246,7 +249,7 @@ const demographics = (function () {
         const medicareNumber = data.MedicareNumber;
         const residentNumber = data.ResidentNumber;
         const consumerNumber = data.consumerNumber;
-        const localId = data.localId;
+        const localID = data.localID;
 
         // Organization Info
         const county = data.County;
@@ -298,7 +301,7 @@ const demographics = (function () {
                 medicaidNumber,
                 medicareNumber,
                 residentNumber,
-                localId,
+                localID,
                 consumerNumber,
                 ssn: socialSecurityNumber,
             },
@@ -596,7 +599,7 @@ const demographics = (function () {
                 prop === 'medicareNumber' ||
                 prop === 'residentNumber' ||
                 prop === 'consumerNumber' ||
-                prop === 'localId'
+                prop === 'localID'
             ) {
                 viewEle.classList.add('hidden');
             }
@@ -631,14 +634,14 @@ const demographics = (function () {
                 if ($.session.DemographicsViewResident) {
                     viewElements['residentNumber'].classList.remove('hidden');
                 }
-                if ($.session.DemographicsViewSSN) {
+               if ($.session.DemographicsViewSSN) {
                     viewElements['ssn'].classList.remove('hidden');
-                }
+               }
                 if ($.session.DemographicsViewConsumerNumber) {
                     viewElements['consumerNumber'].classList.remove('hidden');
                 }
                 if ($.session.DemographicsViewLocalId) {
-                    viewElements['localId'].classList.remove('hidden');
+                    viewElements['localID'].classList.remove('hidden');
                 }
             } else {
                 e.target.innerText = 'Show Details';
@@ -649,7 +652,7 @@ const demographics = (function () {
                 viewElements['residentNumber'].classList.add('hidden');
                 viewElements['ssn'].classList.add('hidden');
                 viewElements['consumerNumber'].classList.add('hidden');
-                viewElements['localId'].classList.add('hidden');
+                viewElements['localID'].classList.add('hidden');
             }
         });
 
