@@ -14,6 +14,7 @@ const addOutcomes = (() => {
         selectedConsumers = selectedConsume;
         goalId = goalID;
         buildNewOutcomes();
+        SAVE_BTN.classList.add('disabled'); 
     }
 
     // Build New Outcomes Page 

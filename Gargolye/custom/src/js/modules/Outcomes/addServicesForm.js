@@ -23,6 +23,7 @@ const addServicesForm = (() => {
         objectiveId = ObjectiveID;
         outcomeGoalId = goalId > 0 ? goalId : '';
         buildNewServicesForm();
+        SAVE_BTN.classList.add('disabled'); 
     }
 
     // Build New Outcomes Page 
