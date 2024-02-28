@@ -138,7 +138,8 @@ const addServicesForm = (() => {
             label: 'Frequency',
             style: 'secondary',
             value: frequency,
-            attributes: [               
+            attributes: [        
+                { key: 'min', value: '0' }, 
                 {
                     key: 'onkeypress',
                     value: 'return event.charCode >= 48 && event.charCode <= 57',
