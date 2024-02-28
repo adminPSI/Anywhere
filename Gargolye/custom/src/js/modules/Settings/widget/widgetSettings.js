@@ -599,8 +599,8 @@ const widgetSettings = (function () {
                 updatedListOrder = [];
                 updatedListOrder.length = allElmnts.length;
                 for (var i = 0; i < allElmnts.length; i++) {
-                    updatedListOrder[i] = allElmnts[i].innerText.replace('show', '').replace('\n', '');
-                }
+                    updatedListOrder[i] = allElmnts[i].innerText.replace('show', '').replace('\n', '').trim();
+                } 
                 await widgetSettingsAjax.setWidgetSettingOrder(updatedListOrder);
                 if ($.session.activeModule == 'home')
                     dashboard.load();
