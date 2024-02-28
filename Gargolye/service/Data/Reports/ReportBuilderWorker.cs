@@ -62,6 +62,13 @@ namespace Anywhere.service.Data.ReportBuilder
 
                     break;
 
+                case "Minutes By Date":
+                    result = generateMinutesByDateReport(token, reportData);
+
+                    reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
+
+                    break;
+
                     // GK only
                 case "Detail Report":
                     result = generateDetailedCaseNotesReportGK(token, reportData);
@@ -158,6 +165,19 @@ namespace Anywhere.service.Data.ReportBuilder
             string result = "";
 
             result = rbdg.generateDetailedCaseNotesReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.consumerName, reportData.serviceDateStart, reportData.serviceDateEnd, reportData.location,
+                reportData.enteredDateStart, reportData.enteredDateEnd, reportData.billingCode, reportData.service, reportData.need, reportData.contact);
+
+            return result;
+        }
+
+        public string generateMinutesByDateReport(string token, ReportData reportData)
+        {
+            string category = "Case Notes";
+            string title = "Minutes By Date";
+            string reportServerList = "Primary";
+            string result = "";
+
+            result = rbdg.generateMinutesByDateReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.consumerName, reportData.serviceDateStart, reportData.serviceDateEnd, reportData.location,
                 reportData.enteredDateStart, reportData.enteredDateEnd, reportData.billingCode, reportData.service, reportData.need, reportData.contact);
 
             return result;
