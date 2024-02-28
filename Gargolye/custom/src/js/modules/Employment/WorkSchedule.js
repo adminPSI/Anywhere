@@ -191,7 +191,7 @@ const WorkSchedule = (() => {
 
         const heading = document.createElement('h2');
         heading.style.marginTop = '-20px';
-        heading.style.marginBottom = '20px';
+        heading.style.marginBottom = '15px';
         if (eventName == 'Edit') {
             heading.innerText = 'Update Shift';
             WorkScheduleID = WorkScheduleId;
@@ -201,6 +201,7 @@ const WorkSchedule = (() => {
             heading.innerText = 'Copy Shift';
             WorkScheduleID = WorkScheduleId;
             nameOfEvent = 'Copy'
+            dayOfWeek = '';
         }
         else {
             heading.innerText = 'New Shift';
@@ -210,52 +211,68 @@ const WorkSchedule = (() => {
 
         // Checkbox
         var checkboxlable = document.createElement('div');
+        checkboxlable.style.marginBottom = '10px';
+        checkboxlable.style.marginLeft = '5px';
         checkboxlable.innerHTML = `<h3 id="checkboxlable" >Day(s) Of Week</h3>`;
 
+        var sundaylable = document.createElement('div');
+        sundaylable.classList.add('chkWeekDay');
+        sundaylable.innerHTML = `<b>Sun</b>`;
         sundaychkBox = input.buildCheckbox({
-            text: 'Sun',
             id: 'sundaychkBox',
             isChecked: false,
             style: 'secondary',
             callback: () => checkRequiredFieldsOfPopup(),
         });
+        var mondaylable = document.createElement('div');
+        mondaylable.classList.add('chkWeekDay');
+        mondaylable.innerHTML = `<b>Mon</b>`;
         mondaychkBox = input.buildCheckbox({
-            text: 'Mon',
             id: 'mondaychkBox',
             isChecked: false,
             style: 'secondary',
             callback: () => checkRequiredFieldsOfPopup(),
         });
+        var tuesdaylable = document.createElement('div');
+        tuesdaylable.classList.add('chkWeekDay');
+        tuesdaylable.innerHTML = `<b>Tue</b>`;
         tuesdaychkBox = input.buildCheckbox({
-            text: 'Tue',
             id: 'tuesdaychkBox',
             isChecked: false,
             style: 'secondary',
             callback: () => checkRequiredFieldsOfPopup(),
         });
+        var wednesdaylable = document.createElement('div');
+        wednesdaylable.classList.add('chkWeekDay');
+        wednesdaylable.innerHTML = `<b>Wed</b>`;
         wednesdaychkBox = input.buildCheckbox({
-            text: 'Wed',
             id: 'wednesdaychkBox',
             isChecked: false,
             style: 'secondary',
             callback: () => checkRequiredFieldsOfPopup(),
         });
+        var thursdaylable = document.createElement('div');
+        thursdaylable.classList.add('chkWeekDay');
+        thursdaylable.innerHTML = `<b>Thu</b>`;
         thursdaychkBox = input.buildCheckbox({
-            text: 'Thu',
             id: 'thursdaychkBox',
             isChecked: false,
             style: 'secondary',
             callback: () => checkRequiredFieldsOfPopup(),
         });
+        var fridaylable = document.createElement('div');
+        fridaylable.classList.add('chkWeekDay');
+        fridaylable.innerHTML = `<b>Fri</b>`;
         fridaychkBox = input.buildCheckbox({
-            text: 'Fri',
             id: 'fridaychkBox',
             isChecked: false,
             style: 'secondary',
             callback: () => checkRequiredFieldsOfPopup(),
         });
+        var saturdaylable = document.createElement('div');
+        saturdaylable.classList.add('chkWeekDay');
+        saturdaylable.innerHTML = `<b>Sat</b>`;
         saturdaychkBox = input.buildCheckbox({
-            text: 'Sat',
             id: 'saturdaychkBox',
             isChecked: false,
             style: 'secondary',
@@ -300,18 +317,24 @@ const WorkSchedule = (() => {
 
         addWorkSchedulePopup.appendChild(heading);
 
-
         if (WorkScheduleId == 0 || WorkScheduleId == undefined) {
-            addWorkSchedulePopup.appendChild(checkboxlable);
             var dayChkWrap = document.createElement('div');
+            sundaylable.appendChild(sundaychkBox);
+            mondaylable.appendChild(mondaychkBox);
+            tuesdaylable.appendChild(tuesdaychkBox);
+            wednesdaylable.appendChild(wednesdaychkBox);
+            thursdaylable.appendChild(thursdaychkBox);
+            fridaylable.appendChild(fridaychkBox);
+            saturdaylable.appendChild(saturdaychkBox);
+            addWorkSchedulePopup.appendChild(checkboxlable);
             dayChkWrap.classList.add('chkWrap');
-            dayChkWrap.appendChild(sundaychkBox);
-            dayChkWrap.appendChild(mondaychkBox);
-            dayChkWrap.appendChild(tuesdaychkBox);
-            dayChkWrap.appendChild(wednesdaychkBox);
-            dayChkWrap.appendChild(thursdaychkBox);
-            dayChkWrap.appendChild(fridaychkBox);
-            dayChkWrap.appendChild(saturdaychkBox);
+            dayChkWrap.appendChild(sundaylable);
+            dayChkWrap.appendChild(mondaylable);
+            dayChkWrap.appendChild(tuesdaylable);
+            dayChkWrap.appendChild(wednesdaylable);
+            dayChkWrap.appendChild(thursdaylable);
+            dayChkWrap.appendChild(fridaylable);
+            dayChkWrap.appendChild(saturdaylable);
             addWorkSchedulePopup.appendChild(dayChkWrap);
         } else {
             addWorkSchedulePopup.appendChild(dayOfWeekDropdown);
@@ -452,7 +475,7 @@ const WorkSchedule = (() => {
 
 
     async function saveNewWagesPopup() {
-        weekDaysSelection = []; 
+        weekDaysSelection = [];
         if (nameOfEvent == 'Add') {
             if (sundaychkBox.querySelector('#sundaychkBox').checked) weekDaysSelection.push(1)
             if (mondaychkBox.querySelector('#mondaychkBox').checked) weekDaysSelection.push(2)
@@ -465,7 +488,7 @@ const WorkSchedule = (() => {
             weekDaysSelection.push(dayOfWeek)
         } else {
             weekDaysSelection.push(dayOfWeek)
-            WorkScheduleID = 0;  
+            WorkScheduleID = 0;
         }
 
         const result = await EmploymentAjax.insertWorkScheduleAsync(weekDaysSelection, startTime, endTime, PositionId, WorkScheduleID, $.session.UserId);
