@@ -85,12 +85,34 @@
       color: $black;
     }
     p {
+      align-items: center;
       cursor: pointer;
+      display: flex;
+      flex-flow: row nowrap;
+
+      .svgIcon {
+        color: $font-error;
+        margin-left: 4px;
+      }
 
       &.hiddenPage {
         cursor: default;
         pointer-events: none;
         opacity: 0.5;
+      }
+
+      &.needs,
+      &.contributingCircumstances,
+      &.hiddenPage {
+        .svgIcon {
+          display: none;
+        }
+      }
+
+      &.formComplete {
+        .svgIcon {
+          color: $secondary;
+        }
       }
     }
     .section {
