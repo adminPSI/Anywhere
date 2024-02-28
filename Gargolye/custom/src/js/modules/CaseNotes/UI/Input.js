@@ -203,7 +203,7 @@
    * @param {Function} cbFunc Callback function to call
    */
   Input.prototype.onChange = function (cbFunc) {
-    this.input.addEventListener('input', e => {
+    this.input.addEventListener('onchange', e => {
       if (cbFunc) cbFunc(e);
     });
   };
