@@ -1,7 +1,7 @@
 const TRANS_manageEditRoute = (function () {
     let driverDropdown, routeNameInput, locationDropdown, otherRiderDropdown, vehicleDropdown, routeStartOdo, routeEndOdo, routeStartInput, routeEndInput;
     let milesRadio, tripsRadio;
-    let consumerSectionBody;
+    let consumerSectionBody, noConsumerWarning;
     let tripInfo;
     let consumersOnRecord = new Map();
     let consumersToRemove;
@@ -216,6 +216,13 @@ const TRANS_manageEditRoute = (function () {
         consumerSectionHeader.innerText = "Consumers on Route";
         consumerSectionCard.appendChild(consumerSectionHeader);
         consumerSectionCard.appendChild(consumerSectionBody);
+        // No Consumer Warning //
+        noConsumerWarning = document.createElement('p');
+        noConsumerWarning.style.color = 'red';
+        noConsumerWarning.innerText = 'You must select at least one consumer for the route.'
+        consumerSectionBody.appendChild(noConsumerWarning)
+        noConsumerWarning.style.display = 'none';
+        //
         column2.appendChild(consumerSectionCard)
         column2.appendChild(btnWrap);
         if (!ro) column2.appendChild(deleteBtn);
@@ -226,6 +233,7 @@ const TRANS_manageEditRoute = (function () {
         populateDropdowns()
         buildConsumerCards()
         eventListeners()
+        setBtnStatusOfAddRoute()  
     }
 
     function buildConsumerCards() {
@@ -327,7 +335,7 @@ const TRANS_manageEditRoute = (function () {
             if (event.target.value.trim() === "") {
                 routeNameInput.classList.add('error');
             } else {
-                routeNameInput.classList.remove('error'); 
+                routeNameInput.classList.remove('error');
             }
             selectedRouteName = event.target.value;
             setBtnStatusOfAddRoute();
@@ -375,7 +383,10 @@ const TRANS_manageEditRoute = (function () {
             updateBtn.classList.add('disabled');
             return;
         } else {
-            updateBtn.classList.remove('disabled');
+            if ($.session.transportationUpdate)
+                updateBtn.classList.remove('disabled');
+            else
+                updateBtn.classList.add('disabled');
         }
     }
 
@@ -407,6 +418,15 @@ const TRANS_manageEditRoute = (function () {
     function consumerRemoveAction(consumerId) {
         consumersOnRecord.delete(consumerId)
         consumersToRemove.push(consumerId)
+
+        if (consumersOnRecord.size > 0) {
+            noConsumerWarning.style.display = 'none';
+            noConsumerWarning.classList.remove('error');
+        } else {
+            noConsumerWarning.style.display = 'block';
+            noConsumerWarning.classList.add('error');
+        }
+        setBtnStatusOfAddRoute();
     }
     function updateConsumerData(data) {
         const { consumerId, key, value } = data
@@ -475,7 +495,7 @@ const TRANS_manageEditRoute = (function () {
             // Check for errors first
             const errors = document.querySelectorAll('.error');
             if (errors.length > 0) throw "err exist"
-
+            const routeName = routeNameInput.querySelector('input').value;
             const startTime = routeStartInput.querySelector('input').value
             const endTime = routeEndInput.querySelector('input').value
             const odoStart = routeStartOdo.querySelector('input').value
@@ -494,6 +514,7 @@ const TRANS_manageEditRoute = (function () {
                 vehicleId: tripInfo.vehicleInformationId,
                 locationId: tripInfo.locationId,
                 billingType: billingType,
+                tripName: UTIL.removeUnsavableNoteText(routeName),
             };
             dbCallArr.push(TRANS_manageRoutesAjax.updateManageTripDetails(tripData));
             if (deleteInspection) dbCallArr.push(TRANS_vehicleInspectionAjax.deleteVehicleInspection(vehicleInspection))
@@ -554,7 +575,15 @@ const TRANS_manageEditRoute = (function () {
                     consumersOnRecord.set(consumer.id, consumerDetails);
                     consumersOnRecord.get(consumer.id)['riderStatus'] = '';
                     const transportationCard = TRANS_consumerDocCard.createCard(consumer.id, consumerDetails);
-                    consumerSectionBody.appendChild(transportationCard)
+                    consumerSectionBody.appendChild(transportationCard);
+                    if (consumersOnRecord.size > 0) {
+                        noConsumerWarning.style.display = 'none';
+                        noConsumerWarning.classList.remove('error');
+                    } else {
+                        noConsumerWarning.style.display = 'block';
+                        noConsumerWarning.classList.add('error');
+                    }
+                    setBtnStatusOfAddRoute();
                 })
                 break;
             }
