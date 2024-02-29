@@ -673,7 +673,7 @@ const roster2 = (function () {
       const rosterlists = [...ROSTER_WRAP.querySelectorAll('.roster__list')];
       rosterlists && rosterlists.forEach(rl => ROSTER_WRAP.removeChild(rl));
       ROSTER_SPINNER = PROGRESS.SPINNER.get('Please wait while we gather everyone up...');
-      ROSTER_WRAP.appendChild(ROSTER_SPINNER);
+      ROSTER_WRAP.insertBefore(ROSTER_SPINNER, ROSTER_WRAP.lastChild);
       totalConsumerCount = 0;
       await getRosterConsumersData(true);
       //Ugly... should be re-done to be able to pass a custom apply action for the filter if needed
