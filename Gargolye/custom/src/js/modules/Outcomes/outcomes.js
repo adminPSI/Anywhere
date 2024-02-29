@@ -623,7 +623,7 @@ var outcomes = (function () {
         var targetAction = target.dataset.actionNav;
 
         switch (targetAction) {
-            case "rosterDone": {
+            case "rosterDone": { 
                 roster.selectedConsumersToEnabledList();
                 PROGRESS.SPINNER.show("Loading Outcomes...");
                 loadLandingPage();
@@ -642,7 +642,7 @@ var outcomes = (function () {
                 dashboard.load();
                 break;
             }
-            case "miniRosterDone": {
+            case "miniRosterDone": {  
                 initLoad = false;
                 var activeConsumers = roster2.getActiveConsumers();
                 if (activeConsumers.length > 0) {
@@ -654,29 +654,7 @@ var outcomes = (function () {
                 selectedConsumerObj = activeConsumers[activeConsumers.length - 1];
                 consumerName = activeConsumers[activeConsumers.length - 1].card.innerText;
                 selectedConsumerId = activeConsumers[activeConsumers.length - 1].id;
-                DOM.toggleNavLayout();
-
-                PROGRESS.SPINNER.show(`Loading Outcomes For ${consumerName}`);
-                resetFilter();
-                updateCurrentFilterDisplay();
-                outcomesAjax.getOutcomesPrompts(function (results) {
-                    outcomesPrompts = results;
-                    outcomesAjax.getGoalsCommunityIntegrationLevelDropdown(function (
-                        ciResults
-                    ) {
-                        ciData = ciResults;
-                        outcomesAjax.getDaysBackForEditingGoalsAndUseConsumerLocation(
-                            selectedConsumerId,
-                            function (results) {
-                                daysBack = results[0].setting_value;
-                                daysBackDate = convertDaysBack(daysBack);
-                                useConsumerLocation = results[0].outcomes_use_consumer_location;
-                                defaultPrimaryLocation = results[0].consumer_location;
-                                loadCardView(activeConsumers[activeConsumers.length - 1]);
-                            }
-                        );
-                    });
-                });
+                afterSelectionRoster();               
                 break;
             }
             case "miniRosterCancel": {
@@ -687,6 +665,39 @@ var outcomes = (function () {
                 break;
             }
         }
+    }
+
+    function backToOutcomeLoad(consumerObj) {
+        selectedConsumerObj = consumerObj;
+        consumerName = consumerObj.card.innerText;
+        selectedConsumerId = consumerObj.id; 
+        afterSelectionRoster();
+    }
+
+    function afterSelectionRoster() {
+        DOM.toggleNavLayout(); 
+        PROGRESS.SPINNER.show(`Loading Outcomes For ${consumerName}`);
+        resetFilter();
+        updateCurrentFilterDisplay();
+        outcomesAjax.getOutcomesPrompts(function (results) {
+            outcomesPrompts = results;
+            outcomesAjax.getGoalsCommunityIntegrationLevelDropdown(function (
+                ciResults
+            ) {
+                ciData = ciResults;
+                outcomesAjax.getDaysBackForEditingGoalsAndUseConsumerLocation(
+                    selectedConsumerId,
+                    function (results) {
+                        daysBack = results[0].setting_value;
+                        daysBackDate = convertDaysBack(daysBack);
+                        useConsumerLocation = results[0].outcomes_use_consumer_location;
+                        defaultPrimaryLocation = results[0].consumer_location;
+                        loadCardView(selectedConsumerObj); 
+                    }
+                );
+            });
+        });
+
     }
     //Set up spans to display
     function setUpOutcomesTabSpans() {
@@ -2202,6 +2213,7 @@ var outcomes = (function () {
     return {
         handleActionNavEvent,
         dashHandler,
-        init
+        init,
+        backToOutcomeLoad
     };
 })();

@@ -5,6 +5,7 @@ const addEditOutcomeServices = (() => {
     let newFilterValues;
     let filterRow;
     let addOutCome;
+    let backBtn;
     // DOM
     let pageWrap;
     let overviewTable;
@@ -30,12 +31,17 @@ const addEditOutcomeServices = (() => {
 
         pageWrap = document.createElement('div');
         const consumerCard = buildConsumerCard();
+        const backbtnWrap = document.createElement('div');
+        backbtnWrap.classList.add('addOutcomeBtnWrap'); 
 
         filteredByData = buildFilteredByData();
         addOutCome = addOutcomesButton();
+        backBtn = backButton();
+        backbtnWrap.appendChild(addOutCome);  
+        backbtnWrap.appendChild(backBtn); 
 
         pageWrap.appendChild(consumerCard);
-        pageWrap.appendChild(addOutCome);
+        pageWrap.appendChild(backbtnWrap); 
         pageWrap.appendChild(filteredByData);
         DOM.ACTIONCENTER.appendChild(pageWrap);
 
@@ -76,6 +82,16 @@ const addEditOutcomeServices = (() => {
         });
     }
 
+    function backButton() {
+        return button.build({
+            text: 'BACK',
+            style: 'secondary',
+            type: 'outlined',
+            callback: async () => { outcomes.backToOutcomeLoad(selectedConsumer) },  
+        });
+
+    }
+
     function initFilterValues() {
         filterValues = {
             outcomeType: '%',
@@ -103,9 +119,9 @@ const addEditOutcomeServices = (() => {
 
         effectiveDateStart = `${formatDate(filterValues.effectiveDateStart)}`;
         effectiveDateEnd = `${formatDate(filterValues.effectiveDateEnd)}`;
-
+       
         if (!currentFilterDisplay) {
-            currentFilterDisplay = document.createElement('div');
+            currentFilterDisplay = document.createElement('div');        
             currentFilterDisplay.classList.add('filteredByData');
             filterButtonSet();
             currentFilterDisplay.appendChild(btnWrap);
