@@ -338,6 +338,49 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
+        public string generateMinutesByDateReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string consumerName,
+                                              string serviceStartDate, string serviceEndDate, string location, string originallyEnteredStart, string originallyEnteredEnd, string billCodeText, string service,
+                                              string need, string contact)
+        { 
+            if (tokenValidator(token) == false) return null;
+            if (billCodeText == null)
+            {
+                billCodeText = "All";
+            }
+            logger.debug("generateDetailedCaseNotesReport ");
+            string source = "";
+            string filterSyntax = "";
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+            list.Add(source);
+            list.Add(billerId);
+            list.Add(billCodeText);
+            list.Add(consumerId);
+            list.Add(consumerName);
+            list.Add(serviceStartDate);
+            list.Add(serviceEndDate);
+            list.Add(location);
+            list.Add(originallyEnteredStart);
+            list.Add(originallyEnteredEnd);
+            list.Add(service);
+            list.Add(need);
+            list.Add(contact);
+            list.Add(filterSyntax);
+            string text = "CALL DBA.ANYW_CaseNotes_GenerateMinutesByDateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1CNR", ex.Message + "ANYW_CaseNotes_GenerateMinutesByDateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1CNR: error ANYW_CaseNotes_GenerateMinutesByDateReport";
+            }
+        }
+
         public string generateTXXCaseNotesReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string billingCode, string serviceStartDate, string serviceEndDate)
         {
             if (tokenValidator(token) == false) return null;

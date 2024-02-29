@@ -286,9 +286,9 @@ var notesOverview = (function () {
     //   },
     // });
 
-    var cnReportBtn = generateReports.createMainReportButton([ { text: 'Detail Report', filterValues}, { text: 'Time Analysis Report', filterValues}, { text: 'TXX Case Notes', filterValues}])
+    var cnReportBtn = generateReports.createMainReportButton([ { text: 'Detail Report', filterValues}, { text: 'Time Analysis Report', filterValues}, { text: 'TXX Case Notes', filterValues}, { text: 'Minutes By Date', filterValues}])
 
-        cnADVReportBtn = generateReports.createMainReportButton([{ text: 'Detailed Case Notes By Biller', filterValues }]);
+        cnADVReportBtn = generateReports.createMainReportButton([{ text: 'Detailed Case Notes By Biller', filterValues }, { text: 'Minutes By Date', filterValues}]);
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('cnbtnWrap');

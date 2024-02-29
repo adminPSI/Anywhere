@@ -806,9 +806,13 @@
         max-width: 420px !important;
 
         .checkbox-mtd > span::after {
-            top: -22px !important;
-            left: 2px !important;
+            top: -39px !important;
+            left: 14px !important;
         }
+
+        .password-error {
+            color: #db162f !important;
+        } 
     }
 
     .employmentDTWrap {
@@ -901,12 +905,17 @@
     .chkWrap {
         display: flex;
         flex-flow: row wrap;
-        justify-content: flex-end;
-        margin-bottom: 10px;
+        justify-content: center;
 
         .checkbox-mtd {
             display: flow !important;
+            height: 30px;
         }
+    }
+
+    .chkWeekDay {
+        width: 13%;
+        text-align: center;
     }
 
     .boldfont {

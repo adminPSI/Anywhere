@@ -208,8 +208,10 @@ const EmploymentInformation = (() => {
             style: 'secondary',
             type: 'contained',
             callback: async () => {
-                SAVE_BTN.classList.add('disabled');
-                saveEmployeeInfo()
+                if (!SAVE_BTN.classList.contains('disabled')) {
+                    SAVE_BTN.classList.add('disabled');
+                    saveEmployeeInfo()
+                }              
             },
         });
         CANCEL_BTN = button.build({
@@ -650,8 +652,10 @@ const EmploymentInformation = (() => {
             style: 'secondary',
             type: 'contained',
             callback: () => {
-                APPLY_BTN.classList.add('disabled');
-                saveNewPathPopup();
+                if (!APPLY_BTN.classList.contains('disabled')) {
+                    APPLY_BTN.classList.add('disabled');
+                    saveNewPathPopup();
+                }
             }
         });
 
@@ -881,8 +885,10 @@ const EmploymentInformation = (() => {
             style: 'secondary',
             type: 'contained',
             callback: () => {
-                CONTINUE_BTN.classList.add('disabled');
-                createNewPath();
+                if (!CONTINUE_BTN.classList.contains('disabled')) {
+                    CONTINUE_BTN.classList.add('disabled');
+                    createNewPath();
+                }
             }
         });
 

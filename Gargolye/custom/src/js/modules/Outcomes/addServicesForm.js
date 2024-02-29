@@ -23,6 +23,7 @@ const addServicesForm = (() => {
         objectiveId = ObjectiveID;
         outcomeGoalId = goalId > 0 ? goalId : '';
         buildNewServicesForm();
+        SAVE_BTN.classList.add('disabled'); 
     }
 
     // Build New Outcomes Page 
@@ -138,7 +139,8 @@ const addServicesForm = (() => {
             label: 'Frequency',
             style: 'secondary',
             value: frequency,
-            attributes: [               
+            attributes: [        
+                { key: 'min', value: '0' }, 
                 {
                     key: 'onkeypress',
                     value: 'return event.charCode >= 48 && event.charCode <= 57',
