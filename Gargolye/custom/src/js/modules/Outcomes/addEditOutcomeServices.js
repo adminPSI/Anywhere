@@ -278,22 +278,22 @@ const addEditOutcomeServices = (() => {
             newFilterValues.outcomeTypeName = selectedOption.text;
         });
 
-        effectiveDateStartInput.addEventListener('change', e => {
-            newFilterValues.effectiveDateStart = e.target.value;
+        effectiveDateStartInput.addEventListener('change', e => {         
             if (e.target.value === '') {
                 effectiveDateStartInput.classList.add('error');
             } else {
                 effectiveDateStartInput.classList.remove('error');
-            }
+                newFilterValues.effectiveDateStart = e.target.value;
+            }         
             checkFilterPopForErrors();
         });
-        effectiveDateEndInput.addEventListener('change', e => {
-            newFilterValues.effectiveDateEnd = e.target.value;
+        effectiveDateEndInput.addEventListener('change', e => {         
             if (e.target.value === '') {
                 effectiveDateEndInput.classList.add('error');
             } else {
                 effectiveDateEndInput.classList.remove('error');
-            }
+                newFilterValues.effectiveDateEnd = e.target.value;
+            }          
             checkFilterPopForErrors();
         });
         applyFilterBtn.addEventListener('click', async e => {
