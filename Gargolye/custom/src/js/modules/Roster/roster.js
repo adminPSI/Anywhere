@@ -724,8 +724,8 @@ const roster2 = (function () {
     if ($.loadedApp === 'timeEntry') {
       await timeEntryCard.customRosterApplyFilterEvent();
     }
-      populateRoster();
-      filterUpdateDisplay();
+    populateRoster();
+    filterUpdateDisplay();
   }
   // Top Nav
   //---------------------------------------------
