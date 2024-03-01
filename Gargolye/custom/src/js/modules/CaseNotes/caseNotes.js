@@ -439,6 +439,7 @@ const CaseNotes = (() => {
 
     const servLocData = cnData.getServiceLocationDropdownData();
     cnForm.inputs['serviceLocation'].populate(servLocData);
+    cnForm.inputs['serviceLocation'].setValue(cnForm.formData.serviceLocation);
   }
   async function setConsumerRelatedDropdowns() {
     await updateVendorDropdownByConsumer();
