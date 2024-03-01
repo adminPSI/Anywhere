@@ -439,7 +439,9 @@ const CaseNotes = (() => {
 
     const servLocData = cnData.getServiceLocationDropdownData();
     cnForm.inputs['serviceLocation'].populate(servLocData);
-    cnForm.inputs['serviceLocation'].setValue(cnForm.formData.serviceLocation);
+    if (cnForm.formData) {
+      cnForm.inputs['serviceLocation'].setValue(cnForm.formData.serviceLocation);
+    }
   }
   async function setConsumerRelatedDropdowns() {
     await updateVendorDropdownByConsumer();
@@ -541,6 +543,9 @@ const CaseNotes = (() => {
     } else {
       const isServiceFunding = cnData.isServiceFunding(selectedServiceCode);
       cnForm.inputs['serviceLocation'].toggleDisabled(!isServiceFunding);
+      if (!isServiceFunding) {
+        cnForm.inputs['serviceLocation'].setValue('');
+      }
     }
 
     if (selectedServiceCode !== '') {
