@@ -1769,27 +1769,44 @@ const WaitingListAssessment = (() => {
     //* waitingListInfo
     currentLivingArrangement: ({ value }) => {
       wlForms['waitingListInfo'].inputs['livingArrangementOther'].toggleDisabled(value === 'Other' ? false : true);
+      if (value !== 'Other') {
+        wlForms['waitingListInfo'].inputs['livingArrangementOther'].setValue('');
+      }
     },
     //* currentAvailableServices
     isOtherService: ({ value }) => {
       wlForms['currentAvailableServices'].inputs['otherDescription'].toggleDisabled(value === 'yes' ? false : true);
+      if (value !== 'yes') {
+        wlForms['currentAvailableServices'].inputs['otherDescription'].setValue('');
+      }
     },
     //* primaryCaregiver
-    isPrimaryCaregiverUnavailable: ({ name, value }) => {
+    isPrimaryCaregiverUnavailable: ({ value }) => {
       wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(value === 'no' ? false : true);
-    },
-    isActionRequiredIn30Days: ({ name, value }) => {
-      wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(value === 'yes' ? false : true);
-    },
-    isIndividualSkillsDeclined: ({ name, value }) => {
-      const isYesChecked = wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].getValue(
-        'isIndividualSkillsDeclinedyes',
-      );
 
-      wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].toggleDisabled(!isYesChecked);
-      wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].toggleDisabled(!isYesChecked);
+      if (value !== 'yes') {
+        wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].setValue('');
+        wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].setValue('');
+      } else {
+        wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].setValue('');
+      }
+    },
+    isActionRequiredIn30Days: ({ value }) => {
+      wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(value === 'yes' ? false : true);
+      if (value !== 'yes') {
+        wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].setValue('');
+      }
+    },
+    isIndividualSkillsDeclined: ({ value }) => {
+      wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].toggleDisabled(value === 'yes' ? false : true);
+      wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].toggleDisabled(value === 'yes' ? false : true);
+
+      if (value !== 'yes') {
+        wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].setValue('');
+        wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].setValue('');
+      }
     },
     //* behavioral
     risksIs: ({ name, value }) => {
@@ -1799,6 +1816,9 @@ const WaitingListAssessment = (() => {
       // (ENABLE) [risksFrequencyDescription] the "Describe type, frequency, and intensity of behavioral..." textbox (IF)
       // any of the checkboxes are checked in the first group of checkboxes
       wlForms['behavioral'].inputs['risksFrequencyDescription'].toggleDisabled(!hasCheck);
+      if (!hasCheck) {
+        wlForms['behavioral'].inputs['risksFrequencyDescription'].setValue('');
+      }
 
       // (SET) [risksIsRiskToSelf] "Is the individual a child / adult currently engaging..." to "YES" (IF)
       // There is at least one checkbox checked in first two groups of checkboxes
@@ -1905,6 +1925,9 @@ const WaitingListAssessment = (() => {
       // "Other" checkbox is checked in the second group of checkboxes.
 
       wlForms['behavioral'].inputs['risksOtherDocumentDescription'].toggleDisabled(value === 'on' ? false : true);
+      if (value !== 'on') {
+        wlForms['behavioral'].inputs['risksOtherDocumentDescription'].setValue('');
+      }
     },
     //* physical
     physicalNeeds: ({ name, value }) => {
@@ -1913,6 +1936,9 @@ const WaitingListAssessment = (() => {
       // (ENABLE) [physicalNeedsDescription] the "Describe type, frequency, and intensity of physical..." textbox (IF)
       // any of the checkboxes are checked in the third group of checkboxes EXCEPT the "Not applicable...checkbox"
       wlForms['physical'].inputs['physicalNeedsDescription'].toggleDisabled(!hasCheck);
+      if (!hasCheck) {
+        wlForms['physical'].inputs['physicalNeedsDescription'].setValue('');
+      }
 
       // (SET) [physicalNeedsIsPhysicalCareNeeded] "Is the individual a child/adult with significant physical care needs?" to "YES" (IF)
       // There is at least one checkbox checked in the third group of checkboxes NOT including the "Not applicable…" checkboxes
@@ -1966,6 +1992,9 @@ const WaitingListAssessment = (() => {
       // (ENABLE) [medicalNeedsDescription] the "Describe type, frequency, and intensity of medical..." textbox (IF)
       // any of the checkboxes are checked in the fourth group of checkboxes EXCEPT the "Not applicable..." checkbox
       wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(!hasCheck);
+      if (!hasCheck) {
+        wlForms['medical'].inputs['medicalNeedsDescription'].setValue('');
+      }
 
       // (SET) [medicalNeedsIsLifeThreatening] "Is the individual a child/adult with significant or life-threatening medical needs?" to "YES" (IF)
       // There is at least one checkbox checked in the fourth group of checkboxes NOT including the "Not applicable…" checkboxes
@@ -2016,6 +2045,9 @@ const WaitingListAssessment = (() => {
     needsIsActionRequiredRequiredIn30Days: ({ value }) => {
       const isNeedsActionRequiredYes = value === 'yes' ? true : false;
       wlForms['other'].inputs['needsIsContinuousSupportRequired'].toggleDisabled(isNeedsActionRequiredYes);
+      if (isNeedsActionRequiredYes) {
+        wlForms['other'].inputs['needsIsContinuousSupportRequired'].setValue('');
+      }
       wlForms['riskMitigation'].form.parentElement.classList.toggle('hiddenPage', isNeedsActionRequiredYes);
       tocLinks['riskMitigation'].classList.toggle('hiddenPage', isNeedsActionRequiredYes);
 
@@ -2045,6 +2077,10 @@ const WaitingListAssessment = (() => {
 
       wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(!isRMChecked);
       wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!isRMChecked);
+      if (!isRMChecked) {
+        wlForms['riskMitigation'].inputs['rMdescription'].setValue('');
+        wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
+      }
 
       if (isRMChecked) {
         wlForms['physical'].inputs['physicalNeedsIsNone'].setValue(false);
@@ -2134,6 +2170,9 @@ const WaitingListAssessment = (() => {
     //* childProtectionAgency
     cpaIsReleasedNext12Months: ({ name, value }) => {
       wlForms['childProtectionAgency'].inputs['cpaAnticipatedDate'].toggleDisabled(value === 'yes' ? false : true);
+      if (value !== 'yes') {
+        wlForms['childProtectionAgency'].inputs['cpaAnticipatedDate'].setValue('');
+      }
       childProtectionAgencyDetermination();
     },
     cpaHasUnaddressableNeeds: childProtectionAgencyDetermination,
@@ -2152,6 +2191,9 @@ const WaitingListAssessment = (() => {
 
       const isYesChecked = wlForms['currentNeeds'].inputs['unmetNeedsSupports'].getValue('unmetNeedsSupportsyes');
       wlForms['currentNeeds'].inputs['unmetNeedsDescription'].toggleDisabled(isYesChecked);
+      if (isYesChecked) {
+        wlForms['currentNeeds'].inputs['unmetNeedsDescription'].setValue('');
+      }
 
       setConclusionWaiverFunded12Months();
     },
@@ -2161,6 +2203,9 @@ const WaitingListAssessment = (() => {
 
       const isYesChecked = wlForms['currentNeeds'].inputs['unmetNeedsHas'].getValue('unmetNeedsHasyes');
       wlForms['currentNeeds'].inputs['unmetNeedsSupports'].toggleDisabled(isYesChecked);
+      if (isYesChecked) {
+        wlForms['currentNeeds'].inputs['unmetNeedsSupports'].setValue('');
+      }
 
       setConclusionWaiverFunded12Months();
     },
@@ -2174,6 +2219,9 @@ const WaitingListAssessment = (() => {
         'waivEnrollWaiverEnrollmentIsRequiredyes',
       );
       wlForms['waiverEnrollment'].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(isYesChecked);
+      if (isYesChecked) {
+        wlForms['waiverEnrollment'].inputs['waivEnrollWaiverEnrollmentDescription'].setValue('');
+      }
 
       setConclusionUnmetNeeds();
       setConclusionWaiverFunded12Months();

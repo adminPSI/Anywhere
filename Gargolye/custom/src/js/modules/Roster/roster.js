@@ -662,454 +662,450 @@ const roster2 = (function () {
     }
 
     async function filterApply() {
-        customGroups.init(rosterGroups);
+      customGroups.init(rosterGroups);
 
-        if (locationHasUnreadNote) {
-            LOCATION_NOTES_BTN.classList.add('attention');
-        } else {
-            LOCATION_NOTES_BTN.classList.remove('attention');
-        }
+      if (locationHasUnreadNote) {
+        LOCATION_NOTES_BTN.classList.add('attention');
+      } else {
+        LOCATION_NOTES_BTN.classList.remove('attention');
+      }
 
-        const rosterlists = [...ROSTER_WRAP.querySelectorAll('.roster__list')];
-        rosterlists && rosterlists.forEach(rl => ROSTER_WRAP.removeChild(rl));
-        totalConsumerCount = 0;
-        await getRosterConsumersData(true);
-        //Ugly... should be re-done to be able to pass a custom apply action for the filter if needed
-        // but I'm running out of thime for this release. THis is needed to reset the set allowed consumers
-        //when filtering on a location or group.
-        if ($.loadedApp === 'timeEntry') {
-            await timeEntryCard.customRosterApplyFilterEvent();
-        }
-        populateRoster();
+      const rosterlists = [...ROSTER_WRAP.querySelectorAll('.roster__list')];
+      rosterlists && rosterlists.forEach(rl => ROSTER_WRAP.removeChild(rl));
+      ROSTER_SPINNER = PROGRESS.SPINNER.get('Please wait while we gather everyone up...');
+      ROSTER_WRAP.insertBefore(ROSTER_SPINNER, ROSTER_WRAP.lastChild);
+      totalConsumerCount = 0;
+      await getRosterConsumersData(true);
+      //Ugly... should be re-done to be able to pass a custom apply action for the filter if needed
+      // but I'm running out of thime for this release. THis is needed to reset the set allowed consumers
+      //when filtering on a location or group.
+      if ($.loadedApp === 'timeEntry') {
+        await timeEntryCard.customRosterApplyFilterEvent();
+      }
+      populateRoster();
 
-        if (selectedDate === '') {
-            selectedDate = UTIL.getTodaysDate();
-        }
-        var splitDate = selectedDate.split('-');
-        filteredDate = `${UTIL.leadingZero(splitDate[1])}/${UTIL.leadingZero(splitDate[2])}/${splitDate[0].slice(
-            2,
-            4,
-        )}`;
- 
-        if (document.getElementById('filteredDateBtn') != null)
-            document.getElementById('filteredDateBtn').innerHTML = 'Date: ' + filteredDate;
+      if (selectedDate === '') {
+        selectedDate = UTIL.getTodaysDate();
+      }
+      var splitDate = selectedDate.split('-');
+      filteredDate = `${UTIL.leadingZero(splitDate[1])}/${UTIL.leadingZero(splitDate[2])}/${splitDate[0].slice(2, 4)}`;
 
-        if (selectedLocationName === '%' || selectedLocationName === 'All') {
-            btnWrap.appendChild(selectedLocationNameBtnWrap);
-            btnWrap.removeChild(selectedLocationNameBtnWrap);
-        } else {
-            btnWrap.appendChild(selectedLocationNameBtnWrap);
-            document.getElementById('selectedLocationNameBtn').innerHTML = 'Location: ' + selectedLocationName;
-        }
+      if (document.getElementById('filteredDateBtn') != null)
+        document.getElementById('filteredDateBtn').innerHTML = 'Date: ' + filteredDate;
 
-        if (selectedGroupName === '%' || selectedGroupName === 'Everyone') {
-            btnWrap.appendChild(selectedGroupNameBtnWrap);
-            btnWrap.removeChild(selectedGroupNameBtnWrap);
-        } else {
-            btnWrap.appendChild(selectedGroupNameBtnWrap);
-            document.getElementById('selectedGroupNameBtn').innerHTML = 'Group: ' + selectedGroupName;
-        }
+      if (selectedLocationName === '%' || selectedLocationName === 'All') {
+        btnWrap.appendChild(selectedLocationNameBtnWrap);
+        btnWrap.removeChild(selectedLocationNameBtnWrap);
+      } else {
+        btnWrap.appendChild(selectedLocationNameBtnWrap);
+        document.getElementById('selectedLocationNameBtn').innerHTML = 'Location: ' + selectedLocationName;
+      }
 
-        document.getElementById('totalConsumerCountBtn').innerHTML = 'Total Consumer Count: ' + totalConsumerCount;
+      if (selectedGroupName === '%' || selectedGroupName === 'Everyone') {
+        btnWrap.appendChild(selectedGroupNameBtnWrap);
+        btnWrap.removeChild(selectedGroupNameBtnWrap);
+      } else {
+        btnWrap.appendChild(selectedGroupNameBtnWrap);
+        document.getElementById('selectedGroupNameBtn').innerHTML = 'Group: ' + selectedGroupName;
+      }
 
+      document.getElementById('totalConsumerCountBtn').innerHTML = 'Total Consumer Count: ' + totalConsumerCount;
 
-        if (!rosterListSelectable) {
-            consumerInfo.toggleHideShowAbsentMenuSection(selectedLocationId);
-        }
+      if (!rosterListSelectable) {
+        consumerInfo.toggleHideShowAbsentMenuSection(selectedLocationId);
+      }
 
-        if (selectedLocationId !== '000') {
-            if (defaults.rememberLastLocation('roster')) defaults.setLocation('roster', selectedLocationId);
-        }
+      if (selectedLocationId !== '000') {
+        if (defaults.rememberLastLocation('roster')) defaults.setLocation('roster', selectedLocationId);
+      }
 
-
-        if ($.loadedApp === 'ConsumerFinances' || $.loadedApp === 'CFEditAccount') {
-            if (defaults.rememberLastLocation('moneyManagement')) defaults.setLocation('moneyManagement', selectedLocationId);
-        }
-
+      if ($.loadedApp === 'ConsumerFinances' || $.loadedApp === 'CFEditAccount') {
+        if (defaults.rememberLastLocation('moneyManagement'))
+          defaults.setLocation('moneyManagement', selectedLocationId);
+      }
     }
     // Top Nav
     //---------------------------------------------
     function toggleLocationNotesBtn() {
-        if (selectedLocationId === '0' || selectedLocationName === 'All' || $.session.useProgressNotes === 'N') {
-            LOCATION_NOTES_BTN.classList.add('disabled');
-            LOCATION_NOTES_BTN.classList.remove('attention');
-        } else {
-            LOCATION_NOTES_BTN.classList.remove('disabled');
-        }
+      if (selectedLocationId === '0' || selectedLocationName === 'All' || $.session.useProgressNotes === 'N') {
+        LOCATION_NOTES_BTN.classList.add('disabled');
+        LOCATION_NOTES_BTN.classList.remove('attention');
+      } else {
+        LOCATION_NOTES_BTN.classList.remove('disabled');
+      }
     }
     function toggleMassAbsentBtn() {
-        var useAbsent = $.session.useAbsentFeature === 'Y' ? true : false;
+      var useAbsent = $.session.useAbsentFeature === 'Y' ? true : false;
 
-        if (!useAbsent || selectedLocationId === '0' || selectedLocationName === 'All') {
-            MASS_ABSENT_BTN.classList.add('disabled');
-        } else {
-            MASS_ABSENT_BTN.classList.remove('disabled');
-        }
+      if (!useAbsent || selectedLocationId === '0' || selectedLocationName === 'All') {
+        MASS_ABSENT_BTN.classList.add('disabled');
+      } else {
+        MASS_ABSENT_BTN.classList.remove('disabled');
+      }
     }
     function buildFilterBtn() {
-        return button.build({
-            text: 'Filter',
-            icon: 'filter',
-            style: 'secondary',
-            type: 'contained',
-            classNames: 'filterBtn',
-        });
+      return button.build({
+        text: 'Filter',
+        icon: 'filter',
+        style: 'secondary',
+        type: 'contained',
+        classNames: 'filterBtn',
+      });
     }
     function buildSearchBtn() {
-        return button.build({
-            id: 'searchBtn',
-            text: 'Search',
-            icon: 'search',
-            style: 'secondary',
-            type: 'contained',
-            classNames: ['searchBtn'],
-        });
+      return button.build({
+        id: 'searchBtn',
+        text: 'Search',
+        icon: 'search',
+        style: 'secondary',
+        type: 'contained',
+        classNames: ['searchBtn'],
+      });
     }
     function buildSelectAllBtn() {
-        return button.build({
-            icon: 'selectAll',
-            style: 'secondary',
-            type: 'contained',
-            classNames: 'selectAllBtn',
-        });
+      return button.build({
+        icon: 'selectAll',
+        style: 'secondary',
+        type: 'contained',
+        classNames: 'selectAllBtn',
+      });
     }
     function buildDeSelectAllBtn() {
-        return button.build({
-            icon: 'deSelectAll',
-            style: 'secondary',
-            type: 'contained',
-            classNames: 'deselectAllBtn',
-        });
+      return button.build({
+        icon: 'deSelectAll',
+        style: 'secondary',
+        type: 'contained',
+        classNames: 'deselectAllBtn',
+      });
     }
     function buildLocationNotesBtn() {
-        var hasUnreadLocationNote =
-            locationsWithUnreadNotes && locationsWithUnreadNotes.filter(loc => loc.loc_id === selectedLocationId);
-        hasUnreadLocationNote = hasUnreadLocationNote.length > 0 ? true : false;
+      var hasUnreadLocationNote =
+        locationsWithUnreadNotes && locationsWithUnreadNotes.filter(loc => loc.loc_id === selectedLocationId);
+      hasUnreadLocationNote = hasUnreadLocationNote.length > 0 ? true : false;
 
-        const locationNotesBtnClassNames = ['locationNotesBtn'];
+      const locationNotesBtnClassNames = ['locationNotesBtn'];
 
-        if (selectedLocationId === '0' || selectedLocationName === 'All' || $.session.useProgressNotes === 'N') {
-            locationNotesBtnClassNames.push('disabled');
-        }
-        if (hasUnreadLocationNote && $.session.useProgressNotes === 'Y') {
-            locationNotesBtnClassNames.push('attention');
-        }
+      if (selectedLocationId === '0' || selectedLocationName === 'All' || $.session.useProgressNotes === 'N') {
+        locationNotesBtnClassNames.push('disabled');
+      }
+      if (hasUnreadLocationNote && $.session.useProgressNotes === 'Y') {
+        locationNotesBtnClassNames.push('attention');
+      }
 
-        return button.build({
-            text: 'Location Notes',
-            style: 'secondary',
-            type: 'contained',
-            icon: 'note',
-            classNames: locationNotesBtnClassNames,
-        });
+      return button.build({
+        text: 'Location Notes',
+        style: 'secondary',
+        type: 'contained',
+        icon: 'note',
+        classNames: locationNotesBtnClassNames,
+      });
     }
     function buildMassAbsentBtn() {
-        var useAbsent = $.session.useAbsentFeature === 'Y' ? true : false;
+      var useAbsent = $.session.useAbsentFeature === 'Y' ? true : false;
 
-        return button.build({
-            text: 'Mass Absent',
-            style: 'secondary',
-            type: 'contained',
-            icon: 'no',
-            classNames:
-                selectedLocationId === '0' || selectedLocationName === 'All' || !useAbsent
-                    ? ['massAbsentBtn', 'disabled']
-                    : ['massAbsentBtn'],
-            toggle: true,
-        });
+      return button.build({
+        text: 'Mass Absent',
+        style: 'secondary',
+        type: 'contained',
+        icon: 'no',
+        classNames:
+          selectedLocationId === '0' || selectedLocationName === 'All' || !useAbsent
+            ? ['massAbsentBtn', 'disabled']
+            : ['massAbsentBtn'],
+        toggle: true,
+      });
     }
     function buildManageGroupsBtn() {
-        return button.build({
-            text: 'Manage Groups',
-            style: 'secondary',
-            type: 'contained',
-            icon: 'people',
-        });
+      return button.build({
+        text: 'Manage Groups',
+        style: 'secondary',
+        type: 'contained',
+        icon: 'people',
+      });
     }
     function buildRosterTopNav() {
-        var btnWrap = document.createElement('div');
-        btnWrap.classList.add('roster-top-nav');
+      var btnWrap = document.createElement('div');
+      btnWrap.classList.add('roster-top-nav');
 
-        FILTER_BTN = buildFilterBtn();
-        SEARCH_BTN = buildSearchBtn();
-        SELECT_ALL_BTN = buildSelectAllBtn();
-        DESELECT_ALL_BTN = buildDeSelectAllBtn();
-        LOCATION_NOTES_BTN = buildLocationNotesBtn();
-        MASS_ABSENT_BTN = buildMassAbsentBtn();
-        MANAGE_GROUPS_BTN = buildManageGroupsBtn();
+      FILTER_BTN = buildFilterBtn();
+      SEARCH_BTN = buildSearchBtn();
+      SELECT_ALL_BTN = buildSelectAllBtn();
+      DESELECT_ALL_BTN = buildDeSelectAllBtn();
+      LOCATION_NOTES_BTN = buildLocationNotesBtn();
+      MASS_ABSENT_BTN = buildMassAbsentBtn();
+      MANAGE_GROUPS_BTN = buildManageGroupsBtn();
 
-        // custom search stuff
-        SEARCH_WRAP = document.createElement('div');
-        // SEARCH_WRAP.classList.add('rosterSearch', 'searchOpen');
-        SEARCH_WRAP.classList.add('rosterSearch');
-        SEARCH_INPUT = document.createElement('input');
-        SEARCH_INPUT.setAttribute('placeholder', 'search consumers');
-        SEARCH_WRAP.appendChild(SEARCH_BTN);
-        SEARCH_WRAP.appendChild(SEARCH_INPUT);
+      // custom search stuff
+      SEARCH_WRAP = document.createElement('div');
+      // SEARCH_WRAP.classList.add('rosterSearch', 'searchOpen');
+      SEARCH_WRAP.classList.add('rosterSearch');
+      SEARCH_INPUT = document.createElement('input');
+      SEARCH_INPUT.setAttribute('placeholder', 'search consumers');
+      SEARCH_WRAP.appendChild(SEARCH_BTN);
+      SEARCH_WRAP.appendChild(SEARCH_INPUT);
 
-        if (rosterListSelectable) {
-            var wrap1 = document.createElement('div');
-            var wrap2 = document.createElement('div');
-            wrap1.classList.add('btnWrap');
-            wrap2.classList.add('btnWrap');
-            // btns to show => selectAll, deselectAll
-            wrap1.appendChild(SEARCH_WRAP);
-            wrap2.appendChild(FILTER_BTN);
-            wrap2.appendChild(SELECT_ALL_BTN);
-            wrap2.appendChild(DESELECT_ALL_BTN);
+      if (rosterListSelectable) {
+        var wrap1 = document.createElement('div');
+        var wrap2 = document.createElement('div');
+        wrap1.classList.add('btnWrap');
+        wrap2.classList.add('btnWrap');
+        // btns to show => selectAll, deselectAll
+        wrap1.appendChild(SEARCH_WRAP);
+        wrap2.appendChild(FILTER_BTN);
+        wrap2.appendChild(SELECT_ALL_BTN);
+        wrap2.appendChild(DESELECT_ALL_BTN);
 
-            btnWrap.appendChild(wrap1);
-            btnWrap.appendChild(wrap2);
-        } else {
-            var wrap1 = document.createElement('div');
-            var wrap2 = document.createElement('div');
-            wrap1.classList.add('btnWrap');
-            wrap2.classList.add('btnWrap');
-            wrap2.classList.add('rosterNotesAbsentGroups');
-            // btns to show => search, notes, absent, groups
-            wrap1.appendChild(FILTER_BTN);
-            wrap1.appendChild(SEARCH_WRAP);
+        btnWrap.appendChild(wrap1);
+        btnWrap.appendChild(wrap2);
+      } else {
+        var wrap1 = document.createElement('div');
+        var wrap2 = document.createElement('div');
+        wrap1.classList.add('btnWrap');
+        wrap2.classList.add('btnWrap');
+        wrap2.classList.add('rosterNotesAbsentGroups');
+        // btns to show => search, notes, absent, groups
+        wrap1.appendChild(FILTER_BTN);
+        wrap1.appendChild(SEARCH_WRAP);
 
-            wrap2.appendChild(LOCATION_NOTES_BTN);
-            wrap2.appendChild(MASS_ABSENT_BTN);
-            wrap2.appendChild(MANAGE_GROUPS_BTN);
+        wrap2.appendChild(LOCATION_NOTES_BTN);
+        wrap2.appendChild(MASS_ABSENT_BTN);
+        wrap2.appendChild(MANAGE_GROUPS_BTN);
 
-            btnWrap.appendChild(wrap1);
-            btnWrap.appendChild(wrap2);
-        }
+        btnWrap.appendChild(wrap1);
+        btnWrap.appendChild(wrap2);
+      }
 
-        return btnWrap;
+      return btnWrap;
     }
 
     // Roster Consumers
     //---------------------------------------------
     function populateConsumerCardPortraits() {
-        const consumerCards = [...document.querySelectorAll('.consumerCard')];
-        consumerCards.forEach(card => {
-            const id = card.dataset.consumerId;
-            const portrait = card.querySelector('.portrait');
-            portrait.innerHTML = `
+      const consumerCards = [...document.querySelectorAll('.consumerCard')];
+      consumerCards.forEach(card => {
+        const id = card.dataset.consumerId;
+        const portrait = card.querySelector('.portrait');
+        portrait.innerHTML = `
        <img
          src="./images/portraits/${id}.png"
          onerror="this.src='./images/new-icons/default.jpg'"
        />`;
-        });
+      });
     }
     function buildConsumerCard(consumerData) {
-        const fName = consumerData.FN ? consumerData.FN.trim() : '';
-        const lName = consumerData.LN ? consumerData.LN.trim() : '';
-        const mName = consumerData.MN ? consumerData.MN.trim() : '';
-        const id = consumerData.id;
-        const serviceLocations = consumerData.LId;
-        const primaryLocation = consumerData.conL;
-        const hasUnreadNote = consumersWithUnreadNotes && consumersWithUnreadNotes[consumerData.id] ? true : false;
-        const isAbsent = absentConsumers && absentConsumers[consumerData.id] ? true : false;
-        const isActive = activeConsumers && activeConsumers.filter(ac => ac.id === consumerData.id);
-        const isSelected = selectedConsumers && selectedConsumers.filter(sc => sc.id === consumerData.id);
-        const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
-        const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
-        const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
-        let isAllowed;
-        if (!allowedConsumerIds) {
-            isAllowed = true;
-        } else if (allowedConsumerIds[0] === '%') {
-            isAllowed = true;
+      const fName = consumerData.FN ? consumerData.FN.trim() : '';
+      const lName = consumerData.LN ? consumerData.LN.trim() : '';
+      const mName = consumerData.MN ? consumerData.MN.trim() : '';
+      const id = consumerData.id;
+      const serviceLocations = consumerData.LId;
+      const primaryLocation = consumerData.conL;
+      const hasUnreadNote = consumersWithUnreadNotes && consumersWithUnreadNotes[consumerData.id] ? true : false;
+      const isAbsent = absentConsumers && absentConsumers[consumerData.id] ? true : false;
+      const isActive = activeConsumers && activeConsumers.filter(ac => ac.id === consumerData.id);
+      const isSelected = selectedConsumers && selectedConsumers.filter(sc => sc.id === consumerData.id);
+      const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
+      const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
+      const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
+      let isAllowed;
+      if (!allowedConsumerIds) {
+        isAllowed = true;
+      } else if (allowedConsumerIds[0] === '%') {
+        isAllowed = true;
+      } else {
+        isAllowed = allowedConsumerIds.filter(consumerId => consumerId === id);
+        isAllowed = isAllowed.length === 0 ? false : true;
+      }
+
+      const consumerCard = document.createElement('div');
+      consumerCard.classList.add('consumerCard');
+      consumerCard.setAttribute('data-consumer-id', id);
+      consumerCard.setAttribute('data-dob', dateOfBirth);
+
+      if (serviceLocations) {
+        consumerCard.setAttribute('data-service-locations', serviceLocations);
+      }
+      if (primaryLocation && $.session.applicationName === 'Advisor') {
+        consumerCard.setAttribute('data-primary-location', primaryLocation);
+      }
+      if (hasUnreadNote) {
+        consumerCard.setAttribute('data-unreadnote', 'true');
+      } else {
+        consumerCard.setAttribute('data-unreadnote', 'false');
+      }
+
+      if (isSelected.length > 0 && rosterListSelectable) {
+        consumerCard.classList.add('highlighted', 'consumer-selected');
+      }
+
+      if ($.loadedApp === 'outcomes') {
+        consumerCard.classList.remove('disabled');
+      } else {
+        if ((isActive && isActive.length >= 1) || !isAllowed) {
+          consumerCard.classList.add('disabled');
         } else {
-            isAllowed = allowedConsumerIds.filter(consumerId => consumerId === id);
-            isAllowed = isAllowed.length === 0 ? false : true;
+          consumerCard.classList.remove('disabled');
         }
+      }
 
-        const consumerCard = document.createElement('div');
-        consumerCard.classList.add('consumerCard');
-        consumerCard.setAttribute('data-consumer-id', id);
-        consumerCard.setAttribute('data-dob', dateOfBirth);
-
-        if (serviceLocations) {
-            consumerCard.setAttribute('data-service-locations', serviceLocations);
-        }
-        if (primaryLocation && $.session.applicationName === 'Advisor') {
-            consumerCard.setAttribute('data-primary-location', primaryLocation);
-        }
-        if (hasUnreadNote) {
-            consumerCard.setAttribute('data-unreadnote', 'true');
-        } else {
-            consumerCard.setAttribute('data-unreadnote', 'false');
-        }
-
-        if (isSelected.length > 0 && rosterListSelectable) {
-            consumerCard.classList.add('highlighted', 'consumer-selected');
-        }
-
-        if ($.loadedApp === 'outcomes') {
-            consumerCard.classList.remove('disabled');
-        }
-        else {
-            if ((isActive && isActive.length >= 1) || !isAllowed) {
-                consumerCard.classList.add('disabled');
-            } else {
-                consumerCard.classList.remove('disabled');
-            }
-        }
-
-        const portrait = document.createElement('div');
-        const details = document.createElement('div');
-        const alertIcons = document.createElement('div');
-        const d = new Date();
-        const time = d.getTime();
-        portrait.classList.add('portrait');
-        details.classList.add('details');
-        alertIcons.classList.add('icons');
-        portrait.innerHTML = `''`;
-        portrait.innerHTML = `
+      const portrait = document.createElement('div');
+      const details = document.createElement('div');
+      const alertIcons = document.createElement('div');
+      const d = new Date();
+      const time = d.getTime();
+      portrait.classList.add('portrait');
+      details.classList.add('details');
+      alertIcons.classList.add('icons');
+      portrait.innerHTML = `''`;
+      portrait.innerHTML = `
       <img 
         src="./images/portraits/${id}.png?${time}"
         onerror="this.src='./images/new-icons/default.jpg'"
       />`;
-        details.innerHTML = `
+      details.innerHTML = `
       <div class="name">
         <p class="name_last">${lName},</p>
 		    <p class="name_first">${fName} ${mName}</p>
       <div>`;
-        alertIcons.innerHTML = `
+      alertIcons.innerHTML = `
       ${isAbsent ? `<span class="absentIcon">A</span>` : ''}
       ${!rosterListSelectable ? (hasUnreadNote ? `<span class="alert">${icons['bell']}</span>` : '') : ''}
 		`;
 
-        consumerCard.appendChild(portrait);
-        consumerCard.appendChild(details);
-        consumerCard.appendChild(alertIcons);
+      consumerCard.appendChild(portrait);
+      consumerCard.appendChild(details);
+      consumerCard.appendChild(alertIcons);
 
-        if (showAlert) {
-            var ICONS = consumerCard.querySelector('.icons');
-            var iconsSVG = ICONS.querySelector('.alertIcon');
-            var iconSVG = document.createElement('p');
-            iconSVG.classList.add('alertIcon');
-            iconSVG.innerHTML = icons['error'];
-            if (ICONS) {
-                if (!iconsSVG) {
-                    ICONS.appendChild(iconSVG);
-                }
-            }
+      if (showAlert) {
+        var ICONS = consumerCard.querySelector('.icons');
+        var iconsSVG = ICONS.querySelector('.alertIcon');
+        var iconSVG = document.createElement('p');
+        iconSVG.classList.add('alertIcon');
+        iconSVG.innerHTML = icons['error'];
+        if (ICONS) {
+          if (!iconsSVG) {
+            ICONS.appendChild(iconSVG);
+          }
         }
+      }
 
-        return consumerCard;
+      return consumerCard;
     }
 
     // Mini Roster Popup
     //---------------------------------------------
     function toggleActionCenterChildrenVisiblity(hideOrShow) {
-        const actionCenterChildren = [...DOM.ACTIONCENTER.children];
-        actionCenterChildren.forEach(child => {
-            if (hideOrShow === 'hide') {
-                child.style.display = 'none';
-                return;
-            }
-            child.removeAttribute('style');
-        });
+      const actionCenterChildren = [...DOM.ACTIONCENTER.children];
+      actionCenterChildren.forEach(child => {
+        if (hideOrShow === 'hide') {
+          child.style.display = 'none';
+          return;
+        }
+        child.removeAttribute('style');
+      });
     }
     function actionNavCallback(e) {
-        SELECT_ALL_BTN.classList.remove('disabled');
-        DESELECT_ALL_BTN.classList.remove('disabled');
+      SELECT_ALL_BTN.classList.remove('disabled');
+      DESELECT_ALL_BTN.classList.remove('disabled');
 
-        if (MINI_ROSTER_BTN) MINI_ROSTER_BTN.classList.remove('disabled');
+      if (MINI_ROSTER_BTN) MINI_ROSTER_BTN.classList.remove('disabled');
 
-        DOM.ACTIONCENTER.removeChild(MINI_ROSTER_POPUP);
-        toggleActionCenterChildrenVisiblity('show');
+      DOM.ACTIONCENTER.removeChild(MINI_ROSTER_POPUP);
+      toggleActionCenterChildrenVisiblity('show');
 
-        if (e.target === MINI_ROSTER_DONE) {
-            roster2.selectedConsumersToActiveList();
-        }
+      if (e.target === MINI_ROSTER_DONE) {
+        roster2.selectedConsumersToActiveList();
+      }
     }
     function buildActioNav() {
-        MINI_ROSTER_DONE = button.build({
-            text: 'Done',
-            icon: 'checkmark',
-            style: 'secondary',
-            type: 'contained',
-            attributes: [{ key: 'data-action-nav', value: 'miniRosterDone' }],
-            classNames: ['disabled'],
-            callback: actionNavCallback,
-        });
-        MINI_ROSTER_CANCEL = button.build({
-            text: 'Cancel',
-            icon: 'close',
-            style: 'secondary',
-            type: 'outlined',
-            attributes: [{ key: 'data-action-nav', value: 'miniRosterCancel' }],
-            callback: actionNavCallback,
-        });
+      MINI_ROSTER_DONE = button.build({
+        text: 'Done',
+        icon: 'checkmark',
+        style: 'secondary',
+        type: 'contained',
+        attributes: [{ key: 'data-action-nav', value: 'miniRosterDone' }],
+        classNames: ['disabled'],
+        callback: actionNavCallback,
+      });
+      MINI_ROSTER_CANCEL = button.build({
+        text: 'Cancel',
+        icon: 'close',
+        style: 'secondary',
+        type: 'outlined',
+        attributes: [{ key: 'data-action-nav', value: 'miniRosterCancel' }],
+        callback: actionNavCallback,
+      });
 
-        ACTION_NAV.populate([MINI_ROSTER_DONE, MINI_ROSTER_CANCEL]);
+      ACTION_NAV.populate([MINI_ROSTER_DONE, MINI_ROSTER_CANCEL]);
     }
     function getMiniRosterHeadline(consumercount) {
-        switch ($.loadedApp) {
-            case 'incidenttracking': {
-                if (!consumercount) return `Select consumer(s) below`;
-                return `Select consumer(s) below to add them to this incident. <span>Total Consumer Count:</span> ${consumercount}`;
-                break;
-            }
-            case 'timeEntry': {
-                if (!consumercount) return `Select consumer(s) below`;
-                return `Select consumer(s) below to add them to this entry. <span>Total Consumer Count:</span> ${consumercount}`;
-                break;
-            }
-            case 'workshop': {
-                if (!consumercount) return `Select consumer(s) below`;
-                return `Select consumer(s) below to clock them in or out. <span>Total Consumer Count:</span> ${consumercount}`;
-                break;
-            }
-            case 'plan': {
-                return `Select a consumer below`;
-            }
-            default: {
-                if (!consumercount) return `Select consumer(s) below`;
-                return `Select consumer(s) below <span>Total Consumer Count:</span> ${consumercount}`;
-                break;
-            }
+      switch ($.loadedApp) {
+        case 'incidenttracking': {
+          if (!consumercount) return `Select consumer(s) below`;
+          return `Select consumer(s) below to add them to this incident. <span>Total Consumer Count:</span> ${consumercount}`;
+          break;
         }
+        case 'timeEntry': {
+          if (!consumercount) return `Select consumer(s) below`;
+          return `Select consumer(s) below to add them to this entry. <span>Total Consumer Count:</span> ${consumercount}`;
+          break;
+        }
+        case 'workshop': {
+          if (!consumercount) return `Select consumer(s) below`;
+          return `Select consumer(s) below to clock them in or out. <span>Total Consumer Count:</span> ${consumercount}`;
+          break;
+        }
+        case 'plan': {
+          return `Select a consumer below`;
+        }
+        default: {
+          if (!consumercount) return `Select consumer(s) below`;
+          return `Select consumer(s) below <span>Total Consumer Count:</span> ${consumercount}`;
+          break;
+        }
+      }
     }
     function buildMiniRosterPopup(rosterMarkup) {
-        const miniRosterWrap = document.createElement('div');
-        miniRosterWrap.classList.add('enabledConsumers', 'miniRoster');
-        miniRosterWrap.setAttribute('data-roster', 'enabled');
+      const miniRosterWrap = document.createElement('div');
+      miniRosterWrap.classList.add('enabledConsumers', 'miniRoster');
+      miniRosterWrap.setAttribute('data-roster', 'enabled');
 
-        var headline = document.createElement('h3');
-        headline.classList.add('miniRosterHeadline');
-        headline.innerHTML = getMiniRosterHeadline();
+      var headline = document.createElement('h3');
+      headline.classList.add('miniRosterHeadline');
+      headline.innerHTML = getMiniRosterHeadline();
 
-        // miniRosterWrap.appendChild(headline);
-        rosterMarkup.insertBefore(headline, rosterMarkup.firstChild.nextSibling);
-        miniRosterWrap.appendChild(rosterMarkup);
+      // miniRosterWrap.appendChild(headline);
+      rosterMarkup.insertBefore(headline, rosterMarkup.firstChild.nextSibling);
+      miniRosterWrap.appendChild(rosterMarkup);
 
-        return miniRosterWrap;
+      return miniRosterWrap;
     }
     function showMiniRosterPopup(rosterMarkup) {
-        if (MINI_ROSTER_BTN) MINI_ROSTER_BTN.classList.add('disabled');
+      if (MINI_ROSTER_BTN) MINI_ROSTER_BTN.classList.add('disabled');
 
-        const activeSection = DOM.ACTIONCENTER.dataset.activeSection;
-        //buttons need to be disabled. This will need to
-        // be modified if more modules need these buttons disabled
+      const activeSection = DOM.ACTIONCENTER.dataset.activeSection;
+      //buttons need to be disabled. This will need to
+      // be modified if more modules need these buttons disabled
 
-        if (
-            $.loadedApp === 'outcomes' ||
-            $.loadedApp === 'plan' ||
-            $.loadedApp === 'ConsumerFinances' ||
-            $.loadedApp === 'CFEditAccount' ||
-            $.loadedApp === 'employment' ||
-            $.loadedApp === 'covid' ||
-            $.loadedApp === 'forms' ||
-            $.loadedApp === 'assessmentHistory' ||
-            activeSection === 'caseNotesSSA-new' ||
-            activeSection === 'caseNotes-new'
-        ) {
-            SELECT_ALL_BTN.classList.add('disabled');
-            DESELECT_ALL_BTN.classList.add('disabled');
-        }
-        toggleActionCenterChildrenVisiblity('hide');
+      if (
+        $.loadedApp === 'outcomes' ||
+        $.loadedApp === 'plan' ||
+        $.loadedApp === 'ConsumerFinances' ||
+        $.loadedApp === 'CFEditAccount' ||
+        $.loadedApp === 'employment' ||
+        $.loadedApp === 'covid' ||
+        $.loadedApp === 'forms' ||
+        $.loadedApp === 'assessmentHistory' ||
+        activeSection === 'caseNotesSSA-new' ||
+        activeSection === 'caseNotes-new'
+      ) {
+        SELECT_ALL_BTN.classList.add('disabled');
+        DESELECT_ALL_BTN.classList.add('disabled');
+      }
+      toggleActionCenterChildrenVisiblity('hide');
 
-        MINI_ROSTER_POPUP = buildMiniRosterPopup(rosterMarkup);
-        DOM.ACTIONCENTER.appendChild(MINI_ROSTER_POPUP);
-        buildActioNav();
+      MINI_ROSTER_POPUP = buildMiniRosterPopup(rosterMarkup);
+      DOM.ACTIONCENTER.appendChild(MINI_ROSTER_POPUP);
+      buildActioNav();
     }
     /**
      * Initializes the mini roster. Removes the mini roster button, and re-adds it with new settings.
@@ -1122,409 +1118,409 @@ const roster2 = (function () {
      * !IMPORTANT! If setting this to true, you must update the roster date when they change the date within the module using roster2.updateSelectedDate()
      */
     async function miniRosterinit(locationData, rosterOptions) {
-        removeMiniRosterBtn();
-        // Reset date from moving between modules:
-        selectedDate = UTIL.getTodaysDate();
-        if (locationData) {
-            const { locationId, locationName } = locationData;
-            if (locationName && locationId) {
-                selectedLocationName = locationName;
-                selectedLocationId = locationId;
-            } else if (locationName === '') {
-                if (locationId === '0') {
-                    selectedLocationName = 'All';
-                    selectedLocationId = locationId;
-                } else {
-                    rosterLocations = rosterLocations ?? (await getRosterLocationsData());
-                    const selectedLocationObj = rosterLocations.filter(loc => locationId === loc.ID);
-                    selectedLocationName = selectedLocationObj[0].Name;
-                    selectedLocationId = locationId;
-                }
-            }
-            // reset group when custom location is passed:
-            selectedGroupId = selectedLocationId;
-            selectedGroupCode = 'ALL';
-            selectedGroupName = 'Everyone';
+      removeMiniRosterBtn();
+      // Reset date from moving between modules:
+      selectedDate = UTIL.getTodaysDate();
+      if (locationData) {
+        const { locationId, locationName } = locationData;
+        if (locationName && locationId) {
+          selectedLocationName = locationName;
+          selectedLocationId = locationId;
+        } else if (locationName === '') {
+          if (locationId === '0') {
+            selectedLocationName = 'All';
+            selectedLocationId = locationId;
+          } else {
+            rosterLocations = rosterLocations ?? (await getRosterLocationsData());
+            const selectedLocationObj = rosterLocations.filter(loc => locationId === loc.ID);
+            selectedLocationName = selectedLocationObj[0].Name;
+            selectedLocationId = locationId;
+          }
         }
-        MINI_ROSTER_BTN = button.build({
-            icon: 'people',
-            style: 'secondary',
-            type: 'contained',
-            id: 'mini_roster',
-            // classNames: ['floatingActionBtn', 'consumerListBtn', 'disabled'],
-            classNames: ['floatingActionBtn', 'consumerListBtn'],
-            callback: async () => {
-                if (
-                    $.loadedApp === 'ConsumerFinances' ||
-                    $.loadedApp === 'CFEditAccount' ||
-                    $.loadedApp === 'employment' ||
-                    $.loadedApp === 'assessmentHistory'
-                ) {
-                    clearSelectedConsumers();
-                    clearActiveConsumers();
-                }
-                MINI_ROSTER_BTN.classList.add('disabled');
-                await showMiniRoster(rosterOptions);
-                MINI_ROSTER_BTN.classList.remove('disabled');
-            },
-        });
+        // reset group when custom location is passed:
+        selectedGroupId = selectedLocationId;
+        selectedGroupCode = 'ALL';
+        selectedGroupName = 'Everyone';
+      }
+      MINI_ROSTER_BTN = button.build({
+        icon: 'people',
+        style: 'secondary',
+        type: 'contained',
+        id: 'mini_roster',
+        // classNames: ['floatingActionBtn', 'consumerListBtn', 'disabled'],
+        classNames: ['floatingActionBtn', 'consumerListBtn'],
+        callback: async () => {
+          if (
+            $.loadedApp === 'ConsumerFinances' ||
+            $.loadedApp === 'CFEditAccount' ||
+            $.loadedApp === 'employment' ||
+            $.loadedApp === 'assessmentHistory'
+          ) {
+            clearSelectedConsumers();
+            clearActiveConsumers();
+          }
+          MINI_ROSTER_BTN.classList.add('disabled');
+          await showMiniRoster(rosterOptions);
+          MINI_ROSTER_BTN.classList.remove('disabled');
+        },
+      });
 
-        document.body.appendChild(MINI_ROSTER_BTN);
-        DOM.toggleNavLayout();
+      document.body.appendChild(MINI_ROSTER_BTN);
+      DOM.toggleNavLayout();
     }
 
     async function showMiniRoster(
-        rosterOptions = {
-            hideDate: false,
-        },
+      rosterOptions = {
+        hideDate: false,
+      },
     ) {
-        const rosterMarkup = await buildRoster({
-            selectable: true,
-            hideDateFilter: rosterOptions.hideDate ? true : false,
-        });
-        showMiniRosterPopup(rosterMarkup);
-        totalConsumerCount = 0;
-        await getRosterConsumersData();
-        populateRoster();
-        document.getElementById('searchBtn').click();
-        filterApply();
+      const rosterMarkup = await buildRoster({
+        selectable: true,
+        hideDateFilter: rosterOptions.hideDate ? true : false,
+      });
+      showMiniRosterPopup(rosterMarkup);
+      totalConsumerCount = 0;
+      await getRosterConsumersData();
+      populateRoster();
+      document.getElementById('searchBtn').click();
+      filterApply();
     }
     /**
      * Enables or disables the mini roster button.
      * @param {boolean} showBtn - True = enable the mini roster button
      */
     function toggleMiniRosterBtnVisible(showBtn) {
-        if (showBtn) {
-            MINI_ROSTER_BTN.classList.remove('disabled');
-        } else {
-            MINI_ROSTER_BTN.classList.add('disabled');
-        }
+      if (showBtn) {
+        MINI_ROSTER_BTN.classList.remove('disabled');
+      } else {
+        MINI_ROSTER_BTN.classList.add('disabled');
+      }
     }
     // Roster Data
     //---------------------------------------------
     async function getRosterLocationsData() {
-        try {
-            const data = (await rosterAjax.getRosterLocations()).getLocationsJSONResult;
-            return data;
-        } catch (error) {
-            console.log(error);
-        }
+      try {
+        const data = (await rosterAjax.getRosterLocations()).getLocationsJSONResult;
+        return data;
+      } catch (error) {
+        console.log(error);
+      }
     }
     async function getConsumerGroupsData() {
-        try {
-            const data = (await customGroupsAjax.getConsumerGroups(selectedLocationId)).getConsumerGroupsJSONResult;
-            return data;
-        } catch (error) {
-            console.log(error);
-        }
+      try {
+        const data = (await customGroupsAjax.getConsumerGroups(selectedLocationId)).getConsumerGroupsJSONResult;
+        return data;
+      } catch (error) {
+        console.log(error);
+      }
     }
     async function getLocationsWithUnreadNotesData() {
-        try {
-            const data = (await locationNotesAjax.getLocationsWithUnreadNotes()).getLocationsWithUnreadNotesResult;
-            return JSON.parse(data);
-        } catch (error) {
-            console.log(error);
-        }
+      try {
+        const data = (await locationNotesAjax.getLocationsWithUnreadNotes()).getLocationsWithUnreadNotesResult;
+        return JSON.parse(data);
+      } catch (error) {
+        console.log(error);
+      }
     }
     async function getConsumersByGroupData(getConsumerByGroupData) {
-        try {
-            const data = (await rosterAjax.getConsumersByGroup(getConsumerByGroupData)).getConsumersByGroupJSONResult;
-            return data;
-        } catch (error) {
-            console.log(error);
-        }
+      try {
+        const data = (await rosterAjax.getConsumersByGroup(getConsumerByGroupData)).getConsumersByGroupJSONResult;
+        return data;
+      } catch (error) {
+        console.log(error);
+      }
     }
     async function getConsumersWithUnreadNotesByEmployeeAndLocationData(selectedLocationId) {
-        try {
-            const data = (await progressNotesAjax.getConsumersWithUnreadNotesByEmployeeAndLocation(selectedLocationId))
-                .getConsumersWithUnreadNotesByEmployeeAndLocationResult;
-            return JSON.parse(data);
-        } catch (error) {
-            console.log(error);
-        }
+      try {
+        const data = (await progressNotesAjax.getConsumersWithUnreadNotesByEmployeeAndLocation(selectedLocationId))
+          .getConsumersWithUnreadNotesByEmployeeAndLocationResult;
+        return JSON.parse(data);
+      } catch (error) {
+        console.log(error);
+      }
     }
     async function getRosterConsumersData(forceGroupFilter) {
-        if ($.session.formsCaseload == true && $.loadedApp === 'forms') selectedGroupCode = 'CAS';
-        const getConsumerByGroupData = {
-            selectedGroupCode,
-            selectedGroupId,
-            selectedLocationId,
-            selectedDate,
-        };
+      if ($.session.formsCaseload == true && $.loadedApp === 'forms') selectedGroupCode = 'CAS';
+      const getConsumerByGroupData = {
+        selectedGroupCode,
+        selectedGroupId,
+        selectedLocationId,
+        selectedDate,
+      };
 
-        if (!rosterConsumers || rosterConsumers.length === 0 || forceGroupFilter) {
-            rosterConsumers = await getConsumersByGroupData(getConsumerByGroupData);
-        }
+      if (!rosterConsumers || rosterConsumers.length === 0 || forceGroupFilter) {
+        rosterConsumers = await getConsumersByGroupData(getConsumerByGroupData);
+      }
 
-        // I am not sure why consumer location was being set to the selected location ID?
-        const seenIds = {};
+      // I am not sure why consumer location was being set to the selected location ID?
+      const seenIds = {};
 
-        rosterConsumers = rosterConsumers.filter(consumer => {
-            if (seenIds[consumer.id]) {
-                return false;
-            } else {
-                seenIds[consumer.id] = true;
-                return true;
-            }
-        });
-        groupRosterConsumers();
-
-        if (selectedLocationId !== '0') {
-            const consumersWithUnreadNotesResults = await getConsumersWithUnreadNotesByEmployeeAndLocationData(
-                selectedLocationId,
-            );
-            consumersWithUnreadNotes = progressNotes.createConsumersWithUnreadNotesObj(consumersWithUnreadNotesResults);
+      rosterConsumers = rosterConsumers.filter(consumer => {
+        if (seenIds[consumer.id]) {
+          return false;
         } else {
-            consumersWithUnreadNotes = {};
+          seenIds[consumer.id] = true;
+          return true;
         }
+      });
+      groupRosterConsumers();
 
-        absentConsumers = await rosterAbsent.getAbsentConsumers(selectedLocationId, selectedDate);
+      if (selectedLocationId !== '0') {
+        const consumersWithUnreadNotesResults = await getConsumersWithUnreadNotesByEmployeeAndLocationData(
+          selectedLocationId,
+        );
+        consumersWithUnreadNotes = progressNotes.createConsumersWithUnreadNotesObj(consumersWithUnreadNotesResults);
+      } else {
+        consumersWithUnreadNotes = {};
+      }
+
+      absentConsumers = await rosterAbsent.getAbsentConsumers(selectedLocationId, selectedDate);
     }
     async function getRosterData() {
-        if (!selectedDate) selectedDate = UTIL.getTodaysDate();
+      if (!selectedDate) selectedDate = UTIL.getTodaysDate();
 
-        rosterLocations = await getRosterLocationsData();
-        if (!selectedLocationId || rosterLocations.filter(loc => loc.ID === selectedLocationId).length === 0) {
-            if (selectedLocationId !== '0') setSelectedLocationData();
-        }
+      rosterLocations = await getRosterLocationsData();
+      if (!selectedLocationId || rosterLocations.filter(loc => loc.ID === selectedLocationId).length === 0) {
+        if (selectedLocationId !== '0') setSelectedLocationData();
+      }
 
-        rosterGroups = await getConsumerGroupsData(selectedLocationId);
-        if (!selectedGroupName || ($.session.formsCaseload == true && $.loadedApp === 'forms')) setSelectedGroupData();
+      rosterGroups = await getConsumerGroupsData(selectedLocationId);
+      if (!selectedGroupName || ($.session.formsCaseload == true && $.loadedApp === 'forms')) setSelectedGroupData();
 
-        locationsWithUnreadNotes = await getLocationsWithUnreadNotesData();
+      locationsWithUnreadNotes = await getLocationsWithUnreadNotesData();
     }
 
     // Roster List
     //---------------------------------------------
     function buildLoadMoreBtn() {
-        const btnWrap = document.createElement('div');
-        btnWrap.classList.add('loadMoreConsumersBtn');
+      const btnWrap = document.createElement('div');
+      btnWrap.classList.add('loadMoreConsumersBtn');
 
-        const btn = button.build({
-            text: 'Load More...',
-            style: 'secondary',
-            type: 'contained',
-            callback: () => {
-                activeGroup++;
-                populateRoster(true);
-            },
-        });
+      const btn = button.build({
+        text: 'Load More...',
+        style: 'secondary',
+        type: 'contained',
+        callback: () => {
+          activeGroup++;
+          populateRoster(true);
+        },
+      });
 
-        btnWrap.appendChild(btn);
+      btnWrap.appendChild(btn);
 
-        return btnWrap;
+      return btnWrap;
     }
     function toggleRosterListLockdown(lockItDown) {
-        if (lockItDown) {
-            ROSTER_WRAP.classList.add('disabled');
-        } else {
-            ROSTER_WRAP.classList.remove('disabled');
-        }
+      if (lockItDown) {
+        ROSTER_WRAP.classList.add('disabled');
+      } else {
+        ROSTER_WRAP.classList.remove('disabled');
+      }
     }
     async function refreshRosterList() {
-        rosterListSelectable = false;
-        setActiveModuleSectionAttribute('roster-info');
+      rosterListSelectable = false;
+      setActiveModuleSectionAttribute('roster-info');
 
-        const rosterlists = [...ROSTER_WRAP.querySelectorAll('.roster__list')];
-        rosterlists && rosterlists.forEach(rl => ROSTER_WRAP.removeChild(rl));
-        totalConsumerCount = 0;
+      const rosterlists = [...ROSTER_WRAP.querySelectorAll('.roster__list')];
+      rosterlists && rosterlists.forEach(rl => ROSTER_WRAP.removeChild(rl));
+      totalConsumerCount = 0;
 
-        await getRosterData();
-        await getRosterConsumersData(true);
-        populateRoster();
+      await getRosterData();
+      await getRosterConsumersData(true);
+      populateRoster();
     }
     function rosterEventSetup() {
-        ROSTER_WRAP.addEventListener('click', e => {
-            const isConsumer = event.target.classList.contains('consumerCard');
-            if (!isConsumer) return;
-            const consumer = event.target;
-            const consumerId = event.target.dataset.consumerId;
+      ROSTER_WRAP.addEventListener('click', e => {
+        const isConsumer = event.target.classList.contains('consumerCard');
+        if (!isConsumer) return;
+        const consumer = event.target;
+        const consumerId = event.target.dataset.consumerId;
 
-            const activeSection = DOM.ACTIONCENTER.dataset.activeSection;
+        const activeSection = DOM.ACTIONCENTER.dataset.activeSection;
 
-            if (activeSection === 'roster-info') {
-                toggleRosterListLockdown(true);
-                DOM.scrollToTopOfPage();
-                consumerInfo.showCard(consumer);
-                return;
+        if (activeSection === 'roster-info') {
+          toggleRosterListLockdown(true);
+          DOM.scrollToTopOfPage();
+          consumerInfo.showCard(consumer);
+          return;
+        }
+
+        const isConsumerSelected = consumer.classList.contains('consumer-selected');
+        // var activeSection = actioncenter.dataset.activeSection;
+
+        if (
+          $.loadedApp === 'outcomes' ||
+          $.loadedApp === 'plan' ||
+          $.loadedApp === 'authorizations' ||
+          $.loadedApp === 'ConsumerFinances' ||
+          $.loadedApp === 'CFEditAccount' ||
+          $.loadedApp === 'employment' ||
+          $.loadedApp === 'covid' ||
+          $.loadedApp === 'forms' ||
+          $.loadedApp === 'assessmentHistory' ||
+          // $.loadedApp === 'OOD' ||
+          activeSection === 'caseNotesSSA-new' ||
+          activeSection === 'caseNotes-new'
+        ) {
+          // add modules that only allow one consumer
+          if (isConsumerSelected) {
+            consumer.classList.remove('consumer-selected');
+            consumer.classList.remove('highlighted');
+            removeConsumerFromSelectedConsumers(consumerId);
+          } else {
+            const currentlySelectedConsumer = ROSTER_WRAP.querySelector('.consumer-selected');
+            if (currentlySelectedConsumer) {
+              const currentlySelectedConsumerId = currentlySelectedConsumer.dataset.consumerId;
+              currentlySelectedConsumer.classList.remove('highlighted');
+              currentlySelectedConsumer.classList.remove('consumer-selected');
+              removeConsumerFromSelectedConsumers(currentlySelectedConsumerId);
             }
+            consumer.classList.add('consumer-selected');
+            consumer.classList.add('highlighted');
+            addConsumerToSelectedConsumers(consumer);
+          }
+        } else {
+          if (!isConsumerSelected) {
+            addConsumerToSelectedConsumers(consumer);
+            consumer.classList.add('consumer-selected');
+            consumer.classList.add('highlighted');
+          } else {
+            consumer.classList.remove('consumer-selected');
+            consumer.classList.remove('highlighted');
+            removeConsumerFromSelectedConsumers(consumerId);
+          }
+        }
 
-            const isConsumerSelected = consumer.classList.contains('consumer-selected');
-            // var activeSection = actioncenter.dataset.activeSection;
+        if (activeSection === 'roster-absent') {
+          const doneBtn = document.getElementById('absentDone');
+          if (selectedConsumers.length > 0) {
+            doneBtn.classList.remove('disabled');
+          } else {
+            doneBtn.classList.add('disabled');
+          }
+          return;
+        }
 
-            if (
-                $.loadedApp === 'outcomes' ||
-                $.loadedApp === 'plan' ||
-                $.loadedApp === 'authorizations' ||
-                $.loadedApp === 'ConsumerFinances' ||
-                $.loadedApp === 'CFEditAccount' ||
-                $.loadedApp === 'employment' ||
-                $.loadedApp === 'covid' ||
-                $.loadedApp === 'forms' ||
-                $.loadedApp === 'assessmentHistory' ||
-                // $.loadedApp === 'OOD' ||
-                activeSection === 'caseNotesSSA-new' ||
-                activeSection === 'caseNotes-new'
-            ) {
-                // add modules that only allow one consumer
-                if (isConsumerSelected) {
-                    consumer.classList.remove('consumer-selected');
-                    consumer.classList.remove('highlighted');
-                    removeConsumerFromSelectedConsumers(consumerId);
-                } else {
-                    const currentlySelectedConsumer = ROSTER_WRAP.querySelector('.consumer-selected');
-                    if (currentlySelectedConsumer) {
-                        const currentlySelectedConsumerId = currentlySelectedConsumer.dataset.consumerId;
-                        currentlySelectedConsumer.classList.remove('highlighted');
-                        currentlySelectedConsumer.classList.remove('consumer-selected');
-                        removeConsumerFromSelectedConsumers(currentlySelectedConsumerId);
-                    }
-                    consumer.classList.add('consumer-selected');
-                    consumer.classList.add('highlighted');
-                    addConsumerToSelectedConsumers(consumer);
-                }
-            } else {
-                if (!isConsumerSelected) {
-                    addConsumerToSelectedConsumers(consumer);
-                    consumer.classList.add('consumer-selected');
-                    consumer.classList.add('highlighted');
-                } else {
-                    consumer.classList.remove('consumer-selected');
-                    consumer.classList.remove('highlighted');
-                    removeConsumerFromSelectedConsumers(consumerId);
-                }
-            }
+        if (selectedConsumers.length > 0) {
+          MINI_ROSTER_DONE.classList.remove('disabled');
+        } else {
+          MINI_ROSTER_DONE.classList.add('disabled');
+        }
+      });
 
-            if (activeSection === 'roster-absent') {
-                const doneBtn = document.getElementById('absentDone');
-                if (selectedConsumers.length > 0) {
-                    doneBtn.classList.remove('disabled');
-                } else {
-                    doneBtn.classList.add('disabled');
-                }
-                return;
-            }
-
-            if (selectedConsumers.length > 0) {
-                MINI_ROSTER_DONE.classList.remove('disabled');
-            } else {
-                MINI_ROSTER_DONE.classList.add('disabled');
-            }
+      SELECT_ALL_BTN.addEventListener('click', event => {
+        var consumers = [].slice.call(ROSTER_WRAP.querySelectorAll('.consumerCard:not(.highlighted)'));
+        consumers.forEach(c => {
+          if (c.classList.contains('disabled')) return;
+          var consumer = c.cloneNode(true);
+          addConsumerToSelectedConsumers(consumer);
+          c.classList.add('consumer-selected', 'highlighted');
         });
 
-        SELECT_ALL_BTN.addEventListener('click', event => {
-            var consumers = [].slice.call(ROSTER_WRAP.querySelectorAll('.consumerCard:not(.highlighted)'));
-            consumers.forEach(c => {
-                if (c.classList.contains('disabled')) return;
-                var consumer = c.cloneNode(true);
-                addConsumerToSelectedConsumers(consumer);
-                c.classList.add('consumer-selected', 'highlighted');
+        const groupCount = Object.keys(groupedRosterConsumers).length;
+        const nextGroup = activeGroup + 1;
+        for (let i = nextGroup; i <= groupCount; i++) {
+          if (groupedRosterConsumers[i]) {
+            groupedRosterConsumers[i].forEach(c => {
+              var consumer = buildConsumerCard(c);
+              if (consumer.classList.contains('disabled')) return;
+              addConsumerToSelectedConsumers(consumer);
             });
+          }
+        }
 
-            const groupCount = Object.keys(groupedRosterConsumers).length;
-            const nextGroup = activeGroup + 1;
-            for (let i = nextGroup; i <= groupCount; i++) {
-                if (groupedRosterConsumers[i]) {
-                    groupedRosterConsumers[i].forEach(c => {
-                        var consumer = buildConsumerCard(c);
-                        if (consumer.classList.contains('disabled')) return;
-                        addConsumerToSelectedConsumers(consumer);
-                    });
-                }
-            }
+        console.table(selectedConsumers);
 
-            console.table(selectedConsumers);
+        if (selectedConsumers.length > 0) {
+          MINI_ROSTER_DONE.classList.remove('disabled');
+        } else {
+          MINI_ROSTER_DONE.classList.add('disabled');
+        }
+      });
 
-            if (selectedConsumers.length > 0) {
-                MINI_ROSTER_DONE.classList.remove('disabled');
-            } else {
-                MINI_ROSTER_DONE.classList.add('disabled');
-            }
-        });
+      DESELECT_ALL_BTN.addEventListener('click', event => {
+        clearHighlightedConsumers();
+        clearSelectedConsumers();
 
-        DESELECT_ALL_BTN.addEventListener('click', event => {
-            clearHighlightedConsumers();
-            clearSelectedConsumers();
+        console.table(selectedConsumers);
 
-            console.table(selectedConsumers);
+        if (selectedConsumers.length > 0) {
+          MINI_ROSTER_DONE.classList.remove('disabled');
+        } else {
+          MINI_ROSTER_DONE.classList.add('disabled');
+        }
+      });
 
-            if (selectedConsumers.length > 0) {
-                MINI_ROSTER_DONE.classList.remove('disabled');
-            } else {
-                MINI_ROSTER_DONE.classList.add('disabled');
-            }
-        });
+      FILTER_BTN.addEventListener('click', event => {
+        buildFilterPopup('ALL');
+      });
 
-        FILTER_BTN.addEventListener('click', event => {
-            buildFilterPopup('ALL');
-        });
+      SEARCH_BTN.addEventListener('click', event => {
+        SEARCH_WRAP.classList.toggle('searchOpen');
+        SEARCH_INPUT.value = '';
+        SEARCH_INPUT.focus();
+      });
+      SEARCH_INPUT.addEventListener('keyup', event => {
+        if (event.keyCode === 13) {
+          searchRoster(event.target.value);
+        }
+      });
 
-        SEARCH_BTN.addEventListener('click', event => {
-            SEARCH_WRAP.classList.toggle('searchOpen');
-            SEARCH_INPUT.value = '';
-            SEARCH_INPUT.focus();
-        });
-        SEARCH_INPUT.addEventListener('keyup', event => {
-            if (event.keyCode === 13) {
-                searchRoster(event.target.value);
-            }
-        });
+      MASS_ABSENT_BTN.addEventListener('click', event => {
+        if (event.target.dataset.toggled === 'true') {
+          rosterListSelectable = true;
+          rosterAbsent.initMassAbsent();
+          setActiveModuleSectionAttribute('roster-absent');
+        } else {
+          rosterListSelectable = false;
+          ACTION_NAV.hide();
+          setActiveModuleSectionAttribute('roster-info');
+        }
+      });
 
-        MASS_ABSENT_BTN.addEventListener('click', event => {
-            if (event.target.dataset.toggled === 'true') {
-                rosterListSelectable = true;
-                rosterAbsent.initMassAbsent();
-                setActiveModuleSectionAttribute('roster-absent');
-            } else {
-                rosterListSelectable = false;
-                ACTION_NAV.hide();
-                setActiveModuleSectionAttribute('roster-info');
-            }
-        });
+      MANAGE_GROUPS_BTN.addEventListener('click', event => {
+        customGroups.loadManageGroupsPage();
+      });
 
-        MANAGE_GROUPS_BTN.addEventListener('click', event => {
-            customGroups.loadManageGroupsPage();
-        });
-
-        LOCATION_NOTES_BTN.addEventListener('click', event => {
-            locationNotes.loadAllNotesPage();
-        });
+      LOCATION_NOTES_BTN.addEventListener('click', event => {
+        locationNotes.loadAllNotesPage();
+      });
     }
     function populateRoster(loadingMore) {
-        if (!rosterConsumers) return;
+      if (!rosterConsumers) return;
 
-        ROSTER_LIST = document.createElement('div');
-        ROSTER_LIST.classList.add('roster__list');
+      ROSTER_LIST = document.createElement('div');
+      ROSTER_LIST.classList.add('roster__list');
 
-        if (groupedRosterConsumers[activeGroup]) {
-            groupedRosterConsumers[activeGroup].forEach(c => ROSTER_LIST.appendChild(buildConsumerCard(c)));
-            totalConsumerCount = rosterConsumers.length;
-        }
+      if (groupedRosterConsumers[activeGroup]) {
+        groupedRosterConsumers[activeGroup].forEach(c => ROSTER_LIST.appendChild(buildConsumerCard(c)));
+        totalConsumerCount = rosterConsumers.length;
+      }
 
-        if (ROSTER_WRAP.contains(ROSTER_SPINNER)) ROSTER_WRAP.removeChild(ROSTER_SPINNER);
-        if (!ROSTER_WRAP.contains(LOAD_MORE_BTN)) {
-            LOAD_MORE_BTN = buildLoadMoreBtn();
-            ROSTER_WRAP.appendChild(LOAD_MORE_BTN);
-        }
-        ROSTER_WRAP.insertBefore(ROSTER_LIST, LOAD_MORE_BTN);
-        // if (!loadingMore) SEARCH_INPUT.focus();
-        const nextGroup = activeGroup + 1;
-        if (!groupedRosterConsumers[nextGroup]) {
-            ROSTER_WRAP.removeChild(LOAD_MORE_BTN);
-        }
+      if (ROSTER_WRAP.contains(ROSTER_SPINNER)) ROSTER_WRAP.removeChild(ROSTER_SPINNER);
+      if (!ROSTER_WRAP.contains(LOAD_MORE_BTN)) {
+        LOAD_MORE_BTN = buildLoadMoreBtn();
+        ROSTER_WRAP.appendChild(LOAD_MORE_BTN);
+      }
+      ROSTER_WRAP.insertBefore(ROSTER_LIST, LOAD_MORE_BTN);
+      // if (!loadingMore) SEARCH_INPUT.focus();
+      const nextGroup = activeGroup + 1;
+      if (!groupedRosterConsumers[nextGroup]) {
+        ROSTER_WRAP.removeChild(LOAD_MORE_BTN);
+      }
 
-        updateTotalConsumerCount();
-        // populateConsumerCardPortraits();
+      updateTotalConsumerCount();
+      // populateConsumerCardPortraits();
     }
     function groupRosterConsumers(consumers) {
-        const chunkBy = 50;
-        const chunkedArray = consumers ? UTIL.chunkArray(consumers, chunkBy) : UTIL.chunkArray(rosterConsumers, chunkBy);
-        groupedRosterConsumers = {};
-        chunkedArray.forEach((a, index) => (groupedRosterConsumers[index] = a));
+      const chunkBy = 50;
+      const chunkedArray = consumers ? UTIL.chunkArray(consumers, chunkBy) : UTIL.chunkArray(rosterConsumers, chunkBy);
+      groupedRosterConsumers = {};
+      chunkedArray.forEach((a, index) => (groupedRosterConsumers[index] = a));
 
-        const rosterGroupKeys = Object.keys(groupedRosterConsumers);
-        rosterGroupCount = rosterGroupKeys && rosterGroupKeys.length;
-        activeGroup = 0;
+      const rosterGroupKeys = Object.keys(groupedRosterConsumers);
+      rosterGroupCount = rosterGroupKeys && rosterGroupKeys.length;
+      activeGroup = 0;
     }
     /**
      *
@@ -1533,26 +1529,26 @@ const roster2 = (function () {
      *
      */
     async function buildRoster({ selectable, ...otherOpts }, callback) {
-        rosterListSelectable = selectable;
-        hideDateFilter = otherOpts.hideDateFilter;
+      rosterListSelectable = selectable;
+      hideDateFilter = otherOpts.hideDateFilter;
 
-        await getRosterData();
+      await getRosterData();
 
-        // roster
-        ROSTER_WRAP = document.createElement('div');
-        ROSTER_WRAP.classList.add('roster');
-        // roster topNav
-        const topNav = buildRosterTopNav();
-        const filteredBy = buildFilteredBy();
-        // build roster
-        ROSTER_SPINNER = PROGRESS.SPINNER.get('Please wait while we gather everyone up...');
-        ROSTER_WRAP.appendChild(topNav);
-        ROSTER_WRAP.appendChild(filteredBy);
-        ROSTER_WRAP.appendChild(ROSTER_SPINNER);
-        // setup event listener
-        rosterEventSetup();
+      // roster
+      ROSTER_WRAP = document.createElement('div');
+      ROSTER_WRAP.classList.add('roster');
+      // roster topNav
+      const topNav = buildRosterTopNav();
+      const filteredBy = buildFilteredBy();
+      // build roster
+      ROSTER_SPINNER = PROGRESS.SPINNER.get('Please wait while we gather everyone up...');
+      ROSTER_WRAP.appendChild(topNav);
+      ROSTER_WRAP.appendChild(filteredBy);
+      ROSTER_WRAP.appendChild(ROSTER_SPINNER);
+      // setup event listener
+      rosterEventSetup();
 
-        return ROSTER_WRAP;
+      return ROSTER_WRAP;
     }
 
     // Main Module
