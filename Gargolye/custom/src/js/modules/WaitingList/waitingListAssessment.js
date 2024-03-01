@@ -1498,7 +1498,7 @@ const WaitingListAssessment = (() => {
 
     // save / update
     let hasId = false;
-    hasId = wlFormInfo[formName].id === '' ? false : true;
+    hasId = !wlFormInfo[formName].id ? false : true;
 
     if (!hasId) {
       const resp = await insertAssessmentData({
