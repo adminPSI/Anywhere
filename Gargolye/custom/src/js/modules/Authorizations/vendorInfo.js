@@ -17,6 +17,12 @@ const vendorInfo = (function () {
     let fundingSourceBtnWrap;
     let serviceCodeBtnWrap;
 
+    let vendorsData;
+    let groupedVendors;
+    let vendorGroupCount;
+    let activeGroup;
+    let loadMoreVendors = [];
+
     //filter
     let filterValues;
     function init() {
@@ -34,10 +40,12 @@ const vendorInfo = (function () {
         const filteredBy = buildFilteredBy();
         filterRow.appendChild(filteredBy);
         topNav.classList.add('marginBottomFilter');
+        LOAD_MORE_BTN = buildLoadMoreBtn();
 
-        DOM.ACTIONCENTER.appendChild(topNav);
+        DOM.ACTIONCENTER.appendChild(topNav);        
         DOM.ACTIONCENTER.appendChild(filterRow);
         DOM.ACTIONCENTER.appendChild(userTable);
+        DOM.ACTIONCENTER.appendChild(LOAD_MORE_BTN);
 
         SEARCH_BTN.addEventListener('click', event => {
             SEARCH_WRAP.classList.toggle('searchOpen');
@@ -48,7 +56,7 @@ const vendorInfo = (function () {
         SEARCH_INPUT.addEventListener('keyup', event => {
             tableUserSearch(event.target.value);
         });
-        loadReviewPage();
+        await loadReviewPage();
         document.getElementById('searchBtn').click();
     }
 
@@ -91,7 +99,7 @@ const vendorInfo = (function () {
         return table.build(tableOptions);
     }
 
-    function populateTable(results, IsFirstLoad) {
+    function populateTable(results) {
         userTableData = results.map(td => {
             var vendorID = td.vendorID;
             var name = td.name;
@@ -113,9 +121,7 @@ const vendorInfo = (function () {
                 ],
             };
         });
-        if (IsFirstLoad) {
-            tempUserTableData = userTableData;
-        }
+
         table.populate(userTable, userTableData, false, true);
     }
 
@@ -172,7 +178,8 @@ const vendorInfo = (function () {
                 displayedUsers.push(consumerObj);
             }
         });
-        populateTable(displayedUsers, false);
+
+        groupVendorData(displayedUsers); 
     }
 
     function buildFilteredBy() {
@@ -260,7 +267,7 @@ const vendorInfo = (function () {
             text: 'DD ',
             style: 'secondary',
             type: 'text',
-            classNames: 'filterSelectionBtnVendorInfo',  
+            classNames: 'filterSelectionBtnVendorInfo',
             callback: () => { buildFilterPopUp('DDNumberBtn') },
         });
 
@@ -346,7 +353,7 @@ const vendorInfo = (function () {
         takingNewReferralsBtn = button.build({
             id: 'takingNewReferralsBtn',
             text: filterValues.takingNewReferrals == 'Y' ? 'Taking New Referrals: Yes' : 'Taking New Referrals: No',
-            style: 'secondary', 
+            style: 'secondary',
             type: 'text',
             classNames: 'filterSelectionBtn',
             callback: () => { buildFilterPopUp('takingNewReferralsBtn') },
@@ -404,7 +411,7 @@ const vendorInfo = (function () {
         DDNumberBtnWrap = document.createElement('div');
         DDNumberBtnWrap.classList.add('filterSelectionBtnWrap');
         DDNumberBtnWrap.appendChild(DDNumberBtn);
-        DDNumberBtnWrap.appendChild(DDNumberBtn2);  
+        DDNumberBtnWrap.appendChild(DDNumberBtn2);
         DDNumberBtnWrap.appendChild(DDNumberCloseBtn)
         btnWrap.appendChild(DDNumberBtnWrap);
 
@@ -564,12 +571,12 @@ const vendorInfo = (function () {
             filterPopup.appendChild(goodStandingDropdown);
         if (IsShow == 'ALL' || IsShow == 'homeServicesBtn')
             filterPopup.appendChild(homeServicesDropdown);
-        if (IsShow == 'ALL' || IsShow == 'takingNewReferralsBtn')  
+        if (IsShow == 'ALL' || IsShow == 'takingNewReferralsBtn')
             filterPopup.appendChild(takingNewReferralsDropdown);
         if (IsShow == 'ALL' || IsShow == 'fundingSourceBtn')
             filterPopup.appendChild(fundingSourceDropdown);
         if (IsShow == 'ALL' || IsShow == 'serviceCodeBtn')
-        filterPopup.appendChild(serviceCodeDropdown);
+            filterPopup.appendChild(serviceCodeDropdown);
 
         filterPopup.appendChild(btnWrap);
 
@@ -596,7 +603,7 @@ const vendorInfo = (function () {
             tmpDDNumber = event.target.value.trim();
         });
         localNumberInput.addEventListener('input', event => {
-            tmpLocalNumber = event.target.value.trim(); 
+            tmpLocalNumber = event.target.value.trim();
         });
         goodStandingDropdown.addEventListener('change', event => {
             tmpGoodStanding = event.target.value;
@@ -704,10 +711,10 @@ const vendorInfo = (function () {
     }
 
     // load  
-    function loadReviewPage() {
+    async function loadReviewPage() {
         var DDNum = filterValues.DDNumber == '' ? '%' : filterValues.DDNumber;
         var localNum = filterValues.localNumber == '' ? '%' : filterValues.localNumber;
-        authorizationsAjax.getVendorInfoAsync({
+        await authorizationsAjax.getVendorInfoAsync({
             vendor: filterValues.vendor,
             DDNumber: DDNum,
             localNumber: localNum,
@@ -717,10 +724,61 @@ const vendorInfo = (function () {
             fundingSource: filterValues.fundingSource,
             serviceCode: filterValues.serviceCode,
         },
-            function (results) {
-                populateTable(results, true);
+            async function (results) {
+                tempUserTableData = results;
+                vendorsData = results;
+                await groupVendorData();               
             },
         );
+    }
+
+    function pouplateVendors() {  
+        if (!groupedVendors[activeGroup + 1]) {
+            document.getElementById('loadMoreBtn').style.display = 'none';
+        }
+        else {
+            document.getElementById('loadMoreBtn').style.display = 'block';
+        }
+        loadMoreVendors = loadMoreVendors.concat(groupedVendors[activeGroup]);
+        populateTable(loadMoreVendors);
+    }
+
+    async function groupVendorData(vendors) { 
+        const chunkBy = 50;
+        const chunkedArray = vendors ? UTIL.chunkArray(vendors, chunkBy) : UTIL.chunkArray(vendorsData, chunkBy);
+        groupedVendors = {};
+        chunkedArray.forEach((a, index) => (groupedVendors[index] = a));
+        const vendorKeys = Object.keys(groupedVendors);
+        vendorGroupCount = vendorKeys && vendorKeys.length;
+        activeGroup = 0;
+        loadMoreVendors = groupedVendors[activeGroup];
+        if (chunkedArray.length < 2) { 
+            document.getElementById('loadMoreBtn').style.display = 'none';
+        }
+        else {
+            document.getElementById('loadMoreBtn').style.display = 'block';
+        } 
+        populateTable(loadMoreVendors); 
+    }
+
+    function buildLoadMoreBtn() { 
+        const btnWrap = document.createElement('div');
+        btnWrap.classList.add('loadMoreVendorBtn');
+
+        const btn = button.build({
+            id: 'loadMoreBtn',
+            text: 'Load More...', 
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                activeGroup++;
+                pouplateVendors();
+            },
+        });
+
+        btnWrap.appendChild(btn);
+
+        return btnWrap;
     }
 
     function formatPhoneNumber(number) {

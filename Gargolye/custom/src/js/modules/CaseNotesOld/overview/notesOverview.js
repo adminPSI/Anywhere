@@ -286,7 +286,7 @@ var notesOverview = (function () {
     //   },
     // });
 
-    var cnReportBtn = generateReports.createMainReportButton([ { text: 'Detail Report', filterValues}, { text: 'Time Analysis Report', filterValues}, { text: 'TXX Case Notes', filterValues}, { text: 'Minutes By Date', filterValues}])
+    var cnReportBtn = generateReports.createMainReportButton([ { text: 'Detail Report', filterValues},{ text: 'Minutes By Date', filterValues}, { text: 'Time Analysis Report', filterValues}, { text: 'TXX Case Notes', filterValues}])
 
         cnADVReportBtn = generateReports.createMainReportButton([{ text: 'Detailed Case Notes By Biller', filterValues }, { text: 'Minutes By Date', filterValues}]);
 
