@@ -1310,6 +1310,7 @@ namespace Anywhere.Data
         public string setupPasswordResetEmail(string userName)
         {
             logger.debug("setupPasswordResetEmail" + userName);
+            if (stringInjectionValidatorLogin(userName) == false) return null;
             if (stringInjectionValidator(userName) == false) return null;
             try
             {
