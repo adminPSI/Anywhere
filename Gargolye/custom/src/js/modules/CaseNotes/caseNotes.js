@@ -756,6 +756,7 @@ const CaseNotes = (() => {
     }
   }
   async function onFormSubmit(data, submitter) {
+    toggleFormButtonsDisabled(true);
     const buttonName = submitter.name.toLowerCase();
   
     const overlaps = await timeOverlapCheck(data.startTime, data.endTime);
@@ -811,6 +812,8 @@ const CaseNotes = (() => {
         cnDocTimer.clear();
       }
     }
+
+    toggleFormButtonsDisabled(false);
   }
   
 
@@ -1153,6 +1156,7 @@ const CaseNotes = (() => {
     initComponents();
     await loadPage();
     await populatePage();
+    lazyLoadingRosterImageObserverEventsSetup();
 
     // if (isReadOnly) {
     //   cnForm.disableFormInputs();
