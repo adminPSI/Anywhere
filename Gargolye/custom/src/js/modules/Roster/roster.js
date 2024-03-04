@@ -1186,7 +1186,8 @@ const roster2 = (function () {
     await getRosterConsumersData();
     populateRoster();
     document.getElementById('searchBtn').click();
-    filterApply();
+    //filterApply();
+    filterUpdateDisplay();
   }
   /**
    * Enables or disables the mini roster button.
