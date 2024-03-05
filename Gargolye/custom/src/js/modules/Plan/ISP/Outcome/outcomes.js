@@ -1645,7 +1645,7 @@ const planOutcomes = (() => {
   async function insertOutcomeReview(saveData) {
     const outcomeId = saveData.outcomeId;
     const whatWillHappen = saveData.whatWillHappen;
-    //const whenToCheckIn = saveData.whenToCheckIn;
+    const whenToCheckIn = saveData.whenToCheckIn;
     const whoReview = saveData.whoReview;
     const reviewOrder = `${saveData.reviewOrder}`;
     const contactId = parseInt(saveData.contactId);
@@ -1654,7 +1654,7 @@ const planOutcomes = (() => {
       token: $.session.Token,
       outcomeId: outcomeId,
       whatWillHappen: [whatWillHappen],
-      whenToCheckIn: [''],
+      whenToCheckIn: [whenToCheckIn],
       whoReview: [whoReview],
       reviewOrder: [reviewOrder],
       contactId: [contactId],
@@ -1673,7 +1673,7 @@ const planOutcomes = (() => {
             showReviewsPopup(
               {
                 whatWillHappen,
-                //whenToCheckIn,
+                whenToCheckIn,
                 whoReview,
                 reviewOrder,
                 reviewIds: reviewId,
@@ -1692,7 +1692,7 @@ const planOutcomes = (() => {
     const outcomeId = updateData.outcomeId;
     const reviewIds = updateData.reviewIds;
     const whatWillHappen = updateData.whatWillHappen;
-    //const whenToCheckIn = updateData.whenToCheckIn;
+    const whenToCheckIn = updateData.whenToCheckIn;
     const whoReview = updateData.whoReview;
     //const reviewOrder = updateData.reviewOrder;
     const contactId = updateData.contactId;
@@ -1702,7 +1702,7 @@ const planOutcomes = (() => {
       outcomeId,
       reviewIds: [reviewIds],
       whatWillHappen: [whatWillHappen],
-      whenToCheckIn: [''],
+      whenToCheckIn: [whenToCheckIn],
       whoReview: [whoReview],
       contactId: [contactId],
       // reviewOrder: [reviewOrder],
@@ -1722,7 +1722,7 @@ const planOutcomes = (() => {
                 outcomeId,
                 reviewIds,
                 whatWillHappen,
-                //whenToCheckIn,
+                whenToCheckIn,
                 whoReview,
                 contactId,
                 //reviewOrder,
@@ -1772,7 +1772,7 @@ const planOutcomes = (() => {
     const saveUpdateData = {
       outcomeId: popupData.outcomeId,
       whatWillHappen: popupData.whatWillHappen ? popupData.whatWillHappen : '',
-      //whenToCheckIn: popupData.whenToCheckIn ? popupData.whenToCheckIn : '',
+      whenToCheckIn: popupData.whenToCheckIn ? popupData.whenToCheckIn : '',
       whoReview: popupData.whoReview ? popupData.whoReview : '',
       reviewOrder: popupData.reviewOrder ? popupData.reviewOrder : '',
       contactId: popupData.contactId ? popupData.contactId : '',
@@ -1839,16 +1839,38 @@ const planOutcomes = (() => {
       },
     });
     // When To Check In
-    // const whenToCheckInInput = input.build({
-    //   label: 'When To Check In?',
-    //   type: 'text',
-    //   style: 'secondary',
-    //   value: saveUpdateData.whenToCheckIn,
-    //   charLimit: charLimits.whenToCheckIn,
-    //   forceCharLimit: true,
-    //   attributes: [{ key: 'tabindex', value: '-1' }],
-    // });
+    const whenToCheckinDropdown = dropdown.build({
+      label: 'When To Check In?',
+      type: 'text',
+      style: 'secondary',
+      callback: (e, selectedOption) => {
+       
+        saveUpdateData.whenToCheckIn = selectedOption.text;
+
+        if (saveUpdateData.whenToCheckIn === '' || saveUpdateData.whenToCheckIn === '%') {
+          whenToCheckinDropdown.classList.add('error');
+        } else {
+          whenToCheckinDropdown.classList.remove('error');
+        }
+
+        toggleReviewsPopupDoneBtn();
+      }
+    });
     // whenToCheckInInput.classList.add('disabled');
+
+    // whenToCheckinDropdown
+    function populatewhenToCheckinDropdown(whenToCheckinDropdown) {
+      const dropdownData = [
+        { text: '', value: '' },
+        { text: 'Weekly', value: 'Weekly' },
+        { text: 'Monthly', value: 'Monthly' },
+        { text: 'Quarterly', value: 'Quarterly' },
+        { text: 'Semi-Monthly', value: 'Semi-Monthly' },
+        { text: 'Bi-Monthly', value: 'Bi-Monthly' },
+        { text: 'N/A', value: 'N/A' },
+      ];
+      dropdown.populate(whenToCheckinDropdown, dropdownData);
+    }
 
     const doneBtn = button.build({
       text: isNew ? 'Save' : 'Update',
@@ -1916,6 +1938,10 @@ const planOutcomes = (() => {
       whoReviewDropdown.classList.add('error');
       hasInitialErros = true;
     }
+    if (saveUpdateData.whenToCheckIn === '' || saveUpdateData.whenToCheckIn === '%') {
+      whenToCheckinDropdown.classList.add('error');
+      hasInitialErros = true;
+    }
     if (hasInitialErros) {
       doneBtn.classList.add('disabled');
     }
@@ -1924,18 +1950,20 @@ const planOutcomes = (() => {
     if (isReadOnly) {
       whatWillHappenInput.classList.add('disabled');
       whoReviewDropdown.classList.add('disabled');
-      //whenToCheckInInput.classList.add('disabled');
+      whenToCheckinDropdown.classList.add('disabled');
       doneBtn.classList.add('disabled');
       deleteBtn.classList.add('disabled');
     }
 
     reviewsPopup.appendChild(whatWillHappenInput);
     reviewsPopup.appendChild(whoReviewDropdown);
-    //reviewsPopup.appendChild(whenToCheckInInput);
+    reviewsPopup.appendChild(whenToCheckinDropdown);
     reviewsPopup.appendChild(btnWrap);
 
     //populateReviewsWhoDropdown(whoReviewDropdown, saveUpdateData.contactId);
     planData.populateRelationshipDropdown(whoReviewDropdown, saveUpdateData.contactId);
+
+    populatewhenToCheckinDropdown(whenToCheckinDropdown);
 
     POPUP.show(reviewsPopup);
     DOM.autosizeTextarea();
