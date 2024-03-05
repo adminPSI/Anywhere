@@ -1380,6 +1380,11 @@ const WaitingListAssessment = (() => {
       tocLinks['immediateNeeds'].classList.remove('hiddenPage');
     }
   }
+  function enableInputsForReview() {
+    if (wlData.waitingListInfo.currentLivingArrangement === 'Other') {
+      wlForms.waitingListInfo.inputs['livingArrangementOther'].toggleDisabled();
+    }
+  }
   function addNewDocumentToList({ documentId, fileName }) {
     const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
     const deleteIcon = Icon.getIcon('delete');
@@ -2659,6 +2664,7 @@ const WaitingListAssessment = (() => {
 
     if (wlData) {
       enableSectionsForReview();
+      enableInputsForReview();
 
       for (section in wlData) {
         wlForms[section].populate(wlData[section]);
