@@ -1749,10 +1749,10 @@ const planOutcomes = (() => {
 
     // checks for missing data
     validationCheck = await planValidation.ISPValidation(planId);
-
+ 
     // displays or removes button alert depending on validationCheck
     planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
-
+  
     // displays or removes alerts for tabs in the navs depending on validationCheck
     planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
@@ -2062,7 +2062,7 @@ const planOutcomes = (() => {
     reviewsDiv.appendChild(reviewsBtnAlertDiv);
 
     planValidation.reviewsValidationCheck(validationCheck, outcomeId, reviewAlertDiv);
-
+  
     return reviewsDiv;
   }
 
