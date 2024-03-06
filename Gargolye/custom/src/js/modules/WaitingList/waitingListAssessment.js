@@ -1380,11 +1380,6 @@ const WaitingListAssessment = (() => {
       tocLinks['immediateNeeds'].classList.remove('hiddenPage');
     }
   }
-  function enableInputsForReview() {
-    if (wlData.waitingListInfo.currentLivingArrangement === 'Other') {
-      wlForms.waitingListInfo.inputs['livingArrangementOther'].toggleDisabled();
-    }
-  }
   function addNewDocumentToList({ documentId, fileName }) {
     const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
     const deleteIcon = Icon.getIcon('delete');
@@ -1770,6 +1765,15 @@ const WaitingListAssessment = (() => {
     wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(!conditionPageAllYes);
   }
   //--------------------------------------------------
+  function enableInputsForReview() {
+    if (wlData.waitingListInfo.currentLivingArrangement === 'Other') {
+      wlForms.waitingListInfo.inputs['livingArrangementOther'].toggleDisabled(false);
+    }
+
+    if (wlData.currentAvailableServices.isOtherService.includes('yes')) {
+      wlForms['currentAvailableServices'].inputs['otherDescription'].toggleDisabled(false);
+    }
+  }
   const onChangeCallbacks = {
     //* waitingListInfo
     currentLivingArrangement: ({ value }) => {
