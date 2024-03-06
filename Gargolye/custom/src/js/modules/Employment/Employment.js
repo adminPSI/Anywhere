@@ -18,6 +18,7 @@ const Employment = (() => {
     let positionStartDateBtnWrap;
     let positionEndDateBtnWrap;
     let jobStandingBtnWrap;
+    let reportValues;
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
@@ -160,9 +161,9 @@ const Employment = (() => {
                 callback: function () {
                     // Iterate through each item in the buttonsData array
                     buttonsData.forEach(function (buttonData) {
-                        buttonData.filterValues = getFilterValues();
+                        buttonData.filterValues = getReportValues();
                     });
-
+                    
                     generateReports.showReportsPopup(buttonsData);
                 },
             });
@@ -209,14 +210,14 @@ const Employment = (() => {
         }
     }
 
-    function getFilterValues() {
-        return (filterValues = {
+    function getReportValues() { 
+        return (reportValues = {
             consumerID: selectedConsumersId,
-            employer: filterValues.EmployerID,
-            position: filterValues.positionID,
+            employer: filterValues.EmployerID == undefined ? '%' : filterValues.EmployerID,
+            position: filterValues.positionID == undefined ? '%' : filterValues.positionID,
             positionStartDate: filterValues.positionStartDate,
             positionEndDate: filterValues.positionEndDate == null ? UTIL.getTodaysDate() : filterValues.positionEndDate,
-            jobStanding: filterValues.jobStandingID,
+            jobStanding: filterValues.jobStandingID == undefined ? '%' : filterValues.jobStandingID,
         });
     }
 
