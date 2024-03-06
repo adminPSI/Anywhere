@@ -362,7 +362,7 @@
    * @function
    * @param {Array} consumerIds
    */
-  RosterPicker.prototype.setSelectedConsumers = function (consumerIds, lockdown) {
+  RosterPicker.prototype.setSelectedConsumers = function (consumerIds, lockdown = false) {
     this.clearSelectedConsumers();
 
     consumerIds.forEach(cid => {

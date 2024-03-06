@@ -16,7 +16,7 @@ const WaitingList = (() => {
     moduleWrapEle.appendChild(moduleBodyEle);
     _DOM.ACTIONCENTER.appendChild(moduleWrapEle);
 
-    WaitingListOverview.init({ moduleHeaderEle, moduleBodyEle });
+    WaitingListOverview.init({ moduleHeader: moduleHeaderEle, moduleBody: moduleBodyEle });
   }
 
   return {

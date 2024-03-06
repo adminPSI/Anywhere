@@ -2,6 +2,7 @@ const WaitingListAssessment = (() => {
   //--------------------------
   // SESSION DATA
   //--------------------------
+  let selectedConsumer;
   let wlData;
   let wlLinkID;
   let wlCircID;
@@ -2463,11 +2464,18 @@ const WaitingListAssessment = (() => {
         rowId,
       );
     });
+
+    backButton.onClick(() => {
+      WaitingListOverview.init({ moduleHeader, moduleBody, selectedConsumer });
+    });
   }
   function loadPage() {
     // Header
-    sendEmailButton.renderTo(moduleHeader);
-    documentsButton.renderTo(moduleHeader);
+    backButton.renderTo(moduleHeader);
+    const primaryButtonWrap = _DOM.createElement('div');
+    sendEmailButton.renderTo(primaryButtonWrap);
+    documentsButton.renderTo(primaryButtonWrap);
+    moduleHeader.appendChild(primaryButtonWrap);
 
     sendEmailForm.renderTo(sendEmailPopup.dialog);
     sendEmailPopup.renderTo(_DOM.ACTIONCENTER);
@@ -2646,9 +2654,16 @@ const WaitingListAssessment = (() => {
       ],
     });
     documentsPopup = new Dialog({ className: 'wlDocumentPopup' });
+
+    // Back to overview
+    backButton = new Button({
+      text: 'Back',
+      style: 'primary',
+      styleType: 'outlined',
+    });
   }
 
-  async function init(opts, isReview = false) {
+  async function init(opts) {
     wlForms = {};
     tocLinks = {};
     wlDocuments = [];
@@ -2656,8 +2671,8 @@ const WaitingListAssessment = (() => {
     wlFormInfo = initFormInfo();
     wlData = mapDataBySection(opts.wlData);
     selectedConsumer = opts.selectedConsumer;
-    moduleHeader = opts.moduleHeaderEle;
-    moduleBody = opts.moduleBodyEle;
+    moduleHeader = opts.moduleHeader;
+    moduleBody = opts.moduleBody;
 
     loadPageSkeleton();
     initComponents();
