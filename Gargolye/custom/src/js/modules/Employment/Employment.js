@@ -18,6 +18,7 @@ const Employment = (() => {
     let positionStartDateBtnWrap;
     let positionEndDateBtnWrap;
     let jobStandingBtnWrap;
+    let reportValues;
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
@@ -45,7 +46,7 @@ const Employment = (() => {
 
         if (!document.querySelector('.consumerListBtn')) roster2.miniRosterinit();
 
-        landingPage = document.createElement('div'); 
+        landingPage = document.createElement('div');
 
         selectedConsumersId = selectedConsumers[selectedConsumers.length - 1].id;
         $.session.consumerId = selectedConsumersId;
@@ -126,7 +127,7 @@ const Employment = (() => {
         buttonBar.classList.add('OODbuttonBar');
         buttonBar.style.maxHeight = '50px';
         buttonBar.style.minWidth = '100%';
-       
+
         const newPositionBtn = button.build({
             text: '+ New Position',
             style: 'secondary',
@@ -144,10 +145,32 @@ const Employment = (() => {
                 if (!editEmployerBtn.classList.contains('disabled')) {
                     addEditEmployers.init();
                 }
-            },  
-        }); 
+            },
+        });
 
-        if ($.session.EmploymentUpdate ) {
+
+
+        // Helper function to create the main reports button on the module page
+        function createMainReportButton(buttonsData) {
+            return button.build({
+                text: 'Reports',
+                icon: 'add',
+                style: 'secondary',
+                type: 'contained',
+                classNames: 'entryBtn',
+                callback: function () {
+                    // Iterate through each item in the buttonsData array
+                    buttonsData.forEach(function (buttonData) {
+                        buttonData.filterValues = getReportValues();
+                    });
+                    
+                    generateReports.showReportsPopup(buttonsData);
+                },
+            });
+        }
+        reportsBtn = createMainReportButton([{ text: 'Employee Reporting Information' }])
+
+        if ($.session.EmploymentUpdate) {
             newPositionBtn.classList.remove('disabled');
         }
         else {
@@ -164,8 +187,9 @@ const Employment = (() => {
 
         if (!$.session.InsertEmployers && !$.session.UpdateEmployers) {
             editEmployerBtn.classList.add('disabled');
-        }   
-        entryButtonBar.appendChild(editEmployerBtn); 
+        }
+        entryButtonBar.appendChild(editEmployerBtn);
+        entryButtonBar.appendChild(reportsBtn);
         buttonBar.appendChild(entryButtonBar);
 
         return buttonBar;
@@ -180,7 +204,21 @@ const Employment = (() => {
             positionStartDate: '1900-01-01',
             positionEndDate: null,
             jobStanding: '%',
+            EmployerID: '%',
+            positionID: '%',
+            jobStandingID: '%'
         }
+    }
+
+    function getReportValues() { 
+        return (reportValues = {
+            consumerID: selectedConsumersId,
+            employer: filterValues.EmployerID == undefined ? '%' : filterValues.EmployerID,
+            position: filterValues.positionID == undefined ? '%' : filterValues.positionID,
+            positionStartDate: filterValues.positionStartDate,
+            positionEndDate: filterValues.positionEndDate == null ? UTIL.getTodaysDate() : filterValues.positionEndDate,
+            jobStanding: filterValues.jobStandingID == undefined ? '%' : filterValues.jobStandingID,
+        });
     }
 
 
@@ -189,7 +227,7 @@ const Employment = (() => {
         var filteredBy = document.querySelector('.filteredByData');
         if (!filteredBy) {
             filteredBy = document.createElement('div');
-            filteredBy.classList.add('filteredByData');  
+            filteredBy.classList.add('filteredByData');
             filterButtonSet()
             filteredBy.appendChild(btnWrap);
         }
@@ -449,6 +487,9 @@ const Employment = (() => {
         var tmpJobStanding;
         var tmpStartDate;
         var tmpEndDate;
+        var tmpEmployerID;
+        var tmppositionID;
+        var tmpjobStandingID;
 
         positionStartDate.addEventListener('change', event => {
             tmpStartDate = event.target.value;
@@ -458,12 +499,15 @@ const Employment = (() => {
         });
         EmployerDropdown.addEventListener('change', event => {
             tmpEmployer = event.target.value;
+            tmpEmployerID = event.target.options[event.target.selectedIndex].id;
         });
         positionDropdown.addEventListener('change', event => {
             tmpPosition = event.target.value;
+            tmppositionID = event.target.options[event.target.selectedIndex].id;
         });
         jobStandingDropdown.addEventListener('change', event => {
             tmpJobStanding = event.target.value;
+            tmpjobStandingID = event.target.options[event.target.selectedIndex].id;
         });
 
         APPLY_BTN.addEventListener('click', () => {
@@ -472,7 +516,10 @@ const Employment = (() => {
                 tmpPosition,
                 tmpJobStanding,
                 tmpStartDate,
-                tmpEndDate
+                tmpEndDate,
+                tmpEmployerID,
+                tmppositionID,
+                tmpjobStandingID
             });
 
             POPUP.hide(filterPopup);
@@ -489,6 +536,10 @@ const Employment = (() => {
         if (data.tmpEndDate) filterValues.positionEndDate = data.tmpEndDate;
         if (data.tmpEndDate == '') filterValues.positionEndDate = null;
         if (data.tmpStartDate == '') filterValues.positionStartDate = '1900-01-01';
+
+        if (data.tmpEmployerID) filterValues.EmployerID = data.tmpEmployerID;
+        if (data.tmppositionID) filterValues.positionID = data.tmppositionID;
+        if (data.tmpjobStandingID) filterValues.jobStandingID = data.tmpjobStandingID;
     }
 
     async function populateFilterDropdown() {

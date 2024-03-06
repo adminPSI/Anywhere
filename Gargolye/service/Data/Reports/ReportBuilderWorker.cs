@@ -104,6 +104,13 @@ namespace Anywhere.service.Data.ReportBuilder
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
+                //Employment
+                case "Employee Reporting Information":
+                    result = generateEmploymentReport(token, reportData);
+
+                    reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
+
+                    break;
             }
 
             return reportScheduleId;
@@ -322,6 +329,17 @@ namespace Anywhere.service.Data.ReportBuilder
             return rbdg.checkIfReportExists(token, reportScheduleId);
         }
 
+        public string generateEmploymentReport(string token, ReportData reportData)
+        {
+            string category = "Employment";
+            string title = "Employment Reporting Information";
+            string reportServerList = "Primary";
+            string result = "";
+
+            result = rbdg.generateEmploymentReport(token, category, title, reportServerList, reportData.employer, reportData.position, reportData.positionStartDate, reportData.positionEndDate, reportData.jobStanding, reportData.consumerID);
+            return result;
+        }
+
         public class ReportData
         {
             public string userId { get; set; }
@@ -375,6 +393,13 @@ namespace Anywhere.service.Data.ReportBuilder
             public string workshopStartDate { get; set; }
             public string workshopEndDate { get; set; }
 
+            // Employment 
+            public string employer { get; set; }
+            public string position { get; set; }
+            public string positionStartDate { get; set; }
+            public string positionEndDate { get; set; }
+            public string jobStanding { get; set; }
+            public string consumerID { get; set; }
         }
 
         public class ReportScheduleId

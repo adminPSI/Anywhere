@@ -81,7 +81,7 @@ const planOutcomes = (() => {
       if (!oc.reviews[o.outcomeReviewId]) {
         oc.reviews[o.outcomeReviewId] = {
           whatWillHappen: o.whatWillHappen,
-          //whenToCheckIn: o.whenToCheckIn,
+          whenToCheckIn: o.whenToCheckIn,
           whoReview: o.who,
           reviewIds: o.outcomeReviewId,
           whoResponsible: o.whoResponsible,
@@ -1859,7 +1859,7 @@ const planOutcomes = (() => {
     // whenToCheckInInput.classList.add('disabled');
 
     // whenToCheckinDropdown
-    function populatewhenToCheckinDropdown(whenToCheckinDropdown) {
+    function populatewhenToCheckinDropdown(whenToCheckinDropdown, whenToCheckIn) {
       const dropdownData = [
         { text: '', value: '' },
         { text: 'Weekly', value: 'Weekly' },
@@ -1869,7 +1869,7 @@ const planOutcomes = (() => {
         { text: 'Bi-Monthly', value: 'Bi-Monthly' },
         { text: 'N/A', value: 'N/A' },
       ];
-      dropdown.populate(whenToCheckinDropdown, dropdownData);
+      dropdown.populate(whenToCheckinDropdown, dropdownData, whenToCheckIn);
     }
 
     const doneBtn = button.build({
@@ -1963,7 +1963,7 @@ const planOutcomes = (() => {
     //populateReviewsWhoDropdown(whoReviewDropdown, saveUpdateData.contactId);
     planData.populateRelationshipDropdown(whoReviewDropdown, saveUpdateData.contactId);
 
-    populatewhenToCheckinDropdown(whenToCheckinDropdown);
+    populatewhenToCheckinDropdown(whenToCheckinDropdown, saveUpdateData.whenToCheckIn);
 
     POPUP.show(reviewsPopup);
     DOM.autosizeTextarea();
@@ -2016,7 +2016,7 @@ const planOutcomes = (() => {
         .map(td => {
           const whatWillHappen = td.whatWillHappen;
           const whoReview = td.whoReview;
-          //const whenToCheckIn = td.whenToCheckIn;
+          const whenToCheckIn = td.whenToCheckIn;
           const rowId = `reviews${td.reviewIds}`;
 
           return {
@@ -2026,7 +2026,7 @@ const planOutcomes = (() => {
               showReviewsPopup(
                 {
                   whatWillHappen: whatWillHappen,
-                  //whenToCheckIn: whenToCheckIn,
+                  whenToCheckIn: whenToCheckIn,
                   whoReview: whoReview,
                   reviewOrder: td.reviewOrder + 1,
                   reviewIds: td.reviewIds,
