@@ -1156,7 +1156,6 @@ const CaseNotes = (() => {
     initComponents();
     await loadPage();
     await populatePage();
-    lazyLoadingRosterImageObserverEventsSetup();
 
     // if (isReadOnly) {
     //   cnForm.disableFormInputs();
