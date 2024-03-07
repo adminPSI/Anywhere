@@ -384,7 +384,9 @@ const WorkSchedule = (() => {
         });
 
         APPLY_BTN.addEventListener('click', () => {
-            saveNewWagesPopup();
+            if (!APPLY_BTN.classList.contains('disabled')) {
+                saveNewWagesPopup();
+            }
         });
 
         CANCEL_BTN.addEventListener('click', () => {
