@@ -333,33 +333,55 @@ const planValidation = (function () {
   
     // ASSESSMENT WORKING/NOT WORKING
     function workingSectionCheck(assessmentValidationCheck) {
-      const groupedByAnswerRow = {};
+      const groupedByRow = {};
+      const hasValue605Array = [];
+      const hasValue606Array = [];
+  
+      // Group objects by row
       assessmentValidationCheck.workingNotWorking.forEach(obj => {
-          if (!groupedByAnswerRow[obj.answerRow]) {
-              groupedByAnswerRow[obj.answerRow] = [];
+          if (!groupedByRow[obj.answerRow]) {
+              groupedByRow[obj.answerRow] = [];
           }
-          groupedByAnswerRow[obj.answerRow].push(obj);
+          groupedByRow[obj.answerRow].push(obj);
       });
   
-      let isQuestion607NotEmpty = false;
-      let is605Or606NotEmpty = false;
+      // Check for Question 607 within each row having values for 605 or 606
+      for (const row in groupedByRow) {
+          let hasValue605 = false;
+          let hasValue606 = false;
+          let hasValue607 = false;
   
-      for (const answerRow in groupedByAnswerRow) {
-          if (groupedByAnswerRow[answerRow].some(obj => obj.questionNumber === "Question 607")) {
-              isQuestion607NotEmpty = groupedByAnswerRow[answerRow].some(obj => obj.questionNumber === "Question 607" && obj.answer !== '');
+          groupedByRow[row].forEach(obj => {
+              if (obj.questionNumber === "Question 605" && obj.answer) {
+                  hasValue605 = true;
+              }
+              if (obj.questionNumber === "Question 606" && obj.answer) {
+                  hasValue606 = true;
+              }
+              if (obj.questionNumber === "Question 607" && obj.answer) {
+                  hasValue607 = true;
+              }
+          });
+  
+          // If either 605 or 606 has value, then 607 must also have a value
+          if ((hasValue605 || hasValue606) && !hasValue607) {
+              assessmentValidationCheck.workingSectionComplete = false;
+              return assessmentValidationCheck;
           }
-          if (groupedByAnswerRow[answerRow].some(obj => obj.questionNumber === "Question 605" || obj.questionNumber === "Question 606")) {
-              is605Or606NotEmpty = groupedByAnswerRow[answerRow].some(obj => (obj.questionNumber === "Question 605" || obj.questionNumber === "Question 606") && obj.answer !== '');
-          }
+  
+          hasValue605Array.push(hasValue605);
+          hasValue606Array.push(hasValue606);
       }
   
-      const additionalCheckResult = isQuestion607NotEmpty && is605Or606NotEmpty;
+      // Check if there's at least one row with both 605 and 606 having values
+      const hasValue605 = hasValue605Array.some(val => val);
+      const hasValue606 = hasValue606Array.some(val => val);
+      if (!hasValue605 || !hasValue606) {
+          assessmentValidationCheck.workingSectionComplete = false;
+          return assessmentValidationCheck;
+      }
   
-      const isNotWorkingFilledOut = assessmentValidationCheck.workingNotWorking.some(obj => obj.questionNumber === "Question 605" && obj.answer !== "");
-      const isWorkingFilledOut = assessmentValidationCheck.workingNotWorking.some(obj => obj.questionNumber === "Question 606" && obj.answer !== "");
-  
-      assessmentValidationCheck.workingSectionComplete = isWorkingFilledOut && isNotWorkingFilledOut && additionalCheckResult;
-  
+      assessmentValidationCheck.workingSectionComplete = true;
       return assessmentValidationCheck;
   }
   

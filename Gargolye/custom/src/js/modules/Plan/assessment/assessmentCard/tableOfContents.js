@@ -112,7 +112,7 @@
       }
 
       const isWorkingSectionComplete = planValidation.returnAssessmentValidationData();
-      if (sectionKey === '41' && isWorkingSectionComplete.workingSectionComplete === true) {
+      if (sectionKey === '41') {
         numOfQuestionsUnawnsered = 0;
         numOfQuestionsUnawnseredWrapDiv.classList.add('hidden');
       }
