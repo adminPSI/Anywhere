@@ -111,6 +111,13 @@ namespace Anywhere.service.Data.ReportBuilder
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
+                //Case Load
+                case "My Case Load Roster List":
+                    result = generateCaseLoadRosterListReport(token, reportData);
+
+                    reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
+
+                    break;
             }
 
             return reportScheduleId;
@@ -337,6 +344,17 @@ namespace Anywhere.service.Data.ReportBuilder
             string result = "";
 
             result = rbdg.generateEmploymentReport(token, category, title, reportServerList, reportData.employer, reportData.position, reportData.positionStartDate, reportData.positionEndDate, reportData.jobStanding, reportData.consumerID);
+            return result;
+        }
+
+        public string generateCaseLoadRosterListReport(string token, ReportData reportData)
+        {
+            string category = "Demographics - Case Load";
+            string title = "My Case Load Roster List";
+            string reportServerList = "Primary";
+            string result = "";
+
+            result = rbdg.generateCaseLoadRosterListReport(token, category, title, reportServerList);
             return result;
         }
 

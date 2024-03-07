@@ -174,11 +174,18 @@ const ISP = (function () {
         );
 
         // If a plan returns an error on the validation check, show the alert div
-        if (validationCheck.complete === false) {
-          outcomesAlertDiv.style.display = 'flex';
-        } else {
+        if (validationCheck.missingExperiences.length === 0 && validationCheck.missingReviews.length === 0) 
+        {
           outcomesAlertDiv.style.display = 'none';
-        }
+       } else {
+          outcomesAlertDiv.style.display = 'flex';
+       }
+       
+       // if (validationCheck.complete === false) {
+         // outcomesAlertDiv.style.display = 'flex';
+      // } else {
+        //  outcomesAlertDiv.style.display = 'none';
+      // }
       }
 
       // if the section is 'Outcomes' run an initial validation check on the section

@@ -621,6 +621,28 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
+        public string generateCaseLoadRosterListReport(string token, string category, string title, string reportServerList)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("ANYW_CaseNotes_GenerateCaseLoadRosterListReport");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+
+            string text = "CALL DBA.ANYW_CaseNotes_GenerateCaseLoadRosterListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1ITR", ex.Message + "ANYW_CaseNotes_GenerateCaseLoadRosterListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_CaseNotes_GenerateCaseLoadRosterListReport";
+            }
+        }
+
 
     }
 }

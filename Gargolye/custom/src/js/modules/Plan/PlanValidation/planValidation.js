@@ -604,7 +604,7 @@ const planValidation = (function () {
         token: $.session.Token,
         assessmentId: planId,
       });
-
+  
       IspValidationCheck.outcomesData = outcomesData;
 
       for (const item of outcomesData.planOutcomeExperiences) {
@@ -622,7 +622,7 @@ const planValidation = (function () {
   
       // get a list of the unique outcomeIds
       var uniqueOutcomeIds = Array.from(new Set(outcomesData.planOutcome.map(obj => obj.outcomeId)));
-  
+    
       // if any outcome is missing the 'Details to Know' or 'Outcome' section, return false on the validation check
       for (let i = 0; i < outcomesData.planOutcome.length; i++) {
         if (outcomesData.planOutcome[i].details === '') {
@@ -633,6 +633,13 @@ const planValidation = (function () {
         }
       }
   
+      for (let i = 0; i < outcomesData.planReviews.length; i++) {
+        if (outcomesData.planReviews[i].whenToCheckIn === '') {
+          IspValidationCheck.missingReviews.push(outcomesData.planReviews[i].outcomeId);
+         //IspValidationCheck.complete = false;
+        }
+      }
+
       // makes list of all the outcomeIds from the plan outcome experiences and reviews
       const outcomeExperienceOutcomeIds = outcomesData.planOutcomeExperiences.map(
         obj => obj.outcomeId,
@@ -646,10 +653,11 @@ const planValidation = (function () {
       const missingOutcomeReviews = uniqueOutcomeIds.filter(
         num => !outcomeReviewOutcomeIds.includes(num),
       );
-  
+    
       IspValidationCheck.missingExperiences = missingOutcomeExperiences;
-      IspValidationCheck.missingReviews = missingOutcomeReviews;
-  
+   //   IspValidationCheck.missingReviews = missingOutcomeReviews;
+      IspValidationCheck.missingReviews.push(...missingOutcomeReviews) ;
+         
       // if an outcome is missing a review or experience, return false on the validation check
       if (missingOutcomeReviews.length > 0 || missingOutcomeExperiences.length > 0) {
         IspValidationCheck.complete = false;
@@ -685,7 +693,7 @@ const planValidation = (function () {
     function updatedIspOutcomesSetAlerts(validationCheck) {
       //checkExperienceProviders(validationCheck);
       checkAllOutcomesComplete(validationCheck);
-
+//
       // ISP Main Nav and ISP Outcomes Tab 
       const ISPAlertDiv = document.getElementById('navAlertISP');
       const outcomesNav = document.getElementById('outcomesAlert');
@@ -706,14 +714,14 @@ const planValidation = (function () {
       if (validationCheck.outcomesData.planOutcome.length < 1) {
         validationCheck.planProgressSummary = true;
       }
-
+ 
       validationCheck.complete =
         validationCheck.details.length === 0 &&
         validationCheck.missingExperiences.length === 0 &&
         validationCheck.missingReviews.length === 0 &&
         validationCheck.planProgressSummary &&
         validationCheck.outcome.length === 0 &&
-        //outcomesData.planOutcome.length > 0 &&
+        outcomesData.planOutcome.length > 0 &&
         validationCheck.invalidProviders.length === 0;
 
       return validationCheck;
@@ -751,7 +759,7 @@ const planValidation = (function () {
       const display = validationCheck.missingReviews.includes(outcomeId) ? 'flex' : 'none';
       alertDiv.style.display = display;
     }
-  
+    
     //ISP EXPERIENCES
     //checks if the outcome has an experience, if not, set the alert next to the add experience button
     function experiencesValidationCheck(validationCheck, outcomeId, alertDiv) {

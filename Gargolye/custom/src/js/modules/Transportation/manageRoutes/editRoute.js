@@ -7,7 +7,7 @@ const TRANS_manageEditRoute = (function () {
     let consumersToRemove;
     let ro, isAddHoc, isBatched;
     let selectedDate, selectedRouteId, selectedRouteName, selectedLocationName, vehicleInspection, deleteInspection;
-
+    let notTodeleteConsumers = [];
     function buildPage() {
         const column1 = document.createElement('div')
         const column2 = document.createElement('div')
@@ -233,7 +233,7 @@ const TRANS_manageEditRoute = (function () {
         populateDropdowns()
         buildConsumerCards()
         eventListeners()
-        setBtnStatusOfAddRoute()  
+        setBtnStatusOfAddRoute()
     }
 
     function buildConsumerCards() {
@@ -490,6 +490,7 @@ const TRANS_manageEditRoute = (function () {
     }
 
     function saveData() {
+        notTodeleteConsumers = [];
         pendingSave.show('Saving Route...')
         try {
             // Check for errors first
@@ -517,8 +518,9 @@ const TRANS_manageEditRoute = (function () {
                 tripName: UTIL.removeUnsavableNoteText(routeName),
             };
             dbCallArr.push(TRANS_manageRoutesAjax.updateManageTripDetails(tripData));
-            if (deleteInspection) dbCallArr.push(TRANS_vehicleInspectionAjax.deleteVehicleInspection(vehicleInspection))
-      consumersOnRecord.forEach((val,key,map) => {
+            if (deleteInspection) dbCallArr.push(TRANS_vehicleInspectionAjax.deleteVehicleInspection(vehicleInspection))            
+            consumersOnRecord.forEach((val,key,map) => {
+                notTodeleteConsumers.push(key);
                 const { alternateAddress, completedDetailId, directions, pickupOrder, notes, riderStatus, scheduledTime, specialInstructions, totalTravelTime } = val
                 const consumerDetailSubmit = {
                     token: $.session.Token,
@@ -535,14 +537,17 @@ const TRANS_manageEditRoute = (function () {
           notes:  notes ? notes: '',
                 };
                 dbCallArr.push(TRANS_routeDocumentationAjax.insertUpdateTripConsumers(consumerDetailSubmit));
-                consumersToRemove.forEach(consumer => {
-                    const data = {
-                        tripsCompletedId: selectedRouteId,
-                        consumerId: consumer
-                    }
-                    dbCallArr.push(TRANS_routeDocumentationAjax.deleteConsumerFromTrip(data))
-                });
             });
+            consumersToRemove.forEach(consumer => {  
+                let IsSameInsertedConsumerFind = notTodeleteConsumers.includes(consumer);
+                const data = {
+                    tripsCompletedId: selectedRouteId,
+                    consumerId: consumer
+                }
+                if (!IsSameInsertedConsumerFind) {
+                    dbCallArr.push(TRANS_routeDocumentationAjax.deleteConsumerFromTrip(data))
+                }            
+            }); 
             Promise.all(dbCallArr).then(() => {
                 // Get Alt Addresses from DB Again:
                 TRANS_mainLanding.updateAltAddress();
