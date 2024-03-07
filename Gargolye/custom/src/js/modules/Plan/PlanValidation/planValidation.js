@@ -675,7 +675,7 @@ const planValidation = (function () {
       // if there are invalid providers, return false on the validaton check
       if (IspValidationCheck.invalidProviders.length > 0) {
         IspValidationCheck.complete = false;
-      }
+      } 
   
       // checks if all required data on the page has been filled out
       checkAllOutcomesComplete(IspValidationCheck);
@@ -698,13 +698,15 @@ const planValidation = (function () {
       const ISPAlertDiv = document.getElementById('navAlertISP');
       const outcomesNav = document.getElementById('outcomesAlert');
 
-      if (validationCheck.complete === true) {
+      //if (validationCheck.complete === true) {
+    if (validationCheck.missingExperiences.length > 0 || validationCheck.missingReviews.length > 0) {
+      outcomesNav.style.display = 'block';
+      ISPAlertDiv.style.display = 'flex';
+      } else {
         outcomesNav.style.display = 'none';
         ISPAlertDiv.style.display = 'none';
-      } else {
-        outcomesNav.style.display = 'block';
-        ISPAlertDiv.style.display = 'flex';
       }
+
 
       return validationCheck;
     }

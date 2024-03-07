@@ -1687,6 +1687,18 @@ const planOutcomes = (() => {
       ],
       isSortable,
     );
+
+        // grabs the review alert for this specific outcome
+        const alertDiv = document.getElementById(`reviewsAlert${outcomeId}`);
+
+        // checks for missing data
+        validationCheck = await planValidation.ISPValidation(planId);
+     
+        // displays or removes button alert depending on validationCheck
+        planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
+      
+        // displays or removes alerts for tabs in the navs depending on validationCheck
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   async function updateOutcomeReview(updateData) {
     const outcomeId = updateData.outcomeId;
@@ -1734,6 +1746,18 @@ const planOutcomes = (() => {
       ],
       isSortable,
     );
+
+        // grabs the review alert for this specific outcome
+        const alertDiv = document.getElementById(`reviewsAlert${outcomeId}`);
+
+        // checks for missing data
+        validationCheck = await planValidation.ISPValidation(planId);
+     
+        // displays or removes button alert depending on validationCheck
+        planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
+      
+        // displays or removes alerts for tabs in the navs depending on validationCheck
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   async function deleteOutcomeReview(outcomeId, reviewId) {
     await planOutcomesAjax.deletePlanOutcomeReview({
