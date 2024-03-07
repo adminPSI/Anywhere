@@ -63,7 +63,7 @@ const WaitingListOverview = (() => {
 
     if (!selectedConsumer) return;
 
-    const { tableData, alreadyHasAssessmentForToday } = await getReviewDataByConsumer(selectedConsumer);
+    const { tableData, alreadyHasAssessmentForToday } = await getReviewDataByConsumer(selectedConsumer.id);
     wlReviewTable.populate(tableData);
     newAssessmentBtn.toggleDisabled(false);
     newAssessmentBtn.toggleDisabled(alreadyHasAssessmentForToday);
@@ -73,16 +73,19 @@ const WaitingListOverview = (() => {
       WaitingListAssessment.init({ selectedConsumer, moduleHeader, moduleBody }, true);
     });
 
-    rosterPicker.onConsumerSelect(data => {
-      selectedConsumer = data[0];
-      populateReviewTable();
-    });
+    rosterPicker.onConsumerSelect(
+      data => {
+        selectedConsumer = Object.values(data)[0];
+        populateReviewTable();
+      },
+      { idkyet: true },
+    );
 
     wlReviewTable.onRowClick(async rowId => {
       const resp = await _UTIL.fetchData('getWaitingListAssessment', { waitingListAssessmentId: parseInt(rowId) });
       WaitingListAssessment.init({
         wlData: resp.getWaitingListAssessmentResult[0],
-        selectedConsumer,
+        selectedConsumer: selectedConsumer,
         moduleHeader,
         moduleBody,
       });
@@ -164,7 +167,7 @@ const WaitingListOverview = (() => {
 
     if (selectedConsumer) {
       populateReviewTable();
-      rosterPicker.setSelectedConsumers([selectedConsumer]);
+      rosterPicker.setSelectedConsumers([selectedConsumer.id]);
     }
   }
 

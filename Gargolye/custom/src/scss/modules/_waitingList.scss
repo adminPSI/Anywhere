@@ -1,6 +1,7 @@
 [data-ui] {
   .waitingList {
     &__header {
+      align-items: center;
       display: flex;
       column-gap: 10px;
       flex-flow: row wrap;
