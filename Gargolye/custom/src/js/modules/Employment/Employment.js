@@ -189,7 +189,9 @@ const Employment = (() => {
             editEmployerBtn.classList.add('disabled');
         }
         entryButtonBar.appendChild(editEmployerBtn);
-        entryButtonBar.appendChild(reportsBtn);
+        if ($.session.EmploymentView) {
+            entryButtonBar.appendChild(reportsBtn);
+        }        
         buttonBar.appendChild(entryButtonBar);
 
         return buttonBar;
