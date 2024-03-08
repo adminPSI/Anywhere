@@ -153,21 +153,40 @@
     tocSectionAlertDiv.style.display = 'none';
 
     if (title === 'WORKING/ NOT WORKING') {
-      const workingAlertDiv = document.createElement('div');
-      workingAlertDiv.classList.add('workingAlertDiv');
-      workingAlertDiv.id = `workingAlert`;
-      workingAlertDiv.innerHTML = `${icons.error}`;
-      sectionHeading.appendChild(workingAlertDiv);
+      const workingAlertDivCase1 = document.createElement('div');
+      workingAlertDivCase1.classList.add('workingAlertDivCase1');
+      workingAlertDivCase1.id = `workingAlert1`;
+      workingAlertDivCase1.innerHTML = `${icons.error}`;
+      sectionHeading.appendChild(workingAlertDivCase1);
 
       planValidation.createTooltip(
         "There must be at least one record for What's Working/What's Not Working",
-        workingAlertDiv,
+        workingAlertDivCase1,
       );
 
-      workingAlertDiv.style.display = 'none';
+      workingAlertDivCase1.style.display = 'none';
+
+      const workingAlertDivCase2 = document.createElement('div');
+      workingAlertDivCase2.classList.add('workingAlertDivCase2');
+      workingAlertDivCase2.id = `workingAlert2`;
+      workingAlertDivCase2.innerHTML = `${icons.error}`;
+      sectionHeading.appendChild(workingAlertDivCase2);
+
+      planValidation.createTooltip(
+        "Each 'Working/Not Working' record must include at least one entry for either 'What's Working' or 'What's Not Working', along with a 'Who Said It?' entry.",
+        workingAlertDivCase2,
+      );
+
+      workingAlertDivCase2.style.display = 'none';
 
       if (assessmentValidationCheck.workingSectionComplete === false) {
-       workingAlertDiv.style.display = 'inline-block';
+        let workingSectionCaseValue = planValidation.returnWorkingSectionCaseValue();
+        if (workingSectionCaseValue === 1) {
+          workingAlertDivCase1.style.display = 'inline-block';
+        }
+        else if (workingSectionCaseValue === 2) {
+          workingAlertDivCase2.style.display = 'inline-block';
+        }
       }
     }
 

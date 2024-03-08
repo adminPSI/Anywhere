@@ -975,7 +975,10 @@
         .numOfQuestionsUnawnseredWrap {
           top: -4px;
         }
-        .workingAlertDiv {
+        .workingAlertDivCase1 {
+          top: -4px
+        }
+        .workingAlertDivCase2 {
           top: -4px
         }
       }
@@ -1059,7 +1062,7 @@
   }
 }
 
-.tocAlertDiv, .workingAlertDiv {
+.tocAlertDiv, .workingAlertDivCase1, .workingAlertDivCase2 {
   svg {
     height: 24px;
     color: red;
@@ -1068,7 +1071,7 @@
   }
 }
 
-.workingAlertDiv {
+.workingAlertDivCase1, .workingAlertDivCase2 {
   position: relative;
   display: inline-block;
   top: 10px;
