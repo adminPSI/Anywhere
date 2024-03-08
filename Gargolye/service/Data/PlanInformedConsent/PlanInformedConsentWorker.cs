@@ -79,6 +79,12 @@ namespace Anywhere.service.Data.PlanInformedConsent
             return picdg.updatePlanRestrictiveMeasures(token, informedConsentId, rmIdentified, hcrDate, rmKeepSelfSafe, rmFadeRestriction, rmOtherWayHelpGood, rmOtherWayHelpBad, rmWhatCouldHappenGood, rmWhatCouldHappenBad);
         }
 
+        public string deletePlanRestrictiveMeasures(string token, string informedConsentId)
+        {
+            return picdg.deletePlanRestrictiveMeasures(token, informedConsentId);
+
+        }
+
         public string updatePlanConsentStatements(string token, string signatureId, string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology)
         {
             return picdg.updatePlanConsentStatements(token, signatureId, csChangeMind, csChangeMindSSAPeopleId, csContact, csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess, csResidentialOptions, csSupportsHealthNeeds, csTechnology);

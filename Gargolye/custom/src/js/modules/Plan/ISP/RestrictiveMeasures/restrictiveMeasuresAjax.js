@@ -20,7 +20,7 @@ const restrictiveMeasuresAjax = (() => {
         dataType: 'json',
       });
 
-      return data.getPlanRestrictiveMeasuresResult[0];
+      return data.getPlanRestrictiveMeasuresResult;
     } catch (error) {
       console.log(error);
     }
@@ -84,9 +84,35 @@ const restrictiveMeasuresAjax = (() => {
     }
   }
 
+  async function deletePlanRestrictiveMeasures(retrieveData) {
+    // string token, string informedConsentId
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/deletePlanRestrictiveMeasures/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.deletePlanRestrictiveMeasuresResult[0];
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return {
     getPlanRestrictiveMeasures,
     insertPlanRestrictiveMeasures,
     updatePlanRestrictiveMeasures,
+    deletePlanRestrictiveMeasures
   };
 })();
