@@ -158,6 +158,10 @@
       return;
     }
 
+    if (!this.inputs[inputId]) {
+      debugger;
+    }
+
     this.inputs[inputId].setValue(true);
   };
 

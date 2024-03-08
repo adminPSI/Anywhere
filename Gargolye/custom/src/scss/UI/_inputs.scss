@@ -82,6 +82,7 @@ $label_fontSize: $px14;
     &:disabled,
     &[readonly] {
       background: $gray;
+      cursor: not-allowed;
     }
   }
 
@@ -137,6 +138,10 @@ $label_fontSize: $px14;
     }
     &:invalid ~ label::before {
       border-color: $error;
+    }
+    &:disabled ~ label::before {
+      color: $gray;
+      cursor: not-allowed;
     }
 
     & ~ label {
