@@ -77,7 +77,7 @@
 
   // Utils
   //------------------------------------
-  function addAnswer(id, answer, answerRow, skipped) {
+  async function addAnswer(id, answer, answerRow, skipped) {
     assessmentAjax.updateConsumerAssessmentAnswer({
       answerId: id,
       answerText: answer ? answer : '',
@@ -320,7 +320,7 @@
     });
   }
   // Events
-  function handleAssessmentChangeEvents(e) {
+  async function handleAssessmentChangeEvents(e) {
     if (e.target.id.includes('applicable')) {
       let target = e.target.id;
       let sectionID = target.match(/\d+/)[0];
@@ -466,25 +466,24 @@
         answer = e.target.value;
 
         if (answer !== '') {
-          addAnswer(answerId, answer);
+           await addAnswer(answerId, answer);
 
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
-
-            if (sectionId === '41') {
-              planValidation.updateAnswerWorkingSection(assessmentId);
-            }
           }
         } else {
-          addAnswer(answerId);
+          await addAnswer(answerId);
 
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
+        }
 
-          planValidation.updateAnswerWorkingSection(assessmentId);
+        if (sectionId === '41') {
+          await planValidation.updateAnswerWorkingSection(assessmentId);
+          tableOfContents.showUnansweredQuestionCount();
         }
       }
       if (type === 'select-one') {

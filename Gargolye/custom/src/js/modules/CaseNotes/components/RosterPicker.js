@@ -289,8 +289,24 @@
    * @function
    * @param {Function} cbFunc Callback function to call
    */
-  RosterPicker.prototype.onConsumerSelect = function (cbFunc) {
+  RosterPicker.prototype.onConsumerSelect = function (cbFunc, opts = {}) {
     this.rosterWrapEle.addEventListener('onConsumerSelect', () => {
+      if (opts.idkyet) {
+        const selectedConsumers = Object.keys(this.selectedConsumers).reduce((acc, cv) => {
+          const consumer = this.consumers[cv];
+          acc[cv] = {
+            id: cv,
+            firstName: consumer.FN,
+            middleName: consumer.MN,
+            lastName: consumer.LN,
+          };
+          return acc;
+        }, {});
+
+        cbFunc(selectedConsumers);
+        return;
+      }
+
       cbFunc(Object.keys(this.selectedConsumers));
     });
   };
