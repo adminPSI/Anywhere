@@ -385,7 +385,7 @@ const planValidation = (function () {
             }
 
             // Check if all three questions are blank
-            if (!hasValue605 && !hasValue606 && !hasValue607) {
+            if (!hasValue605 && !hasValue606) {
                 assessmentValidationCheck.workingSectionComplete = false;
                 workingSectionCase = 2;
                 return assessmentValidationCheck;
