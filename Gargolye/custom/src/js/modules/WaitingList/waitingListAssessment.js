@@ -1521,7 +1521,7 @@ const WaitingListAssessment = (() => {
       wlForms['physical'].inputs['physicalNeedsIsOther'].toggleRequired(false);
     }
     if (hasCheckMedical) {
-      wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(!hasCheck);
+      wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(false);
 
       wlForms['medical'].inputs['medicalNeedsIsNone'].toggleRequired(false);
       wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].toggleRequired(false);
