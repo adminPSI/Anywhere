@@ -1786,8 +1786,10 @@ const planOutcomes = (() => {
     const doneBtn = document.querySelector('.reviewsPopup .doneBtn');
     if (inputsWithErrors) {
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
     } else {
       doneBtn.classList.remove('disabled');
+      doneBtn.disabled = false;
     }
   }
   function showReviewsPopup(popupData, isNew) {
@@ -1903,6 +1905,7 @@ const planOutcomes = (() => {
       classNames: 'doneBtn',
       callback: async () => {
         doneBtn.classList.add('disabled');
+        doneBtn.disabled = true;
         if (isNew) {
           const tableId = `reviewsTable${saveUpdateData.outcomeId}`;
           const rowOrder = table.getRowCount(tableId) + 1;
@@ -1913,7 +1916,9 @@ const planOutcomes = (() => {
         }
 
         doneBtn.classList.remove('disabled');
+        doneBtn.disabled = false;
         POPUP.hide(reviewsPopup);
+        
 
         // grabs the review alert for this specific outcome
         const alertDiv = document.getElementById(`reviewsAlert${saveUpdateData.outcomeId}`);
@@ -1968,6 +1973,8 @@ const planOutcomes = (() => {
     }
     if (hasInitialErros) {
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
+
     }
     // end required fields
 
@@ -1976,6 +1983,7 @@ const planOutcomes = (() => {
       whoReviewDropdown.classList.add('disabled');
       whenToCheckinDropdown.classList.add('disabled');
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
       deleteBtn.classList.add('disabled');
     }
 
