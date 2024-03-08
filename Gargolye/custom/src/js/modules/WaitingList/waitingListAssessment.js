@@ -1308,9 +1308,6 @@ const WaitingListAssessment = (() => {
       tocLinks[link].classList.toggle('hiddenPage', disable);
     });
   }
-  function toggleSectionShowHide(formName, showHide) {
-    wlForms[formName].form.parentElement.classList.toggle('hiddenPage', showHide);
-  }
   function enableSectionsForReview() {
     const isOtherThanMentalHealthYes =
       wlData.conditions.otherThanMentalHealth === 'otherThanMentalHealthyes' ? true : false;
@@ -2013,15 +2010,15 @@ const WaitingListAssessment = (() => {
     medicalNeeds: ({ name, value }) => {
       const hasCheck = isAnyCheckboxCheckedMedical();
 
-      // (ENABLE) [medicalNeedsDescription] the "Describe type, frequency, and intensity of medical..." textbox (IF)
-      // any of the checkboxes are checked in the fourth group of checkboxes EXCEPT the "Not applicable..." checkbox
+      // (ENABLE) [medicalNeedsDescription] the "Describe type, frequency, and intensity of medical..." textbox
+      // (IF) any of the checkboxes are checked in the fourth group of checkboxes EXCEPT the "Not applicable..." checkbox
       wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(!hasCheck);
       if (!hasCheck) {
         wlForms['medical'].inputs['medicalNeedsDescription'].setValue('');
       }
 
-      // (SET) [medicalNeedsIsLifeThreatening] "Is the individual a child/adult with significant or life-threatening medical needs?" to "YES" (IF)
-      // There is at least one checkbox checked in the fourth group of checkboxes NOT including the "Not applicable…" checkboxes
+      // (SET) [medicalNeedsIsLifeThreatening] "Is the individual a child/adult with significant or life-threatening medical needs?" to "YES"
+      // (IF) There is at least one checkbox checked in the fourth group of checkboxes NOT including the "Not applicable…" checkboxes
       const inputId = hasCheck ? 'medicalNeedsIsLifeThreateningyes' : 'medicalNeedsIsLifeThreateningno';
       wlForms['medical'].inputs['medicalNeedsIsLifeThreatening'].setValue(inputId);
       insertUpdateAssessment({
@@ -2032,7 +2029,7 @@ const WaitingListAssessment = (() => {
       });
 
       if (hasCheck) {
-        wlForms['physical'].inputs['physicalNeedsIsNone'].setValue(false);
+        wlForms['physical'].inputs['medicalNeedsIsNone'].setValue(false);
       }
 
       const isNotAppChecked = wlForms['medical'].inputs['medicalNeedsIsNone'].getValue();

@@ -1181,6 +1181,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string areasPersonNeedsHelp { get; set; }
             public string participants { get; set; }
             public string conditionId { get; set; }
+            public string isSelfWaiverService { get; set; }
             public string otherThanMentalHealth { get; set; }
             public string before22 { get; set; }
             public string activeServiceId { get; set; }
@@ -1191,6 +1192,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string isFCFCService { get; set; }
             public string isODEService { get; set; }
             public string isOODService { get; set; }
+            public string isLevelOneWaiverService { get; set; }
             public string isChildrenServices { get; set; }
             public string isMedicaidStatePlanService { get; set; }
             public string isOhioHomeCareWaiverservice { get; set; }
