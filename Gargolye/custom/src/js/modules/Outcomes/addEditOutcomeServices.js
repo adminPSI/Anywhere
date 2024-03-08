@@ -28,7 +28,7 @@ const addEditOutcomeServices = (() => {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
         initFilterValues();
-
+        document.getElementById('mini_roster').style.display = 'none';
         pageWrap = document.createElement('div');
         const consumerCard = buildConsumerCard();
         const backbtnWrap = document.createElement('div');
@@ -87,7 +87,10 @@ const addEditOutcomeServices = (() => {
             text: 'BACK',
             style: 'secondary',
             type: 'outlined',
-            callback: async () => { outcomes.backToOutcomeLoad(selectedConsumer) },  
+            callback: async () => {
+                document.getElementById('mini_roster').style.display = 'block';   
+                outcomes.backToOutcomeLoad(selectedConsumer);
+            },  
         });
 
     }
