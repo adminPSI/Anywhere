@@ -10,6 +10,7 @@ using System.Linq;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.CaseNoteSSA.CaseNoteSSAWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
+using static Anywhere.service.Data.Employment.EmploymentWorker;
 
 namespace Anywhere.service.Data.ReportBuilder
 {
@@ -590,6 +591,55 @@ namespace Anywhere.service.Data.ReportBuilder
             {
                 logger.error("640", ex.Message + "CALL DBA.ANYW_ViewReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return null;
+            }
+        }
+
+        public string generateEmploymentReport(string token, string category, string title, string reportServerList, string employer, string position, string positionStartDate, string positionEndDate, string jobStanding, string consumerID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("ANYW_GenerateEmploymentReport");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+            list.Add(employer);
+            list.Add(position);
+            list.Add(positionStartDate);
+            list.Add(positionEndDate);
+            list.Add(jobStanding);
+            list.Add(consumerID);  
+            string text = "CALL DBA.ANYW_GenerateEmploymentReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1ITR", ex.Message + "ANYW_GenerateEmploymentReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_GenerateEmploymentReport";
+            }
+        }
+
+        public string generateCaseLoadRosterListReport(string token, string category, string title, string reportServerList)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("ANYW_CaseNotes_GenerateCaseLoadRosterListReport");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+
+            string text = "CALL DBA.ANYW_CaseNotes_GenerateCaseLoadRosterListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1ITR", ex.Message + "ANYW_CaseNotes_GenerateCaseLoadRosterListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_CaseNotes_GenerateCaseLoadRosterListReport";
             }
         }
 

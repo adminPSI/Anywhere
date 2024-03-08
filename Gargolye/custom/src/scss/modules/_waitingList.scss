@@ -1,10 +1,19 @@
 [data-ui] {
   .waitingList {
     &__header {
+      align-items: center;
       display: flex;
       column-gap: 10px;
       flex-flow: row wrap;
       margin: 0 0 20px 0;
+
+      justify-content: space-between;
+
+      div {
+        display: flex;
+        flex-flow: row nowrap;
+        column-gap: 10px;
+      }
     }
 
     &__body {

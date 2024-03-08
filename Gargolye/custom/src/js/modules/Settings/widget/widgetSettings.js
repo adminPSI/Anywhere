@@ -299,7 +299,7 @@ const widgetSettings = (function () {
                     value: that.settings.daysBack,
                     attributes: [
                         { key: 'min', value: '1' },
-                        { key: 'max', value: '60' },
+                        { key: 'max', value: '999' },
                         {
                             key: 'onkeypress',
                             value: 'return event.charCode >= 48 && event.charCode <= 57',
@@ -313,27 +313,29 @@ const widgetSettings = (function () {
                     style: 'secondary',
                     classNames: ['widgetSettingsSaveBtn'],
                     callback: async () => {
-                        console.log(that);
-                        // get input field values
-                        const newDaysBack = parseInt(daysBackInput.firstElementChild.value);
-                        if (newDaysBack >= 1 && newDaysBack <= 60) {
-                            that.settings.daysBack = newDaysBack;
+                        if (!saveBtn.classList.contains('disabled')) {
+                            console.log(that);
+                            // get input field values
+                            const newDaysBack = parseInt(daysBackInput.firstElementChild.value);
+                            if (newDaysBack >= 1 && newDaysBack <= 999) {
+                                that.settings.daysBack = newDaysBack;
+                            }
+
+                            // config string to json
+                            const configString = JSON.stringify(that.settings);
+
+                            // style saved button
+                            saveBtn.innerText = 'saved';
+                            saveBtn.classList.add('saved');
+                            setTimeout(() => {
+                                saveBtn.classList.remove('saved');
+                                saveBtn.innerText = 'save';
+                            }, 1600);
+
+                            // update settings
+                            await widgetSettingsAjax.setWidgetSettingConfig(saveID, configString, that.showHide);
+                            dashboard.load();
                         }
-
-                        // config string to json
-                        const configString = JSON.stringify(that.settings);
-
-                        // style saved button
-                        saveBtn.innerText = 'saved';
-                        saveBtn.classList.add('saved');
-                        setTimeout(() => {
-                            saveBtn.classList.remove('saved');
-                            saveBtn.innerText = 'save';
-                        }, 1600);
-
-                        // update settings
-                        await widgetSettingsAjax.setWidgetSettingConfig(saveID, configString, that.showHide);
-                        dashboard.load();
                     },
                 });
 
@@ -358,6 +360,16 @@ const widgetSettings = (function () {
                 widgetBody.appendChild(daysBackInput);
                 widgetBody.appendChild(btnWrap);
 
+                daysBackInput.addEventListener('input', event => {
+                    if (event.target.value > 999) {
+                        daysBackInput.classList.add('error');
+                        saveBtn.classList.add('disabled');
+                    }
+                    else {
+                        daysBackInput.classList.remove('error');
+                        saveBtn.classList.remove('disabled');
+                    }
+                });
                 return widgetBody;
             },
         },

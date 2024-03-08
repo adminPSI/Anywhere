@@ -810,9 +810,14 @@
             left: 14px !important;
         }
 
+        .checkbox-mtd > input {
+            top: -7px !important;
+            margin-left : 12px !important; 
+        }
+
         .password-error {
             color: #db162f !important;
-        } 
+        }
     }
 
     .employmentDTWrap {
@@ -881,7 +886,7 @@
     }
 
     .entryBtn {
-        width: 49%;
+        width: 32%;
     }
 
     .employmentBtnWrap {

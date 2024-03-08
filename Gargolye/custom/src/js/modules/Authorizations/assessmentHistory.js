@@ -128,7 +128,7 @@ const assessmentHistory = (() => {
             token: $.session.Token,
             methodology: '%',
             score: '%',
-            startDateFrom: UTIL.formatDateFromDateObj(dates.subDays(new Date(), 730)),
+            startDateFrom: '%',//UTIL.formatDateFromDateObj(dates.subDays(new Date(), 730)), 
             startDateTo: '%',
             endDateFrom: '%',
             endDateTo: '%',
@@ -275,6 +275,13 @@ const assessmentHistory = (() => {
             classNames: 'filterSelectionBtn',
             callback: () => { buildFilterPopUp('startDateBtn') },
         });
+        startDateCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('startDateBtn') },
+        });
 
         endDateBtn = button.build({
             id: 'endDateBtn',
@@ -374,7 +381,8 @@ const assessmentHistory = (() => {
 
         startDateBtnWrap = document.createElement('div');
         startDateBtnWrap.classList.add('filterSelectionBtnWrap');
-        startDateBtnWrap.appendChild(startDateBtn); 
+        startDateBtnWrap.appendChild(startDateBtn);
+        startDateBtnWrap.appendChild(startDateCloseBtn);
         btnWrap.appendChild(startDateBtnWrap);
 
         endDateBtnWrap = document.createElement('div');
@@ -436,6 +444,12 @@ const assessmentHistory = (() => {
         if (closeFilter == 'priorAuthAmtToBtn') {
             filterValues.priorAuthAmtTo = '';
         }
+        if (closeFilter == 'startDateBtn') {
+            filterValues.startDateFrom = '%'; 
+            filterValues.startDateTo = '%';
+        }
+
+        
 
         loadAssessmentHistoryLanding();
     }

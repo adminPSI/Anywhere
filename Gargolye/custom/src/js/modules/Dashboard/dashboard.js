@@ -210,6 +210,26 @@
             widgetHeader.appendChild(filterBtn);
         }
     }
+
+    function appendPDFButton(widgetId, btnId) {
+        var pdfBtn = document.getElementById(btnId);
+        if (!pdfBtn) {
+            var headerSelector = `#${widgetId} .widget__header`;
+            var widgetHeader = document.querySelector(headerSelector);
+            pdfBtn = button.build({
+                id: btnId,
+                style: 'primary',
+                type: 'text',
+                icon: 'PDFFormWhite', 
+                iconPos: 'right',   
+                callback: function () {
+                    generateReports.passFilterValuesForReport('My Case Load Roster List', null);
+                },
+            });
+            widgetHeader.appendChild(pdfBtn);
+        }
+    }
+
     function buildFilterPopup() {
         var filterPopup = document.createElement('div');
         filterPopup.classList.add('widget__filters', 'popup', 'popup--static', 'popup--filter');
@@ -745,6 +765,7 @@
 
     return {
         appendFilterButton,
+        appendPDFButton,
         buildFilterPopup,
         getWidgetSettings,
         refreshWidgetSettings,

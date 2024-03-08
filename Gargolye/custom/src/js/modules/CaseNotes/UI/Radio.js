@@ -153,8 +153,9 @@
    * @param {String | Number} value
    */
   RadioGroup.prototype.setValue = function (inputId) {
-    if (!inputId) {
+    if (!inputId || inputId === '') {
       this.clear();
+      return;
     }
 
     this.inputs[inputId].setValue(true);

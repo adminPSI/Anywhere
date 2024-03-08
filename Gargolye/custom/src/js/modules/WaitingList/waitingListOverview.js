@@ -57,33 +57,37 @@ const WaitingListOverview = (() => {
 
   // EVENTS
   //--------------------------------------------------
-  async function onConsumerSelect(data) {
-    selectedConsumer = data[0];
-
+  async function populateReviewTable() {
     wlReviewTable.clear();
     newAssessmentBtn.toggleDisabled(!selectedConsumer);
 
     if (!selectedConsumer) return;
 
-    const { tableData, alreadyHasAssessmentForToday } = await getReviewDataByConsumer(selectedConsumer);
+    const { tableData, alreadyHasAssessmentForToday } = await getReviewDataByConsumer(selectedConsumer.id);
     wlReviewTable.populate(tableData);
     newAssessmentBtn.toggleDisabled(false);
     newAssessmentBtn.toggleDisabled(alreadyHasAssessmentForToday);
   }
   function attachEvents() {
     newAssessmentBtn.onClick(() => {
-      WaitingListAssessment.init({ selectedConsumer, moduleHeaderEle, moduleBodyEle }, true);
+      WaitingListAssessment.init({ selectedConsumer, moduleHeader, moduleBody }, true);
     });
 
-    rosterPicker.onConsumerSelect(onConsumerSelect);
+    rosterPicker.onConsumerSelect(
+      data => {
+        selectedConsumer = Object.values(data)[0];
+        populateReviewTable();
+      },
+      { idkyet: true },
+    );
 
     wlReviewTable.onRowClick(async rowId => {
       const resp = await _UTIL.fetchData('getWaitingListAssessment', { waitingListAssessmentId: parseInt(rowId) });
       WaitingListAssessment.init({
         wlData: resp.getWaitingListAssessmentResult[0],
-        selectedConsumer,
-        moduleHeaderEle,
-        moduleBodyEle,
+        selectedConsumer: selectedConsumer,
+        moduleHeader,
+        moduleBody,
       });
     });
   }
@@ -145,25 +149,30 @@ const WaitingListOverview = (() => {
       disabled: true,
     });
   }
-  async function load() {
-    initComponents();
-
+  async function reload() {
     loadPageSkeleton();
-
     await loadPage();
-
     attachEvents();
   }
 
-  async function init({ moduleHeaderEle, moduleBodyEle }) {
-    moduleHeader = moduleHeaderEle;
-    moduleBody = moduleBodyEle;
+  async function init(opts) {
+    moduleHeader = opts.moduleHeader;
+    moduleBody = opts.moduleBody;
+    selectedConsumer = opts.selectedConsumer;
 
-    load();
+    initComponents();
+    loadPageSkeleton();
+    await loadPage();
+    attachEvents();
+
+    if (selectedConsumer) {
+      populateReviewTable();
+      rosterPicker.setSelectedConsumers([selectedConsumer.id]);
+    }
   }
 
   return {
     init,
-    onConsumerSelect,
+    reload,
   };
 })();

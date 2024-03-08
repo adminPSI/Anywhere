@@ -22,7 +22,7 @@ const vendorInfo = (function () {
     let vendorGroupCount;
     let activeGroup;
     let loadMoreVendors = [];
-
+    let chunkedArray;
     //filter
     let filterValues;
     function init() {
@@ -46,6 +46,7 @@ const vendorInfo = (function () {
         DOM.ACTIONCENTER.appendChild(filterRow);
         DOM.ACTIONCENTER.appendChild(userTable);
         DOM.ACTIONCENTER.appendChild(LOAD_MORE_BTN);
+        document.getElementById('loadMoreBtn').style.display = 'none';  
 
         SEARCH_BTN.addEventListener('click', event => {
             SEARCH_WRAP.classList.toggle('searchOpen');
@@ -123,6 +124,12 @@ const vendorInfo = (function () {
         });
 
         table.populate(userTable, userTableData, false, true);
+        if (chunkedArray.length < 2) {
+            document.getElementById('loadMoreBtn').style.display = 'none';
+        }
+        else {
+            document.getElementById('loadMoreBtn').style.display = 'block';
+        } 
     }
 
     function handleVendorInfoTableEvents(event) {
@@ -743,21 +750,15 @@ const vendorInfo = (function () {
         populateTable(loadMoreVendors);
     }
 
-    async function groupVendorData(vendors) { 
+    async function groupVendorData(vendors) {        
         const chunkBy = 50;
-        const chunkedArray = vendors ? UTIL.chunkArray(vendors, chunkBy) : UTIL.chunkArray(vendorsData, chunkBy);
+        chunkedArray = vendors ? UTIL.chunkArray(vendors, chunkBy) : UTIL.chunkArray(vendorsData, chunkBy);
         groupedVendors = {};
         chunkedArray.forEach((a, index) => (groupedVendors[index] = a));
         const vendorKeys = Object.keys(groupedVendors);
         vendorGroupCount = vendorKeys && vendorKeys.length;
         activeGroup = 0;
-        loadMoreVendors = groupedVendors[activeGroup];
-        if (chunkedArray.length < 2) { 
-            document.getElementById('loadMoreBtn').style.display = 'none';
-        }
-        else {
-            document.getElementById('loadMoreBtn').style.display = 'block';
-        } 
+        loadMoreVendors = groupedVendors[activeGroup];       
         populateTable(loadMoreVendors); 
     }
 

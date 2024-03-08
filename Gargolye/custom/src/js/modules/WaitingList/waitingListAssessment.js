@@ -2,6 +2,7 @@ const WaitingListAssessment = (() => {
   //--------------------------
   // SESSION DATA
   //--------------------------
+  let selectedConsumer;
   let wlData;
   let wlLinkID;
   let wlCircID;
@@ -1099,12 +1100,14 @@ const WaitingListAssessment = (() => {
     wlNeedID = assessmentData.needId;
 
     wlParticipants = {};
-    for (const participantData of assessmentData.participants.split('||')) {
-      const particpant = participantData.split('|');
-      wlParticipants[particpant[2]] = {
-        id: particpant[2],
-        values: [particpant[0], particpant[1]],
-      };
+    if (assessmentData.participants) {
+      for (const participantData of assessmentData.participants.split('||')) {
+        const particpant = participantData.split('|');
+        wlParticipants[particpant[2]] = {
+          id: particpant[2],
+          values: [particpant[0], particpant[1]],
+        };
+      }
     }
 
     wlFormInfo['waitingListInfo'].id = wlLinkID;
@@ -1304,6 +1307,9 @@ const WaitingListAssessment = (() => {
     links.forEach(link => {
       tocLinks[link].classList.toggle('hiddenPage', disable);
     });
+  }
+  function toggleSectionShowHide(formName, showHide) {
+    wlForms[formName].form.parentElement.classList.toggle('hiddenPage', showHide);
   }
   function enableSectionsForReview() {
     const isOtherThanMentalHealthYes =
@@ -1765,10 +1771,20 @@ const WaitingListAssessment = (() => {
     wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(!conditionPageAllYes);
   }
   //--------------------------------------------------
+  function enableInputsForReview() {
+    if (wlData.waitingListInfo.currentLivingArrangement === 'Other') {
+      wlForms.waitingListInfo.inputs['livingArrangementOther'].toggleDisabled(false);
+    }
+
+    if (wlData.currentAvailableServices.isOtherService.includes('yes')) {
+      wlForms['currentAvailableServices'].inputs['otherDescription'].toggleDisabled(false);
+    }
+  }
   const onChangeCallbacks = {
     //* waitingListInfo
     currentLivingArrangement: ({ value }) => {
       wlForms['waitingListInfo'].inputs['livingArrangementOther'].toggleDisabled(value === 'Other' ? false : true);
+
       if (value !== 'Other') {
         wlForms['waitingListInfo'].inputs['livingArrangementOther'].setValue('');
       }
@@ -1776,6 +1792,7 @@ const WaitingListAssessment = (() => {
     //* currentAvailableServices
     isOtherService: ({ value }) => {
       wlForms['currentAvailableServices'].inputs['otherDescription'].toggleDisabled(value === 'yes' ? false : true);
+
       if (value !== 'yes') {
         wlForms['currentAvailableServices'].inputs['otherDescription'].setValue('');
       }
@@ -1789,12 +1806,19 @@ const WaitingListAssessment = (() => {
       if (value !== 'yes') {
         wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].setValue('');
         wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].setValue('');
+        wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].setValue('');
+        wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(true);
       } else {
         wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].setValue('');
+        wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].setValue('');
+        wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].setValue('');
+        wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].toggleDisabled(true);
+        wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].toggleDisabled(true);
       }
     },
     isActionRequiredIn30Days: ({ value }) => {
       wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(value === 'yes' ? false : true);
+
       if (value !== 'yes') {
         wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].setValue('');
       }
@@ -2008,7 +2032,7 @@ const WaitingListAssessment = (() => {
       });
 
       if (hasCheck) {
-        wlForms['physical'].inputs['physicalNeedsIsNone'].setValue(false);
+        wlForms['physical'].inputs['medicalNeedsIsNone'].setValue(false);
       }
 
       const isNotAppChecked = wlForms['medical'].inputs['medicalNeedsIsNone'].getValue();
@@ -2152,6 +2176,7 @@ const WaitingListAssessment = (() => {
 
       const inputId = isRisksActionRequired ? 'rMIsSupportNeededyes' : 'rMIsSupportNeededno';
       wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue(inputId);
+
       insertUpdateAssessment({
         value: isRisksActionRequired ? 'yes' : 'no',
         name: 'rMIsSupportNeeded',
@@ -2173,6 +2198,7 @@ const WaitingListAssessment = (() => {
       if (value !== 'yes') {
         wlForms['childProtectionAgency'].inputs['cpaAnticipatedDate'].setValue('');
       }
+
       childProtectionAgencyDetermination();
     },
     cpaHasUnaddressableNeeds: childProtectionAgencyDetermination,
@@ -2185,26 +2211,29 @@ const WaitingListAssessment = (() => {
     dischargeIsInterestedInMoving: dischargePlanDetermination,
     dischargeHasDischargePlan: dischargePlanDetermination,
     //* currentNeeds
-    unmetNeedsSupports: ({ name, value }) => {
-      // (ENABLE) [unmetNeedsDescription] "If 'Yes', describe the unmet need:" text box only
-      // (IF)[unmetNeedsSupports] "If 'Yes', will any of those needs..." is YES
+    unmetNeedsHas: ({ name, value }) => {
+      // (ENABLE) [unmetNeedsSupports] "If 'Yes', will any of those needs..." only
+      // (IF) [unmetNeedsHas] "Does the individual have an identified need?" is YES
 
-      const isYesChecked = wlForms['currentNeeds'].inputs['unmetNeedsSupports'].getValue('unmetNeedsSupportsyes');
-      wlForms['currentNeeds'].inputs['unmetNeedsDescription'].toggleDisabled(isYesChecked);
-      if (isYesChecked) {
+      wlForms['currentNeeds'].inputs['unmetNeedsSupports'].toggleDisabled(value === 'yes' ? false : true);
+
+      if (value !== 'yes') {
+        wlForms['currentNeeds'].inputs['unmetNeedsSupports'].setValue('');
+
+        wlForms['currentNeeds'].inputs['unmetNeedsDescription'].toggleDisabled(true);
         wlForms['currentNeeds'].inputs['unmetNeedsDescription'].setValue('');
       }
 
       setConclusionWaiverFunded12Months();
     },
-    unmetNeedsHas: ({ name, value }) => {
-      // (ENABLE) [unmetNeedsSupports] "If 'Yes', will any of those needs..." only
-      // (IF) [unmetNeedsHas] "Does the individual have an identified need?" is YES
+    unmetNeedsSupports: ({ name, value }) => {
+      // (ENABLE) [unmetNeedsDescription] "If 'Yes', describe the unmet need:" text box only
+      // (IF)[unmetNeedsSupports] "If 'Yes', will any of those needs..." is YES
 
-      const isYesChecked = wlForms['currentNeeds'].inputs['unmetNeedsHas'].getValue('unmetNeedsHasyes');
-      wlForms['currentNeeds'].inputs['unmetNeedsSupports'].toggleDisabled(isYesChecked);
-      if (isYesChecked) {
-        wlForms['currentNeeds'].inputs['unmetNeedsSupports'].setValue('');
+      wlForms['currentNeeds'].inputs['unmetNeedsDescription'].toggleDisabled(value === 'yes' ? false : true);
+
+      if (value !== 'yes') {
+        wlForms['currentNeeds'].inputs['unmetNeedsDescription'].setValue('');
       }
 
       setConclusionWaiverFunded12Months();
@@ -2454,11 +2483,19 @@ const WaitingListAssessment = (() => {
         rowId,
       );
     });
+
+    backButton.onClick(() => {
+      WaitingListOverview.init({ moduleHeader, moduleBody, selectedConsumer });
+    });
   }
   function loadPage() {
     // Header
-    sendEmailButton.renderTo(moduleHeader);
-    documentsButton.renderTo(moduleHeader);
+    consumerCard.renderTo(moduleHeader);
+    const primaryButtonWrap = _DOM.createElement('div');
+    backButton.renderTo(primaryButtonWrap);
+    sendEmailButton.renderTo(primaryButtonWrap);
+    documentsButton.renderTo(primaryButtonWrap);
+    moduleHeader.appendChild(primaryButtonWrap);
 
     sendEmailForm.renderTo(sendEmailPopup.dialog);
     sendEmailPopup.renderTo(_DOM.ACTIONCENTER);
@@ -2637,9 +2674,24 @@ const WaitingListAssessment = (() => {
       ],
     });
     documentsPopup = new Dialog({ className: 'wlDocumentPopup' });
+
+    // Back to overview
+    backButton = new Button({
+      text: 'Back',
+      style: 'primary',
+      styleType: 'outlined',
+    });
+
+    // consumer card
+    consumerCard = new RosterCard({
+      consumerId: selectedConsumer.id,
+      firstName: selectedConsumer.firstName,
+      middleName: selectedConsumer.middleName,
+      lastName: selectedConsumer.lastName,
+    });
   }
 
-  async function init(opts, isReview = false) {
+  async function init(opts) {
     wlForms = {};
     tocLinks = {};
     wlDocuments = [];
@@ -2647,8 +2699,8 @@ const WaitingListAssessment = (() => {
     wlFormInfo = initFormInfo();
     wlData = mapDataBySection(opts.wlData);
     selectedConsumer = opts.selectedConsumer;
-    moduleHeader = opts.moduleHeaderEle;
-    moduleBody = opts.moduleBodyEle;
+    moduleHeader = opts.moduleHeader;
+    moduleBody = opts.moduleBody;
 
     loadPageSkeleton();
     initComponents();
@@ -2659,6 +2711,7 @@ const WaitingListAssessment = (() => {
 
     if (wlData) {
       enableSectionsForReview();
+      enableInputsForReview();
 
       for (section in wlData) {
         wlForms[section].populate(wlData[section]);
@@ -2689,7 +2742,7 @@ const WaitingListAssessment = (() => {
       return;
     }
 
-    const resp = await insertNewWaitingListAssessment(selectedConsumer);
+    const resp = await insertNewWaitingListAssessment(selectedConsumer.id);
     wlLinkID = resp[0].newRecordId;
     wlFormInfo['waitingListInfo'].id = wlLinkID;
     wlFormInfo['conclusion'].id = wlLinkID;
