@@ -2032,7 +2032,7 @@ const WaitingListAssessment = (() => {
       });
 
       if (hasCheck) {
-        wlForms['physical'].inputs['physicalNeedsIsNone'].setValue(false);
+        wlForms['physical'].inputs['medicalNeedsIsNone'].setValue(false);
       }
 
       const isNotAppChecked = wlForms['medical'].inputs['medicalNeedsIsNone'].getValue();
