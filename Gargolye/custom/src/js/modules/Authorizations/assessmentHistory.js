@@ -1,7 +1,7 @@
 const assessmentHistory = (() => {
     //Inputs
     let filterRow;
-    let assessmentEntriesTable = [];
+    let assessmentEntriesTable;
     let filterPopup;
     var selectedConsumers;
     var selectedConsumersName;
@@ -28,7 +28,12 @@ const assessmentHistory = (() => {
     let priorAuthRecBtnWrap;
     let priorAuthAmtFromBtnWrap;
     let priorAuthAmtToBtnWrap;
-
+    let HistoryData;
+    let groupedHistory;
+    let historyGroupCount;
+    let activeGroup;
+    let loadMoreHistory = [];
+    let chunkedArray;
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
@@ -75,13 +80,18 @@ const assessmentHistory = (() => {
         const filteredBy = buildFilteredBy();
         filterRow.appendChild(filteredBy);
         landingPage.appendChild(filterRow);
-        assessmentEntriesTable = await buildAssessmentEntriesTable(filterValues);
+        assessmentEntriesTable = await buildAssessmentEntriesTable();
+        LOAD_MORE_BTN = buildLoadMoreBtn();
         landingPage.appendChild(assessmentEntriesTable);
+        landingPage.appendChild(LOAD_MORE_BTN);
         DOM.ACTIONCENTER.appendChild(landingPage);
+        document.getElementById('loadMoreBtn').style.display = 'none';
+        loadAssessmentHistoryPage();
+
     }
 
     // build the listing of Assessment Entries (based off of filter settings)
-    async function buildAssessmentEntriesTable(filterValues) {
+    async function buildAssessmentEntriesTable() {
         const tableOptions = {
             plain: false,
             tableId: 'assessmentHistoryTable',
@@ -90,6 +100,10 @@ const assessmentHistory = (() => {
             endIcon: false,
         };
 
+        return table.build(tableOptions);
+    }
+
+    async function loadAssessmentHistoryPage() {
         let assessmentEntries = await authorizationsAjax.getAssessmentEntriesAsync(
             selectedConsumersId,
             filterValues.methodology,
@@ -105,17 +119,58 @@ const assessmentHistory = (() => {
             filterValues.priorAuthAmtFrom,
             filterValues.priorAuthAmtTo,
         );
+        HistoryData = assessmentEntries.getAssessmentEntriesResult;
+        groupHistoryData();
+    }
 
-        let tableData = assessmentEntries.getAssessmentEntriesResult.map((entry) => ({
-            values: [entry.startDate == '' ? '' : moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY'),
+    function populateTable(results) {
+        let tableData = results.map((entry) => ({
+            values: [entry.startDate == '' || entry.startDate == undefined ? '' : moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' || entry.endDate == undefined ? '' : moment(entry.endDate).format('MM/DD/YYYY'),
             entry.methodology, entry.score, entry.behaviorMod, entry.medicalMod, entry.DCMod, entry.CCMod, entry.priorAuthApplied == '' ? '' : moment(entry.priorAuthApplied).format('MM/DD/YYYY'),
             entry.priorAuthReceived == '' ? '' : moment(entry.priorAuthReceived).format('MM/DD/YYYY'), entry.priorAuthAmount == '' ? '' : '$' + numberWithCommas(entry.priorAuthAmount)],
             attributes: [{ key: 'Id', value: entry.ID }],
         }));
-        const oTable = table.build(tableOptions);
-        table.populate(oTable, tableData);
+        table.populate(assessmentEntriesTable, tableData); 
+        if (!groupedHistory[activeGroup + 1]) {
+            document.getElementById('loadMoreBtn').style.display = 'none';
+        }
+        else {
+            document.getElementById('loadMoreBtn').style.display = 'block';
+        }
+    }
 
-        return oTable;
+    function pouplateHistory() {
+        loadMoreHistory = loadMoreHistory.concat(groupedHistory[activeGroup]);
+        populateTable(loadMoreHistory);
+    }
+
+    async function groupHistoryData(history) {
+        const chunkBy = 50;
+        chunkedArray = history ? UTIL.chunkArray(history, chunkBy) : UTIL.chunkArray(HistoryData, chunkBy);
+        groupedHistory = {};
+        chunkedArray.forEach((a, index) => (groupedHistory[index] = a));
+        const vendorKeys = Object.keys(groupedHistory);
+        historyGroupCount = vendorKeys && vendorKeys.length;
+        activeGroup = 0;
+        loadMoreHistory = groupedHistory[activeGroup];
+        populateTable(loadMoreHistory);
+    }
+
+    function buildLoadMoreBtn() {
+        const btnWrap = document.createElement('div');
+        btnWrap.classList.add('loadMoreVendorBtn');
+        const btn = button.build({
+            id: 'loadMoreBtn',
+            text: 'Load More...',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                activeGroup++;
+                pouplateHistory();
+            },
+        });
+        btnWrap.appendChild(btn);
+        return btnWrap;
     }
 
     function numberWithCommas(x) {
@@ -445,11 +500,11 @@ const assessmentHistory = (() => {
             filterValues.priorAuthAmtTo = '';
         }
         if (closeFilter == 'startDateBtn') {
-            filterValues.startDateFrom = '%'; 
+            filterValues.startDateFrom = '%';
             filterValues.startDateTo = '%';
         }
 
-        
+
 
         loadAssessmentHistoryLanding();
     }
