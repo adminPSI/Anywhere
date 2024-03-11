@@ -799,7 +799,7 @@ const WaitingListAssessment = (() => {
           ],
         },
         {
-          id: 'cpaAnticipatedDate',
+          id: 'cpaAnticipateDate',
           type: 'date',
           label: 'Anticipated Date',
           disabled: true,
@@ -1294,7 +1294,7 @@ const WaitingListAssessment = (() => {
       childProtectionAgency: {
         cpaDetermination: assessmentData.cpaDetermination,
         cpaIsReleasedNext12Months: assessmentData.cpaIsReleasedNext12Months,
-        cpaAnticipatedDate: assessmentData.cpaAnticipatedDate ? assessmentData.cpaAnticipatedDate.split(' ')[0] : '',
+        cpaAnticipateDate: assessmentData.cpaAnticipateDate ? assessmentData.cpaAnticipateDate.split(' ')[0] : '',
         cpaHasUnaddressableNeeds: assessmentData.cpaHasUnaddressableNeeds,
       },
       adultDayEmployment: {
@@ -1563,7 +1563,7 @@ const WaitingListAssessment = (() => {
     // childProtectionAgency
     //-------------------------------
     if (wlData.childProtectionAgency.cpaIsReleasedNext12Months.includes('yes')) {
-      wlForms['childProtectionAgency'].inputs['cpaAnticipatedDate'].toggleDisabled(false);
+      wlForms['childProtectionAgency'].inputs['cpaAnticipateDate'].toggleDisabled(false);
     }
 
     // currentNeeds
@@ -1680,7 +1680,7 @@ const WaitingListAssessment = (() => {
       ].includes(formName)
     ) {
       linkIdForSaveUpdate = wlCircID;
-    } else if ('other') {
+    } else if (formName === 'other') {
       linkIdForSaveUpdate = wlCircID;
     } else if (['behavioral', 'physical', 'medical'].includes(formName)) {
       linkIdForSaveUpdate = wlNeedID;
@@ -2371,9 +2371,9 @@ const WaitingListAssessment = (() => {
     intSupIsActionRequiredIn30Days: intermittentSupportsDetermination,
     //* childProtectionAgency
     cpaIsReleasedNext12Months: ({ value }) => {
-      wlForms['childProtectionAgency'].inputs['cpaAnticipatedDate'].toggleDisabled(value === 'yes' ? false : true);
+      wlForms['childProtectionAgency'].inputs['cpaAnticipateDate'].toggleDisabled(value === 'yes' ? false : true);
       if (value !== 'yes') {
-        wlForms['childProtectionAgency'].inputs['cpaAnticipatedDate'].setValue('');
+        wlForms['childProtectionAgency'].inputs['cpaAnticipateDate'].setValue('');
       }
 
       childProtectionAgencyDetermination();
