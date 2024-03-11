@@ -173,7 +173,7 @@
       sectionHeading.appendChild(workingAlertDivCase2);
 
       planValidation.createTooltip(
-        "Each 'Working/Not Working' record must include at least one entry for either 'What's Working' or 'What's Not Working', along with a 'Who Said It?' entry.",
+        "Each record must include at least one 'What's Working' or 'What's Not Working', along with a 'Who Said It?' entry",
         workingAlertDivCase2,
       );
 

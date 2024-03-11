@@ -36,18 +36,27 @@ async function deleteRMData(rmId) {
     const res = await restrictiveMeasuresAjax.deletePlanRestrictiveMeasures(data);
 }
 
-function toggleRestrictiveMeasureQuestionsVisiblity(show) {
+async function toggleRestrictiveMeasureQuestionsVisiblity(show) {
   //const add = document.querySelector('.addSectionBtn');
   
   if (show) {
-    addSectionBtn.style.display = 'block';
-      // Create sections for each data entry
-      rmDataArray.forEach((rmData, index) => {
-          const isFirstSection = index === 0;
-          const newSection = createNewSection(rmData, isFirstSection);
-        
-          rmMainWrap.insertBefore(newSection, addSectionBtn);
+      addSectionBtn.style.display = 'block';
+
+      if (rmDataArray.length === 0) {
+        restrictiveMeasuresSectionID = await restrictiveMeasuresAjax.insertPlanRestrictiveMeasures({
+          token: $.session.Token,
+          assessmentId: planId
       });
+
+      const newSection = createNewSection(null, false, restrictiveMeasuresSectionID.informedConsentId);
+      rmMainWrap.insertBefore(newSection, addSectionBtn);
+    } else {
+        rmDataArray.forEach((rmData, index) => {
+            const isFirstSection = index === 0;
+            const newSection = createNewSection(rmData, isFirstSection);
+            rmMainWrap.insertBefore(newSection, addSectionBtn);
+        });
+    }
   } else {
       const rmSections = document.querySelectorAll('.restrictiveMeasureContainer');
       rmSections.forEach((section, index) => {
@@ -57,6 +66,9 @@ function toggleRestrictiveMeasureQuestionsVisiblity(show) {
               section.remove();
           }
       });
+      rmDataArray.forEach((rmData) => {
+        deleteRMData(rmData.informedConsentId);
+    });
       addSectionBtn.style.display = 'none';
   }
 }
@@ -395,19 +407,18 @@ function toggleRestrictiveMeasureQuestionsVisiblity(show) {
     const newSection = document.createElement('div');
     newSection.classList.add('restrictiveMeasureContainer');
 
-    // Create an object to hold the data for this section
     const sectionData = {
-        token: $.session.Token,
-        informedConsentId: rmData.informedConsentId || insertedRMID,
-        rmIdentified: 'Y',
-        rmHRCDate: rmData.rmHRCDate || '',
-        rmKeepSelfSafe: rmData.rmKeepSelfSafe || '',
-        rmFadeRestriction: rmData.rmFadeRestriction || '',
-        rmWhatCouldHappenGood: rmData.rmWhatCouldHappenGood || '',
-        rmWhatCouldHappenBad: rmData.rmWhatCouldHappenBad || '',
-        rmOtherWayHelpGood: rmData.rmOtherWayHelpGood || '',
-        rmOtherWayHelpBad: rmData.rmOtherWayHelpBad || ''
-    };
+      token: $.session.Token,
+      informedConsentId: rmData?.informedConsentId || insertedRMID,
+      rmIdentified: 'Y',
+      rmHRCDate: rmData?.rmHRCDate || '',
+      rmKeepSelfSafe: rmData?.rmKeepSelfSafe || '',
+      rmFadeRestriction: rmData?.rmFadeRestriction || '',
+      rmWhatCouldHappenGood: rmData?.rmWhatCouldHappenGood || '',
+      rmWhatCouldHappenBad: rmData?.rmWhatCouldHappenBad || '',
+      rmOtherWayHelpGood: rmData?.rmOtherWayHelpGood || '',
+      rmOtherWayHelpBad: rmData?.rmOtherWayHelpBad || ''
+  };  
 
     // Attach the section data to the section element
     newSection.sectionData = sectionData;
@@ -440,8 +451,8 @@ function createAddSectionButton() {
       type: 'contained',
       style: 'secondary',
       classNames: 'addSectionBtn',
-      callback: () => {
-          restrictiveMeasuresSectionID = restrictiveMeasuresAjax.insertPlanRestrictiveMeasures({
+      callback: async () => {
+          restrictiveMeasuresSectionID = await restrictiveMeasuresAjax.insertPlanRestrictiveMeasures({
               token: $.session.Token,
               assessmentId: planId
           });
@@ -478,10 +489,12 @@ function createAddSectionButton() {
     const toggleQuestion = buildToggleQuestions();
     rmMainWrap.appendChild(toggleQuestion);
 
-    if (rmData.rmIdentified === 'Y') {
+    addSectionBtn = createAddSectionButton();
+    rmMainWrap.appendChild(addSectionBtn);
+    addSectionBtn.style.display = 'none';
 
-      addSectionBtn = createAddSectionButton();
-      rmMainWrap.appendChild(addSectionBtn);
+    if (rmData.rmIdentified === 'Y') {
+      addSectionBtn.style.display = 'block';
         // Create sections for each data entry
         rmDataArray.forEach((rmData, index) => {
             const isFirstSection = index === 0;
@@ -530,7 +543,7 @@ function createAddSectionButton() {
         rmData = {
           token: $.session.Token,
             informedConsentId: firstElement.informedConsentId,
-            rmIdentified: firstElement.rmIdentified,
+            rmIdentified: firstElement.rmIdentified === '' ? 'N' : 'Y',
             rmHRCDate: firstElement.rmHRCDate,
             rmKeepSelfSafe: firstElement.rmKeepSelfSafe,
             rmFadeRestriction: firstElement.rmFadeRestriction,

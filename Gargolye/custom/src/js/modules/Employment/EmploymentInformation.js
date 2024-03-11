@@ -211,7 +211,7 @@ const EmploymentInformation = (() => {
                 if (!SAVE_BTN.classList.contains('disabled')) {
                     SAVE_BTN.classList.add('disabled');
                     saveEmployeeInfo()
-                }              
+                }
             },
         });
         CANCEL_BTN = button.build({
@@ -241,7 +241,7 @@ const EmploymentInformation = (() => {
                     consumersName: selectedConsumersName,
                     consumersId: consumersID
                 };
-                if (!addEmployerBtn.classList.contains('disabled')) { 
+                if (!addEmployerBtn.classList.contains('disabled')) {
                     addEditEmployers.buildEmployerPopUp({}, 'insert', 'employmentInfo', redirectInfo);
                 }
             },
@@ -297,7 +297,7 @@ const EmploymentInformation = (() => {
         addEmployerBtn.style.width = '19%';
         if (!$.session.InsertEmployers) {
             addEmployerBtn.classList.add('disabled');
-        } 
+        }
         employerBtnWrap.appendChild(employerDropdown);
         employerBtnWrap.appendChild(addEmployerBtn);
 
@@ -787,7 +787,7 @@ const EmploymentInformation = (() => {
         const { insertEmploymentInfoResult } = result;
         if (insertEmploymentInfoResult.positionID != null) {
             NewEmployment.refreshEmployment(insertEmploymentInfoResult.positionID, employerName, positionName, selectedConsumersName, consumersID, tabPositionIndex = 0);
-        }      
+        }
     }
 
     function CancleValidate() {
@@ -935,7 +935,13 @@ const EmploymentInformation = (() => {
         });
 
         pathToEmploymentStartDate.addEventListener('input', event => {
-            pathToStartDate = event.target.value;
+            if (pathToEmployment != '') {
+                pathToStartDate = event.target.value;
+            }
+            else {
+                document.getElementById('pathToEmploymentStartDate').value = '';
+                pathToStartDate = '';
+            }
             checkRequiredFieldsOfCreateEmploymentPath();
         });
 
@@ -994,7 +1000,7 @@ const EmploymentInformation = (() => {
             POPUP.hide(createPathPopup);
             NewEmployment.refreshEmployment(PositionId, employerName, positionName, selectedConsumersName, consumersID);
 
-        }      
+        }
     }
 
     return {
