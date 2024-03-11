@@ -221,6 +221,18 @@
   };
 
   /**
+   * Handles input click event
+   *
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  Input.prototype.onClick = function (cbFunc) {
+    this.input.addEventListener('click', e => {
+      if (cbFunc) cbFunc(e);
+    });
+  };
+
+  /**
    * Updates the text inside label element
    *
    * @param {String} newValue

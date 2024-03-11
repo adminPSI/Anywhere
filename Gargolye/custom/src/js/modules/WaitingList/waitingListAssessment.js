@@ -1680,7 +1680,9 @@ const WaitingListAssessment = (() => {
       ].includes(formName)
     ) {
       linkIdForSaveUpdate = wlCircID;
-    } else if (['other', 'behavioral', 'physical', 'medical'].includes(formName)) {
+    } else if ('other') {
+      linkIdForSaveUpdate = wlCircID;
+    } else if (['behavioral', 'physical', 'medical'].includes(formName)) {
       linkIdForSaveUpdate = wlNeedID;
     } else {
       linkIdForSaveUpdate = wlLinkID;
@@ -1701,7 +1703,7 @@ const WaitingListAssessment = (() => {
       wlFormInfo[formName].id = resp[0].newRecordId;
     } else {
       await updateAssessmentData({
-        id: wlFormInfo[formName].id,
+        id: formName === 'other' ? wlNeedID : wlFormInfo[formName].id,
         linkId: formName === 'waitingListInfo' || formName === 'conclusion' ? 0 : linkIdForSaveUpdate,
         propertyName: name,
         value: value,
@@ -2421,7 +2423,7 @@ const WaitingListAssessment = (() => {
       // (IF)[waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
 
       wlForms['waiverEnrollment'].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(
-        value === 'yes' ? false : tru,
+        value === 'yes' ? false : true,
       );
       if (value !== 'yes') {
         wlForms['waiverEnrollment'].inputs['waivEnrollWaiverEnrollmentDescription'].setValue('');
@@ -2516,6 +2518,7 @@ const WaitingListAssessment = (() => {
           propertyName: 'getCircumstanceId',
           value: '',
         });
+
         wlCircID = resp[0].newRecordId;
       }
       // get needs id
@@ -2527,6 +2530,7 @@ const WaitingListAssessment = (() => {
           value: '',
         });
         wlNeedID = resp[0].newRecordId;
+        wlFormInfo['other'].id = wlNeedID;
       }
 
       setConclusionUnmetNeeds();

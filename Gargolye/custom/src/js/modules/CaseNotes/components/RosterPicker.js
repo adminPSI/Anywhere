@@ -147,6 +147,10 @@
     this.rosterSearchInput.onChange(e => {
       this._filterConsumersOnSearch(e);
     });
+    this.rosterSearchInput.onClick(e => {
+      console.log(e);
+      // this._filterConsumersOnSearch(e);
+    });
 
     this.rosterCaseLoadInput.onChange(async e => {
       this.groupCode = e.target.checked ? 'CAS' : 'ALL';
