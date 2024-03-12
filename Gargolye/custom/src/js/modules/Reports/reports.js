@@ -15,7 +15,8 @@ const generateReports = (() =>  {
     });
   }
 
-  function passFilterValuesForReport(reportType, filterValues) {
+    function passFilterValuesForReport(reportType, filterValues) {
+    showWarningPopup(reportType);
     generateReportsAjax.generateReport(reportType, filterValues, checkIfReportIsReadyInterval);
   }
 
