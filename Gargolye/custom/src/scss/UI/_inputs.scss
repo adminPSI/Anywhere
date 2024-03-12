@@ -139,9 +139,6 @@ $label_fontSize: $px14;
     &:invalid ~ label::before {
       border-color: $error;
     }
-    &:disabled ~ label {
-      color: $gray;
-    }
     &:disabled ~ label::before {
       border-color: $gray;
       cursor: not-allowed;

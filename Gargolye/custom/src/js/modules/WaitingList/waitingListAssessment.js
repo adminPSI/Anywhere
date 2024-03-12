@@ -1247,16 +1247,16 @@ const WaitingListAssessment = (() => {
     });
   }
   function updateFormCompletionStatus(formName) {
-    const isFormComplete = [
+    const requiredInputs = [
       ...wlForms[formName].form.querySelectorAll(
         'input:required:not([disabled]), select:required:not([disabled]), textarea:required:not([disabled])',
       ),
-    ]
-      .map(input => {
-        const a = input.disabled;
-        return input.checkValidity();
-      })
-      .every(isValid => isValid === true);
+    ];
+
+    let isFormComplete = false;
+    if (requiredInputs.length) {
+      isFormComplete = requiredInputs.map(input => input.checkValidity()).every(isValid => isValid);
+    }
 
     tocLinks[formName].classList.toggle('formComplete', isFormComplete);
   }
@@ -1527,7 +1527,10 @@ const WaitingListAssessment = (() => {
       tocLinks['dischargePlan'].classList.remove('hiddenPage');
     }
 
-    if (!isRMActionRequiredYes || !isNeedActionRequiredYes) {
+    if (
+      (!isRMActionRequiredYes && wlData.riskMitigation.rMIsActionRequiredIn3oDays !== '') ||
+      (!isNeedActionRequiredYes && wlData.other.needsIsActionRequiredRequiredIn30Days !== '')
+    ) {
       wlForms['currentNeeds'].form.parentElement.classList.remove('hiddenPage');
       tocLinks['currentNeeds'].classList.remove('hiddenPage');
     }
