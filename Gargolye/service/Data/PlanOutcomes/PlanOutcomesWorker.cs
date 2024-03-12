@@ -114,7 +114,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             //return allIds;
         }
 
-        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText)
+        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, string[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText)
         {
             var j = 0;
             List<string> resposibilityIds = new List<string>();
@@ -300,7 +300,7 @@ namespace Anywhere.service.Data.PlanOutcomes
                     {
                         string experienceId = "";
                         long respContact = 0;
-                        long respProvider = 0;
+                        string respProvider = "0";
                         long whenFreq = 0;
                         if (outcomes.planOutcomeExperiences[j].outcomeId == outcomes.planOutcome[i].outcomeId)
                         {
@@ -323,11 +323,11 @@ namespace Anywhere.service.Data.PlanOutcomes
                                     }
                                     if (outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].responsibleProvider != null && outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].responsibleProvider != "")
                                     {
-                                        respProvider = long.Parse(outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].responsibleProvider);
+                                        respProvider = outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].responsibleProvider;
                                     }
                                     else
                                     {
-                                        respProvider = 0;
+                                        respProvider = "0";
                                     }
                                     if (outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].whenFrequency != null && outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].whenFrequency != "")
                                     {

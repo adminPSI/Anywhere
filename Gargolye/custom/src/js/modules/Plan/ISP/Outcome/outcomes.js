@@ -673,7 +673,7 @@ const planOutcomes = (() => {
       if (resp.responsibleProvider === '%') {
         respData.responsibleProvider.push(0);
       } else {
-        respData.responsibleProvider.push(parseInt(resp.responsibleProvider));
+        respData.responsibleProvider.push(resp.responsibleProvider);
       }
 
       respData.whenHowOftenFrequency.push(parseInt(resp.whenHowOftenFrequency));
@@ -814,7 +814,7 @@ const planOutcomes = (() => {
       const responsibleContact =
         resp.responsibleContact === '%' ? 0 : parseInt(resp.responsibleContact);
       const responsibleProvider =
-        resp.responsibleProvider === '%' ? 0 : parseInt(resp.responsibleProvider);
+        resp.responsibleProvider === '%' ? 0 : resp.responsibleProvider;
       const whenHowOftenFrequency = parseInt(resp.whenHowOftenFrequency);
       const whenHowOftenValue = resp.whenHowOftenValue;
       const whenHowOftenText = resp.whenHowOftenText;

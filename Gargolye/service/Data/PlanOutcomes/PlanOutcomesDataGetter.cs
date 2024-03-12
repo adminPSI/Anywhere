@@ -232,7 +232,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        public string insertPlanOutcomeExperienceResponsibility(string experienceId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText)
+        public string insertPlanOutcomeExperienceResponsibility(string experienceId, long responsibleContact, string responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText)
         {
 
             logger.debug("insertPlanOutcomesExperiences ");
