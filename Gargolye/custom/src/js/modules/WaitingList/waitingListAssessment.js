@@ -1139,9 +1139,12 @@ const WaitingListAssessment = (() => {
   }
   function updateFormCompletionStatus(formName) {
     const isFormComplete = [
-      ...wlForms[formName].form.querySelectorAll('input:required, select:required, textarea:required'),
+      ...wlForms[formName].form.querySelectorAll(
+        'input:required:not([disabled]), select:required:not([disabled]), textarea:required:not([disabled])',
+      ),
     ]
       .map(input => {
+        const a = input.disabled;
         return input.checkValidity();
       })
       .every(isValid => isValid === true);
@@ -1821,7 +1824,7 @@ const WaitingListAssessment = (() => {
       value: allHaveCheck ? 'yes' : 'no',
       name: 'intSupDetermination',
       type: 'radio',
-      formName: 'intSupDetermination',
+      formName: 'intermittentSupports',
     });
   }
   function icfDischargeDetermination() {
@@ -2468,6 +2471,8 @@ const WaitingListAssessment = (() => {
           if (wlFormInfo[formName].id) {
             formsToDelete.push(`${wlFormInfo[formName].id}|${wlFormInfo[formName].dbtable}`);
             wlFormInfo[formName].id = '';
+            wlForms[formName].clear();
+            tocLinks[formName].classList.remove('formComplete');
           }
         });
 

@@ -1,16 +1,6 @@
 const WaitingListOverview = (() => {
-  //--------------------------
-  // SESSION DATA
-  //--------------------------
   let selectedConsumer;
-  //--------------------------
-  // DOM
-  //--------------------------
-  let moduleWrap;
   let overviewWrap;
-  //--------------------------
-  // UI INSTANCES
-  //--------------------------
   let wlReviewTable;
 
   // DATA
@@ -154,7 +144,6 @@ const WaitingListOverview = (() => {
     await loadPage();
     attachEvents();
   }
-
   async function init(opts) {
     moduleHeader = opts.moduleHeader;
     moduleBody = opts.moduleBody;
