@@ -1071,6 +1071,115 @@ const WaitingListAssessment = (() => {
       ],
     },
   };
+  const sectionResets = {
+    currentAvailableServices: () => {
+      wlForms['currentAvailableServices'].inputs['otherDescription'].toggleDisabled(true);
+    },
+    primaryCaregiver: () => {
+      wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].toggleDisabled(true);
+      wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].toggleDisabled(true);
+      wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(true);
+      wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(true);
+      wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].toggleDisabled(true);
+      wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].toggleDisabled(true);
+    },
+    behavioral: () => {
+      wlForms['behavioral'].inputs['risksFrequencyDescription'].toggleDisabled(true);
+      wlForms['behavioral'].inputs['risksOtherDocumentDescription'].toggleDisabled(true);
+
+      // checkboxes set 1
+      wlForms['behavioral'].inputs['risksIsNone'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksIsPhysicalAggression'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksIsSelfInjury'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksIsFireSetting'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksIsElopement'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksIsSexualOffending'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksIsOther'].toggleDisabled(false);
+      //
+      wlForms['behavioral'].inputs['risksIsNone'].toggleRequired(true);
+      wlForms['behavioral'].inputs['risksIsPhysicalAggression'].toggleRequired(true);
+      wlForms['behavioral'].inputs['risksIsSelfInjury'].toggleRequired(true);
+      wlForms['behavioral'].inputs['risksIsFireSetting'].toggleRequired(true);
+      wlForms['behavioral'].inputs['risksIsElopement'].toggleRequired(true);
+      wlForms['behavioral'].inputs['risksIsSexualOffending'].toggleRequired(true);
+      wlForms['behavioral'].inputs['risksIsOther'].toggleRequired(true);
+      // checkbox set 2
+      wlForms['behavioral'].inputs['risksHasNoDocument'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksHasPoliceReport'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksHasIncidentReport'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksHasBehaviorTracking'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksHasPsychologicalAssessment'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleDisabled(false);
+      //
+      wlForms['behavioral'].inputs['risksHasNoDocument'].toggleRequired(true);
+      wlForms['behavioral'].inputs['risksHasPoliceReport'].toggleRequired(true);
+      wlForms['behavioral'].inputs['risksHasIncidentReport'].toggleRequired(true);
+      wlForms['behavioral'].inputs['risksHasBehaviorTracking'].toggleRequired(true);
+      wlForms['behavioral'].inputs['risksHasPsychologicalAssessment'].toggleRequired(true);
+      wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleRequired(true);
+    },
+    physical: () => {
+      wlForms['physical'].inputs['physicalNeedsDescription'].toggleDisabled(true);
+
+      // checkboxes
+      wlForms['physical'].inputs['physicalNeedsIsNone'].toggleDisabled(false);
+      wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].toggleDisabled(false);
+      wlForms['physical'].inputs['physicalNeedsIsRiskDuringPhysicalCare'].toggleDisabled(false);
+      wlForms['physical'].inputs['physicalNeedsIsOther'].toggleDisabled(false);
+      //
+      wlForms['physical'].inputs['physicalNeedsIsNone'].toggleRequired(true);
+      wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].toggleRequired(true);
+      wlForms['physical'].inputs['physicalNeedsIsRiskDuringPhysicalCare'].toggleRequired(true);
+      wlForms['physical'].inputs['physicalNeedsIsOther'].toggleRequired(true);
+    },
+    medical: () => {
+      wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(true);
+
+      // checkboxes
+      wlForms['medical'].inputs['medicalNeedsIsNone'].toggleDisabled(false);
+      wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].toggleDisabled(false);
+      wlForms['medical'].inputs['medicalNeedsIsOngoingMedicalCare'].toggleDisabled(false);
+      wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].toggleDisabled(false);
+      wlForms['medical'].inputs['medicalNeedsIsOther'].toggleDisabled(false);
+      //
+      wlForms['medical'].inputs['medicalNeedsIsNone'].toggleRequired(true);
+      wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].toggleRequired(true);
+      wlForms['medical'].inputs['medicalNeedsIsOngoingMedicalCare'].toggleRequired(true);
+      wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].toggleRequired(true);
+      wlForms['medical'].inputs['medicalNeedsIsOther'].toggleRequired(true);
+    },
+    other: () => {
+      wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(true);
+      wlForms['other'].inputs['needsIsContinuousSupportRequired'].toggleDisabled(true);
+    },
+    riskMitigation: () => {
+      wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(true);
+      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(true);
+
+      // checkboxes
+      wlForms['riskMitigation'].inputs['rMIsNone'].toggleDisabled(false);
+      wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].toggleDisabled(false);
+      wlForms['riskMitigation'].inputs['rMIsCountyBoardInvestigation'].toggleDisabled(false);
+      wlForms['riskMitigation'].inputs['rMIsLawEnforcementInvestigation'].toggleDisabled(false);
+      wlForms['riskMitigation'].inputs['rMIsOtherInvestigation'].toggleDisabled(false);
+      //
+      wlForms['riskMitigation'].inputs['rMIsNone'].toggleRequired(true);
+      wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].toggleRequired(true);
+      wlForms['riskMitigation'].inputs['rMIsCountyBoardInvestigation'].toggleRequired(true);
+      wlForms['riskMitigation'].inputs['rMIsLawEnforcementInvestigation'].toggleRequired(true);
+      wlForms['riskMitigation'].inputs['rMIsOtherInvestigation'].toggleRequired(true);
+    },
+    childProtectionAgency: () => {
+      wlForms['childProtectionAgency'].inputs['cpaAnticipateDate'].toggleDisabled(true);
+    },
+    currentNeeds: () => {
+      wlForms['currentNeeds'].inputs['unmetNeedsSupports'].toggleDisabled(true);
+      wlForms['currentNeeds'].inputs['unmetNeedsDescription'].toggleDisabled(true);
+    },
+    waiverEnrollment: () => {
+      wlForms['waiverEnrollment'].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(true);
+    },
+  };
 
   // UTILS
   //--------------------------------------------------
@@ -1091,11 +1200,6 @@ const WaitingListAssessment = (() => {
     }
 
     return fieldtype;
-  }
-  function toggleTocLinksDisabledStatus(links, disable) {
-    links.forEach(link => {
-      tocLinks[link].classList.toggle('hiddenPage', disable);
-    });
   }
   function addNewDocumentToList({ documentId, fileName }) {
     const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
@@ -1136,6 +1240,11 @@ const WaitingListAssessment = (() => {
     });
 
     doucmentsList.appendChild(documentItem);
+  }
+  function toggleTocLinksDisabledStatus(links, disable) {
+    links.forEach(link => {
+      tocLinks[link].classList.toggle('hiddenPage', disable);
+    });
   }
   function updateFormCompletionStatus(formName) {
     const isFormComplete = [
@@ -1981,7 +2090,6 @@ const WaitingListAssessment = (() => {
     isPrimaryCaregiverUnavailable: ({ value }) => {
       wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].toggleDisabled(value === 'yes' ? false : true);
-
       wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(value === 'no' ? false : true);
 
       if (value !== 'yes') {
@@ -2251,18 +2359,28 @@ const WaitingListAssessment = (() => {
     },
     //* other
     needsIsActionRequiredRequiredIn30Days: ({ value }) => {
-      const isNeedsActionRequiredYes = value === 'yes' ? true : false;
+      const isNeedsActionRequiredYes = value === 'yes';
       wlForms['other'].inputs['needsIsContinuousSupportRequired'].toggleDisabled(isNeedsActionRequiredYes);
       if (isNeedsActionRequiredYes) {
         wlForms['other'].inputs['needsIsContinuousSupportRequired'].setValue('');
       }
       wlForms['riskMitigation'].form.parentElement.classList.toggle('hiddenPage', isNeedsActionRequiredYes);
       tocLinks['riskMitigation'].classList.toggle('hiddenPage', isNeedsActionRequiredYes);
+      if (isNeedsActionRequiredYes) {
+        if (sectionResets['riskMitigation']) {
+          sectionResets['riskMitigation']();
+        }
+      }
 
       const isRisksActionRequired = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
       const showCurrentNeeds = !isNeedsActionRequiredYes || isRisksActionRequired === 'rMIsActionRequiredIn3oDaysno';
       wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
       tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
+      if (!showCurrentNeeds) {
+        if (sectionResets['currentNeeds']) {
+          sectionResets['currentNeeds']();
+        }
+      }
 
       const isRMChecked = isAnyCheckboxCheckedRiskMitigation();
       const showImmediateNeeds =
@@ -2335,24 +2453,32 @@ const WaitingListAssessment = (() => {
       });
     },
     rMIsActionRequiredIn3oDays: ({ value }) => {
-      const isRisksActionRequired = value === 'yes' ? true : false;
-      wlForms['icfDischarge'].form.parentElement.classList.toggle('hiddenPage', !isRisksActionRequired);
-      wlForms['intermittentSupports'].form.parentElement.classList.toggle('hiddenPage', !isRisksActionRequired);
-      wlForms['childProtectionAgency'].form.parentElement.classList.toggle('hiddenPage', !isRisksActionRequired);
-      wlForms['adultDayEmployment'].form.parentElement.classList.toggle('hiddenPage', !isRisksActionRequired);
-      wlForms['dischargePlan'].form.parentElement.classList.toggle('hiddenPage', !isRisksActionRequired);
-      tocLinks['icfDischarge'].classList.toggle('hiddenPage', !isRisksActionRequired);
-      tocLinks['intermittentSupports'].classList.toggle('hiddenPage', !isRisksActionRequired);
-      tocLinks['childProtectionAgency'].classList.toggle('hiddenPage', !isRisksActionRequired);
-      tocLinks['adultDayEmployment'].classList.toggle('hiddenPage', !isRisksActionRequired);
-      tocLinks['dischargePlan'].classList.toggle('hiddenPage', !isRisksActionRequired);
+      const isRisksActionRequired = value === 'yes';
+      ['icfDischarge', 'intermittentSupports', 'childProtectionAgency', 'adultDayEmployment', 'dischargePlan'].forEach(
+        formName => {
+          wlForms[formName].form.parentElement.classList.toggle('hiddenPage', !isRisksActionRequired);
+          tocLinks[formName].classList.toggle('hiddenPage', !isRisksActionRequired);
+          if (!isRisksActionRequired) {
+            if (sectionResets[formName]) {
+              sectionResets[formName]();
+            }
+          }
+        },
+      );
 
       const isNeedsActionRequired = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
       const isRMChecked = isAnyCheckboxCheckedRiskMitigation();
+
       const showCurrentNeeds =
         !isRisksActionRequired || isNeedsActionRequired === 'needsIsActionRequiredRequiredIn30Daysno';
       wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
       tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
+      if (!showCurrentNeeds) {
+        if (sectionResets['currentNeeds']) {
+          sectionResets['currentNeeds']();
+        }
+      }
+
       const showImmediateNeeds =
         (isRisksActionRequired || isNeedsActionRequired === 'needsIsActionRequiredRequiredIn30Daysyes') && isRMChecked;
       wlForms['immediateNeeds'].form.parentElement.classList.toggle('hiddenPage', !showImmediateNeeds);
@@ -2467,12 +2593,15 @@ const WaitingListAssessment = (() => {
         ].forEach(formName => {
           wlForms[formName].form.parentElement.classList.add('hiddenPage');
           tocLinks[formName].classList.add('hiddenPage');
+          wlForms[formName].clear();
+          tocLinks[formName].classList.remove('formComplete');
+          if (sectionResets[formName]) {
+            sectionResets[formName]();
+          }
 
           if (wlFormInfo[formName].id) {
             formsToDelete.push(`${wlFormInfo[formName].id}|${wlFormInfo[formName].dbtable}`);
             wlFormInfo[formName].id = '';
-            wlForms[formName].clear();
-            tocLinks[formName].classList.remove('formComplete');
           }
         });
 

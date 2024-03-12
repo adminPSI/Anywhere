@@ -10,7 +10,6 @@
 //   e. "Does the individual require funding…" is YES on the Adult Day/Employment page
 //   f. "Does the individual have a viable…" is YES on the Discharge Plan page
 //-----------------------------------------------------------------------------------------------------------------------------------
-
 // IF [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver has a declining or chronic condition or is facing"
 // is answered NO
 //? OR ====================================================
@@ -19,5 +18,6 @@
 // AND [isActionRequiredIn30Days] "Is action required within the next 30 days due to the caregiver's inability to care for the individual?"
 // is answered NO
 //?====================================================
-// THEN [isIndividualSkillsDeclined] "Is there evidence of declining skills the individual has experienced as a result of either the caregiver's" 
+// THEN [isIndividualSkillsDeclined] "Is there evidence of declining skills the individual has experienced as a result of either the caregiver's"
 // should be enabled.
+
