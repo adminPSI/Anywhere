@@ -1978,6 +1978,7 @@ const WaitingListAssessment = (() => {
     isPrimaryCaregiverUnavailable: ({ value }) => {
       wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].toggleDisabled(value === 'yes' ? false : true);
+
       wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(value === 'no' ? false : true);
 
       if (value !== 'yes') {
@@ -1995,9 +1996,12 @@ const WaitingListAssessment = (() => {
     },
     isActionRequiredIn30Days: ({ value }) => {
       wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(value === 'yes' ? false : true);
+      wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(value === 'no' ? false : true);
 
       if (value !== 'yes') {
         wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].setValue('');
+      } else {
+        wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].setValue('');
       }
     },
     isIndividualSkillsDeclined: ({ value }) => {
