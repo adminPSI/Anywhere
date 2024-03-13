@@ -543,7 +543,7 @@ function createAddSectionButton() {
         rmData = {
           token: $.session.Token,
             informedConsentId: firstElement.informedConsentId,
-            rmIdentified: firstElement.rmIdentified === '' ? 'N' : 'Y',
+            rmIdentified: firstElement.rmIdentified === '' || firstElement.rmIdentified === 'N' ? 'N' : 'Y',
             rmHRCDate: firstElement.rmHRCDate,
             rmKeepSelfSafe: firstElement.rmKeepSelfSafe,
             rmFadeRestriction: firstElement.rmFadeRestriction,
