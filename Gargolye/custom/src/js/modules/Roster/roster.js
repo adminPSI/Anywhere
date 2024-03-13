@@ -1089,6 +1089,11 @@ const roster2 = (function () {
         //buttons need to be disabled. This will need to
         // be modified if more modules need these buttons disabled
 
+        toggleActionCenterChildrenVisiblity('hide');
+
+        MINI_ROSTER_POPUP = buildMiniRosterPopup(rosterMarkup);
+        DOM.ACTIONCENTER.appendChild(MINI_ROSTER_POPUP);
+        buildActioNav();
         if (
             $.loadedApp === 'outcomes' ||
             $.loadedApp === 'plan' ||
@@ -1099,17 +1104,15 @@ const roster2 = (function () {
             $.loadedApp === 'forms' ||
             $.loadedApp === 'assessmentHistory' ||
             activeSection === 'caseNotesSSA-new' ||
-            activeSection === 'caseNotes-new'
+            activeSection === 'caseNotes-new' ||
+            $.loadedApp === 'authorizations'
         ) {
             SELECT_ALL_BTN.classList.add('disabled');
             DESELECT_ALL_BTN.classList.add('disabled');
-        }
-        toggleActionCenterChildrenVisiblity('hide');
-
-        MINI_ROSTER_POPUP = buildMiniRosterPopup(rosterMarkup);
-        DOM.ACTIONCENTER.appendChild(MINI_ROSTER_POPUP);
-        buildActioNav();
-    }
+            MINI_ROSTER_DONE.style.display = 'none';
+            MINI_ROSTER_CANCEL.style.display = 'none';
+        }     
+    } 
     /**
      * Initializes the mini roster. Removes the mini roster button, and re-adds it with new settings.
      * @param {Object} locationData - Location information Object. Only use if you need to bypass the roster's default location.
@@ -1362,10 +1365,9 @@ const roster2 = (function () {
                 $.loadedApp === 'covid' ||
                 $.loadedApp === 'forms' ||
                 $.loadedApp === 'assessmentHistory' ||
-                // $.loadedApp === 'OOD' ||
                 activeSection === 'caseNotesSSA-new' ||
                 activeSection === 'caseNotes-new'
-            ) {
+            ) {              
                 // add modules that only allow one consumer
                 if (isConsumerSelected) {
                     consumer.classList.remove('consumer-selected');
@@ -1382,7 +1384,11 @@ const roster2 = (function () {
                     consumer.classList.add('consumer-selected');
                     consumer.classList.add('highlighted');
                     addConsumerToSelectedConsumers(consumer);
-                }
+                } 
+
+                // only one consumer selection page rediret to main page without done button
+                MINI_ROSTER_DONE.setAttribute('data-action-nav', 'miniRosterDone');
+                MINI_ROSTER_DONE.click(); 
             } else {
                 if (!isConsumerSelected) {
                     addConsumerToSelectedConsumers(consumer);
@@ -1403,14 +1409,14 @@ const roster2 = (function () {
                     doneBtn.classList.add('disabled');
                 }
                 return;
-            }
+            }          
 
             if (selectedConsumers.length > 0) {
                 MINI_ROSTER_DONE.classList.remove('disabled');
             } else {
                 MINI_ROSTER_DONE.classList.add('disabled');
             }
-        });
+        }); 
 
         SELECT_ALL_BTN.addEventListener('click', event => {
             var consumers = [].slice.call(ROSTER_WRAP.querySelectorAll('.consumerCard:not(.highlighted)'));
