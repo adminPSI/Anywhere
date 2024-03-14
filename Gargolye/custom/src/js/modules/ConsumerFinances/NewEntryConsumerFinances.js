@@ -1289,6 +1289,7 @@ const NewEntryCF = (() => {
             style: 'secondary',
             type: 'contained',
             callback: () => {
+                cancelSplitBtn.classList.remove('disabled'); 
                 if (errorCode == 1) {
                     POPUP.hide(errorConfPOPUP);
                     POPUP.hide(splitTransPopup);
@@ -1307,6 +1308,7 @@ const NewEntryCF = (() => {
             style: 'secondary',
             type: 'outlined',
             callback: () => {
+                cancelSplitBtn.classList.remove('disabled');
                 if (errorCode == 1) {
                     POPUP.hide(errorConfPOPUP);
                     POPUP.show(splitTransPopup);
@@ -1333,6 +1335,7 @@ const NewEntryCF = (() => {
         errorConfPOPUP.appendChild(message);
         errorConfPOPUP.appendChild(btnWrap);
         POPUP.show(errorConfPOPUP);
+        cancelSplitBtn.classList.add('disabled');
     }
 
     async function splitTransSaveData() {

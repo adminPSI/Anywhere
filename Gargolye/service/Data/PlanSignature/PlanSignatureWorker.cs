@@ -208,13 +208,13 @@ namespace Anywhere.service.Data.PlanSignature
 
                     return sigObjPeop;
                 }
-                //if (salesforceId == "")
+                if (salesforceId == "")
+                {
+                //if (teamMember == "Guardian" || teamMember == "Parent/Guardian" || teamMember == "Case Manager")
                 //{
-                if (teamMember == "Guardian" || teamMember == "Parent/Guardian" || teamMember == "Case Manager")
-                {
-                    // don't make call to Salesforce
-                } else
-                {
+                //    // don't make call to Salesforce
+                //} else
+                //{
                     newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
 
                     if (newSalesForceId != null)
@@ -225,8 +225,8 @@ namespace Anywhere.service.Data.PlanSignature
                     {
                         salesforceId = "";
                     }
-                }                
-                //}
+                //}                
+                }
                 if (createRelationship == "T")
                 {
 
