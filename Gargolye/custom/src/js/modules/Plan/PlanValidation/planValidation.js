@@ -667,7 +667,7 @@ const planValidation = (function () {
       const paidSupportsIds = outcomesData.paidSupports.map(obj => obj.providerId);
       IspValidationCheck.paidSupportsProviders = paidSupportsIds;
 
-      const invalidProviders = (IspValidationCheck.selectedProviders).filter(number => number !== "" && number !== "%" && !(IspValidationCheck.paidSupportsProviders).includes(number));
+      const invalidProviders = (IspValidationCheck.selectedProviders).filter(number => number !== "" && number !== "%" && !(IspValidationCheck.paidSupportsProviders).includes(number) && !number.endsWith('L'));
       IspValidationCheck.invalidProviders = invalidProviders;
   
       // get a list of the unique outcomeIds
@@ -938,7 +938,12 @@ const planValidation = (function () {
       const secondValues = (validationCheck.paidSupportsProviders).map(obj => obj.value);
 
       // Create a list of values from the first array that don't exist in the second array
-      const invalidProviders = validationCheck.selectedProviders.filter(value => value !== '' && value !== '%' && !secondValues.includes(value));
+      const invalidProviders = validationCheck.selectedProviders.filter(value => 
+        value !== '' && 
+        value !== '%' && 
+        !secondValues.includes(value) && 
+        !value.endsWith('L')
+      );
       
       validationCheck.invalidProviders = invalidProviders;
       return validationCheck;

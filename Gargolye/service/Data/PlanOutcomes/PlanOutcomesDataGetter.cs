@@ -256,7 +256,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        public string updatePlanOutcomeExperienceResponsibility(long responsibilityId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText)
+        public string updatePlanOutcomeExperienceResponsibility(long responsibilityId, long responsibleContact, string responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText)
         {
 
             logger.debug("insertPlanOutcomesExperiences ");
