@@ -849,7 +849,7 @@ const WaitingListAssessment = (() => {
           id: 'rwfNeedsServiceNotMetIDEA',
           required: true,
           groupLabel:
-            'Are thhe needed services beyond what is available to the individual through the local school district / Individuals with Disabilities Education Act?',
+            'Are the needed services beyond what is available to the individual through the local school district / Individuals with Disabilities Education Act?',
           fields: [
             { type: 'radio', label: 'Yes', value: 'yes', id: 'rwfNeedsServiceNotMetIDEAyes' },
             { type: 'radio', label: 'No', value: 'no', id: 'rwfNeedsServiceNotMetIDEAno' },
@@ -1911,7 +1911,7 @@ const WaitingListAssessment = (() => {
     const needsIsActionDisabled = (hasCheckBehaviorOne && hasCheckBehaviorTwo) || hasCheckPhysical || hasCheckMedical;
     wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!needsIsActionDisabled);
   }
-  function intermittentSupportsDetermination() {
+  async function intermittentSupportsDetermination() {
     // AI FIELD
     // (SET) [intSupDetermination] "Does the individual have an..." to "YES"
     // (IF) all radio - button answers on this page are "Yes"..Otherwise, set to "NO"
@@ -1932,14 +1932,16 @@ const WaitingListAssessment = (() => {
     const inputId = allHaveCheck ? 'intSupDeterminationyes' : 'intSupDeterminationno';
 
     wlForms['intermittentSupports'].inputs['intSupDetermination'].setValue(inputId);
-    insertUpdateAssessment({
+    await insertUpdateAssessment({
       value: allHaveCheck ? 'yes' : 'no',
       name: 'intSupDetermination',
       type: 'radio',
       formName: 'intermittentSupports',
     });
+
+    currentNeedsDetermination();
   }
-  function icfDischargeDetermination() {
+  async function icfDischargeDetermination() {
     // AI FIELD
     // (SET) [icfDetermination] "Is the individual a resident..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
 
@@ -1953,14 +1955,14 @@ const WaitingListAssessment = (() => {
     const inputId = allHaveCheck ? 'icfDeterminationyes' : 'icfDeterminationno';
 
     wlForms['icfDischarge'].inputs['icfDetermination'].setValue(inputId);
-    insertUpdateAssessment({
+    await insertUpdateAssessment({
       value: allHaveCheck ? 'yes' : 'no',
       name: 'icfDetermination',
       type: 'radio',
       formName: 'icfDischarge',
     });
   }
-  function childProtectionAgencyDetermination() {
+  async function childProtectionAgencyDetermination() {
     // AI FIELD
     // (SET) [cpaDetermination] "Is the individual reaching..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
 
@@ -1973,14 +1975,16 @@ const WaitingListAssessment = (() => {
     const inputId = allHaveCheck ? 'cpaDeterminationyes' : 'cpaDeterminationno';
 
     wlForms['childProtectionAgency'].inputs['cpaDetermination'].setValue(inputId);
-    insertUpdateAssessment({
+    await insertUpdateAssessment({
       value: allHaveCheck ? 'yes' : 'no',
       name: 'cpaDetermination',
       type: 'radio',
       formName: 'childProtectionAgency',
     });
+
+    currentNeedsDetermination();
   }
-  function adultDayEmploymentDetermination() {
+  async function adultDayEmploymentDetermination() {
     // AI FIELD
     // (SET) [rwfWaiverFundingRequired] "Does the individual require..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
 
@@ -1994,14 +1998,16 @@ const WaitingListAssessment = (() => {
     const inputId = allHaveCheck ? 'rwfWaiverFundingRequiredyes' : 'rwfWaiverFundingRequiredno';
 
     wlForms['adultDayEmployment'].inputs['rwfWaiverFundingRequired'].setValue(inputId);
-    insertUpdateAssessment({
+    await insertUpdateAssessment({
       value: allHaveCheck ? 'yes' : 'no',
       name: 'rwfWaiverFundingRequired',
       type: 'radio',
       formName: 'adultDayEmployment',
     });
+
+    currentNeedsDetermination();
   }
-  function dischargePlanDetermination() {
+  async function dischargePlanDetermination() {
     // AI FIELD
     // (SET) [dischargeDetermination] "Does the individual have a viable..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
 
@@ -2015,12 +2021,68 @@ const WaitingListAssessment = (() => {
     const inputId = allHaveCheck ? 'dischargeDeterminationyes' : 'dischargeDeterminationno';
 
     wlForms['dischargePlan'].inputs['dischargeDetermination'].setValue(inputId);
-    insertUpdateAssessment({
+    await insertUpdateAssessment({
       value: allHaveCheck ? 'yes' : 'no',
       name: 'dischargeDetermination',
       type: 'radio',
       formName: 'dischargePlan',
     });
+
+    currentNeedsDetermination();
+  }
+  async function currentNeedsDetermination() {
+    const isPrimaryCaregiverUnavailable =
+      wlForms['primaryCaregiver'].inputs['isPrimaryCaregiverUnavailable'].getValue();
+    const isActionRequiredIn30Days = wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].getValue();
+    const isIndividualSkillsDeclined = wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].getValue();
+    const risksIsRiskToSelf = wlForms['behavioral'].inputs['risksIsRiskToSelf'].getValue();
+    const physicalNeedsIsPhysicalCareNeeded =
+      wlForms['physical'].inputs['physicalNeedsIsPhysicalCareNeeded'].getValue();
+    const medicalNeedsIsLifeThreatening = wlForms['medical'].inputs['medicalNeedsIsLifeThreatening'].getValue();
+    const needsIsContinuousSupportRequired = wlForms['other'].inputs['needsIsContinuousSupportRequired'].getValue();
+    const intSupDetermination = wlForms['intermittentSupports'].inputs['intSupDetermination'].getValue();
+    const cpaDetermination = wlForms['childProtectionAgency'].inputs['cpaDetermination'].getValue();
+    const rwfWaiverFundingRequired = wlForms['adultDayEmployment'].inputs['rwfWaiverFundingRequired'].getValue();
+    const dischargeDetermination = wlForms['dischargePlan'].inputs['dischargeDetermination'].getValue();
+    const unmetNeedsHas = wlForms['currentNeeds'].inputs['unmetNeedsHas'].getValue();
+
+    const conditions = [
+      isPrimaryCaregiverUnavailable.includes('yes') && isActionRequiredIn30Days.includes('no'),
+      isPrimaryCaregiverUnavailable.includes('no') && isIndividualSkillsDeclined.includes('yes'),
+      risksIsRiskToSelf.includes('yes'),
+      physicalNeedsIsPhysicalCareNeeded.includes('yes'),
+      medicalNeedsIsLifeThreatening.includes('yes') && needsIsContinuousSupportRequired.includes('yes'),
+      intSupDetermination.includes('yes'),
+      cpaDetermination.includes('yes'),
+      rwfWaiverFundingRequired.includes('yes'),
+      dischargeDetermination.includes('yes'),
+    ];
+
+    for (const condition of conditions) {
+      if (condition) {
+        if (unmetNeedsHas.includes('no')) {
+          wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasyes');
+          await insertUpdateAssessment({
+            value: 'yes',
+            name: 'unmetNeedsHas',
+            type: 'radio',
+            formName: 'currentNeeds',
+          });
+        }
+
+        return;
+      }
+    }
+
+    if (unmetNeedsHas.includes('yes')) {
+      wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasno');
+      await insertUpdateAssessment({
+        value: 'no',
+        name: 'unmetNeedsHas',
+        type: 'radio',
+        formName: 'currentNeeds',
+      });
+    }
   }
 
   //--------------------------------------------------
@@ -2107,6 +2169,8 @@ const WaitingListAssessment = (() => {
         wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].toggleDisabled(true);
         wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].toggleDisabled(true);
       }
+
+      currentNeedsDetermination();
     },
     isActionRequiredIn30Days: ({ value }) => {
       wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(value === 'yes' ? false : true);
@@ -2117,6 +2181,8 @@ const WaitingListAssessment = (() => {
       } else {
         wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].setValue('');
       }
+
+      currentNeedsDetermination();
     },
     isIndividualSkillsDeclined: ({ value }) => {
       wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].toggleDisabled(value === 'yes' ? false : true);
@@ -2126,6 +2192,8 @@ const WaitingListAssessment = (() => {
         wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].setValue('');
         wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].setValue('');
       }
+
+      currentNeedsDetermination();
     },
     //* behavioral
     risksIs: () => {
@@ -2165,6 +2233,7 @@ const WaitingListAssessment = (() => {
       wlForms['behavioral'].inputs['risksIsOther'].toggleRequired(isRequired);
 
       needsOtherCheck();
+      currentNeedsDetermination();
     },
     risksHas: ({ name, value }) => {
       const hasCheck = isAnyCheckboxCheckedBehaviors();
@@ -2195,6 +2264,7 @@ const WaitingListAssessment = (() => {
       wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleRequired(isRequired);
 
       needsOtherCheck();
+      currentNeedsDetermination();
     },
     risksIsNone: ({ value }) => {
       [
@@ -2286,6 +2356,7 @@ const WaitingListAssessment = (() => {
       wlForms['physical'].inputs['physicalNeedsIsOther'].toggleRequired(isRequired);
 
       needsOtherCheck();
+      currentNeedsDetermination();
     },
     physicalNeedsIsNone: ({ value }) => {
       ['physicalNeedsIsPersonalCareNeeded', 'physicalNeedsIsRiskDuringPhysicalCare', 'physicalNeedsIsOther'].forEach(
@@ -2339,6 +2410,7 @@ const WaitingListAssessment = (() => {
       wlForms['medical'].inputs['medicalNeedsIsOther'].toggleRequired(isRequired);
 
       needsOtherCheck();
+      currentNeedsDetermination();
     },
     medicalNeedsIsNone: ({ value }) => {
       [
@@ -2390,6 +2462,9 @@ const WaitingListAssessment = (() => {
         (isNeedsActionRequiredYes || isRisksActionRequired === 'rMIsActionRequiredIn3oDaysyes') && isRMChecked;
       wlForms['immediateNeeds'].form.parentElement.classList.toggle('hiddenPage', !showImmediateNeeds);
       tocLinks['immediateNeeds'].classList.toggle('hiddenPage', !showImmediateNeeds);
+    },
+    needsIsContinuousSupportRequired: () => {
+      currentNeedsDetermination();
     },
     //* riskMitigation
     rMIs: () => {
