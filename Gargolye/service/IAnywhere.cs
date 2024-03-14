@@ -3295,7 +3295,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertPlanOutcomesReview/")]
-        string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, long[] contactId);
+        string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, string[] contactId);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,

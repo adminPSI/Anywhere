@@ -2347,7 +2347,7 @@ namespace Anywhere
             return poW.updatePlanOutcomeExperienceResponsibility(responsibilityIds, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText);
         }
 
-        public string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, long[] contactId)
+        public string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, string[] contactId)
         {
             return poW.insertPlanOutcomesReview(outcomeId, whatWillHappen, whenToCheckIn, whoReview, reviewOrder, contactId);
         }

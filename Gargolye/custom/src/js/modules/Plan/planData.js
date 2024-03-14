@@ -455,7 +455,7 @@ const planData = (() => {
     groupDropdownData.push(teamMemberGroup);
     groupDropdownData.push(nonTeamMemberGroup);
 
-    if (includeSupports) {
+    if (includeSupports)  {
       const supportData = servicesSupports.getSelectedVendors();
       paidSupportsGroup.dropdownValues = supportData.map(ps => {
         return {
@@ -471,7 +471,7 @@ const planData = (() => {
         return textA < textB ? -1 : textA > textB ? 1 : 0;
       });
       groupDropdownData.push(paidSupportsGroup);
-    }
+   }
 
     dropdown.groupingPopulate({
       dropdown: dropdownEle,
@@ -513,6 +513,91 @@ const planData = (() => {
     //   dropdown.populate(dropdownEle, removeDups(data), defaultValue);
     // }
   }
+
+  async function populateOutcomesReviewWhoDropdown(dropdownEle, defaultValue) {
+    //if ($.session.areInSalesForce) {
+    // group populate
+    const teamMemberGroup = {
+      groupLabel: 'Plan Team Member',
+      groupId: 'teamMemberGroup',
+      dropdownValues: [],
+    };
+    const nonTeamMemberGroup = {
+      groupLabel: 'Not a Team Member on this Plan',
+      groupId: 'nonTeamMemberGroup',
+      dropdownValues: [],
+    };
+    const paidSupportsGroup = {
+      groupLabel: 'Providers on this Plan',
+      groupId: 'paidSupportsGroup',
+      dropdownValues: [],
+    };
+
+    dropdowns.relationships.forEach(dd => {
+      if (dd.signatureId) {
+        teamMemberGroup.dropdownValues.push({
+          value: dd.contactId,
+          text: `${dd.lastName}, ${dd.firstName}`,
+        });
+      } else {
+        nonTeamMemberGroup.dropdownValues.push({
+          value: dd.contactId,
+          text: `${dd.lastName}, ${dd.firstName}`,
+        });
+      }
+    });
+
+    teamMemberGroup.dropdownValues = removeDups(teamMemberGroup.dropdownValues);
+    nonTeamMemberGroup.dropdownValues = removeDups(nonTeamMemberGroup.dropdownValues);
+
+    teamMemberGroup.dropdownValues.sort((a, b) => {
+      const textA = a.text.toUpperCase();
+      const textB = b.text.toUpperCase();
+      return textA < textB ? -1 : textA > textB ? 1 : 0;
+    });
+    nonTeamMemberGroup.dropdownValues.sort((a, b) => {
+      const textA = a.text.toUpperCase();
+      const textB = b.text.toUpperCase();
+      return textA < textB ? -1 : textA > textB ? 1 : 0;
+    });
+
+    const groupDropdownData = [];
+    groupDropdownData.push(teamMemberGroup);
+    groupDropdownData.push(nonTeamMemberGroup);
+
+      const teamMemberData = await consentAndSignAjax.getConsentAndSignData({
+        token: $.session.Token,
+        assessmentId: planId,
+      });
+
+     // var theseVendors = teamMemberData.filter(vendor => vendor.vendorId !== '' && vendor.salesForceId !== '');
+      var theseVendors = teamMemberData.filter(vendor => vendor.vendorId !== '');
+
+      paidSupportsGroup.dropdownValues = theseVendors.map(ps => {
+        return {
+          value: `${ps.vendorId}V`,
+          text: ps.name,
+        };
+      });
+
+      paidSupportsGroup.dropdownValues = removeDups(paidSupportsGroup.dropdownValues);
+      paidSupportsGroup.dropdownValues.sort((a, b) => {
+        const textA = a.text.toUpperCase();
+        const textB = b.text.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
+      groupDropdownData.push(paidSupportsGroup);
+  // }
+
+    dropdown.groupingPopulate({
+      dropdown: dropdownEle,
+      data: groupDropdownData,
+      nonGroupedData: [{ value: '', text: '' }],
+      defaultVal: defaultValue,
+    });
+    
+  }
+
   async function init(planID) {
     planId = planID;
     await setDropdownData();
@@ -527,6 +612,7 @@ const planData = (() => {
     getAllISPcharacterLimts,
     getAssessmentCharacterLimits,
     populateRelationshipDropdown,
+    populateOutcomesReviewWhoDropdown,
     refreshDropdownData,
   };
 })();
