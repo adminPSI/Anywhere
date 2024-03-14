@@ -5040,7 +5040,15 @@ namespace Anywhere
                BodyStyle = WebMessageBodyStyle.Wrapped,
                ResponseFormat = WebMessageFormat.Json,
                RequestFormat = WebMessageFormat.Json,
-               UriTemplate = "/getContactValidationData/")]
+               UriTemplate = "/getSummaryRiskValidationData/")]
+        PlanValidationWorker.SummaryRiskValidation[] getSummaryRiskValidationData(string token, string planId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
+               UriTemplate = "/getSummaryVa/")]
         PlanValidationWorker.ContactValidationData[] getContactValidationData(string token, string planId);
 
         [OperationContract]

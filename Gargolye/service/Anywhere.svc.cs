@@ -3777,6 +3777,11 @@ namespace Anywhere
             return pv.getContactValidationData(token, planId);
         }
 
+        public PlanValidationWorker.SummaryRiskValidation[] getSummaryRiskValidationData(string token, string planId)
+        {
+            return pv.getSummaryRiskValidationData(token, planId);
+        }
+
         public PlanValidationWorker.ServicesAndSupports getAssessmentValidationData(string token, string planId)
         {
             return pv.getAssessmentValidationData(token, planId);
