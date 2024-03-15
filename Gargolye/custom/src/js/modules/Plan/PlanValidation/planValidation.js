@@ -87,7 +87,8 @@ const planValidation = (function () {
       selectedProviders: [],
       paidSupportsProviders: [],
       invalidProviders: [],
-      contactSectionComplete: true
+      contactSectionComplete: true,
+      summaryRisksValidation: true
     };
 
     let contactsValidation = {
@@ -731,7 +732,9 @@ const planValidation = (function () {
       checkAllOutcomesComplete(IspValidationCheck);
 
       ispValidationContactCheck();
-  
+      
+      await summaryRisksValidationCheck();
+
       //IspValidationCheck = validationCheck;
       return IspValidationCheck;
     }
@@ -966,9 +969,74 @@ const planValidation = (function () {
         });
       }
     }
+
+    // Summary Risks
+    async function summaryRisksValidationCheck() {
+      let summaryValidationData = await planValidationAjax.getSummaryRiskValidationData(planId);
+  
+      let groupedByQuestionSetId = summaryValidationData.reduce((acc, obj) => {
+          const key = obj.QuestionSetId;
+          (acc[key] ? acc[key] : (acc[key] = [])).push(obj);
+          return acc;
+      }, {});
+  
+      // Check if any answer in the group is null or empty
+      function hasNullOrEmptyAnswer(group) {
+          return group.some(item => item.Answer === '' || item.Answer === null || item.Answer === '%');
+      }
+  
+      // Iterate over each group and perform the necessary checks
+      for (let group of Object.values(groupedByQuestionSetId)) {
+          // Check if there is at least one non-empty answer for the specified question text
+          let hasNonEmptyAnswer = group.some(item => item.Answer !== '' && item.QuestionText === 'What is the risk, what it looks like, where it occurs:');
+          if (hasNonEmptyAnswer) {
+              // If there's a non-empty answer for the specified question text,
+              // check if any other answer in the group is null or empty
+              let hasNullOrEmpty = hasNullOrEmptyAnswer(group);
+              if (hasNullOrEmpty) {
+                  // If any answer is null or empty, set the flag and exit the function
+                  IspValidationCheck.summaryRisksValidation = false;
+                  return;
+              }
+          }
+      }
+  
+      // If no null or empty answers were found, set the flag to true
+      IspValidationCheck.summaryRisksValidation = true;
+    }
+  
+
+    function returnSummaryRisksValidation() {
+      return IspValidationCheck.summaryRisksValidation;
+    }
+
+    function setSummaryRiskValidation(hasErrors) {
+      IspValidationCheck.summaryRisksValidation = hasErrors;
+    }
+
+    async function alertCheckSummaryRisksValidation() {
+      const ISPAlertDiv = document.getElementById('navAlertISP');
+      const summaryAlertDiv = document.querySelector('.summaryAlertDiv');
+
+      if (summaryAlertDiv && IspValidationCheck.summaryRisksValidation) {
+        summaryAlertDiv.style.display = 'flex';
+      } else if (summaryAlertDiv) {
+        summaryAlertDiv.style.display = 'none';
+      }
+
+      const isEverythingComplete = await ISPValidation(planId);
+
+      if (ISPAlertDiv && (!isEverythingComplete.complete || !isEverythingComplete.contactSectionComplete || !isEverythingComplete.summaryRisksValidation)) {
+        ISPAlertDiv.style.display = 'flex';
+      } else if (ISPAlertDiv) {
+        ISPAlertDiv.style.display = 'none';
+      }
+    }
   
     async function init(newPlanId) {
       planId = newPlanId;
+
+      //await summaryRisksValidationCheck(planId);
 
       await contactsValidationCheck(planId);
       
@@ -1005,6 +1073,10 @@ const planValidation = (function () {
       checkExperiencesAfterAddingNewPaidSupport,
       contactsValidationCheck,
       getContactValidation,
+      returnSummaryRisksValidation,
+      setSummaryRiskValidation,
+      alertCheckSummaryRisksValidation,
+      summaryRisksValidationCheck,
       init,
     };
   })();
