@@ -5048,7 +5048,7 @@ namespace Anywhere
                BodyStyle = WebMessageBodyStyle.Wrapped,
                ResponseFormat = WebMessageFormat.Json,
                RequestFormat = WebMessageFormat.Json,
-               UriTemplate = "/getSummaryVa/")]
+               UriTemplate = "/getContactValidationData/")]
         PlanValidationWorker.ContactValidationData[] getContactValidationData(string token, string planId);
 
         [OperationContract]
