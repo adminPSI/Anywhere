@@ -2060,29 +2060,26 @@ const WaitingListAssessment = (() => {
 
     for (const condition of conditions) {
       if (condition) {
-        if (unmetNeedsHas.includes('no')) {
-          wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasyes');
-          await insertUpdateAssessment({
-            value: 'yes',
-            name: 'unmetNeedsHas',
-            type: 'radio',
-            formName: 'currentNeeds',
-          });
-        }
+        wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasyes');
+        await insertUpdateAssessment({
+          value: 'yes',
+          name: 'unmetNeedsHas',
+          type: 'radio',
+          formName: 'currentNeeds',
+        });
 
         return;
       }
     }
 
-    if (unmetNeedsHas.includes('yes')) {
-      wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasno');
-      await insertUpdateAssessment({
-        value: 'no',
-        name: 'unmetNeedsHas',
-        type: 'radio',
-        formName: 'currentNeeds',
-      });
-    }
+    wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasno');
+    await insertUpdateAssessment({
+      value: 'no',
+      name: 'unmetNeedsHas',
+      type: 'radio',
+      formName: 'currentNeeds',
+    });
+    
   }
 
   //--------------------------------------------------
