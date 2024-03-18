@@ -20,6 +20,10 @@
         }
     }
 
+    .errorRow {
+        border: 3px solid red;
+      }
+
     .endIcon,
     .copyIcon {
         flex-grow: 0;
@@ -83,7 +87,7 @@
     }
 
     &__row:last-child {
-        border-bottom: 0;
+        //border-bottom: 0;
     }
 
     &__row.header {

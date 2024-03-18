@@ -1648,7 +1648,8 @@ const planOutcomes = (() => {
     const whenToCheckIn = saveData.whenToCheckIn;
     const whoReview = saveData.whoReview;
     const reviewOrder = `${saveData.reviewOrder}`;
-    const contactId = parseInt(saveData.contactId);
+   // const contactId = parseInt(saveData.contactId);
+   const contactId = saveData.contactId;
 
     const reviewId = await planOutcomesAjax.insertPlanOutcomesReview({
       token: $.session.Token,
@@ -1838,7 +1839,8 @@ const planOutcomes = (() => {
     });
     // Who Review
     const whoReviewDropdown = dropdown.build({
-      dropdownId: '',
+      dropdownId: 'whoReviewDropdown',
+      id: 'whoReviewDropdown',
       label: 'Who?',
       style: 'secondary',
       callback: (e, selectedOption) => {
@@ -1993,7 +1995,8 @@ const planOutcomes = (() => {
     reviewsPopup.appendChild(btnWrap);
 
     //populateReviewsWhoDropdown(whoReviewDropdown, saveUpdateData.contactId);
-    planData.populateRelationshipDropdown(whoReviewDropdown, saveUpdateData.contactId);
+   // planData.populateRelationshipDropdown(whoReviewDropdown, saveUpdateData.contactId);
+    planData.populateOutcomesReviewWhoDropdown(whoReviewDropdown, saveUpdateData.contactId);
 
     populatewhenToCheckinDropdown(whenToCheckinDropdown, saveUpdateData.whenToCheckIn);
 

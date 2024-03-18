@@ -409,7 +409,7 @@ async function toggleRestrictiveMeasureQuestionsVisiblity(show) {
 
     const sectionData = {
       token: $.session.Token,
-      informedConsentId: rmData?.informedConsentId || insertedRMID,
+      informedConsentId: rmData?.informedConsentId || insertedRMID.informedConsentId,
       rmIdentified: 'Y',
       rmHRCDate: rmData?.rmHRCDate || '',
       rmKeepSelfSafe: rmData?.rmKeepSelfSafe || '',

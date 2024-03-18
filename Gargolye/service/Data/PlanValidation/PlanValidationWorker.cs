@@ -35,6 +35,29 @@ namespace Anywhere.service.Data.PlanValidation
             }
         }
 
+        public class SummaryRiskValidation
+        {
+            public int QuestionId { get; set; }
+            public string QuestionText { get; set; }
+            public int QuestionSetId { get; set; }
+            public string Answer { get; set; }
+            public int SectionId { get; set; }
+        }
+
+        public SummaryRiskValidation[] getSummaryRiskValidationData(string token, string planId)
+        {
+            try
+            {
+                string result = pvdg.getSummaryRiskValidationData(token, planId);
+                SummaryRiskValidation[] contactValidationObj = js.Deserialize<SummaryRiskValidation[]>(result);
+                return contactValidationObj;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public ServicesAndSupports getAssessmentValidationData(string token, string oldPlanId)
         {
             long planId = long.Parse(oldPlanId);

@@ -1299,6 +1299,7 @@ const planSummary = (function () {
   // KNOWN & LIKELY RISKS TABLES
   //--------------------------------------------------------------------
   async function addRisksTableRow(data) {
+    // Extracting values from data
     const sectionTitle = data.sectionTitle;
     const secTitle = sectionTitle.replaceAll(' ', '');
     const row = data.row;
@@ -1311,81 +1312,96 @@ const planSummary = (function () {
     const questionSetId = data.questionSetId;
     const rowId = `planRisksTable${secTitle}${row}`;
 
+    // Checking for errors
+    const hasError = whatIsRisk && (!whatSupportLooksLike || !levelOfSupervision || !whoResponsible);
+
+    // Incrementing selected vendors
     if (whoResponsible) {
-      if (selectedVendors[whoResponsible]) {
-        selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
-      } else {
-        selectedVendors[whoResponsible] = 1;
-      }
+        if (selectedVendors[whoResponsible]) {
+            selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
+        } else {
+            selectedVendors[whoResponsible] = 1;
+        }
     }
 
+    // Adding the row to the table
     table.addRows(
-      `planRisksTable${secTitle}`,
-      [
-        {
-          id: rowId,
-          values: [
-            sectionTitle,
-            whatIsRisk,
-            whatSupportLooksLike,
-            levelOfSupervision,
-            whoResponsibleText,
-          ],
-          attributes: [
-            { key: 'data-questionSetId', value: questionSetId },
+        `planRisksTable${secTitle}`,
+        [
             {
-              key: 'data-answerIds',
-              value: `${data.whatIsRisk.answerId}|${data.whatSupportLooksLike.answerId}|${data.riskSupervision.answerId}|${data.whoResponsible.answerId}`,
+                id: rowId,
+                values: [
+                    sectionTitle,
+                    whatIsRisk,
+                    whatSupportLooksLike,
+                    levelOfSupervision,
+                    whoResponsibleText,
+                ],
+                attributes: [
+                    { key: 'data-questionSetId', value: questionSetId },
+                    {
+                        key: 'data-answerIds',
+                        value: `${data.whatIsRisk.answerId}|${data.whatSupportLooksLike.answerId}|${data.riskSupervision.answerId}|${data.whoResponsible.answerId}`,
+                    },
+                ],
+                onClick: e => {
+                    const rowOrderFromID = e.target.id.replace(`planRisksTable${secTitle}`, '');
+                    showRisksTablePopup(
+                        {
+                            ...data,
+                            row: rowOrderFromID,
+                        },
+                        false,
+                        false,
+                    );
+                },
+                onCopyClick: e => {
+                    if (isReadOnly) return;
+                    showRisksTablePopup(
+                        {
+                            sectionTitle,
+                            row: '',
+                            questionSetId,
+                            whatIsRisk: {
+                                answer: whatIsRisk,
+                            },
+                            whatSupportLooksLike: {
+                                answer: whatSupportLooksLike,
+                            },
+                            riskSupervision: {
+                                answer: riskSupervision,
+                            },
+                            whoResponsible: {
+                                answer: whoResponsible,
+                            },
+                        },
+                        true,
+                        true,
+                    );
+                },
+                // Add the hasError property to the row object
+                hasError: hasError,
             },
-          ],
-          onClick: e => {
-            const rowOrderFromID = e.target.id.replace(`planRisksTable${secTitle}`, '');
-            showRisksTablePopup(
-              {
-                ...data,
-                row: rowOrderFromID,
-              },
-              false,
-              false,
-            );
-          },
-          onCopyClick: e => {
-            if (isReadOnly) return;
-
-            showRisksTablePopup(
-              {
-                sectionTitle,
-                row: '',
-                questionSetId,
-                whatIsRisk: {
-                  answer: whatIsRisk,
-                },
-                whatSupportLooksLike: {
-                  answer: whatSupportLooksLike,
-                },
-                riskSupervision: {
-                  answer: riskSupervision,
-                },
-                whoResponsible: {
-                  answer: whoResponsible,
-                },
-              },
-              true,
-              true,
-            );
-          },
-        },
-      ],
-      isSortable,
+        ],
+        isSortable,
     );
 
+    if (hasError) {
+      planValidation.setSummaryRiskValidation(true);
+      planValidation.alertCheckSummaryRisksValidation();
+    } else {
+      planValidation.summaryRisksValidationCheck();
+      planValidation.alertCheckSummaryRisksValidation();
+    }
+
     const SummaryData = await summaryAjax.getAssessmentSummaryQuestions({
-      token: $.session.Token,
-      anywAssessmentId: planId,
+        token: $.session.Token,
+        anywAssessmentId: planId,
     });
     summaryData = mapSummaryData(SummaryData);
-  }
+}
   async function updateRisksTableRow(data, oldData) {
+    // Extracting values from data
     const sectionTitle = data.sectionTitle;
     const secTitle = sectionTitle.replaceAll(' ', '');
     const row = data.row;
@@ -1398,92 +1414,106 @@ const planSummary = (function () {
     const questionSetId = data.questionSetId;
     const rowId = `planRisksTable${secTitle}${row}`;
 
+    // Checking for errors
+    const hasError = whatIsRisk && (!whatSupportLooksLike || !levelOfSupervision || !whoResponsible);
+
+    // Update selected vendors if responsible party changed
     if (Object.keys(oldData).length) {
-      if (oldData.whoResponsible.answer !== whoResponsible) {
-        // remove old
-        if (oldData.whoResponsible.answer !== '') {
-          if (selectedVendors[oldData.whoResponsible.answer] === 1) {
-            delete selectedVendors[oldData.whoResponsible.answer];
-          } else {
-            selectedVendors[oldData.whoResponsible.answer] = selectedVendors[whoResponsible] - 1;
-          }
+        if (oldData.whoResponsible.answer !== whoResponsible) {
+            // remove old
+            if (oldData.whoResponsible.answer !== '') {
+                if (selectedVendors[oldData.whoResponsible.answer] === 1) {
+                    delete selectedVendors[oldData.whoResponsible.answer];
+                } else {
+                    selectedVendors[oldData.whoResponsible.answer] = selectedVendors[whoResponsible] - 1;
+                }
+            }
+            // add new
+            if (whoResponsible) {
+                if (selectedVendors[whoResponsible]) {
+                    selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
+                } else {
+                    selectedVendors[whoResponsible] = 1;
+                }
+            }
         }
-        // add new
-        if (whoResponsible) {
-          if (selectedVendors[whoResponsible]) {
-            selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
-          } else {
-            selectedVendors[whoResponsible] = 1;
-          }
-        }
-      }
     }
 
+    // Updating the row in the table
     table.updateRows(
-      `planRisksTable${secTitle}`,
-      [
-        {
-          id: rowId,
-          values: [
-            sectionTitle,
-            whatIsRisk,
-            whatSupportLooksLike,
-            levelOfSupervision,
-            whoResponsibleText,
-          ],
-          attributes: [
-            { key: 'data-questionSetId', value: questionSetId },
+        `planRisksTable${secTitle}`,
+        [
             {
-              key: 'data-answerIds',
-              value: `${data.whatIsRisk.answerId}|${data.whatSupportLooksLike.answerId}|${data.riskSupervision.answerId}|${data.whoResponsible.answerId}`,
+                id: rowId,
+                values: [
+                    sectionTitle,
+                    whatIsRisk,
+                    whatSupportLooksLike,
+                    levelOfSupervision,
+                    whoResponsibleText,
+                ],
+                attributes: [
+                    { key: 'data-questionSetId', value: questionSetId },
+                    {
+                        key: 'data-answerIds',
+                        value: `${data.whatIsRisk.answerId}|${data.whatSupportLooksLike.answerId}|${data.riskSupervision.answerId}|${data.whoResponsible.answerId}`,
+                    },
+                ],
+                onClick: e => {
+                    const rowOrderFromID = e.target.id.replace(`planRisksTable${secTitle}`, '');
+                    showRisksTablePopup(
+                        {
+                            ...data,
+                            row: rowOrderFromID,
+                        },
+                        false,
+                        false,
+                    );
+                },
+                onCopyClick: e => {
+                    if (isReadOnly) return;
+                    showRisksTablePopup(
+                        {
+                            sectionTitle,
+                            row: '',
+                            questionSetId,
+                            whatIsRisk: {
+                                answer: whatIsRisk,
+                            },
+                            whatSupportLooksLike: {
+                                answer: whatSupportLooksLike,
+                            },
+                            riskSupervision: {
+                                answer: riskSupervision,
+                            },
+                            whoResponsible: {
+                                answer: whoResponsible,
+                            },
+                        },
+                        true,
+                        true,
+                    );
+                },
+                hasError: hasError,
             },
-          ],
-          onClick: e => {
-            const rowOrderFromID = e.target.id.replace(`planRisksTable${secTitle}`, '');
-            showRisksTablePopup(
-              {
-                ...data,
-                row: rowOrderFromID,
-              },
-              false,
-              false,
-            );
-          },
-          onCopyClick: e => {
-            if (isReadOnly) return;
-            showRisksTablePopup(
-              {
-                sectionTitle,
-                row: '',
-                questionSetId,
-                whatIsRisk: {
-                  answer: whatIsRisk,
-                },
-                whatSupportLooksLike: {
-                  answer: whatSupportLooksLike,
-                },
-                riskSupervision: {
-                  answer: riskSupervision,
-                },
-                whoResponsible: {
-                  answer: whoResponsible,
-                },
-              },
-              true,
-              true,
-            );
-          },
-        },
-      ],
-      isSortable,
+        ],
+        isSortable,
     );
 
+    if (hasError) {
+      planValidation.setSummaryRiskValidation(true);
+      planValidation.alertCheckSummaryRisksValidation();
+    } else {
+      planValidation.summaryRisksValidationCheck();
+      planValidation.alertCheckSummaryRisksValidation();
+    }
+
     const SummaryData = await summaryAjax.getAssessmentSummaryQuestions({
-      token: $.session.Token,
-      anywAssessmentId: planId,
+        token: $.session.Token,
+        anywAssessmentId: planId,
     });
     summaryData = mapSummaryData(SummaryData);
-  }
+}
   // markup
   //------------------
   function toggleRisksDoneBtn() {
@@ -1921,6 +1951,8 @@ const planSummary = (function () {
         const secTitle = sectionTitle.replaceAll(' ', '');
         const questionSetId = val.whatIsRisk.questionSetId;
 
+        const hasError = whatIsRisk && (!whatSupportLooksLike || !levelOfSupervision || !whoResponsible);
+
         if (whoResponsible) {
           if (selectedVendors[whoResponsible]) {
             selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
@@ -1982,6 +2014,7 @@ const planSummary = (function () {
               false,
             );
           },
+          hasError: hasError,
           onCopyClick: isRowEmpty
             ? false
             : e => {
@@ -2014,6 +2047,15 @@ const planSummary = (function () {
     });
 
     table.populate(risksTable, tableData, isSortable);
+
+    const sectionHasErrors = tableData.some(row => row.hasError);
+    if (sectionHasErrors) {
+      planValidation.setSummaryRiskValidation(true);
+      planValidation.alertCheckSummaryRisksValidation();
+    } else {
+      planValidation.setSummaryRiskValidation(false);
+      planValidation.alertCheckSummaryRisksValidation();
+    }
 
     return risksTable;
   }

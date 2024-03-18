@@ -1862,9 +1862,9 @@ namespace Anywhere
             return wfw.deleteWorkflow(token, workflowId);
         }
 
-        public WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId)
+        public WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId, string TypeId)
         {
-            return wfw.getPeopleNames(token, peopleId);
+            return wfw.getPeopleNames(token, peopleId, TypeId);
         }
 
         public WorkflowWorker.ResponsiblePartyRelationship[] getWFResponsiblePartyRelationships(string token, string workflowId)
@@ -1885,6 +1885,11 @@ namespace Anywhere
         public WorkflowWorker.WorkflowStep[] getResponsiblePartyIdforThisEditStep(string token, string stepId)
         {
             return wfw.getResponsiblePartyIdforThisEditStep(token, stepId);
+        }
+
+        public WorkflowWorker.ResponsiblePartyClassification[] getResponsiblePartyClassification(string token)
+        {
+            return wfw.getResponsiblePartyClassification(token);
         }
 
         public FormWorker.FormTemplate[] getFormTemplates(string token)
@@ -2347,7 +2352,7 @@ namespace Anywhere
             return poW.updatePlanOutcomeExperienceResponsibility(responsibilityIds, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText);
         }
 
-        public string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, long[] contactId)
+        public string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, string[] contactId)
         {
             return poW.insertPlanOutcomesReview(outcomeId, whatWillHappen, whenToCheckIn, whoReview, reviewOrder, contactId);
         }
@@ -3775,6 +3780,11 @@ namespace Anywhere
         public PlanValidationWorker.ContactValidationData[] getContactValidationData(string token, string planId)
         {
             return pv.getContactValidationData(token, planId);
+        }
+
+        public PlanValidationWorker.SummaryRiskValidation[] getSummaryRiskValidationData(string token, string planId)
+        {
+            return pv.getSummaryRiskValidationData(token, planId);
         }
 
         public PlanValidationWorker.ServicesAndSupports getAssessmentValidationData(string token, string planId)

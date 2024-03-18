@@ -2726,7 +2726,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/getPeopleNames/")]
-        WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId);
+        WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId ,string TypeId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -2759,6 +2759,14 @@ namespace Anywhere
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/getResponsiblePartyIdforThisEditStep/")]
         WorkflowWorker.WorkflowStep[] getResponsiblePartyIdforThisEditStep(string token, string stepId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getResponsiblePartyClassification/")]
+        WorkflowWorker.ResponsiblePartyClassification[] getResponsiblePartyClassification(string token);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -3295,7 +3303,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertPlanOutcomesReview/")]
-        string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, long[] contactId);
+        string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, string[] contactId);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -5035,6 +5043,14 @@ namespace Anywhere
         ConsumerFinancesWorker.ConsumerName[] getCFWidgetConsumers(string token);
 
         // Plan Validation
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
+               UriTemplate = "/getSummaryRiskValidationData/")]
+        PlanValidationWorker.SummaryRiskValidation[] getSummaryRiskValidationData(string token, string planId);
+
         [OperationContract]
         [WebInvoke(Method = "POST",
                BodyStyle = WebMessageBodyStyle.Wrapped,

@@ -16,9 +16,8 @@ const generateReports = (() =>  {
   }
 
     function passFilterValuesForReport(reportType, filterValues) {
-    showWarningPopup(reportType);
-    generateReportsAjax.generateReport(reportType, filterValues, checkIfReportIsReadyInterval);
-  }
+        generateReportsAjax.generateReport(reportType, filterValues, checkIfReportIsReadyInterval);
+    }
 
   // Helper function to create report buttons
   function createIndividualReportButton(text, filterValues) {
@@ -35,7 +34,7 @@ const generateReports = (() =>  {
 
         // set report running to true to stop mulitple reports being ran, run report, then show popup while report runs in background
         reportRunning = true;
-        passFilterValuesForReport(text, filterValues);
+          passFilterValuesForReport(text, filterValues); 
         showWarningPopup(text, filterValues);
       },
     });
@@ -155,5 +154,6 @@ const generateReports = (() =>  {
     checkIfReportIsReadyInterval,
     checkIfReportExists,
     callReport,
+    showWarningPopup,
   };
 })();
