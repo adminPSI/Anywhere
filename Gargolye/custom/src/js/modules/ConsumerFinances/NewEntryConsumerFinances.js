@@ -1179,6 +1179,13 @@ const NewEntryCF = (() => {
                 splitAmountTotal();
             });
             splitAmountInputN[i].addEventListener('focusout', event => {
+                tempAmouts = event.target.value;
+                if (tempAmouts.includes('.') && (tempAmouts.match(/\./g).length > 1 || tempAmouts.toString().split('.')[1].length > 2)) {
+                    splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value = tempAmouts.substring(0, tempAmouts.length - 1);
+                    return;
+                }
+                checkRequiredFieldsSplitTransection();
+                splitAmountTotal();  
                 if (splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value != '')
                     splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value = parseFloat(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value).toFixed(2);
             });
