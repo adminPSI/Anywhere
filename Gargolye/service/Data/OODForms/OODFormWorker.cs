@@ -85,12 +85,35 @@ namespace OODForms
             string servicename = string.Format("{0}", row["servicename"].ToString().Trim());
             WS.Cell("a12").Value = servicename;
 
-            string EmploymentGoal = String.Format("{0}", row["ReviewGoal"].ToString().Trim());
-            WS.Cell("k19").Value = EmploymentGoal;
+            DataSet ds = obj.EmpGoal(AuthorizationNumber, StartDate, EndDate);
+
+            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                string employeeGoal = ds.Tables[0].Rows[0]["em_review_goal"].ToString();
+                string individualsInputOnSearch = ds.Tables[0].Rows[0]["IndividualsInputOnSearch"].ToString();
+
+                string potentialIssues = ds.Tables[0].Rows[0]["PotentialIssues"].ToString();
+
+                WS.Cell("K19").Value = employeeGoal;
+
+                WS.Cell("K73").Value = individualsInputOnSearch;
+
+                WS.Cell("K74").Value = potentialIssues;
+            }
+            else
+            {
+                WS.Cell("K19").Value = string.Empty;
+                WS.Cell("K73").Value = string.Empty;
+                WS.Cell("K74").Value = string.Empty;
+            }
+
+
+            //string EmploymentGoal = String.Format("{0}", row["ReviewGoal"].ToString().Trim());
+            //WS.Cell("k19").Value = EmploymentGoal;
 
             string OODStaff = string.Empty;
             string MiddleName = string.Empty;
-            DataSet ds = obj.OODStaff(AuthorizationNumber, serviceCode, StartDate, EndDate, userID);
+            ds = obj.OODStaff(AuthorizationNumber, serviceCode, StartDate, EndDate, userID);
             List<string> personInitialsList = new List<string>();
 
             if (ds.Tables.Count > 0)
@@ -155,16 +178,9 @@ namespace OODForms
 
             }
 
-            WS.Cell("k73").Value = row["IndividualsInputOnSearch"].ToString().Trim();
+            //WS.Cell("k73").Value = row["IndividualsInputOnSearch"].ToString().Trim();
 
-            WS.Cell("k74").Value = row["PotentialIssues"].ToString().Trim();
-
-            ds = obj.EmpGoal(AuthorizationNumber, StartDate, EndDate);
-            string employeeGoal = ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0 ? ds.Tables[0].Rows[0][0].ToString() : string.Empty;
-            WS.Cell("k19").Value = employeeGoal;
-
-            DateTime oldestDate = DateTime.MaxValue;
-            DateTime newestDate = DateTime.MinValue;
+            //WS.Cell("k74").Value = row["PotentialIssues"].ToString().Trim();
 
             ds = obj.OODDevelopment2(AuthorizationNumber, StartDate, EndDate, serviceCode, userID);
             if (ds.Tables.Count > 0)
@@ -174,20 +190,8 @@ namespace OODForms
                 {
                     long i = dt.Rows.IndexOf(row2) + 21;
 
-                    DateTime contactDate = Convert.ToDateTime(row2["Contact_Date"]);
-
-                    if (contactDate < oldestDate)
-                    {
-                        oldestDate = contactDate;
-                    }
-
-                    if (contactDate > newestDate)
-                    {
-                        newestDate = contactDate;
-                    }
-
-                    WS.Cell("k9").Value = oldestDate;
-                    WS.Cell("k10").Value = newestDate;
+                    WS.Cell("k9").Value = DateTime.Parse(StartDate).ToString("MM/dd/yy"); ;
+                    WS.Cell("k10").Value = DateTime.Parse(EndDate).ToString("MM/dd/yy"); ;
 
                     DateTime parsedStartTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["StartTime"]));
 
@@ -209,7 +213,7 @@ namespace OODForms
 
                     string formattedUnits = units.ToString();
 
-                    WS.Cell(String.Format("a{0}", i)).ValueAsDateTime = Convert.ToDateTime(Convert.ToDateTime(row2["Contact_Date"]).ToString("MM/dd/yyyy"));
+                    WS.Cell(String.Format("a{0}", i)).ValueAsDateTime = Convert.ToDateTime(row2["serviceDate"]);
 
                     WS.Cell(String.Format("b{0}", i)).ValueAsDateTime = DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"), row2["StartTime"]));
 

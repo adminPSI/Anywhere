@@ -288,14 +288,14 @@ namespace OODForms
         public DataSet EmpGoal(string AuthorizationNumber, string StartDate, string EndDate)
         {
             sb.Clear();
-            sb.Append("SELECT DISTINCT DBA.Persons.Last_Name, DBA.Persons.Middle_Name, DBA.Persons.First_Name, em_review.em_review_goal ");
+            sb.Append("SELECT DISTINCT DBA.Persons.Last_Name, DBA.Persons.Middle_Name, DBA.Persons.First_Name, em_review.em_review_goal, DBA.EM_Review.EM_Review_Summary AS IndividualsInputOnSearch, DBA.EM_Review.EM_Review_Other_Impediments AS PotentialIssues ");
             sb.Append("FROM dba.Consumer_Services_Master ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
             sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Consumer_Services_Master.Person_Id = dba.Persons.Person_ID ");
             sb.Append("LEFT OUTER JOIN dba.em_review ON dba.Consumer_Services_Master.Reference_Number = em_review.Reference_Num ");
             sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
-            sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
+            //sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
             sb.AppendFormat("AND MONTH(em_review.em_review_date) = MONTH('{0}') AND YEAR(em_review.em_review_date) = YEAR('{0}')", StartDate);
 
 
@@ -426,7 +426,7 @@ namespace OODForms
         {
             sb.Clear();
             sb.Append("SELECT DISTINCT  DBA.Case_Notes.Case_Note_ID, dba.EM_Contacts.Contact_Date, dba.Case_Notes.Start_Time AS StartTime, ");
-            sb.Append("dba.Case_Notes.End_Time AS EndTime, dba.Case_Notes.Service_Area_Modifier AS SAMLevel, dba.Employer.Name AS Location, ");
+            sb.Append("dba.Case_Notes.End_Time AS EndTime, dba.Case_Notes.Service_Area_Modifier AS SAMLevel, dba.Employer.Name AS Location, dba.Case_Notes.Service_Date AS serviceDate, ");
             sb.Append("dba.Employer.Address1 AS LocationAddress, dba.Employer.City AS LocationCity, dba.EM_Contacts.Notes AS Comments, ");
             sb.Append("dba.EM_Contacts.Contact_Type AS ContactType, dba.EM_Contacts.Notes as Narrative, dba.Code_Table.Caption AS OutCome, dba.EM_Contacts.EM_Job_Seeker_Present AS JobSeekerPresent, ");
             sb.Append("dba.Consumer_Services_Master.Reference_Number, dba.Code_Table.Table_ID, dba.Case_Notes.Notes AS Note2, ");
