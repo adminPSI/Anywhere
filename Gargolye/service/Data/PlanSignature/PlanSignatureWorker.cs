@@ -86,6 +86,7 @@ namespace Anywhere.service.Data.PlanSignature
             public string vendorId { get; set; }
             public string email { get; set; }
             public string parentOfMinor { get; set; }
+            public string locationId { get; set; }
         }
 
         public class SigId
