@@ -2726,7 +2726,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/getPeopleNames/")]
-        WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId);
+        WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId ,string TypeId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -2759,6 +2759,14 @@ namespace Anywhere
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/getResponsiblePartyIdforThisEditStep/")]
         WorkflowWorker.WorkflowStep[] getResponsiblePartyIdforThisEditStep(string token, string stepId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getResponsiblePartyClassification/")]
+        WorkflowWorker.ResponsiblePartyClassification[] getResponsiblePartyClassification(string token);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

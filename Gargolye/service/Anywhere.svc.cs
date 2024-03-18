@@ -1862,9 +1862,9 @@ namespace Anywhere
             return wfw.deleteWorkflow(token, workflowId);
         }
 
-        public WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId)
+        public WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId, string TypeId)
         {
-            return wfw.getPeopleNames(token, peopleId);
+            return wfw.getPeopleNames(token, peopleId, TypeId);
         }
 
         public WorkflowWorker.ResponsiblePartyRelationship[] getWFResponsiblePartyRelationships(string token, string workflowId)
@@ -1885,6 +1885,11 @@ namespace Anywhere
         public WorkflowWorker.WorkflowStep[] getResponsiblePartyIdforThisEditStep(string token, string stepId)
         {
             return wfw.getResponsiblePartyIdforThisEditStep(token, stepId);
+        }
+
+        public WorkflowWorker.ResponsiblePartyClassification[] getResponsiblePartyClassification(string token)
+        {
+            return wfw.getResponsiblePartyClassification(token);
         }
 
         public FormWorker.FormTemplate[] getFormTemplates(string token)

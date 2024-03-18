@@ -15,7 +15,7 @@ const WorkflowViewerComponent = (function () {
 
     const {
       getPeopleNamesResult: people,
-    } = await WorkflowViewerAjax.getPeopleNamesAsync(peopleId);
+    } = await WorkflowViewerAjax.getPeopleNamesAsync(peopleId, '0');
 
     const { getWorkflowsResult: workflows } = await WorkflowViewerAjax.getWorkflowsAsync(
       processId,
@@ -140,7 +140,7 @@ const WorkflowViewerComponent = (function () {
       var peopleId = attachmentInputs.dataset.peopleId;
       const {
         getPeopleNamesResult: people,
-      } = await WorkflowViewerAjax.getPeopleNamesAsync(peopleId);
+      } = await WorkflowViewerAjax.getPeopleNamesAsync(peopleId,'0');
       const {
         getWorkflowsResult: workflows,
       } = await WorkflowViewerAjax.getWorkflowsAsync(processId, referenceId);
