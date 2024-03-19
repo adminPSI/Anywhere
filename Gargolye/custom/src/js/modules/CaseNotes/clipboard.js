@@ -1,4 +1,4 @@
-// (SET) [unmetNeedsHas] "Does the individual have an identified need?" to YES only when one of the following is true:
+// (SET) "Does the individual have an identified need?" to YES only when one of the following is true:
 //   a. ("Is there evidence that the primary" is YES (AND) "Is action required…" is NO on the Primary Caregiver page) { OR }
 //      ("Is there evidence that the primary" is NO (AND) "Is there evidence of declining skills…" is YES on the Primary Caregiver page)
 //   b.  ("Is the individual a child / adult currently engaging…" is YES on the Needs page { OR }
@@ -46,7 +46,6 @@
 //?====================================================
 // THEN [isIndividualSkillsDeclined] "Is there evidence of declining skills the individual has experienced as a result of either the caregiver's"
 // should be enabled.
-
 
 // async function currentNeedsDetermination() {
 //   const isPrimaryCaregiverUnavailable =
