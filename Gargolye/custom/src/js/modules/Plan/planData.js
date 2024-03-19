@@ -590,10 +590,11 @@ const planData = (() => {
         const textB = b.text.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
       });
-      if (theseVendors.count > 0) groupDropdownData.push(paidSupportsGroup);
+      if (theseVendors.length > 0) groupDropdownData.push(paidSupportsGroup);
 
       if ($.session.applicationName !== 'Gatekeeper') {  
       var theseLocations = teamMemberData.filter(member => member.locationId !== '' && member.salesForceId !== '');
+     //var theseLocations = teamMemberData.filter(member => member.locationId !== '');
       locationsGroup.dropdownValues = theseLocations.map(ps => {
         return {
           value: `${ps.locationId}L`,
@@ -607,7 +608,7 @@ const planData = (() => {
         const textB = b.text.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
       });
-      if (theseLocations.count > 0) groupDropdownData.push(locationsGroup);
+      if (theseLocations.length > 0) groupDropdownData.push(locationsGroup);
     }
   // }
 
