@@ -1253,7 +1253,7 @@ const WaitingListAssessment = (() => {
       ),
     ];
 
-    let isFormComplete = false;
+    let isFormComplete = true;
     if (requiredInputs.length) {
       isFormComplete = requiredInputs.map(input => input.checkValidity()).every(isValid => isValid);
     }
@@ -1939,7 +1939,7 @@ const WaitingListAssessment = (() => {
       formName: 'intermittentSupports',
     });
 
-    currentNeedsDetermination();
+    await currentNeedsDetermination();
   }
   async function icfDischargeDetermination() {
     // AI FIELD
@@ -1982,7 +1982,7 @@ const WaitingListAssessment = (() => {
       formName: 'childProtectionAgency',
     });
 
-    currentNeedsDetermination();
+    await currentNeedsDetermination();
   }
   async function adultDayEmploymentDetermination() {
     // AI FIELD
@@ -2005,7 +2005,7 @@ const WaitingListAssessment = (() => {
       formName: 'adultDayEmployment',
     });
 
-    currentNeedsDetermination();
+    await currentNeedsDetermination();
   }
   async function dischargePlanDetermination() {
     // AI FIELD
@@ -2028,7 +2028,7 @@ const WaitingListAssessment = (() => {
       formName: 'dischargePlan',
     });
 
-    currentNeedsDetermination();
+    await currentNeedsDetermination();
   }
   async function currentNeedsDetermination() {
     const isPrimaryCaregiverUnavailable =
@@ -2131,7 +2131,7 @@ const WaitingListAssessment = (() => {
   //--------------------------------------------------
   const onChangeCallbacks = {
     //* waitingListInfo
-    currentLivingArrangement: ({ value }) => {
+    currentLivingArrangement: async ({ value }) => {
       wlForms['waitingListInfo'].inputs['livingArrangementOther'].toggleDisabled(value === 'Other' ? false : true);
 
       if (value !== 'Other') {
@@ -2139,7 +2139,7 @@ const WaitingListAssessment = (() => {
       }
     },
     //* currentAvailableServices
-    isOtherService: ({ value }) => {
+    isOtherService: async ({ value }) => {
       wlForms['currentAvailableServices'].inputs['otherDescription'].toggleDisabled(value === 'yes' ? false : true);
 
       if (value !== 'yes') {
@@ -2476,7 +2476,7 @@ const WaitingListAssessment = (() => {
       });
     },
     //* other
-    needsIsActionRequiredRequiredIn30Days: ({ value }) => {
+    needsIsActionRequiredRequiredIn30Days: async ({ value }) => {
       const isNeedsActionRequiredYes = value === 'yes';
       wlForms['other'].inputs['needsIsContinuousSupportRequired'].toggleDisabled(isNeedsActionRequiredYes);
 
@@ -2687,7 +2687,7 @@ const WaitingListAssessment = (() => {
     //* immediateNeeds
     immNeedsRequired: setConclusionUnmetNeeds,
     //* waiverEnrollment
-    waivEnrollWaiverEnrollmentIsRequired: ({ value }) => {
+    waivEnrollWaiverEnrollmentIsRequired: async ({ value }) => {
       // (ENABLE) [waivEnrollWaiverEnrollmentDescription] the "If 'No', describe the...' textbox only
       // (IF)[waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
 
