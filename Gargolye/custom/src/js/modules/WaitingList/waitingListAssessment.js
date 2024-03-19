@@ -2692,9 +2692,9 @@ const WaitingListAssessment = (() => {
       // (IF)[waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
 
       wlForms['waiverEnrollment'].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(
-        value === 'yes' ? false : true,
+        value === 'no' ? false : true,
       );
-      if (value !== 'yes') {
+      if (value !== 'no') {
         wlForms['waiverEnrollment'].inputs['waivEnrollWaiverEnrollmentDescription'].setValue('');
       }
 
