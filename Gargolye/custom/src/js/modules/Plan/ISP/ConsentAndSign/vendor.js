@@ -66,7 +66,7 @@ const csVendor = (() => {
   function removeV(ids) {
     return ids.map(id => id.replace('V', ''));
   }
-  function populateVendorDropdownData(vendorData, vendorDropdown, teamMember) {
+ async function populateVendorDropdownData(vendorData, vendorDropdown, teamMember) {
     // get vendors from the following
     // (Add Risk -> Who Is Responsible) on the Summary tab
     // (Add Experience -> Responsible Provider) on the Outcomes tab
@@ -77,6 +77,13 @@ const csVendor = (() => {
 
     let selectedVendors = [...summaryVendors, ...outcomesVendors, ...servicesVendors];
     selectedVendors = removeDups(selectedVendors);
+    
+    // 'facilities' and 'location' are used interchangeably in vendor.js and outcomes.js 
+    const facilitiesGroup = {
+      groupLabel: 'Facilities',
+      groupId: 'facilitiesGroup',
+      dropdownValues: [],
+    };
 
     const vendorGroup = {
       groupLabel: 'Plan Vendor',
@@ -98,7 +105,34 @@ const csVendor = (() => {
       }
     });
 
+    const planId = plan.getCurrentPlanId();
+    const teamMemberData = await consentAndSignAjax.getConsentAndSignData({
+      token: $.session.Token,
+      assessmentId: planId,
+    });
+
     const groupDropdownData = [];
+
+    if ($.session.applicationName !== 'Gatekeeper') {  
+      var theseLocations = teamMemberData.filter(member => member.locationId !== '');
+      facilitiesGroup.dropdownValues = theseLocations.map(ps => {
+        return {
+          value: `${ps.locationId}L`,
+          text: ps.name,
+        };
+      });
+
+      facilitiesGroup.dropdownValues = removeDups(facilitiesGroup.dropdownValues);
+      facilitiesGroup.dropdownValues.sort((a, b) => {
+        const textA = a.text.toUpperCase();
+        const textB = b.text.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
+      groupDropdownData.push(facilitiesGroup);
+    }
+
+    //const groupDropdownData = [];
+   // groupDropdownData.push(facilitiesGroup);
     groupDropdownData.push(vendorGroup);
     groupDropdownData.push(nonVendorGroup);
 
