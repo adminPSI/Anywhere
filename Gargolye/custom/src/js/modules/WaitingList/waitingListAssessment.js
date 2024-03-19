@@ -2057,27 +2057,22 @@ const WaitingListAssessment = (() => {
       dischargeDetermination.includes('yes'),
     ];
 
+    let updateTo = 'no';
+
     for (const condition of conditions) {
       if (condition) {
-        wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasyes');
-        await insertUpdateAssessment({
-          value: 'yes',
-          name: 'unmetNeedsHas',
-          type: 'radio',
-          formName: 'currentNeeds',
-        });
-
-        return;
+        updateTo = 'yes';
       }
     }
 
-    wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasno');
+    wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue(`unmetNeedsHas${updateTo}`);
     await insertUpdateAssessment({
-      value: 'no',
+      value: updateTo,
       name: 'unmetNeedsHas',
       type: 'radio',
       formName: 'currentNeeds',
     });
+    updateFormCompletionStatus('currentNeeds');
   }
 
   //--------------------------------------------------
