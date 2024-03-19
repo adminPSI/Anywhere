@@ -532,6 +532,11 @@ const planData = (() => {
       groupId: 'paidSupportsGroup',
       dropdownValues: [],
     };
+    const locationsGroup = {
+      groupLabel: 'Locations on this Plan',
+      groupId: 'locationsGroup',
+      dropdownValues: [],
+    };
 
     dropdowns.relationships.forEach(dd => {
       if (dd.signatureId) {
@@ -571,8 +576,7 @@ const planData = (() => {
       });
 
      // var theseVendors = teamMemberData.filter(vendor => vendor.vendorId !== '' && vendor.salesForceId !== '');
-      var theseVendors = teamMemberData.filter(vendor => vendor.vendorId !== '');
-
+      var theseVendors = teamMemberData.filter(member => member.vendorId !== '');
       paidSupportsGroup.dropdownValues = theseVendors.map(ps => {
         return {
           value: `${ps.vendorId}V`,
@@ -587,6 +591,24 @@ const planData = (() => {
         return textA < textB ? -1 : textA > textB ? 1 : 0;
       });
       groupDropdownData.push(paidSupportsGroup);
+
+      if ($.session.applicationName !== 'Gatekeeper') {  
+      var theseLocations = teamMemberData.filter(member => member.locationId !== '');
+      locationsGroup.dropdownValues = theseLocations.map(ps => {
+        return {
+          value: `${ps.locationId}L`,
+          text: ps.name,
+        };
+      });
+
+      locationsGroup.dropdownValues = removeDups(locationsGroup.dropdownValues);
+      locationsGroup.dropdownValues.sort((a, b) => {
+        const textA = a.text.toUpperCase();
+        const textB = b.text.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
+      groupDropdownData.push(locationsGroup);
+    }
   // }
 
     dropdown.groupingPopulate({
