@@ -715,6 +715,9 @@ var notesOverview = (function () {
                 overlaps: 'N',
                 noteText: '%',
                 noteTextValue: '',
+                viewEntered,
+                caseloadOnly,
+                userId: $.session.UserId
             };
         }
     }

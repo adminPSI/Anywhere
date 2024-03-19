@@ -20,6 +20,7 @@ namespace Anywhere.service.Data.ReportBuilder
         ReportBuilderDataGetter rbdg = new ReportBuilderDataGetter();
         AnywhereWorker anywhereWorker = new AnywhereWorker();
         CaseNoteReportBuilderDataGetter cnrdG = new CaseNoteReportBuilderDataGetter();
+        DataGetter dg = new DataGetter();
 
         public ReportScheduleId[] generateReport(string token, string reportType, ReportData reportData)
         {
@@ -191,8 +192,19 @@ namespace Anywhere.service.Data.ReportBuilder
             string reportServerList = "Primary";
             string result = "";
 
+            // Apply filters based on permissions used in the front-end
+            if (reportData.viewEntered == "false")
+            {
+                reportData.userId = "";
+            }
+
+            //if ( reportData.caseloadOnly == "true")
+            //{
+            //    string caseloadRestriction = dg.getCaseLoadRestriction(token);
+            //}
+
             result = rbdg.generateMinutesByDateReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.consumerName, reportData.serviceDateStart, reportData.serviceDateEnd, reportData.location,
-                reportData.enteredDateStart, reportData.enteredDateEnd, reportData.billingCode, reportData.service, reportData.need, reportData.contact);
+                reportData.enteredDateStart, reportData.enteredDateEnd, reportData.billingCode, reportData.service, reportData.need, reportData.contact, reportData.userId);
 
             return result;
         }
@@ -397,6 +409,8 @@ namespace Anywhere.service.Data.ReportBuilder
             public string overlaps { get; set; }
             public string noteText { get; set; }
             public string noteTextValue { get; set; }
+            public string viewEntered { get; set; }
+            public string caseloadOnly { get; set; }
 
             // INCIDENT TRACKING
             public string ITLocation { get; set; }
