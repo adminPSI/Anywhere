@@ -1,4 +1,4 @@
-// (SET) [unmetNeedsHas] "Does the individual have an identified need?" to YES only when one of the following is true:
+// (SET) "Does the individual have an identified need?" to YES only when one of the following is true:
 //   a. ("Is there evidence that the primary" is YES (AND) "Is action required…" is NO on the Primary Caregiver page) { OR }
 //      ("Is there evidence that the primary" is NO (AND) "Is there evidence of declining skills…" is YES on the Primary Caregiver page)
 //   b.  ("Is the individual a child / adult currently engaging…" is YES on the Needs page { OR }
@@ -47,17 +47,9 @@
 // THEN [isIndividualSkillsDeclined] "Is there evidence of declining skills the individual has experienced as a result of either the caregiver's"
 // should be enabled.
 
-
-// async function currentNeedsDetermination() {
-//   const isPrimaryCaregiverUnavailable =
-//     wlForms['primaryCaregiver'].inputs['isPrimaryCaregiverUnavailable'].getValue();
-//   const isActionRequiredIn30Days = wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].getValue();
-//   const isIndividualSkillsDeclined = wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].getValue();
-
-//   if (
-//     (isPrimaryCaregiverUnavailable.includes('yes') && isActionRequiredIn30Days.includes('no')) ||
-//     (isPrimaryCaregiverUnavailable.includes('no') && isIndividualSkillsDeclined.includes('yes'))
-//   ) {
+// for (const condition of conditions) {
+//   if (condition) {
+//     updateTo = 'yes';
 //     wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasyes');
 //     await insertUpdateAssessment({
 //       value: 'yes',
@@ -65,56 +57,16 @@
 //       type: 'radio',
 //       formName: 'currentNeeds',
 //     });
+
+//     updateFormCompletionStatus('currentNeeds');
 //     return;
 //   }
-
-//   const risksIsRiskToSelf = wlForms['behavioral'].inputs['risksIsRiskToSelf'].getValue();
-//   const physicalNeedsIsPhysicalCareNeeded =
-//     wlForms['physical'].inputs['physicalNeedsIsPhysicalCareNeeded'].getValue();
-//   const medicalNeedsIsLifeThreatening = wlForms['medical'].inputs['medicalNeedsIsLifeThreatening'].getValue();
-//   const needsIsContinuousSupportRequired = wlForms['other'].inputs['needsIsContinuousSupportRequired'].getValue();
-
-//   if (
-//     risksIsRiskToSelf.includes('yes') ||
-//     physicalNeedsIsPhysicalCareNeeded.includes('yes') ||
-//     (medicalNeedsIsLifeThreatening.includes('yes') && needsIsContinuousSupportRequired.includes('yes'))
-//   ) {
-//     wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasyes');
-//     await insertUpdateAssessment({
-//       value: 'yes',
-//       name: 'unmetNeedsHas',
-//       type: 'radio',
-//       formName: 'currentNeeds',
-//     });
-//     return;
-//   }
-
-//   const intSupDetermination = wlForms['intermittentSupports'].inputs['intSupDetermination'].getValue();
-//   const cpaDetermination = wlForms['childProtectionAgency'].inputs['cpaDetermination'].getValue();
-//   const rwfWaiverFundingRequired = wlForms['adultDayEmployment'].inputs['rwfWaiverFundingRequired'].getValue();
-//   const dischargeDetermination = wlForms['dischargePlan'].inputs['dischargeDetermination'].getValue();
-
-//   if (
-//     intSupDetermination.includes('yes') ||
-//     cpaDetermination.includes('yes') ||
-//     rwfWaiverFundingRequired.includes('yes') ||
-//     dischargeDetermination.includes('yes')
-//   ) {
-//     wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasyes');
-//     await insertUpdateAssessment({
-//       value: 'yes',
-//       name: 'unmetNeedsHas',
-//       type: 'radio',
-//       formName: 'currentNeeds',
-//     });
-//     return;
-//   }
-
-//   wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasno');
-//   await insertUpdateAssessment({
-//     value: 'no',
-//     name: 'unmetNeedsHas',
-//     type: 'radio',
-//     formName: 'currentNeeds',
-//   });
 // }
+// wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue('unmetNeedsHasno');
+// await insertUpdateAssessment({
+//   value: 'no',
+//   name: 'unmetNeedsHas',
+//   type: 'radio',
+//   formName: 'currentNeeds',
+// });
+// updateFormCompletionStatus('currentNeeds');
