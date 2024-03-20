@@ -25,8 +25,8 @@ const WaitingListOverview = (() => {
 
     let alreadyHasAssessmentForToday = false;
 
-    const tableData = data.getLandingPageForConsumerResult.map(
-      ({ wlInfoId, interviewDate, conclusionResult, conclusionDate, sentToDODD }) => {
+    const tableData = data.getLandingPageForConsumerResult
+      .map(({ wlInfoId, interviewDate, conclusionResult, conclusionDate, sentToDODD }) => {
         const isToday = new Date().setHours(0, 0, 0, 0) === new Date(interviewDate).setHours(0, 0, 0, 0);
         if (isToday) alreadyHasAssessmentForToday = true;
 
@@ -39,8 +39,19 @@ const WaitingListOverview = (() => {
             UTIL.formatDateToIso(sentToDODD.split(' ')[0]),
           ],
         };
-      },
-    );
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.values[0]).getTime();
+        const dateB = new Date(b.values[0]).getTime();
+
+        if (dateA > dateB) {
+          return -1;
+        } else if (dateA < dateB) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
 
     return { tableData, alreadyHasAssessmentForToday };
   }
