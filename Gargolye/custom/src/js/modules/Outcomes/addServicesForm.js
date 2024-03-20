@@ -185,10 +185,10 @@ const addServicesForm = (() => {
         column1.appendChild(addNewCard);
 
         const addNewServiceCard = document.createElement("div");
-        addNewServiceCard.classList.add("card");
+        addNewServiceCard.classList.add("card");  
         const addNewServiceCardBody = document.createElement("div");
         addNewServiceCardBody.classList.add("card__body");
-        addNewServiceCard.innerHTML = `<div class="card__header">Services</div>`;
+        addNewServiceCard.innerHTML = `<div class="card__header">Service</div>`;
         addNewServiceCard.appendChild(addNewServiceCardBody)
         column1.appendChild(addNewServiceCard)
 
