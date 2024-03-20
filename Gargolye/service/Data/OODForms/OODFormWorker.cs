@@ -28,7 +28,6 @@ namespace OODForms
 
         public string generateForm4(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
         {
-                //OODFormWorker obj = new OODFormWorker();
                 OODFormDataGetter obj = new OODFormDataGetter();
 
                 string SSinfo = obj.getSpreadsheetNameAndKey(token);
@@ -40,7 +39,6 @@ namespace OODForms
                 PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
                 string path = pathdatalist[0].path;
                 string templateFileName = "Form4MonthlyJobAndSiteDevelopment.xlsx";
-                //string templateFileName = "formulaTestFile.xlsx";
                 string ReportPath = string.Format(path, templateFileName);
 
                 long PeopleID = long.Parse(peopleIDString);
@@ -106,10 +104,6 @@ namespace OODForms
                 WS.Cell("K73").Value = string.Empty;
                 WS.Cell("K74").Value = string.Empty;
             }
-
-
-            //string EmploymentGoal = String.Format("{0}", row["ReviewGoal"].ToString().Trim());
-            //WS.Cell("k19").Value = EmploymentGoal;
 
             string OODStaff = string.Empty;
             string MiddleName = string.Empty;
@@ -177,10 +171,6 @@ namespace OODForms
                 }
 
             }
-
-            //WS.Cell("k73").Value = row["IndividualsInputOnSearch"].ToString().Trim();
-
-            //WS.Cell("k74").Value = row["PotentialIssues"].ToString().Trim();
 
             ds = obj.OODDevelopment2(AuthorizationNumber, StartDate, EndDate, serviceCode, userID);
             if (ds.Tables.Count > 0)
