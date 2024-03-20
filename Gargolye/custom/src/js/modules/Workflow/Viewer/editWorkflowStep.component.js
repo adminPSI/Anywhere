@@ -270,9 +270,11 @@ class EditWorkflowStepComponent {
     }
 
     async poplateResponsibleDropDownbyTypeID(typeID) {
+        const attachmentInputs = document.querySelector('.generalInfo');
+        var peopleId = attachmentInputs.dataset.peopleId;  
         const { 
             getPeopleNamesResult: people,
-        } = await WorkflowViewerAjax.getPeopleNamesAsync('0', typeID);  
+        } = await WorkflowViewerAjax.getPeopleNamesAsync(peopleId, typeID);   
         let data = people.map((person) => ({
             id: person.peopleId,
             value: person.peopleId,
