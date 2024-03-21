@@ -133,7 +133,11 @@ const Employment = (() => {
             style: 'secondary',
             type: 'contained',
             classNames: 'entryBtn',
-            callback: async () => { NewEmployment.refreshEmployment(positionId = undefined, '', '', selectedConsumersName, selectedConsumersId) },
+            callback: async () => {
+                if (!newPositionBtn.classList.contains('disabled')) {
+                    NewEmployment.refreshEmployment(positionId = undefined, '', '', selectedConsumersName, selectedConsumersId)
+                }
+            },
         });
 
         const editEmployerBtn = button.build({
@@ -163,7 +167,7 @@ const Employment = (() => {
                     buttonsData.forEach(function (buttonData) {
                         buttonData.filterValues = getReportValues();
                     });
-                    
+
                     generateReports.showReportsPopup(buttonsData);
                 },
             });
@@ -191,7 +195,7 @@ const Employment = (() => {
         entryButtonBar.appendChild(editEmployerBtn);
         if ($.session.EmploymentView) {
             entryButtonBar.appendChild(reportsBtn);
-        }        
+        }
         buttonBar.appendChild(entryButtonBar);
 
         return buttonBar;
@@ -212,7 +216,7 @@ const Employment = (() => {
         }
     }
 
-    function getReportValues() { 
+    function getReportValues() {
         return (reportValues = {
             consumerID: selectedConsumersId,
             employer: filterValues.EmployerID == undefined ? '%' : filterValues.EmployerID,
