@@ -598,7 +598,7 @@ var outcomesAjax = (function () {
     }
 
     async function insertOutcomeInfoAsync(
-        startDate, endDate, outcomeType, outcomeStatement, userID, goalId,consumerId
+        startDate, endDate, outcomeType, outcomeStatement, userID, goalId, consumerId, location
     ) {
         try {
             const result = await $.ajax({
@@ -617,10 +617,11 @@ var outcomesAjax = (function () {
                     startDate: startDate,
                     endDate: endDate,
                     outcomeType: outcomeType,
-                    outcomeStatement: outcomeStatement,                  
+                    outcomeStatement: outcomeStatement,
                     userID: userID,
                     goalId: goalId,
                     consumerId: consumerId,
+                    location: location
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -632,7 +633,7 @@ var outcomesAjax = (function () {
     }
 
     async function insertOutcomeServiceInfoAsync(
-        startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId
+        startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId, location, duration
     ) {
         try {
             const result = await $.ajax({
@@ -652,7 +653,7 @@ var outcomesAjax = (function () {
                     endDate: endDate,
                     outcomeType: outcomeType,
                     servicesStatement: servicesStatement,
-                    ServiceType: ServiceType,                    
+                    ServiceType: ServiceType,
                     method: method,
                     success: success,
                     frequencyModifier: frequencyModifier,
@@ -661,6 +662,34 @@ var outcomesAjax = (function () {
                     userID: userID,
                     objectiveId: objectiveId,
                     consumerId: consumerId,
+                    location: location,
+                    duration: duration
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getLocationDropDownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getLocationDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -698,5 +727,6 @@ var outcomesAjax = (function () {
         getServiceFrequencyTypeDropDownAsync,
         insertOutcomeInfoAsync,
         insertOutcomeServiceInfoAsync,
+        getLocationDropDownAsync,
     };
 })();
