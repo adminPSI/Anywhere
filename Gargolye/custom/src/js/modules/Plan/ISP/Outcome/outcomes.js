@@ -110,6 +110,10 @@ const planOutcomes = (() => {
       outcomesProgressSummary.classList.remove('error');
     }
   }
+  function responsibleProviderIsSalesforceLocationCheck(responsiblebleProvider) {
+    // Check if the last character of the string is 'L' (This means it is a salesforce location id)
+    return responsiblebleProvider.endsWith('L');
+  }
 
   //*------------------------------------------------------
   //* DROPDOWNS
@@ -662,6 +666,7 @@ const planOutcomes = (() => {
       whenHowOftenValue: [],
       whenHowOftenFrequency: [],
       whenHowOftenText: [],
+      isSalesforceLocation: []
     };
 
     Object.values(saveData.responsibilities).forEach(resp => {
@@ -673,7 +678,14 @@ const planOutcomes = (() => {
       if (resp.responsibleProvider === '%') {
         respData.responsibleProvider.push(0);
       } else {
-        respData.responsibleProvider.push(resp.responsibleProvider);
+        if ($.session.applicationName === 'Advisor') {
+          resp.isSalesforceLocation = responsibleProviderIsSalesforceLocationCheck(resp.responsibleProvider);
+          resp.responsibleProvider = UTIL.removeNonIntegerCharactersFromString(resp.responsibleProvider);
+          respData.isSalesforceLocation.push(resp.isSalesforceLocation);
+          respData.responsibleProvider.push(resp.responsibleProvider);
+        } else {
+          respData.responsibleProvider.push(resp.responsibleProvider);
+        }
       }
 
       respData.whenHowOftenFrequency.push(parseInt(resp.whenHowOftenFrequency));

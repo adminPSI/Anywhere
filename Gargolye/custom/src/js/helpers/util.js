@@ -480,6 +480,11 @@ const UTIL = (function () {
     return number < 0 ? Math.ceil(number) : Math.floor(number);
   }
 
+  function removeNonIntegerCharactersFromString(inputString) {
+    // Use a regular expression to remove non-integer characters from string
+    return inputString.replace(/[^\d]/g, '');
+}
+
   function validateTime(time) {
     const splitTime = time.split('.'); //Edge Chromium adds milliseconds to end of time when using time picker
     return /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(splitTime[0]);
@@ -841,6 +846,7 @@ const UTIL = (function () {
     removeDecimals,
     removeQuotes,
     toInteger,
+    removeNonIntegerCharactersFromString,
     validateTime,
     validateDateFromInput,
     warningPopup,
