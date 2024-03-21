@@ -128,6 +128,7 @@ const planConsentAndSign = (() => {
       section: '',
       questionId: '0',
       vendorId: selectedMemberData.vendorId,
+      locationId: selectedMemberData.locationId,
     };
 
     let stuff = await consentAndSignAjax.insertTeamMember(data);

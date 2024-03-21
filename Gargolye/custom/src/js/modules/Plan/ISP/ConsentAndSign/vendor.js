@@ -117,7 +117,7 @@ const csVendor = (() => {
       var theseLocations = teamMemberData.filter(member => member.locationId !== '');
       facilitiesGroup.dropdownValues = theseLocations.map(ps => {
         return {
-          value: `${ps.locationId}L`,
+          value: `${ps.name}LOCATIONID:${ps.locationId}L`,
           text: ps.name,
         };
       });
@@ -135,6 +135,14 @@ const csVendor = (() => {
    // groupDropdownData.push(facilitiesGroup);
     groupDropdownData.push(vendorGroup);
     groupDropdownData.push(nonVendorGroup);
+
+    if (facilitiesGroup.dropdownValues.length > 0) {
+      for (let i = 0; i < facilitiesGroup.dropdownValues.length; i++) {
+        if (facilitiesGroup.dropdownValues[i].text.trim() === teamMember.trim()){
+          teamMember = facilitiesGroup.dropdownValues[i].value;
+        }
+      }
+    }
 
     dropdown.groupingPopulate({
       dropdown: vendorDropdown,
@@ -403,20 +411,33 @@ const csVendor = (() => {
       callback: async event => {
         selectedMemberData.name = event.target.value;
 
+
         if (event.target.value === '') {
           vendorDropdown.classList.add('error');
         } else {
           vendorDropdown.classList.remove('error');
         }
 
-        const vendorRel = getSelectedVendorRel(vendorData, selectedMemberData.name);
-        if (selectedMemberData.name === '') {
-          selectedMemberData.buildingNumber = '';
-          selectedMemberData.vendorId = '';
-        } else {
-          selectedMemberData.buildingNumber = vendorRel.vendorAddress;
-          selectedMemberData.vendorId = vendorRel.vendorId;
+        if (selectedMemberData.name.includes('LOCATIONID:')) {
+          
+          arr = event.target.value.split("LOCATIONID:");
+          selectedMemberData.name = arr[0];
+          selectedMemberData.locationId = arr[1];
+          selectedMemberData.vendorId = arr[1];
+          
         }
+        
+        if (!selectedMemberData.vendorId.includes('LOCATIONID:')) {
+          const vendorRel = getSelectedVendorRel(vendorData, selectedMemberData.name);
+          if (selectedMemberData.name === '') {
+            selectedMemberData.buildingNumber = '';
+            selectedMemberData.vendorId = '';
+          } else {
+            selectedMemberData.buildingNumber = vendorRel.vendorAddress;
+            selectedMemberData.vendorId = vendorRel.vendorId;
+          }
+        }
+        
 
         buildingNumberInput.childNodes[0].value = selectedMemberData.buildingNumber.substring(0, 4);
         buildingNumberInput.classList.add('disabled');

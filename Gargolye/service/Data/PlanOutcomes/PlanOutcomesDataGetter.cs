@@ -232,7 +232,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        public string insertPlanOutcomeExperienceResponsibility(string experienceId, long responsibleContact, string responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText)
+        public string insertPlanOutcomeExperienceResponsibility(string experienceId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText, bool isSalesforceLocation)
         {
 
             logger.debug("insertPlanOutcomesExperiences ");
@@ -244,6 +244,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             list.Add(whenHowOftenValue);
             list.Add(whenHowOftenFrequency.ToString());
             list.Add(whenHowOftenText);
+            list.Add(isSalesforceLocation.ToString().ToUpper());
             string text = "CALL DBA.ANYW_ISP_InsertPlanOutcomeExperienceResponsibility(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -256,7 +257,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        public string updatePlanOutcomeExperienceResponsibility(long responsibilityId, long responsibleContact, string responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText)
+        public string updatePlanOutcomeExperienceResponsibility(long responsibilityId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText)
         {
 
             logger.debug("insertPlanOutcomesExperiences ");
