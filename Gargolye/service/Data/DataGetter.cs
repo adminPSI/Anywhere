@@ -603,7 +603,7 @@ namespace Anywhere.Data
                 logger.error("524", ex.Message + " ANYW_GetStrongPassword()");
                 return "524: Error Getting Strong Password Requirements";
             }
-        
+
         }
 
         public string getCustomTextAndAnywhereVersion()
@@ -1038,7 +1038,7 @@ namespace Anywhere.Data
         }
 
         public string getCaseNoteAttachmentsListForGroupNote(string caseNoteId)
-        {            
+        {
             logger.debug("deleteCaseNoteAttachment");
             List<string> list = new List<string>();
             list.Add(caseNoteId);
@@ -1059,7 +1059,7 @@ namespace Anywhere.Data
             if (tokenValidator(token) == false) return null;
             try
             {
-                if(imageFile == "")
+                if (imageFile == "")
                 {
                     File.Delete(@portraitPath + id + ".png");
                 }
@@ -6573,6 +6573,24 @@ namespace Anywhere.Data
             }
         }
 
+        public string getLocationDropDown(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getLocationDropDown" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_GoalsAndServices_getLocationDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices_getLocationDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices_getLocationDropDown";
+            }
+        }
+
         public string getGoalEntriesById(string token, string goalId)
         {
             if (tokenValidator(token) == false) return null;
@@ -6648,7 +6666,7 @@ namespace Anywhere.Data
             }
         }
 
-        public string insertOutcomeInfo(string token, string startDate, string endDate, string outcomeType, string outcomeStatement, string userID, string goalId, string consumerId)
+        public string insertOutcomeInfo(string token, string startDate, string endDate, string outcomeType, string outcomeStatement, string userID, string goalId, string consumerId, string location)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertOutcomeInfo" + token);
@@ -6661,6 +6679,7 @@ namespace Anywhere.Data
             list.Add(userID);
             list.Add(goalId);
             list.Add(consumerId);
+            list.Add(location);
             string text = "CALL DBA.ANYW_GoalsAndServices_insertOutcomeInfo(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -6673,7 +6692,7 @@ namespace Anywhere.Data
             }
         }
 
-        public string insertOutcomeServiceInfo(string token, string startDate, string endDate, string outcomeType, string servicesStatement, string ServiceType, string method, string success, string frequencyModifier, string frequency, string frequencyPeriod, string userID, string objectiveId, string consumerId)
+        public string insertOutcomeServiceInfo(string token, string startDate, string endDate, string outcomeType, string servicesStatement, string ServiceType, string method, string success, string frequencyModifier, string frequency, string frequencyPeriod, string userID, string objectiveId, string consumerId, string location, string duration)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertOutcomeServiceInfo" + token);
@@ -6692,6 +6711,8 @@ namespace Anywhere.Data
             list.Add(userID);
             list.Add(objectiveId);
             list.Add(consumerId);
+            list.Add(location);
+            list.Add(duration);
             string text = "CALL DBA.ANYW_GoalsAndServices_insertOutcomeServiceInfo(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

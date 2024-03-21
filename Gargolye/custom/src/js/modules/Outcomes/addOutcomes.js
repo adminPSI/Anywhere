@@ -9,6 +9,7 @@ const addOutcomes = (() => {
     let outcomeStatement;
     let goalId;
     let BtnName;
+    let location;
 
     async function init(selectedConsume, goalID) {
         selectedConsumers = selectedConsume;
@@ -40,6 +41,7 @@ const addOutcomes = (() => {
             endDate = getGoalEntriesByIdResult[0].effectiveDateEnd == '' ? '' : moment(getGoalEntriesByIdResult[0].effectiveDateEnd).format('YYYY-MM-DD');
             outcomeType = getGoalEntriesByIdResult[0].outcomeType;
             outcomeStatement = getGoalEntriesByIdResult[0].outcomeStatement;
+            location = getGoalEntriesByIdResult[0].location;
             BtnName = 'UPDATE';
         }
         else {
@@ -47,6 +49,7 @@ const addOutcomes = (() => {
             endDate = '';
             outcomeType = '';
             outcomeStatement = '';
+            location = '';
             BtnName = 'SAVE';
         }
 
@@ -77,6 +80,12 @@ const addOutcomes = (() => {
             label: 'End Date',
             style: 'secondary',
             value: endDate,
+        });
+        locationDropdown = dropdown.build({
+            id: 'locationDropdown',
+            label: "Location",
+            dropdownId: "locationDropdown",
+            value: location,
         });
 
         // button
@@ -116,6 +125,8 @@ const addOutcomes = (() => {
         dateWrap.appendChild(dateStart);
         dateEnd.style.marginLeft = '2%';
         dateWrap.appendChild(dateEnd);
+        locationDropdown.style.marginLeft = '2%';
+        dateWrap.appendChild(locationDropdown);
         addNewCardBody.appendChild(dateWrap);
 
         var btnWrap = document.createElement('div');
@@ -150,6 +161,17 @@ const addOutcomes = (() => {
         }));
         outcomeTypeData.unshift({ id: null, value: '', text: '' });
         dropdown.populate("outcomeDropdown", outcomeTypeData, outcomeType);
+
+        const {
+            getLocationDropDownResult: locationDrop,
+        } = await outcomesAjax.getLocationDropDownAsync();
+        let locationData = locationDrop.map((locationDrops) => ({
+            id: locationDrops.locationID,
+            value: locationDrops.locationID,
+            text: locationDrops.locationDescription
+        }));
+        locationData.unshift({ id: null, value: '', text: '' });
+        dropdown.populate("locationDropdown", locationData, location);
     }
 
     function eventListeners() {
@@ -158,6 +180,11 @@ const addOutcomes = (() => {
             outcomeType = selectedOption.value;
             outcomeTypeName = selectedOption.innerHTML;
             checkRequiredFieldsOfAddOutcome();
+        });
+
+        locationDropdown.addEventListener("change", event => {
+            var selectedOption = event.target.options[event.target.selectedIndex];
+            location = selectedOption.value;
         });
 
         outcomeStatementInput.addEventListener('input', event => {
@@ -224,7 +251,7 @@ const addOutcomes = (() => {
     }
 
     async function saveUpdateOutcomes() {
-        const result = await outcomesAjax.insertOutcomeInfoAsync(startDate, endDate, outcomeType, outcomeStatement, $.session.UserId, goalId, selectedConsumerId);
+        const result = await outcomesAjax.insertOutcomeInfoAsync(startDate, endDate, outcomeType, outcomeStatement, $.session.UserId, goalId, selectedConsumerId,location);
         const { insertOutcomeInfoResult } = result;
         if (insertOutcomeInfoResult[0].goal_id != '0') {
             addEditOutcomeServices.init(selectedConsumers)
