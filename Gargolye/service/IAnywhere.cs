@@ -3598,6 +3598,12 @@ namespace Anywhere
            UriTemplate = "/getTeamMemberBySalesForceId/")]
         PlanSignatureWorker.PlanSignatures[] getTeamMemberBySalesForceId(string salesForceId);
 
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getLocationswithSalesforceId/")]
+        PlanSignatureWorker.Locations[] getLocationswithSalesforceId(string token);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,

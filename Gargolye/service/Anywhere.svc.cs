@@ -2558,6 +2558,12 @@ namespace Anywhere
             return psw.getTeamMemberBySalesForceId(salesForceId);
         }
 
+        public PlanSignatureWorker.Locations[] getLocationswithSalesforceId(string token)
+        {
+            return psw.getLocationswithSalesforceId(token);
+        }
+
+
         public PlanSignatureWorker.TeamMemberFromState[] getTeamMemberListFromState(long peopleId)
         {
             return psw.getTeamMemberListFromState(peopleId);
