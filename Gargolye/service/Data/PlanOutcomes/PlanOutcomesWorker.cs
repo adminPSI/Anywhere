@@ -129,12 +129,12 @@ namespace Anywhere.service.Data.PlanOutcomes
             return resposibilityIds;
         }
 
-        public string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText)
+        public string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
         {
             var j = 0;
             foreach (long responsibilityId in responsibilityIds)
             {
-                pdg.updatePlanOutcomeExperienceResponsibility(responsibilityId, responsibleContact[j], responsibleProvider[j], whenHowOftenValue[j], whenHowOftenFrequency[j], whenHowOftenText[j]);
+                pdg.updatePlanOutcomeExperienceResponsibility(responsibilityId, responsibleContact[j], responsibleProvider[j], whenHowOftenValue[j], whenHowOftenFrequency[j], whenHowOftenText[j], isSalesforceLocation[j]);
                 j++;
             }
 
@@ -162,7 +162,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             return "Sucess";
         }
 
-        public string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText)
+        public string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
         {
             var i = 0;
             var j = 0;
@@ -172,7 +172,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             {
                 foreach (long responsibilityId in responsibilityIds)
                 {
-                    pdg.updatePlanOutcomeExperienceResponsibility(responsibilityId, responsibleContact[j], responsibleProvider[j], whenHowOftenValue[j], whenHowOftenFrequency[j], whenHowOftenText[j]);
+                    pdg.updatePlanOutcomeExperienceResponsibility(responsibilityId, responsibleContact[j], responsibleProvider[j], whenHowOftenValue[j], whenHowOftenFrequency[j], whenHowOftenText[j], isSalesforceLocation[j]);
                     j++;
                 }
             }
