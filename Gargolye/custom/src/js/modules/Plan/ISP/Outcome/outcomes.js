@@ -677,6 +677,7 @@ const planOutcomes = (() => {
       }
       if (resp.responsibleProvider === '%') {
         respData.responsibleProvider.push(0);
+        respData.isSalesforceLocation.push(false);
       } else {
         if ($.session.applicationName === 'Advisor') {
           resp.isSalesforceLocation = responsibleProviderIsSalesforceLocationCheck(resp.responsibleProvider);
@@ -685,6 +686,7 @@ const planOutcomes = (() => {
           respData.responsibleProvider.push(resp.responsibleProvider);
         } else {
           respData.responsibleProvider.push(resp.responsibleProvider);
+          respData.isSalesforceLocation.push(false);
         }
       }
 
