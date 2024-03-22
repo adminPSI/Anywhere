@@ -1511,9 +1511,10 @@ const WaitingListAssessment = (() => {
       tocLinks['riskMitigation'].classList.remove('hiddenPage');
     }
 
+    const isRMActionRequiredNo = wlData.riskMitigation.rMIsActionRequiredIn3oDays === 'rMIsActionRequiredIn3oDaysno';
     const isRMActionRequiredYes = wlData.riskMitigation.rMIsActionRequiredIn3oDays === 'rMIsActionRequiredIn3oDaysyes';
 
-    if (isRMActionRequiredYes) {
+    if (isRMActionRequiredNo) {
       wlForms['icfDischarge'].form.parentElement.classList.remove('hiddenPage');
       wlForms['intermittentSupports'].form.parentElement.classList.remove('hiddenPage');
       wlForms['childProtectionAgency'].form.parentElement.classList.remove('hiddenPage');
@@ -2870,11 +2871,13 @@ const WaitingListAssessment = (() => {
       });
     },
     rMIsActionRequiredIn3oDays: async ({ value }) => {
-      const isRisksActionRequired = value === 'yes';
+      //const isRisksActionRequired = value === 'yes';
+      const isRisksActionRequired = value === 'no';
       ['icfDischarge', 'intermittentSupports', 'childProtectionAgency', 'adultDayEmployment', 'dischargePlan'].forEach(
         formName => {
           wlForms[formName].form.parentElement.classList.toggle('hiddenPage', !isRisksActionRequired);
           tocLinks[formName].classList.toggle('hiddenPage', !isRisksActionRequired);
+
           if (!isRisksActionRequired) {
             if (sectionResets[formName]) {
               sectionResets[formName]();
