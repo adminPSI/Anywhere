@@ -677,6 +677,7 @@ const planOutcomes = (() => {
       }
       if (resp.responsibleProvider === '%') {
         respData.responsibleProvider.push(0);
+        respData.isSalesforceLocation.push(false);
       } else {
         if ($.session.applicationName === 'Advisor') {
           resp.isSalesforceLocation = responsibleProviderIsSalesforceLocationCheck(resp.responsibleProvider);
@@ -685,6 +686,7 @@ const planOutcomes = (() => {
           respData.responsibleProvider.push(resp.responsibleProvider);
         } else {
           respData.responsibleProvider.push(resp.responsibleProvider);
+          respData.isSalesforceLocation.push(false);
         }
       }
 
@@ -700,6 +702,7 @@ const planOutcomes = (() => {
       const whoResponsible = getColTextForWhoResponsible(
         saveData.responsibilities[index].responsibleContact,
         saveData.responsibilities[index].responsibleProvider,
+        saveData.responsibilities[index].isSalesforceLocation
       );
       const whenHowOften = getColTextForWhenHowOften(
         saveData.responsibilities[index].whenHowOftenFrequency,
@@ -708,9 +711,12 @@ const planOutcomes = (() => {
       );
 
       const vendorID =
-        saveData.responsibilities[index].responsibleContact === '%'
-          ? saveData.responsibilities[index].responsibleProvider
-          : saveData.responsibilities[index].responsibleContact;
+      saveData.responsibilities[index].responsibleContact === '%' &&
+      saveData.responsibilities[index].isSalesforceLocation
+        ? saveData.responsibilities[index].responsibleProvider + 'L'
+        : saveData.responsibilities[index].responsibleContact === '%'
+        ? saveData.responsibilities[index].responsibleProvider
+        : saveData.responsibilities[index].responsibleContact;
       const respId = saveData.responsibilities[index].responsibilityIds;
       selectedVendors[respId] = vendorID;
 
@@ -804,6 +810,7 @@ const planOutcomes = (() => {
       whenHowOftenValue: [],
       whenHowOftenFrequency: [],
       whenHowOftenText: [],
+      isSalesforceLocation: []
     };
 
     Object.entries(updateData.responsibilities).map(async ([key, resp]) => {
@@ -825,16 +832,18 @@ const planOutcomes = (() => {
     Object.entries(updateData.responsibilities).map(async ([key, resp], index) => {
       const responsibleContact =
         resp.responsibleContact === '%' ? 0 : parseInt(resp.responsibleContact);
-      const responsibleProvider =
+      const isSalesforceLocation = responsibleProviderIsSalesforceLocationCheck(resp.responsibleProvider);
+      let responsibleProvider =
         resp.responsibleProvider === '%' ? 0 : resp.responsibleProvider;
+      responsibleProvider = UTIL.removeNonIntegerCharactersFromString(resp.responsibleProvider);
       const whenHowOftenFrequency = parseInt(resp.whenHowOftenFrequency);
       const whenHowOftenValue = resp.whenHowOftenValue;
       const whenHowOftenText = resp.whenHowOftenText;
 
       //* push to new table data
       const whoResponsible = getColTextForWhoResponsible(
-        `${responsibleContact}`,
-        `${responsibleProvider}`,
+        `${resp.responsibleContact}`,
+        `${resp.responsibleProvider}`,
       );
       const whenHowOften = getColTextForWhenHowOften(
         `${whenHowOftenFrequency}`,
@@ -870,6 +879,7 @@ const planOutcomes = (() => {
         respData.whenHowOftenFrequency.push(whenHowOftenFrequency);
         respData.whenHowOftenValue.push(whenHowOftenValue);
         respData.whenHowOftenText.push(whenHowOftenText);
+        respData.isSalesforceLocation.push(isSalesforceLocation);
       } else {
         const respIds = await planOutcomesAjax.insertPlanOutcomeExperienceResponsibility({
           token: $.session.Token,
@@ -879,6 +889,7 @@ const planOutcomes = (() => {
           whenHowOftenValue: [whenHowOftenValue],
           whenHowOftenFrequency: [whenHowOftenFrequency],
           whenHowOftenText: [whenHowOftenText],
+          isSalesforceLocation: [isSalesforceLocation]
         });
         updateData.responsibilities[key].responsibilityIds = respIds[0];
       }
@@ -958,8 +969,11 @@ const planOutcomes = (() => {
 
     return whenHowOften;
   }
-  function getColTextForWhoResponsible(responsibleContact, responsibleProvider) {
+  function getColTextForWhoResponsible(responsibleContact, responsibleProvider, isSalesforceLocation) {
     if (responsibleProvider !== '%' && responsibleProvider !== '0') {
+      if (isSalesforceLocation) {
+        responsibleProvider = responsibleProvider + 'L';
+      }
       const filteredVendor = dropdownData.serviceVendors.filter(
         dd => dd.vendorId === responsibleProvider,
       );

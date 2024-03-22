@@ -105,24 +105,21 @@ const csVendor = (() => {
       }
     });
 
-    const planId = plan.getCurrentPlanId();
-    const teamMemberData = await consentAndSignAjax.getConsentAndSignData({
-      token: $.session.Token,
-      assessmentId: planId,
-    });
+    
+    const locationData = await consentAndSignAjax.getLocationswithSalesforceId();
 
     const groupDropdownData = [];
 
     if ($.session.applicationName !== 'Gatekeeper') {  
-      var theseLocations = teamMemberData.filter(member => member.locationId !== '');
-      facilitiesGroup.dropdownValues = theseLocations.map(ps => {
+      //var theseLocations = locationData.filter(member => member.locationId !== '');
+      facilitiesGroup.dropdownValues = locationData.map(ps => {
         return {
-          value: `${ps.name}LOCATIONID:${ps.locationId}L`,
-          text: ps.name,
+          value: `${ps.Name}LOCATIONID:${ps.ID}L`,
+          text: ps.Name,
         };
       });
 
-      facilitiesGroup.dropdownValues = removeDups(facilitiesGroup.dropdownValues);
+     // facilitiesGroup.dropdownValues = removeDups(facilitiesGroup.dropdownValues);
       facilitiesGroup.dropdownValues.sort((a, b) => {
         const textA = a.text.toUpperCase();
         const textB = b.text.toUpperCase();

@@ -576,7 +576,7 @@ const planData = (() => {
       });
 
      // var theseVendors = teamMemberData.filter(vendor => vendor.vendorId !== '' && vendor.salesForceId !== '');
-      var theseVendors = teamMemberData.filter(member => member.vendorId !== '' && member.salesForceId !== '');
+      var theseVendors = teamMemberData.filter(member => member.vendorId !== '');
       paidSupportsGroup.dropdownValues = theseVendors.map(ps => {
         return {
           value: `${ps.vendorId}V`,
@@ -593,7 +593,7 @@ const planData = (() => {
       if (theseVendors.length > 0) groupDropdownData.push(paidSupportsGroup);
 
       if ($.session.applicationName !== 'Gatekeeper') {  
-      var theseLocations = teamMemberData.filter(member => member.locationId !== '' && member.salesForceId !== '');
+      var theseLocations = teamMemberData.filter(member => member.locationId !== '');
      //var theseLocations = teamMemberData.filter(member => member.locationId !== '');
       locationsGroup.dropdownValues = theseLocations.map(ps => {
         return {
