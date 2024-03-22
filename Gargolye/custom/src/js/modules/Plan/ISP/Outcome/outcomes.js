@@ -835,7 +835,9 @@ const planOutcomes = (() => {
       const isSalesforceLocation = responsibleProviderIsSalesforceLocationCheck(resp.responsibleProvider);
       let responsibleProvider =
         resp.responsibleProvider === '%' ? 0 : resp.responsibleProvider;
-      responsibleProvider = UTIL.removeNonIntegerCharactersFromString(resp.responsibleProvider);
+        if (responsibleProvider !== 0) {
+          responsibleProvider = UTIL.removeNonIntegerCharactersFromString(resp.responsibleProvider);
+        }
       const whenHowOftenFrequency = parseInt(resp.whenHowOftenFrequency);
       const whenHowOftenValue = resp.whenHowOftenValue;
       const whenHowOftenText = resp.whenHowOftenText;
