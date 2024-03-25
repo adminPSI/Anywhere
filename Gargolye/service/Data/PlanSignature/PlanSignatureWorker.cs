@@ -438,7 +438,7 @@ namespace Anywhere.service.Data.PlanSignature
                                         bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId, string clear, string email)
         {
             //Runs this section if we are updating the vendors and not the team member
-            if (vendorId != null)
+            if (vendorId != null && vendorId != "")
             {
                 if (buildingNumber == null) buildingNumber = "";
                 if (dateOfBirth == null || dateOfBirth == "") dateOfBirth = "";
