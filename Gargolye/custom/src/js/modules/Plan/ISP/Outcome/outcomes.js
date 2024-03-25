@@ -110,10 +110,6 @@ const planOutcomes = (() => {
       outcomesProgressSummary.classList.remove('error');
     }
   }
-  function responsibleProviderIsSalesforceLocationCheck(responsiblebleProvider) {
-    // Check if the last character of the string is 'L' (This means it is a salesforce location id)
-    return responsiblebleProvider.endsWith('L');
-  }
 
   //*------------------------------------------------------
   //* DROPDOWNS
@@ -319,6 +315,12 @@ const planOutcomes = (() => {
     if (filteredWho && filteredWho.length > 0) {
       return filteredWho[0].teamMember === 'Case Manager' ? true : false;
     }
+  }
+
+  function isSalesforceLocationTrue(value) {
+    // Check if value exists in dropdownData.serviceVendors array and its isSalesforceLocation is 'True'
+    const vendor = dropdownData.serviceVendors.find(vendor => vendor.vendorId === value);
+    return vendor ? vendor.isSalesforceLocation === 'True' : false;
   }
 
   //*------------------------------------------------------
@@ -680,7 +682,7 @@ const planOutcomes = (() => {
         respData.isSalesforceLocation.push(false);
       } else {
         if ($.session.applicationName === 'Advisor') {
-          resp.isSalesforceLocation = responsibleProviderIsSalesforceLocationCheck(resp.responsibleProvider);
+          resp.isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider);
           resp.responsibleProvider = UTIL.removeNonIntegerCharactersFromString(resp.responsibleProvider);
           respData.isSalesforceLocation.push(resp.isSalesforceLocation);
           respData.responsibleProvider.push(resp.responsibleProvider);
@@ -713,7 +715,7 @@ const planOutcomes = (() => {
       const vendorID =
       saveData.responsibilities[index].responsibleContact === '%' &&
       saveData.responsibilities[index].isSalesforceLocation
-        ? saveData.responsibilities[index].responsibleProvider + 'L'
+        ? saveData.responsibilities[index].responsibleProvider
         : saveData.responsibilities[index].responsibleContact === '%'
         ? saveData.responsibilities[index].responsibleProvider
         : saveData.responsibilities[index].responsibleContact;
@@ -974,7 +976,7 @@ const planOutcomes = (() => {
   function getColTextForWhoResponsible(responsibleContact, responsibleProvider, isSalesforceLocation) {
     if (responsibleProvider !== '%' && responsibleProvider !== '0') {
       if (isSalesforceLocation) {
-        responsibleProvider = responsibleProvider + 'L';
+        responsibleProvider = responsibleProvider;
       }
       const filteredVendor = dropdownData.serviceVendors.filter(
         dd => dd.vendorId === responsibleProvider,

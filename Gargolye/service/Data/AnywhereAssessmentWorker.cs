@@ -307,6 +307,7 @@ namespace Anywhere.service.Data
         {
             public string vendorId { get; set; }
             public string vendorName { get; set; }
+            public string isSalesforceLocation { get; set; }
         }
 
         public class ActiveVendors
