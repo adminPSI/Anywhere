@@ -158,6 +158,31 @@ const ISP = (function () {
       navItem.classList.add('planISP__navItem');
       navItem.innerHTML = `${section.title}`;
 
+      if (section.title === 'Summary') {
+        const summaryAlertDiv = document.createElement('div');
+        summaryAlertDiv.classList.add('summaryAlertDiv');
+        summaryAlertDiv.id = 'summaryAlert';
+        summaryAlertDiv.innerHTML = `${icons.error}`;
+        navItem.appendChild(summaryAlertDiv);
+        summaryAlertDiv.style.display = 'none';
+
+        // creates and shows a tip when hovering over the visible alert div
+        planValidation.createTooltip(
+          'There is data missing on this tab that is required by DODD',
+          summaryAlertDiv,
+        );
+
+        let summaryRisksValidation = planValidation.returnSummaryRisksValidation();
+
+        // If a plan returns an error on the validation check, show the alert div
+        if (!summaryRisksValidation)
+        {
+          summaryAlertDiv.style.display = 'flex';
+        } else {
+          summaryAlertDiv.style.display = 'none';
+        }
+      }
+
       // if the section is 'Outcomes' run an initial validation check on the section
       if (section.title === 'Outcomes') {
         const outcomesAlertDiv = document.createElement('div');

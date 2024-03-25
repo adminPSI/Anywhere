@@ -66,7 +66,7 @@ const csVendor = (() => {
   function removeV(ids) {
     return ids.map(id => id.replace('V', ''));
   }
-  function populateVendorDropdownData(vendorData, vendorDropdown, teamMember) {
+ async function populateVendorDropdownData(vendorData, vendorDropdown, teamMember) {
     // get vendors from the following
     // (Add Risk -> Who Is Responsible) on the Summary tab
     // (Add Experience -> Responsible Provider) on the Outcomes tab
@@ -77,6 +77,13 @@ const csVendor = (() => {
 
     let selectedVendors = [...summaryVendors, ...outcomesVendors, ...servicesVendors];
     selectedVendors = removeDups(selectedVendors);
+    
+    // 'facilities' and 'location' are used interchangeably in vendor.js and outcomes.js 
+    const facilitiesGroup = {
+      groupLabel: 'Facilities',
+      groupId: 'facilitiesGroup',
+      dropdownValues: [],
+    };
 
     const vendorGroup = {
       groupLabel: 'Plan Vendor',
@@ -98,9 +105,41 @@ const csVendor = (() => {
       }
     });
 
+    
+    const locationData = await consentAndSignAjax.getLocationswithSalesforceId();
+
     const groupDropdownData = [];
+
+    if ($.session.applicationName !== 'Gatekeeper') {  
+      //var theseLocations = locationData.filter(member => member.locationId !== '');
+      facilitiesGroup.dropdownValues = locationData.map(ps => {
+        return {
+          value: `${ps.Name}LOCATIONID:${ps.ID}L`,
+          text: ps.Name,
+        };
+      });
+
+     // facilitiesGroup.dropdownValues = removeDups(facilitiesGroup.dropdownValues);
+      facilitiesGroup.dropdownValues.sort((a, b) => {
+        const textA = a.text.toUpperCase();
+        const textB = b.text.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
+      groupDropdownData.push(facilitiesGroup);
+    }
+
+    //const groupDropdownData = [];
+   // groupDropdownData.push(facilitiesGroup);
     groupDropdownData.push(vendorGroup);
     groupDropdownData.push(nonVendorGroup);
+
+    if (facilitiesGroup.dropdownValues.length > 0) {
+      for (let i = 0; i < facilitiesGroup.dropdownValues.length; i++) {
+        if (facilitiesGroup.dropdownValues[i].text.trim() === teamMember.trim()){
+          teamMember = facilitiesGroup.dropdownValues[i].value;
+        }
+      }
+    }
 
     dropdown.groupingPopulate({
       dropdown: vendorDropdown,
@@ -369,20 +408,33 @@ const csVendor = (() => {
       callback: async event => {
         selectedMemberData.name = event.target.value;
 
+
         if (event.target.value === '') {
           vendorDropdown.classList.add('error');
         } else {
           vendorDropdown.classList.remove('error');
         }
 
-        const vendorRel = getSelectedVendorRel(vendorData, selectedMemberData.name);
-        if (selectedMemberData.name === '') {
-          selectedMemberData.buildingNumber = '';
-          selectedMemberData.vendorId = '';
-        } else {
-          selectedMemberData.buildingNumber = vendorRel.vendorAddress;
-          selectedMemberData.vendorId = vendorRel.vendorId;
+        if (selectedMemberData.name.includes('LOCATIONID:')) {
+          
+          arr = event.target.value.split("LOCATIONID:");
+          selectedMemberData.name = arr[0];
+          selectedMemberData.locationId = arr[1];
+          selectedMemberData.vendorId = arr[1];
+          
         }
+        
+        if (!selectedMemberData.vendorId.includes('LOCATIONID:')) {
+          const vendorRel = getSelectedVendorRel(vendorData, selectedMemberData.name);
+          if (selectedMemberData.name === '') {
+            selectedMemberData.buildingNumber = '';
+            selectedMemberData.vendorId = '';
+          } else {
+            selectedMemberData.buildingNumber = vendorRel.vendorAddress;
+            selectedMemberData.vendorId = vendorRel.vendorId;
+          }
+        }
+        
 
         buildingNumberInput.childNodes[0].value = selectedMemberData.buildingNumber.substring(0, 4);
         buildingNumberInput.classList.add('disabled');

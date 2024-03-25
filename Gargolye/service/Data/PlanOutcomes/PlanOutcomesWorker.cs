@@ -114,13 +114,13 @@ namespace Anywhere.service.Data.PlanOutcomes
             //return allIds;
         }
 
-        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, string[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText)
+        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
         {
             var j = 0;
             List<string> resposibilityIds = new List<string>();
             foreach (string whenHowOftenVal in whenHowOftenValue)
             {
-                string responsibileId = pdg.insertPlanOutcomeExperienceResponsibility(experienceId, responsibleContact[j], responsibleProvider[j], whenHowOftenVal, whenHowOftenFrequency[j], whenHowOftenText[j]);
+                string responsibileId = pdg.insertPlanOutcomeExperienceResponsibility(experienceId, responsibleContact[j], responsibleProvider[j], whenHowOftenVal, whenHowOftenFrequency[j], whenHowOftenText[j], isSalesforceLocation[j]);
                 ResponsibilityId[] responsibilityId = js.Deserialize<ResponsibilityId[]>(responsibileId);
                 resposibilityIds.Add(responsibilityId[0].responsibilityId.ToString());
                 j++;
@@ -129,19 +129,19 @@ namespace Anywhere.service.Data.PlanOutcomes
             return resposibilityIds;
         }
 
-        public string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, string[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText)
+        public string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
         {
             var j = 0;
             foreach (long responsibilityId in responsibilityIds)
             {
-                pdg.updatePlanOutcomeExperienceResponsibility(responsibilityId, responsibleContact[j], responsibleProvider[j], whenHowOftenValue[j], whenHowOftenFrequency[j], whenHowOftenText[j]);
+                pdg.updatePlanOutcomeExperienceResponsibility(responsibilityId, responsibleContact[j], responsibleProvider[j], whenHowOftenValue[j], whenHowOftenFrequency[j], whenHowOftenText[j], isSalesforceLocation[j]);
                 j++;
             }
 
             return "success";
         }
 
-        public string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, long[] contactId)
+        public string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, string[] contactId)
         {
             var j = 0;
             string reviewId = "";
@@ -162,7 +162,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             return "Sucess";
         }
 
-        public string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityIds, int[] responsibleContact, string[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText)
+        public string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
         {
             var i = 0;
             var j = 0;
@@ -172,7 +172,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             {
                 foreach (long responsibilityId in responsibilityIds)
                 {
-                    pdg.updatePlanOutcomeExperienceResponsibility(responsibilityId, responsibleContact[j], responsibleProvider[j], whenHowOftenValue[j], whenHowOftenFrequency[j], whenHowOftenText[j]);
+                    pdg.updatePlanOutcomeExperienceResponsibility(responsibilityId, responsibleContact[j], responsibleProvider[j], whenHowOftenValue[j], whenHowOftenFrequency[j], whenHowOftenText[j], isSalesforceLocation[j]);
                     j++;
                 }
             }
@@ -300,7 +300,7 @@ namespace Anywhere.service.Data.PlanOutcomes
                     {
                         string experienceId = "";
                         long respContact = 0;
-                        string respProvider = "0";
+                        long respProvider = 0;
                         long whenFreq = 0;
                         if (outcomes.planOutcomeExperiences[j].outcomeId == outcomes.planOutcome[i].outcomeId)
                         {
@@ -323,11 +323,11 @@ namespace Anywhere.service.Data.PlanOutcomes
                                     }
                                     if (outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].responsibleProvider != null && outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].responsibleProvider != "")
                                     {
-                                        respProvider = outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].responsibleProvider;
+                                        respProvider = long.Parse(outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].responsibleProvider);
                                     }
                                     else
                                     {
-                                        respProvider = "0";
+                                        respProvider = 0;
                                     }
                                     if (outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].whenFrequency != null && outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].whenFrequency != "")
                                     {
@@ -340,7 +340,8 @@ namespace Anywhere.service.Data.PlanOutcomes
 
                                     pdg.insertPlanOutcomeExperienceResponsibility(experienceIdObj[0].experienceId.ToString(), respContact, respProvider,
                                                                                   outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].whenValue, whenFreq,
-                                                                                  outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].whenOther);
+                                                                                  outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].whenOther,
+                                                                                  bool.Parse(outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].isSalesforceLocation));
                                 }
                             }
                         }
@@ -432,6 +433,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             public string whenFrequency { get; set; }
             public string whenOther { get; set; }
             public string whenValue { get; set; }
+            public string isSalesforceLocation { get; set; }
         }
 
         public class PlanOutcomesReviews

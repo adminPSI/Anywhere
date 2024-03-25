@@ -1179,6 +1179,13 @@ const NewEntryCF = (() => {
                 splitAmountTotal();
             });
             splitAmountInputN[i].addEventListener('focusout', event => {
+                tempAmouts = event.target.value;
+                if (tempAmouts.includes('.') && (tempAmouts.match(/\./g).length > 1 || tempAmouts.toString().split('.')[1].length > 2)) {
+                    splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value = tempAmouts.substring(0, tempAmouts.length - 1);
+                    return;
+                }
+                checkRequiredFieldsSplitTransection();
+                splitAmountTotal();  
                 if (splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value != '')
                     splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value = parseFloat(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value).toFixed(2);
             });
@@ -1289,6 +1296,7 @@ const NewEntryCF = (() => {
             style: 'secondary',
             type: 'contained',
             callback: () => {
+                cancelSplitBtn.classList.remove('disabled'); 
                 if (errorCode == 1) {
                     POPUP.hide(errorConfPOPUP);
                     POPUP.hide(splitTransPopup);
@@ -1307,6 +1315,7 @@ const NewEntryCF = (() => {
             style: 'secondary',
             type: 'outlined',
             callback: () => {
+                cancelSplitBtn.classList.remove('disabled');
                 if (errorCode == 1) {
                     POPUP.hide(errorConfPOPUP);
                     POPUP.show(splitTransPopup);
@@ -1333,6 +1342,7 @@ const NewEntryCF = (() => {
         errorConfPOPUP.appendChild(message);
         errorConfPOPUP.appendChild(btnWrap);
         POPUP.show(errorConfPOPUP);
+        cancelSplitBtn.classList.add('disabled');
     }
 
     async function splitTransSaveData() {

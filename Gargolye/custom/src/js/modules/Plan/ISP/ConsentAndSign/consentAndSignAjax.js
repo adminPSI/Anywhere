@@ -330,6 +330,29 @@ const consentAndSignAjax = (() => {
     }
   }
 
+  async function getLocationswithSalesforceId() {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getLocationswithSalesforceId/',
+        data: JSON.stringify({ token: $.session.Token }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.getLocationswithSalesforceIdResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
+
   // INSERT
   //-------------------------------------
   async function insertTeamMember(retrieveData) {
@@ -560,6 +583,7 @@ const consentAndSignAjax = (() => {
     getConsumerOrganizationId,
     getCaseManagersfromOptionsTable,
     getConsumerswithSaleforceIds,
+    getLocationswithSalesforceId,
     updateTeamMember,
     updatePlanConsentStatements,
     updateTableRowOrder,

@@ -341,7 +341,7 @@ namespace Anywhere.service.Data.ReportBuilder
 
         public string generateMinutesByDateReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string consumerName,
                                               string serviceStartDate, string serviceEndDate, string location, string originallyEnteredStart, string originallyEnteredEnd, string billCodeText, string service,
-                                              string need, string contact)
+                                              string need, string contact, string userId, string caseloadRestriction)
         { 
             if (tokenValidator(token) == false) return null;
             if (billCodeText == null)
@@ -369,6 +369,8 @@ namespace Anywhere.service.Data.ReportBuilder
             list.Add(service);
             list.Add(need);
             list.Add(contact);
+            list.Add(userId);
+            list.Add(caseloadRestriction);
             list.Add(filterSyntax);
             string text = "CALL DBA.ANYW_CaseNotes_GenerateMinutesByDateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try

@@ -85,7 +85,7 @@ var incidentTrackingWidget = (function () {
         widgetBody.innerHTML = '';
         widgetBody.appendChild(itTable);
 
-        var incidents = {};
+        var incidents = []; 
         res.forEach(r => {
             if (!incidents[r.incidentId]) {
                 incidents[r.incidentId] = r;
@@ -97,6 +97,19 @@ var incidentTrackingWidget = (function () {
                 incidents[r.incidentId].viewedBy += `, ${r.viewedBy}`;
             }
         });
+
+        incidents.sort(function (a, b) {
+            var o1 = a.consumerName.toLowerCase();
+            var o2 = b.consumerName.toLowerCase();
+
+            if (o1 < o2) return -1;
+            if (o1 > o2) return 1;
+            return 0;
+        }); 
+
+        incidents.sort(function (a, b) {
+            return new Date(b.incidentDate) - new Date(a.incidentDate);
+        });  
 
         var keys = Object.keys(incidents);
         const removeArray = [];

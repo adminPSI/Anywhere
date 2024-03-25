@@ -16,7 +16,9 @@ const addServicesForm = (() => {
     let frequencyPeriod;
     let objectiveId;
     let BtnName;
-    let outcomeGoalId
+    let outcomeGoalId;
+    let duration;
+    let location;
 
     async function init(selectedConsume, ObjectiveID , goalId) {
         selectedConsumers = selectedConsume;
@@ -54,9 +56,14 @@ const addServicesForm = (() => {
             frequencyModifier = getObjectiveEntriesByIdResult[0].frequency_modifier;
             frequency = getObjectiveEntriesByIdResult[0].frequency_occurance;
             frequencyPeriod = getObjectiveEntriesByIdResult[0].frequency_peroid;
+            duration = getObjectiveEntriesByIdResult[0].duration;
+            location = getObjectiveEntriesByIdResult[0].location;
             BtnName = 'UPDATE';
         }
         else {
+            const result = await outcomesAjax.getGoalEntriesByIdAsync(outcomeGoalId);
+            const { getGoalEntriesByIdResult } = result;
+
             startDate = UTIL.getTodaysDate();
             endDate = '';
             outcomeType = outcomeGoalId;  
@@ -67,6 +74,8 @@ const addServicesForm = (() => {
             frequencyModifier = '';
             frequency = '';
             frequencyPeriod = '';
+            duration = '';
+            location = getGoalEntriesByIdResult[0].location;
             BtnName = 'SAVE';
         }
 
@@ -125,6 +134,12 @@ const addServicesForm = (() => {
             style: 'secondary',
             value: endDate,
         });
+        locationDropdown = dropdown.build({
+            id: 'locationDropdown',
+            label: "Location",
+            dropdownId: "locationDropdown",
+            value: location,
+        });
 
         frequencyModifierDropdown = dropdown.build({
             id: 'frequencyModifierDropdown',
@@ -153,6 +168,14 @@ const addServicesForm = (() => {
             label: "Frequency Period",
             dropdownId: "frequencyPeriodDropdown",
             value: frequencyPeriod,
+        });
+
+        durationInput = input.build({
+            id: 'durationInput',
+            type: 'text',
+            label: 'Duration',
+            style: 'secondary',
+            value: duration,         
         });
 
         // button
@@ -185,10 +208,10 @@ const addServicesForm = (() => {
         column1.appendChild(addNewCard);
 
         const addNewServiceCard = document.createElement("div");
-        addNewServiceCard.classList.add("card");
+        addNewServiceCard.classList.add("card");  
         const addNewServiceCardBody = document.createElement("div");
         addNewServiceCardBody.classList.add("card__body");
-        addNewServiceCard.innerHTML = `<div class="card__header">Services</div>`;
+        addNewServiceCard.innerHTML = `<div class="card__header">Service</div>`;
         addNewServiceCard.appendChild(addNewServiceCardBody)
         column1.appendChild(addNewServiceCard)
 
@@ -209,6 +232,8 @@ const addServicesForm = (() => {
         dateWrap.appendChild(dateStart);
         dateEnd.style.marginLeft = '2%';
         dateWrap.appendChild(dateEnd);
+        locationDropdown.style.marginLeft = '2%';
+        dateWrap.appendChild(locationDropdown);
         addNewServiceCardBody.appendChild(dateWrap);
 
         addNewServiceCardBody.appendChild(consumerNameDisplay);
@@ -224,6 +249,12 @@ const addServicesForm = (() => {
         frequencyPeriodDropdown.classList.add('width32Per');
         infoWrap.appendChild(frequencyPeriodDropdown);
         addNewServiceCardBody.appendChild(infoWrap);
+
+        var durationWrap = document.createElement('div');
+        durationWrap.classList.add('frequencyDTWrap');
+        durationInput.classList.add('width32Per');
+        durationWrap.appendChild(durationInput);
+        addNewServiceCardBody.appendChild(durationWrap); 
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('addOutcomeBtnWrap');
@@ -242,9 +273,9 @@ const addServicesForm = (() => {
         populateOutcomeDropdown();
         eventListeners();
         populatefrequencyModifierDropdown();
-        RequiredFieldsOfAddServiceForm(outcomeType, ServiceType, servicesStatement, frequencyModifier, startDate, endDate);
+        RequiredFieldsOfAddServiceForm(outcomeType, servicesStatement, frequencyModifier, startDate, endDate);
         return employeeInfoDiv;
-    }
+    }  
 
     async function populatefrequencyModifierDropdown() {
         const {
@@ -291,6 +322,17 @@ const addServicesForm = (() => {
         ]);
         frequencyPeriodDropdownData.unshift({ id: null, value: '', text: '' });
         dropdown.populate("frequencyPeriodDropdown", frequencyPeriodDropdownData, frequencyPeriod);
+
+        const {
+            getLocationDropDownResult: locationDrop,
+        } = await outcomesAjax.getLocationDropDownAsync();
+        let locationData = locationDrop.map((locationDrops) => ({
+            id: locationDrops.locationID,
+            value: locationDrops.locationID,
+            text: locationDrops.locationDescription
+        }));
+        locationData.unshift({ id: null, value: '', text: '' });
+        dropdown.populate("locationDropdown", locationData, location);  
     }
 
     function eventListeners() {
@@ -304,9 +346,7 @@ const addServicesForm = (() => {
         ServiceTypeDropdown.addEventListener("change", event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             ServiceType = selectedOption.value;
-            ServiceTypeName = selectedOption.innerHTML;
-
-            getRequiredFieldsOfAddServiceForm();
+            ServiceTypeName = selectedOption.innerHTML;            
         });
 
         servicesStatementInput.addEventListener('input', event => {
@@ -345,6 +385,15 @@ const addServicesForm = (() => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             frequencyPeriod = selectedOption.value;
         });
+
+        durationInput.addEventListener('input', event => {
+            duration = event.target.value.trim();
+        });
+
+        locationDropdown.addEventListener("change", event => {
+            var selectedOption = event.target.options[event.target.selectedIndex];
+            location = selectedOption.value;
+        });
     }
 
 
@@ -353,22 +402,15 @@ const addServicesForm = (() => {
         var endDateVal = dateEnd.querySelector('#dateEnd');
         var servicesStatementVal = servicesStatementInput.querySelector('#servicesStatementInput');
         var outComeVal = outcomeDropdown.querySelector('#outcomeDropdown');
-        var serviceTypeVal = ServiceTypeDropdown.querySelector('#ServiceTypeDropdown');
         var frequencyModifierVal = frequencyModifierDropdown.querySelector('#frequencyModifierDropdown');
-        RequiredFieldsOfAddServiceForm(outComeVal.value, serviceTypeVal.value, servicesStatementVal.value, frequencyModifierVal.value, startDateVal.value, endDateVal.value);
+        RequiredFieldsOfAddServiceForm(outComeVal.value, servicesStatementVal.value, frequencyModifierVal.value, startDateVal.value, endDateVal.value);
     }
 
-    function RequiredFieldsOfAddServiceForm(outComeVal, serviceTypeVal, servicesStatementVal, frequencyModifierVal, startDateVal, endDateVal) {
+    function RequiredFieldsOfAddServiceForm(outComeVal, servicesStatementVal, frequencyModifierVal, startDateVal, endDateVal) {
         if (outComeVal === '') {
             outcomeDropdown.classList.add('error');
         } else {
             outcomeDropdown.classList.remove('error');
-        }
-
-        if (serviceTypeVal === '') {
-            ServiceTypeDropdown.classList.add('error');
-        } else {
-            ServiceTypeDropdown.classList.remove('error');
         }
 
         if (servicesStatementVal.trim() === '') { 
@@ -403,7 +445,7 @@ const addServicesForm = (() => {
     }
 
     async function saveUpdateOutcomesService() {
-        const result = await outcomesAjax.insertOutcomeServiceInfoAsync(startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, $.session.UserId, objectiveId, selectedConsumerId);
+        const result = await outcomesAjax.insertOutcomeServiceInfoAsync(startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, $.session.UserId, objectiveId, selectedConsumerId, location, duration);
         const { insertOutcomeServiceInfoResult } = result;
         if (insertOutcomeServiceInfoResult[0].objective_Id != '0') {
             addEditOutcomeServices.init(selectedConsumers)

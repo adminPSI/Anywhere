@@ -49,9 +49,35 @@ const planValidationAjax = (function () {
             console.log(error);
           }
     }
+
+    async function getSummaryRiskValidationData(planId) {
+      const retrieveData = {token: $.session.Token, planId}
+          try {
+            const data = await $.ajax({
+              type: 'POST',
+              url:
+                $.webServer.protocol +
+                '://' +
+                $.webServer.address +
+                ':' +
+                $.webServer.port +
+                '/' +
+                $.webServer.serviceName +
+                '/getSummaryRiskValidationData/',
+              data: JSON.stringify(retrieveData),
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json',
+            });
+      
+            return data.getSummaryRiskValidationDataResult;
+          } catch (error) {
+            console.log(error);
+          }
+    }
       
     return {
       getAssessmentValidationData,
-      getContactValidationData
+      getContactValidationData,
+      getSummaryRiskValidationData
     };
   })();

@@ -270,6 +270,7 @@ namespace Anywhere.service.Data
             public string effectiveDateStart { get; set; }
             public string effectiveDateEnd { get; set; }
             public string goal_id { get; set; }
+            public string location { get; set; }
 
         }
 
@@ -289,6 +290,8 @@ namespace Anywhere.service.Data
             public string frequency_modifier { get; set; }
             public string frequency_occurance { get; set; }
             public string frequency_peroid { get; set; }
+            public string location { get; set; }
+            public string duration { get; set; }
         }
 
         public class OutComePageData
@@ -307,6 +310,12 @@ namespace Anywhere.service.Data
         {
             public string serviceFrequencyType_id { get; set; }
             public string serviceFrequencyType_name { get; set; }
+        }
+
+        public class LocationType
+        {
+            public string locationDescription { get; set; }
+            public string locationID { get; set; }
         }
 
         public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)
@@ -360,9 +369,9 @@ namespace Anywhere.service.Data
             {
                 string jsonResult = "";
                 sb.Clear();
-
                 sb.Append(" select ROW_NUMBER() OVER(ORDER BY obj.Objective_id) AS itemnum, obj.Objective_ID as objective_Id, obj.goal_id as goal_id , ");
-                sb.Append(" case when obj.Objective_recurrance = 'M' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per month' ");
+                sb.Append(" case When obj.Objective_recurrance Is null or obj.Objective_recurrance = '' or obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0  then '' ");
+                sb.Append(" when obj.Objective_recurrance = 'M' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per month' ");
                 sb.Append(" when obj.Objective_recurrance = 'D' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per day' ");
                 sb.Append(" when obj.Objective_recurrance = 'W' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per week' ");
                 sb.Append(" when obj.Objective_recurrance = 'H' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per hour' ");
@@ -400,6 +409,13 @@ namespace Anywhere.service.Data
             return outcomeTypeObj;
         }
 
+        public OutcomesWorker.LocationType[] getLocationDropDown(string token)
+        {
+            string locationTypeString = dg.getLocationDropDown(token);
+            LocationType[] locationTypeObj = js.Deserialize<LocationType[]>(locationTypeString);
+            return locationTypeObj;
+        }
+
         public OutcomesWorker.PDParentOutcome[] getGoalEntriesById(string token, string goalId)
         {
             string goalString = dg.getGoalEntriesById(token, goalId);
@@ -428,16 +444,16 @@ namespace Anywhere.service.Data
             return serviceFrequencyTypeObj;
         }
 
-        public OutcomesWorker.PDParentOutcome[] insertOutcomeInfo(string token, string startDate, string endDate, string outcomeType, string outcomeStatement, string userID, string goalId, string consumerId)
+        public OutcomesWorker.PDParentOutcome[] insertOutcomeInfo(string token, string startDate, string endDate, string outcomeType, string outcomeStatement, string userID, string goalId, string consumerId, string location)
         {
-            string insertOutcomeString = dg.insertOutcomeInfo(token, startDate, endDate, outcomeType, outcomeStatement, userID, goalId, consumerId);
+            string insertOutcomeString = dg.insertOutcomeInfo(token, startDate, endDate, outcomeType, outcomeStatement, userID, goalId, consumerId, location);
             OutcomesWorker.PDParentOutcome[] insertOutcomeObj = js.Deserialize<OutcomesWorker.PDParentOutcome[]>(insertOutcomeString);
             return insertOutcomeObj;
         }
 
-        public OutcomesWorker.PDChildOutcome[] insertOutcomeServiceInfo(string token, string startDate, string endDate, string outcomeType, string servicesStatement, string ServiceType, string method, string success, string frequencyModifier, string frequency, string frequencyPeriod, string userID, string objectiveId, string consumerId)
+        public OutcomesWorker.PDChildOutcome[] insertOutcomeServiceInfo(string token, string startDate, string endDate, string outcomeType, string servicesStatement, string ServiceType, string method, string success, string frequencyModifier, string frequency, string frequencyPeriod, string userID, string objectiveId, string consumerId, string location, string duration)
         {
-            string insertOutcomeServiceString = dg.insertOutcomeServiceInfo(token, startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId);
+            string insertOutcomeServiceString = dg.insertOutcomeServiceInfo(token, startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId, location, duration);
             OutcomesWorker.PDChildOutcome[] insertOutcomeServiceObj = js.Deserialize<OutcomesWorker.PDChildOutcome[]>(insertOutcomeServiceString);
             return insertOutcomeServiceObj;
         }

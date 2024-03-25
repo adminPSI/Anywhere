@@ -447,6 +447,16 @@ namespace Anywhere.service.Data
             [DataMember(Order = 2)]
             public string actionId { get; set; }
         }
+
+        [DataContract]
+        public class ResponsiblePartyClassification
+        {
+            [DataMember(Order = 0)]
+            public string typeID { get; set; }
+            [DataMember(Order = 1)]
+            public string description { get; set; }
+
+        }
         #endregion
 
         #region WORKFLOW METHODS
@@ -518,7 +528,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public PeopleName[] getPeopleNames(string token, string peopleId)
+        public PeopleName[] getPeopleNames(string token, string peopleId, string TypeId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -526,7 +536,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    PeopleName[] people = js.Deserialize<PeopleName[]>(wfdg.getPeopleNames(peopleId, transaction));
+                    PeopleName[] people = js.Deserialize<PeopleName[]>(wfdg.getPeopleNames(peopleId, TypeId, transaction));
                     return people;
                 }
                 catch (Exception ex)
@@ -584,6 +594,24 @@ namespace Anywhere.service.Data
                     js.MaxJsonLength = Int32.MaxValue;
                     // if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
                     WorkflowStep[] steps = js.Deserialize<WorkflowStep[]>(wfdg.getResponsiblePartyIDforThisEditStep(stepId, transaction));
+                    return steps;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public ResponsiblePartyClassification[] getResponsiblePartyClassification(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    ResponsiblePartyClassification[] steps = js.Deserialize<ResponsiblePartyClassification[]>(wfdg.getResponsiblePartyClassification(token, transaction));
                     return steps;
                 }
                 catch (Exception ex)
@@ -728,7 +756,7 @@ namespace Anywhere.service.Data
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
 
                     return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "True", "", "", transaction);
-                   // return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "True", transaction);
+                    // return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "True", transaction);
 
                 }
                 catch (Exception ex)
@@ -1331,7 +1359,7 @@ namespace Anywhere.service.Data
                 case "[Step Name]":
                     dictPlaceHolderValuesforStep.Add(param, thisStep.StepName);
                     break;
-                  
+
             }
 
             return dictPlaceHolderValuesforStep;
@@ -1950,7 +1978,7 @@ namespace Anywhere.service.Data
 
 
         string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, string wantedFormAttachmentIds, string priorConsumerPlanId, DistributedTransaction transaction_insertWFDetails)
-       // string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, DistributedTransaction transaction_insertWFDetails)
+        // string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, DistributedTransaction transaction_insertWFDetails)
         {
 
             try
@@ -2016,7 +2044,7 @@ namespace Anywhere.service.Data
                 List<WorkflowTemplateStepEventAction> actions = js.Deserialize<List<WorkflowTemplateStepEventAction>>(wfdg.getWorkflowTemplateStepEventActions(null, transaction_insertWFDetails));
                 // -- Get PreviousPlan StepId 
                 List<WorkflowTemplateStepDocument> selecteddocuments = new List<WorkflowTemplateStepDocument>();
-                
+
                 if (!string.IsNullOrEmpty(wantedFormAttachmentIds)) {
                     string[] attachmentIds = wantedFormAttachmentIds.Split(',');
                     foreach (string attachmentID in attachmentIds)
@@ -2025,9 +2053,9 @@ namespace Anywhere.service.Data
                         WorkflowTemplateStepDocument[] selecteddocument = js.Deserialize<WorkflowTemplateStepDocument[]>(wfdg.getWorkflowStepDocuments(previousPlanStepId, attachmentID, priorConsumerPlanId, transaction_insertWFDetails));
                         selecteddocuments.Add(selecteddocument[0]);
                     }
-                    
+
                 }
-               
+
                 List<WorkflowTemplateStepDocument> documents = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowTemplateStepDocuments(null, transaction_insertWFDetails));
 
                 // Get relationships data used for getting responsible party relationships
@@ -2137,7 +2165,7 @@ namespace Anywhere.service.Data
                         {
                             // insert selected step documents
                             String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
-                          
+
                         }
 
                     }

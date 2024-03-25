@@ -224,6 +224,7 @@
                 iconPos: 'right',   
                 callback: function () {
                     generateReports.passFilterValuesForReport('My Case Load Roster List', null);
+                    generateReports.showWarningPopup('My Case Load Roster List')
                 },
             });
             widgetHeader.appendChild(pdfBtn);

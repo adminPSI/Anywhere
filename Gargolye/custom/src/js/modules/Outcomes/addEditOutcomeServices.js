@@ -32,20 +32,20 @@ const addEditOutcomeServices = (() => {
         pageWrap = document.createElement('div');
         const consumerCard = buildConsumerCard();
         const backbtnWrap = document.createElement('div');
-        backbtnWrap.classList.add('addOutcomeBtnWrap'); 
+        backbtnWrap.classList.add('addOutcomeBtnWrap');
 
         filteredByData = buildFilteredByData();
         addOutCome = addOutcomesButton();
         backBtn = backButton();
-        backbtnWrap.appendChild(addOutCome);  
-        backbtnWrap.appendChild(backBtn); 
+        backbtnWrap.appendChild(addOutCome);
+        backbtnWrap.appendChild(backBtn);
 
         pageWrap.appendChild(consumerCard);
-        pageWrap.appendChild(backbtnWrap); 
+        pageWrap.appendChild(backbtnWrap);
         pageWrap.appendChild(filteredByData);
         DOM.ACTIONCENTER.appendChild(pageWrap);
 
-        if ($.session.InsertOutcomes == true) { 
+        if ($.session.InsertOutcomes == true) {
             addOutCome.classList.remove('disabled');
         }
         else {
@@ -88,9 +88,9 @@ const addEditOutcomeServices = (() => {
             style: 'secondary',
             type: 'outlined',
             callback: async () => {
-                document.getElementById('mini_roster').style.display = 'block';   
+                document.getElementById('mini_roster').style.display = 'block';
                 outcomes.backToOutcomeLoad(selectedConsumer);
-            },  
+            },
         });
 
     }
@@ -122,9 +122,9 @@ const addEditOutcomeServices = (() => {
 
         effectiveDateStart = `${formatDate(filterValues.effectiveDateStart)}`;
         effectiveDateEnd = `${formatDate(filterValues.effectiveDateEnd)}`;
-       
+
         if (!currentFilterDisplay) {
-            currentFilterDisplay = document.createElement('div');        
+            currentFilterDisplay = document.createElement('div');
             currentFilterDisplay.classList.add('filteredByData');
             filterButtonSet();
             currentFilterDisplay.appendChild(btnWrap);
@@ -281,22 +281,22 @@ const addEditOutcomeServices = (() => {
             newFilterValues.outcomeTypeName = selectedOption.text;
         });
 
-        effectiveDateStartInput.addEventListener('change', e => {         
+        effectiveDateStartInput.addEventListener('change', e => {
             if (e.target.value === '') {
                 effectiveDateStartInput.classList.add('error');
             } else {
                 effectiveDateStartInput.classList.remove('error');
                 newFilterValues.effectiveDateStart = e.target.value;
-            }         
+            }
             checkFilterPopForErrors();
         });
-        effectiveDateEndInput.addEventListener('change', e => {         
+        effectiveDateEndInput.addEventListener('change', e => {
             if (e.target.value === '') {
                 effectiveDateEndInput.classList.add('error');
             } else {
                 effectiveDateEndInput.classList.remove('error');
                 newFilterValues.effectiveDateEnd = e.target.value;
-            }          
+            }
             checkFilterPopForErrors();
         });
         applyFilterBtn.addEventListener('click', async e => {
@@ -322,7 +322,7 @@ const addEditOutcomeServices = (() => {
 
     function checkFilterPopForErrors() {
         const errors = [...filterPopup.querySelectorAll('.error')];
-        const hasErrors = errors.length > 0 ? true : false; 
+        const hasErrors = errors.length > 0 ? true : false;
 
         if (hasErrors) {
             applyFilterBtn.classList.add('disabled');
@@ -388,7 +388,7 @@ const addEditOutcomeServices = (() => {
             mainDataRow.value = parent.goal_id;
             const endIcon = document.createElement('div');
             endIcon.classList.add('outcomeTable__endIcon');
-            
+
 
             const toggleIcon = document.createElement('div');
             toggleIcon.id = 'authToggle';
@@ -405,7 +405,7 @@ const addEditOutcomeServices = (() => {
                 endIcon.innerHTML = icons['add'];
             }
             else {
-                endIcon.innerHTML = `<div></div>`; 
+                endIcon.innerHTML = `<div></div>`;
             }
             mainDataRow.appendChild(endIcon);
             rowWrap.appendChild(mainDataRow);
@@ -436,10 +436,11 @@ const addEditOutcomeServices = (() => {
                     const subDataRow = document.createElement('div');
                     var startDate = child.serviceStartDate == null || '' ? '' : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(child.serviceStartDate.split('T')[0]),);
                     var endDate = child.serviceEndDate == null || '' ? '' : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(child.serviceEndDate.split('T')[0]),);
+                    var serviceTyp = child.serviceType == null ? '' : child.serviceType;
                     subDataRow.classList.add('outcomeTable__subDataRow', 'outcomeTable__dataRow');
                     subDataRow.innerHTML = `
             <div></div>
-            <div>${child.serviceType}</div>
+            <div>${serviceTyp}</div>     
             <div>${child.serviceStatement}</div>
             <div>${child.frequency}</div>
             <div>${startDate}</div>
@@ -449,7 +450,7 @@ const addEditOutcomeServices = (() => {
 
                     subDataRow.addEventListener('click', e => {
                         if ($.session.UpdateServices == true) {
-                            addServicesForm.init(selectedConsumer, child.objective_Id ,0);
+                            addServicesForm.init(selectedConsumer, child.objective_Id, 0);
                         }
                     });
                 });
@@ -477,13 +478,13 @@ const addEditOutcomeServices = (() => {
                 } else {
                     // open it
                     subRowWrap.classList.add('active');
-                    toggleIcon.innerHTML = icons.keyArrowDown; 
+                    toggleIcon.innerHTML = icons.keyArrowDown;
                 }
             });
 
             endIcon.addEventListener('click', e => {
                 eventName = 'add';
-                addServicesForm.init(selectedConsumer,0, goalID);
+                addServicesForm.init(selectedConsumer, 0, goalID);
             });
 
 

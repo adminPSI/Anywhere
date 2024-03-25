@@ -106,7 +106,7 @@ const TABS = (function () {
     }
 
     // DIsplay ISP Nav Validation if their are validation errors in the ISP or ISP contact section
-    if (navText === 'ISP' && (ISPValidationCheck.complete === false || ISPValidationCheck.contactSectionComplete === false)) {
+    if (navText === 'ISP' && (ISPValidationCheck.complete === false || ISPValidationCheck.contactSectionComplete === false || ISPValidationCheck.summaryRisksValidation === false)) {
      navAlertDiv.style.display = 'flex';
     }
 

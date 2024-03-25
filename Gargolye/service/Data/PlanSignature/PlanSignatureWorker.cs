@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereWorker;
 
 namespace Anywhere.service.Data.PlanSignature
 {
@@ -86,6 +87,7 @@ namespace Anywhere.service.Data.PlanSignature
             public string vendorId { get; set; }
             public string email { get; set; }
             public string parentOfMinor { get; set; }
+            public string locationId { get; set; }
         }
 
         public class SigId
@@ -151,6 +153,19 @@ namespace Anywhere.service.Data.PlanSignature
             return "";
         }
 
+
+        public Locations[] getLocationswithSalesforceId(string token)
+        {
+            string locations = psdg.getLocationswithSalesforceId(token);
+            Locations[] locationsData = js.Deserialize<Locations[]>(locations);
+            return locationsData;//test
+        }
+
+        public class Locations
+        {
+            public string ID { get; set; }
+            public string Name { get; set; }
+        }
 
         public SigId[] insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
