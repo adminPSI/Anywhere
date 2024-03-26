@@ -683,7 +683,6 @@ const planOutcomes = (() => {
       } else {
         if ($.session.applicationName === 'Advisor') {
           resp.isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider);
-          resp.responsibleProvider = UTIL.removeNonIntegerCharactersFromString(resp.responsibleProvider);
           respData.isSalesforceLocation.push(resp.isSalesforceLocation);
           respData.responsibleProvider.push(resp.responsibleProvider);
         } else {
@@ -704,7 +703,6 @@ const planOutcomes = (() => {
       const whoResponsible = getColTextForWhoResponsible(
         saveData.responsibilities[index].responsibleContact,
         saveData.responsibilities[index].responsibleProvider,
-        saveData.responsibilities[index].isSalesforceLocation
       );
       const whenHowOften = getColTextForWhenHowOften(
         saveData.responsibilities[index].whenHowOftenFrequency,
@@ -713,12 +711,9 @@ const planOutcomes = (() => {
       );
 
       const vendorID =
-      saveData.responsibilities[index].responsibleContact === '%' &&
-      saveData.responsibilities[index].isSalesforceLocation
-        ? saveData.responsibilities[index].responsibleProvider
-        : saveData.responsibilities[index].responsibleContact === '%'
-        ? saveData.responsibilities[index].responsibleProvider
-        : saveData.responsibilities[index].responsibleContact;
+        saveData.responsibilities[index].responsibleContact === '%'
+            ? saveData.responsibilities[index].responsibleProvider
+            : saveData.responsibilities[index].responsibleContact;
       const respId = saveData.responsibilities[index].responsibilityIds;
       selectedVendors[respId] = vendorID;
 
@@ -834,20 +829,16 @@ const planOutcomes = (() => {
     Object.entries(updateData.responsibilities).map(async ([key, resp], index) => {
       const responsibleContact =
         resp.responsibleContact === '%' ? 0 : parseInt(resp.responsibleContact);
-      const isSalesforceLocation = responsibleProviderIsSalesforceLocationCheck(resp.responsibleProvider);
-      let responsibleProvider =
-        resp.responsibleProvider === '%' ? 0 : resp.responsibleProvider;
-        if (responsibleProvider !== 0) {
-          responsibleProvider = UTIL.removeNonIntegerCharactersFromString(resp.responsibleProvider);
-        }
+      const isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider);
+      const responsibleProvider = resp.responsibleProvider === '%' ? 0 : resp.responsibleProvider;
       const whenHowOftenFrequency = parseInt(resp.whenHowOftenFrequency);
       const whenHowOftenValue = resp.whenHowOftenValue;
       const whenHowOftenText = resp.whenHowOftenText;
 
       //* push to new table data
       const whoResponsible = getColTextForWhoResponsible(
-        `${resp.responsibleContact}`,
-        `${resp.responsibleProvider}`,
+        `${responsibleContact}`,
+        `${responsibleProvider}`,
       );
       const whenHowOften = getColTextForWhenHowOften(
         `${whenHowOftenFrequency}`,
@@ -973,11 +964,8 @@ const planOutcomes = (() => {
 
     return whenHowOften;
   }
-  function getColTextForWhoResponsible(responsibleContact, responsibleProvider, isSalesforceLocation) {
+  function getColTextForWhoResponsible(responsibleContact, responsibleProvider) {
     if (responsibleProvider !== '%' && responsibleProvider !== '0') {
-      if (isSalesforceLocation) {
-        responsibleProvider = responsibleProvider;
-      }
       const filteredVendor = dropdownData.serviceVendors.filter(
         dd => dd.vendorId === responsibleProvider,
       );
