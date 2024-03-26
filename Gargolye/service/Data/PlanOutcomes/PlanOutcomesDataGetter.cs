@@ -298,7 +298,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        public string updatePlanOutcomesReview(long outcomeId, string reviewId, string whatWillHappen, string whenToCheckIn, string whoReview, long contactId)
+        public string updatePlanOutcomesReview(long outcomeId, string reviewId, string whatWillHappen, string whenToCheckIn, string whoReview, string contactId)
         {
 
             logger.debug("insertPlanOutcomesExperiences ");
@@ -308,7 +308,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             list.Add(whatWillHappen);
             list.Add(whenToCheckIn);
             list.Add(whoReview);
-            list.Add(contactId.ToString());
+            list.Add(contactId);
             string text = "CALL DBA.ANYW_ISP_UpdatePlanOutcomesReview(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
