@@ -3249,7 +3249,7 @@ const WaitingListAssessment = (() => {
         participantId: parseInt(rowId),
       });
 
-      delete wlParticipants[participantId];
+      delete wlParticipants[rowId];
 
       participantsTable.populate(Object.values(wlParticipants));
 
