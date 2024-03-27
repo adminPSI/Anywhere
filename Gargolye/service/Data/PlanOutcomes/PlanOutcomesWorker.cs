@@ -181,7 +181,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             return "Sucess";
         }
 
-        public string updatePlanOutcomesReview(long outcomeId, string[] reviewIds, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, long[] contactId)
+        public string updatePlanOutcomesReview(long outcomeId, string[] reviewIds, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] contactId)
         {
             var j = 0;
 

@@ -1,5 +1,6 @@
 const csVendor = (() => {
   let selectedMemberData;
+  let currentTeamMemberList;
   let isNew;
   let isSigned;
   let readOnly;
@@ -107,6 +108,15 @@ const csVendor = (() => {
 
     
     const locationData = await consentAndSignAjax.getLocationswithSalesforceId();
+
+    // remove the locations that are already selected and displayed on the teammember screen
+    currentTeamMemberList.forEach(member => {
+      for (let i = 0; i < locationData.length; i++) {
+        if (member.locationId === locationData[i].ID) {
+          locationData.splice(i,1);
+        }
+      }
+    });
 
     const groupDropdownData = [];
 

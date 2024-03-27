@@ -533,7 +533,7 @@ const planData = (() => {
       dropdownValues: [],
     };
     const locationsGroup = {
-      groupLabel: 'Locations on this Plan',
+      groupLabel: 'Facilities on this Plan ',
       groupId: 'locationsGroup',
       dropdownValues: [],
     };

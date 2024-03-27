@@ -1516,13 +1516,11 @@ const WaitingListAssessment = (() => {
 
     if (isRMActionRequiredNo) {
       wlForms['icfDischarge'].form.parentElement.classList.remove('hiddenPage');
-      wlForms['intermittentSupports'].form.parentElement.classList.remove('hiddenPage');
       wlForms['childProtectionAgency'].form.parentElement.classList.remove('hiddenPage');
       wlForms['adultDayEmployment'].form.parentElement.classList.remove('hiddenPage');
       wlForms['dischargePlan'].form.parentElement.classList.remove('hiddenPage');
 
       tocLinks['icfDischarge'].classList.remove('hiddenPage');
-      tocLinks['intermittentSupports'].classList.remove('hiddenPage');
       tocLinks['childProtectionAgency'].classList.remove('hiddenPage');
       tocLinks['adultDayEmployment'].classList.remove('hiddenPage');
       tocLinks['dischargePlan'].classList.remove('hiddenPage');
@@ -1549,6 +1547,15 @@ const WaitingListAssessment = (() => {
     ) {
       wlForms['immediateNeeds'].form.parentElement.classList.remove('hiddenPage');
       tocLinks['immediateNeeds'].classList.remove('hiddenPage');
+    }
+
+    const icfIsICFResident = wlData.icfDischarge.icfIsICFResident.includes('no');
+    const icfIsNoticeIssued = wlData.icfDischarge.icfIsNoticeIssued.includes('no');
+    const icfIsActionRequiredIn30Days = wlData.icfDischarge.icfIsActionRequiredIn30Days.includes('no');
+
+    if (icfIsICFResident || icfIsNoticeIssued || icfIsActionRequiredIn30Days) {
+      wlForms['intermittentSupports'].form.parentElement.classList.remove('hiddenPage');
+      tocLinks['intermittentSupports'].classList.remove('hiddenPage');
     }
   }
   function enableInputsForReview() {
@@ -1905,18 +1912,10 @@ const WaitingListAssessment = (() => {
     const hasCheckPhysical = isAnyCheckboxCheckedPhysical();
     const hasCheckMedical = isAnyCheckboxCheckedMedical();
 
-    // (ENABLE) [needsIsActionRequiredRequiredIn30Days] the "Is action required within the next 30 days..." radio buttons only (IF)
-    // A checkbox is checked in each of the first two groups of checkboxes (not including the "Not applicable…" checkboxes in each group) (OR)
-    // A checkbox is checked in the third group of checkboxes (not including the "Not applicable…" checkbox) (OR)
-    // A checkbox is checked in the fourth group of checkboxes (not including the "Not applicable…" checkbox) (OR)
     const needsIsActionDisabled = (hasCheckBehaviorOne && hasCheckBehaviorTwo) || hasCheckPhysical || hasCheckMedical;
     wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!needsIsActionDisabled);
   }
   async function intermittentSupportsDetermination() {
-    // AI FIELD
-    // (SET) [intSupDetermination] "Does the individual have an..." to "YES"
-    // (IF) all radio - button answers on this page are "Yes"..Otherwise, set to "NO"
-
     const data = [
       wlForms['intermittentSupports'].inputs['intSupIsSupportNeededIn12Months'].getValue(
         'intSupIsSupportNeededIn12Monthsyes',
@@ -1943,9 +1942,6 @@ const WaitingListAssessment = (() => {
     await currentNeedsDetermination();
   }
   async function icfDischargeDetermination() {
-    // AI FIELD
-    // (SET) [icfDetermination] "Is the individual a resident..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
-
     const data = [
       wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue('icfIsICFResidentyes'),
       wlForms['icfDischarge'].inputs['icfIsNoticeIssued'].getValue('icfIsNoticeIssuedyes'),
@@ -1964,9 +1960,6 @@ const WaitingListAssessment = (() => {
     });
   }
   async function childProtectionAgencyDetermination() {
-    // AI FIELD
-    // (SET) [cpaDetermination] "Is the individual reaching..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
-
     const data = [
       wlForms['childProtectionAgency'].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes'),
       wlForms['childProtectionAgency'].inputs['cpaHasUnaddressableNeeds'].getValue('cpaHasUnaddressableNeedsyes'),
@@ -1986,9 +1979,6 @@ const WaitingListAssessment = (() => {
     await currentNeedsDetermination();
   }
   async function adultDayEmploymentDetermination() {
-    // AI FIELD
-    // (SET) [rwfWaiverFundingRequired] "Does the individual require..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
-
     const data = [
       wlForms['adultDayEmployment'].inputs['rwfNeedsMoreFrequency'].getValue('rwfNeedsMoreFrequencyyes'),
       wlForms['adultDayEmployment'].inputs['rwfNeedsServiceNotMetIDEA'].getValue('rwfNeedsServiceNotMetIDEAyes'),
@@ -2009,9 +1999,6 @@ const WaitingListAssessment = (() => {
     await currentNeedsDetermination();
   }
   async function dischargePlanDetermination() {
-    // AI FIELD
-    // (SET) [dischargeDetermination] "Does the individual have a viable..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
-
     const data = [
       wlForms['dischargePlan'].inputs['dischargeIsICFResident'].getValue('dischargeIsICFResidentyes'),
       wlForms['dischargePlan'].inputs['dischargeIsInterestedInMoving'].getValue('dischargeIsInterestedInMovingyes'),
@@ -2873,18 +2860,17 @@ const WaitingListAssessment = (() => {
     rMIsActionRequiredIn3oDays: async ({ value }) => {
       //const isRisksActionRequired = value === 'yes';
       const isRisksActionRequired = value === 'no';
-      ['icfDischarge', 'intermittentSupports', 'childProtectionAgency', 'adultDayEmployment', 'dischargePlan'].forEach(
-        formName => {
-          wlForms[formName].form.parentElement.classList.toggle('hiddenPage', !isRisksActionRequired);
-          tocLinks[formName].classList.toggle('hiddenPage', !isRisksActionRequired);
+      // 'intermittentSupports',
+      ['icfDischarge', 'childProtectionAgency', 'adultDayEmployment', 'dischargePlan'].forEach(formName => {
+        wlForms[formName].form.parentElement.classList.toggle('hiddenPage', !isRisksActionRequired);
+        tocLinks[formName].classList.toggle('hiddenPage', !isRisksActionRequired);
 
-          if (!isRisksActionRequired) {
-            if (sectionResets[formName]) {
-              sectionResets[formName]();
-            }
+        if (!isRisksActionRequired) {
+          if (sectionResets[formName]) {
+            sectionResets[formName]();
           }
-        },
-      );
+        }
+      });
 
       const isNeedsActionRequired = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
       const isRMChecked = isAnyCheckboxCheckedRiskMitigation();
@@ -2915,9 +2901,48 @@ const WaitingListAssessment = (() => {
       });
     },
     //* icfDischarge
-    icfIsICFResident: icfDischargeDetermination,
-    icfIsNoticeIssued: icfDischargeDetermination,
-    icfIsActionRequiredIn30Days: icfDischargeDetermination,
+    icfIsICFResident: async ({ value }) => {
+      const icfIsNoticeIssued = wlForms['icfDischarge'].inputs['icfIsNoticeIssued'].getValue();
+      const icfIsActionRequiredIn30Days = wlForms['icfDischarge'].inputs['icfIsActionRequiredIn30Days'].getValue();
+      const disableIntermittentSupportsPage =
+        icfIsNoticeIssued.includes('no') || icfIsActionRequiredIn30Days.includes('no') || value === 'no' ? false : true;
+
+      wlForms['intermittentSupports'].form.parentElement.classList.toggle(
+        'hiddenPage',
+        disableIntermittentSupportsPage,
+      );
+      tocLinks['intermittentSupports'].classList.toggle('hiddenPage', disableIntermittentSupportsPage);
+
+      icfDischargeDetermination();
+    },
+    icfIsNoticeIssued: async ({ value }) => {
+      const icfIsICFResident = wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue();
+      const icfIsActionRequiredIn30Days = wlForms['icfDischarge'].inputs['icfIsActionRequiredIn30Days'].getValue();
+      const disableIntermittentSupportsPage =
+        icfIsICFResident.includes('no') || icfIsActionRequiredIn30Days.includes('no') || value === 'no' ? false : true;
+
+      wlForms['intermittentSupports'].form.parentElement.classList.toggle(
+        'hiddenPage',
+        disableIntermittentSupportsPage,
+      );
+      tocLinks['intermittentSupports'].classList.toggle('hiddenPage', disableIntermittentSupportsPage);
+
+      icfDischargeDetermination();
+    },
+    icfIsActionRequiredIn30Days: async ({ value }) => {
+      const icfIsNoticeIssued = wlForms['icfDischarge'].inputs['icfIsNoticeIssued'].getValue();
+      const icfIsICFResident = wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue();
+      const disableIntermittentSupportsPage =
+        icfIsNoticeIssued.includes('no') || icfIsICFResident.includes('no') || value === 'no' ? false : true;
+
+      wlForms['intermittentSupports'].form.parentElement.classList.toggle(
+        'hiddenPage',
+        disableIntermittentSupportsPage,
+      );
+      tocLinks['intermittentSupports'].classList.toggle('hiddenPage', disableIntermittentSupportsPage);
+
+      icfDischargeDetermination();
+    },
     //* intermittentSupports
     intSupIsSupportNeededIn12Months: intermittentSupportsDetermination,
     intSupIsStayingLivingArrangement: intermittentSupportsDetermination,
@@ -3256,7 +3281,7 @@ const WaitingListAssessment = (() => {
       const isNeedsSubSection = ['behavioral', 'physical', 'medical', 'other'].includes(section);
 
       // Build TOC
-      const className = isContributingCircumstancesSubSection ? 'subsection' : 'section';
+      const className = isContributingCircumstancesSubSection || isNeedsSubSection ? 'subsection' : 'section';
       const tocSection = _DOM.createElement('p', { class: [className, section] });
       const tocSectionLink = _DOM.createElement('a', { href: `#${section}`, text: sections[section].name });
       const statusIcon = Icon.getIcon('error');
