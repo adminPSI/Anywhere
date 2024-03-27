@@ -668,7 +668,17 @@ const planValidation = (function () {
       const paidSupportsIds = outcomesData.paidSupports.map(obj => obj.providerId);
       IspValidationCheck.paidSupportsProviders = paidSupportsIds;
 
-      const invalidProviders = (IspValidationCheck.selectedProviders).filter(number => number !== "" && number !== "%" && !(IspValidationCheck.paidSupportsProviders).includes(number) && !number.endsWith('L'));
+      const invalidProviders = (IspValidationCheck.selectedProviders).filter(number => 
+        number !== "" && 
+        number !== "%" && 
+        !(IspValidationCheck.paidSupportsProviders).includes(number) && 
+        !IspValidationCheck.outcomesData.planOutcomeExperiences.some(outcome =>
+          Object.values(outcome.planExperienceResponsibilities).some(responsibility =>
+            responsibility.responsibleProvider === number &&
+            responsibility.isSalesforceLocation === 'True'
+          )
+        )
+      );
       IspValidationCheck.invalidProviders = invalidProviders;
   
       // get a list of the unique outcomeIds
