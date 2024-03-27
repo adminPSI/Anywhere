@@ -49,6 +49,11 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return fundSourceObj;
         }
 
+        public string deleteWaitingListParticipant(string token, int participantId)
+        {
+            return dg.deleteWaitingListParticipant(token, participantId);
+        }
+
         public string deleteFromWaitingList(string[] properties)
         {
             var i = 0;

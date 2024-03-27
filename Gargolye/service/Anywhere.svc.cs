@@ -2831,6 +2831,11 @@ namespace Anywhere
            return wlw.deleteFromWaitingList(properties);
         }
 
+        public string deleteWaitingListParticipant(string token, int participantId)
+        {
+            return wlw.deleteWaitingListParticipant(token, participantId);
+        }
+
         public LandingPageInfo[] getLandingPageForConsumer(string token, double consumerId)
         {
             return wlw.getLandingPageForConsumer(token, consumerId);
