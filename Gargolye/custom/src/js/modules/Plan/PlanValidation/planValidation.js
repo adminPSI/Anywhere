@@ -941,12 +941,17 @@ const planValidation = (function () {
       const secondValues = (validationCheck.paidSupportsProviders).map(obj => obj.value);
 
       // Create a list of values from the first array that don't exist in the second array
-      const invalidProviders = validationCheck.selectedProviders.filter(value => 
-        value !== '' && 
-        value !== '%' && 
-        !secondValues.includes(value) && 
-        !value.endsWith('L')
-      );
+      const invalidProviders = validationCheck.selectedProviders.filter(value =>
+        value !== '' &&
+        value !== '%' &&
+        !secondValues.includes(value) &&
+        !validationCheck.outcomesData.planOutcomeExperiences.some(outcome =>
+          Object.values(outcome.planExperienceResponsibilities).some(responsibility =>
+            responsibility.responsibleProvider === value &&
+            responsibility.isSalesforceLocation === 'True'
+          )
+        )
+      );      
       
       validationCheck.invalidProviders = invalidProviders;
       return validationCheck;
