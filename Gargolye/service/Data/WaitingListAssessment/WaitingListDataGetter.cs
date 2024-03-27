@@ -173,6 +173,24 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
+        public string deleteWaitingListParticipant(string token, int participantId)
+        {
+            if (tokenValidator(token) == false) return null;
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(participantId.ToString());       
+            string text = "CALL DBA.ANYW_WaitingList_DeleteParticipant(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("6WL", ex.Message + "ANYW_WaitingList_DeleteParticipant(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "6WL: error ANYW_WaitingList_DeleteParticipant";
+            }
+        }
+
         public MemoryStream viewSupportingDocInBrowser(string token, string attachmentId)
         {
             logger.debug("viewSupportingDocInBrowser " + attachmentId);
