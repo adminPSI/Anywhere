@@ -110,13 +110,16 @@ const csVendor = (() => {
     const locationData = await consentAndSignAjax.getLocationswithSalesforceId();
 
     // remove the locations that are already selected and displayed on the teammember screen
-    currentTeamMemberList.forEach(member => {
-      for (let i = 0; i < locationData.length; i++) {
-        if (member.locationId === locationData[i].ID) {
-          locationData.splice(i,1);
+    if (locationData) {
+      currentTeamMemberList.forEach(member => {
+        for (let i = 0; i < locationData.length; i++) {
+          if (member.locationId === locationData[i].ID) {
+            locationData.splice(i,1);
+          }
         }
-      }
-    });
+      });
+    }
+    
 
     const groupDropdownData = [];
 
@@ -432,9 +435,8 @@ const csVendor = (() => {
           selectedMemberData.locationId = arr[1];
           selectedMemberData.vendorId = arr[1];
           
-        }
-        
-        if (!selectedMemberData.vendorId.includes('LOCATIONID:')) {
+        } else {
+
           const vendorRel = getSelectedVendorRel(vendorData, selectedMemberData.name);
           if (selectedMemberData.name === '') {
             selectedMemberData.buildingNumber = '';
@@ -443,6 +445,7 @@ const csVendor = (() => {
             selectedMemberData.buildingNumber = vendorRel.vendorAddress;
             selectedMemberData.vendorId = vendorRel.vendorId;
           }
+
         }
         
 
