@@ -61,6 +61,7 @@
     rowSortable: false,
     columnSortable: false,
     allowCopy: false,
+    allowDelete: false,
   };
 
   /**
@@ -71,6 +72,7 @@
    * @param {Boolean} [options.rowSortable]     Row re ordering
    * @param {Boolean} [options.columnSortable]  Column sorting by header
    * @param {Boolean} [options.allowCopy]       Row's can be duplicated by copy
+   * @param {Boolean} [options.allowDelete]       Row's can be duplicated by copy
    */
   function Table(options) {
     // Data Init
@@ -119,6 +121,14 @@
       });
       tableHeader.rows[0].appendChild(cell);
     });
+
+    //* add col for delete
+    if (this.options.allowDelete) {
+      const cell = _DOM.createElement('th', {
+        'data-type': 'deleteRow',
+      });
+      tableHeader.rows[0].appendChild(cell);
+    }
   };
 
   /**
@@ -126,6 +136,12 @@
    */
   Table.prototype._setupEvents = function () {
     this.table.tBodies[0].addEventListener('click', e => {
+      if (e.target.dataset.type === 'deleteRow') {
+        const customEvent = new CustomEvent('onRowDelete', { detail: e.target.closest('tr') });
+        this.table.tBodies[0].dispatchEvent(customEvent);
+        return;
+      }
+
       const customEvent = new CustomEvent('onRowClick', { detail: e.target.closest('tr') });
       this.table.tBodies[0].dispatchEvent(customEvent);
     });
@@ -308,6 +324,15 @@
         rowEle.appendChild(cell);
       });
 
+      // add col for delete
+      if (this.options.allowDelete) {
+        const cell = _DOM.createElement('td', {
+          node: Icon.getIcon('delete'),
+          'data-type': 'deleteRow',
+        });
+        rowEle.appendChild(cell);
+      }
+
       this.table.tBodies[0].appendChild(rowEle);
     });
   };
@@ -320,6 +345,18 @@
    */
   Table.prototype.onRowClick = function (cbFunc) {
     this.table.tBodies[0].addEventListener('onRowClick', e => {
+      cbFunc(e.detail.id);
+    });
+  };
+
+  /**
+   * Handles click event for row delete
+   *
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  Table.prototype.onRowDelete = function (cbFunc) {
+    this.table.tBodies[0].addEventListener('onRowDelete', e => {
       cbFunc(e.detail.id);
     });
   };

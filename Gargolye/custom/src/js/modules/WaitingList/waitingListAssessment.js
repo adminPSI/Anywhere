@@ -3244,6 +3244,11 @@ const WaitingListAssessment = (() => {
         rowId,
       );
     });
+    participantsTable.onRowDelete(async rowId => {
+      await _UTIL.fetchData('deleteWaitingListParticipant', {
+        participantId: parseInt(rowId),
+      });
+    });
 
     backButton.onClick(() => {
       WaitingListOverview.init({ moduleHeader, moduleBody, selectedConsumer });
@@ -3372,6 +3377,7 @@ const WaitingListAssessment = (() => {
     // Participants
     participantsTable = new Table({
       columnSortable: true,
+      allowDelete: true,
       headings: [
         {
           text: 'Name of Participant',
