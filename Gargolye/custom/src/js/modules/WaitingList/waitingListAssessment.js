@@ -3248,6 +3248,12 @@ const WaitingListAssessment = (() => {
       await _UTIL.fetchData('deleteWaitingListParticipant', {
         participantId: parseInt(rowId),
       });
+
+      delete wlParticipants[participantId];
+
+      participantsTable.populate(Object.values(wlParticipants));
+
+      tocLinks['participants'].classList.toggle('formComplete', Object.values(wlParticipants).length);
     });
 
     backButton.onClick(() => {

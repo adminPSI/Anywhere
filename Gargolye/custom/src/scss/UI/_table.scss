@@ -64,6 +64,10 @@
         &[data-type='number'] {
           text-align: center;
         }
+
+        .svgIcon {
+          pointer-events: none;
+        }
       }
     }
   }
