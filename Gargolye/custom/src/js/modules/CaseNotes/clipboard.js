@@ -1,5 +1,6 @@
 // NEEDS  (wla_circumstances, wla_physical_needs, wla_medical_needs, wla_risks)
 //  Page should only be enabled if all questions on CONDITIONS page have answer of "YES"
+//  AND "Is action required within the next 30 days..." is NO on the Primary Caregiver page.
 
 // RISK MITIGATION (wla_circumstances, wla_risk_mitigations)
 //  Page should only be enabled if all questions on CONDITIONS page have answer of "YES"
@@ -32,9 +33,14 @@
 //    a.  "Is action required within the next 30 days…" has an answer of YES on the NEEDS page OR
 //    b.  "Is action required within the next 30 days…" has an answer of YES on the RISK MITIGATION page
 //        AND any checkbox is checked on the RISK MITIGATION page(except the "Not applicable…" checkbox)
+//  Set "Is there an immediate need..." to YES only when the page is enabled.  Otherwise, set it to NO
 
 // CURRENT NEEDS  (wla_needs)
 //  Page should only be enabled if all questions on CONDITIONS page have answer of "YES"
 //   AND one of the following is true:
-//     a. "Is action required within the next 30 days…" has an answer of NO on the NEEDS page OR
-//     b. "Is action required within the next 30 days…" has an answer of NO on the RISK MITIGATION page
+//     a "Is action required within the next 30 days…" has an answer of NO on the NEEDS OR
+//     b "Is action required within the next 30 days…" has an answer of NO on the RISK MITIGATION
+
+
+// If YES to all questions under ICF Discharge, the following tabs are disabled
+// (Intermittent Supports, Child Protection Agency, Adult Day / Employment, Discharge Plan)
