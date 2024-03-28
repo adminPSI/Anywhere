@@ -67,7 +67,7 @@ const csVendor = (() => {
   function removeV(ids) {
     return ids.map(id => id.replace('V', ''));
   }
- async function populateVendorDropdownData(vendorData, vendorDropdown, teamMember) {
+ async function populateVendorDropdownData(vendorData, vendorDropdown, teamMember, clickSource) {
     // get vendors from the following
     // (Add Risk -> Who Is Responsible) on the Summary tab
     // (Add Experience -> Responsible Provider) on the Outcomes tab
@@ -113,7 +113,7 @@ const csVendor = (() => {
     if (locationData) {
       currentTeamMemberList.forEach(member => {
         for (let i = 0; i < locationData.length; i++) {
-          if (member.locationId === locationData[i].ID) {
+          if (member.locationId === locationData[i].ID && clickSource === 'addVendor') {
             locationData.splice(i,1);
           }
         }
@@ -390,6 +390,7 @@ const csVendor = (() => {
     memberData,
     currentTeamMemberData,
     vendorData,
+    clickSource,
   }) {
     isNew = isNewMember;
     isSigned = memberData.dateSigned !== '';
@@ -592,7 +593,7 @@ const csVendor = (() => {
     csVendorPopup.appendChild(signatureTypeDropdown);
     csVendorPopup.appendChild(btns);
 
-    populateVendorDropdownData(vendorData, vendorDropdown, selectedMemberData.name);
+    populateVendorDropdownData(vendorData, vendorDropdown, selectedMemberData.name, clickSource);
     populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
     populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
 
