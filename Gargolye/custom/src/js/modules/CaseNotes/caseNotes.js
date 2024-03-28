@@ -1011,7 +1011,7 @@ const CaseNotes = (() => {
           id: 'serviceCode',
           required: true,
           data: cnData.getServiceBillCodeDropdownData(),
-          defaultValue: cnData.getDefaultServiceCode(),
+          defaultValue: selectedServiceCode,
           includeBlankOption: true,
         },
         //location
@@ -1149,6 +1149,7 @@ const CaseNotes = (() => {
     cnData = new CaseNotesData();
     await cnData.fetchDropdownData();
     await cnData.fetchCaseManagerReviewData(caseManagerId);
+    selectedServiceCode = cnData.getDefaultServiceCode();
     if ($.session.applicationName === 'Advisor') {
       await cnData.fetchConsumersThatCanHaveMileage();
     }
@@ -1156,6 +1157,8 @@ const CaseNotes = (() => {
     initComponents();
     await loadPage();
     await populatePage();
+
+    onServiceCodeChange();
 
     // if (isReadOnly) {
     //   cnForm.disableFormInputs();
