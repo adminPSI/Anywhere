@@ -325,21 +325,13 @@ namespace OODForms
             SS.SaveToStreamXLSX(ms);
             ms.Position = 0;
 
-            templateFileName = "TemporaryFormFile.xlsx";
-            string newFilePath = string.Format(path, templateFileName);
-
-            using (FileStream fileStream = new FileStream(newFilePath, FileMode.Create, FileAccess.ReadWrite))
-            {
-                ms.WriteTo(fileStream);
-            }
-
             Attachment attachment = new Attachment
             {
-                filename = "Form4",
+                filename = "Form4.xlsx",
                 data = ms
             };
 
-            DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", newFilePath);
+            DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
             return "Success";
         }
@@ -574,7 +566,7 @@ namespace OODForms
                     data = ms
                 };
 
-                DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", newFilePath);
+                //DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", newFilePath);
 
                 return "Success";
             }
@@ -789,7 +781,7 @@ namespace OODForms
             return maxDate.ToString("M/d/yy");
         }
 
-        public void DisplayAttachment(Attachment attachment, string fileExtension, string contentType, string filePath)
+        public void DisplayAttachment(Attachment attachment, string fileExtension, string contentType)
         {
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
@@ -806,27 +798,21 @@ namespace OODForms
                 }
                 else
                 {
+                    //byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
+                    //response.Clear();
+                    //response.BufferOutput = true;
+                    //response.AddHeader("Content-Disposition", "attachment;filename=" + attachment.filename + fileExtension + ";");
+                    ////response.AddHeader("Content-Type", contentType);
+                    //response.ContentType = contentType;
+                    //response.AddHeader("Content-Length", bytes.Length.ToString());
+                    //response.AddHeader("Access-Control-Allow-Origin", "*");
+                    //response.OutputStream.Write(bytes, 0, bytes.Length);
+                    //response.Flush();
                     byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
-                    response.Clear();
-                    response.BufferOutput = true;
+                    response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
+                    response.ContentType = "application/octet-stream";
                     response.AddHeader("Transfer-Encoding", "identity");
-                    response.AddHeader("Content-Disposition", "attachment;filename=" + attachment.filename + fileExtension + ";");
-                    response.AddHeader("Content-Type", contentType);
-                    response.AddHeader("Content-Length", bytes.Length.ToString());
-                    response.AddHeader("Access-Control-Allow-Origin", "*");
-                    response.OutputStream.Write(bytes, 0, bytes.Length);
-                    response.TransmitFile(filePath);
-                    response.End();
-
-                    try
-                    {
-                        // Attempt to delete the file
-                        File.Delete(filePath);
-                    }
-                    catch (Exception ex)
-                    {
-
-                    }
+                    response.BinaryWrite(bytes);
                 }
             }
             catch (Exception ex)
@@ -835,7 +821,11 @@ namespace OODForms
             }
             finally
             {
-                // logger2.debug("Done?");
+                // Dispose the MemoryStream
+                attachment.data.Dispose();
+                // Optionally, clear any sensitive data in the memory stream
+                //attachment.data.SetLength(0);
+                // Dispose other resources if necessary
             }
         }
 

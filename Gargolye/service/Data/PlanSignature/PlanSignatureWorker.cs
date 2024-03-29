@@ -437,8 +437,8 @@ namespace Anywhere.service.Data.PlanSignature
         public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string peopleId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
                                         bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId, string clear, string email)
         {
-            //Runs this section if we are updating the vendors and not the team member
-            if (vendorId != null && vendorId != "")
+            //Runs this section if we are updating the vendors or facilities -- and not a team member
+            if ((vendorId != null && vendorId != "") || (contactId == null || contactId == ""))
             {
                 if (buildingNumber == null) buildingNumber = "";
                 if (dateOfBirth == null || dateOfBirth == "") dateOfBirth = "";
