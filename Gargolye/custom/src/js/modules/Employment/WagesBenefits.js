@@ -74,7 +74,7 @@ const WagesBenefits = (() => {
             id: 'chkEligibleBenefits',
             isChecked: eligibleBenefits == 'Y' ? true : false,
             style: 'secondary',
-            callback: () => {
+            callback: event => {
                 saveWagesChecked('EligibleForBenifit', event.target.checked, null);
                 eligibleBenefits = event.target.checked == true ? 'Y' : 'N';
                 if (event.target.checked == false) {
