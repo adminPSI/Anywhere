@@ -206,11 +206,11 @@ const ISP = (function () {
           outcomesAlertDiv.style.display = 'flex';
        }
        
-       // if (validationCheck.complete === false) {
-         // outcomesAlertDiv.style.display = 'flex';
-      // } else {
-        //  outcomesAlertDiv.style.display = 'none';
-      // }
+       if (validationCheck.complete === false) {
+         outcomesAlertDiv.style.display = 'flex';
+      } else {
+         outcomesAlertDiv.style.display = 'none';
+      }
       }
 
       // if the section is 'Outcomes' run an initial validation check on the section
