@@ -1033,7 +1033,7 @@ const planValidation = (function () {
       const ISPAlertDiv = document.getElementById('navAlertISP');
       const summaryAlertDiv = document.querySelector('.summaryAlertDiv');
 
-      if (summaryAlertDiv && IspValidationCheck.summaryRisksValidation) {
+      if (summaryAlertDiv && !IspValidationCheck.summaryRisksValidation) {
         summaryAlertDiv.style.display = 'flex';
       } else if (summaryAlertDiv) {
         summaryAlertDiv.style.display = 'none';
