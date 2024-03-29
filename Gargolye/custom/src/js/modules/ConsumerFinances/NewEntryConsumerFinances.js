@@ -1149,8 +1149,12 @@ const NewEntryCF = (() => {
             style: "secondary",
             callback: () => {
                 document.getElementById('newCategoryDropdown').value = categoryOldVal;
-                document.getElementById('newAmountInput').value = tempAmountval;
-                amount = tempAmountval;
+                
+                if (tempAmountval) {
+                  document.getElementById('newAmountInput').value = tempAmountval;
+                  amount = tempAmountval;
+                }
+                
                 POPUP.hide(splitTransPopup);
                 checkRequiredFieldsOfNewEntry();
             },
