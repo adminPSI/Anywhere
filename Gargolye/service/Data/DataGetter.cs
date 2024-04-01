@@ -3278,7 +3278,7 @@ namespace Anywhere.Data
             }
             catch (Exception ex)
             {
-                logger.error("6404", ex.Message + "ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                logger.error("6404", ex.Message + "ANYW_WF_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return null;
             }
         }
