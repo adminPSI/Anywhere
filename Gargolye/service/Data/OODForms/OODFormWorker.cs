@@ -331,7 +331,7 @@ namespace OODForms
                 data = ms
             };
 
-            DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            DisplayAttachment(attachment);
 
             return "Success";
         }
@@ -552,21 +552,13 @@ namespace OODForms
                 SS.SaveToStreamXLSX(ms);
                 ms.Position = 0;
 
-                templateFileName = "TemporaryFormFile.xlsx";
-                string newFilePath = string.Format(path, templateFileName);
-
-                using (FileStream fileStream = new FileStream(newFilePath, FileMode.Create, FileAccess.ReadWrite))
-                {
-                    ms.WriteTo(fileStream);
-                }
-
                 Attachment attachment = new Attachment
                 {
-                    filename = "Form8",
+                    filename = "Form8.xlsx",
                     data = ms
                 };
 
-                //DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", newFilePath);
+                DisplayAttachment(attachment);
 
                 return "Success";
             }
@@ -781,7 +773,7 @@ namespace OODForms
             return maxDate.ToString("M/d/yy");
         }
 
-        public void DisplayAttachment(Attachment attachment, string fileExtension, string contentType)
+        public void DisplayAttachment(Attachment attachment)
         {
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
