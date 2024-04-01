@@ -1888,13 +1888,13 @@ const WaitingListAssessment = (() => {
     const icfIsICFResident = wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue();
     const icfIsActionRequiredIn30Days = wlForms['icfDischarge'].inputs['icfIsActionRequiredIn30Days'].getValue();
 
-    const icfAllYes = [icfIsNoticeIssued, icfIsICFResident, icfIsActionRequiredIn30Days].every(answer =>
-      answer.includes('yes'),
+    const icfAnyNo = [icfIsNoticeIssued, icfIsICFResident, icfIsActionRequiredIn30Days].some(answer =>
+      answer.includes('no'),
     );
 
     ['intermittentSupports', 'childProtectionAgency', 'adultDayEmployment', 'dischargePlan'].forEach(page => {
-      wlForms[page].form.parentElement.classList.toggle('hiddenPage', !icfAllYes);
-      tocLinks[page].classList.toggle('hiddenPage', !icfAllYes);
+      wlForms[page].form.parentElement.classList.toggle('hiddenPage', !icfAnyNo);
+      tocLinks[page].classList.toggle('hiddenPage', !icfAnyNo);
       if (sectionResets[page]) {
         sectionResets[page]();
       }
