@@ -294,43 +294,58 @@ const addServicesForm = (() => {
         const {
             getOutcomeServiceDropDownResult: OutcomeType,
         } = await outcomesAjax.getOutcomeServiceDropDownAsync();
-        let outcomeTypeData = OutcomeType.map((outcomeTypes) => ({
-            id: outcomeTypes.goal_id,
-            value: outcomeTypes.goal_id,
-            text: outcomeTypes.goal_serviceStatement
-        }));
+
+        let outcomeTypeData = OutcomeType.map(outcomeTypes => ({
+          id: outcomeTypes.goal_id,
+          value: outcomeTypes.goal_id,
+          text: outcomeTypes.goal_serviceStatement,
+        })).sort((a, b) => {
+          if (a.text < b.text) return -1;
+          if (a.text > b.text) return 1;
+          return 0;
+        });
+
         outcomeTypeData.unshift({ id: null, value: '', text: '' });
-        dropdown.populate("outcomeDropdown", outcomeTypeData, outcomeType);
+        dropdown.populate('outcomeDropdown', outcomeTypeData, outcomeType);
 
-        const {
-            getServiceFrequencyTypeDropDownResult: ServiceFrequencyType,
-        } = await outcomesAjax.getServiceFrequencyTypeDropDownAsync('service');
-        let ServiceFrequencyData = ServiceFrequencyType.map((serviceFrequencyType) => ({
-            id: serviceFrequencyType.serviceFrequencyType_id,
-            value: serviceFrequencyType.serviceFrequencyType_id,
-            text: serviceFrequencyType.serviceFrequencyType_name
-        }));
+        const { getServiceFrequencyTypeDropDownResult: ServiceFrequencyType } =
+          await outcomesAjax.getServiceFrequencyTypeDropDownAsync('service');
+
+        let ServiceFrequencyData = ServiceFrequencyType.map(serviceFrequencyType => ({
+          id: serviceFrequencyType.serviceFrequencyType_id,
+          value: serviceFrequencyType.serviceFrequencyType_id,
+          text: serviceFrequencyType.serviceFrequencyType_name,
+        })).sort((a, b) => {
+          if (a.text < b.text) return -1;
+          if (a.text > b.text) return 1;
+          return 0;
+        });
         ServiceFrequencyData.unshift({ id: null, value: '', text: '' });
-        dropdown.populate("ServiceTypeDropdown", ServiceFrequencyData, ServiceType);
+        dropdown.populate('ServiceTypeDropdown', ServiceFrequencyData, ServiceType);
 
-        const frequencyPeriodDropdownData = ([
-            { id: 'H', value: 'H', text: 'per Hour' },
-            { id: 'D', value: 'D', text: 'per Day' },
-            { id: 'W', value: 'W', text: 'per Week' },
-            { id: 'M', value: 'M', text: 'per Month' },
-            { id: 'Y', value: 'Y', text: 'per Year' },
-        ]);
+        const frequencyPeriodDropdownData = [
+          { id: 'H', value: 'H', text: 'per Hour' },
+          { id: 'D', value: 'D', text: 'per Day' },
+          { id: 'W', value: 'W', text: 'per Week' },
+          { id: 'M', value: 'M', text: 'per Month' },
+          { id: 'Y', value: 'Y', text: 'per Year' },
+        ];
         frequencyPeriodDropdownData.unshift({ id: null, value: '', text: '' });
-        dropdown.populate("frequencyPeriodDropdown", frequencyPeriodDropdownData, frequencyPeriod);
+        dropdown.populate('frequencyPeriodDropdown', frequencyPeriodDropdownData, frequencyPeriod);
 
-        const {
-            getLocationDropDownResult: locationDrop,
-        } = await outcomesAjax.getLocationDropDownAsync();
-        let locationData = locationDrop.map((locationDrops) => ({
+        const { getLocationDropDownResult: locationDrop } = await outcomesAjax.getLocationDropDownAsync();
+
+        let locationData = locationDrop
+          .map(locationDrops => ({
             id: locationDrops.locationID,
             value: locationDrops.locationID,
-            text: locationDrops.locationDescription
-        }));
+            text: locationDrops.locationDescription,
+          }))
+          .sort((a, b) => {
+            if (a.text < b.text) return -1;
+            if (a.text > b.text) return 1;
+            return 0;
+          });
         locationData.unshift({ id: null, value: '', text: '' });
         dropdown.populate("locationDropdown", locationData, location);  
     }
