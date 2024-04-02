@@ -99,12 +99,15 @@ namespace OODForms
         public DataSet OODForm8BussinessAddress(long PeopleID)
         {
             sb.Clear();
-            sb.Append("SELECT   dba.Employer.Name, dba.Employer.Address1, dba.Employer.City, dba.Employer.State, ");
+            sb.Append("SELECT DISTINCT  dba.Employer.Name, dba.Employer.Address1, dba.Employer.City, dba.Employer.State, ");
             sb.Append("dba.Employer.Zip_Code, dba.Employer.Primary_Phone ");
-            sb.Append("FROM     dba.EM_Employee_Position ");
+            sb.Append("FROM dba.EM_Employee_Position ");
             sb.Append("LEFT OUTER JOIN dba.Employer ON dba.EM_Employee_Position.Employer_ID = dba.Employer.Employer_ID ");
-            sb.AppendFormat("WHERE dba.EM_Employee_Position.People_ID = {0} ", PeopleID);
-            sb.Append("AND dba.EM_Employee_Position.End_Date IS NULL ");
+            sb.Append("LEFT OUTER JOIN emp_ood ON emp_ood.position_id = dba.EM_Employee_Position.position_id ");
+            sb.Append("LEFT OUTER JOIN people ON people.id = dba.EM_Employee_Position.People_ID ");
+            sb.AppendFormat("WHERE people.consumer_id = {0} ", PeopleID);
+            sb.AppendFormat("    AND dba.EM_Employee_Position.End_Date IS NULL ");
+            sb.AppendFormat("    AND emp_ood.position_id IS NOT NULL;");
             return di.SelectRowsDS(sb.ToString());
         }
         public string OODForm8GetSupportAndTransistion(string AuthorizationNumber, string StartDate)
@@ -196,7 +199,7 @@ namespace OODForms
 
             sb.Clear();
             sb.AppendFormat("SELECT   dba.Case_Notes.Service_Date, DATEFORMAT(Cast(dba.Case_Notes.Start_Time AS CHAR), 'hh:mm AA') as Start_Time, DATEFORMAT(CAST(dba.Case_Notes.End_Time AS CHAR), 'hh:mm AA') AS End_Time, ");
-            sb.Append("dba.Code_Table.Caption AS Contact_Method, dba.EMP_OOD.Behavioral_Indicators, dba.EMP_OOD.Quality_Indicators, ");
+            sb.Append("dba.Code_Table.Caption AS Contact_Method, dba.EMP_OOD.Behavioral_Indicators, dba.EMP_OOD.Quality_Indicators, dba.Case_Notes.Service_Area_Modifier as SAM, ");
             sb.Append("dba.EMP_OOD.Quantity_Indicators, dba.EMP_OOD.Narrative, dba.EMP_OOD.Interventions, ");
             sb.Append("dba.People.Last_Name, dba.People.First_Name, dba.People.Middle_Name, ");
             sb.Append("'' AS Initials, dba.Case_Notes.Notes, '' AS StartTime, '' AS EndTime  ");

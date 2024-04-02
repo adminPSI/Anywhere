@@ -513,6 +513,7 @@ namespace OODForms
                     WS.Cell(String.Format("b{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["Start_Time"])); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
                     WS.Cell(String.Format("c{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["End_Time"]));
                     WS.Cell(String.Format("d{0}", t)).Value = "0";
+                    WS.Cell(String.Format("g{0}", t)).Value = row2["SAM"].ToString().Trim(); ;
                     WS.Cell(String.Format("h{0}", t)).Value = row2["Initials"].ToString().Trim();
                     WS.Cell(String.Format("i{0}", t)).Value = row2["Contact_Method"].ToString().Trim();
                     WS.Cell(String.Format("j{0}", t)).Value = row2["Behavioral_Indicators"].ToString().Trim();
