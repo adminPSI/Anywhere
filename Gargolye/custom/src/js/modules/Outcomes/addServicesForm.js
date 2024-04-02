@@ -19,13 +19,14 @@ const addServicesForm = (() => {
     let outcomeGoalId;
     let duration;
     let location;
+    let SAVE_BTN;  
 
     async function init(selectedConsume, ObjectiveID , goalId) {
         selectedConsumers = selectedConsume;
         objectiveId = ObjectiveID;
         outcomeGoalId = goalId > 0 ? goalId : '';
-        buildNewServicesForm();
-        SAVE_BTN.classList.add('disabled'); 
+        await buildNewServicesForm();
+        SAVE_BTN.classList.add('disabled');   
     }
 
     // Build New Outcomes Page 
