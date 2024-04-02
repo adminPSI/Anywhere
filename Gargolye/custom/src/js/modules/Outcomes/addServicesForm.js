@@ -362,7 +362,8 @@ const addServicesForm = (() => {
         ServiceTypeDropdown.addEventListener("change", event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             ServiceType = selectedOption.value;
-            ServiceTypeName = selectedOption.innerHTML;            
+            ServiceTypeName = selectedOption.innerHTML;  
+            getRequiredFieldsOfAddServiceForm(); 
         });
 
         servicesStatementInput.addEventListener('input', event => {
@@ -372,14 +373,17 @@ const addServicesForm = (() => {
 
         methodInput.addEventListener('input', event => {
             method = event.target.value.trim();
+            getRequiredFieldsOfAddServiceForm();
         });
 
         successInput.addEventListener('input', event => {
             success = event.target.value.trim();
+            getRequiredFieldsOfAddServiceForm();
         });
 
         frequencyInput.addEventListener('input', event => {
             frequency = event.target.value;
+            getRequiredFieldsOfAddServiceForm();
         });
 
         dateStart.addEventListener('input', event => {
@@ -400,15 +404,18 @@ const addServicesForm = (() => {
         frequencyPeriodDropdown.addEventListener("change", event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             frequencyPeriod = selectedOption.value;
+            getRequiredFieldsOfAddServiceForm();
         });
 
         durationInput.addEventListener('input', event => {
             duration = event.target.value.trim();
+            getRequiredFieldsOfAddServiceForm();
         });
 
         locationDropdown.addEventListener("change", event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             location = selectedOption.value;
+            getRequiredFieldsOfAddServiceForm();
         });
     }
 
