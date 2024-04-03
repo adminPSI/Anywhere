@@ -188,7 +188,7 @@ const addOutcomes = (() => {
         });
 
         outcomeStatementInput.addEventListener('input', event => {
-            outcomeStatement = event.target.value.trim();
+            outcomeStatement = UTIL.removeUnsavableNoteText(event.target.value).trim();
             checkRequiredFieldsOfAddOutcome();
         });
         dateStart.addEventListener('input', event => {

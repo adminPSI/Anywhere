@@ -274,7 +274,7 @@ const addServicesForm = (() => {
         populateOutcomeDropdown();
         eventListeners();
         populatefrequencyModifierDropdown();
-        RequiredFieldsOfAddServiceForm(outcomeType, servicesStatement, frequencyModifier, startDate, endDate);
+        RequiredFieldsOfAddServiceForm(outcomeType, servicesStatement, startDate, endDate);
         return employeeInfoDiv;
     }  
 
@@ -367,17 +367,17 @@ const addServicesForm = (() => {
         });
 
         servicesStatementInput.addEventListener('input', event => {
-            servicesStatement = event.target.value.trim();
+            servicesStatement = UTIL.removeUnsavableNoteText(event.target.value).trim();  
             getRequiredFieldsOfAddServiceForm();
         });
 
         methodInput.addEventListener('input', event => {
-            method = event.target.value.trim();
+            method = UTIL.removeUnsavableNoteText(event.target.value).trim();
             getRequiredFieldsOfAddServiceForm();
         });
 
         successInput.addEventListener('input', event => {
-            success = event.target.value.trim();
+            success = UTIL.removeUnsavableNoteText(event.target.value).trim();
             getRequiredFieldsOfAddServiceForm();
         });
 
@@ -425,27 +425,20 @@ const addServicesForm = (() => {
         var endDateVal = dateEnd.querySelector('#dateEnd');
         var servicesStatementVal = servicesStatementInput.querySelector('#servicesStatementInput');
         var outComeVal = outcomeDropdown.querySelector('#outcomeDropdown');
-        var frequencyModifierVal = frequencyModifierDropdown.querySelector('#frequencyModifierDropdown');
-        RequiredFieldsOfAddServiceForm(outComeVal.value, servicesStatementVal.value, frequencyModifierVal.value, startDateVal.value, endDateVal.value);
+        RequiredFieldsOfAddServiceForm(outComeVal.value, servicesStatementVal.value, startDateVal.value, endDateVal.value);
     }
 
-    function RequiredFieldsOfAddServiceForm(outComeVal, servicesStatementVal, frequencyModifierVal, startDateVal, endDateVal) {
+    function RequiredFieldsOfAddServiceForm(outComeVal, servicesStatementVal, startDateVal, endDateVal) {
         if (outComeVal === '') {
             outcomeDropdown.classList.add('error');
         } else {
             outcomeDropdown.classList.remove('error');
         }
-
+         
         if (servicesStatementVal.trim() === '') { 
             servicesStatementInput.classList.add('error');
         } else {
             servicesStatementInput.classList.remove('error');
-        }
-
-        if (frequencyModifierVal === '') {
-            frequencyModifierDropdown.classList.add('error');
-        } else {
-            frequencyModifierDropdown.classList.remove('error');
         }
 
         if (endDateVal != null && endDateVal != '' && startDateVal > endDateVal) {
