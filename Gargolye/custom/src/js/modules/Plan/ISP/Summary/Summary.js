@@ -1387,10 +1387,10 @@ const planSummary = (function () {
     );
 
     if (hasError) {
-      planValidation.setSummaryRiskValidation(true);
+      planValidation.setSummaryRiskValidation(false);
       planValidation.alertCheckSummaryRisksValidation();
     } else {
-      planValidation.summaryRisksValidationCheck();
+      planValidation.setSummaryRiskValidation(true);
       planValidation.alertCheckSummaryRisksValidation();
     }
 
@@ -1501,10 +1501,10 @@ const planSummary = (function () {
     );
 
     if (hasError) {
-      planValidation.setSummaryRiskValidation(true);
+      planValidation.setSummaryRiskValidation(false);
       planValidation.alertCheckSummaryRisksValidation();
     } else {
-      planValidation.summaryRisksValidationCheck();
+      planValidation.setSummaryRiskValidation(true);
       planValidation.alertCheckSummaryRisksValidation();
     }
 
@@ -2055,10 +2055,10 @@ const planSummary = (function () {
 
     const sectionHasErrors = tableData.some(row => row.hasError);
     if (sectionHasErrors) {
-      planValidation.setSummaryRiskValidation(true);
+      planValidation.setSummaryRiskValidation(false);
       planValidation.alertCheckSummaryRisksValidation();
     } else {
-      planValidation.setSummaryRiskValidation(false);
+      planValidation.setSummaryRiskValidation(true);
       planValidation.alertCheckSummaryRisksValidation();
     }
 
@@ -2147,11 +2147,6 @@ const planSummary = (function () {
       classNames: 'autosize',
       onBlurCallback: event => {
         additionalSummaryData.aloneTimeAmount = event.target.value;
-        if (hasPaidSupports) {
-          if (additionalSummaryData.aloneTimeAmount === '') {
-            amountOfTimeQuestion.classList.add('error');
-          } else amountOfTimeQuestion.classList.remove('error');
-        } else amountOfTimeQuestion.classList.remove('error');
         const submitData = {
           anywAssessmentId: planId,
           aloneTimeAmount: UTIL.removeUnsavableNoteText(additionalSummaryData.aloneTimeAmount),
@@ -2159,8 +2154,6 @@ const planSummary = (function () {
         };
         summaryAjax.updateAdditionalAssessmentSummaryAnswers(submitData);
       },
-    });
-    amountOfTimeQuestion.addEventListener('keyup', e => {
     });
     amountOfTimeWrap.appendChild(amountOfTimePrompt);
     amountOfTimeWrap.appendChild(amountOfTimeQuestion);
@@ -2179,13 +2172,6 @@ const planSummary = (function () {
       forceCharLimit: true,
       onBlurCallback: event => {
         additionalSummaryData.providerBackUp = event.target.value;
-        if (hasPaidSupports) {
-          if (additionalSummaryData.providerBackUp === '') {
-            backupPlanQuestion.classList.add('error');
-          } else backupPlanQuestion.classList.remove('error');
-        } else {
-          backupPlanQuestion.classList.remove('error');
-        }
         const submitData = {
           anywAssessmentId: planId,
           aloneTimeAmount: UTIL.removeUnsavableNoteText(additionalSummaryData.aloneTimeAmount),
@@ -2193,9 +2179,6 @@ const planSummary = (function () {
         };
         summaryAjax.updateAdditionalAssessmentSummaryAnswers(submitData);
       },
-    });
-    backupPlanQuestion.addEventListener('keyup', e => {
-
     });
 
     backupPlanWrap.appendChild(backupPlanPrompt);
