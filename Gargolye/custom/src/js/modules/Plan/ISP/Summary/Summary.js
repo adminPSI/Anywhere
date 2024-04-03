@@ -1521,8 +1521,10 @@ const planSummary = (function () {
     const doneBtn = document.querySelector('.risksPopup .doneBtn');
     if (inputsWithErrors) {
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
     } else {
       doneBtn.classList.remove('disabled');
+      doneBtn.disabled = false;
     }
   }
   function showRisksTablePopup(popupData, isNew, isCopy) {
@@ -1651,7 +1653,7 @@ const planSummary = (function () {
       readonly: isReadOnly,
       callback: (e, selectedOption) => {
         whoResponsible = selectedOption.value;
-        if (selectedOption === '') {
+        if (whoResponsible === '') {
           whoResponsibleDropdown.classList.add('error');
         } else {
           whoResponsibleDropdown.classList.remove('error');
@@ -1787,6 +1789,7 @@ const planSummary = (function () {
         }
 
         doneBtn.classList.remove('disabled');
+        doneBtn.disabled = false;
         POPUP.hide(risksPopup);
       },
     });
@@ -1888,6 +1891,7 @@ const planSummary = (function () {
     }
     if (hasInitialErros) {
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
     }
     // end required fields
 
@@ -1898,6 +1902,7 @@ const planSummary = (function () {
       levelsOfSupervisionDropdown.classList.add('disabled');
       whoResponsibleDropdown.classList.add('disabled');
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
       deleteBtn.classList.add('disabled');
     }
 
@@ -2120,17 +2125,7 @@ const planSummary = (function () {
 
   function checkForPaidSupports(numOfPaidSupports) {
     hasPaidSupports = numOfPaidSupports > 0;
-    if (hasPaidSupports) {
-      if (additionalSummaryData.aloneTimeAmount === '') {
-        amountOfTimeQuestion.classList.add('error');
-      }
-      if (additionalSummaryData.providerBackUp === '') {
-        backupPlanQuestion.classList.add('error');
-      }
-    } else {
-      amountOfTimeQuestion.classList.remove('error');
-      backupPlanQuestion.classList.remove('error');
-    }
+    
   }
   function getAdditionalSummaryQuestionMarkup() {
     const additionalQuestionDiv = document.createElement('div');
@@ -2166,13 +2161,6 @@ const planSummary = (function () {
       },
     });
     amountOfTimeQuestion.addEventListener('keyup', e => {
-      if (hasPaidSupports) {
-        if (e.target.value === '') {
-          amountOfTimeQuestion.classList.add('error');
-        } else amountOfTimeQuestion.classList.remove('error');
-      } else {
-        amountOfTimeQuestion.classList.remove('error');
-      }
     });
     amountOfTimeWrap.appendChild(amountOfTimePrompt);
     amountOfTimeWrap.appendChild(amountOfTimeQuestion);
@@ -2207,13 +2195,7 @@ const planSummary = (function () {
       },
     });
     backupPlanQuestion.addEventListener('keyup', e => {
-      if (hasPaidSupports) {
-        if (e.target.value === '') {
-          backupPlanQuestion.classList.add('error');
-        } else backupPlanQuestion.classList.remove('error');
-      } else {
-        backupPlanQuestion.classList.remove('error');
-      }
+
     });
 
     backupPlanWrap.appendChild(backupPlanPrompt);
@@ -2221,15 +2203,6 @@ const planSummary = (function () {
 
     additionalQuestionDiv.appendChild(amountOfTimeWrap);
     additionalQuestionDiv.appendChild(backupPlanWrap);
-
-    if (hasPaidSupports && !isReadOnly) {
-      if (additionalSummaryData.aloneTimeAmount === '') {
-        amountOfTimeQuestion.classList.add('error');
-      }
-      if (additionalSummaryData.providerBackUp === '') {
-        backupPlanQuestion.classList.add('error');
-      }
-    }
 
     if (isReadOnly) {
       amountOfTimeQuestion.classList.add('disabled');
