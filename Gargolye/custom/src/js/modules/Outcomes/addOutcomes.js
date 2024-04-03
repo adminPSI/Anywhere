@@ -15,7 +15,7 @@ const addOutcomes = (() => {
         selectedConsumers = selectedConsume;
         goalId = goalID;
         buildNewOutcomes();
-        SAVE_BTN.classList.add('disabled'); 
+        SAVE_BTN.classList.add('disabled');
     }
 
     // Build New Outcomes Page 
@@ -188,7 +188,7 @@ const addOutcomes = (() => {
         });
 
         outcomeStatementInput.addEventListener('input', event => {
-            outcomeStatement = UTIL.removeUnsavableNoteText(event.target.value).trim();
+            outcomeStatement = event.target.value.trim();
             checkRequiredFieldsOfAddOutcome();
         });
         dateStart.addEventListener('input', event => {
@@ -251,7 +251,7 @@ const addOutcomes = (() => {
     }
 
     async function saveUpdateOutcomes() {
-        const result = await outcomesAjax.insertOutcomeInfoAsync(startDate, endDate, outcomeType, outcomeStatement, $.session.UserId, goalId, selectedConsumerId,location);
+        const result = await outcomesAjax.insertOutcomeInfoAsync(startDate, endDate, outcomeType, UTIL.removeUnsavableNoteText(outcomeStatement), $.session.UserId, goalId, selectedConsumerId, location);
         const { insertOutcomeInfoResult } = result;
         if (insertOutcomeInfoResult[0].goal_id != '0') {
             addEditOutcomeServices.init(selectedConsumers)

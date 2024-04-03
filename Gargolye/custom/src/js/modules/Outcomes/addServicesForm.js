@@ -367,17 +367,17 @@ const addServicesForm = (() => {
         });
 
         servicesStatementInput.addEventListener('input', event => {
-            servicesStatement = UTIL.removeUnsavableNoteText(event.target.value).trim();  
+            servicesStatement = event.target.value.trim();  
             getRequiredFieldsOfAddServiceForm();
         });
 
         methodInput.addEventListener('input', event => {
-            method = UTIL.removeUnsavableNoteText(event.target.value).trim();
+            method = event.target.value.trim();
             getRequiredFieldsOfAddServiceForm();
         });
 
         successInput.addEventListener('input', event => {
-            success = UTIL.removeUnsavableNoteText(event.target.value).trim();
+            success = event.target.value.trim();
             getRequiredFieldsOfAddServiceForm();
         });
 
@@ -461,11 +461,11 @@ const addServicesForm = (() => {
     }
 
     async function saveUpdateOutcomesService() {
-        const result = await outcomesAjax.insertOutcomeServiceInfoAsync(startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, $.session.UserId, objectiveId, selectedConsumerId, location, duration);
+        const result = await outcomesAjax.insertOutcomeServiceInfoAsync(startDate, endDate, outcomeType, UTIL.removeUnsavableNoteText(servicesStatement), ServiceType, UTIL.removeUnsavableNoteText(method), UTIL.removeUnsavableNoteText(success), frequencyModifier, frequency, frequencyPeriod, $.session.UserId, objectiveId, selectedConsumerId, location, duration);
         const { insertOutcomeServiceInfoResult } = result;
         if (insertOutcomeServiceInfoResult[0].objective_Id != '0') {
             addEditOutcomeServices.init(selectedConsumers)
-        }
+        } 
     }
 
 
