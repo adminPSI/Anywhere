@@ -741,11 +741,14 @@ const OOD = (() => {
                     break;
             }
         } catch (error) {
-            console.error(error);
+            //console.error(error);
+            const formsPopup = document.getElementById('createOODFormsPopup');
+            formsPopup.remove();
+            overlay.hide();
         }
-
         const formsPopup = document.getElementById('createOODFormsPopup');
-        formsPopup.style.display = 'none';
+        formsPopup.remove();
+        overlay.hide();
     }
     
 

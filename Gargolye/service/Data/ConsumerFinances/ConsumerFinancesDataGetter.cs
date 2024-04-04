@@ -577,6 +577,26 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
+        public string updateSplitRegisterCategoryData(string token, string registerId, string category, string subCategory, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("updateSplitRegisterCategory");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[3];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@registerId", DbType.String, registerId);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@category", DbType.String, category);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@subCategory", DbType.String, subCategory);
+
+                return DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_updateSplitRegisterCategory(?, ?, ?)", args, ref transaction).ToString();
+
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_updateSplitRegisterCategory(" + registerId + ")");
+                throw ex;
+            }
+        }
+
         public string deleteSplitRegisterData(string token, string registerId, DistributedTransaction transaction)
         {
             try

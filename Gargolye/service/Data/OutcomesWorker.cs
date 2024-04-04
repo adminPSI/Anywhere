@@ -370,12 +370,13 @@ namespace Anywhere.service.Data
                 string jsonResult = "";
                 sb.Clear();
                 sb.Append(" select ROW_NUMBER() OVER(ORDER BY obj.Objective_id) AS itemnum, obj.Objective_ID as objective_Id, obj.goal_id as goal_id , ");
-                sb.Append(" case When obj.Objective_recurrance Is null or obj.Objective_recurrance = '' or obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0  then '' ");
-                sb.Append(" when obj.Objective_recurrance = 'M' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per month' ");
-                sb.Append(" when obj.Objective_recurrance = 'D' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per day' ");
-                sb.Append(" when obj.Objective_recurrance = 'W' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per week' ");
-                sb.Append(" when obj.Objective_recurrance = 'H' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per hour' ");
-                sb.Append(" when obj.Objective_recurrance = 'Y' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per year' end as frequency, ");
+                sb.Append(" case When (obj.Objective_recurrance Is null or obj.Objective_recurrance = '') and (obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0) and (ctf.Caption Is null or ctf.Caption ='')  then '' ");
+                sb.Append(" when obj.Objective_recurrance Is null then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end ");
+                sb.Append(" when obj.Objective_recurrance = 'M' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end + 'per month' ");
+                sb.Append(" when obj.Objective_recurrance = 'D' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end + 'per day' ");
+                sb.Append(" when obj.Objective_recurrance = 'W' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end + 'per week' ");
+                sb.Append(" when obj.Objective_recurrance = 'H' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end + 'per hour' ");
+                sb.Append(" when obj.Objective_recurrance = 'Y' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end + 'per year' end as frequency, ");
                 if (appName == "Gatekeeper")
                     sb.Append(" ct.Caption as serviceType, obj.Objective_Statement as serviceStatement, obj.objective_start as serviceStartDate, obj.objective_end as serviceEndDate ");
                 else

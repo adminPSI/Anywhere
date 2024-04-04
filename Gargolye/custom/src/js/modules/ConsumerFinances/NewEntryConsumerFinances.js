@@ -82,7 +82,7 @@ const NewEntryCF = (() => {
                     sum += parseFloat(splitAmount[i].amount);
             }
             totalAmount = sum.toFixed(2);
-            totalAmountSaved = totalAmount;  
+            totalAmountSaved = totalAmount;
         }
         else if (registerId == 0 && attachmentID) {
             regId = 0;
@@ -578,7 +578,7 @@ const NewEntryCF = (() => {
             }
         });
 
-        newAmountInput.addEventListener('focusout', event => {  
+        newAmountInput.addEventListener('focusout', event => {
             if (totalAmountSaved > 0 && totalAmountSaved != event.target.value) {
                 errorPopup(2);
             }
@@ -1149,12 +1149,12 @@ const NewEntryCF = (() => {
             style: "secondary",
             callback: () => {
                 document.getElementById('newCategoryDropdown').value = categoryOldVal;
-                
+
                 if (tempAmountval) {
-                  document.getElementById('newAmountInput').value = tempAmountval;
-                  amount = tempAmountval;
+                    document.getElementById('newAmountInput').value = tempAmountval;
+                    amount = tempAmountval;
                 }
-                
+
                 POPUP.hide(splitTransPopup);
                 checkRequiredFieldsOfNewEntry();
             },
@@ -1189,7 +1189,7 @@ const NewEntryCF = (() => {
                     return;
                 }
                 checkRequiredFieldsSplitTransection();
-                splitAmountTotal();  
+                splitAmountTotal();
                 if (splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value != '')
                     splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value = parseFloat(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value).toFixed(2);
             });
@@ -1300,12 +1300,12 @@ const NewEntryCF = (() => {
             style: 'secondary',
             type: 'contained',
             callback: () => {
-                cancelSplitBtn.classList.remove('disabled'); 
                 if (errorCode == 1) {
+                    cancelSplitBtn.classList.remove('disabled');
                     POPUP.hide(errorConfPOPUP);
                     POPUP.hide(splitTransPopup);
                     document.getElementById('newAmountInput').value = parseFloat(totalAmount).toFixed(2);
-                    amount = parseFloat(totalAmount).toFixed(2); 
+                    amount = parseFloat(totalAmount).toFixed(2);
                     splitTransSaveData();
                 }
                 else {
@@ -1319,8 +1319,8 @@ const NewEntryCF = (() => {
             style: 'secondary',
             type: 'outlined',
             callback: () => {
-                cancelSplitBtn.classList.remove('disabled');
                 if (errorCode == 1) {
+                    cancelSplitBtn.classList.remove('disabled');
                     POPUP.hide(errorConfPOPUP);
                     POPUP.show(splitTransPopup);
                 } else {
@@ -1346,7 +1346,8 @@ const NewEntryCF = (() => {
         errorConfPOPUP.appendChild(message);
         errorConfPOPUP.appendChild(btnWrap);
         POPUP.show(errorConfPOPUP);
-        cancelSplitBtn.classList.add('disabled');
+        if (errorCode == 1)
+            cancelSplitBtn.classList.add('disabled');
     }
 
     async function splitTransSaveData() {
