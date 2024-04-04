@@ -1735,10 +1735,15 @@ const WaitingListAssessment = (() => {
     const isOtherThanMentalHealthYes = wlData.conditions.otherThanMentalHealth.includes('yes');
     const isBefore22Yes = wlData.conditions.before22.includes('yes');
     const isConditionIndefiniteYes = wlData.conditions.isConditionIndefinite.includes('yes');
+    const isImmNeedsRequiredYes = wlData.immediateNeeds.immNeedsRequired.includes('yes');
     const isWaiverEnrollRequiredYes = wlData.waiverEnrollment.waivEnrollWaiverEnrollmentIsRequired.includes('yes');
 
     const isChecked =
-      isOtherThanMentalHealthYes && isBefore22Yes && isConditionIndefiniteYes && isWaiverEnrollRequiredYes;
+      isOtherThanMentalHealthYes &&
+      isBefore22Yes &&
+      isConditionIndefiniteYes &&
+      isWaiverEnrollRequiredYes &&
+      isImmNeedsRequiredYes;
     wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(isChecked);
   }
   function setConclusionWaiverFunded12MonthsReview() {
@@ -2155,24 +2160,29 @@ const WaitingListAssessment = (() => {
   }
   //--------------------------------------------------
   function setConclusionUnmetNeeds() {
+    // [conclusionUnmetNeeds] "The individual has unmet..." should be selected if ALL of the following are true:
+    //  a. All Questions on the CONDITIONS page have an answer of "YES"
     const conditionPageAllYes = isConditionInputsAllYes();
+    //  b. "Is there an immediate need identified…" is YES on the IMMEDIATE NEEDS page
+    const isImmNeedsRequiredYes = wlForms['immediateNeeds'].inputs['immNeedsRequired'].getValue('immNeedsRequiredyes');
+    //  c. "Will the unmet immeidate need…" is YES on the WAIVER ENROLLMENT page
     const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
       'waivEnrollWaiverEnrollmentIsRequired'
     ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
 
-    const isChecked = conditionPageAllYes && isWaiverEnrollRequiredYes;
+    const isChecked = conditionPageAllYes && isWaiverEnrollRequiredYes && isImmNeedsRequiredYes;
     wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(isChecked);
   }
   function setConclusionWaiverFunded12Months() {
-    // [conclusionWaiverFunded12Months] "The individual has needs..." should always be uneditable and also should be selected if ALL of the following are true:
-    //   a.   All Questions on the CONDITIONS page have an answer of "YES"
+    // [conclusionWaiverFunded12Months] "The individual has needs..." should be selected if ALL of the following are true:
+    //   a. All Questions on the CONDITIONS page have an answer of "YES"
     const conditionPageAllYes = isConditionInputsAllYes();
-    //   b.  [unmetNeedsHas] "Does the individual have an identified need?" is YES on the CURRENT NEEDS page
+    //   b. [unmetNeedsHas] "Does the individual have an identified need?" is YES on the CURRENT NEEDS page
     const isUnmetNeedsHasYes = wlForms['currentNeeds'].inputs['unmetNeedsHas'].getValue('unmetNeedsHasyes');
-    //   c.  [unmetNeedsSupports] "If 'Yes', will any of those needs…" is YES on the CURRENT NEEDS page
+    //   c. [unmetNeedsSupports] "If 'Yes', will any of those needs…" is YES on the CURRENT NEEDS page
     const isUnmetNeedsSupportsYes =
       wlForms['currentNeeds'].inputs['unmetNeedsSupports'].getValue('unmetNeedsSupportsyes');
-    //   d.  [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet immeidate need…" is YES on the WAIVER ENROLLMENT page
+    //   d. [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet immeidate need…" is YES on the WAIVER ENROLLMENT page
     const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
       'waivEnrollWaiverEnrollmentIsRequired'
     ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
@@ -2181,8 +2191,8 @@ const WaitingListAssessment = (() => {
     wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(isChecked);
   }
   function setConclusionDoesNotRequireWaiver() {
-    // [conclusionDoesNotRequireWaiver] "The individual does not require waiver..." should always be uneditable and also should be selected if ALL of the following are true:
-    //   a. [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet immeidate need…" is NO on the WAIVER ENROLLMENT page
+    // [conclusionDoesNotRequireWaiver] "The individual does not require waiver..." should be selected
+    // (IF) [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet immeidate need…" is NO on the WAIVER ENROLLMENT page
     const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
       'waivEnrollWaiverEnrollmentIsRequired'
     ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
@@ -2190,8 +2200,8 @@ const WaitingListAssessment = (() => {
     wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(isWaiverEnrollRequiredYes);
   }
   function setConclusionNotEligibleForWaiver() {
-    // [conclusionNotEligibleForWaiver] "The individual is not eligible..." should be selected if ALL of the following are true:
-    //   a.  Any of the questions on the CONDITIONS page have an answer of "NO"
+    // [conclusionNotEligibleForWaiver] "The individual is not eligible..." should be selected
+    // (IF) Any of the questions on the CONDITIONS page have an answer of "NO"
     const conditionPageAllYes = isConditionInputsAllYes();
 
     wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(!conditionPageAllYes);
