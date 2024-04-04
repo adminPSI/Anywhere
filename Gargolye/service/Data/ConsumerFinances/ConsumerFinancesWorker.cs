@@ -462,6 +462,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                     {
                         Odg.deleteSplitRegisterData(token, RegisterID, transaction);
                         Odg.insertSplitRegisterAccount(token, RegisterID, "1", category, description, amount, categoryID, userId, transaction);
+                        Odg.updateSplitRegisterCategoryData(token, RegisterID, category, subCategory, transaction);
                     }
                     acountRegister.registerId = RegisterID;
                     return acountRegister;
