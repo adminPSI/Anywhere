@@ -614,6 +614,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 try
                 {
                     ConsumerFinancesEntry[] categorySubCategory = js.Deserialize<ConsumerFinancesEntry[]>(Odg.deleteConsumerFinanceAccount(token, registerId, transaction));
+                    Odg.deleteSplitRegisterData(token, registerId, transaction);
                     updateAccountBalance(categorySubCategory[0].activityDate, categorySubCategory[0].accountID, transaction, categorySubCategory[0].balance);
                     return categorySubCategory[0].accountID;
                 }
