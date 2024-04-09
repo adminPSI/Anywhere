@@ -1764,9 +1764,9 @@ const WaitingListAssessment = (() => {
     wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(isChecked);
   }
   function setConclusionDoesNotRequireWaiverReview() {
-    const isWaiverEnrollRequiredYes = wlData.waiverEnrollment.waivEnrollWaiverEnrollmentIsRequired.includes('yes');
+    const isWaiverEnrollRequiredNo = wlData.waiverEnrollment.waivEnrollWaiverEnrollmentIsRequired.includes('no');
 
-    wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(isWaiverEnrollRequiredYes);
+    wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(isWaiverEnrollRequiredNo);
   }
   function setConclusionNotEligibleForWaiverReview() {
     const isOtherThanMentalHealthYes = wlData.conditions.otherThanMentalHealth.includes('yes');
