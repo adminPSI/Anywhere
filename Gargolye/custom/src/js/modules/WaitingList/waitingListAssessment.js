@@ -2193,11 +2193,11 @@ const WaitingListAssessment = (() => {
   function setConclusionDoesNotRequireWaiver() {
     // [conclusionDoesNotRequireWaiver] "The individual does not require waiver..." should be selected
     // (IF) [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet immeidate need…" is NO on the WAIVER ENROLLMENT page
-    const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
+    const isWaiverEnrollRequiredNo = wlForms['waiverEnrollment'].inputs[
       'waivEnrollWaiverEnrollmentIsRequired'
-    ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
+    ].getValue('waivEnrollWaiverEnrollmentIsRequiredno');
 
-    wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(isWaiverEnrollRequiredYes);
+    wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(isWaiverEnrollRequiredNo);
   }
   function setConclusionNotEligibleForWaiver() {
     // [conclusionNotEligibleForWaiver] "The individual is not eligible..." should be selected
