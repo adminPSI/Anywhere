@@ -330,7 +330,6 @@ namespace Anywhere.service.Data
 
             pageData.pageDataParent = parentObj;
             pageData.pageDataChild = childObj;
-
             return pageData;
         }
 
@@ -345,7 +344,8 @@ namespace Anywhere.service.Data
                 sb.Append("select Goal_ID as goal_id , gt.Goal_Type_Description as outcomeType, gs.Goal_Statement as outcomeStatement , gs.Start_Date as effectiveDateStart, gs.End_Date as effectiveDateEnd ");
                 sb.Append("from dba.goals gs ");
                 sb.Append("left outer join dba.Goal_Types gt on gs.Goal_Type_ID = gt.Goal_Type_ID ");
-                sb.AppendFormat("where(gs.Start_Date between '{0}' and '{1}') ", effectiveDateStart, effectiveDateEnd);
+                sb.AppendFormat("where(gs.Start_Date <= '{0}' or gs.Start_Date is null ) ", effectiveDateEnd);
+                sb.AppendFormat("AND (gs.End_Date >= '{0}' or gs.End_Date is null) ", effectiveDateEnd);
                 sb.AppendFormat("AND (gt.Goal_Type_Description like '{0}') ", outcomeType);
                 sb.AppendFormat("AND (gs.ID = {0}) ", selectedConsumerId);
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
