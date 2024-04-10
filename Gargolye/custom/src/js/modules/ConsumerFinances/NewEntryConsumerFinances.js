@@ -1271,7 +1271,7 @@ const NewEntryCF = (() => {
             if (splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value != '')
                 sum += parseFloat(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value);
         }
-        totalAmount = sum;
+        totalAmount = parseFloat(sum).toFixed(2);  
         document.getElementById('amountTotalInput').value = sum.toFixed(2);
         if (document.getElementById('newAmountInput').value == '') {
             document.getElementById('newAmountInput').value = sum.toFixed(2);
