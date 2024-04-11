@@ -1832,10 +1832,9 @@ const WaitingListAssessment = (() => {
         'childProtectionAgency',
         'adultDayEmployment',
         'dischargePlan',
+        'other',
       ].includes(formName)
     ) {
-      linkIdForSaveUpdate = wlCircID;
-    } else if (formName === 'other') {
       linkIdForSaveUpdate = wlCircID;
     } else if (['behavioral', 'physical', 'medical'].includes(formName)) {
       linkIdForSaveUpdate = wlNeedID;
@@ -3172,6 +3171,8 @@ const WaitingListAssessment = (() => {
         waitingListId: wlLinkID,
       });
 
+      console.log(resp.generateWaitingListAssessmentReportResult);
+
       if (resp !== '1') return;
 
       const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
@@ -3476,6 +3477,8 @@ const WaitingListAssessment = (() => {
     tocLinks = {};
     wlDocuments = [];
     wlParticipants = {};
+    wlCircID = '';
+    wlNeedID = '';
     wlFormInfo = initFormInfo();
     wlData = mapDataBySection(opts.wlData);
     selectedConsumer = opts.selectedConsumer;
