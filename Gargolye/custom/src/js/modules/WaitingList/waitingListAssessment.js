@@ -3171,9 +3171,7 @@ const WaitingListAssessment = (() => {
         waitingListId: wlLinkID,
       });
 
-      console.log(resp.generateWaitingListAssessmentReportResult);
-
-      if (resp !== '1') return;
+      if (resp.generateWaitingListAssessmentReportResult[0]['reportScheduleId'] === '') return;
 
       const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
         header: data['emailHeader'],
