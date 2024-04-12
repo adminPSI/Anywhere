@@ -3481,6 +3481,11 @@ namespace Anywhere
             return cf.getCatogories(token, categoryID);
         }
 
+        public Category[] getSplitCategoriesSubCategories(string token, string categoryID)
+        {
+            return cf.getSplitCategoriesSubCategories(token, categoryID);
+        }
+
         public Category[] getCategoriesSubCategories(string token, string categoryID)
         {
             return cf.getCategoriesSubCategories(token, categoryID);
