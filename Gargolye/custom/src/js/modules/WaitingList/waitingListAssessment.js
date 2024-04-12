@@ -3167,15 +3167,16 @@ const WaitingListAssessment = (() => {
       sendEmailPopup.show();
     });
     sendEmailForm.onSubmit(async (data, submitter) => {
-      const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
+      let resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
         waitingListId: wlLinkID,
       });
-
-      if (resp.generateWaitingListAssessmentReportResult[0]['reportScheduleId'] === '') return;
+      resp = resp.generateWaitingListAssessmentReportResult;
 
       const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
         header: data['emailHeader'],
         body: data['emailBody'],
+        reportScheduleId: resp,
+        waitingListId: wlLinkID,
       });
 
       sendEmailPopup.close();
