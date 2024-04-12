@@ -291,6 +291,25 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
+        public Category[] getSplitCategoriesSubCategories(string token, string categoryID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    Category[] category = js.Deserialize<Category[]>(Odg.getSplitCategoriesSubCategories(transaction, categoryID));
+                    return category;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
         public SubCategory[] getSubCatogories(string token, string category)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))

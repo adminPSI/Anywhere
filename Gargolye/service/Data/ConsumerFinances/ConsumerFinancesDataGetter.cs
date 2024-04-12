@@ -100,6 +100,24 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
+        public string getSplitCategoriesSubCategories(DistributedTransaction transaction, string categoryID)
+        {
+            List<string> list = new List<string>();
+            list.Add(categoryID);
+            try
+            {
+                logger.debug("getSplitCategoriesSubCategories");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getSplitCategoriesSubCategories(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getSplitCategoriesSubCategories()");
+                throw ex;
+            }
+
+        }
+
         public string getSubCatogories(DistributedTransaction transaction, string category)
         {
             List<string> list = new List<string>();
