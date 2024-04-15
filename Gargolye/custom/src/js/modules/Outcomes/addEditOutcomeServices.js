@@ -116,7 +116,6 @@ const addEditOutcomeServices = (() => {
   function buildFilteredByData() {
     var currentFilterDisplay = document.querySelector('.filteredByData');
 
-    effectiveDateStart = `${formatDate(filterValues.effectiveDateStart)}`;
     effectiveDateEnd = `${formatDate(filterValues.effectiveDateEnd)}`;
 
     if (!currentFilterDisplay) {
@@ -135,14 +134,14 @@ const addEditOutcomeServices = (() => {
         document.getElementById('outcomeTypeBtn').innerHTML = 'Outcome Type: ' + filterValues.outcomeTypeName;
     }
 
-    if (effectiveDateStart == '' && effectiveDateEnd == '') {
+    if (effectiveDateEnd == '') {
       btnWrap.appendChild(effectiveDateBtnWrap);
       btnWrap.removeChild(effectiveDateBtnWrap);
     } else {
       btnWrap.appendChild(effectiveDateBtnWrap);
       if (document.getElementById('effectiveDateBtn') != null)
         document.getElementById('effectiveDateBtn').innerHTML =
-          'Effective: ' + effectiveDateStart + '-' + effectiveDateEnd;
+          'Effective As Of: ' + effectiveDateEnd;
     }
 
     return currentFilterDisplay;
@@ -182,7 +181,7 @@ const addEditOutcomeServices = (() => {
 
     effectiveDateBtn = button.build({
       id: 'effectiveDateBtn',
-      text: 'Effective: ' + effectiveDateStart + '-' + effectiveDateEnd,
+      text: 'Effective As Of: ' + effectiveDateEnd,
       style: 'secondary',
       type: 'text',
       classNames: 'filterSelectionBtn',
@@ -230,21 +229,14 @@ const addEditOutcomeServices = (() => {
 
     // Date Inputs
     const dateWrap = document.createElement('div');
-    effectiveDateStartInput = input.build({
-      type: 'date',
-      label: 'Effective Start Date',
-      style: 'secondary',
-      value: filterValues.effectiveDateStart,
-    });
     effectiveDateEndInput = input.build({
       type: 'date',
-      label: 'Effective End Date',
+      label: 'Effective As Of',
       style: 'secondary',
       value: filterValues.effectiveDateEnd,
     });
 
-    if (IsShow == 'ALL' || IsShow == 'effectiveDateBtn') {
-      dateWrap.appendChild(effectiveDateStartInput);
+    if (IsShow == 'ALL' || IsShow == 'effectiveDateBtn') {    
       dateWrap.appendChild(effectiveDateEndInput);
     }
 
@@ -284,15 +276,6 @@ const addEditOutcomeServices = (() => {
       newFilterValues.outcomeTypeName = selectedOption.text;
     });
 
-    effectiveDateStartInput.addEventListener('change', e => {
-      if (e.target.value === '') {
-        effectiveDateStartInput.classList.add('error');
-      } else {
-        effectiveDateStartInput.classList.remove('error');
-        newFilterValues.effectiveDateStart = e.target.value;
-      }
-      checkFilterPopForErrors();
-    });
     effectiveDateEndInput.addEventListener('change', e => {
       if (e.target.value === '') {
         effectiveDateEndInput.classList.add('error');

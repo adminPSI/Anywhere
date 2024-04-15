@@ -791,16 +791,6 @@ namespace OODForms
                 }
                 else
                 {
-                    //byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
-                    //response.Clear();
-                    //response.BufferOutput = true;
-                    //response.AddHeader("Content-Disposition", "attachment;filename=" + attachment.filename + fileExtension + ";");
-                    ////response.AddHeader("Content-Type", contentType);
-                    //response.ContentType = contentType;
-                    //response.AddHeader("Content-Length", bytes.Length.ToString());
-                    //response.AddHeader("Access-Control-Allow-Origin", "*");
-                    //response.OutputStream.Write(bytes, 0, bytes.Length);
-                    //response.Flush();
                     byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
                     response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
                     response.ContentType = "application/octet-stream";
@@ -816,9 +806,6 @@ namespace OODForms
             {
                 // Dispose the MemoryStream
                 attachment.data.Dispose();
-                // Optionally, clear any sensitive data in the memory stream
-                //attachment.data.SetLength(0);
-                // Dispose other resources if necessary
             }
         }
 

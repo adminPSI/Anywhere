@@ -2,6 +2,7 @@
 using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.PlanInformedConsent;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -288,6 +289,13 @@ namespace Anywhere.service.Data.ReportBuilder
             return result;
         }
 
+        public static string ExtractInnerValue(string jsonString)
+        {
+            JArray jsonArray = JArray.Parse(jsonString);
+            JObject jsonObject = (JObject)jsonArray[0];
+            return jsonObject["reportScheduleId"].ToString();
+        }
+
         public string generateWaitingListAssessmentReport(string token, string waitingListId)
         {
             string category = "Waiting List";
@@ -296,6 +304,9 @@ namespace Anywhere.service.Data.ReportBuilder
             string result = "";
 
             result = rbdg.generateWaitingListAssessmentReport(token, category, title, reportServerList, waitingListId);
+
+            // Adding escape characters to allow the front-end to run json.parse() on the value
+            result = ExtractInnerValue(result);
 
             return result;
         }

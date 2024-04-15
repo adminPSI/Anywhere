@@ -1249,18 +1249,18 @@ const NewEntryCF = (() => {
         }
     }
 
-    async function populateSplitCategoryDropdown(categoryID) {
+    async function populateSplitCategoryDropdown(categoryID) { 
         const {
-            getCatogoriesResult: Category,
-        } = await ConsumerFinancesAjax.getCategoriesAsync(categoryID);
+            getSplitCategoriesSubCategoriesResult: Category,
+        } = await ConsumerFinancesAjax.getSplitCategoriesSubCategoriesAsync(categoryID);
         let data = Category.map((category) => ({
             id: category.CategoryID,
-            value: category.CategoryDescription,
+            value: category.CategoryID,
             text: category.CategoryDescription
         }));
         data.unshift({ id: null, value: '', text: '' });
         for (let i = 0; i < numberOfRows; i++) {
-            dropdown.populate("splitCategoryDropdownN" + i, data, splitAmount[i] != undefined ? splitAmount[i].category : '');
+            dropdown.populate("splitCategoryDropdownN" + i, data, splitAmount[i] != undefined ? splitAmount[i].categoryId : '');
         }
         checkRequiredFieldsSplitTransection();
     }
@@ -1271,7 +1271,7 @@ const NewEntryCF = (() => {
             if (splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value != '')
                 sum += parseFloat(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value);
         }
-        totalAmount = sum;
+        totalAmount = parseFloat(sum).toFixed(2);  
         document.getElementById('amountTotalInput').value = sum.toFixed(2);
         if (document.getElementById('newAmountInput').value == '') {
             document.getElementById('newAmountInput').value = sum.toFixed(2);
