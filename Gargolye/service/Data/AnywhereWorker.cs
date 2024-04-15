@@ -576,6 +576,7 @@ namespace Anywhere.service.Data
             public string appendITPreventionPlan { get; set; }
             public string appendITCause { get; set; }
             public string planFormCarryover { get; set; }
+            public string sendWaitingListEmail { get; set; }
             public string defaultMoneyManagementLocation { get; set; }
             public string defaultMoneyManagementLocationName { get; set; }
 
