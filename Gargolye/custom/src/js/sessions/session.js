@@ -327,6 +327,9 @@ $.session.InsertEmployers = false;
 $.session.UpdateEmployers = false;
 
 $.session.consumerId = '';
+
+//Waiting List
+$.session.sendWaitingListEmail = false;
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
 
 //Needs updated for every release.
