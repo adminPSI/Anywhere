@@ -9,7 +9,6 @@ const WaitingListAssessment = (() => {
   let wlNeedID;
   let wlDocuments;
   let wlParticipants;
-  let promiseQue;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -1215,6 +1214,20 @@ const WaitingListAssessment = (() => {
         properties: [`${wlFormInfo['riskMitigation'].id}|${wlFormInfo['riskMitigation'].dbtable}`],
       });
     },
+    icfDischarge: async () => {
+      wlForms['icfDischarge'].clear();
+
+      await _UTIL.fetchData('deleteFromWaitingList', {
+        properties: [`${wlFormInfo['icfDischarge'].id}|${wlFormInfo['icfDischarge'].dbtable}`],
+      });
+    },
+    intermittentSupports: async () => {
+      wlForms['intermittentSupports'].clear();
+
+      await _UTIL.fetchData('deleteFromWaitingList', {
+        properties: [`${wlFormInfo['intermittentSupports'].id}|${wlFormInfo['intermittentSupports'].dbtable}`],
+      });
+    },
     childProtectionAgency: async () => {
       wlForms['childProtectionAgency'].clear();
 
@@ -1222,6 +1235,29 @@ const WaitingListAssessment = (() => {
 
       await _UTIL.fetchData('deleteFromWaitingList', {
         properties: [`${wlFormInfo['childProtectionAgency'].id}|${wlFormInfo['childProtectionAgency'].dbtable}`],
+      });
+    },
+    adultDayEmployment: async () => {
+      wlForms['adultDayEmployment'].clear();
+
+      await _UTIL.fetchData('deleteFromWaitingList', {
+        properties: [`${wlFormInfo['adultDayEmployment'].id}|${wlFormInfo['adultDayEmployment'].dbtable}`],
+      });
+    },
+    dischargePlan: async () => {
+      wlForms['dischargePlan'].clear();
+
+      await _UTIL.fetchData('deleteFromWaitingList', {
+        properties: [`${wlFormInfo['dischargePlan'].id}|${wlFormInfo['dischargePlan'].dbtable}`],
+      });
+    },
+    immediateNeeds: async () => {
+      wlForms['immediateNeeds'].clear();
+
+      wlForms['immediateNeeds'].inputs['immNeedsDescription'].toggleDisabled(true);
+
+      await _UTIL.fetchData('deleteFromWaitingList', {
+        properties: [`${wlFormInfo['immediateNeeds'].id}|${wlFormInfo['immediateNeeds'].dbtable}`],
       });
     },
     currentNeeds: async () => {
@@ -1232,15 +1268,6 @@ const WaitingListAssessment = (() => {
 
       await _UTIL.fetchData('deleteFromWaitingList', {
         properties: [`${wlFormInfo['currentNeeds'].id}|${wlFormInfo['currentNeeds'].dbtable}`],
-      });
-    },
-    immediateNeeds: async () => {
-      wlForms['immediateNeeds'].clear();
-
-      wlForms['immediateNeeds'].inputs['immNeedsDescription'].toggleDisabled(true);
-
-      await _UTIL.fetchData('deleteFromWaitingList', {
-        properties: [`${wlFormInfo['immediateNeeds'].id}|${wlFormInfo['immediateNeeds'].dbtable}`],
       });
     },
     waiverEnrollment: async () => {
@@ -1332,6 +1359,119 @@ const WaitingListAssessment = (() => {
     }
 
     tocLinks[formName].classList.toggle('formComplete', isFormComplete);
+  }
+
+  // DATA
+  //--------------------------------------------------
+  async function insertNewWaitingListAssessment(consumerId) {
+    const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
+      id: 0,
+      linkId: 0,
+      propertyName: 'consumerId',
+      value: consumerId,
+      valueTwo: '',
+      insertOrUpdate: 'I',
+    });
+
+    return JSON.parse(data.insertUpdateWaitingListValueResult);
+  }
+  async function insertAssessmentData({ id, linkId, propertyName, value, valueTwo = '' }) {
+    const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
+      id,
+      linkId,
+      propertyName,
+      value,
+      valueTwo,
+      insertOrUpdate: 'I',
+    });
+
+    return JSON.parse(data.insertUpdateWaitingListValueResult);
+  }
+  async function updateAssessmentData({ id, linkId = 0, propertyName, value, valueTwo = '' }) {
+    const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
+      id,
+      linkId,
+      propertyName,
+      value,
+      valueTwo,
+      insertOrUpdate: 'U',
+    });
+
+    return data.insertUpdateWaitingListValueResult;
+  }
+  async function insertUpdateAssessment({ value, name, type, formName }) {
+    // set radio/checkbox value
+    if (type === 'radio' || type === 'checkbox') {
+      value = value === 'yes' || value === 'on' ? 1 : 0;
+    }
+
+    // determine if we use wlLinkID or wlCircID or wlNeedID
+    let linkIdForSaveUpdate;
+
+    if (
+      [
+        'primaryCaregiver',
+        'riskMitigation',
+        'icfDischarge',
+        'intermittentSupports',
+        'childProtectionAgency',
+        'adultDayEmployment',
+        'dischargePlan',
+        'other',
+      ].includes(formName)
+    ) {
+      linkIdForSaveUpdate = wlCircID;
+    } else if (['behavioral', 'physical', 'medical'].includes(formName)) {
+      linkIdForSaveUpdate = wlNeedID;
+    } else {
+      linkIdForSaveUpdate = wlLinkID;
+    }
+
+    // save / update
+    let hasId = false;
+    hasId = !wlFormInfo[formName].id ? false : true;
+
+    try {
+      if (!hasId) {
+        const resp = await insertAssessmentData({
+          id: 0,
+          linkId: linkIdForSaveUpdate,
+          propertyName: name,
+          value: value,
+        });
+  
+        wlFormInfo[formName].id = resp[0].newRecordId;
+      } else {
+        await updateAssessmentData({
+          id: formName === 'other' ? wlNeedID : wlFormInfo[formName].id,
+          linkId: formName === 'waitingListInfo' || formName === 'conclusion' ? 0 : linkIdForSaveUpdate,
+          propertyName: name,
+          value: value,
+        });
+      }
+    } catch (error) {
+      console.log(error, {propertyName: name, insertOrUpdate: hasId ? 'U' : 'I'});
+    }
+  }
+  async function getFundingSources() {
+    const resp = await _UTIL.fetchData('getWaitingListFundingSources');
+    const fundingSources = resp.getWaitingListFundingSourcesResult;
+    return fundingSources.map(fs => {
+      return {
+        value: fs.fundingSourceId,
+        text: fs.description,
+      };
+    });
+  }
+  async function saveDocument(attachDetails) {
+    const resp = await _UTIL.fetchData('addWlSupportingDocument', {
+      waitingListInformationId: wlLinkID,
+      description: attachDetails.description,
+      includeOnEmail: data['email'] === 'on' ? 'Y' : 'N',
+      attachmentType: attachDetails.type,
+      attachment: attachDetails.attachment,
+    });
+    return resp.addWLSupportingDocumentResult[0].supportingDocumentId;
   }
 
   // REVIEW / EDIT
@@ -1845,117 +1985,36 @@ const WaitingListAssessment = (() => {
     wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(isChecked);
   }
 
-  // DATA
-  //--------------------------------------------------
-  async function insertNewWaitingListAssessment(consumerId) {
-    const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
-      id: 0,
-      linkId: 0,
-      propertyName: 'consumerId',
-      value: consumerId,
-      valueTwo: '',
-      insertOrUpdate: 'I',
-    });
-
-    return JSON.parse(data.insertUpdateWaitingListValueResult);
-  }
-  async function insertAssessmentData({ id, linkId, propertyName, value, valueTwo = '' }) {
-    const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
-      id,
-      linkId,
-      propertyName,
-      value,
-      valueTwo,
-      insertOrUpdate: 'I',
-    });
-
-    return JSON.parse(data.insertUpdateWaitingListValueResult);
-  }
-  async function updateAssessmentData({ id, linkId = 0, propertyName, value, valueTwo = '' }) {
-    const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
-      id,
-      linkId,
-      propertyName,
-      value,
-      valueTwo,
-      insertOrUpdate: 'U',
-    });
-
-    return data.insertUpdateWaitingListValueResult;
-  }
-  async function insertUpdateAssessment({ value, name, type, formName }) {
-    // set radio/checkbox value
-    if (type === 'radio' || type === 'checkbox') {
-      value = value === 'yes' || value === 'on' ? 1 : 0;
-    }
-
-    // determine if we use wlLinkID or wlCircID or wlNeedID
-    let linkIdForSaveUpdate;
-    if (
-      [
-        'primaryCaregiver',
-        'riskMitigation',
-        'icfDischarge',
-        'intermittentSupports',
-        'childProtectionAgency',
-        'adultDayEmployment',
-        'dischargePlan',
-        'other',
-      ].includes(formName)
-    ) {
-      linkIdForSaveUpdate = wlCircID;
-    } else if (['behavioral', 'physical', 'medical'].includes(formName)) {
-      linkIdForSaveUpdate = wlNeedID;
-    } else {
-      linkIdForSaveUpdate = wlLinkID;
-    }
-
-    // save / update
-    let hasId = false;
-    hasId = !wlFormInfo[formName].id ? false : true;
-
-    if (!hasId) {
-      const resp = await insertAssessmentData({
-        id: 0,
-        linkId: linkIdForSaveUpdate,
-        propertyName: name,
-        value: value,
-      });
-
-      wlFormInfo[formName].id = resp[0].newRecordId;
-    } else {
-      await updateAssessmentData({
-        id: formName === 'other' ? wlNeedID : wlFormInfo[formName].id,
-        linkId: formName === 'waitingListInfo' || formName === 'conclusion' ? 0 : linkIdForSaveUpdate,
-        propertyName: name,
-        value: value,
-      });
-    }
-  }
-  async function getFundingSources() {
-    const resp = await _UTIL.fetchData('getWaitingListFundingSources');
-    const fundingSources = resp.getWaitingListFundingSourcesResult;
-    return fundingSources.map(fs => {
-      return {
-        value: fs.fundingSourceId,
-        text: fs.description,
-      };
-    });
-  }
-  async function saveDocument(attachDetails) {
-    const resp = await _UTIL.fetchData('addWlSupportingDocument', {
-      waitingListInformationId: wlLinkID,
-      description: attachDetails.description,
-      includeOnEmail: data['email'] === 'on' ? 'Y' : 'N',
-      attachmentType: attachDetails.type,
-      attachment: attachDetails.attachment,
-    });
-    return resp.addWLSupportingDocumentResult[0].supportingDocumentId;
-  }
-
   // EVENTS
   //--------------------------------------------------
-  function showHidePagesRelatedToICF() {
+  async function showHideNeedsPages() {
+    const promises = [];
+    const isPrimaryCaregiverUnavailable = wlForms['primaryCaregiver'].inputs['isPrimaryCaregiverUnavailable'].getValue();
+    const isActionRequiredIn30Days = wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].getValue();
+    const showHide = isPrimaryCaregiverUnavailable && isActionRequiredIn30Days;
+
+    needsWrap.classList.toggle('hiddenPage', showHide);
+    tocLinks['needs'].classList.toggle('hiddenPage', showHide);
+
+    ['behavioral', 'physical', 'medical', 'other'].forEach(page => {
+      wlForms[page].form.parentElement.classList.toggle('hiddenPage', showHide);
+      tocLinks[page].classList.toggle('hiddenPage', showHide);
+      
+      promises.push(
+        new Promise(async resolve => {
+          await sectionResets[page]();;
+          resolve();
+        }),
+      );
+    });
+
+    await Promise.allSettled(promises).then(results => {
+      return;
+    });
+  }
+  async function showHidePagesRelatedToICF() {
+    const promises = [];
+
     const icfIsNoticeIssued = wlForms['icfDischarge'].inputs['icfIsNoticeIssued'].getValue();
     const icfIsICFResident = wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue();
     const icfIsActionRequiredIn30Days = wlForms['icfDischarge'].inputs['icfIsActionRequiredIn30Days'].getValue();
@@ -1967,9 +2026,16 @@ const WaitingListAssessment = (() => {
     ['intermittentSupports', 'childProtectionAgency', 'adultDayEmployment', 'dischargePlan'].forEach(page => {
       wlForms[page].form.parentElement.classList.toggle('hiddenPage', !icfAnyNo);
       tocLinks[page].classList.toggle('hiddenPage', !icfAnyNo);
-      if (sectionResets[page]) {
-        sectionResets[page]();
-      }
+      promises.push(
+        new Promise(async resolve => {
+          await sectionResets[page]();
+          resolve();
+        }),
+      );
+    });
+
+    await Promise.allSettled(promises).then(results => {
+      return;
     });
   }
   async function showHideImmediateNeeds() {
@@ -1992,7 +2058,7 @@ const WaitingListAssessment = (() => {
         formName: 'immediateNeeds',
       });
     } else {
-      sectionResets['immediateNeeds']();
+      await sectionResets['immediateNeeds']();
     }
   }
   //--------------------------------------------------
@@ -2046,16 +2112,28 @@ const WaitingListAssessment = (() => {
     ].some(element => element === true);
   }
   //--------------------------------------------------
-  function needsOtherCheck() {
+  async function needsOtherCheck() {
     const hasCheckBehaviorOne = isAnyCheckboxCheckedBehaviors();
     const hasCheckBehaviorTwo = isAnyCheckboxCheckedBehaviorsDocs();
     const hasCheckPhysical = isAnyCheckboxCheckedPhysical();
     const hasCheckMedical = isAnyCheckboxCheckedMedical();
 
     const needsIsActionDisabled = (hasCheckBehaviorOne && hasCheckBehaviorTwo) || hasCheckPhysical || hasCheckMedical;
-    wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!needsIsActionDisabled);
+    wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(needsIsActionDisabled === false);
+    
+    if (!needsIsActionDisabled) {
+      wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].setValue('');
+      await insertUpdateAssessment({
+        value: '',
+        name: 'physicalNeedsDescription',
+        type: 'text',
+        formName: 'physical',
+      });
+    }
   }
+  //--------------------------------------------------
   async function intermittentSupportsDetermination() {
+    const promises = [];
     const data = [
       wlForms['intermittentSupports'].inputs['intSupIsSupportNeededIn12Months'].getValue(
         'intSupIsSupportNeededIn12Monthsyes',
@@ -2072,14 +2150,28 @@ const WaitingListAssessment = (() => {
     const inputId = allHaveCheck ? 'intSupDeterminationyes' : 'intSupDeterminationno';
 
     wlForms['intermittentSupports'].inputs['intSupDetermination'].setValue(inputId);
-    await insertUpdateAssessment({
-      value: allHaveCheck ? 'yes' : 'no',
-      name: 'intSupDetermination',
-      type: 'radio',
-      formName: 'intermittentSupports',
-    });
+    promises.push(
+      new Promise(async resolve => {
+        await insertUpdateAssessment({
+          value: allHaveCheck ? 'yes' : 'no',
+          name: 'intSupDetermination',
+          type: 'radio',
+          formName: 'intermittentSupports',
+        });
+        resolve();
+      }),
+    );
 
-    await currentNeedsDetermination();
+    promises.push(
+      new Promise(async resolve => {
+        await currentNeedsDetermination();
+        resolve();
+      }),
+    );
+
+    await Promise.allSettled(promises).then(results => {
+      return;
+    });
   }
   async function icfDischargeDetermination() {
     const data = [
@@ -2100,6 +2192,7 @@ const WaitingListAssessment = (() => {
     });
   }
   async function childProtectionAgencyDetermination() {
+    const promises = [];
     const data = [
       wlForms['childProtectionAgency'].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes'),
       wlForms['childProtectionAgency'].inputs['cpaHasUnaddressableNeeds'].getValue('cpaHasUnaddressableNeedsyes'),
@@ -2109,16 +2202,31 @@ const WaitingListAssessment = (() => {
     const inputId = allHaveCheck ? 'cpaDeterminationyes' : 'cpaDeterminationno';
 
     wlForms['childProtectionAgency'].inputs['cpaDetermination'].setValue(inputId);
-    await insertUpdateAssessment({
-      value: allHaveCheck ? 'yes' : 'no',
-      name: 'cpaDetermination',
-      type: 'radio',
-      formName: 'childProtectionAgency',
-    });
+    promises.push(
+      new Promise(async resolve => {
+        await insertUpdateAssessment({
+          value: allHaveCheck ? 'yes' : 'no',
+          name: 'cpaDetermination',
+          type: 'radio',
+          formName: 'childProtectionAgency',
+        });
+        resolve();
+      }),
+    );
 
-    await currentNeedsDetermination();
+    promises.push(
+      new Promise(async resolve => {
+        await currentNeedsDetermination();
+        resolve();
+      }),
+    );
+
+    await Promise.allSettled(promises).then(results => {
+      return;
+    });
   }
   async function adultDayEmploymentDetermination() {
+    const promises = [];
     const data = [
       wlForms['adultDayEmployment'].inputs['rwfNeedsMoreFrequency'].getValue('rwfNeedsMoreFrequencyyes'),
       wlForms['adultDayEmployment'].inputs['rwfNeedsServiceNotMetIDEA'].getValue('rwfNeedsServiceNotMetIDEAyes'),
@@ -2129,16 +2237,32 @@ const WaitingListAssessment = (() => {
     const inputId = allHaveCheck ? 'rwfWaiverFundingRequiredyes' : 'rwfWaiverFundingRequiredno';
 
     wlForms['adultDayEmployment'].inputs['rwfWaiverFundingRequired'].setValue(inputId);
-    await insertUpdateAssessment({
-      value: allHaveCheck ? 'yes' : 'no',
-      name: 'rwfWaiverFundingRequired',
-      type: 'radio',
-      formName: 'adultDayEmployment',
-    });
+    promises.push(
+      new Promise(async resolve => {
+        await insertUpdateAssessment({
+          value: allHaveCheck ? 'yes' : 'no',
+          name: 'rwfWaiverFundingRequired',
+          type: 'radio',
+          formName: 'adultDayEmployment',
+        });
+        resolve();
+      }),
+    );
 
-    await currentNeedsDetermination();
+    promises.push(
+      new Promise(async resolve => {
+        await currentNeedsDetermination();
+        resolve();
+      }),
+    );
+
+    await Promise.allSettled(promises).then(results => {
+      return;
+    });
   }
   async function dischargePlanDetermination() {
+    const promises = [];
+    
     const data = [
       wlForms['dischargePlan'].inputs['dischargeIsICFResident'].getValue('dischargeIsICFResidentyes'),
       wlForms['dischargePlan'].inputs['dischargeIsInterestedInMoving'].getValue('dischargeIsInterestedInMovingyes'),
@@ -2149,14 +2273,28 @@ const WaitingListAssessment = (() => {
     const inputId = allHaveCheck ? 'dischargeDeterminationyes' : 'dischargeDeterminationno';
 
     wlForms['dischargePlan'].inputs['dischargeDetermination'].setValue(inputId);
-    await insertUpdateAssessment({
-      value: allHaveCheck ? 'yes' : 'no',
-      name: 'dischargeDetermination',
-      type: 'radio',
-      formName: 'dischargePlan',
-    });
+    promises.push(
+      new Promise(async resolve => {
+        await insertUpdateAssessment({
+          value: allHaveCheck ? 'yes' : 'no',
+          name: 'dischargeDetermination',
+          type: 'radio',
+          formName: 'dischargePlan',
+        });
+        resolve();
+      }),
+    );
 
-    await currentNeedsDetermination();
+    promises.push(
+      new Promise(async resolve => {
+        await currentNeedsDetermination();
+        resolve();
+      }),
+    );
+    
+    await Promise.allSettled(promises).then(results => {
+      return;
+    });
   }
   async function currentNeedsDetermination() {
     const isPrimaryCaregiverUnavailable =
@@ -2196,7 +2334,6 @@ const WaitingListAssessment = (() => {
     }
 
     wlForms['currentNeeds'].inputs['unmetNeedsHas'].setValue(`unmetNeedsHas${updateTo}`);
-
     wlForms['currentNeeds'].inputs['unmetNeedsSupports'].toggleDisabled(updateTo === 'yes' ? false : true);
 
     if (updateTo === 'no') {
@@ -2250,12 +2387,8 @@ const WaitingListAssessment = (() => {
   }
   //--------------------------------------------------
   function setConclusionUnmetNeeds() {
-    // [conclusionUnmetNeeds] "The individual has unmet..." should be selected if ALL of the following are true:
-    //  a. All Questions on the CONDITIONS page have an answer of "YES"
     const conditionPageAllYes = isConditionInputsAllYes();
-    //  b. "Is there an immediate need identified…" is YES on the IMMEDIATE NEEDS page
     const isImmNeedsRequiredYes = wlForms['immediateNeeds'].inputs['immNeedsRequired'].getValue('immNeedsRequiredyes');
-    //  c. "Will the unmet immeidate need…" is YES on the WAIVER ENROLLMENT page
     const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
       'waivEnrollWaiverEnrollmentIsRequired'
     ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
@@ -2264,15 +2397,10 @@ const WaitingListAssessment = (() => {
     wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(isChecked);
   }
   function setConclusionWaiverFunded12Months() {
-    // [conclusionWaiverFunded12Months] "The individual has needs..." should be selected if ALL of the following are true:
-    //   a. All Questions on the CONDITIONS page have an answer of "YES"
     const conditionPageAllYes = isConditionInputsAllYes();
-    //   b. [unmetNeedsHas] "Does the individual have an identified need?" is YES on the CURRENT NEEDS page
     const isUnmetNeedsHasYes = wlForms['currentNeeds'].inputs['unmetNeedsHas'].getValue('unmetNeedsHasyes');
-    //   c. [unmetNeedsSupports] "If 'Yes', will any of those needs…" is YES on the CURRENT NEEDS page
     const isUnmetNeedsSupportsYes =
       wlForms['currentNeeds'].inputs['unmetNeedsSupports'].getValue('unmetNeedsSupportsyes');
-    //   d. [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet immeidate need…" is YES on the WAIVER ENROLLMENT page
     const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
       'waivEnrollWaiverEnrollmentIsRequired'
     ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
@@ -2281,8 +2409,6 @@ const WaitingListAssessment = (() => {
     wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(isChecked);
   }
   function setConclusionDoesNotRequireWaiver() {
-    // [conclusionDoesNotRequireWaiver] "The individual does not require waiver..." should be selected
-    // (IF) [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet immeidate need…" is NO on the WAIVER ENROLLMENT page
     const isWaiverEnrollRequiredNo = wlForms['waiverEnrollment'].inputs[
       'waivEnrollWaiverEnrollmentIsRequired'
     ].getValue('waivEnrollWaiverEnrollmentIsRequiredno');
@@ -2290,8 +2416,6 @@ const WaitingListAssessment = (() => {
     wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(isWaiverEnrollRequiredNo);
   }
   function setConclusionNotEligibleForWaiver() {
-    // [conclusionNotEligibleForWaiver] "The individual is not eligible..." should be selected
-    // (IF) Any of the questions on the CONDITIONS page have an answer of "NO"
     const conditionPageAllYes = isConditionInputsAllYes();
 
     wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(!conditionPageAllYes);
@@ -2300,7 +2424,7 @@ const WaitingListAssessment = (() => {
   const onChangeCallbacks = {
     //* waitingListInfo
     currentLivingArrangement: async ({ value }) => {
-      wlForms['waitingListInfo'].inputs['livingArrangementOther'].toggleDisabled(value === 'Other' ? false : true);
+      wlForms['waitingListInfo'].inputs['livingArrangementOther'].toggleDisabled(value !== 'Other');
 
       if (value !== 'Other') {
         wlForms['waitingListInfo'].inputs['livingArrangementOther'].setValue('');
@@ -2328,132 +2452,216 @@ const WaitingListAssessment = (() => {
     },
     //* primaryCaregiver
     isPrimaryCaregiverUnavailable: async ({ value }) => {
+      const promises = [];
+
       wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(value === 'no' ? false : true);
 
       if (value !== 'yes') {
         wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].setValue('');
-        await insertUpdateAssessment({
-          value: '',
-          name: 'unavailableDocumentation',
-          type: 'text',
-          formName: 'primaryCaregiver',
-        });
-
         wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].setValue('');
-        await insertUpdateAssessment({
-          value: 'no',
-          name: 'isActionRequiredIn30Days',
-          type: 'radio',
-          formName: 'primaryCaregiver',
-        });
-
         wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].setValue('');
-        await insertUpdateAssessment({
-          value: '',
-          name: 'actionRequiredDescription',
-          type: 'text',
-          formName: 'primaryCaregiver',
-        });
-
         wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(true);
+
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: '',
+              name: 'unavailableDocumentation',
+              type: 'text',
+              formName: 'primaryCaregiver',
+            });
+            resolve();
+          }),
+        );
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: 'no',
+              name: 'isActionRequiredIn30Days',
+              type: 'radio',
+              formName: 'primaryCaregiver',
+            });
+            resolve();
+          }),
+        );
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: '',
+              name: 'actionRequiredDescription',
+              type: 'text',
+              formName: 'primaryCaregiver',
+            });
+            resolve();
+          }),
+        );
       } else {
         wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].setValue('');
-        await insertUpdateAssessment({
-          value: 'no',
-          name: 'isIndividualSkillsDeclined',
-          type: 'radio',
-          formName: 'primaryCaregiver',
-        });
-
         wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].setValue('');
-        await insertUpdateAssessment({
-          value: '',
-          name: 'declinedSkillsDocumentation',
-          type: 'text',
-          formName: 'primaryCaregiver',
-        });
-
         wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].setValue('');
-        await insertUpdateAssessment({
-          value: '',
-          name: 'declinedSkillsDescription',
-          type: 'text',
-          formName: 'primaryCaregiver',
-        });
-
         wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].toggleDisabled(true);
         wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].toggleDisabled(true);
+
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: 'no',
+              name: 'isIndividualSkillsDeclined',
+              type: 'radio',
+              formName: 'primaryCaregiver',
+            });
+            resolve();
+          }),
+        );
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: '',
+              name: 'declinedSkillsDocumentation',
+              type: 'text',
+              formName: 'primaryCaregiver',
+            });
+            resolve();
+          }),
+        );
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: '',
+              name: 'declinedSkillsDescription',
+              type: 'text',
+              formName: 'primaryCaregiver',
+            });
+            resolve();
+          }),
+        );
       }
 
-      await currentNeedsDetermination();
+      promises.push(
+        new Promise(async resolve => {
+          await currentNeedsDetermination();
+          resolve();
+        }),
+      );
+
+      promises.push(
+        new Promise(async resolve => {
+          await showHideNeedsPages();
+          resolve();
+        }),
+      );
+
+      await Promise.allSettled(promises).then(results => {
+        return;
+      });
+
     },
     isActionRequiredIn30Days: async ({ value }) => {
-      needsWrap.classList.toggle('hiddenPage', value === 'yes');
-      tocLinks['needs'].classList.toggle('hiddenPage', value === 'yes');
-      ['behavioral', 'physical', 'medical', 'other'].forEach(page => {
-        wlForms[page].form.parentElement.classList.toggle('hiddenPage', value === 'yes');
-        tocLinks[page].classList.toggle('hiddenPage', value === 'yes');
-        if (sectionResets[page]) {
-          sectionResets[page]();
-        }
-      });
+      const promises = [];
 
       wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(value === 'no' ? false : true);
 
       if (value !== 'yes') {
         wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].setValue('');
-        await insertUpdateAssessment({
-          value: '',
-          name: 'actionRequiredDescription',
-          type: 'text',
-          formName: 'primaryCaregiver',
-        });
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: '',
+              name: 'actionRequiredDescription',
+              type: 'text',
+              formName: 'primaryCaregiver',
+            });
+            resolve();
+          }),
+        );
       } else {
         wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].setValue('');
-        await insertUpdateAssessment({
-          value: 'no',
-          name: 'isIndividualSkillsDeclined',
-          type: 'radio',
-          formName: 'primaryCaregiver',
-        });
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: 'no',
+              name: 'isIndividualSkillsDeclined',
+              type: 'radio',
+              formName: 'primaryCaregiver',
+            });
+            resolve();
+          }),
+        );
       }
 
-      await currentNeedsDetermination();
+      promises.push(
+        new Promise(async resolve => {
+          await showHideNeedsPages();
+          resolve();
+        }),
+      );
+
+      promises.push(
+        new Promise(async resolve => {
+          await currentNeedsDetermination();
+          resolve();
+        }),
+      );
+
+      await Promise.allSettled(promises).then(results => {
+        return;
+      });
     },
     isIndividualSkillsDeclined: async ({ value }) => {
+      const promises = [];
+
       wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].toggleDisabled(value === 'yes' ? false : true);
 
       if (value !== 'yes') {
         wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].setValue('');
-        await insertUpdateAssessment({
-          value: '',
-          name: 'declinedSkillsDocumentation',
-          type: 'text',
-          formName: 'primaryCaregiver',
-        });
         wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].setValue('');
-        await insertUpdateAssessment({
-          value: '',
-          name: 'declinedSkillsDescription',
-          type: 'text',
-          formName: 'primaryCaregiver',
-        });
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: '',
+              name: 'declinedSkillsDocumentation',
+              type: 'text',
+              formName: 'primaryCaregiver',
+            });
+            resolve();
+          }),
+        );
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: '',
+              name: 'declinedSkillsDescription',
+              type: 'text',
+              formName: 'primaryCaregiver',
+            });
+            resolve();
+          }),
+        );
       }
 
-      await currentNeedsDetermination();
+      promises.push(
+        new Promise(async resolve => {
+          await currentNeedsDetermination();
+          resolve();
+        }),
+      );
+
+      await Promise.allSettled(promises).then(results => {
+        return;
+      });
     },
     //* behavioral
-    risksIs: async props => {
+    risksIs: async ({ name, value }) => {
       const promises = [];
-      const hasCheck = isAnyCheckboxCheckedBehaviors();
+
+      const isNotAppChecked = name === 'risksIsNone' && value === 'on';
+      const hasCheck = isNotAppChecked ? false : isAnyCheckboxCheckedBehaviors();
       const hasCheckDocs = isAnyCheckboxCheckedBehaviorsDocs();
       const risksIsRiskToSelfInputId = hasCheck && hasCheckDocs ? 'risksIsRiskToSelfyes' : 'risksIsRiskToSelfno';
-      const isNotAppChecked = wlForms['behavioral'].inputs['risksIsNone'].getValue();
-      const isRequired = hasCheck || isNotAppChecked ? false : true;
 
       wlForms['behavioral'].inputs['risksFrequencyDescription'].toggleDisabled(!hasCheck);
       if (!hasCheck) {
@@ -2484,44 +2692,72 @@ const WaitingListAssessment = (() => {
         }),
       );
 
-      if (hasCheck && isNotAppChecked) {
-        wlForms['behavioral'].inputs['risksIsNone'].setValue(false);
-        promises.push(
-          new Promise(async resolve => {
-            await insertUpdateAssessment({
-              value: 'off',
-              name: 'risksIsNone',
-              type: 'checkbox',
-              formName: 'behavioral',
-            });
-            resolve();
-          }),
-        );
-      }
+      [
+        'risksIsNone',
+        'risksIsPhysicalAggression',
+        'risksIsSelfInjury',
+        'risksIsFireSetting',
+        'risksIsElopement',
+        'risksIsSexualOffending',
+        'risksIsOther',
+      ].forEach(inputId => {
+        wlForms['behavioral'].inputs[inputId].toggleRequired(hasCheck || isNotAppChecked ? false : true);
 
-      wlForms['behavioral'].inputs['risksIsNone'].toggleRequired(isRequired);
-      wlForms['behavioral'].inputs['risksIsPhysicalAggression'].toggleRequired(isRequired);
-      wlForms['behavioral'].inputs['risksIsSelfInjury'].toggleRequired(isRequired);
-      wlForms['behavioral'].inputs['risksIsFireSetting'].toggleRequired(isRequired);
-      wlForms['behavioral'].inputs['risksIsElopement'].toggleRequired(isRequired);
-      wlForms['behavioral'].inputs['risksIsSexualOffending'].toggleRequired(isRequired);
-      wlForms['behavioral'].inputs['risksIsOther'].toggleRequired(isRequired);
+        if (wlForms['behavioral'].inputs[inputId].getValue()) {
+          if (inputId === 'risksIsNone' && hasCheck) {
+            wlForms['behavioral'].inputs[inputId].setValue(false);
+            promises.push(
+              new Promise(async resolve => {
+                await insertUpdateAssessment({
+                  value: 'off',
+                  name: inputId,
+                  type: 'checkbox',
+                  formName: 'behavioral',
+                });
+                resolve();
+              }),
+            );
+          } else if (isNotAppChecked && inputId !== 'risksIsNone') {
+            wlForms['behavioral'].inputs[inputId].setValue(false);
+            promises.push(
+              new Promise(async resolve => {
+                await insertUpdateAssessment({
+                  value: 'off',
+                  name: inputId,
+                  type: 'checkbox',
+                  formName: 'behavioral',
+                });
+                resolve();
+              }),
+            );
+          }
+        }
+      });
 
-      needsOtherCheck();
-      await currentNeedsDetermination();
+      promises.push(
+        new Promise(async resolve => {
+          await currentNeedsDetermination();
+          resolve();
+        }),
+      );
+      promises.push(
+        new Promise(async resolve => {
+          await needsOtherCheck();
+          resolve();
+        }),
+      );
 
       await Promise.allSettled(promises).then(results => {
         return;
       });
     },
-    risksHas: async props => {
+    risksHas: async ({ name, value }) => {
       const promises = [];
-
+    
+      const isNotAppChecked = name === 'risksHasNoDocument' && value === 'on';
       const hasCheck = isAnyCheckboxCheckedBehaviors();
-      const hasCheckDocs = isAnyCheckboxCheckedBehaviorsDocs();
+      const hasCheckDocs = isNotAppChecked ? false : isAnyCheckboxCheckedBehaviorsDocs();
       const risksIsRiskToSelfInputId = hasCheck && hasCheckDocs ? 'risksIsRiskToSelfyes' : 'risksIsRiskToSelfno';
-      const isNotAppChecked = wlForms['behavioral'].inputs['risksHasNoDocument'].getValue();
-      const isRequired = hasCheckDocs || isNotAppChecked ? false : true;
 
       wlForms['behavioral'].inputs['risksIsRiskToSelf'].setValue(risksIsRiskToSelfInputId);
       promises.push(
@@ -2536,107 +2772,67 @@ const WaitingListAssessment = (() => {
         }),
       );
 
-      if (hasCheckDocs && isNotAppChecked) {
-        wlForms['behavioral'].inputs['risksHasNoDocument'].setValue(false);
-        promises.push(
-          new Promise(async resolve => {
-            await insertUpdateAssessment({
-              value: 'off',
-              name: 'risksHasNoDocument',
-              type: 'checkbox',
-              formName: 'behavioral',
-            });
-            resolve();
-          }),
-        );
-      }
-
-      wlForms['behavioral'].inputs['risksHasNoDocument'].toggleRequired(isRequired);
-      wlForms['behavioral'].inputs['risksHasPoliceReport'].toggleRequired(isRequired);
-      wlForms['behavioral'].inputs['risksHasIncidentReport'].toggleRequired(isRequired);
-      wlForms['behavioral'].inputs['risksHasBehaviorTracking'].toggleRequired(isRequired);
-      wlForms['behavioral'].inputs['risksHasPsychologicalAssessment'].toggleRequired(isRequired);
-      wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleRequired(isRequired);
-
-      needsOtherCheck();
-      await currentNeedsDetermination();
-
-      await Promise.allSettled(promises).then(results => {
-        return;
-      });
-    },
-    risksIsNone: async ({ value }) => {
-      const promises = [];
-
       [
-        'risksIsPhysicalAggression',
-        'risksIsSelfInjury',
-        'risksIsFireSetting',
-        'risksIsElopement',
-        'risksIsSexualOffending',
-        'risksIsOther',
-      ].forEach(inputId => {
-        wlForms['behavioral'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
-
-        if (value === 'on' && wlForms['behavioral'].inputs[inputId].getValue()) {
-          wlForms['behavioral'].inputs[inputId].setValue(false);
-
-          promises.push(
-            new Promise(async resolve => {
-              await insertUpdateAssessment({
-                value: 'off',
-                name: inputId,
-                type: 'checkbox',
-                formName: 'behavioral',
-              });
-              resolve();
-            }),
-          );
-        }
-      });
-
-      await Promise.allSettled(promises).then(results => {
-        return;
-      });
-    },
-    risksHasNoDocument: async ({ value }) => {
-      const promises = [];
-
-      [
+        'risksHasNoDocument',
         'risksHasPoliceReport',
         'risksHasIncidentReport',
         'risksHasBehaviorTracking',
         'risksHasPsychologicalAssessment',
         'risksHasOtherDocument',
       ].forEach(inputId => {
-        wlForms['behavioral'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
+        wlForms['behavioral'].inputs[inputId].toggleRequired(hasCheck || isNotAppChecked ? false : true);
 
-        if (value === 'on' && wlForms['behavioral'].inputs[inputId].getValue()) {
-          wlForms['behavioral'].inputs[inputId].setValue(false);
-
-          promises.push(
-            new Promise(async resolve => {
-              await insertUpdateAssessment({
-                value: 'off',
-                name: inputId,
-                type: 'checkbox',
-                formName: 'behavioral',
-              });
-              resolve();
-            }),
-          );
+        if (wlForms['behavioral'].inputs[inputId].getValue()) {
+          if (hasCheck && inputId === 'risksHasNoDocument') {
+            wlForms['behavioral'].inputs[inputId].setValue(false);
+            promises.push(
+              new Promise(async resolve => {
+                await insertUpdateAssessment({
+                  value: 'off',
+                  name: inputId,
+                  type: 'checkbox',
+                  formName: 'behavioral',
+                });
+                resolve();
+              }),
+            );
+          } else if (isNotAppChecked && inputId !== 'risksHasNoDocument') {
+            wlForms['behavioral'].inputs[inputId].setValue(false);
+            promises.push(
+              new Promise(async resolve => {
+                await insertUpdateAssessment({
+                  value: 'off',
+                  name: inputId,
+                  type: 'checkbox',
+                  formName: 'behavioral',
+                });
+                resolve();
+              }),
+            );
+          }
         }
       });
+
+      promises.push(
+        new Promise(async resolve => {
+          await currentNeedsDetermination();
+          resolve();
+        }),
+      );
+      promises.push(
+        new Promise(async resolve => {
+          await needsOtherCheck();
+          resolve();
+        }),
+      );
 
       await Promise.allSettled(promises).then(results => {
         return;
       });
     },
     risksHasOtherDocument: async ({ name, value }) => {
-      // (ENABLE) [risksOtherDocumentDescription] the second textbox (under the second group of checkboxes" as long as the
-      // "Other" checkbox is checked in the second group of checkboxes.
-
       wlForms['behavioral'].inputs['risksOtherDocumentDescription'].toggleDisabled(value === 'on' ? false : true);
+
       if (value !== 'on') {
         wlForms['behavioral'].inputs['risksOtherDocumentDescription'].setValue('');
         await insertUpdateAssessment({
@@ -2648,14 +2844,14 @@ const WaitingListAssessment = (() => {
       }
     },
     //* physical
-    physicalNeeds: async () => {
+    physicalNeeds: async ({ name, value }) => {
       const promises = [];
-      const hasCheck = isAnyCheckboxCheckedPhysical();
-      const physicalNeedsIsPhysicalCareNeededInputId = hasCheck
+    
+      const isNotAppChecked = name === 'physicalNeedsIsNone' && value === 'on';
+      const hasCheck = isNotAppChecked ? false : isAnyCheckboxCheckedPhysical();
+      const isPhysicalCareNeededInputId = hasCheck
         ? 'physicalNeedsIsPhysicalCareNeededyes'
         : 'physicalNeedsIsPhysicalCareNeededno';
-      const isNotAppChecked = wlForms['physical'].inputs['physicalNeedsIsNone'].getValue();
-      const isRequired = hasCheck || isNotAppChecked ? false : true;
 
       wlForms['physical'].inputs['physicalNeedsDescription'].toggleDisabled(!hasCheck);
       if (!hasCheck) {
@@ -2674,7 +2870,7 @@ const WaitingListAssessment = (() => {
       }
 
       wlForms['physical'].inputs['physicalNeedsIsPhysicalCareNeeded'].setValue(
-        physicalNeedsIsPhysicalCareNeededInputId,
+        isPhysicalCareNeededInputId,
       );
       promises.push(
         new Promise(async resolve => {
@@ -2688,43 +2884,30 @@ const WaitingListAssessment = (() => {
         }),
       );
 
-      if (hasCheck && isNotAppChecked) {
-        wlForms['physical'].inputs['physicalNeedsIsNone'].setValue(false);
-        promises.push(
-          new Promise(async resolve => {
-            await insertUpdateAssessment({
-              value: 'off',
-              name: 'physicalNeedsIsNone',
-              type: 'checkbox',
-              formName: 'physical',
-            });
-            resolve();
-          }),
-        );
-      }
+      [
+        'physicalNeedsIsNone', 
+        'physicalNeedsIsPersonalCareNeeded', 
+        'physicalNeedsIsRiskDuringPhysicalCare', 
+        'physicalNeedsIsOther'
+      ].forEach(inputId => {
+        wlForms['physical'].inputs[inputId].toggleRequired(hasCheck || isNotAppChecked ? false : true);
 
-      wlForms['physical'].inputs['physicalNeedsIsNone'].toggleRequired(isRequired);
-      wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].toggleRequired(isRequired);
-      wlForms['physical'].inputs['physicalNeedsIsRiskDuringPhysicalCare'].toggleRequired(isRequired);
-      wlForms['physical'].inputs['physicalNeedsIsOther'].toggleRequired(isRequired);
-
-      needsOtherCheck();
-      await currentNeedsDetermination();
-
-      await Promise.allSettled(promises).then(results => {
-        return;
-      });
-    },
-    physicalNeedsIsNone: async ({ value }) => {
-      const promises = [];
-
-      ['physicalNeedsIsPersonalCareNeeded', 'physicalNeedsIsRiskDuringPhysicalCare', 'physicalNeedsIsOther'].forEach(
-        inputId => {
-          wlForms['physical'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
-
-          if (value === 'on' && wlForms['physical'].inputs[inputId].getValue()) {
+        if (wlForms['physical'].inputs[inputId].getValue()) {
+          if (hasCheck && inputId === 'physicalNeedsIsNone') {
             wlForms['physical'].inputs[inputId].setValue(false);
-
+            promises.push(
+              new Promise(async resolve => {
+                await insertUpdateAssessment({
+                  value: 'off',
+                  name: inputId,
+                  type: 'checkbox',
+                  formName: 'physical',
+                });
+                resolve();
+              }),
+            );
+          } else if (isNotAppChecked && inputId !== 'physicalNeedsIsNone') {
+            wlForms['physical'].inputs[inputId].setValue(false);
             promises.push(
               new Promise(async resolve => {
                 await insertUpdateAssessment({
@@ -2737,7 +2920,20 @@ const WaitingListAssessment = (() => {
               }),
             );
           }
-        },
+        }
+      });
+
+      promises.push(
+        new Promise(async resolve => {
+          await currentNeedsDetermination();
+          resolve();
+        }),
+      );
+      promises.push(
+        new Promise(async resolve => {
+          await needsOtherCheck();
+          resolve();
+        }),
       );
 
       await Promise.allSettled(promises).then(results => {
@@ -2745,13 +2941,12 @@ const WaitingListAssessment = (() => {
       });
     },
     //* medical
-    medicalNeeds: async () => {
+    medicalNeeds: async ({ name, value }) => {
       const promises = [];
-
-      const hasCheck = isAnyCheckboxCheckedMedical();
+  
+      const isNotAppChecked = name === 'medicalNeedsIsNone' && value === 'on';
+      const hasCheck = isNotAppChecked ? false : isAnyCheckboxCheckedMedical();
       const inputId = hasCheck ? 'medicalNeedsIsLifeThreateningyes' : 'medicalNeedsIsLifeThreateningno';
-      const isNotAppChecked = wlForms['medical'].inputs['medicalNeedsIsNone'].getValue();
-      const isRequired = hasCheck || isNotAppChecked ? false : true;
 
       wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(!hasCheck);
       if (!hasCheck) {
@@ -2770,7 +2965,6 @@ const WaitingListAssessment = (() => {
       }
 
       wlForms['medical'].inputs['medicalNeedsIsLifeThreatening'].setValue(inputId);
-
       promises.push(
         new Promise(async resolve => {
           await insertUpdateAssessment({
@@ -2782,63 +2976,59 @@ const WaitingListAssessment = (() => {
           resolve();
         }),
       );
-
-      if (hasCheck && isNotAppChecked) {
-        wlForms['medical'].inputs['medicalNeedsIsNone'].setValue(false);
-        promises.push(
-          new Promise(async resolve => {
-            await insertUpdateAssessment({
-              value: 'off',
-              name: 'medicalNeedsIsNone',
-              type: 'checkbox',
-              formName: 'medical',
-            });
-            resolve();
-          }),
-        );
-      }
-
-      wlForms['medical'].inputs['medicalNeedsIsNone'].toggleRequired(isRequired);
-      wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].toggleRequired(isRequired);
-      wlForms['medical'].inputs['medicalNeedsIsOngoingMedicalCare'].toggleRequired(isRequired);
-      wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].toggleRequired(isRequired);
-      wlForms['medical'].inputs['medicalNeedsIsOther'].toggleRequired(isRequired);
-
-      needsOtherCheck();
-
-      await currentNeedsDetermination();
-
-      await Promise.allSettled(promises).then(results => {
-        return;
-      });
-    },
-    medicalNeedsIsNone: async ({ value }) => {
-      const promises = [];
-
+      
       [
+        'medicalNeedsIsNone',
         'medicalNeedsIsFrequentEmergencyVisit',
         'medicalNeedsIsOngoingMedicalCare',
         'medicalNeedsIsSpecializedCareGiveNeeded',
         'medicalNeedsIsOther',
-      ].forEach(async inputId => {
-        wlForms['medical'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
+      ].forEach(inputId => {
+        wlForms['medical'].inputs[inputId].toggleRequired(hasCheck || isNotAppChecked ? false : true);
 
-        if (value === 'on' && wlForms['medical'].inputs[inputId].getValue()) {
-          wlForms['medical'].inputs[inputId].setValue(false);
-
-          promises.push(
-            new Promise(async resolve => {
-              await insertUpdateAssessment({
-                value: 'off',
-                name: inputId,
-                type: 'checkbox',
-                formName: 'medical',
-              });
-              resolve();
-            }),
-          );
+        if (wlForms['medical'].inputs[inputId].getValue()) {
+          if (hasCheck && inputId === 'medicalNeedsIsNone') {
+            wlForms['medical'].inputs[inputId].setValue(false);
+            promises.push(
+              new Promise(async resolve => {
+                await insertUpdateAssessment({
+                  value: 'off',
+                  name: inputId,
+                  type: 'checkbox',
+                  formName: 'medical',
+                });
+                resolve();
+              }),
+            );
+          } else if (isNotAppChecked && inputId !== 'medicalNeedsIsNone') {
+            wlForms['medical'].inputs[inputId].setValue(false);
+            promises.push(
+              new Promise(async resolve => {
+                await insertUpdateAssessment({
+                  value: 'off',
+                  name: inputId,
+                  type: 'checkbox',
+                  formName: 'medical',
+                });
+                resolve();
+              }),
+            );
+          }
         }
       });
+
+      promises.push(
+        new Promise(async resolve => {
+          await currentNeedsDetermination();
+          resolve();
+        }),
+      );
+      promises.push(
+        new Promise(async resolve => {
+          await needsOtherCheck();
+          resolve();
+        }),
+      );
 
       await Promise.allSettled(promises).then(results => {
         return;
@@ -2846,6 +3036,8 @@ const WaitingListAssessment = (() => {
     },
     //* other
     needsIsActionRequiredRequiredIn30Days: async ({ value }) => {
+      const promises = [];
+
       const isNeedsActionRequiredYes = value === 'yes';
       const isRisksActionRequired = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
       const showCurrentNeeds = !isNeedsActionRequiredYes || isRisksActionRequired.includes('no');
@@ -2853,31 +3045,51 @@ const WaitingListAssessment = (() => {
       wlForms['other'].inputs['needsIsContinuousSupportRequired'].toggleDisabled(isNeedsActionRequiredYes);
       if (isNeedsActionRequiredYes) {
         wlForms['other'].inputs['needsIsContinuousSupportRequired'].setValue('');
-        await insertUpdateAssessment({
-          value: 'no',
-          name: 'needsIsContinuousSupportRequired',
-          type: 'radio',
-          formName: 'other',
-        });
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: 'no',
+              name: 'needsIsContinuousSupportRequired',
+              type: 'radio',
+              formName: 'other',
+            });
+            resolve();
+          }),
+        );
       }
 
       wlForms['riskMitigation'].form.parentElement.classList.toggle('hiddenPage', isNeedsActionRequiredYes);
       tocLinks['riskMitigation'].classList.toggle('hiddenPage', isNeedsActionRequiredYes);
       if (isNeedsActionRequiredYes) {
-        if (sectionResets['riskMitigation']) {
-          sectionResets['riskMitigation']();
-        }
+        promises.push(
+          new Promise(async resolve => {
+            await sectionResets['riskMitigation']();
+            resolve();
+          }),
+        );
       }
 
       wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
       tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
       if (!showCurrentNeeds) {
-        if (sectionResets['currentNeeds']) {
-          sectionResets['currentNeeds']();
-        }
+        promises.push(
+          new Promise(async resolve => {
+            await sectionResets['currentNeeds']();
+            resolve();
+          }),
+        );
       }
 
-      await showHideImmediateNeeds();
+      promises.push(
+        new Promise(async resolve => {
+          await showHideImmediateNeeds();
+          resolve();
+        }),
+      );
+
+      await Promise.allSettled(promises).then(results => {
+        return;
+      });
     },
     needsIsContinuousSupportRequired: async () => {
       await currentNeedsDetermination();
@@ -2885,15 +3097,9 @@ const WaitingListAssessment = (() => {
     //* riskMitigation
     rMIs: async () => {
       const promises = [];
-
-      const isRMChecked = isAnyCheckboxCheckedRiskMitigation();
-      const isNeedsActionRequired = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
-      const isRisksActionRequired = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
-      const showImmediateNeeds =
-        (isNeedsActionRequired.includes('yes') || isRisksActionRequired.includes('yes')) && isRMChecked;
-      const isNotAppChecked = wlForms['riskMitigation'].inputs['rMIsNone'].getValue();
-      const isRequired = isRMChecked || isNotAppChecked ? false : true;
-      const inputId = showImmediateNeeds ? 'immNeedsRequiredyes' : 'immNeedsRequiredno';
+  
+      const isNotAppChecked = name === 'rMIsNone' && value === 'on';
+      const isRMChecked = isNotAppChecked ? false : isAnyCheckboxCheckedRiskMitigation();
 
       wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(!isRMChecked);
       wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!isRMChecked);
@@ -2901,7 +3107,7 @@ const WaitingListAssessment = (() => {
       if (!isRMChecked) {
         wlForms['riskMitigation'].inputs['rMdescription'].setValue('');
         wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
-
+  
         promises.push(
           new Promise(async resolve => {
             await insertUpdateAssessment({
@@ -2913,7 +3119,7 @@ const WaitingListAssessment = (() => {
             resolve();
           }),
         );
-
+  
         promises.push(
           new Promise(async resolve => {
             await insertUpdateAssessment({
@@ -2927,106 +3133,126 @@ const WaitingListAssessment = (() => {
         );
       }
 
-      if (isRMChecked && isNotAppChecked) {
-        wlForms['riskMitigation'].inputs['rMIsNone'].setValue(false);
-        promises.push(
-          new Promise(async resolve => {
-            await insertUpdateAssessment({
-              value: 'off',
-              name: 'rMIsNone',
-              type: 'checkbox',
-              formName: 'riskMitigation',
-            });
-            resolve();
-          }),
-        );
-      }
-
-      wlForms['riskMitigation'].inputs['rMIsNone'].toggleRequired(isRequired);
-      wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].toggleRequired(isRequired);
-      wlForms['riskMitigation'].inputs['rMIsCountyBoardInvestigation'].toggleRequired(isRequired);
-      wlForms['riskMitigation'].inputs['rMIsLawEnforcementInvestigation'].toggleRequired(isRequired);
-      wlForms['riskMitigation'].inputs['rMIsOtherInvestigation'].toggleRequired(isRequired);
-
-      await showHideImmediateNeeds();
-
-      await Promise.allSettled(promises).then(results => {
-        return;
-      });
-    },
-    rMIsNone: async ({ value }) => {
-      const promises = [];
-
       [
+        'rMIsNone',
         'rMIsAdultProtectiveServiceInvestigation',
         'rMIsCountyBoardInvestigation',
         'rMIsLawEnforcementInvestigation',
         'rMIsOtherInvestigation',
-      ].forEach(async inputId => {
-        wlForms['riskMitigation'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
+      ].forEach(inputId => {
+        wlForms['riskMitigation'].inputs[inputId].toggleRequired(hasCheck || isNotAppChecked ? false : true);
 
-        if (value === 'on' && wlForms['riskMitigation'].inputs[inputId].getValue()) {
-          wlForms['riskMitigation'].inputs[inputId].setValue(false);
-
-          promises.push(
-            new Promise(async resolve => {
-              await insertUpdateAssessment({
-                value: 'off',
-                name: inputId,
-                type: 'checkbox',
-                formName: 'riskMitigation',
-              });
-              resolve();
-            }),
-          );
+        if (wlForms['riskMitigation'].inputs[inputId].getValue()) {
+          if (hasCheck && inputId === 'rMIsNone') {
+            wlForms['riskMitigation'].inputs[inputId].setValue(false);
+            promises.push(
+              new Promise(async resolve => {
+                await insertUpdateAssessment({
+                  value: 'off',
+                  name: inputId,
+                  type: 'checkbox',
+                  formName: 'riskMitigation',
+                });
+                resolve();
+              }),
+            );
+          } else if (isNotAppChecked && inputId !== 'rMIsNone') {
+            wlForms['riskMitigation'].inputs[inputId].setValue(false);
+            promises.push(
+              new Promise(async resolve => {
+                await insertUpdateAssessment({
+                  value: 'off',
+                  name: inputId,
+                  type: 'checkbox',
+                  formName: 'riskMitigation',
+                });
+                resolve();
+              }),
+            );
+          }
         }
       });
+
+      promises.push(
+        new Promise(async resolve => {
+          await showHideImmediateNeeds();
+          resolve();
+        }),
+      );
 
       await Promise.allSettled(promises).then(results => {
         return;
       });
     },
     rMIsActionRequiredIn3oDays: async ({ value }) => {
+      const promises = [];
+
       const isRisksActionRequired = value;
       const isNeedsActionRequired = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
       const showCurrentNeeds = isRisksActionRequired.includes('no') || isNeedsActionRequired.includes('no');
+      const showICF = isRisksActionRequired.includes('no');
       const inputId = isRisksActionRequired.includes('yes') ? 'rMIsSupportNeededyes' : 'rMIsSupportNeededno';
 
       // Hide/Show Sections
-      wlForms['icfDischarge'].form.parentElement.classList.toggle('hiddenPage', isRisksActionRequired.includes('yes'));
-      tocLinks['icfDischarge'].classList.toggle('hiddenPage', isRisksActionRequired.includes('yes'));
+      wlForms['icfDischarge'].form.parentElement.classList.toggle('hiddenPage', !showICF);
+      tocLinks['icfDischarge'].classList.toggle('hiddenPage', !showICF);
+      if (!showICF) {
+        promises.push(
+          new Promise(async resolve => {
+            await sectionResets['icfDischarge']();
+            resolve();
+          }),
+        );
+      }
+      
 
       wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
       tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
       if (!showCurrentNeeds) {
-        if (sectionResets['currentNeeds']) {
-          sectionResets['currentNeeds']();
-        }
+        promises.push(
+          new Promise(async resolve => {
+            await sectionResets['currentNeeds']();
+            resolve();
+          }),
+        );
       }
 
-      await showHideImmediateNeeds();
+      promises.push(
+        new Promise(async resolve => {
+          await showHideImmediateNeeds();
+          resolve();
+        }),
+      );
 
       // Set Input
       wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue(inputId);
+      promises.push(
+        new Promise(async resolve => {
+          await insertUpdateAssessment({
+            value: isRisksActionRequired ? 'yes' : 'no',
+            name: 'rMIsSupportNeeded',
+            type: 'radio',
+            formName: 'riskMitigation',
+          });
+          resolve();
+        }),
+      );
 
-      await insertUpdateAssessment({
-        value: isRisksActionRequired ? 'yes' : 'no',
-        name: 'rMIsSupportNeeded',
-        type: 'radio',
-        formName: 'riskMitigation',
+      await Promise.allSettled(promises).then(results => {
+        return;
       });
     },
     //* icfDischarge
     icfIsICFResident: async ({ value }) => {
-      showHidePagesRelatedToICF();
+      await showHidePagesRelatedToICF();
       icfDischargeDetermination();
     },
     icfIsNoticeIssued: async ({ value }) => {
-      showHidePagesRelatedToICF();
+      await showHidePagesRelatedToICF();
       icfDischargeDetermination();
     },
     icfIsActionRequiredIn30Days: async ({ value }) => {
-      showHidePagesRelatedToICF();
+      await showHidePagesRelatedToICF();
       icfDischargeDetermination();
     },
     //* intermittentSupports
@@ -3035,19 +3261,35 @@ const WaitingListAssessment = (() => {
     intSupIsActionRequiredIn30Days: intermittentSupportsDetermination,
     //* childProtectionAgency
     cpaIsReleasedNext12Months: async ({ value }) => {
+      const promises = [];
+
       wlForms['childProtectionAgency'].inputs['cpaAnticipateDate'].toggleDisabled(value === 'yes' ? false : true);
 
       if (value !== 'yes') {
         wlForms['childProtectionAgency'].inputs['cpaAnticipateDate'].setValue('');
-        await insertUpdateAssessment({
-          value: '',
-          name: 'cpaAnticipateDate',
-          type: 'date',
-          formName: 'childProtectionAgency',
-        });
+        promises.push(
+          new Promise(async resolve => {
+            await insertUpdateAssessment({
+              value: '',
+              name: 'cpaAnticipateDate',
+              type: 'date',
+              formName: 'childProtectionAgency',
+            });
+            resolve();
+          }),
+        );
       }
 
-      await childProtectionAgencyDetermination();
+      promises.push(
+        new Promise(async resolve => {
+          await childProtectionAgencyDetermination();
+          resolve();
+        }),
+      );
+
+      await Promise.allSettled(promises).then(results => {
+        return;
+      });
     },
     cpaHasUnaddressableNeeds: childProtectionAgencyDetermination,
     //* adultDayEmployment
@@ -3102,6 +3344,7 @@ const WaitingListAssessment = (() => {
       const conditionPageAllYes = isConditionInputsAllYes();
 
       if (!conditionPageAllYes) {
+        let promises = [];
         let formsToDelete = [];
 
         [
@@ -3126,7 +3369,12 @@ const WaitingListAssessment = (() => {
           wlForms[formName].clear();
           tocLinks[formName].classList.remove('formComplete');
           if (sectionResets[formName]) {
-            sectionResets[formName]();
+            promises.push(
+              new Promise(async resolve => {
+                await sectionResets[formName]();
+                resolve();
+              }),
+            );
           }
 
           if (wlFormInfo[formName].id) {
@@ -3141,7 +3389,12 @@ const WaitingListAssessment = (() => {
         toggleTocLinksDisabledStatus(['contributingCircumstances', 'needs'], true);
 
         if (formsToDelete.length) {
-          await _UTIL.fetchData('deleteFromWaitingList', { properties: formsToDelete });
+          promises.push(
+            new Promise(async resolve => {
+              await _UTIL.fetchData('deleteFromWaitingList', { properties: formsToDelete });
+              resolve();
+            }),
+          );
           wlCircID = '';
           wlNeedID = '';
         }
@@ -3150,7 +3403,9 @@ const WaitingListAssessment = (() => {
         setConclusionWaiverFunded12Months();
         setConclusionNotEligibleForWaiver();
 
-        return;
+        await Promise.allSettled(promises).then(results => {
+          return;
+        });
       }
 
       contributingCircumstancesWrap.classList.remove('hiddenPage');
@@ -3537,18 +3792,17 @@ const WaitingListAssessment = (() => {
   }
 
   async function init(opts) {
+    wlCircID = '';
+    wlNeedID = '';
     wlForms = {};
     tocLinks = {};
     wlDocuments = [];
     wlParticipants = {};
-    wlCircID = '';
-    wlNeedID = '';
     wlFormInfo = initFormInfo();
     wlData = mapDataBySection(opts.wlData);
     selectedConsumer = opts.selectedConsumer;
     moduleHeader = opts.moduleHeader;
     moduleBody = opts.moduleBody;
-    promiseQue = [];
 
     loadPageSkeleton();
     initComponents();
@@ -3599,3 +3853,5 @@ const WaitingListAssessment = (() => {
 
   return { init };
 })();
+
+//$.session.sendWaitingListemail
