@@ -59,6 +59,96 @@
   }
 
   /**
+   * Creates an instance of AsyncQueue for managing and sending updates asynchronously.
+   *
+   * @constructor
+   * @param {string} apiEndpoint - The endpoint URL where updates will be sent.
+   * @param {number} [maxQueueSize=10] - The maximum number of updates before automatically sending them.
+   */
+  function AsyncQueue(apiEndpoint, maxQueueSize = 10, onSendComplete = () => {}) {
+    this.apiEndpoint = apiEndpoint;
+    this.maxQueueSize = maxQueueSize;
+    this.onSendComplete = onSendComplete;
+
+    this.queue = [];
+    this.failedUpdates = [];
+    this.isSending = false;
+  }
+
+  /**
+   * Adds an update to the queue. Automatically sends updates if the queue reaches maxQueueSize.
+   *
+   * @param {string} inputId - The identifier for the input being updated.
+   * @param {any} newValue - The new value for the input.
+   */
+  AsyncQueue.prototype.addUpdate = function (updateData) {
+    this.queue.push(updateData);
+
+    if (this.queue.length >= this.maxQueueSize) {
+      this.sendUpdates();
+    }
+  };
+
+  /**
+   * Sends updates from the queue to the server endpoint. Can be forced to send all updates regardless of queue size.
+   *
+   * @param {boolean} [force=false] - Whether to force sending of updates regardless of the current queue size.
+   */
+  AsyncQueue.prototype.sendUpdates = async function (forceUpdate = false) {
+    if (this.queue.length === 0 || (this.isSending && !forceUpdate)) {
+      this.onSendComplete([]);
+      return;
+    }
+
+    this.isSending = true;
+
+    const updatesToSend = this.queue.splice(0, this.queue.length);
+
+    const sendPromises = updatesToSend.map(async update => {
+      try {
+        const response = await _UTIL.fetchData(this.apiEndpoint, update);
+        return { success: true, data: response, update };
+      } catch (error) {
+        console.error('Error sending update:', update, error);
+        this.failedUpdates.push(update);
+        return { success: false, error: error.message, update };
+      }
+    });
+
+    const results = await Promise.all(sendPromises);
+    this.isSending = false;
+    this.onSendComplete(results); // Call the callback with the results
+  };
+
+  /**
+   * Sets the callback function to be executed when sending data is complete.
+   *
+   * @param {Function} callback - The callback function to be called when sending is complete.
+   * @returns {void}
+   */
+  AsyncQueue.prototype.setSendCompleteCallback = function (callback) {
+    this.onSendComplete = callback;
+  };
+
+  /**
+   * Immediately forces sending of all updates in the queue, regardless of queue size.
+   */
+  AsyncQueue.prototype.forceSendUpdates = function () {
+    if (this.queue.length > 0) {
+      this.sendUpdates(true); // Force sending updates even if the queue hasn't reached the max size
+    }
+  };
+
+  /**
+   * Retrieves the list of updates that failed to be sent to the server.
+   *
+   * @returns {Array} List of failed updates.
+   */
+  AsyncQueue.prototype.getFailedUpdates = function () {
+    return this.failedUpdates;
+  };
+
+  /**
    * Converts a camelCase string to a title case string with spaces.
    *
    * @param {string} camelCaseStr - The camelCase string to be converted.
@@ -385,6 +475,7 @@
   return {
     autoIncrementId,
     asyncSetTimeout,
+    AsyncQueue,
     convertCamelCaseToTitle,
     debounce,
     getDeviceType,
