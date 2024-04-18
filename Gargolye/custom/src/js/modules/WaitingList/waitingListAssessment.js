@@ -10,7 +10,7 @@ const WaitingListAssessment = (() => {
   let wlDocuments;
   let wlParticipants;
   let updateQueue;
-  let maxQueueSize = 3;
+  let maxQueueSize = 5;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -1127,7 +1127,7 @@ const WaitingListAssessment = (() => {
       wlForms['behavioral'].inputs['risksHasIncidentReport'].toggleRequired(true);
       wlForms['behavioral'].inputs['risksHasBehaviorTracking'].toggleRequired(true);
       wlForms['behavioral'].inputs['risksHasPsychologicalAssessment'].toggleRequired(true);
-      wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleRequired(true);      
+      wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleRequired(true);
     },
     physical: () => {
       wlForms['physical'].clear();
@@ -1414,6 +1414,18 @@ const WaitingListAssessment = (() => {
       wlFormInfo[formName].id = resp[0].newRecordId;
       return;
     }
+
+    // updateQueue.addUpdate({
+    //   id: name,
+    //   data: {
+    //     id: formName === 'other' ? wlNeedID : wlFormInfo[formName].id,
+    //     linkId: getLinkIdForInsertUpdate(formName, 'U'),
+    //     propertyName: name,
+    //     value: setAnswerValueForInsertUpdate(value, type),
+    //     valueTwo: '',
+    //     insertOrUpdate: 'U',
+    //   }
+    // });
 
     updateQueue.addUpdate({
       id: formName === 'other' ? wlNeedID : wlFormInfo[formName].id,
@@ -1962,7 +1974,7 @@ const WaitingListAssessment = (() => {
           `${wlFormInfo['behavioral'].id}|${wlFormInfo['behavioral'].dbtable}`,
           `${wlFormInfo['physical'].id}|${wlFormInfo['physical'].dbtable}`,
           `${wlFormInfo['medical'].id}|${wlFormInfo['medical'].dbtable}`,
-          `${wlFormInfo['other'].id}|${wlFormInfo['other'].dbtable}`
+          `${wlFormInfo['other'].id}|${wlFormInfo['other'].dbtable}`,
         ],
       });
     }
@@ -1990,7 +2002,7 @@ const WaitingListAssessment = (() => {
           `${wlFormInfo['intermittentSupports'].id}|${wlFormInfo['intermittentSupports'].dbtable}`,
           `${wlFormInfo['childProtectionAgency'].id}|${wlFormInfo['childProtectionAgency'].dbtable}`,
           `${wlFormInfo['adultDayEmployment'].id}|${wlFormInfo['adultDayEmployment'].dbtable}`,
-          `${wlFormInfo['dischargePlan'].id}|${wlFormInfo['dischargePlan'].dbtable}`
+          `${wlFormInfo['dischargePlan'].id}|${wlFormInfo['dischargePlan'].dbtable}`,
         ],
       });
     }
@@ -2017,9 +2029,7 @@ const WaitingListAssessment = (() => {
     } else {
       sectionResets['immediateNeeds']();
       await _UTIL.fetchData('deleteFromWaitingList', {
-        properties: [
-          `${wlFormInfo['immediateNeeds'].id}|${wlFormInfo['immediateNeeds'].dbtable}`,
-        ],
+        properties: [`${wlFormInfo['immediateNeeds'].id}|${wlFormInfo['immediateNeeds'].dbtable}`],
       });
     }
   }
@@ -2087,9 +2097,9 @@ const WaitingListAssessment = (() => {
       wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].setValue('');
       await insertUpdateAssessmentData({
         value: '',
-        name: 'physicalNeedsDescription',
-        type: 'text',
-        formName: 'physical',
+        name: 'needsIsActionRequiredRequiredIn30Days',
+        type: 'radio',
+        formName: 'other',
       });
     }
   }
@@ -2243,14 +2253,14 @@ const WaitingListAssessment = (() => {
       wlForms['currentNeeds'].inputs['unmetNeedsDescription'].toggleDisabled(true);
       wlForms['currentNeeds'].inputs['unmetNeedsDescription'].setValue('');
 
-      await insertUpdateAssessment({
+      await insertUpdateAssessmentData({
         value: 'off',
         name: 'unmetNeedsSupports',
         type: 'radio',
         formName: 'currentNeeds',
       });
 
-      await insertUpdateAssessment({
+      await insertUpdateAssessmentData({
         value: '',
         name: 'unmetNeedsDescription',
         type: 'text',
@@ -2258,7 +2268,7 @@ const WaitingListAssessment = (() => {
       });
     }
 
-    await insertUpdateAssessment({
+    await insertUpdateAssessmentData({
       value: updateTo,
       name: 'unmetNeedsHas',
       type: 'radio',
@@ -3280,6 +3290,7 @@ const WaitingListAssessment = (() => {
       text: 'Send Report',
       style: 'primary',
       styleType: 'contained',
+      disabled: true,
     });
     sendEmailForm = new Form({
       fields: [

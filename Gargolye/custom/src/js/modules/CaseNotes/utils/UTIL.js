@@ -140,15 +140,6 @@
   };
 
   /**
-   * Retrieves the list of updates that failed to be sent to the server.
-   *
-   * @returns {Array} List of failed updates.
-   */
-  AsyncQueue.prototype.getFailedUpdates = function () {
-    return this.failedUpdates;
-  };
-
-  /**
    * Converts a camelCase string to a title case string with spaces.
    *
    * @param {string} camelCaseStr - The camelCase string to be converted.
