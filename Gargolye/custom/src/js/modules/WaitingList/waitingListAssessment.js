@@ -1670,8 +1670,9 @@ const WaitingListAssessment = (() => {
     tocLinks['currentAvailableServices'].classList.remove('hiddenPage');
 
     const isActionRequiredIn30DaysNo = wlData.primaryCaregiver.isActionRequiredIn30Days.includes('no');
+    const isPrimaryCaregiverUnavailableYes = wlData.primaryCaregiver.isPrimaryCaregiverUnavailable.includes('yes');
 
-    if (isActionRequiredIn30DaysNo) {
+    if (isActionRequiredIn30DaysNo && isPrimaryCaregiverUnavailableYes) {
       needsWrap.classList.remove('hiddenPage');
       wlForms['behavioral'].form.parentElement.classList.remove('hiddenPage');
       wlForms['physical'].form.parentElement.classList.remove('hiddenPage');
@@ -2012,7 +2013,7 @@ const WaitingListAssessment = (() => {
     const isRMActionRequiredIn3oDays = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
     const isNeedsActionRequiredIn30Days = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
     const showImmediateNeeds =
-      isNeedsActionRequiredIn30Days.includes('yes') && isRMActionRequiredIn3oDays.includes('yes') && isRMChecked;
+      isNeedsActionRequiredIn30Days.includes('yes') || (isRMActionRequiredIn3oDays.includes('yes') && isRMChecked);
 
     wlForms['immediateNeeds'].form.parentElement.classList.toggle('hiddenPage', !showImmediateNeeds);
     tocLinks['immediateNeeds'].classList.toggle('hiddenPage', !showImmediateNeeds);
@@ -2720,8 +2721,7 @@ const WaitingListAssessment = (() => {
         await sectionResets['currentNeeds']();
       }
 
-      // TODO-ASH
-      // await showHideImmediateNeeds();
+      await showHideImmediateNeeds();
     },
     needsIsContinuousSupportRequired: async () => {
       await currentNeedsDetermination();
