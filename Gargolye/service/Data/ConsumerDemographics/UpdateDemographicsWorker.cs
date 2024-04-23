@@ -43,6 +43,31 @@ namespace Anywhere.service.Data.ConsumerDemographics
                     sb.AppendFormat("update dba.consumers set ssn = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
                 }
             }
+
+            if (field.Equals("localID"))
+            {
+                if (applicationName.ToUpper() == "GATEKEEPER")
+                {
+                    sb.AppendFormat("update dba.people set LOCAL_ID = {0} where people.id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+                else
+                {
+                    sb.AppendFormat("update dba.consumers set Consumer_Number = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+            }
+
+            if (field.Equals("consumerNumber"))
+            {
+                if (applicationName.ToUpper() == "GATEKEEPER")
+                {
+                    sb.AppendFormat("update dba.people set LOCAL_ID = {0} where people.id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+                else
+                {
+                    sb.AppendFormat("update dba.consumers set Consumer_Number = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+            }
+
             if (field.Equals("city"))
             {
                 if (applicationName.ToUpper() == "GATEKEEPER")
