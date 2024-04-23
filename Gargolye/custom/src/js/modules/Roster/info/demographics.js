@@ -146,7 +146,7 @@ const demographics = (function () {
             name === 'medicaidNumber' ||
             name === 'medicareNumber' ||
             name === 'residentNumber' ||
-            name === 'localID' 
+            name === 'localID'
            // name === 'consumerNumber'
         ) {
             input.type = 'number';
@@ -182,7 +182,10 @@ const demographics = (function () {
         if (text.toLowerCase() === 'localid') {
             return 'Local ID';
         }
-
+        
+        if (text.toLowerCase() === 'consumernumber') {
+            return 'Consumer #';
+        }
         const splitText = text
             .match(/([A-Z]?[^A-Z]*)/g)
             .slice(0, -1)
@@ -331,12 +334,13 @@ const demographics = (function () {
         wrap.classList.add('inputGroupWrap', `${title.replaceAll(' ', '').toLowerCase()}`);
 
         const heading = document.createElement('h3');
-        heading.innerText = title;
-
+        heading.innerText = title;  
         wrap.appendChild(heading);
 
         wrap.addEventListener('click', e => {
             if (!$.session.DemographicsUpdate) return;
+
+            // if (title === 'Additional Info') return;
 
             if (e.target.classList.contains('inputGroup')) {
                 if (e.target.classList.contains('unEditabled')) return;
@@ -502,6 +506,9 @@ const demographics = (function () {
                 }
                 if (name === 'ssn') {
                     saveValue = e.target.value.replaceAll('-', '');
+                }
+                if (name === 'localId') {
+                    saveValue = e.target.value
                 }
                 // save value
                 const success = await rosterAjax.updateConsumerDemographics({
