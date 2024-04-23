@@ -1321,6 +1321,8 @@ const WaitingListAssessment = (() => {
   // DATA
   //--------------------------------------------------
   function setAnswerValueForInsertUpdate(value, type) {
+    if (value === '') return value;
+
     if (type === 'radio' || type === 'checkbox') {
       return value === 'yes' || value === 'on' ? 1 : 0;
     }
@@ -1528,6 +1530,7 @@ const WaitingListAssessment = (() => {
         additionalCommentsForUnavailable: assessmentData.additionalCommentsForUnavailable,
       },
       behavioral: {
+        risksIsNone: assessmentData.risksIsNone,
         risksIsRiskToSelf: assessmentData.risksIsRiskToSelf,
         risksIsPhysicalAggression: assessmentData.risksIsPhysicalAggression,
         risksIsSelfInjury: assessmentData.risksIsSelfInjury,
@@ -1777,6 +1780,7 @@ const WaitingListAssessment = (() => {
     // needs
     //-------------------------------
     const hasCheckBehavioral = [
+      wlData.behavioral.risksIsNone,
       wlData.behavioral.risksIsPhysicalAggression,
       wlData.behavioral.risksIsSelfInjury,
       wlData.behavioral.risksIsFireSetting,
@@ -1785,6 +1789,7 @@ const WaitingListAssessment = (() => {
       wlData.behavioral.risksIsOther,
     ].some(value => value === true);
     const hasCheckBehavioralDocs = [
+      wlData.behavioral.risksHasNoDocument,
       wlData.behavioral.risksHasPoliceReport,
       wlData.behavioral.risksHasIncidentReport,
       wlData.behavioral.risksHasBehaviorTracking,
@@ -1792,11 +1797,13 @@ const WaitingListAssessment = (() => {
       wlData.behavioral.risksHasOtherDocument,
     ].some(value => value === true);
     const hasCheckPhysical = [
+      wlData.physical.physicalNeedsIsNone,
       wlData.physical.physicalNeedsIsPersonalCareNeeded,
       wlData.physical.physicalNeedsIsRiskDuringPhysicalCare,
       wlData.physical.physicalNeedsIsOther,
     ].some(value => value === true);
     const hasCheckMedical = [
+      wlData.medical.medicalNeedsIsNone,
       wlData.medical.medicalNeedsIsFrequentEmergencyVisit,
       wlData.medical.medicalNeedsIsOngoingMedicalCare,
       wlData.medical.medicalNeedsIsSpecializedCareGiveNeeded,
@@ -1839,7 +1846,7 @@ const WaitingListAssessment = (() => {
       wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].toggleRequired(false);
       wlForms['medical'].inputs['medicalNeedsIsOther'].toggleRequired(false);
     }
-    if (hasCheckBehavioral && hasCheckBehavioralDocs && hasCheckPhysical && hasCheckMedical) {
+    if ((hasCheckBehavioral && hasCheckBehavioralDocs) || hasCheckPhysical || hasCheckMedical) {
       wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(false);
     }
 
