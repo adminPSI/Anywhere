@@ -2735,14 +2735,14 @@ const WaitingListAssessment = (() => {
       await currentNeedsDetermination();
     },
     //* riskMitigation
-    rMIs: async () => {
+    rMIs: async ({ name, value }) => {
       const isNotAppChecked = name === 'rMIsNone' && value === 'on';
-      const isRMChecked = isNotAppChecked ? false : isAnyCheckboxCheckedRiskMitigation();
+      const hasCheck = isNotAppChecked ? false : isAnyCheckboxCheckedRiskMitigation();
 
-      wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(!isRMChecked);
-      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!isRMChecked);
+      wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(!hasCheck);
+      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!hasCheck);
 
-      if (!isRMChecked) {
+      if (!hasCheck) {
         wlForms['riskMitigation'].inputs['rMdescription'].setValue('');
         wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
 
