@@ -82,8 +82,9 @@
    * @param {any} newValue - The new value for the input.
    */
   AsyncQueue.prototype.addUpdate = function (updateData) {
-    const timestamp = new Date().now();
-    
+    //let timestamp = new Date();
+    //timestamp = timestamp.now();
+
     this.queue.push(updateData);
 
     if (this.queue.length >= this.maxQueueSize) {

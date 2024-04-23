@@ -70,7 +70,7 @@ const WagesBenefits = (() => {
         eligibleBenefits = CheckBoxEntries.getWagesCheckboxEntriesResult[0].eligibleBenefits;
 
         eligibleBenefitschkBox = input.buildCheckbox({
-            text: 'Eligible For Benefit',
+            text: 'Eligible For Benefits',
             id: 'chkEligibleBenefits',
             isChecked: eligibleBenefits == 'Y' ? true : false,
             style: 'secondary',
