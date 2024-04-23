@@ -2555,10 +2555,10 @@ const WaitingListAssessment = (() => {
         'risksHasPsychologicalAssessment',
         'risksHasOtherDocument',
       ].forEach(async inputId => {
-        wlForms['behavioral'].inputs[inputId].toggleRequired(hasCheck || isNotAppChecked ? false : true);
+        wlForms['behavioral'].inputs[inputId].toggleRequired(hasCheckDocs || isNotAppChecked ? false : true);
 
         if (wlForms['behavioral'].inputs[inputId].getValue()) {
-          if (hasCheck && inputId === 'risksHasNoDocument') {
+          if (hasCheckDocs && inputId === 'risksHasNoDocument') {
             wlForms['behavioral'].inputs[inputId].setValue(false);
             await insertUpdateAssessmentData({
               value: 'off',
