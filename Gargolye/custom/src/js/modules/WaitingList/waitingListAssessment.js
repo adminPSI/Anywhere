@@ -1811,7 +1811,7 @@ const WaitingListAssessment = (() => {
     ].some(value => value === true);
 
     if (hasCheckBehavioral) {
-      wlForms['behavioral'].inputs['risksFrequencyDescription'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksFrequencyDescription'].toggleDisabled(wlData.behavioral.risksIsNone);
 
       wlForms['behavioral'].inputs['risksIsNone'].toggleRequired(false);
       wlForms['behavioral'].inputs['risksIsPhysicalAggression'].toggleRequired(false);
@@ -1830,7 +1830,7 @@ const WaitingListAssessment = (() => {
       wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleRequired(false);
     }
     if (hasCheckPhysical) {
-      wlForms['physical'].inputs['physicalNeedsDescription'].toggleDisabled(false);
+      wlForms['physical'].inputs['physicalNeedsDescription'].toggleDisabled(wlData.physical.physicalNeedsIsNone);
 
       wlForms['physical'].inputs['physicalNeedsIsNone'].toggleRequired(false);
       wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].toggleRequired(false);
@@ -1838,7 +1838,7 @@ const WaitingListAssessment = (() => {
       wlForms['physical'].inputs['physicalNeedsIsOther'].toggleRequired(false);
     }
     if (hasCheckMedical) {
-      wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(false);
+      wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(wlData.medical.medicalNeedsIsNone);
 
       wlForms['medical'].inputs['medicalNeedsIsNone'].toggleRequired(false);
       wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].toggleRequired(false);
@@ -2106,10 +2106,12 @@ const WaitingListAssessment = (() => {
     const hasCheckPhysical = isAnyCheckboxCheckedPhysical();
     const hasCheckMedical = isAnyCheckboxCheckedMedical();
 
-    const needsIsActionDisabled = (hasCheckBehaviorOne && hasCheckBehaviorTwo) || hasCheckPhysical || hasCheckMedical;
-    wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(needsIsActionDisabled === false);
+    const needsIsActionEnabled = (hasCheckBehaviorOne && hasCheckBehaviorTwo) || hasCheckPhysical || hasCheckMedical;
+    wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(needsIsActionEnabled === false);
 
-    if (!needsIsActionDisabled) {
+    updateFormCompletionStatus('other');
+
+    if (!needsIsActionEnabled) {
       wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].setValue('');
       await insertUpdateAssessmentData({
         value: '',
@@ -2119,6 +2121,8 @@ const WaitingListAssessment = (() => {
       });
     }
   }
+
+    
   //--------------------------------------------------
   async function intermittentSupportsDetermination() {
     const data = [
