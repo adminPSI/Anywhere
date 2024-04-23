@@ -1,6 +1,7 @@
 const WaitingList = (() => {
   function unload() {
     _DOM.ACTIONCENTER.removeAttribute('data-ui');
+    WaitingListAssessment.unload();
   }
 
   async function load() {

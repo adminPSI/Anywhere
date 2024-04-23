@@ -9,7 +9,6 @@ const WaitingListAssessment = (() => {
   let wlNeedID;
   let wlDocuments;
   let wlParticipants;
-  let updateQueue;
   let maxQueueSize = 5;
   //--------------------------
   // PERMISSIONS
@@ -27,14 +26,12 @@ const WaitingListAssessment = (() => {
   //--------------------------
   // UI INSTANCES
   //--------------------------
+  let updateQueue;
   let wlForms;
-
   let participantsTable;
-
   let sendEmailButton;
   let sendEmailPopup;
   let sendEmailForm;
-
   let documentsButton;
   let documentsForm;
   let documentsPopup;
@@ -1225,6 +1222,17 @@ const WaitingListAssessment = (() => {
 
   // UTILS
   //--------------------------------------------------
+  function unload() {
+    updateQueue.forceSendUpdates();
+
+    selectedConsumer = undefined;
+    wlData = undefined;
+    wlLinkID = undefined;
+    wlCircID = undefined;
+    wlNeedID = undefined;
+    wlDocuments = undefined;
+    wlParticipants = undefined;
+  }
   function findFieldTypeById(formElements, targetId) {
     let fieldtype;
 
@@ -3130,6 +3138,7 @@ const WaitingListAssessment = (() => {
     });
 
     backButton.onClick(() => {
+      updateQueue.forceSendUpdates();
       WaitingListOverview.init({ moduleHeader, moduleBody, selectedConsumer });
     });
   }
@@ -3412,5 +3421,5 @@ const WaitingListAssessment = (() => {
     }
   }
 
-  return { init };
+  return { init, unload };
 })();
