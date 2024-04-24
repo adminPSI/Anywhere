@@ -996,11 +996,8 @@ const EmploymentInformation = (() => {
     async function createNewPath() {
         const result = await EmploymentAjax.createNewEmploymentPathAsync(currentStatus, pathToEmployment, pathToStartDate, consumersID, $.session.UserId);
         const { createNewEmploymentPathResult } = result;
-        if (createNewEmploymentPathResult.pathId != '0') {
-            POPUP.hide(createPathPopup);
-            NewEmployment.refreshEmployment(PositionId, employerName, positionName, selectedConsumersName, consumersID);
-
-        }
+        POPUP.hide(createPathPopup);
+        NewEmployment.refreshEmployment(PositionId, employerName, positionName, selectedConsumersName, consumersID);
     }
 
     return {
