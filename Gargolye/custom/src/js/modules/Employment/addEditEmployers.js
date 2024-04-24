@@ -55,7 +55,7 @@ const addEditEmployers = (() => {
         if (!$.session.InsertEmployers) {
             addNewEmployerBtn.classList.add('disabled');
         }
-        headingWrap.appendChild(addNewEmployerBtn); 
+        headingWrap.appendChild(addNewEmployerBtn);
         headingWrap.appendChild(rtnOODMainPageBtn);
         container.appendChild(headingWrap);
         container.appendChild(LineBr);
@@ -71,7 +71,7 @@ const addEditEmployers = (() => {
             plain: false,
             tableId: 'OODEmployersTable',
             columnHeadings: ['Employer', 'Address', 'City', 'State', 'Zip Code'],
-            endIcon: false, 
+            endIcon: false,
         };
         const { getActiveEmployersResult: activeEmployers } = await OODAjax.getActiveEmployersAsync();
         var filteredActiveEmployers = activeEmployers.filter((x) => x.employerId != 0);
@@ -79,11 +79,11 @@ const addEditEmployers = (() => {
         let tableData = filteredActiveEmployers.map((employer) => ({
             values: [employer.employerName, employer.address1 + ' ' + employer.address2, employer.city, employer.state, employer.zipcode],
             attributes: [{ key: 'employerId', value: employer.employerId }],
-            id: employer.employerId,       
+            id: employer.employerId,
             onClick: (e) => {
-                    OODAjax.getEmployer(employer.employerId, function (results) {
-                        buildEmployerPopUp(results, 'update', 'employer', null);
-                    });
+                OODAjax.getEmployer(employer.employerId, function (results) {
+                    buildEmployerPopUp(results, 'update', 'employer', null);
+                });
             },
         }));
         const oTable = table.build(tableOptions);
@@ -122,7 +122,7 @@ const addEditEmployers = (() => {
             employerzipcode = '';
             headingEmployer = 'Add Employer';
             BtnEventType = 'Add';
-        } 
+        }
 
         let editEmployerPopup = POPUP.build({
             header: headingEmployer,
@@ -168,7 +168,7 @@ const addEditEmployers = (() => {
             style: "secondary",
             classNames: 'disabled',
             callback: () => {
-                if (!saveBtn.classList.contains('disabled')) { 
+                if (!saveBtn.classList.contains('disabled')) {
                     editEmployerPopupDoneBtn(postType)
                 }
             }
@@ -201,7 +201,7 @@ const addEditEmployers = (() => {
 
     function popUpEventHandlers() {
         employerInput.addEventListener('input', event => {
-            employerName = event.target.value.trim(); 
+            employerName = event.target.value.trim();
             checkRequiredFields();
         });
 
@@ -230,18 +230,10 @@ const addEditEmployers = (() => {
         var employrInput = employerInput.querySelector('#employerInput');
         if (employrInput.value.trim() === '') { 
             employerInput.classList.add('error');
-        } else {
-            employerInput.classList.remove('error');
-        }
-        setBtnStatus();
-    }
-
-    function setBtnStatus() {
-        var hasErrors = [].slice.call(document.querySelectorAll('.error'));
-        if (hasErrors.length !== 0) {
-            saveBtn.classList.add('disabled');
+            saveBtn.classList.add('disabled'); 
             return;
         } else {
+            employerInput.classList.remove('error');
             saveBtn.classList.remove('disabled');
         }
 
@@ -249,7 +241,7 @@ const addEditEmployers = (() => {
             saveBtn.classList.remove('disabled');
         } else {
             saveBtn.classList.add('disabled');
-        } 
+        }
     }
 
     // Event for Done BTN on the Edit Employer Popup Window
