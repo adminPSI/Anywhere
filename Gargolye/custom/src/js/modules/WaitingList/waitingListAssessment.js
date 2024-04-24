@@ -1860,6 +1860,7 @@ const WaitingListAssessment = (() => {
     // riskMitigation
     //-------------------------------
     const hasCheckRisksMitigation = [
+      wlData.behavioral.rMIsNone,
       wlData.behavioral.rMIsAdultProtectiveServiceInvestigation,
       wlData.behavioral.rMIsCountyBoardInvestigation,
       wlData.behavioral.rMIsLawEnforcementInvestigation,
@@ -1867,8 +1868,8 @@ const WaitingListAssessment = (() => {
     ].some(value => value === true);
 
     if (hasCheckRisksMitigation) {
-      wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(false);
-      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(false);
+      wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(wlData.behavioral.rMIsNone);
+      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(wlData.behavioral.rMIsNone);
 
       wlForms['riskMitigation'].inputs['rMIsNone'].toggleRequired(false);
       wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].toggleRequired(false);
@@ -1914,7 +1915,7 @@ const WaitingListAssessment = (() => {
 
     // waiverEnrollment
     //-------------------------------
-    if (wlData.waiverEnrollment.waivEnrollWaiverEnrollmentIsRequired.includes('yes')) {
+    if (wlData.waiverEnrollment.waivEnrollWaiverEnrollmentIsRequired.includes('no')) {
       wlForms['waiverEnrollment'].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(false);
     }
   }
@@ -1975,23 +1976,23 @@ const WaitingListAssessment = (() => {
     const UnmetNeedsSupports = wlData.currentNeeds.unmetNeedsSupports;
 
     if (!conditionPageAllYes) {
-      wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue('');
-      wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue('');
-      wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue('');
+      wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(false);
+      wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
+      wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(false);
       wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(true);
       return;
     }
 
     if (WaiverEnrollRequired.includes('no')) {
-      wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue('');
-      wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue('');
+      wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(false);
+      wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
       wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(true);
-      wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue('');
+      wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(false);
       return;
     }
 
-    wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue('');
-    wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue('');
+    wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(false);
+    wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(false);
 
     if (ImmNeedsRequired.includes('yes')) {
       wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(true);
@@ -2380,23 +2381,23 @@ const WaitingListAssessment = (() => {
     const isUnmetNeedsSupports = wlForms['currentNeeds'].inputs['unmetNeedsSupports'].getValue();
 
     if (!conditionPageAllYes) {
-      wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue('');
-      wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue('');
-      wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue('');
+      wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(false);
+      wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
+      wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(false);
       wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(true);
       return;
     }
 
     if (isWaiverEnrollRequired.includes('no')) {
-      wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue('');
-      wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue('');
+      wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(false);
+      wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
       wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(true);
-      wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue('');
+      wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(false);
       return;
     }
 
-    wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue('');
-    wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue('');
+    wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(false);
+    wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(false);
 
     if (isImmNeedsRequired.includes('yes')) {
       wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(true);
