@@ -1860,16 +1860,16 @@ const WaitingListAssessment = (() => {
     // riskMitigation
     //-------------------------------
     const hasCheckRisksMitigation = [
-      wlData.behavioral.rMIsNone,
-      wlData.behavioral.rMIsAdultProtectiveServiceInvestigation,
-      wlData.behavioral.rMIsCountyBoardInvestigation,
-      wlData.behavioral.rMIsLawEnforcementInvestigation,
-      wlData.behavioral.rMIsOtherInvestigation,
+      wlData.riskMitigation.rMIsNone,
+      wlData.riskMitigation.rMIsAdultProtectiveServiceInvestigation,
+      wlData.riskMitigation.rMIsCountyBoardInvestigation,
+      wlData.riskMitigation.rMIsLawEnforcementInvestigation,
+      wlData.riskMitigation.rMIsOtherInvestigation,
     ].some(value => value === true);
 
     if (hasCheckRisksMitigation) {
-      wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(wlData.behavioral.rMIsNone);
-      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(wlData.behavioral.rMIsNone);
+      wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(wlData.riskMitigation.rMIsNone);
+      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(wlData.riskMitigation.rMIsNone);
 
       wlForms['riskMitigation'].inputs['rMIsNone'].toggleRequired(false);
       wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].toggleRequired(false);
