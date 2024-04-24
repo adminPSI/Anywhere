@@ -9,7 +9,6 @@ const WaitingListAssessment = (() => {
   let wlNeedID;
   let wlDocuments;
   let wlParticipants;
-  let updateQueue;
   let maxQueueSize = 5;
   //--------------------------
   // PERMISSIONS
@@ -27,14 +26,12 @@ const WaitingListAssessment = (() => {
   //--------------------------
   // UI INSTANCES
   //--------------------------
+  let updateQueue;
   let wlForms;
-
   let participantsTable;
-
   let sendEmailButton;
   let sendEmailPopup;
   let sendEmailForm;
-
   let documentsButton;
   let documentsForm;
   let documentsPopup;
@@ -1225,6 +1222,17 @@ const WaitingListAssessment = (() => {
 
   // UTILS
   //--------------------------------------------------
+  function unload() {
+    updateQueue.forceSendUpdates();
+
+    selectedConsumer = undefined;
+    wlData = undefined;
+    wlLinkID = undefined;
+    wlCircID = undefined;
+    wlNeedID = undefined;
+    wlDocuments = undefined;
+    wlParticipants = undefined;
+  }
   function findFieldTypeById(formElements, targetId) {
     let fieldtype;
 
@@ -1313,6 +1321,8 @@ const WaitingListAssessment = (() => {
   // DATA
   //--------------------------------------------------
   function setAnswerValueForInsertUpdate(value, type) {
+    if (value === '') return value;
+
     if (type === 'radio' || type === 'checkbox') {
       return value === 'yes' || value === 'on' ? 1 : 0;
     }
@@ -1520,6 +1530,7 @@ const WaitingListAssessment = (() => {
         additionalCommentsForUnavailable: assessmentData.additionalCommentsForUnavailable,
       },
       behavioral: {
+        risksIsNone: assessmentData.risksIsNone,
         risksIsRiskToSelf: assessmentData.risksIsRiskToSelf,
         risksIsPhysicalAggression: assessmentData.risksIsPhysicalAggression,
         risksIsSelfInjury: assessmentData.risksIsSelfInjury,
@@ -1769,6 +1780,7 @@ const WaitingListAssessment = (() => {
     // needs
     //-------------------------------
     const hasCheckBehavioral = [
+      wlData.behavioral.risksIsNone,
       wlData.behavioral.risksIsPhysicalAggression,
       wlData.behavioral.risksIsSelfInjury,
       wlData.behavioral.risksIsFireSetting,
@@ -1777,6 +1789,7 @@ const WaitingListAssessment = (() => {
       wlData.behavioral.risksIsOther,
     ].some(value => value === true);
     const hasCheckBehavioralDocs = [
+      wlData.behavioral.risksHasNoDocument,
       wlData.behavioral.risksHasPoliceReport,
       wlData.behavioral.risksHasIncidentReport,
       wlData.behavioral.risksHasBehaviorTracking,
@@ -1784,11 +1797,13 @@ const WaitingListAssessment = (() => {
       wlData.behavioral.risksHasOtherDocument,
     ].some(value => value === true);
     const hasCheckPhysical = [
+      wlData.physical.physicalNeedsIsNone,
       wlData.physical.physicalNeedsIsPersonalCareNeeded,
       wlData.physical.physicalNeedsIsRiskDuringPhysicalCare,
       wlData.physical.physicalNeedsIsOther,
     ].some(value => value === true);
     const hasCheckMedical = [
+      wlData.medical.medicalNeedsIsNone,
       wlData.medical.medicalNeedsIsFrequentEmergencyVisit,
       wlData.medical.medicalNeedsIsOngoingMedicalCare,
       wlData.medical.medicalNeedsIsSpecializedCareGiveNeeded,
@@ -1796,7 +1811,7 @@ const WaitingListAssessment = (() => {
     ].some(value => value === true);
 
     if (hasCheckBehavioral) {
-      wlForms['behavioral'].inputs['risksFrequencyDescription'].toggleDisabled(false);
+      wlForms['behavioral'].inputs['risksFrequencyDescription'].toggleDisabled(wlData.behavioral.risksIsNone);
 
       wlForms['behavioral'].inputs['risksIsNone'].toggleRequired(false);
       wlForms['behavioral'].inputs['risksIsPhysicalAggression'].toggleRequired(false);
@@ -1815,7 +1830,7 @@ const WaitingListAssessment = (() => {
       wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleRequired(false);
     }
     if (hasCheckPhysical) {
-      wlForms['physical'].inputs['physicalNeedsDescription'].toggleDisabled(false);
+      wlForms['physical'].inputs['physicalNeedsDescription'].toggleDisabled(wlData.physical.physicalNeedsIsNone);
 
       wlForms['physical'].inputs['physicalNeedsIsNone'].toggleRequired(false);
       wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].toggleRequired(false);
@@ -1823,7 +1838,7 @@ const WaitingListAssessment = (() => {
       wlForms['physical'].inputs['physicalNeedsIsOther'].toggleRequired(false);
     }
     if (hasCheckMedical) {
-      wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(false);
+      wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(wlData.medical.medicalNeedsIsNone);
 
       wlForms['medical'].inputs['medicalNeedsIsNone'].toggleRequired(false);
       wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].toggleRequired(false);
@@ -1831,7 +1846,7 @@ const WaitingListAssessment = (() => {
       wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].toggleRequired(false);
       wlForms['medical'].inputs['medicalNeedsIsOther'].toggleRequired(false);
     }
-    if (hasCheckBehavioral && hasCheckBehavioralDocs && hasCheckPhysical && hasCheckMedical) {
+    if ((hasCheckBehavioral && hasCheckBehavioralDocs) || hasCheckPhysical || hasCheckMedical) {
       wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(false);
     }
 
@@ -2091,10 +2106,12 @@ const WaitingListAssessment = (() => {
     const hasCheckPhysical = isAnyCheckboxCheckedPhysical();
     const hasCheckMedical = isAnyCheckboxCheckedMedical();
 
-    const needsIsActionDisabled = (hasCheckBehaviorOne && hasCheckBehaviorTwo) || hasCheckPhysical || hasCheckMedical;
-    wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(needsIsActionDisabled === false);
+    const needsIsActionEnabled = (hasCheckBehaviorOne && hasCheckBehaviorTwo) || hasCheckPhysical || hasCheckMedical;
+    wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(needsIsActionEnabled === false);
 
-    if (!needsIsActionDisabled) {
+    updateFormCompletionStatus('other');
+
+    if (!needsIsActionEnabled) {
       wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].setValue('');
       await insertUpdateAssessmentData({
         value: '',
@@ -2104,6 +2121,8 @@ const WaitingListAssessment = (() => {
       });
     }
   }
+
+    
   //--------------------------------------------------
   async function intermittentSupportsDetermination() {
     const data = [
@@ -2536,10 +2555,10 @@ const WaitingListAssessment = (() => {
         'risksHasPsychologicalAssessment',
         'risksHasOtherDocument',
       ].forEach(async inputId => {
-        wlForms['behavioral'].inputs[inputId].toggleRequired(hasCheck || isNotAppChecked ? false : true);
+        wlForms['behavioral'].inputs[inputId].toggleRequired(hasCheckDocs || isNotAppChecked ? false : true);
 
         if (wlForms['behavioral'].inputs[inputId].getValue()) {
-          if (hasCheck && inputId === 'risksHasNoDocument') {
+          if (hasCheckDocs && inputId === 'risksHasNoDocument') {
             wlForms['behavioral'].inputs[inputId].setValue(false);
             await insertUpdateAssessmentData({
               value: 'off',
@@ -2727,14 +2746,14 @@ const WaitingListAssessment = (() => {
       await currentNeedsDetermination();
     },
     //* riskMitigation
-    rMIs: async () => {
+    rMIs: async ({ name, value }) => {
       const isNotAppChecked = name === 'rMIsNone' && value === 'on';
-      const isRMChecked = isNotAppChecked ? false : isAnyCheckboxCheckedRiskMitigation();
+      const hasCheck = isNotAppChecked ? false : isAnyCheckboxCheckedRiskMitigation();
 
-      wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(!isRMChecked);
-      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!isRMChecked);
+      wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(!hasCheck);
+      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!hasCheck);
 
-      if (!isRMChecked) {
+      if (!hasCheck) {
         wlForms['riskMitigation'].inputs['rMdescription'].setValue('');
         wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
 
@@ -3130,6 +3149,7 @@ const WaitingListAssessment = (() => {
     });
 
     backButton.onClick(() => {
+      updateQueue.forceSendUpdates();
       WaitingListOverview.init({ moduleHeader, moduleBody, selectedConsumer });
     });
   }
@@ -3412,5 +3432,5 @@ const WaitingListAssessment = (() => {
     }
   }
 
-  return { init };
+  return { init, unload };
 })();

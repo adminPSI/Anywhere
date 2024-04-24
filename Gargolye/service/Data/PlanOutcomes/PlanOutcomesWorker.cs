@@ -338,6 +338,11 @@ namespace Anywhere.service.Data.PlanOutcomes
                                         whenFreq = 0;
                                     }
 
+                                    if (outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].isSalesforceLocation == null )
+                                    {
+                                        outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].isSalesforceLocation = "false";
+                                    }
+
                                     pdg.insertPlanOutcomeExperienceResponsibility(experienceIdObj[0].experienceId.ToString(), respContact, respProvider,
                                                                                   outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].whenValue, whenFreq,
                                                                                   outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].whenOther,
