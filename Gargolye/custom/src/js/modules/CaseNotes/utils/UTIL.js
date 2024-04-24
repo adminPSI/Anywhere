@@ -82,6 +82,9 @@
    * @param {any} newValue - The new value for the input.
    */
   AsyncQueue.prototype.addUpdate = function (updateData) {
+    //let timestamp = new Date();
+    //timestamp = timestamp.now();
+
     this.queue.push(updateData);
 
     if (this.queue.length >= this.maxQueueSize) {
@@ -137,15 +140,6 @@
     if (this.queue.length > 0) {
       this.sendUpdates(true); // Force sending updates even if the queue hasn't reached the max size
     }
-  };
-
-  /**
-   * Retrieves the list of updates that failed to be sent to the server.
-   *
-   * @returns {Array} List of failed updates.
-   */
-  AsyncQueue.prototype.getFailedUpdates = function () {
-    return this.failedUpdates;
   };
 
   /**

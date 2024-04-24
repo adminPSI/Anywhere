@@ -44,13 +44,13 @@ const NewEntryCF = (() => {
     let tempAccountPer;
 
     async function init() {
-        buildNewEntryForm(registerId = undefined, attachment = undefined, attachmentID = undefined);
+        buildNewEntryForm(registerId = undefined, attachment = undefined, attachmentID = undefined, IsNewRefresh = true);
     }
 
-    async function buildNewEntryForm(registerId, attachment, attachmentID) {
+    async function buildNewEntryForm(registerId, attachment, attachmentID, IsNewRefresh = true) {
         prevAttachmentArray = [];
         numberOfRows = 5;
-        if (registerId) {
+        if (registerId && IsNewRefresh) {
             splitAmount = [];
             totalAmountSaved = 0;
             prevAttachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId);
@@ -83,6 +83,9 @@ const NewEntryCF = (() => {
             }
             totalAmount = sum.toFixed(2);
             totalAmountSaved = totalAmount;
+        }
+        else if (registerId && !IsNewRefresh) {
+            BtnName = 'UPDATE'
         }
         else if (registerId == 0 && attachmentID) {
             regId = 0;
@@ -579,7 +582,7 @@ const NewEntryCF = (() => {
         });
 
         newAmountInput.addEventListener('focusout', event => {
-            if (totalAmountSaved > 0 && totalAmountSaved != event.target.value) {
+            if (totalAmountSaved > 0 && totalAmountSaved != event.target.value && category == '--Split--') {
                 errorPopup(2);
             }
             if (document.getElementById('newAmountInput').value != '')
@@ -1249,7 +1252,7 @@ const NewEntryCF = (() => {
         }
     }
 
-    async function populateSplitCategoryDropdown(categoryID) { 
+    async function populateSplitCategoryDropdown(categoryID) {
         const {
             getSplitCategoriesSubCategoriesResult: Category,
         } = await ConsumerFinancesAjax.getSplitCategoriesSubCategoriesAsync(categoryID);
@@ -1271,7 +1274,7 @@ const NewEntryCF = (() => {
             if (splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value != '')
                 sum += parseFloat(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value);
         }
-        totalAmount = parseFloat(sum).toFixed(2);  
+        totalAmount = parseFloat(sum).toFixed(2);
         document.getElementById('amountTotalInput').value = sum.toFixed(2);
         if (document.getElementById('newAmountInput').value == '') {
             document.getElementById('newAmountInput').value = sum.toFixed(2);

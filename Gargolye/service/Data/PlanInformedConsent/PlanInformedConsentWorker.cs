@@ -98,18 +98,19 @@ namespace Anywhere.service.Data.PlanInformedConsent
             InformedConsent[] icObj = js.Deserialize<InformedConsent[]>(icString);
             string hcrDate = "";
             int i = icObj.Length;
-            if (icObj.Length > 0)
+
+            for (int j = 0; j < i; j++)
             {
-                if (icObj[0].rmHRCDate != "")
+                if (icObj[j].rmHRCDate != "")
                 {
-                    var date = DateTime.Parse(icObj[0].rmHRCDate);
+                    var date = DateTime.Parse(icObj[j].rmHRCDate);
                     hcrDate = date.ToString("yyyy-MM-dd");
                 }
 
-                picdg.insertForCarryOverInformedConsent(token, newPlanId, icObj[0].rmIdentified, hcrDate, icObj[0].rmKeepSelfSafe, icObj[0].rmFadeRestriction, icObj[0].rmOtherWayHelpGood,
-                    icObj[0].rmOtherWayHelpBad, icObj[0].rmWhatCouldHappenGood, icObj[0].rmWhatCouldHappenBad, revision);
+                picdg.insertForCarryOverInformedConsent(token, newPlanId, icObj[j].rmIdentified, hcrDate, icObj[j].rmKeepSelfSafe, icObj[j].rmFadeRestriction, icObj[j].rmOtherWayHelpGood,
+                    icObj[j].rmOtherWayHelpBad, icObj[j].rmWhatCouldHappenGood, icObj[j].rmWhatCouldHappenBad, revision);
             }
-
         }
+
     }
 }

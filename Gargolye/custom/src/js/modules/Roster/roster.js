@@ -1539,6 +1539,8 @@ const roster2 = (function () {
      *
      */
     async function buildRoster({ selectable, ...otherOpts }, callback) {
+        rosterConsumers = []; 
+
         rosterListSelectable = selectable;
         hideDateFilter = otherOpts.hideDateFilter;
 
