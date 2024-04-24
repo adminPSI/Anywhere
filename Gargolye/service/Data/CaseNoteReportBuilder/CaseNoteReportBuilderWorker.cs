@@ -220,8 +220,10 @@ namespace Anywhere.service.Data.CaseNoteReportBuilder
                 {
                     byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
                     response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ".pdf" + ";");
-                    response.ContentType = "application/pdf";
-                    response.AddHeader("Transfer-Encoding", "identity");
+                    //response.ContentType = "application/octet-stream";
+                    //response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
+                    response.ContentType = "application/octet-stream";
+                    //response.AddHeader("Transfer-Encoding", "identity");
                     response.BinaryWrite(bytes);
                 }
             }
