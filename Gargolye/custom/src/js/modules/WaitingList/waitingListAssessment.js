@@ -1919,51 +1919,6 @@ const WaitingListAssessment = (() => {
       wlForms['waiverEnrollment'].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(false);
     }
   }
-  function setConclusionUnmetNeedsReview() {
-    const isOtherThanMentalHealthYes = wlData.conditions.otherThanMentalHealth.includes('yes');
-    const isBefore22Yes = wlData.conditions.before22.includes('yes');
-    const isConditionIndefiniteYes = wlData.conditions.isConditionIndefinite.includes('yes');
-    const isImmNeedsRequiredYes = wlData.immediateNeeds.immNeedsRequired.includes('yes');
-    const isWaiverEnrollRequiredYes = wlData.waiverEnrollment.waivEnrollWaiverEnrollmentIsRequired.includes('yes');
-
-    const isChecked =
-      isOtherThanMentalHealthYes &&
-      isBefore22Yes &&
-      isConditionIndefiniteYes &&
-      isWaiverEnrollRequiredYes &&
-      isImmNeedsRequiredYes;
-    wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(isChecked);
-  }
-  function setConclusionWaiverFunded12MonthsReview() {
-    const isOtherThanMentalHealthYes = wlData.conditions.otherThanMentalHealth.includes('yes');
-    const isBefore22Yes = wlData.conditions.before22.includes('yes');
-    const isConditionIndefiniteYes = wlData.conditions.isConditionIndefinite.includes('yes');
-    const isUnmetNeedsHasYes = wlData.currentNeeds.unmetNeedsHas.includes('yes');
-    const isUnmetNeedsSupportsYes = wlData.currentNeeds.unmetNeedsSupports.includes('yes');
-    const isWaiverEnrollRequiredYes = wlData.waiverEnrollment.waivEnrollWaiverEnrollmentIsRequired.includes('yes');
-
-    const isChecked =
-      isOtherThanMentalHealthYes &&
-      isBefore22Yes &&
-      isConditionIndefiniteYes &&
-      isUnmetNeedsHasYes &&
-      isUnmetNeedsSupportsYes &&
-      isWaiverEnrollRequiredYes;
-    wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(isChecked);
-  }
-  function setConclusionDoesNotRequireWaiverReview() {
-    const isWaiverEnrollRequiredNo = wlData.waiverEnrollment.waivEnrollWaiverEnrollmentIsRequired.includes('no');
-
-    wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(isWaiverEnrollRequiredNo);
-  }
-  function setConclusionNotEligibleForWaiverReview() {
-    const isOtherThanMentalHealthYes = wlData.conditions.otherThanMentalHealth.includes('yes');
-    const isBefore22Yes = wlData.conditions.before22.includes('yes');
-    const isConditionIndefiniteYes = wlData.conditions.isConditionIndefinite.includes('yes');
-
-    const isChecked = !isOtherThanMentalHealthYes || !isBefore22Yes || !isConditionIndefiniteYes;
-    wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(isChecked);
-  }
   function setConclusionReview() {
     const isOtherThanMentalHealthYes = wlData.conditions.otherThanMentalHealth.includes('yes');
     const isBefore22Yes = wlData.conditions.before22.includes('yes');
@@ -2013,13 +1968,14 @@ const WaitingListAssessment = (() => {
 
     needsWrap.classList.toggle('hiddenPage', !showPages);
     tocLinks['needs'].classList.toggle('hiddenPage', !showPages);
-
     ['behavioral', 'physical', 'medical', 'other'].forEach(async page => {
       wlForms[page].form.parentElement.classList.toggle('hiddenPage', !showPages);
       tocLinks[page].classList.toggle('hiddenPage', !showPages);
 
       if (!showPages) {
         sectionResets[page]();
+      } else {
+        updateFormCompletionStatus(page);
       }
     });
 
@@ -2048,6 +2004,8 @@ const WaitingListAssessment = (() => {
       tocLinks[page].classList.toggle('hiddenPage', !icfAnyNo);
       if (!icfAnyNo) {
         sectionResets[page]();
+      } else {
+        updateFormCompletionStatus(page);
       }
     });
 
@@ -2335,42 +2293,6 @@ const WaitingListAssessment = (() => {
     updateFormCompletionStatus('currentNeeds');
   }
   //--------------------------------------------------
-  function setConclusionUnmetNeeds() {
-    const conditionPageAllYes = isConditionInputsAllYes();
-
-    const isImmNeedsRequiredYes = wlForms['immediateNeeds'].inputs['immNeedsRequired'].getValue('immNeedsRequiredyes');
-    const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
-      'waivEnrollWaiverEnrollmentIsRequired'
-    ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
-
-    const isChecked = conditionPageAllYes && isWaiverEnrollRequiredYes && isImmNeedsRequiredYes;
-    wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(isChecked);
-  }
-  function setConclusionWaiverFunded12Months() {
-    const conditionPageAllYes = isConditionInputsAllYes();
-
-    const isUnmetNeedsHasYes = wlForms['currentNeeds'].inputs['unmetNeedsHas'].getValue('unmetNeedsHasyes');
-    const isUnmetNeedsSupportsYes =
-      wlForms['currentNeeds'].inputs['unmetNeedsSupports'].getValue('unmetNeedsSupportsyes');
-    const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
-      'waivEnrollWaiverEnrollmentIsRequired'
-    ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
-
-    const isChecked = conditionPageAllYes && isUnmetNeedsHasYes && isUnmetNeedsSupportsYes && isWaiverEnrollRequiredYes;
-    wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(isChecked);
-  }
-  function setConclusionDoesNotRequireWaiver() {
-    const isWaiverEnrollRequiredNo = wlForms['waiverEnrollment'].inputs[
-      'waivEnrollWaiverEnrollmentIsRequired'
-    ].getValue('waivEnrollWaiverEnrollmentIsRequiredno');
-
-    wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(isWaiverEnrollRequiredNo);
-  }
-  function setConclusionNotEligibleForWaiver() {
-    const conditionPageAllYes = isConditionInputsAllYes();
-
-    wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(!conditionPageAllYes);
-  }
   function setConclusion() {
     const conditionPageAllYes = isConditionInputsAllYes();
 
@@ -2401,10 +2323,14 @@ const WaitingListAssessment = (() => {
 
     if (isImmNeedsRequired.includes('yes')) {
       wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(true);
+    } else {
+      wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(false);
     }
 
     if (isUnmetNeedsHas.includes('yes') && isUnmetNeedsSupports.includes('yes')) {
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(true);
+    } else {
+      wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
     }
   }
   //--------------------------------------------------
@@ -2620,7 +2546,6 @@ const WaitingListAssessment = (() => {
         type: 'radio',
         formName: 'behavioral',
       });
-
       [
         'risksHasNoDocument',
         'risksHasPoliceReport',
@@ -2694,7 +2619,6 @@ const WaitingListAssessment = (() => {
         type: 'radio',
         formName: 'physical',
       });
-
       [
         'physicalNeedsIsNone',
         'physicalNeedsIsPersonalCareNeeded',
@@ -2751,7 +2675,6 @@ const WaitingListAssessment = (() => {
         type: 'radio',
         formName: 'medical',
       });
-
       [
         'medicalNeedsIsNone',
         'medicalNeedsIsFrequentEmergencyVisit',
@@ -2806,12 +2729,18 @@ const WaitingListAssessment = (() => {
       tocLinks['riskMitigation'].classList.toggle('hiddenPage', isNeedsActionRequiredYes);
       if (isNeedsActionRequiredYes) {
         await sectionResets['riskMitigation']();
+        await _UTIL.fetchData('deleteFromWaitingList', {
+          properties: [`${wlFormInfo['riskMitigation'].id}|${wlFormInfo['riskMitigation'].dbtable}`],
+        });
       }
 
       wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
       tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
       if (!showCurrentNeeds) {
         await sectionResets['currentNeeds']();
+        await _UTIL.fetchData('deleteFromWaitingList', {
+          properties: [`${wlFormInfo['currentNeeds'].id}|${wlFormInfo['currentNeeds'].dbtable}`],
+        });
       }
 
       await showHideImmediateNeeds();
@@ -2890,12 +2819,18 @@ const WaitingListAssessment = (() => {
       tocLinks['icfDischarge'].classList.toggle('hiddenPage', !showICF);
       if (!showICF) {
         await sectionResets['icfDischarge']();
+        await _UTIL.fetchData('deleteFromWaitingList', {
+          properties: [`${wlFormInfo['icfDischarge'].id}|${wlFormInfo['icfDischarge'].dbtable}`],
+        });
       }
 
       wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
       tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
       if (!showCurrentNeeds) {
         await sectionResets['currentNeeds']();
+        await _UTIL.fetchData('deleteFromWaitingList', {
+          properties: [`${wlFormInfo['currentNeeds'].id}|${wlFormInfo['currentNeeds'].dbtable}`],
+        });
       }
 
       // Set Input
@@ -3418,14 +3353,8 @@ const WaitingListAssessment = (() => {
 
     // Save/Update Queue
     updateQueue = new _UTIL.AsyncQueue('insertUpdateWaitingListValue', maxQueueSize, responses => {
-      console.log('Updates sent, handling responses:');
-      responses.forEach(response => {
-        if (response.success) {
-          console.log('Success:', response.data, response.update);
-        } else {
-          console.error('Failed:', response.update, response.error);
-        }
-      });
+      console.log('Updates:');
+      console.table(responses);
     });
   }
 
