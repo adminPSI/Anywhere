@@ -2477,7 +2477,7 @@ const planOutcomes = (() => {
           progressSummaryId: progressSummaryId,
         });
 
-        if (e.target.value === '') {
+        if ((e.target.value === '') && (validationCheck.outcomesData.planOutcome.length > 0)) {
           validationCheck.planProgressSummary = false;
         } else {
           validationCheck.planProgressSummary = true;

@@ -776,9 +776,9 @@ const planValidation = (function () {
   
     // Checks if all fields on the ISP outcomes are completed
     function checkAllOutcomesComplete(validationCheck) {
-      if (validationCheck.outcomesData.planOutcome.length < 1) {
-        validationCheck.planProgressSummary = true;
-      }
+      // if (validationCheck.outcomesData.planOutcome.length > 0) {
+      //   validationCheck.planProgressSummary = true;
+      // }
  
       validationCheck.complete =
         validationCheck.details.length === 0 &&
@@ -786,7 +786,7 @@ const planValidation = (function () {
         validationCheck.missingReviews.length === 0 &&
         validationCheck.planProgressSummary &&
         validationCheck.outcome.length === 0 &&
-        outcomesData.planOutcome.length > 0 &&
+        //outcomesData.planOutcome.length > 0 &&
         validationCheck.invalidProviders.length === 0;
 
       return validationCheck;
