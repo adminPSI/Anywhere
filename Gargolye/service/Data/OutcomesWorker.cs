@@ -381,9 +381,9 @@ namespace Anywhere.service.Data
                     sb.Append(" ct.Caption as serviceType, obj.Objective_Statement as serviceStatement, obj.objective_start as serviceStartDate, obj.objective_end as serviceEndDate ");
                 else
                     sb.Append(" ct.Caption as serviceType, obj.Objective_Statement as serviceStatement, obj.Start_Date as serviceStartDate, obj.End_Date as serviceEndDate ");
-                sb.Append(" from Objectives obj ");
-                sb.Append(" left outer join Code_Table ct on obj.Objective_Type = ct.Code and ct.Field_ID = 'Objective_Type' and ct.Table_ID = 'Objectives' ");
-                sb.Append(" left outer join Code_Table ctf on obj.Frequency_Modifier = ctf.Code and ctf.Field_ID = 'Frequency_Modifier' and ctf.Table_ID = 'Objectives' ");
+                sb.Append(" from dba.Objectives obj ");
+                sb.Append(" left outer join dba.Code_Table ct on obj.Objective_Type = ct.Code and ct.Field_ID = 'Objective_Type' and ct.Table_ID = 'Objectives' ");
+                sb.Append(" left outer join dba.Code_Table ctf on obj.Frequency_Modifier = ctf.Code and ctf.Field_ID = 'Frequency_Modifier' and ctf.Table_ID = 'Objectives' ");
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);
