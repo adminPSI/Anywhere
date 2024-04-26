@@ -152,7 +152,9 @@ var consumerInfo = (function () {
         if ((locationid === '000' || locationid === '0') && absentMenuItem !== null) {
             absentMenuItem.classList.add('hidden');
             const index = menuNewList.findIndex(x => x.title == 'Mark As Absent');
-            menuNewList.splice(index, 1);
+            if (index != -1) { 
+                menuNewList.splice(index, 1);
+            }
         } else if (absentMenuItem !== null) {
             absentMenuItem.classList.remove('hidden');
         }
@@ -916,7 +918,7 @@ var consumerInfo = (function () {
             item.appendChild(itemTitle);
             item.innerHTML += icons['keyArrowRight'];
 
-            cardInner.appendChild(item);
+            cardInner.appendChild(item); 
             menuNewList.push(mi);
         });
         cardMenuList.appendChild(cardInner);
