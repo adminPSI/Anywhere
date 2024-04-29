@@ -80,9 +80,9 @@
                 atLeastOneColumnAnswered: false,
               }
               if (leaveblank !== null && !leaveblank && !answered) {
-                numOfQuestionsUnawnsered++;
+               // numOfQuestionsUnawnsered++;
                 sectionUnawnseredQuestions[sectionKey]++;
-                }
+            }
               }
            // };
             if (answered || leaveblank)
