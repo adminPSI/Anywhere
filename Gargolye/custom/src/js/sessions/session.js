@@ -315,6 +315,13 @@ $.session.CFViewFoodStamp = false;
 $.session.CFViewPettyCash = false;
 $.session.CFViewShaving = false;
 
+$.session.CFViewChristmasClub = false;
+$.session.CFViewSystem20183A = false;
+$.session.CFViewSystem20183 = false;
+$.session.CFViewOhioEBT = false;
+$.session.CFViewViewFoodStampDebitCardEBT = false;
+
+
 // Reset Password
 $.session.ResetPasswordView = false;
 $.session.ResetPasswordUpdate = false;
@@ -804,6 +811,21 @@ function setSessionVariables() {
 
             if (tmpPerm == 'View Savings' || $.session.isPSI == true) {
                 $.session.CFViewShaving = true;
+            }
+            if (tmpPerm == 'View Christmas Club' || $.session.isPSI == true) {
+                $.session.CFViewChristmasClub = true;
+            }
+            if (tmpPerm == 'View System 2018.3A' || $.session.isPSI == true) {
+                $.session.CFViewSystem20183A = true;
+            }
+            if (tmpPerm == 'View System 2018.3' || $.session.isPSI == true) {
+                $.session.CFViewSystem20183 = true;
+            }
+            if (tmpPerm == 'View Ohio EBT' || $.session.isPSI == true) {
+                $.session.CFViewOhioEBT = true;
+            }
+            if (tmpPerm == 'View Food Stamp Debit Card EBT' || $.session.isPSI == true) {
+                $.session.CFViewViewFoodStampDebitCardEBT = true;
             }
         }
 
