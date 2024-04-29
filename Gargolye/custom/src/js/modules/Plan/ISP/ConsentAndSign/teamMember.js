@@ -1009,6 +1009,7 @@ const csTeamMember = (() => {
       //*------------------------------
       if ($.session.planInsertNewTeamMember) {
         const checkIfDateBefore1900 = isDateBefore1900(dateOfBirthInput.value);
+        const teamMember = selectedMemberData.teamMember;
         const isRequired =
         teamMember !== 'Guardian' && teamMember !== 'Parent/Guardian' && teamMember !== 'Case Manager' && teamMember !== '';
 
