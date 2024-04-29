@@ -1695,8 +1695,9 @@ const WaitingListAssessment = (() => {
     }
 
     const isNeedActionRequiredYes = wlData.other.needsIsActionRequiredRequiredIn30Days.includes('yes');
+    const isNeedActionRequiredNo = wlData.other.needsIsActionRequiredRequiredIn30Days.includes('no');
 
-    if (isNeedActionRequiredYes) {
+    if (isNeedActionRequiredNo) {
       wlForms['riskMitigation'].form.parentElement.classList.remove('hiddenPage');
       tocLinks['riskMitigation'].classList.remove('hiddenPage');
     }
