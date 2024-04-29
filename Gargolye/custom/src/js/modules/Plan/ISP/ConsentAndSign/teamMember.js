@@ -1249,11 +1249,16 @@ const csTeamMember = (() => {
       readonly: isSigned || readOnly,
       callback: event => {
         selectedMemberData.dateOfBirth = event.target.value;
+
         const checkIfDateBefore1900 = isDateBefore1900(event.target.value);
-        if (!checkIfDateBefore1900) {
-          dateOfBirthInput.classList.remove('error');
-        } else {
+        const teamMember = selectedMemberData.teamMember;
+        const isRequired =
+          teamMember !== 'Guardian' && teamMember !== 'Parent/Guardian' && teamMember !== 'Case Manager';
+
+        if (checkIfDateBefore1900 || (isRequired && selectedMemberData.dateOfBirth === '')) {
           dateOfBirthInput.classList.add('error');
+        } else {
+          dateOfBirthInput.classList.remove('error');
         }
 
         checkTeamMemberPopupForErrors();
@@ -1388,10 +1393,12 @@ const csTeamMember = (() => {
     //*------------------------------
     if ($.session.planInsertNewTeamMember) {
       const checkIfDateBefore1900 = isDateBefore1900(dateOfBirthInput.value);
-      if (!checkIfDateBefore1900) {
-        dateOfBirthInput.classList.remove('error');
-      } else {
+      const teamMember = selectedMemberData.teamMember;
+      const isRequired = teamMember !== 'Guardian' && teamMember !== 'Parent/Guardian' && teamMember !== 'Case Manager';
+      if (checkIfDateBefore1900 || (isRequired && selectedMemberData.dateOfBirth === '')) {
         dateOfBirthInput.classList.add('error');
+      } else {
+        dateOfBirthInput.classList.remove('error');
       }
       // email input is not currently required
       // if (selectedMemberData.email) {

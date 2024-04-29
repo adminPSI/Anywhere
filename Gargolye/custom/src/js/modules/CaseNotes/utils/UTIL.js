@@ -82,8 +82,10 @@
    * @param {any} newValue - The new value for the input.
    */
   AsyncQueue.prototype.addUpdate = function (updateData) {
-    //let timestamp = new Date();
-    //timestamp = timestamp.now();
+    // let timestamp = new Date();
+    // timestamp = timestamp.now();
+
+    // updateData.timestamp = timestamp;
 
     this.queue.push(updateData);
 

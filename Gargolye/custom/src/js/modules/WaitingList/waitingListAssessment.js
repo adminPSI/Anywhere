@@ -1688,12 +1688,10 @@ const WaitingListAssessment = (() => {
       wlForms['behavioral'].form.parentElement.classList.remove('hiddenPage');
       wlForms['physical'].form.parentElement.classList.remove('hiddenPage');
       wlForms['medical'].form.parentElement.classList.remove('hiddenPage');
-      wlForms['other'].form.parentElement.classList.remove('hiddenPage');
       tocLinks['needs'].classList.remove('hiddenPage');
       tocLinks['behavioral'].classList.remove('hiddenPage');
       tocLinks['physical'].classList.remove('hiddenPage');
       tocLinks['medical'].classList.remove('hiddenPage');
-      tocLinks['other'].classList.remove('hiddenPage');
     }
 
     const isNeedActionRequiredYes = wlData.other.needsIsActionRequiredRequiredIn30Days.includes('yes');
@@ -1847,6 +1845,8 @@ const WaitingListAssessment = (() => {
       wlForms['medical'].inputs['medicalNeedsIsOther'].toggleRequired(false);
     }
     if ((hasCheckBehavioral && hasCheckBehavioralDocs) || hasCheckPhysical || hasCheckMedical) {
+      tocLinks['other'].classList.remove('hiddenPage');
+      wlForms['other'].form.parentElement.classList.remove('hiddenPage');
       wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(false);
     }
 
@@ -1968,7 +1968,8 @@ const WaitingListAssessment = (() => {
 
     needsWrap.classList.toggle('hiddenPage', !showPages);
     tocLinks['needs'].classList.toggle('hiddenPage', !showPages);
-    ['behavioral', 'physical', 'medical', 'other'].forEach(async page => {
+
+    ['behavioral', 'physical', 'medical'].forEach(async page => {
       wlForms[page].form.parentElement.classList.toggle('hiddenPage', !showPages);
       tocLinks[page].classList.toggle('hiddenPage', !showPages);
 
@@ -1985,7 +1986,6 @@ const WaitingListAssessment = (() => {
           `${wlFormInfo['behavioral'].id}|${wlFormInfo['behavioral'].dbtable}`,
           `${wlFormInfo['physical'].id}|${wlFormInfo['physical'].dbtable}`,
           `${wlFormInfo['medical'].id}|${wlFormInfo['medical'].dbtable}`,
-          `${wlFormInfo['other'].id}|${wlFormInfo['other'].dbtable}`,
         ],
       });
     }
@@ -2104,18 +2104,30 @@ const WaitingListAssessment = (() => {
     const hasCheckMedical = isAnyCheckboxCheckedMedical();
 
     const needsIsActionEnabled = (hasCheckBehaviorOne && hasCheckBehaviorTwo) || hasCheckPhysical || hasCheckMedical;
+
+    wlForms['other'].form.parentElement.classList.toggle('hiddenPage', !needsIsActionEnabled);
+    tocLinks['other'].classList.toggle('hiddenPage', !needsIsActionEnabled);
     wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(needsIsActionEnabled === false);
+
+    if (!needsIsActionEnabled) {
+      wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].setValue('');
+      wlForms['other'].inputs['needsIsContinuousSupportRequired'].setValue('');
+      wlForms['other'].inputs['needsIsContinuousSupportRequired'].toggleDisabled(true);
+    }
 
     updateFormCompletionStatus('other');
 
     if (!needsIsActionEnabled) {
-      wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].setValue('');
-      await insertUpdateAssessmentData({
-        value: '',
-        name: 'needsIsActionRequiredRequiredIn30Days',
-        type: 'radio',
-        formName: 'other',
+      await _UTIL.fetchData('deleteFromWaitingList', {
+        properties: [`${wlFormInfo['other'].id}|${wlFormInfo['other'].dbtable}`],
       });
+
+      // await insertUpdateAssessmentData({
+      //   value: '',
+      //   name: 'needsIsActionRequiredRequiredIn30Days',
+      //   type: 'radio',
+      //   formName: 'other',
+      // });
     }
   }
   //--------------------------------------------------
@@ -3051,12 +3063,49 @@ const WaitingListAssessment = (() => {
       });
       resp = resp.generateWaitingListAssessmentReportResult;
 
-      const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
-        header: data['emailHeader'],
-        body: data['emailBody'],
-        reportScheduleId: resp,
-        waitingListId: wlLinkID,
-      });
+      function checkIfReportIsReadyInterval(res) {
+        // Get the interval in seconds from the session and convert it to milliseconds
+        const intervalSeconds = parseInt($.session.reportSeconds);
+        const intervalMilliseconds = intervalSeconds * 250;
+      
+        // Set up an interval to execute the checkIfReportExists function periodically
+        const interval = setInterval(async () => {
+          const reportExists = await checkIfReportExists(res);
+          if (reportExists) {
+            clearInterval(interval);
+            const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
+              header: data['emailHeader'],
+              body: data['emailBody'],
+              reportScheduleId: res,
+              waitingListId: wlLinkID,
+            });
+          }
+        }, intervalMilliseconds);
+      }
+      
+      async function checkIfReportExists(res) {
+        const data = {
+          token: $.session.Token,
+          reportScheduleId: res[0].reportScheduleId,
+        };
+        
+        try {
+          const response = await $.ajax({
+            type: 'POST',
+            url: `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/checkIfReportExists/`,
+            data: JSON.stringify(data),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+          });
+          
+          return response.checkIfReportExistsResult.indexOf('1') !== -1;
+        } catch (error) {
+          console.error('Error:', error);
+          return false;
+        }
+      }
+
+      checkIfReportIsReadyInterval(resp)
 
       sendEmailPopup.close();
     });

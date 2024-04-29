@@ -1106,6 +1106,18 @@
       }
       gridBody.appendChild(gridRow);
     });
+    rowOrderKeys.forEach((rok, rowIndex) => {
+      const questionOrderKeys = Object.keys(questions[rok]);
+      questionOrderKeys.forEach((qok, questionIndex) => {
+        const { id: questionId, text, answerText, answerId, answerStyle, prompt, skipped } = questions[rok][qok];
+        const questionRowId = `${questionId}${rok}`;
+
+        if (!areAllGridAnswersEmpty && skipped === 'Y') {
+          addAnswer(answerId, answerText, rok, 'N');
+          sectionQuestionCount[sectionId][questionSetId][questionRowId].leaveblank = false;
+        }
+      });
+    });
     grid.appendChild(gridBody);
 
     if (allowRowInsert === 'True') {
@@ -1191,7 +1203,7 @@
 
             sectionQuestionCount[sectionId][questionSetId][questionRowId] = {
               answered: false,
-              rowOrder:currentRowOrder,
+              rowOrder: currentRowOrder,
               leaveblank: skipped === 'N' ? false : true,
             };
 
@@ -1297,7 +1309,7 @@
                 return;
               }
             }
- 
+
             addAnswer(answerId, answerText, answerRow);
 
             gridRow.appendChild(gridCell);
@@ -1346,7 +1358,7 @@
             if (sectionId === '41') {
               await planValidation.updateAnswerWorkingSection(assessmentId);
               tableOfContents.showUnansweredQuestionCount();
-          }
+            }
           }
 
           currentRowOrder = gridBody.querySelectorAll('.grid__row').length + 1;
@@ -1380,8 +1392,9 @@
 
     if (questionSetId !== '182') {
       // intentionally blank checkbox
-      console.log(isLeftBlankCheckboxChecked);
-      const isChecked = checkArrayConsistency(isLeftBlankCheckboxChecked);
+      let isChecked = checkArrayConsistency(isLeftBlankCheckboxChecked);
+      isChecked = !areAllGridAnswersEmpty ? false : true;
+
       const intentionallyBlankCheckbox = input.buildCheckbox({
         text: 'Intentionally left blank',
         id: `intentionallyBlankCheckbox${questionSetId}`,
@@ -1393,7 +1406,9 @@
           { key: 'data-isforrow', value: true },
         ],
       });
+
       grid.appendChild(intentionallyBlankCheckbox);
+
       if (!areAllGridAnswersEmpty) {
         input.disableInputField(intentionallyBlankCheckbox);
       }

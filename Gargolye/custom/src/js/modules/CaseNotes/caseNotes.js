@@ -811,6 +811,7 @@ const CaseNotes = (() => {
       resetNoteData();
       cnForm.clear();
       rosterPicker.setSelectedConsumers([]);
+      cnForm.inputs['serviceCode'].setValue(selectedServiceCode);
       onServiceCodeChange();
 
       if ($.session.applicationName === 'Gatekeeper') {
