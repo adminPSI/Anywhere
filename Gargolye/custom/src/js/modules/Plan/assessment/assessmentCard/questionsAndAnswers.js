@@ -1393,7 +1393,7 @@
     if (questionSetId !== '182') {
       // intentionally blank checkbox
       let isChecked = checkArrayConsistency(isLeftBlankCheckboxChecked);
-      isChecked = !areAllGridAnswersEmpty ? false : true;
+      isChecked = !areAllGridAnswersEmpty ? 'N' : isChecked;
 
       const intentionallyBlankCheckbox = input.buildCheckbox({
         text: 'Intentionally left blank',
