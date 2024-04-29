@@ -965,19 +965,6 @@ const csTeamMember = (() => {
       callback: async event => {
         selectedMemberData.teamMember = event.target.value;
 
-        // var selectedConsumer = plan.getSelectedConsumer();
-        // let stateGuardiansOb = await consentAndSignAjax.getStateGuardiansforConsumer({
-        //   peopleId: selectedConsumer.id,
-        // });
-
-        // if (
-        //   (!stateGuardiansOb || stateGuardiansOb.length === 0) &&
-        //   planConsentAndSign.isTeamMemberGuardian(selectedMemberData.teamMember)
-        // )
-        //   alert(
-        //     `No State Guardians found for this individual. No Guardian or Parent/Guardian can be entered as new team member. Enter a new guardian for this individual in the SalesForce Portal.`,
-        //   );
-
         // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
         setStateofPopupFields();
 
@@ -985,8 +972,9 @@ const csTeamMember = (() => {
         insertingConditionalFieldsintoPopup();
 
         checkTeamMemberPopupForErrors();
-      }, // end callback
-    }); // end DROP DOWN BUILD
+      },
+    });
+    teamMemberDropdown.classList.add('teamMemberDropdown');
 
     // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
     function setStateofPopupFields() {
@@ -1021,33 +1009,15 @@ const csTeamMember = (() => {
       //*------------------------------
       if ($.session.planInsertNewTeamMember) {
         const checkIfDateBefore1900 = isDateBefore1900(dateOfBirthInput.value);
-        // if (selectedMemberData.teamMember === 'Guardian' || selectedMemberData.teamMember === 'Parent/Guardian' || selectedMemberData.teamMember === 'Case Manager') {
-        //   dateOfBirthInput.classList.remove('error');
-        // } else {
-        //   if (selectedMemberData.dateOfBirth !== '' && !checkIfDateBefore1900) {
-        //     dateOfBirthInput.classList.remove('error');
-        //   } else {
-        //     dateOfBirthInput.classList.add('error');
-        //   }
-        // }
-        if (
-          selectedMemberData.teamMember !== 'Guardian' ||
-          selectedMemberData.teamMember !== 'Parent/Guardian' ||
-          selectedMemberData.teamMember !== 'Case Manager'
-        ) {
-          if (!checkIfDateBefore1900) {
-            dateOfBirthInput.classList.remove('error');
-          } else {
-            dateOfBirthInput.classList.add('error');
-          }
+        const isRequired =
+        teamMember !== 'Guardian' && teamMember !== 'Parent/Guardian' && teamMember !== 'Case Manager' && teamMember !== '';
+
+        if (checkIfDateBefore1900 || (isRequired && selectedMemberData.dateOfBirth === '')) {
+          dateOfBirthInput.classList.add('error');
+        } else {
+          dateOfBirthInput.classList.remove('error');
         }
 
-        // email input not currently required
-        // if (selectedMemberData.email) {
-        //   emailInput.classList.remove('error');
-        // } else {
-        //   emailInput.classList.add('error');
-        // }
         if (selectedMemberData.teamMember === '') {
           teamMemberDropdown.classList.add('error');
         } else {
@@ -1179,7 +1149,6 @@ const csTeamMember = (() => {
       } // end if -- isSelectedTeamMemberGuardian
     }
 
-    teamMemberDropdown.classList.add('teamMemberDropdown');
 
     // State Guradian
     stateGuardianDropdown = dropdown.build({
@@ -1253,7 +1222,7 @@ const csTeamMember = (() => {
         const checkIfDateBefore1900 = isDateBefore1900(event.target.value);
         const teamMember = selectedMemberData.teamMember;
         const isRequired =
-          teamMember !== 'Guardian' && teamMember !== 'Parent/Guardian' && teamMember !== 'Case Manager';
+          teamMember !== 'Guardian' && teamMember !== 'Parent/Guardian' && teamMember !== 'Case Manager' && teamMember !== '';
 
         if (checkIfDateBefore1900 || (isRequired && selectedMemberData.dateOfBirth === '')) {
           dateOfBirthInput.classList.add('error');
@@ -1394,7 +1363,7 @@ const csTeamMember = (() => {
     if ($.session.planInsertNewTeamMember) {
       const checkIfDateBefore1900 = isDateBefore1900(dateOfBirthInput.value);
       const teamMember = selectedMemberData.teamMember;
-      const isRequired = teamMember !== 'Guardian' && teamMember !== 'Parent/Guardian' && teamMember !== 'Case Manager';
+      const isRequired = teamMember !== 'Guardian' && teamMember !== 'Parent/Guardian' && teamMember !== 'Case Manager' && teamMember !== '';
       if (checkIfDateBefore1900 || (isRequired && selectedMemberData.dateOfBirth === '')) {
         dateOfBirthInput.classList.add('error');
       } else {
