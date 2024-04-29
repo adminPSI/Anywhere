@@ -3063,12 +3063,49 @@ const WaitingListAssessment = (() => {
       });
       resp = resp.generateWaitingListAssessmentReportResult;
 
-      const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
-        header: data['emailHeader'],
-        body: data['emailBody'],
-        reportScheduleId: resp,
-        waitingListId: wlLinkID,
-      });
+      function checkIfReportIsReadyInterval(res) {
+        // Get the interval in seconds from the session and convert it to milliseconds
+        const intervalSeconds = parseInt($.session.reportSeconds);
+        const intervalMilliseconds = intervalSeconds * 250;
+      
+        // Set up an interval to execute the checkIfReportExists function periodically
+        const interval = setInterval(async () => {
+          const reportExists = await checkIfReportExists(res);
+          if (reportExists) {
+            clearInterval(interval);
+            const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
+              header: data['emailHeader'],
+              body: data['emailBody'],
+              reportScheduleId: res,
+              waitingListId: wlLinkID,
+            });
+          }
+        }, intervalMilliseconds);
+      }
+      
+      async function checkIfReportExists(res) {
+        const data = {
+          token: $.session.Token,
+          reportScheduleId: res[0].reportScheduleId,
+        };
+        
+        try {
+          const response = await $.ajax({
+            type: 'POST',
+            url: `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/checkIfReportExists/`,
+            data: JSON.stringify(data),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+          });
+          
+          return response.checkIfReportExistsResult.indexOf('1') !== -1;
+        } catch (error) {
+          console.error('Error:', error);
+          return false;
+        }
+      }
+
+      checkIfReportIsReadyInterval(resp)
 
       sendEmailPopup.close();
     });

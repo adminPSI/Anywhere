@@ -107,6 +107,22 @@ const ConsumerFinances = (() => {
             tempAccountPer.push('Savings');
         }
 
+        if ($.session.CFViewChristmasClub) {
+            tempAccountPer.push('Christmas Club');
+        }
+        if ($.session.CFViewSystem20183A) {
+            tempAccountPer.push('System 2018.3A');
+        }
+        if ($.session.CFViewSystem20183) {
+            tempAccountPer.push('System 2018.3');
+        }
+        if ($.session.CFViewOhioEBT) {
+            tempAccountPer.push('Ohio EBT');
+        }
+        if ($.session.CFViewViewFoodStampDebitCardEBT) {
+            tempAccountPer.push('Food Stamp Debit Card EBT');
+        }
+
         if (tempAccountPer.length > 0) {
             accountPermission = tempAccountPer.toString();
         }
