@@ -228,6 +228,81 @@ const planValidation = (function () {
     }
 
     async function getAssessmentValidation(planId) {
+      // reset the values of the validation for each consumer
+      assessmentValidationCheck = {
+        workingNotWorking: [],
+        sectionsApplicable: [],
+        servicesAndSupports: {},
+        servicesAndSupportsChecked: {
+          34: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          35: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          36: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          37: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          38: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          39: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          40: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+        },
+        hasASectionApplicable: true,
+        workingSectionComplete: false,
+        servicesAndSupportsError: false,
+        complete: false
+      };
       // Gathers the data from the database
       servicesAndSupportsData = await planValidationAjax.getAssessmentValidationData(planId);
   
@@ -238,9 +313,14 @@ const planValidation = (function () {
       // SECTIONS APPLICABLE
       // check each section fo rthe plan and see if any are selected, if at least one is selected, return true
       assessmentValidationCheck.sectionsApplicable = servicesAndSupportsData.sectionsApplicable;
-      const hasASectionApplicable = assessmentValidationCheck.sectionsApplicable.some(
+      let hasASectionApplicable = assessmentValidationCheck.sectionsApplicable.some(
         obj => obj.applicable === 'Y',
       );
+
+      // In the case the ANYW_ISP_Sections_Applicable table is missing the 
+      if (assessmentValidationCheck.sectionsApplicable.length === 0) {
+        hasASectionApplicable = true;
+      }
   
       // if no section is checked, set value to false
       if (!hasASectionApplicable) {
@@ -776,9 +856,9 @@ const planValidation = (function () {
   
     // Checks if all fields on the ISP outcomes are completed
     function checkAllOutcomesComplete(validationCheck) {
-      if (validationCheck.outcomesData.planOutcome.length < 1) {
-        validationCheck.planProgressSummary = true;
-      }
+      // if (validationCheck.outcomesData.planOutcome.length > 0) {
+      //   validationCheck.planProgressSummary = true;
+      // }
  
       validationCheck.complete =
         validationCheck.details.length === 0 &&
@@ -786,7 +866,7 @@ const planValidation = (function () {
         validationCheck.missingReviews.length === 0 &&
         validationCheck.planProgressSummary &&
         validationCheck.outcome.length === 0 &&
-        outcomesData.planOutcome.length > 0 &&
+        //outcomesData.planOutcome.length > 0 &&
         validationCheck.invalidProviders.length === 0;
 
       return validationCheck;
