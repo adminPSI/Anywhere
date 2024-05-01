@@ -257,7 +257,7 @@ const csTeamMember = (() => {
       (selectedMemberData.teamMember === 'Guardian' || selectedMemberData.teamMember === 'Parent/Guardian') &&
       $.session.areInSalesForce === true
     ) {
-        if (selectedStateGuardianSalesForceId === '') selectedStateGuardianSalesForceId = selectedMemberData.salesForceId;
+     //   if (selectedStateGuardianSalesForceId === '') selectedStateGuardianSalesForceId = selectedMemberData.salesForceId;
       var continueGuardianSave = await continueSaveofGuardianTeamMember();
       if (!continueGuardianSave) return;
     }
