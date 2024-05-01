@@ -803,8 +803,8 @@ const CaseNotes = (() => {
 
     const { isNewGroup } = await saveNote(saveData, attachmentsForSave);
 
-    await cnOverview.fetchData(selectedDate);
-    cnOverview.populate();
+    // OVERVIEW // await cnOverview.fetchData(selectedDate);
+    // OVERVIEW // cnOverview.populate();
     cnFormToast.close();
 
     if (buttonName === 'saveandnew' || isNewGroup) {
@@ -848,8 +848,8 @@ const CaseNotes = (() => {
     onTimeChange();
 
     //re populate overview section when date change
-    await cnOverview.fetchData(selectedDate);
-    cnOverview.populate();
+    // OVERVIEW // await cnOverview.fetchData(selectedDate);
+    // OVERVIEW // cnOverview.populate();
   }
 
   // OVERVIEW CARDS
@@ -927,16 +927,16 @@ const CaseNotes = (() => {
     cnForm.onSubmit(onFormSubmit);
     cnForm.onReset(onFormReset);
     cnForm.onFileDelete(onFileDelete);
-    cnOverview.onCardEdit(onOverviewCardEdit);
-    cnOverview.onCardDelete(onOverviewCardDelete);
+    // OVERVIEW // cnOverview.onCardEdit(onOverviewCardEdit);
+    // OVERVIEW // cnOverview.onCardDelete(onOverviewCardDelete);
   }
   async function populatePage() {
     await cnPhrases.InsertPhrases.fetchData();
     cnPhrases.InsertPhrases.populate();
     await rosterPicker.fetchConsumers();
     rosterPicker.populate();
-    await cnOverview.fetchData(selectedDate);
-    cnOverview.populate();
+    // OVERVIEW // await cnOverview.fetchData(selectedDate);
+    // OVERVIEW // cnOverview.populate();
     if (selectedConsumers) {
       rosterPicker.setSelectedConsumers(selectedConsumers);
     }
@@ -946,7 +946,7 @@ const CaseNotes = (() => {
     rosterPicker.renderTo(cnRosterWrap);
     cnFormToast.renderTo(cnFormWrap);
     cnForm.renderTo(cnFormWrap);
-    cnOverview.renderTo(moduleWrap);
+    // OVERVIEW // cnOverview.renderTo(moduleWrap);
     cnPhrases.renderTo(_DOM.ACTIONCENTER);
 
     attachEvents();
@@ -1120,7 +1120,7 @@ const CaseNotes = (() => {
     cnFormToast = new Toast();
 
     // Overview Cards
-    cnOverview = new CaseNotesOverview(cnData);
+    // OVERVIEW // cnOverview = new CaseNotesOverview(cnData);
 
     // Phrases
     cnPhrases = new CaseNotesPhrases();
