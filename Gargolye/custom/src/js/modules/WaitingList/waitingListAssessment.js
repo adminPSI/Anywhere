@@ -1315,7 +1315,7 @@ const WaitingListAssessment = (() => {
       return !link.classList.contains('hiddenPage') && !link.classList.contains('formComplete');
     });
 
-    sendEmailButton.toggleDisabled(incompleteSections.length > 0 || !$.session.sendWaitingListemail);
+    sendEmailButton.toggleDisabled(incompleteSections.length > 0 || !$.session.sendWaitingListEmail);
   }
 
   // DATA
