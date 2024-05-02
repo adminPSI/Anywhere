@@ -257,7 +257,7 @@ const csTeamMember = (() => {
       (selectedMemberData.teamMember === 'Guardian' || selectedMemberData.teamMember === 'Parent/Guardian') &&
       $.session.areInSalesForce === true
     ) {
-        selectedStateGuardianSalesForceId = selectedMemberData.salesForceId;
+     //   if (selectedStateGuardianSalesForceId === '') selectedStateGuardianSalesForceId = selectedMemberData.salesForceId;
       var continueGuardianSave = await continueSaveofGuardianTeamMember();
       if (!continueGuardianSave) return;
     }
@@ -388,7 +388,7 @@ const csTeamMember = (() => {
 
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian
   async function continueSaveofGuardianTeamMember() {
-    // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
+    // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan   
     if (hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId) && $.session.areInSalesForce === true) {
       alert(
         `This team Member will not be saved. This State Guardian has already been used for a team Member in this Plan.`,
