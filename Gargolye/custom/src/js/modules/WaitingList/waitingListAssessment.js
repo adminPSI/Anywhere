@@ -1312,7 +1312,7 @@ const WaitingListAssessment = (() => {
   }
   function toggleSendEmailDisabledStatus() {
     const incompleteSections = Object.values(tocLinks).filter(link => {
-      return !link.classList.contains('hiddenPage') && !link.classList.contains('formComplete');
+      return !link.classList.contains('hiddenPage') && !link.classList.contains('formComplete') && !link.classList.contains('parent');
     });
 
     sendEmailButton.toggleDisabled(incompleteSections.length > 0 || !$.session.sendWaitingListEmail);
@@ -3256,9 +3256,11 @@ const WaitingListAssessment = (() => {
 
       if (section === 'contributingCircumstances') {
         contributingCircumstancesWrap = sectionWrap;
+        tocSection.classList.add('parent');
       }
       if (section === 'needs') {
         needsWrap = sectionWrap;
+        tocSection.classList.add('parent');
       }
 
       if (sections[section].formElements) {
