@@ -2688,6 +2688,7 @@ const WaitingListAssessment = (() => {
         type: 'radio',
         formName: 'medical',
       });
+
       [
         'medicalNeedsIsNone',
         'medicalNeedsIsFrequentEmergencyVisit',
@@ -2741,7 +2742,7 @@ const WaitingListAssessment = (() => {
       wlForms['riskMitigation'].form.parentElement.classList.toggle('hiddenPage', isNeedsActionRequiredYes);
       tocLinks['riskMitigation'].classList.toggle('hiddenPage', isNeedsActionRequiredYes);
       if (isNeedsActionRequiredYes) {
-        await sectionResets['riskMitigation']();
+        sectionResets['riskMitigation']();
         await _UTIL.fetchData('deleteFromWaitingList', {
           properties: [`${wlFormInfo['riskMitigation'].id}|${wlFormInfo['riskMitigation'].dbtable}`],
         });
@@ -2750,7 +2751,7 @@ const WaitingListAssessment = (() => {
       wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
       tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
       if (!showCurrentNeeds) {
-        await sectionResets['currentNeeds']();
+        sectionResets['currentNeeds']();
         await _UTIL.fetchData('deleteFromWaitingList', {
           properties: [`${wlFormInfo['currentNeeds'].id}|${wlFormInfo['currentNeeds'].dbtable}`],
         });
@@ -2772,6 +2773,23 @@ const WaitingListAssessment = (() => {
       if (!hasCheck) {
         wlForms['riskMitigation'].inputs['rMdescription'].setValue('');
         wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
+        wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue('rMIsSupportNeededno');
+
+        wlForms['icfDischarge'].form.parentElement.classList.toggle('hiddenPage', true);
+        tocLinks['icfDischarge'].classList.toggle('hiddenPage', true);
+        wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', true);
+        tocLinks['currentNeeds'].classList.toggle('hiddenPage', true);
+
+        
+        sectionResets['icfDischarge']();
+        sectionResets['currentNeeds']();
+
+        await insertUpdateAssessmentData({
+          value: '',
+          name: 'rMIsSupportNeeded',
+          type: 'radio',
+          formName: 'riskMitigation',
+        });
 
         await insertUpdateAssessmentData({
           value: '',
@@ -2785,6 +2803,13 @@ const WaitingListAssessment = (() => {
           name: 'rMIsActionRequiredIn3oDays',
           type: 'radio',
           formName: 'riskMitigation',
+        });
+
+        await _UTIL.fetchData('deleteFromWaitingList', {
+          properties: [
+            `${wlFormInfo['icfDischarge'].id}|${wlFormInfo['icfDischarge'].dbtable}`, 
+            `${wlFormInfo['currentNeeds'].id}|${wlFormInfo['currentNeeds'].dbtable}`
+          ],
         });
       }
 
@@ -2831,7 +2856,7 @@ const WaitingListAssessment = (() => {
       wlForms['icfDischarge'].form.parentElement.classList.toggle('hiddenPage', !showICF);
       tocLinks['icfDischarge'].classList.toggle('hiddenPage', !showICF);
       if (!showICF) {
-        await sectionResets['icfDischarge']();
+        sectionResets['icfDischarge']();
         await _UTIL.fetchData('deleteFromWaitingList', {
           properties: [`${wlFormInfo['icfDischarge'].id}|${wlFormInfo['icfDischarge'].dbtable}`],
         });
@@ -2840,7 +2865,7 @@ const WaitingListAssessment = (() => {
       wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
       tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
       if (!showCurrentNeeds) {
-        await sectionResets['currentNeeds']();
+        sectionResets['currentNeeds']();
         await _UTIL.fetchData('deleteFromWaitingList', {
           properties: [`${wlFormInfo['currentNeeds'].id}|${wlFormInfo['currentNeeds'].dbtable}`],
         });
