@@ -1966,6 +1966,12 @@ const WaitingListAssessment = (() => {
       wlForms[page].form.parentElement.classList.toggle('hiddenPage', !showPages);
       tocLinks[page].classList.toggle('hiddenPage', !showPages);
 
+      console.log(`
+        ${_UTIL.convertCamelCaseToTitle(page)} Visibility Status: ${showPages ? 'Visible' : 'Hidden'},
+        Reason: isPrimaryCaregiverUnavailable was ${isPrimaryCaregiverUnavailable.replaceAll('isPrimaryCaregiverUnavailable', '')} 
+        AND isActionRequiredIn30Days was ${isActionRequiredIn30Days.replaceAll('isActionRequiredIn30Days', '')}
+      `);
+
       if (!showPages) {
         sectionResets[page]();
       } else {
@@ -1989,6 +1995,11 @@ const WaitingListAssessment = (() => {
   
     wlForms['riskMitigation'].form.parentElement.classList.toggle('hiddenPage', !showRM);
     tocLinks['riskMitigation'].classList.toggle('hiddenPage', !showRM);
+
+    console.log(`
+      Risk Mitigation Visibility Status: ${showRM ? 'Visible' : 'Hidden'},
+      Reason: needsIsActionRequiredIn30Days was ${isNeedsActionRequired.replaceAll('needsIsActionRequiredRequiredIn30Days', '')}
+    `);
     
     if (!showRM) {
       sectionResets['riskMitigation']();
@@ -2009,6 +2020,14 @@ const WaitingListAssessment = (() => {
     ['intermittentSupports', 'childProtectionAgency', 'adultDayEmployment', 'dischargePlan'].forEach(page => {
       wlForms[page].form.parentElement.classList.toggle('hiddenPage', !icfAnyNo);
       tocLinks[page].classList.toggle('hiddenPage', !icfAnyNo);
+
+      console.log(`
+        ${_UTIL.convertCamelCaseToTitle(page)} Visibility Status: ${showICF ? 'Visible' : 'Hidden'},
+        Reason: icfIsNoticeIssued was ${icfIsNoticeIssued.replaceAll('icfIsNoticeIssued', '')} AND
+        icfIsICFResident was ${icfIsICFResident.replaceAll('icfIsICFResident', '')} AND
+        icfIsActionRequiredIn30Days was ${icfIsActionRequiredIn30Days.replaceAll('icfIsActionRequiredIn30Days', '')} AND
+      `);
+
       if (!icfAnyNo) {
         sectionResets[page]();
       } else {
@@ -2033,6 +2052,12 @@ const WaitingListAssessment = (() => {
   
     wlForms['icfDischarge'].form.parentElement.classList.toggle('hiddenPage', !showICF);
     tocLinks['icfDischarge'].classList.toggle('hiddenPage', !showICF);
+
+    console.log(`
+      ICF Discharge Visibility Status: ${showICF ? 'Visible' : 'Hidden'},
+      Reason: rMIsActionRequiredIn3oDays was ${isRisksActionRequired.replaceAll('rMIsActionRequiredIn3oDays', '')}
+    `);
+
     if (!showICF) {
       sectionResets['icfDischarge']();
       _UTIL.fetchData('deleteFromWaitingList', {
@@ -2050,6 +2075,13 @@ const WaitingListAssessment = (() => {
     wlForms['immediateNeeds'].form.parentElement.classList.toggle('hiddenPage', !showImmediateNeeds);
     tocLinks['immediateNeeds'].classList.toggle('hiddenPage', !showImmediateNeeds);
     wlForms['immediateNeeds'].inputs['immNeedsDescription'].toggleDisabled(!showImmediateNeeds);
+
+    console.log(
+      `Immediate Needs Visibility Status: ${showImmediateNeeds ? 'Visible' : 'Hidden'},
+      Reason: rMIsActionRequiredIn3oDays was ${isRMActionRequiredIn3oDays.replaceAll('rMIsActionRequiredIn3oDays', '')} AND
+      needsIsActionRequiredIn30Days was ${isNeedsActionRequiredIn30Days.replaceAll('needsIsActionRequiredRequiredIn30Days', '')} AND
+      riskMitigationCheckboxes had one checked was ${isRMChecked}
+    `);
 
     if (showImmediateNeeds) {
       wlForms['immediateNeeds'].inputs['immNeedsRequired'].setValue('immNeedsRequiredyes');
@@ -2073,6 +2105,12 @@ const WaitingListAssessment = (() => {
   
     wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
     tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
+
+    console.log(`
+      Current Needs Visibility Status: ${showCurrentNeeds ? 'Visible' : 'Hidden'},
+      Reason: needsIsActionRequiredIn30Days was ${isNeedsActionRequired.replaceAll('needsIsActionRequiredRequiredIn30Days', '')} AND
+      rMIsActionRequiredIn3oDays was ${isRisksActionRequired.replaceAll('rMIsActionRequiredIn3oDays', '')}
+    `);
   
     if (!showCurrentNeeds) {
       sectionResets['currentNeeds']();
@@ -3406,8 +3444,8 @@ const WaitingListAssessment = (() => {
 
     // Save/Update Queue
     updateQueue = new _UTIL.AsyncQueue('insertUpdateWaitingListValue', maxQueueSize, responses => {
-      console.log('Updates:');
-      console.table(responses);
+      // console.log('Updates:');
+      // console.table(responses);
     });
   }
 
@@ -3428,6 +3466,8 @@ const WaitingListAssessment = (() => {
     initComponents();
     loadPage();
     attachEvents();
+
+    console.clear();
 
     const fundingSources = await getFundingSources();
 
@@ -3454,10 +3494,6 @@ const WaitingListAssessment = (() => {
 
     wlForms['conclusion'].inputs['fundingSourceId'].populate(fundingSources, wlData['conclusion'].fundingSourceId);
 
-    // setConclusionUnmetNeedsReview();
-    // setConclusionWaiverFunded12MonthsReview();
-    // setConclusionDoesNotRequireWaiverReview();
-    // setConclusionNotEligibleForWaiverReview();
     setConclusionReview();
 
     toggleSendEmailDisabledStatus();
