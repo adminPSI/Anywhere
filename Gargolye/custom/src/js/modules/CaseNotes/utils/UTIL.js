@@ -70,7 +70,8 @@
     this.maxQueueSize = maxQueueSize;
     this.onSendComplete = onSendComplete;
 
-    this.queue = [];
+    this.queue = {};
+    this.queueLength = 0;
     this.failedUpdates = [];
     this.isSending = false;
   }
@@ -82,14 +83,10 @@
    * @param {any} newValue - The new value for the input.
    */
   AsyncQueue.prototype.addUpdate = function (updateData) {
-    // let timestamp = new Date();
-    // timestamp = timestamp.now();
+    this.queue[updateData.id] = updateData.data;
+    this.queueLength = Object.keys(this.queue).length;
 
-    // updateData.timestamp = timestamp;
-
-    this.queue.push(updateData);
-
-    if (this.queue.length >= this.maxQueueSize) {
+    if (this.queueLength >= this.maxQueueSize) {
       this.sendUpdates();
     }
   };
@@ -100,14 +97,16 @@
    * @param {boolean} [force=false] - Whether to force sending of updates regardless of the current queue size.
    */
   AsyncQueue.prototype.sendUpdates = async function (forceUpdate = false) {
-    if (this.queue.length === 0 || (this.isSending && !forceUpdate)) {
+    if (this.queueLength === 0 || (this.isSending && !forceUpdate)) {
       this.onSendComplete([]);
       return;
     }
 
     this.isSending = true;
 
-    const updatesToSend = this.queue.splice(0, this.queue.length);
+    const updatesToSend = Object.values(this.queue);
+    this.queue = {};
+    this.queueLength = 0;
 
     const sendPromises = updatesToSend.map(async update => {
       try {
@@ -122,7 +121,7 @@
 
     const results = await Promise.all(sendPromises);
     this.isSending = false;
-    this.onSendComplete(results); // Call the callback with the results
+    this.onSendComplete(results);
   };
 
   /**
@@ -139,8 +138,8 @@
    * Immediately forces sending of all updates in the queue, regardless of queue size.
    */
   AsyncQueue.prototype.forceSendUpdates = function () {
-    if (this.queue.length > 0) {
-      this.sendUpdates(true); // Force sending updates even if the queue hasn't reached the max size
+    if (this.queueLength > 0) {
+      this.sendUpdates(true);
     }
   };
 

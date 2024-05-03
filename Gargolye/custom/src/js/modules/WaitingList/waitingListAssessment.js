@@ -10,6 +10,7 @@ const WaitingListAssessment = (() => {
   let wlDocuments;
   let wlParticipants;
   let maxQueueSize = 5;
+  let deleteQueue;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -1425,25 +1426,16 @@ const WaitingListAssessment = (() => {
       return;
     }
 
-    // updateQueue.addUpdate({
-    //   id: name,
-    //   data: {
-    //     id: formName === 'other' ? wlNeedID : wlFormInfo[formName].id,
-    //     linkId: getLinkIdForInsertUpdate(formName, 'U'),
-    //     propertyName: name,
-    //     value: setAnswerValueForInsertUpdate(value, type),
-    //     valueTwo: '',
-    //     insertOrUpdate: 'U',
-    //   }
-    // });
-
     updateQueue.addUpdate({
-      id: formName === 'other' ? wlNeedID : wlFormInfo[formName].id,
-      linkId: getLinkIdForInsertUpdate(formName, 'U'),
-      propertyName: name,
-      value: setAnswerValueForInsertUpdate(value, type),
-      valueTwo: '',
-      insertOrUpdate: 'U',
+      id: name,
+      data: {
+        id: formName === 'other' ? wlNeedID : wlFormInfo[formName].id,
+        linkId: getLinkIdForInsertUpdate(formName, 'U'),
+        propertyName: name,
+        value: setAnswerValueForInsertUpdate(value, type),
+        valueTwo: '',
+        insertOrUpdate: 'U',
+      }
     });
   }
 
@@ -1982,12 +1974,26 @@ const WaitingListAssessment = (() => {
     });
 
     if (!showPages) {
-      await _UTIL.fetchData('deleteFromWaitingList', {
+      _UTIL.fetchData('deleteFromWaitingList', {
         properties: [
           `${wlFormInfo['behavioral'].id}|${wlFormInfo['behavioral'].dbtable}`,
           `${wlFormInfo['physical'].id}|${wlFormInfo['physical'].dbtable}`,
           `${wlFormInfo['medical'].id}|${wlFormInfo['medical'].dbtable}`,
         ],
+      });
+    }
+  }
+  async function showHideRiskMitigation() {
+    const isNeedsActionRequired = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
+    const showRM = isNeedsActionRequired.includes('no')
+  
+    wlForms['riskMitigation'].form.parentElement.classList.toggle('hiddenPage', !showRM);
+    tocLinks['riskMitigation'].classList.toggle('hiddenPage', !showRM);
+    
+    if (!showRM) {
+      sectionResets['riskMitigation']();
+      _UTIL.fetchData('deleteFromWaitingList', {
+        properties: [`${wlFormInfo['riskMitigation'].id}|${wlFormInfo['riskMitigation'].dbtable}`],
       });
     }
   }
@@ -2011,13 +2017,26 @@ const WaitingListAssessment = (() => {
     });
 
     if (!icfAnyNo) {
-      await _UTIL.fetchData('deleteFromWaitingList', {
+      _UTIL.fetchData('deleteFromWaitingList', {
         properties: [
           `${wlFormInfo['intermittentSupports'].id}|${wlFormInfo['intermittentSupports'].dbtable}`,
           `${wlFormInfo['childProtectionAgency'].id}|${wlFormInfo['childProtectionAgency'].dbtable}`,
           `${wlFormInfo['adultDayEmployment'].id}|${wlFormInfo['adultDayEmployment'].dbtable}`,
           `${wlFormInfo['dischargePlan'].id}|${wlFormInfo['dischargePlan'].dbtable}`,
         ],
+      });
+    }
+  }
+  async function showHideICFDischarge() {
+    const isRisksActionRequired = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
+    const showICF = isRisksActionRequired.includes('no');
+  
+    wlForms['icfDischarge'].form.parentElement.classList.toggle('hiddenPage', !showICF);
+    tocLinks['icfDischarge'].classList.toggle('hiddenPage', !showICF);
+    if (!showICF) {
+      sectionResets['icfDischarge']();
+      _UTIL.fetchData('deleteFromWaitingList', {
+        properties: [`${wlFormInfo['icfDischarge'].id}|${wlFormInfo['icfDischarge'].dbtable}`],
       });
     }
   }
@@ -2042,8 +2061,23 @@ const WaitingListAssessment = (() => {
       });
     } else {
       sectionResets['immediateNeeds']();
-      await _UTIL.fetchData('deleteFromWaitingList', {
+      _UTIL.fetchData('deleteFromWaitingList', {
         properties: [`${wlFormInfo['immediateNeeds'].id}|${wlFormInfo['immediateNeeds'].dbtable}`],
+      });
+    }
+  }
+  async function showHideCurrentNeeds() {
+    const isNeedsActionRequired = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
+    const isRisksActionRequired = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
+    const showCurrentNeeds = isNeedsActionRequired.includes('no') || isRisksActionRequired.includes('no');
+  
+    wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
+    tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
+  
+    if (!showCurrentNeeds) {
+      sectionResets['currentNeeds']();
+      _UTIL.fetchData('deleteFromWaitingList', {
+        properties: [`${wlFormInfo['currentNeeds'].id}|${wlFormInfo['currentNeeds'].dbtable}`],
       });
     }
   }
@@ -2119,16 +2153,9 @@ const WaitingListAssessment = (() => {
     updateFormCompletionStatus('other');
 
     if (!needsIsActionEnabled) {
-      await _UTIL.fetchData('deleteFromWaitingList', {
+      _UTIL.fetchData('deleteFromWaitingList', {
         properties: [`${wlFormInfo['other'].id}|${wlFormInfo['other'].dbtable}`],
       });
-
-      // await insertUpdateAssessmentData({
-      //   value: '',
-      //   name: 'needsIsActionRequiredRequiredIn30Days',
-      //   type: 'radio',
-      //   formName: 'other',
-      // });
     }
   }
   //--------------------------------------------------
@@ -2725,12 +2752,11 @@ const WaitingListAssessment = (() => {
     //* other
     needsIsActionRequiredRequiredIn30Days: async ({ value }) => {
       const isNeedsActionRequiredYes = value === 'yes';
-      const isRisksActionRequired = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
-      const showCurrentNeeds = !isNeedsActionRequiredYes || isRisksActionRequired.includes('no');
 
       wlForms['other'].inputs['needsIsContinuousSupportRequired'].toggleDisabled(isNeedsActionRequiredYes);
       if (isNeedsActionRequiredYes) {
         wlForms['other'].inputs['needsIsContinuousSupportRequired'].setValue('');
+
         await insertUpdateAssessmentData({
           value: 'no',
           name: 'needsIsContinuousSupportRequired',
@@ -2739,25 +2765,9 @@ const WaitingListAssessment = (() => {
         });
       }
 
-      wlForms['riskMitigation'].form.parentElement.classList.toggle('hiddenPage', isNeedsActionRequiredYes);
-      tocLinks['riskMitigation'].classList.toggle('hiddenPage', isNeedsActionRequiredYes);
-      if (isNeedsActionRequiredYes) {
-        sectionResets['riskMitigation']();
-        await _UTIL.fetchData('deleteFromWaitingList', {
-          properties: [`${wlFormInfo['riskMitigation'].id}|${wlFormInfo['riskMitigation'].dbtable}`],
-        });
-      }
-
-      wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
-      tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
-      if (!showCurrentNeeds) {
-        sectionResets['currentNeeds']();
-        await _UTIL.fetchData('deleteFromWaitingList', {
-          properties: [`${wlFormInfo['currentNeeds'].id}|${wlFormInfo['currentNeeds'].dbtable}`],
-        });
-      }
-
+      await showHideRiskMitigation();
       await showHideImmediateNeeds();
+      await showHideCurrentNeeds();
     },
     needsIsContinuousSupportRequired: async () => {
       await currentNeedsDetermination();
@@ -2774,15 +2784,6 @@ const WaitingListAssessment = (() => {
         wlForms['riskMitigation'].inputs['rMdescription'].setValue('');
         wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
         wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue('rMIsSupportNeededno');
-
-        wlForms['icfDischarge'].form.parentElement.classList.toggle('hiddenPage', true);
-        tocLinks['icfDischarge'].classList.toggle('hiddenPage', true);
-        wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', true);
-        tocLinks['currentNeeds'].classList.toggle('hiddenPage', true);
-
-        
-        sectionResets['icfDischarge']();
-        sectionResets['currentNeeds']();
 
         await insertUpdateAssessmentData({
           value: '',
@@ -2803,13 +2804,6 @@ const WaitingListAssessment = (() => {
           name: 'rMIsActionRequiredIn3oDays',
           type: 'radio',
           formName: 'riskMitigation',
-        });
-
-        await _UTIL.fetchData('deleteFromWaitingList', {
-          properties: [
-            `${wlFormInfo['icfDischarge'].id}|${wlFormInfo['icfDischarge'].dbtable}`, 
-            `${wlFormInfo['currentNeeds'].id}|${wlFormInfo['currentNeeds'].dbtable}`
-          ],
         });
       }
 
@@ -2843,33 +2837,13 @@ const WaitingListAssessment = (() => {
         }
       });
 
+      await showHideICFDischarge();
       await showHideImmediateNeeds();
+      await showHideCurrentNeeds();
     },
     rMIsActionRequiredIn3oDays: async ({ value }) => {
       const isRisksActionRequired = value;
-      const isNeedsActionRequired = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
-      const showCurrentNeeds = isRisksActionRequired.includes('no') || isNeedsActionRequired.includes('no');
-      const showICF = isRisksActionRequired.includes('no');
       const inputId = isRisksActionRequired.includes('yes') ? 'rMIsSupportNeededyes' : 'rMIsSupportNeededno';
-
-      // Hide/Show Sections
-      wlForms['icfDischarge'].form.parentElement.classList.toggle('hiddenPage', !showICF);
-      tocLinks['icfDischarge'].classList.toggle('hiddenPage', !showICF);
-      if (!showICF) {
-        sectionResets['icfDischarge']();
-        await _UTIL.fetchData('deleteFromWaitingList', {
-          properties: [`${wlFormInfo['icfDischarge'].id}|${wlFormInfo['icfDischarge'].dbtable}`],
-        });
-      }
-
-      wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
-      tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
-      if (!showCurrentNeeds) {
-        sectionResets['currentNeeds']();
-        await _UTIL.fetchData('deleteFromWaitingList', {
-          properties: [`${wlFormInfo['currentNeeds'].id}|${wlFormInfo['currentNeeds'].dbtable}`],
-        });
-      }
 
       // Set Input
       wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue(inputId);
@@ -2880,7 +2854,9 @@ const WaitingListAssessment = (() => {
         formName: 'riskMitigation',
       });
 
+      await showHideICFDischarge();
       await showHideImmediateNeeds();
+      await showHideCurrentNeeds();
     },
     //* icfDischarge
     icfIsICFResident: async ({ value }) => {
@@ -2999,7 +2975,7 @@ const WaitingListAssessment = (() => {
         toggleTocLinksDisabledStatus(['contributingCircumstances', 'needs'], true);
 
         if (formsToDelete.length) {
-          await _UTIL.fetchData('deleteFromWaitingList', { properties: formsToDelete });
+          _UTIL.fetchData('deleteFromWaitingList', { properties: formsToDelete });
           wlCircID = '';
           wlNeedID = '';
         }
