@@ -1922,12 +1922,15 @@ const WaitingListAssessment = (() => {
     const WaiverEnrollRequired = wlData.waiverEnrollment.waivEnrollWaiverEnrollmentIsRequired;
     const UnmetNeedsHas = wlData.currentNeeds.unmetNeedsHas;
     const UnmetNeedsSupports = wlData.currentNeeds.unmetNeedsSupports;
+    
+    console.log(`Conclusion: calculating answer.....`);
 
     if (!conditionPageAllYes) {
       wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(false);
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
       wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(false);
       wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(true);
+      console.log(`Conclusion: set to NotEligibleForWaiver, Reason: not all conditions questions were yes`);
       return;
     }
 
@@ -1936,6 +1939,7 @@ const WaitingListAssessment = (() => {
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
       wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(true);
       wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(false);
+      console.log(`Conclusion: set to DoesNotRequireWaiver, Reason: all conditions questions were yes AND WaiverEnrollmentIsRequired was no`);
       return;
     }
 
@@ -1944,10 +1948,12 @@ const WaitingListAssessment = (() => {
 
     if (ImmNeedsRequired.includes('yes')) {
       wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(true);
+      console.log(`Conclusion: set to UnmetNeeds, Reason: all conditions questions were yes AND WaiverEnrollmentIsRequired was yes AND immNeedsRequired was YES`);
     }
 
     if (UnmetNeedsHas.includes('yes') && UnmetNeedsSupports.includes('yes')) {
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(true);
+      console.log(`Conclusion: set to DoesNotRequireWaiver, Reason: all conditions questions were yes  WaiverEnrollmentIsRequired was yes AND unmetNeedsHas was yes AND unmetNeedsSupports was yes`);
     }
   }
 
@@ -2380,11 +2386,14 @@ const WaitingListAssessment = (() => {
     const isUnmetNeedsHas = wlForms['currentNeeds'].inputs['unmetNeedsHas'].getValue();
     const isUnmetNeedsSupports = wlForms['currentNeeds'].inputs['unmetNeedsSupports'].getValue();
 
+    console.log(`Conclusion: calculating answer.....`);
+
     if (!conditionPageAllYes) {
       wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(false);
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
       wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(false);
       wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(true);
+      console.log(`Conclusion: set to NotEligibleForWaiver, Reason: not all conditions questions were yes`);
       return;
     }
 
@@ -2393,6 +2402,7 @@ const WaitingListAssessment = (() => {
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
       wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(true);
       wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(false);
+      console.log(`Conclusion: set to DoesNotRequireWaiver, Reason: all conditions questions were yes AND WaiverEnrollmentIsRequired was no`);
       return;
     }
 
@@ -2401,12 +2411,14 @@ const WaitingListAssessment = (() => {
 
     if (isImmNeedsRequired.includes('yes')) {
       wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(true);
+      console.log(`Conclusion: set to UnmetNeeds, Reason: all conditions questions were yes AND WaiverEnrollmentIsRequired was yes AND immNeedsRequired was YES`);
     } else {
       wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(false);
     }
 
     if (isUnmetNeedsHas.includes('yes') && isUnmetNeedsSupports.includes('yes')) {
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(true);
+      console.log(`Conclusion: set to DoesNotRequireWaiver, Reason: all conditions questions were yes  WaiverEnrollmentIsRequired was yes AND unmetNeedsHas was yes AND unmetNeedsSupports was yes`);
     } else {
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
     }
