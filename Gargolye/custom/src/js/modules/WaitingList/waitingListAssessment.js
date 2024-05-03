@@ -1703,7 +1703,7 @@ const WaitingListAssessment = (() => {
     }
 
     if (
-      (!isRMActionRequiredYes && wlData.riskMitigation.rMIsActionRequiredIn3oDays !== '') ||
+      (!isRMActionRequiredYes && wlData.riskMitigation.rMIsActionRequiredIn3oDays !== '') &&
       (!isNeedActionRequiredYes && wlData.other.needsIsActionRequiredRequiredIn30Days !== '')
     ) {
       wlForms['currentNeeds'].form.parentElement.classList.remove('hiddenPage');
@@ -1714,7 +1714,6 @@ const WaitingListAssessment = (() => {
     const isCountyBoardInvestigationChecked = wlData.riskMitigation.rMIsCountyBoardInvestigation;
     const isLawEnforcementInvestigationChecked = wlData.riskMitigation.rMIsLawEnforcementInvestigation;
     const isOtherInvestigationChecked = wlData.riskMitigation.rMIsOtherInvestigation;
-    const isNeedsActionRequiredIn30Days = wlData.other.needsIsActionRequiredRequiredIn30Days;
 
     if (
       ((isAdultProtectiveServiceInvestigationChecked ||
@@ -1974,8 +1973,8 @@ const WaitingListAssessment = (() => {
 
       console.log(`
         ${_UTIL.convertCamelCaseToTitle(page)} Visibility Status: ${showPages ? 'Visible' : 'Hidden'},
-        Reason: isPrimaryCaregiverUnavailable was ${isPrimaryCaregiverUnavailable.replaceAll('isPrimaryCaregiverUnavailable', '')} 
-        AND isActionRequiredIn30Days was ${isActionRequiredIn30Days.replaceAll('isActionRequiredIn30Days', '')}
+        Reason: isPrimaryCaregiverUnavailable was ${isPrimaryCaregiverUnavailable ? isPrimaryCaregiverUnavailable.replaceAll('isPrimaryCaregiverUnavailable', '') : 'n/a'} 
+        AND isActionRequiredIn30Days was ${isActionRequiredIn30Days ? isActionRequiredIn30Days.replaceAll('isActionRequiredIn30Days', '') : 'n/a'}
       `);
 
       if (!showPages) {
@@ -2004,7 +2003,7 @@ const WaitingListAssessment = (() => {
 
     console.log(`
       Risk Mitigation Visibility Status: ${showRM ? 'Visible' : 'Hidden'},
-      Reason: needsIsActionRequiredIn30Days was ${isNeedsActionRequired.replaceAll('needsIsActionRequiredRequiredIn30Days', '')}
+      Reason: needsIsActionRequiredIn30Days was ${isNeedsActionRequired ? isNeedsActionRequired.replaceAll('needsIsActionRequiredRequiredIn30Days', '') : 'n/a'}
     `);
     
     if (!showRM) {
@@ -2029,9 +2028,9 @@ const WaitingListAssessment = (() => {
 
       console.log(`
         ${_UTIL.convertCamelCaseToTitle(page)} Visibility Status: ${showICF ? 'Visible' : 'Hidden'},
-        Reason: icfIsNoticeIssued was ${icfIsNoticeIssued.replaceAll('icfIsNoticeIssued', '')} AND
-        icfIsICFResident was ${icfIsICFResident.replaceAll('icfIsICFResident', '')} AND
-        icfIsActionRequiredIn30Days was ${icfIsActionRequiredIn30Days.replaceAll('icfIsActionRequiredIn30Days', '')} AND
+        Reason: icfIsNoticeIssued was ${icfIsNoticeIssued ? icfIsNoticeIssued.replaceAll('icfIsNoticeIssued', '') : 'n/a'} AND
+        icfIsICFResident was ${icfIsICFResident ? icfIsICFResident.replaceAll('icfIsICFResident', '') : 'n/a'} AND
+        icfIsActionRequiredIn30Days was ${icfIsActionRequiredIn30Days ? icfIsActionRequiredIn30Days.replaceAll('icfIsActionRequiredIn30Days', '') : 'n/a'} AND
       `);
 
       if (!icfAnyNo) {
@@ -2061,7 +2060,7 @@ const WaitingListAssessment = (() => {
 
     console.log(`
       ICF Discharge Visibility Status: ${showICF ? 'Visible' : 'Hidden'},
-      Reason: rMIsActionRequiredIn3oDays was ${isRisksActionRequired.replaceAll('rMIsActionRequiredIn3oDays', '')}
+      Reason: rMIsActionRequiredIn3oDays was ${isRisksActionRequired ? isRisksActionRequired.replaceAll('rMIsActionRequiredIn3oDays', '') : 'n/a'}
     `);
 
     if (!showICF) {
@@ -2084,8 +2083,8 @@ const WaitingListAssessment = (() => {
 
     console.log(
       `Immediate Needs Visibility Status: ${showImmediateNeeds ? 'Visible' : 'Hidden'},
-      Reason: rMIsActionRequiredIn3oDays was ${isRMActionRequiredIn3oDays.replaceAll('rMIsActionRequiredIn3oDays', '')} AND
-      needsIsActionRequiredIn30Days was ${isNeedsActionRequiredIn30Days.replaceAll('needsIsActionRequiredRequiredIn30Days', '')} AND
+      Reason: rMIsActionRequiredIn3oDays was ${isRMActionRequiredIn3oDays ? isRMActionRequiredIn3oDays.replaceAll('rMIsActionRequiredIn3oDays', '') : 'n/a'} AND
+      needsIsActionRequiredIn30Days was ${isNeedsActionRequiredIn30Days ? isNeedsActionRequiredIn30Days.replaceAll('needsIsActionRequiredRequiredIn30Days', '') : 'n/a'} AND
       riskMitigationCheckboxes had one checked was ${isRMChecked}
     `);
 
@@ -2107,15 +2106,15 @@ const WaitingListAssessment = (() => {
   async function showHideCurrentNeeds() {
     const isNeedsActionRequired = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
     const isRisksActionRequired = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
-    const showCurrentNeeds = isNeedsActionRequired.includes('no') || isRisksActionRequired.includes('no');
+    const showCurrentNeeds = isNeedsActionRequired.includes('no') && isRisksActionRequired.includes('no');
   
     wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
     tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
 
     console.log(`
       Current Needs Visibility Status: ${showCurrentNeeds ? 'Visible' : 'Hidden'},
-      Reason: needsIsActionRequiredIn30Days was ${isNeedsActionRequired.replaceAll('needsIsActionRequiredRequiredIn30Days', '')} AND
-      rMIsActionRequiredIn3oDays was ${isRisksActionRequired.replaceAll('rMIsActionRequiredIn3oDays', '')}
+      Reason: needsIsActionRequiredIn30Days was ${isNeedsActionRequired ? isNeedsActionRequired.replaceAll('needsIsActionRequiredRequiredIn30Days', '') : 'n/a'} AND
+      rMIsActionRequiredIn3oDays was ${isRisksActionRequired ? isRisksActionRequired.replaceAll('rMIsActionRequiredIn3oDays', '') : 'n/a'}
     `);
   
     if (!showCurrentNeeds) {
@@ -2804,11 +2803,12 @@ const WaitingListAssessment = (() => {
       const isNeedsActionRequiredYes = value === 'yes';
 
       wlForms['other'].inputs['needsIsContinuousSupportRequired'].toggleDisabled(isNeedsActionRequiredYes);
+
       if (isNeedsActionRequiredYes) {
         wlForms['other'].inputs['needsIsContinuousSupportRequired'].setValue('');
 
         await insertUpdateAssessmentData({
-          value: 'no',
+          value: '',
           name: 'needsIsContinuousSupportRequired',
           type: 'radio',
           formName: 'other',
@@ -2830,10 +2830,29 @@ const WaitingListAssessment = (() => {
       wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(!hasCheck);
       wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!hasCheck);
 
+      if (isNotAppChecked) {
+        wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('rMIsActionRequiredIn3oDaysno');
+        await insertUpdateAssessmentData({
+          value: 'no',
+          name: 'rMIsActionRequiredIn3oDays',
+          type: 'radio',
+          formName: 'riskMitigation',
+        });
+      }
+
       if (!hasCheck) {
         wlForms['riskMitigation'].inputs['rMdescription'].setValue('');
-        wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
         wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue('rMIsSupportNeededno');
+
+        if (!isNotAppChecked) {
+          wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
+          await insertUpdateAssessmentData({
+            value: '',
+            name: 'rMIsActionRequiredIn3oDays',
+            type: 'radio',
+            formName: 'riskMitigation',
+          });
+        }
 
         await insertUpdateAssessmentData({
           value: '',
@@ -2846,13 +2865,6 @@ const WaitingListAssessment = (() => {
           value: '',
           name: 'rMdescription',
           type: 'text',
-          formName: 'riskMitigation',
-        });
-
-        await insertUpdateAssessmentData({
-          value: 'no',
-          name: 'rMIsActionRequiredIn3oDays',
-          type: 'radio',
           formName: 'riskMitigation',
         });
       }
