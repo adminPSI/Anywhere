@@ -258,8 +258,11 @@ const csTeamMember = (() => {
       $.session.areInSalesForce === true
     ) {
      //   if (selectedStateGuardianSalesForceId === '') selectedStateGuardianSalesForceId = selectedMemberData.salesForceId;
+     if (isNew) {
       var continueGuardianSave = await continueSaveofGuardianTeamMember();
       if (!continueGuardianSave) return;
+     }
+     
     }
 
     teamMemberPopup.style.display = 'none';
@@ -353,7 +356,7 @@ const csTeamMember = (() => {
           }, 2000);
         }
       }
-    } else {
+    } else {  //edit
       await planConsentAndSign.updateTeamMember(selectedMemberData);
       success = true;
 
