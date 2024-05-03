@@ -1952,7 +1952,12 @@ const WaitingListAssessment = (() => {
 
     if (UnmetNeedsHas.includes('yes') && UnmetNeedsSupports.includes('yes')) {
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(true);
-      console.log(`Conclusion: set to DoesNotRequireWaiver, Reason: all conditions questions were yes  WaiverEnrollmentIsRequired was yes AND unmetNeedsHas was yes AND unmetNeedsSupports was yes`);
+      console.log(`Conclusion: set to WaiverFunded12Months, Reason: all conditions questions were yes  WaiverEnrollmentIsRequired was yes AND unmetNeedsHas was yes AND unmetNeedsSupports was yes`);
+    } 
+    
+    if (UnmetNeedsHas.includes('no') || UnmetNeedsSupports.includes('no')) {
+      wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(true);
+      console.log(`Conclusion: set to DoesNotRequireWaiver, Reason: all conditions questions were yes WaiverEnrollmentIsRequired was yes AND either unmetNeedsHas was no OR unmetNeedsSupports was no`);
     }
   }
 
@@ -2418,10 +2423,12 @@ const WaitingListAssessment = (() => {
     if (isUnmetNeedsHas.includes('yes') && isUnmetNeedsSupports.includes('yes')) {
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(true);
       wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(false);
-      console.log(`Conclusion: set to DoesNotRequireWaiver, Reason: all conditions questions were yes  WaiverEnrollmentIsRequired was yes AND unmetNeedsHas was yes AND unmetNeedsSupports was yes`);
-    } else {
+      console.log(`Conclusion: set to WaiverFunded12Months, Reason: all conditions questions were yes WaiverEnrollmentIsRequired was yes AND unmetNeedsHas was yes AND unmetNeedsSupports was yes`);
+    } 
+    if (isUnmetNeedsHas.includes('no') || isUnmetNeedsSupports.includes('no')) {
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
       wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(true);
+      console.log(`Conclusion: set to DoesNotRequireWaiver, Reason: all conditions questions were yes WaiverEnrollmentIsRequired was yes AND either unmetNeedsHas was no OR unmetNeedsSupports was no`);
     }
   }
   //--------------------------------------------------
