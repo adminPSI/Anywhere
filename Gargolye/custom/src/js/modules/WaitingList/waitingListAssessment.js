@@ -2027,7 +2027,7 @@ const WaitingListAssessment = (() => {
       tocLinks[page].classList.toggle('hiddenPage', !icfAnyNo);
 
       console.log(`
-        ${_UTIL.convertCamelCaseToTitle(page)} Visibility Status: ${showICF ? 'Visible' : 'Hidden'},
+        ${_UTIL.convertCamelCaseToTitle(page)} Visibility Status: ${icfAnyNo ? 'Visible' : 'Hidden'},
         Reason: icfIsNoticeIssued was ${icfIsNoticeIssued ? icfIsNoticeIssued.replaceAll('icfIsNoticeIssued', '') : 'n/a'} AND
         icfIsICFResident was ${icfIsICFResident ? icfIsICFResident.replaceAll('icfIsICFResident', '') : 'n/a'} AND
         icfIsActionRequiredIn30Days was ${icfIsActionRequiredIn30Days ? icfIsActionRequiredIn30Days.replaceAll('icfIsActionRequiredIn30Days', '') : 'n/a'} AND
@@ -2417,9 +2417,11 @@ const WaitingListAssessment = (() => {
 
     if (isUnmetNeedsHas.includes('yes') && isUnmetNeedsSupports.includes('yes')) {
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(true);
+      wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(false);
       console.log(`Conclusion: set to DoesNotRequireWaiver, Reason: all conditions questions were yes  WaiverEnrollmentIsRequired was yes AND unmetNeedsHas was yes AND unmetNeedsSupports was yes`);
     } else {
       wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
+      wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(true);
     }
   }
   //--------------------------------------------------
