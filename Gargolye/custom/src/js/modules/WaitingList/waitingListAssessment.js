@@ -3129,6 +3129,7 @@ const WaitingListAssessment = (() => {
   function attachEvents() {
     sendEmailButton.onClick(async () => {
       sendEmailPopup.show();
+      updateQueue.forceSendUpdates();
     });
     sendEmailForm.onSubmit(async (data, submitter) => {
       let resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
@@ -3188,6 +3189,7 @@ const WaitingListAssessment = (() => {
 
     documentsButton.onClick(() => {
       documentsPopup.show();
+      updateQueue.forceSendUpdates();
     });
     documentsForm.onSubmit(async (data, submitter, formId) => {
       const attachDetails = await _DOM.getAttachmentDetails(data['test']);
