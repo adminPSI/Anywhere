@@ -137,9 +137,9 @@
   /**
    * Immediately forces sending of all updates in the queue, regardless of queue size.
    */
-  AsyncQueue.prototype.forceSendUpdates = function () {
+  AsyncQueue.prototype.forceSendUpdates = async function () {
     if (this.queueLength > 0) {
-      this.sendUpdates(true);
+      await this.sendUpdates(true);
     }
   };
 

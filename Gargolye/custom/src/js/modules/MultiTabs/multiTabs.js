@@ -73,6 +73,7 @@ function autoLogout() {
       // Reset idleTime to zero when there's user activity in other tabs
       idleTime = 0;
     } else if (message.type === 'buttonClick') {
+      unloadApp($.loadedApp);
       setCookieOnFail('');
     } else if (message.type === 'newTab') {
       const element = document.getElementById('newTabsPopup');
@@ -111,6 +112,7 @@ function autoLogout() {
 }
 
 function handleLogoutButtonClick() {
+    unloadApp($.loadedApp);
     setCookieOnFail('');
 
     // Broadcast the button click event to other tabs

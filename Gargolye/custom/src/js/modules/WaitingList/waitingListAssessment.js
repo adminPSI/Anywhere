@@ -1223,8 +1223,8 @@ const WaitingListAssessment = (() => {
 
   // UTILS
   //--------------------------------------------------
-  function unload() {
-    updateQueue.forceSendUpdates();
+  async function unload() {
+    await updateQueue.forceSendUpdates();
 
     selectedConsumer = undefined;
     wlData = undefined;
@@ -1672,10 +1672,19 @@ const WaitingListAssessment = (() => {
     tocLinks['waiverEnrollment'].classList.remove('hiddenPage');
     tocLinks['currentAvailableServices'].classList.remove('hiddenPage');
 
-    const isActionRequiredIn30DaysNo = wlData.primaryCaregiver.isActionRequiredIn30Days.includes('no');
-    const isPrimaryCaregiverUnavailableYes = wlData.primaryCaregiver.isPrimaryCaregiverUnavailable.includes('yes');
+    const pgActionRequiredIn30Days = wlData.primaryCaregiver.isActionRequiredIn30Days;
+    const pgUnavailable = wlData.primaryCaregiver.isPrimaryCaregiverUnavailable;
+    const needOtherActionRequired = wlData.other.needsIsActionRequiredRequiredIn30Days;
+    const rmActionRequired = wlData.riskMitigation.rMIsActionRequiredIn3oDays;
+    const icfIsICFResident = wlData.icfDischarge.icfIsICFResident;
+    const icfIsNoticeIssued = wlData.icfDischarge.icfIsNoticeIssued;
+    const icfIsActionRequiredIn30Days = wlData.icfDischarge.icfIsActionRequiredIn30Days;
+    const isAdultProtectiveServiceInvestigationChecked = wlData.riskMitigation.rMIsAdultProtectiveServiceInvestigation;
+    const isCountyBoardInvestigationChecked = wlData.riskMitigation.rMIsCountyBoardInvestigation;
+    const isLawEnforcementInvestigationChecked = wlData.riskMitigation.rMIsLawEnforcementInvestigation;
+    const isOtherInvestigationChecked = wlData.riskMitigation.rMIsOtherInvestigation;
 
-    if (isActionRequiredIn30DaysNo && isPrimaryCaregiverUnavailableYes) {
+    if (pgActionRequiredIn30Days.includes('no') && pgUnavailable.includes('yes')) {
       needsWrap.classList.remove('hiddenPage');
       wlForms['behavioral'].form.parentElement.classList.remove('hiddenPage');
       wlForms['physical'].form.parentElement.classList.remove('hiddenPage');
@@ -1686,52 +1695,38 @@ const WaitingListAssessment = (() => {
       tocLinks['medical'].classList.remove('hiddenPage');
     }
 
-    const isNeedActionRequiredYes = wlData.other.needsIsActionRequiredRequiredIn30Days.includes('yes');
-    const isNeedActionRequiredNo = wlData.other.needsIsActionRequiredRequiredIn30Days.includes('no');
-
-    if (isNeedActionRequiredNo) {
+    if (needOtherActionRequired.includes('no')) {
       wlForms['riskMitigation'].form.parentElement.classList.remove('hiddenPage');
       tocLinks['riskMitigation'].classList.remove('hiddenPage');
     }
-
-    const isRMActionRequiredNo = wlData.riskMitigation.rMIsActionRequiredIn3oDays.includes('no');
-    const isRMActionRequiredYes = wlData.riskMitigation.rMIsActionRequiredIn3oDays.includes('yes');
-
-    if (isRMActionRequiredNo) {
+   
+    if (rmActionRequired.includes('no')) {
       wlForms['icfDischarge'].form.parentElement.classList.remove('hiddenPage');
       tocLinks['icfDischarge'].classList.remove('hiddenPage');
     }
 
     if (
-      (!isRMActionRequiredYes && wlData.riskMitigation.rMIsActionRequiredIn3oDays !== '') &&
-      (!isNeedActionRequiredYes && wlData.other.needsIsActionRequiredRequiredIn30Days !== '')
+      (rmActionRequired.includes('no') && wlData.riskMitigation.rMIsActionRequiredIn3oDays !== '') &&
+      (needOtherActionRequired.includes('no') && wlData.other.needsIsActionRequiredRequiredIn30Days !== '')
     ) {
       wlForms['currentNeeds'].form.parentElement.classList.remove('hiddenPage');
       tocLinks['currentNeeds'].classList.remove('hiddenPage');
     }
-
-    const isAdultProtectiveServiceInvestigationChecked = wlData.riskMitigation.rMIsAdultProtectiveServiceInvestigation;
-    const isCountyBoardInvestigationChecked = wlData.riskMitigation.rMIsCountyBoardInvestigation;
-    const isLawEnforcementInvestigationChecked = wlData.riskMitigation.rMIsLawEnforcementInvestigation;
-    const isOtherInvestigationChecked = wlData.riskMitigation.rMIsOtherInvestigation;
 
     if (
       ((isAdultProtectiveServiceInvestigationChecked ||
         isCountyBoardInvestigationChecked ||
         isLawEnforcementInvestigationChecked ||
         isOtherInvestigationChecked) &&
-        isRMActionRequiredYes) ||
-      isNeedActionRequiredYes
+        rmActionRequired.includes('yes')) ||
+        needOtherActionRequired.includes('yes') ||
+        pgActionRequiredIn30Days.includes('yes')
     ) {
       wlForms['immediateNeeds'].form.parentElement.classList.remove('hiddenPage');
       tocLinks['immediateNeeds'].classList.remove('hiddenPage');
     }
 
-    const icfIsICFResident = wlData.icfDischarge.icfIsICFResident.includes('no');
-    const icfIsNoticeIssued = wlData.icfDischarge.icfIsNoticeIssued.includes('no');
-    const icfIsActionRequiredIn30Days = wlData.icfDischarge.icfIsActionRequiredIn30Days.includes('no');
-
-    if (icfIsICFResident || icfIsNoticeIssued || icfIsActionRequiredIn30Days) {
+    if (icfIsICFResident.includes('no') || icfIsNoticeIssued.includes('no') || icfIsActionRequiredIn30Days.includes('no')) {
       ['intermittentSupports', 'childProtectionAgency', 'adultDayEmployment', 'dischargePlan'].forEach(page => {
         wlForms[page].form.parentElement.classList.remove('hiddenPage');
         tocLinks[page].classList.remove('hiddenPage');
@@ -2079,8 +2074,9 @@ const WaitingListAssessment = (() => {
     const isRMChecked = isAnyCheckboxCheckedRiskMitigation();
     const isRMActionRequiredIn3oDays = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
     const isNeedsActionRequiredIn30Days = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
+    const isPGActionRequiredIn30Days = wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].getValue();
     const showImmediateNeeds =
-      isNeedsActionRequiredIn30Days.includes('yes') || (isRMActionRequiredIn3oDays.includes('yes') && isRMChecked);
+      isNeedsActionRequiredIn30Days.includes('yes') || (isRMActionRequiredIn3oDays.includes('yes') && isRMChecked) || isPGActionRequiredIn30Days.includes('yes');
 
     wlForms['immediateNeeds'].form.parentElement.classList.toggle('hiddenPage', !showImmediateNeeds);
     tocLinks['immediateNeeds'].classList.toggle('hiddenPage', !showImmediateNeeds);
@@ -2499,7 +2495,7 @@ const WaitingListAssessment = (() => {
         wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].toggleDisabled(true);
 
         await insertUpdateAssessmentData({
-          value: 'no',
+          value: '',
           name: 'isIndividualSkillsDeclined',
           type: 'radio',
           formName: 'primaryCaregiver',
@@ -2847,21 +2843,19 @@ const WaitingListAssessment = (() => {
           type: 'radio',
           formName: 'riskMitigation',
         });
+      } else {
+        wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
+        await insertUpdateAssessmentData({
+          value: '',
+          name: 'rMIsActionRequiredIn3oDays',
+          type: 'radio',
+          formName: 'riskMitigation',
+        });
       }
 
       if (!hasCheck) {
         wlForms['riskMitigation'].inputs['rMdescription'].setValue('');
         wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue('rMIsSupportNeededno');
-
-        if (!isNotAppChecked) {
-          wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
-          await insertUpdateAssessmentData({
-            value: '',
-            name: 'rMIsActionRequiredIn3oDays',
-            type: 'radio',
-            formName: 'riskMitigation',
-          });
-        }
 
         await insertUpdateAssessmentData({
           value: '',
@@ -3129,7 +3123,7 @@ const WaitingListAssessment = (() => {
   function attachEvents() {
     sendEmailButton.onClick(async () => {
       sendEmailPopup.show();
-      updateQueue.forceSendUpdates();
+      await updateQueue.forceSendUpdates();
     });
     sendEmailForm.onSubmit(async (data, submitter) => {
       let resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
@@ -3187,9 +3181,9 @@ const WaitingListAssessment = (() => {
       sendEmailPopup.close();
     });
 
-    documentsButton.onClick(() => {
+    documentsButton.onClick(async () => {
       documentsPopup.show();
-      updateQueue.forceSendUpdates();
+      await updateQueue.forceSendUpdates();
     });
     documentsForm.onSubmit(async (data, submitter, formId) => {
       const attachDetails = await _DOM.getAttachmentDetails(data['test']);
