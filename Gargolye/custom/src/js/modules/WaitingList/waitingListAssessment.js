@@ -2515,6 +2515,7 @@ const WaitingListAssessment = (() => {
       }
 
       await showHideNeedsPages();
+      await showHideImmediateNeeds();
       await currentNeedsDetermination();
     },
     isActionRequiredIn30Days: async ({ value }) => {
@@ -2540,6 +2541,7 @@ const WaitingListAssessment = (() => {
       }
 
       await showHideNeedsPages();
+      await showHideImmediateNeeds();
       await currentNeedsDetermination();
     },
     isIndividualSkillsDeclined: async ({ value }) => {
