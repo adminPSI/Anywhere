@@ -653,11 +653,12 @@
             }
 
             _UTIL.connectionWatch();
-            
+
             if (
                 $.session.UserId !== 'ash' &&
                 $.session.UserId !== 'mike' &&
-                $.session.UserId !== 'jmeyer'
+                $.session.UserId !== 'jmeyer' &&
+                $.session.UserId !== 'erick'
             ) {
                 autoLogout();
             }
