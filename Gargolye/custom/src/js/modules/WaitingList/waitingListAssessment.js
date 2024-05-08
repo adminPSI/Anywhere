@@ -2310,6 +2310,8 @@ const WaitingListAssessment = (() => {
     await currentNeedsDetermination();
   }
   async function currentNeedsDetermination() {
+    if (tocLinks['currentNeeds'].classList.contains('hiddenPage')) return;
+
     const isPrimaryCaregiverUnavailable =
       wlForms['primaryCaregiver'].inputs['isPrimaryCaregiverUnavailable'].getValue();
     const isActionRequiredIn30Days = wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].getValue();
@@ -2409,22 +2411,26 @@ const WaitingListAssessment = (() => {
     wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(false);
     wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(false);
 
-    if (isImmNeedsRequired.includes('yes')) {
-      wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(true);
-      console.log(`Conclusion: set to UnmetNeeds, Reason: all conditions questions were yes AND WaiverEnrollmentIsRequired was yes AND immNeedsRequired was YES`);
-    } else {
-      wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(false);
+    if (!tocLinks['immediateNeeds'].classList.contains('hiddenPage')) {
+      if (isImmNeedsRequired.includes('yes')) {
+        wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(true);
+        console.log(`Conclusion: set to UnmetNeeds, Reason: all conditions questions were yes AND WaiverEnrollmentIsRequired was yes AND immNeedsRequired was YES`);
+      } else {
+        wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(false);
+      }
     }
 
-    if (isUnmetNeedsHas.includes('yes') && isUnmetNeedsSupports.includes('yes')) {
-      wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(true);
-      wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(false);
-      console.log(`Conclusion: set to WaiverFunded12Months, Reason: all conditions questions were yes WaiverEnrollmentIsRequired was yes AND unmetNeedsHas was yes AND unmetNeedsSupports was yes`);
-    } 
-    if (isUnmetNeedsHas.includes('no') || isUnmetNeedsSupports.includes('no')) {
-      wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
-      wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(true);
-      console.log(`Conclusion: set to DoesNotRequireWaiver, Reason: all conditions questions were yes WaiverEnrollmentIsRequired was yes AND either unmetNeedsHas was no OR unmetNeedsSupports was no`);
+    if (!tocLinks['currentNeeds'].classList.contains('hiddenPage')) {
+      if (isUnmetNeedsHas.includes('yes') && isUnmetNeedsSupports.includes('yes')) {
+        wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(true);
+        wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(false);
+        console.log(`Conclusion: set to WaiverFunded12Months, Reason: all conditions questions were yes WaiverEnrollmentIsRequired was yes AND unmetNeedsHas was yes AND unmetNeedsSupports was yes`);
+      } 
+      if (isUnmetNeedsHas.includes('no') || isUnmetNeedsSupports.includes('no')) {
+        wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(false);
+        wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(true);
+        console.log(`Conclusion: set to DoesNotRequireWaiver, Reason: all conditions questions were yes WaiverEnrollmentIsRequired was yes AND either unmetNeedsHas was no OR unmetNeedsSupports was no`);
+      }
     }
   }
   //--------------------------------------------------
