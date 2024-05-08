@@ -161,6 +161,31 @@
     return spacedStr.charAt(0).toUpperCase() + spacedStr.slice(1);
   }
 
+  function connectionWatch() {
+    if ($.session.watchingConnection) return;
+
+    const statusPopup = new Dialog({ className: 'connectionWatchStatusPopup' });
+    const statusMessage = _DOM.createElement('p');
+    statusPopup.dialog.appendChild(statusMessage);
+    statusPopup.renderTo(document.body);
+
+    window.addEventListener('offline', event => {
+      statusMessage.innerText = 'The network connection has been lost.';
+      statusPopup.show();
+    });
+
+    window.addEventListener('online', event => {
+      statusMessage.innerText = 'You are now connected to the network.';
+      setTimeout(() => {
+        statusPopup.close();
+      }, 3000)
+    });
+
+    console.clear();
+    console.log('connection watch enabled');
+    $.session.watchingConnection = true;
+  }
+
   /**
    * Debounces a function, ensuring that it's not called until after the specified
    * amount of time has passed since the last time it was invoked.
@@ -471,6 +496,7 @@
     autoIncrementId,
     asyncSetTimeout,
     AsyncQueue,
+    connectionWatch,
     convertCamelCaseToTitle,
     debounce,
     getDeviceType,

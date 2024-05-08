@@ -828,6 +828,7 @@ function getDefaultAnywhereSettings() {
       $.session.seAdminRemoveMap = res.removeSEAdminMap === 'Y' ? true : false;
       $.session.isASupervisor = res.isASupervisor === '' ? false : true;
       $.session.sttEnabled = res.sttEnabled === 'Y' ? true : false;
+      $.session.watchingConnection = '';
       $.session.azureSTTApi = res.azureSttApi;
       $.session.reportSeconds = res.reportSeconds;
       $.session.incidentTrackingPopulateIncidentDate = res.incidentTrackingPopulateIncidentDate;
