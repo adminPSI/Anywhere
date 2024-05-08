@@ -2459,9 +2459,22 @@ const WaitingListAssessment = (() => {
     },
     //* primaryCaregiver
     isPrimaryCaregiverUnavailable: async ({ value }) => {
+      const isActionRequiredIn30Days = wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].getValue();
+      const enableIsIndividualSkillsDeclined = value === 'no' ? true : isActionRequiredIn30Days.includes('no') ? true : false;
+      wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(!enableIsIndividualSkillsDeclined);
+      if (!enableIsIndividualSkillsDeclined) {
+        wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].setValue('');
+
+        await insertUpdateAssessmentData({
+          value: '',
+          name: 'isIndividualSkillsDeclined',
+          type: 'radio',
+          formName: 'primaryCaregiver',
+        });
+      }
+
       wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].toggleDisabled(value === 'yes' ? false : true);
-      wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(value === 'no' ? false : true);
 
       if (value !== 'yes') {
         wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].setValue('');
@@ -2476,7 +2489,7 @@ const WaitingListAssessment = (() => {
           formName: 'primaryCaregiver',
         });
         await insertUpdateAssessmentData({
-          value: 'no',
+          value: '',
           name: 'isActionRequiredIn30Days',
           type: 'radio',
           formName: 'primaryCaregiver',
@@ -2488,18 +2501,11 @@ const WaitingListAssessment = (() => {
           formName: 'primaryCaregiver',
         });
       } else {
-        wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].setValue('');
         wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].setValue('');
         wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].setValue('');
         wlForms['primaryCaregiver'].inputs['declinedSkillsDocumentation'].toggleDisabled(true);
         wlForms['primaryCaregiver'].inputs['declinedSkillsDescription'].toggleDisabled(true);
 
-        await insertUpdateAssessmentData({
-          value: '',
-          name: 'isIndividualSkillsDeclined',
-          type: 'radio',
-          formName: 'primaryCaregiver',
-        });
         await insertUpdateAssessmentData({
           value: '',
           name: 'declinedSkillsDocumentation',
@@ -2519,6 +2525,21 @@ const WaitingListAssessment = (() => {
       await currentNeedsDetermination();
     },
     isActionRequiredIn30Days: async ({ value }) => {
+      const isPrimaryCaregiverUnavailable = wlForms['primaryCaregiver'].inputs['isPrimaryCaregiverUnavailable'].getValue();
+      const enableIsIndividualSkillsDeclined = isPrimaryCaregiverUnavailable.includes('no') ? true : value === 'no' ? true : false;
+      wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(!enableIsIndividualSkillsDeclined);
+      if (!enableIsIndividualSkillsDeclined) {
+        wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].setValue('');
+
+        await insertUpdateAssessmentData({
+          value: '',
+          name: 'isIndividualSkillsDeclined',
+          type: 'radio',
+          formName: 'primaryCaregiver',
+        });
+      }
+
+
       wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(value === 'no' ? false : true);
 
