@@ -59,6 +59,12 @@ const dates = (function () {
     return !isNaN(date);
   }
 
+  function leadingZero(number) {
+    var num = String(number);
+    if (num.length > 1) return num;
+    return `0${num}`;
+  }
+
   // PUBLIC
   //------------------------------------
   // GET
@@ -240,6 +246,20 @@ const dates = (function () {
     return false;
   }
   // FORMAT
+  function checkFormat(dateString) {
+    // Regex pattern for ISO date format (YYYY-MM-DD)
+    const isoFormatPattern = /^\d{4}-\d{2}-\d{2}$/;
+    // Adjusted Regex pattern for Standard format (M/D/YYYY or MM/DD/YYYY)
+    const standardFormatPattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+
+    if (isoFormatPattern.test(dateString)) {
+      return 'iso';
+    } else if (standardFormatPattern.test(dateString)) {
+      return 'standard';
+    } else {
+      return '';
+    }
+  }
   function formatISO(dirtyDate, dirtyOptions) {
     if (arguments.length < 1) {
       throw new TypeError(`1 argument required, but only ${arguments.length} present`);
@@ -311,6 +331,44 @@ const dates = (function () {
     }
 
     return result;
+  }
+  function formateToISO(dirtyDate) {
+    if (!dirtyDate) return;
+
+    let splitBy;
+
+    if (dirtyDate.indexOf('/') !== -1) {
+      splitBy = '/';
+    } else if (dirtyDate.indexOf('-') !== -1) {
+      splitBy = '-';
+    } else {
+      return 'Invalid Date String';
+    }
+
+    const date = dirtyDate.split(splitBy);
+
+    if (date[0].length === 4) {
+      return dirtyDate;
+    }
+
+    const YYYY = date[2];
+    const MM = leadingZero(date[0]);
+    const DD = leadingZero(date[1]);
+
+    return `${YYYY}-${MM}-${DD}`;
+  }
+  function formateToStandard(dirtyDate, joinBy, opts) {
+    var shorten = opts ? opts.shortenYear : false;
+    var date = dirtyDate.split('-');
+    var MM = leadingZero(date[1]);
+    var DD = leadingZero(date[2]);
+    var YYYY = shorten ? date[0].substring(0, 2) : date[0];
+
+    if (joinBy) {
+      return `${MM}${joinBy}${DD}${joinBy}${YYYY}`;
+    }
+
+    return `${MM}/${DD}/${YYYY}`;
   }
   // INTERVALS
   function eachDayOfInterval(interval, options) {
@@ -476,7 +534,10 @@ const dates = (function () {
     isEqual,
     isDateInCurrentWeek,
     isDateInFuture,
+    checkFormat,
     formatISO,
+    formateToISO,
+    formateToStandard,
     eachDayOfInterval,
     // TIME
     convertFromMilitary,

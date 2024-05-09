@@ -232,7 +232,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        public string insertPlanOutcomeExperienceResponsibility(string experienceId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText)
+        public string insertPlanOutcomeExperienceResponsibility(string experienceId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText, bool isSalesforceLocation)
         {
 
             logger.debug("insertPlanOutcomesExperiences ");
@@ -244,6 +244,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             list.Add(whenHowOftenValue);
             list.Add(whenHowOftenFrequency.ToString());
             list.Add(whenHowOftenText);
+            list.Add(isSalesforceLocation.ToString().ToUpper());
             string text = "CALL DBA.ANYW_ISP_InsertPlanOutcomeExperienceResponsibility(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -256,7 +257,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        public string updatePlanOutcomeExperienceResponsibility(long responsibilityId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText)
+        public string updatePlanOutcomeExperienceResponsibility(long responsibilityId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText, bool isSalesforceLocation)
         {
 
             logger.debug("insertPlanOutcomesExperiences ");
@@ -267,6 +268,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             list.Add(whenHowOftenValue);
             list.Add(whenHowOftenFrequency.ToString());
             list.Add(whenHowOftenText);
+            list.Add(isSalesforceLocation.ToString().ToUpper());
             string text = "CALL DBA.ANYW_ISP_UpdatePlanOutcomeExperienceResponsibility(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -296,7 +298,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        public string updatePlanOutcomesReview(long outcomeId, string reviewId, string whatWillHappen, string whenToCheckIn, string whoReview, long contactId)
+        public string updatePlanOutcomesReview(long outcomeId, string reviewId, string whatWillHappen, string whenToCheckIn, string whoReview, string contactId)
         {
 
             logger.debug("insertPlanOutcomesExperiences ");
@@ -306,7 +308,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             list.Add(whatWillHappen);
             list.Add(whenToCheckIn);
             list.Add(whoReview);
-            list.Add(contactId.ToString());
+            list.Add(contactId);
             string text = "CALL DBA.ANYW_ISP_UpdatePlanOutcomesReview(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {

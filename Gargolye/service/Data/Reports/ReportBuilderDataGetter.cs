@@ -10,6 +10,7 @@ using System.Linq;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.CaseNoteSSA.CaseNoteSSAWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
+using static Anywhere.service.Data.Employment.EmploymentWorker;
 
 namespace Anywhere.service.Data.ReportBuilder
 {
@@ -262,10 +263,14 @@ namespace Anywhere.service.Data.ReportBuilder
         }
 
         public string generateDetailedCaseNotesReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string consumerName,
-                                              string serviceStartDate, string serviceEndDate, string location, string originallyEnteredStart, string originallyEnteredEnd, string billingCode, string service,
+                                              string serviceStartDate, string serviceEndDate, string location, string originallyEnteredStart, string originallyEnteredEnd, string billCodeText, string service,
                                               string need, string contact)
         {
             if (tokenValidator(token) == false) return null;
+            if (billCodeText == null)
+            {
+                billCodeText = "All";
+            }
             logger.debug("generateDetailedCaseNotesReport ");
             string source = "";
             string filterSyntax = "";
@@ -275,7 +280,6 @@ namespace Anywhere.service.Data.ReportBuilder
             list.Add(title);
             list.Add(reportServerList);
             list.Add(source);
-            //list.Add(userId);
             list.Add(billerId);
             list.Add(consumerId);
             list.Add(consumerName);
@@ -284,7 +288,7 @@ namespace Anywhere.service.Data.ReportBuilder
             list.Add(location);
             list.Add(originallyEnteredStart);
             list.Add(originallyEnteredEnd);
-            list.Add(billingCode);
+            list.Add(billCodeText);
             list.Add(service);
             list.Add(need);
             list.Add(contact);
@@ -298,6 +302,114 @@ namespace Anywhere.service.Data.ReportBuilder
             {
                 logger.error("1CNR", ex.Message + "ANYW_CaseNotes_GenerateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "1CNR: error ANYW_CaseNotes_GenerateDetailReport";
+            }
+        }
+
+        public string generateCaseNoteTimeReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string billCodeText, string serviceStartDate, string serviceEndDate)
+        {
+            if (tokenValidator(token) == false) return null;
+            if (billCodeText == null)
+            {
+                billCodeText = "All";
+            }
+            string source = "";
+            string filterSyntax = "";
+            logger.debug("generateCaseNoteReport ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+            list.Add(source);
+            list.Add(billerId);
+            list.Add(consumerId);
+            list.Add(billCodeText);
+            list.Add(filterSyntax);
+            list.Add(serviceStartDate);
+            list.Add(serviceEndDate);
+            string text = "CALL DBA.ANYW_CaseNotes_GenerateTimeReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1CNR", ex.Message + "ANYW_CaseNotes_GenerateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1CNR: error ANYW_CaseNotes_GenerateDetailReport";
+            }
+        }
+
+        public string generateMinutesByDateReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string consumerName,
+                                              string serviceStartDate, string serviceEndDate, string location, string originallyEnteredStart, string originallyEnteredEnd, string billCodeText, string service,
+                                              string need, string contact, string userId, string caseloadRestriction)
+        { 
+            if (tokenValidator(token) == false) return null;
+            if (billCodeText == null)
+            {
+                billCodeText = "All";
+            }
+            logger.debug("generateDetailedCaseNotesReport ");
+            string source = "";
+            string filterSyntax = "";
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+            list.Add(source);
+            list.Add(billerId);
+            list.Add(billCodeText);
+            list.Add(consumerId);
+            list.Add(consumerName);
+            list.Add(serviceStartDate);
+            list.Add(serviceEndDate);
+            list.Add(location);
+            list.Add(originallyEnteredStart);
+            list.Add(originallyEnteredEnd);
+            list.Add(service);
+            list.Add(need);
+            list.Add(contact);
+            list.Add(userId);
+            list.Add(caseloadRestriction);
+            list.Add(filterSyntax);
+            string text = "CALL DBA.ANYW_CaseNotes_GenerateMinutesByDateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1CNR", ex.Message + "ANYW_CaseNotes_GenerateMinutesByDateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1CNR: error ANYW_CaseNotes_GenerateMinutesByDateReport";
+            }
+        }
+
+        public string generateTXXCaseNotesReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string billingCode, string serviceStartDate, string serviceEndDate)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("generateTXXCaseNotesReport ");
+            string source = "";
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+            list.Add(source);
+            //list.Add(userId);
+            list.Add(billerId);
+            list.Add(consumerId);
+            list.Add(billingCode);
+            list.Add(serviceStartDate);
+            list.Add(serviceEndDate);
+            string text = "CALL DBA.ANYW_GenerateTXXCaseNotesReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1CNR", ex.Message + "ANYW_GenerateTXXCaseNotesReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1CNR: error ANYW_GenerateTXXCaseNotesReport";
             }
         }
 
@@ -402,29 +514,47 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
-        public string generateRelationshipsListReport(string token, string category, string title, string reportServerList, string location, string consumer, string fromDate, string toDate)
+        public string generateWaitingListAssessmentReport(string token, string category, string title, string reportServerList, string waitingListId)
         {
             if (tokenValidator(token) == false) return null;
-            logger.debug("generateRelationshipsListReport ");
+            logger.debug("generateWaitingListAssessmentReport ");
 
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(category);
             list.Add(title);
             list.Add(reportServerList);
-            list.Add(location);
-            list.Add(consumer);
-            list.Add(fromDate);
-            list.Add(toDate);
-            string text = "CALL DBA.ANYW_GenerateRelationshipsListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            list.Add(waitingListId);
+            string text = "CALL DBA.ANYW_WaitingList_GenerateWaitingListAssessmentReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
                 return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("1ITR", ex.Message + "ANYW_GenerateRelationshipsListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-                return "1ITR: error ANYW_GenerateRelationshipsListReport";
+                logger.error("1ITR", ex.Message + "ANYW_WaitingList_GenerateWaitingListAssessmentReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_WaitingList_GenerateWaitingListAssessmentReport";
+            }
+        }
+
+        public string sendWaitingListReport(string token, string reportScheduleId, string header, string body, string waitingListId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("sendWaitingListAssessmentReport  ");
+            List<string> list = new List<string>();
+            list.Add(reportScheduleId);
+            list.Add(header);
+            list.Add(body);
+            list.Add(waitingListId);
+            string text = "CALL DBA.ANYW_WaitingList_SendWaitingListAssessmentReport (" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1ITR", ex.Message + "ANYW_WaitingList_SendWaitingListAssessmentReport (" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_WaitingList_SendWaitingListAssessmentReport ";
             }
         }
 
@@ -463,6 +593,55 @@ namespace Anywhere.service.Data.ReportBuilder
             {
                 logger.error("640", ex.Message + "CALL DBA.ANYW_ViewReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return null;
+            }
+        }
+
+        public string generateEmploymentReport(string token, string category, string title, string reportServerList, string employer, string position, string positionStartDate, string positionEndDate, string jobStanding, string consumerID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("ANYW_GenerateEmploymentReport");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+            list.Add(employer);
+            list.Add(position);
+            list.Add(positionStartDate);
+            list.Add(positionEndDate);
+            list.Add(jobStanding);
+            list.Add(consumerID);  
+            string text = "CALL DBA.ANYW_GenerateEmploymentReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1ITR", ex.Message + "ANYW_GenerateEmploymentReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_GenerateEmploymentReport";
+            }
+        }
+
+        public string generateCaseLoadRosterListReport(string token, string category, string title, string reportServerList)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("ANYW_CaseNotes_GenerateCaseLoadRosterListReport");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+
+            string text = "CALL DBA.ANYW_CaseNotes_GenerateCaseLoadRosterListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1ITR", ex.Message + "ANYW_CaseNotes_GenerateCaseLoadRosterListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_CaseNotes_GenerateCaseLoadRosterListReport";
             }
         }
 

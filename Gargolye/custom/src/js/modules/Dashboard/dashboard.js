@@ -23,7 +23,7 @@
         missingSignatures: 17,
         moneyManagement: 18,
         infal: null,
-        systemMessages: null,
+        systemMessages: 19,
     };
 
     // Widget Markup
@@ -210,6 +210,27 @@
             widgetHeader.appendChild(filterBtn);
         }
     }
+
+    function appendPDFButton(widgetId, btnId) {
+        var pdfBtn = document.getElementById(btnId);
+        if (!pdfBtn) {
+            var headerSelector = `#${widgetId} .widget__header`;
+            var widgetHeader = document.querySelector(headerSelector);
+            pdfBtn = button.build({
+                id: btnId,
+                style: 'primary',
+                type: 'text',
+                icon: 'PDFFormWhite', 
+                iconPos: 'right',   
+                callback: function () {
+                    generateReports.passFilterValuesForReport('My Case Load Roster List', null);
+                    generateReports.showWarningPopup('My Case Load Roster List')
+                },
+            });
+            widgetHeader.appendChild(pdfBtn);
+        }
+    }
+
     function buildFilterPopup() {
         var filterPopup = document.createElement('div');
         filterPopup.classList.add('widget__filters', 'popup', 'popup--static', 'popup--filter');
@@ -235,30 +256,35 @@
             })();
         }
     }
-    function initLinksAndMessagesWidget() {
+    function initLinksAndMessagesWidget() { 
         const showHideCustomLinks = getWidgetSettings(widgetIds.customLinks).showHide;
-        const showHideMessages = getWidgetSettings(widgetIds.systemMessages).showHide;
-
         (function loadSysMessagesAndCustomLinksWidget() {
-            var div = document.createElement('div');
             var div2 = document.createElement('div');
-            div.setAttribute('data-show', showHideMessages);
-            div.setAttribute('data-widgetId', widgetIds.systemMessages);
             div2.setAttribute('data-show', showHideCustomLinks);
             div2.setAttribute('data-widgetId', widgetIds.customLinks);
-            div.id = 'dashsystemmessagewidget';
             div2.id = 'dashcustomlinks';
-            div.classList.add('widget');
-            div.classList.add('systemMessagesWidget');
             div2.classList.add('widget');
             div2.classList.add('customLinksWidget');
-            div.innerHTML = html.systemMessages;
             div2.innerHTML = html.customLinks;
-            widgets.push(div);
             widgets.push(div2);
             setupFuncs.push(linksAndMessages.init);
         })();
     }
+
+    function initSystemMessagesWidget() {      
+        (function loadSysMessagesAndCustomLinksWidget() {
+            var div = document.createElement('div');
+            div.setAttribute('data-show', 'Y');
+            div.setAttribute('data-widgetId', widgetIds.systemMessages);
+            div.id = 'dashsystemmessagewidget';
+            div.classList.add('widget');
+            div.classList.add('systemMessagesWidget');
+            div.innerHTML = html.systemMessages;
+            widgets.push(div);
+            setupFuncs.push(linksAndMessages.init);
+        })();
+    }
+
     function initSingleEntryWidget() {
         const showHide = getWidgetSettings(widgetIds.singleEntry).showHide;
         if (
@@ -597,30 +623,78 @@
     function loadDashboardWidgets() {
         var actioncenter = document.getElementById('actioncenter');
         actioncenter.innerHTML = '';
+          
+        widgetSettings.forEach(widgetSetting => { 
+            // Check for invalid defaults while widgets load in background
+            defaults.getInvalidDefaultLocations();
 
-        // Check for invalid defaults while widgets load in background
-        defaults.getInvalidDefaultLocations();
+            if (widgetSetting.widgetName == 'System Messages') {
+                /*19*/ initSystemMessagesWidget(); // System Message Widget
+            }    
 
-    // The order of the function calls below determines the order of widgets
-    /*1*/ initLinksAndMessagesWidget(); // System Messages & Custom Links
-    /*2*/ initAbsentWidget(); // Absent Consumers
-    /*3*/ initCaseNotesProductivityWidget(); // Case Notes Producitivity (GK Only) --- WidgetId 1
-    /*4*/ initCaseNotesCaseLoadWidget(); // Case Notes Case Load (GK Only) --- WidgetId 2
-    /*5*/ initCaseNotesRejectedWidget(); // Case Notes Rejected (GK Only) --- WidgetId 2
-    /*6*/ initPlanWorkflowWidget(); // Plan Workflow To Do List Widget
-    /*7*/ initLocationProgressNotesWidget(); //Location Progress Notes Widget
-    /*8*/ initSingleEntryWidget(); // Unapproved Time Entries - Single Entry
-    /*9*/ initConsumerProgressNotesWidget(); //Consumer Progress Note Widget
-    /*10*/ initAdminSingleEntryWidget(); // Supervisor Time Entry Review - Admin Single Entry
-    /*11*/ initTimeClockWidget(); // Employee Day Service Time Clock
-    /*12*/ initHoursWorkedWidget(); // Hours Worked
-    /*13*/ initScheduleWidget(); // My Schedule
-    /*14*/ initDailyServicesWidget(); // Remaining Daily Services
-    /*15*/ initClockedInWidget(); // Day Services Clocked In
-    /*16*/ initIncidentTrackingWidget(); // Incident Tracking
-    /*17*/ initInfalWidget(); // InfalTimeClock Widget
-    /*18*/ initSignaturesWidget(); // Missing Signatures Widget
-    /*18*/ initMoneyManagementWidget(); // Money Management Widget 
+            // The order of the function calls below determines the order of widgets
+            if (widgetSetting.widgetName == 'Custom Links') {
+                  /*1*/ initLinksAndMessagesWidget(); // System Messages & Custom Links
+            }
+            else if (widgetSetting.widgetName == 'Absent Consumers') {
+                 /*2*/ initAbsentWidget(); // Absent Consumers 
+            }
+            else if (widgetSetting.widgetName == 'Case_Note_Productivity') {
+                /*3*/ initCaseNotesProductivityWidget(); // Case Notes Producitivity (GK Only) --- WidgetId 1
+            }
+            else if (widgetSetting.widgetName == 'Case Load Widget') {
+                /*4*/ initCaseNotesCaseLoadWidget(); // Case Notes Case Load (GK Only) --- WidgetId 2
+            }
+            else if (widgetSetting.widgetName == 'Rejected Case Notes') {
+                /*5*/ initCaseNotesRejectedWidget(); // Case Notes Rejected (GK Only) --- WidgetId 2
+            }
+            else if (widgetSetting.widgetName == 'Plan To-Do List') {
+                /*6*/ initPlanWorkflowWidget(); // Plan Workflow To Do List Widget
+            }
+            else if (widgetSetting.widgetName == 'Location Progress Notes') {
+                /*7*/ initLocationProgressNotesWidget(); //Location Progress Notes Widget
+            }
+            else if (widgetSetting.widgetName == 'My Unapproved Time Entries') {
+                /*8*/ initSingleEntryWidget(); // Unapproved Time Entries - Single Entry
+            }
+            else if (widgetSetting.widgetName == 'Consumer Progress Notes') {
+                /*9*/ initConsumerProgressNotesWidget(); //Consumer Progress Note Widget
+            }
+            else if (widgetSetting.widgetName == 'Time Entry Review') {
+                /*10*/ initAdminSingleEntryWidget(); // Supervisor Time Entry Review - Admin Single Entry
+            }
+            else if (widgetSetting.widgetName == 'Day Service Time Clock') {
+                /*11*/ initTimeClockWidget(); // Employee Day Service Time Clock
+            }
+            else if (widgetSetting.widgetName == 'Hours Worked') {
+                /*12*/ initHoursWorkedWidget(); // Hours Worked
+            }
+            else if (widgetSetting.widgetName == 'My Schedule') {
+                /*13*/ initScheduleWidget(); // My Schedule
+            }
+            else if (widgetSetting.widgetName == 'Daily Services') {
+                /*14*/ initDailyServicesWidget(); // Remaining Daily Services
+            }
+            else if (widgetSetting.widgetName == 'Day Services') {
+                /*15*/ initClockedInWidget(); // Day Services Clocked In
+            }
+            else if (widgetSetting.widgetName == 'Incident Tracking') {
+                /*16*/ initIncidentTrackingWidget(); // Incident Tracking
+            }
+            else if (widgetSetting.widgetName == 'Plans Missing Signatures') {
+                /*17*/ initSignaturesWidget(); // Missing Signatures Widget
+            }
+            else if (widgetSetting.widgetName == 'Money Management') {
+                /*18*/ initMoneyManagementWidget(); // Money Management Widget 
+            }
+
+            /*17*/ initInfalWidget(); // InfalTimeClock Widget
+        });
+
+        let IsSystemMessageAvailable = widgetSettings.find(x => x.widgetName == 'System Messages') == undefined ? true : false;  
+        if (IsSystemMessageAvailable) {
+                /*19*/ initSystemMessagesWidget(); // System Message Widget
+        }    
 
         var actioncenter = document.getElementById('actioncenter');
         widgets.forEach(widget => {
@@ -648,6 +722,7 @@
                 widgetConfig:
                     settingForWidget.widgetConfig === '' ? null : JSON.parse(settingForWidget.widgetConfig),
                 widgetName: settingForWidget.widgetName,
+                widgetOrder: settingForWidget.widgetOrder,
             };
         } else {
             return {
@@ -655,6 +730,7 @@
                 showHide: 'Y',
                 widgetConfig: null,
                 widgetName: null,
+                widgetOrder: null,
             };
         }
     }
@@ -682,7 +758,7 @@
     function init() {
         remainingDailyServicesWidget.filter.outcomeType = '%';
         remainingDailyServicesWidget.filter.location = '%';
-        remainingDailyServicesWidget.filter.group = '%';
+        remainingDailyServicesWidget.filter.group = '%';        
         widgets = [];
         setupFuncs = [];
         preLoadWidget();
@@ -690,6 +766,7 @@
 
     return {
         appendFilterButton,
+        appendPDFButton,
         buildFilterPopup,
         getWidgetSettings,
         refreshWidgetSettings,

@@ -287,18 +287,34 @@
   async function populateDropdown() {
     let hasAssignedFormTypes = $.session.formsFormtype ? '1' : '0';
     const { getUserFormTemplatesResult: templates } = await formsAjax.getUserFormTemplatesAsync(
-      $.session.UserId,
-      hasAssignedFormTypes,
+        $.session.UserId,
+        hasAssignedFormTypes,
     );
-    // const templates = WorkflowViewerComponent.getTemplates();
-    let data = templates.map(template => ({
-      id: template.formTemplateId,
-      value: template.formTemplateId,
-      text: template.formType + ' -- ' + template.formDescription,
+
+    // Array to store unique template objects
+    const uniqueForms = [];
+
+    // Iterate over the templates array
+    templates.forEach(template => {
+        // Check if the formTemplateId already exists in uniqueForms
+        const exists = uniqueForms.some(form => form.formTemplateId === template.formTemplateId);
+        // If not, add the template to uniqueForms
+        if (!exists) {
+            uniqueForms.push(template);
+        }
+    });
+
+    // Prepare data for dropdown
+    const data = uniqueForms.map(template => ({
+        id: template.formTemplateId,
+        value: template.formTemplateId,
+        text: template.formType + ' -- ' + template.formDescription,
     }));
-    data.unshift({ id: null, value: '', text: '' }); //ADD Blank value
+
+    data.unshift({ id: null, value: '', text: '' }); // Add blank value
     dropdown.populate('templateDropdown', data);
-  }
+}
+
 
   async function displayFormPopup(
     formId,

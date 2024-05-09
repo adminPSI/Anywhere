@@ -1,4 +1,7 @@
 const planValidation = (function () {
+  let planId;
+  let workingSectionCase = 0;
+
     let assessmentValidationCheck = {
       workingNotWorking: [],
       sectionsApplicable: [],
@@ -73,6 +76,27 @@ const planValidation = (function () {
       servicesAndSupportsError: false,
       complete: false
     };
+
+    let IspValidationCheck = {
+      complete: true,
+      details: [],
+      missingExperiences: [],
+      missingReviews: [],
+      planProgressSummary: false,
+      outcome: [],
+      selectedProviders: [],
+      paidSupportsProviders: [],
+      invalidProviders: [],
+      contactSectionComplete: true,
+      summaryRisksValidation: true
+    };
+
+    let contactsValidation = {
+      importantPeople: true,
+      importantPlaces: true,
+      bestWayToConnect: true
+    }
+
     const servicesAndSupportsQuestionIds = {
       noSupportQuestionIds: ['509', '526', '84', '95', '162', '500', '575'],
       paidSupportQuestionIds: [
@@ -174,6 +198,10 @@ const planValidation = (function () {
         ],
       },
     };
+
+    function setPlanId(newPlanId) {
+      planId = newPlanId;
+    }
   
     //* TOOLTIPS
     function createTooltip(message, attachedDiv) {
@@ -195,12 +223,88 @@ const planValidation = (function () {
     }
   
     //* ASSESSMENT INITIAL CHECK
+    function returnAssessmentValidationData() {
+      return assessmentValidationCheck;
+    }
+
     async function getAssessmentValidation(planId) {
+      // reset the values of the validation for each consumer
+      assessmentValidationCheck = {
+        workingNotWorking: [],
+        sectionsApplicable: [],
+        servicesAndSupports: {},
+        servicesAndSupportsChecked: {
+          34: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          35: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          36: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          37: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          38: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          39: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+          40: {
+            noSupport: false,
+            paidSupport: false,
+            naturalSupport: false,
+            technology: false,
+            communitResource: false,
+            professionalReferral: false,
+            potentialOutcome: false,
+          },
+        },
+        hasASectionApplicable: true,
+        workingSectionComplete: false,
+        servicesAndSupportsError: false,
+        complete: false
+      };
       // Gathers the data from the database
-      servicesAndSupportsData = await servicesSupportsAjax.getServicesAndSupports({
-        token: $.session.Token,
-        anywAssessmentId: planId,
-      });
+      servicesAndSupportsData = await planValidationAjax.getAssessmentValidationData(planId);
   
       // WORKING/NOT WORKING
       assessmentValidationCheck.workingNotWorking = servicesAndSupportsData.workingNotWorking;
@@ -209,9 +313,14 @@ const planValidation = (function () {
       // SECTIONS APPLICABLE
       // check each section fo rthe plan and see if any are selected, if at least one is selected, return true
       assessmentValidationCheck.sectionsApplicable = servicesAndSupportsData.sectionsApplicable;
-      const hasASectionApplicable = assessmentValidationCheck.sectionsApplicable.some(
+      let hasASectionApplicable = assessmentValidationCheck.sectionsApplicable.some(
         obj => obj.applicable === 'Y',
       );
+
+      // In the case the ANYW_ISP_Sections_Applicable table is missing the 
+      if (assessmentValidationCheck.sectionsApplicable.length === 0) {
+        hasASectionApplicable = true;
+      }
   
       // if no section is checked, set value to false
       if (!hasASectionApplicable) {
@@ -242,8 +351,9 @@ const planValidation = (function () {
     }
   
     // ASSESSMENT DATA UPDATE CHECK
-    function updatedAssessmenteValidation(assessmentValidationCheck) {
-      const workingAlertDiv = document.getElementById('workingAlert');
+    function updatedAssessmenteValidation() {
+      const workingAlertDivCase1 = document.getElementById('workingAlert1');
+      const workingAlertDivCase2 = document.getElementById('workingAlert2');
       const tocAlertDiv = document.getElementById('tocAlert');
       const tocMobileAlertDiv = document.getElementById('tocAlertMobile');
       const navAlertDiv = document.getElementById('navAlertAssessment');
@@ -281,12 +391,24 @@ const planValidation = (function () {
   
       // If the working/not working section does not have a completed row, show the alert
       if (!assessmentValidationCheck.workingSectionComplete) {
-        if (workingAlertDiv) {
-          workingAlertDiv.style.display = 'inline-block';
+        if (workingSectionCase === 1) {
+          if (workingAlertDivCase1) {
+            workingAlertDivCase1.style.display = 'inline-block';
+            workingAlertDivCase2.style.display = 'none';
+          }
+        }
+        else if (workingSectionCase === 2) {
+          if (workingAlertDivCase2) {
+            workingAlertDivCase2.style.display = 'inline-block';
+            workingAlertDivCase1.style.display = 'none';
+          }
         }
       } else {
-        if (workingAlertDiv) {
-          workingAlertDiv.style.display = 'none';
+        if (workingAlertDivCase1) {
+          workingAlertDivCase1.style.display = 'none';
+        }
+        if (workingAlertDivCase2) {
+          workingAlertDivCase2.style.display = 'none';
         }
       }
   
@@ -306,41 +428,80 @@ const planValidation = (function () {
   
     // ASSESSMENT WORKING/NOT WORKING
     function workingSectionCheck(assessmentValidationCheck) {
-      // Group objects by answerRow
-        var groups = {};
-        (assessmentValidationCheck.workingNotWorking).forEach(function(obj) {
-            var answerRow = obj.answerRow;
-            if (!groups[answerRow]) {
-                groups[answerRow] = [];
+        const groupedByRow = {};
+        const hasValue605Array = [];
+        const hasValue606Array = [];
+
+        // Group objects by row
+        assessmentValidationCheck.workingNotWorking.forEach(obj => {
+            if (!groupedByRow[obj.answerRow]) {
+                groupedByRow[obj.answerRow] = [];
             }
-            groups[answerRow].push(obj);
+            groupedByRow[obj.answerRow].push(obj);
         });
 
-        // Check if any group has all three objects with non-empty answer values
-        var hasGroupWithNonEmptyAnswers = Object.values(groups).some(function(group) {
-            return group.length === 3 && group.every(function(obj) {
-                return obj.answer !== "";
+        // Check for Question 607 within each row having values for 605 or 606
+        for (const row in groupedByRow) {
+            let hasValue605 = false;
+            let hasValue606 = false;
+            let hasValue607 = false;
+
+            groupedByRow[row].forEach(obj => {
+                if (obj.questionNumber === "Question 605" && obj.answer) {
+                    hasValue605 = true;
+                }
+                if (obj.questionNumber === "Question 606" && obj.answer) {
+                    hasValue606 = true;
+                }
+                if (obj.questionNumber === "Question 607" && obj.answer) {
+                    hasValue607 = true;
+                }
             });
-        });
 
-        if (hasGroupWithNonEmptyAnswers) {
-            assessmentValidationCheck.workingSectionComplete = true;
-        } else {
+            // If either 605 or 606 has value, then 607 must also have a value
+            if ((hasValue605 || hasValue606) && !hasValue607) {
+                assessmentValidationCheck.workingSectionComplete = false;
+                workingSectionCase = 2; 
+                return assessmentValidationCheck;
+            }
+
+            // Check if all three questions are blank
+            if (!hasValue605 && !hasValue606) {
+                assessmentValidationCheck.workingSectionComplete = false;
+                workingSectionCase = 2;
+                return assessmentValidationCheck;
+            }
+
+            hasValue605Array.push(hasValue605);
+            hasValue606Array.push(hasValue606);
+        }
+
+        // Check if there's at least one row with both 605 and 606 having values
+        const hasValue605 = hasValue605Array.some(val => val);
+        const hasValue606 = hasValue606Array.some(val => val);
+        if (!hasValue605 || !hasValue606) {
             assessmentValidationCheck.workingSectionComplete = false;
+            workingSectionCase = 1;
+            return assessmentValidationCheck;
         }
-  
-      return assessmentValidationCheck;
-    }
-  
-    function updateAnswerWorkingSection(assessmentValidationCheck, answer, answerId) {
-      for (let i = 0; i < assessmentValidationCheck.workingNotWorking.length; i++) {
-        if (assessmentValidationCheck.workingNotWorking[i].answerid === answerId) {
-          assessmentValidationCheck.workingNotWorking[i].answer = answer;
-          break;
-        }
+
+        assessmentValidationCheck.workingSectionComplete = true;
+        workingSectionCase = 0; // Set workingSectionCase to 0 if all conditions pass
+        return assessmentValidationCheck;
       }
+
+      function returnWorkingSectionCaseValue() {
+        return workingSectionCase;
+      }
+
+    async function updateAnswerWorkingSection(planId) {
+      const check = await getAssessmentValidation(planId);
+
+      workingSectionCheck(check);
   
-      return assessmentValidationCheck;
+      // checks entire assessments for validation errors
+      planValidation.updatedAssessmenteValidation();
+      //return assessmentValidationCheck;
     }
   
     // ASSESSMENT TABLE OF CONTENTS
@@ -386,7 +547,7 @@ const planValidation = (function () {
     }
   
     // ASSESSMENT SERVICES AND SUPPORTS
-    function servicesAndSupportsBtnCheck(assessmentValidationCheck) {
+    function servicesAndSupportsBtnCheck() {
       const idsToCheck = [34, 35, 36, 37, 38, 39, 40];
 
       idsToCheck.forEach(id => {
@@ -525,10 +686,40 @@ const planValidation = (function () {
       return counts;
     }
 
+    function updateSectionApplicability(sectionID, applied) {
+      // Find the object with matching sectionId and obtain the index
+      const matchingIndex = assessmentValidationCheck.sectionsApplicable.findIndex(
+        obj => obj.sectionId === sectionID,
+      );
+  
+      // Update the value if a match is found
+      if (matchingIndex !== -1) {
+        assessmentValidationCheck.sectionsApplicable[matchingIndex].applicable = applied;
+        // Toggle the value between 'Y' and 'N'
+        assessmentValidationCheck.sectionsApplicable[matchingIndex].applicable = applied;
+        (assessmentValidationCheck.sectionsApplicable[matchingIndex]).applicable === 'Y' ? 'N' : 'Y';
+      }
+  
+      // checks entire assessments for validation errors
+      planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+    }
+
+    function updateAssessmentValidationSection(key, value) {
+      assessmentValidationCheck[key] = value;
+
+      updatedAssessmenteValidation();
+    }
+
+    function updateAssessmentValidationProperty(sectionId, questionIdCategory, value) {
+      assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] = value;
+
+      updatedAssessmenteValidation();
+    }
+
     //* ISP
     async function ISPValidation(planId) {
-      // Set state of check to neutral before running check to remove chached data
-      let validationCheck = {
+      // Set state of check to neutral before running to remove cached data
+      IspValidationCheck = {
         complete: true,
         details: [],
         missingExperiences: [],
@@ -539,41 +730,57 @@ const planValidation = (function () {
         paidSupportsProviders: [],
         invalidProviders: []
       };
-  
 
       outcomesData = await planOutcomesAjax.getPlanSpecificOutcomes({
         token: $.session.Token,
         assessmentId: planId,
       });
-
-      validationCheck.outcomesData = outcomesData;
+  
+      IspValidationCheck.outcomesData = outcomesData;
 
       for (const item of outcomesData.planOutcomeExperiences) {
         for (const responsibility of item.planExperienceResponsibilities) {
           const responsibleProvider = responsibility.responsibleProvider;
-          (validationCheck.selectedProviders).push(responsibleProvider);
+          (IspValidationCheck.selectedProviders).push(responsibleProvider);
         }
       }
 
       const paidSupportsIds = outcomesData.paidSupports.map(obj => obj.providerId);
-      validationCheck.paidSupportsProviders = paidSupportsIds;
+      IspValidationCheck.paidSupportsProviders = paidSupportsIds;
 
-      const invalidProviders = (validationCheck.selectedProviders).filter(number => number !== "" && number !== "%" && !(validationCheck.paidSupportsProviders).includes(number));
-      validationCheck.invalidProviders = invalidProviders;
+      const invalidProviders = (IspValidationCheck.selectedProviders).filter(number => 
+        number !== "" && 
+        number !== "%" && 
+        !(IspValidationCheck.paidSupportsProviders).includes(number) && 
+        !IspValidationCheck.outcomesData.planOutcomeExperiences.some(outcome =>
+          Object.values(outcome.planExperienceResponsibilities).some(responsibility =>
+            responsibility.responsibleProvider === number &&
+            responsibility.isSalesforceLocation === 'True'
+          )
+        )
+      );
+      IspValidationCheck.invalidProviders = invalidProviders;
   
       // get a list of the unique outcomeIds
       var uniqueOutcomeIds = Array.from(new Set(outcomesData.planOutcome.map(obj => obj.outcomeId)));
-  
+    
       // if any outcome is missing the 'Details to Know' or 'Outcome' section, return false on the validation check
       for (let i = 0; i < outcomesData.planOutcome.length; i++) {
         if (outcomesData.planOutcome[i].details === '') {
-          validationCheck.details.push(outcomesData.planOutcome[i].outcomeId);
+          IspValidationCheck.details.push(outcomesData.planOutcome[i].outcomeId);
         }
         if (outcomesData.planOutcome[i].outcome === '') {
-          validationCheck.outcome.push(outcomesData.planOutcome[i].outcomeId);
+          IspValidationCheck.outcome.push(outcomesData.planOutcome[i].outcomeId);
         }
       }
   
+      for (let i = 0; i < outcomesData.planReviews.length; i++) {
+        if (outcomesData.planReviews[i].whenToCheckIn === '') {
+          IspValidationCheck.missingReviews.push(outcomesData.planReviews[i].outcomeId);
+         //IspValidationCheck.complete = false;
+        }
+      }
+
       // makes list of all the outcomeIds from the plan outcome experiences and reviews
       const outcomeExperienceOutcomeIds = outcomesData.planOutcomeExperiences.map(
         obj => obj.outcomeId,
@@ -587,60 +794,79 @@ const planValidation = (function () {
       const missingOutcomeReviews = uniqueOutcomeIds.filter(
         num => !outcomeReviewOutcomeIds.includes(num),
       );
-  
-      validationCheck.missingExperiences = missingOutcomeExperiences;
-      validationCheck.missingReviews = missingOutcomeReviews;
-  
+    
+      IspValidationCheck.missingExperiences = missingOutcomeExperiences;
+   //   IspValidationCheck.missingReviews = missingOutcomeReviews;
+      IspValidationCheck.missingReviews.push(...missingOutcomeReviews) ;
+         
       // if an outcome is missing a review or experience, return false on the validation check
       if (missingOutcomeReviews.length > 0 || missingOutcomeExperiences.length > 0) {
-        validationCheck.complete = false;
+        IspValidationCheck.complete = false;
       }
   
       // check the plan progress summary value
       if (outcomesData.planProgressSummary[0]) {
-        validationCheck.planProgressSummary = (outcomesData.planProgressSummary[0].progressSummary !== '');
+        IspValidationCheck.planProgressSummary = (outcomesData.planProgressSummary[0].progressSummary !== '');
+      }
+
+      if (IspValidationCheck.outcomesData.planOutcome.length < 1) {
+        IspValidationCheck.planProgressSummary = true;
       }
 
       // if there are invalid providers, return false on the validaton check
-      if (validationCheck.invalidProviders.length > 0) {
-        validationCheck.complete = false;
-      }
+      if (IspValidationCheck.invalidProviders.length > 0) {
+        IspValidationCheck.complete = false;
+      } 
   
-     // checks if all required data on the page has been filled out
-     checkAllOutcomesComplete(validationCheck);
-  
-      return validationCheck;
+      // checks if all required data on the page has been filled out
+      checkAllOutcomesComplete(IspValidationCheck);
+
+      ispValidationContactCheck();
+      
+      await summaryRisksValidationCheck();
+
+      //IspValidationCheck = validationCheck;
+      return IspValidationCheck;
     }
 
+    function returnIspValidation() {
+      return IspValidationCheck;
+    }
     // sets the alerts status based on the completion of the ISP outcomes data
     function updatedIspOutcomesSetAlerts(validationCheck) {
       //checkExperienceProviders(validationCheck);
       checkAllOutcomesComplete(validationCheck);
-
+//
       // ISP Main Nav and ISP Outcomes Tab 
       const ISPAlertDiv = document.getElementById('navAlertISP');
       const outcomesNav = document.getElementById('outcomesAlert');
 
-      if (validationCheck.complete === true) {
+      //if (validationCheck.complete === true) {
+    if (validationCheck.missingExperiences.length > 0 || validationCheck.missingReviews.length > 0) {
+      outcomesNav.style.display = 'block';
+      ISPAlertDiv.style.display = 'flex';
+      } else {
         outcomesNav.style.display = 'none';
         ISPAlertDiv.style.display = 'none';
-      } else {
-        outcomesNav.style.display = 'block';
-        ISPAlertDiv.style.display = 'flex';
       }
+
 
       return validationCheck;
     }
   
     // Checks if all fields on the ISP outcomes are completed
     function checkAllOutcomesComplete(validationCheck) {
+      // if (validationCheck.outcomesData.planOutcome.length > 0) {
+      //   validationCheck.planProgressSummary = true;
+      // }
+ 
       validationCheck.complete =
         validationCheck.details.length === 0 &&
         validationCheck.missingExperiences.length === 0 &&
         validationCheck.missingReviews.length === 0 &&
         validationCheck.planProgressSummary &&
         validationCheck.outcome.length === 0 &&
-        outcomesData.planOutcome.length > 0 &&
+        //outcomesData.planOutcome.length > 0 &&
         validationCheck.invalidProviders.length === 0;
 
       return validationCheck;
@@ -678,7 +904,7 @@ const planValidation = (function () {
       const display = validationCheck.missingReviews.includes(outcomeId) ? 'flex' : 'none';
       alertDiv.style.display = display;
     }
-  
+    
     //ISP EXPERIENCES
     //checks if the outcome has an experience, if not, set the alert next to the add experience button
     function experiencesValidationCheck(validationCheck, outcomeId, alertDiv) {
@@ -703,13 +929,119 @@ const planValidation = (function () {
       //validationCheck.invalidProviders.length > 0
     }
 
+    //ISP CONTACTS
+    async function contactsValidationCheck() {
+      const contactData = await planValidationAjax.getContactValidationData(planId);
+
+      const bestWayToConnect = contactData[0]?.bestWayToConnect || '';
+      
+      const importantPeopleData = contactData.map(item => ({
+        type: item.importantPeopleType,
+        typeOther: item.importantPeopleTypeOther,
+      }));
+      
+      const importantPlacesData = contactData.map(item => ({
+        type: item.importantPlacesType,
+        typeOther: item.importantPlacesTypeOther,
+      }));
+
+      checkImportantPeople(importantPeopleData);
+      checkImportantPlaces(importantPlacesData);
+      checkBestWayToConnect(bestWayToConnect);
+
+      checkContactsValidation();
+    }
+
+    function checkImportantPeople(importantPeopleData) {
+      // Loop through each item in the array
+      for (const contact of importantPeopleData) {
+        if (contact.type === 'Other' && contact.typeOther === '') {
+          contactsValidation.importantPeople = false;
+          return;
+        }
+      }
+
+      contactsValidation.importantPeople = true;
+    }
+
+    function checkImportantPlaces(importantPlacesData) {
+      // Loop through each item in the array
+      for (const place of importantPlacesData) {
+        if (place.type === 'Other' && place.typeOther === '') {
+          contactsValidation.importantPlaces = false;
+          return;
+        }
+      }
+
+      contactsValidation.importantPlaces = true;
+    }
+
+    function checkBestWayToConnect(bestWayToConnect) {
+      if (bestWayToConnect === '') {
+        contactsValidation.bestWayToConnect = false;
+        return;
+      }
+
+      contactsValidation.bestWayToConnect = true;
+    }
+
+    function getContactValidation() {
+      return contactsValidation;
+    }
+
+    function checkContactsValidation() {
+      const ISPAlertDiv = document.getElementById('navAlertISP');
+      const alertDiv = document.querySelector('.contactsAlertDiv');
+      const bestWayToConnectAlertDiv = document.querySelector('.bestWaytoConnectAlert')
+
+      // Check if the alertDiv exists and if any validation condition is false
+      if (alertDiv && (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect)) {
+          alertDiv.style.display = 'flex';
+      } else if (alertDiv) {
+          alertDiv.style.display = 'none';
+      }
+
+      if (bestWayToConnectAlertDiv && !contactsValidation.bestWayToConnect) {
+        bestWayToConnectAlertDiv.style.display = 'flex';
+      } else if (bestWayToConnectAlertDiv) {
+        bestWayToConnectAlertDiv.style.display = 'none';
+      }
+
+      if (ISPAlertDiv && (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect)) {
+        ISPAlertDiv.style.display = 'flex';
+      } else if (ISPAlertDiv) {
+        ISPAlertDiv.style.display = 'none';
+      }
+
+      // sets isp validation check variable value regardless of UI
+      ispValidationContactCheck();
+    }
+
+    function ispValidationContactCheck() {
+      if (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect) {
+        IspValidationCheck.contactSectionComplete = false;
+      } else {
+        IspValidationCheck.contactSectionComplete = true;
+      }
+    }
+
     // checks if the provider selected for the experience is also in the paid supports
     function checkExperienceProviders(validationCheck) {
       // Extract the first values from the second array objects
       const secondValues = (validationCheck.paidSupportsProviders).map(obj => obj.value);
 
       // Create a list of values from the first array that don't exist in the second array
-      const invalidProviders = validationCheck.selectedProviders.filter(value => value !== '' && value !== '%' && !secondValues.includes(value));
+      const invalidProviders = validationCheck.selectedProviders.filter(value =>
+        value !== '' &&
+        value !== '%' &&
+        !secondValues.includes(value) &&
+        !validationCheck.outcomesData.planOutcomeExperiences.some(outcome =>
+          Object.values(outcome.planExperienceResponsibilities).some(responsibility =>
+            responsibility.responsibleProvider === value &&
+            responsibility.isSalesforceLocation === 'True'
+          )
+        )
+      );      
       
       validationCheck.invalidProviders = invalidProviders;
       return validationCheck;
@@ -732,19 +1064,95 @@ const planValidation = (function () {
         });
       }
     }
+
+    // Summary Risks
+    async function summaryRisksValidationCheck() {
+      let summaryValidationData = await planValidationAjax.getSummaryRiskValidationData(planId);
   
-    async function init(planId) {
-      ISPValidation(planId);
+      let groupedByQuestionSetId = summaryValidationData.reduce((acc, obj) => {
+          const key = obj.QuestionSetId;
+          (acc[key] ? acc[key] : (acc[key] = [])).push(obj);
+          return acc;
+      }, {});
   
-      assessmentValidation(planId);
+      // Check if any answer in the group is null or empty
+      function hasNullOrEmptyAnswer(group) {
+          return group.some(item => item.Answer === '' || item.Answer === null || item.Answer === '%');
+      }
+  
+      // Iterate over each group and perform the necessary checks
+      for (let group of Object.values(groupedByQuestionSetId)) {
+          // Check if there is at least one non-empty answer for the specified question text
+          let hasNonEmptyAnswer = group.some(item => item.Answer !== '' && item.QuestionText === 'What is the risk, what it looks like, where it occurs:');
+          if (hasNonEmptyAnswer) {
+              // If there's a non-empty answer for the specified question text,
+              // check if any other answer in the group is null or empty
+              let hasNullOrEmpty = hasNullOrEmptyAnswer(group);
+              if (hasNullOrEmpty) {
+                  // If any answer is null or empty, set the flag and exit the function
+                  IspValidationCheck.summaryRisksValidation = false;
+                  return;
+              }
+          }
+      }
+  
+      // If no null or empty answers were found, set the flag to true
+      IspValidationCheck.summaryRisksValidation = true;
+    }
+  
+
+    function returnSummaryRisksValidation() {
+      return IspValidationCheck.summaryRisksValidation;
+    }
+
+    function setSummaryRiskValidation(hasErrors) {
+      IspValidationCheck.summaryRisksValidation = hasErrors;
+    }
+
+    async function alertCheckSummaryRisksValidation() {
+      const ISPAlertDiv = document.getElementById('navAlertISP');
+      const summaryAlertDiv = document.querySelector('.summaryAlertDiv');
+
+      if (summaryAlertDiv && !IspValidationCheck.summaryRisksValidation) {
+        summaryAlertDiv.style.display = 'flex';
+      } else if (summaryAlertDiv) {
+        summaryAlertDiv.style.display = 'none';
+      }
+
+      const isEverythingComplete = await ISPValidation(planId);
+
+      if (ISPAlertDiv && (!isEverythingComplete.complete || !isEverythingComplete.contactSectionComplete || !isEverythingComplete.summaryRisksValidation)) {
+        ISPAlertDiv.style.display = 'flex';
+      } else if (ISPAlertDiv) {
+        ISPAlertDiv.style.display = 'none';
+      }
+    }
+  
+    async function init(newPlanId) {
+      planId = newPlanId;
+
+      //await summaryRisksValidationCheck(planId);
+
+      await contactsValidationCheck(planId);
+      
+      await ISPValidation(planId);
+  
+      await getAssessmentValidation(planId);
     }
   
     return {
+      setPlanId,
       createTooltip,
+      returnAssessmentValidationData,
       getAssessmentValidation,
       updateTocSectionHeaders,
       updatedAssessmenteValidation,
+      updateSectionApplicability,
+      updateAssessmentValidationSection,
+      updateAssessmentValidationProperty,
+      returnWorkingSectionCaseValue,
       ISPValidation,
+      returnIspValidation,
       checkAllOutcomesComplete,
       updatedIspOutcomesSetAlerts,
       reviewsValidationCheck,
@@ -758,6 +1166,12 @@ const planValidation = (function () {
       updateOutcomeDetails,
       checkExperienceProviders,
       checkExperiencesAfterAddingNewPaidSupport,
+      contactsValidationCheck,
+      getContactValidation,
+      returnSummaryRisksValidation,
+      setSummaryRiskValidation,
+      alertCheckSummaryRisksValidation,
+      summaryRisksValidationCheck,
       init,
     };
   })();

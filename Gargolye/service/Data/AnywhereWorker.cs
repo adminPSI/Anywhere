@@ -576,6 +576,9 @@ namespace Anywhere.service.Data
             public string appendITPreventionPlan { get; set; }
             public string appendITCause { get; set; }
             public string planFormCarryover { get; set; }
+            public string sendWaitingListEmail { get; set; }
+            public string defaultMoneyManagementLocation { get; set; }
+            public string defaultMoneyManagementLocationName { get; set; }
 
         }
 
@@ -659,6 +662,9 @@ namespace Anywhere.service.Data
         {
             //Check login type
             //return dg.getLogIn(userId, hash);
+            if (stringInjectionValidatorLogin(userId) == false) return null;
+            if (stringInjectionValidatorLogin(hash) == false) return null;
+            if (stringInjectionValidatorLogin(deviceId) == false) return null;
             string loginType = dg.checkLoginType();
             LoginType[] loginTypeObj = js.Deserialize<LoginType[]>(loginType);
             string type = loginTypeObj[0].setting_value.ToString();
@@ -693,6 +699,23 @@ namespace Anywhere.service.Data
                 return dg.getLogIn(userId, hash);
             }
         }
+        public bool stringInjectionValidatorLogin(string uncheckedString)
+        {
+            string waitFor = "WAITFOR DELAY";
+            string dropTable = "DROP TABLE";
+            string deleteFrom = "DELETE FROM";
+            string singleQuote = "'";
+            if (!string.IsNullOrWhiteSpace(uncheckedString) && (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(singleQuote) || uncheckedString.ToUpper().Contains(deleteFrom)))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
 
         public class LoginType
         {

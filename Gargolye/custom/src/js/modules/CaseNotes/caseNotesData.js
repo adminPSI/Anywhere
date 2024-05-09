@@ -196,7 +196,7 @@
       caseManagerId,
     });
     this.caseManagerReview = data.getReviewRequiredForCaseManagerResult[0];
-    this.reviewRequired = !this.caseManagerReview.reviewrequired ? 'N' : 'Y';
+    this.reviewRequired = this.caseManagerReview.reviewrequired === '' || this.caseManagerReview.reviewrequired === 'N' ? 'N' : 'Y';
     this.defaultServiceCode = this.caseManagerReview.serviceid;
 
     return this;
@@ -223,11 +223,9 @@
   CaseNotesData.prototype.fetchAttachmentsGK = async function (caseNoteId) {
     // const data = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId });
     // this.attachmentList = data.getCaseNoteAttachmentsListResult;
-    // console.log(data);
 
     const data2 = await _UTIL.fetchData('getCaseNoteAttachmentsListForGroupNote', { caseNoteId });
     this.attachmentList = data2.getCaseNoteAttachmentsListForGroupNoteResult;
-    console.log(data2);
 
     return this;
   };

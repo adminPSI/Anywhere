@@ -1,7 +1,9 @@
 const TRANS_vehicleInspection = (function () {
-  let selectedVehicle, selectedRoute, selectedRouteName, selectedRouteDate;
+  let selectedVehicle, selectedRoute, selectedRouteName, selectedRouteDate, saveBtn;
   let dateInput, timeInput, noteInput, vehicleDropdown, inspectionQuestionBody;
   let isEdit, questionResponses, vehicleInspectionId, readOnly, enteredByOtherUser, inspectionEnterPath, routeInspection;
+  let currentlySelectedVehicle;
+  let allQuestionsAnswered = true;
 
   function buildPage(editData) {
     const inspectionDate = isEdit ? 
@@ -21,7 +23,7 @@ const TRANS_vehicleInspection = (function () {
     `;
     inspectionInfoCard.appendChild(inspectionInfoBody)
 
-    let saveBtn
+    //let saveBtn
     let deleteBtn
 
     if (!readOnly) {
@@ -89,6 +91,7 @@ const TRANS_vehicleInspection = (function () {
       style: "secondary",
     });
     vehicleDropdown = dropdown.build({
+      id: 'vehicleDropdown',
       dropdownId: 'vehicleDropdown',
       readonly: readOnly || routeInspection,
       label: 'Vehicle'
@@ -159,6 +162,7 @@ const TRANS_vehicleInspection = (function () {
     populateDropdown()
     buildInspectionQuestions(editData);
     eventListeners()
+    checkForAllRequiredFields();
   }
 
   function eventListeners() {
@@ -176,104 +180,120 @@ const TRANS_vehicleInspection = (function () {
     });
     vehicleDropdown.addEventListener('change', event => {
       const selectedOption = event.target.options[event.target.selectedIndex];
+      currentlySelectedVehicle = selectedOption.value;
       if (selectedOption.value === '') {
         vehicleDropdown.classList.add('error');
         console.warn('No vehicle selected.')
       } else {
         vehicleDropdown.classList.remove('error');
       }
+      checkForAllRequiredFields();
     });
   }
 
   async function buildInspectionQuestions(editData) {
-    // get status from DB if edit
     let completedStatus;
     if (isEdit) {
-      completedStatus = await getInspectionDetailsForEdit(editData.inspectionId)
+        completedStatus = await getInspectionDetailsForEdit(editData.inspectionId)
     }
     const questions = TRANS_mainLanding.getCategories();
-    questionResponses = new Map()
-    questions.forEach((val,key,map) => {
-      const questionContainer = document.createElement('div');
-      const questionTitle = document.createElement('h4');
-      questionTitle.innerText = val.desc;
-      let passCheck = false;
-      let failCheck = false;
-      let naCheck = false;
-      let allowNA = val.allowNA === 'Y' ? true:false;
-      if (isEdit) {
-        switch (completedStatus.get(key)) {
-          case 'P':
-            passCheck = true;
-            questionResponses.set(key, 'P');
-            break;
-          case 'N':
-            naCheck = true;
-            questionResponses.set(key, 'N');
-            break;
-          default:
-            failCheck = true;
-            questionResponses.set(key, 'F');
-            break;
+    questionResponses = new Map();
+    questions.forEach((val, key) => {
+        const questionContainer = document.createElement('div');
+        questionContainer.classList.add('questionWrapWord'); 
+        const questionTitle = document.createElement('h4');
+        questionTitle.innerText = val.desc;
+        let passCheck = false; 
+        let failCheck = false;
+        let naCheck = false;
+        let allowNA = val.allowNA === 'Y' ? true : false;
+        if (isEdit) {
+            switch (completedStatus.get(key)) {
+                case 'P':
+                    passCheck = true;
+                    questionResponses.set(key, 'P');
+                    break;
+                case 'N':
+                    naCheck = true;
+                    questionResponses.set(key, 'N');
+                    break;
+                default:
+                    failCheck = true;
+                    questionResponses.set(key, 'F');
+                    break;
+            }
+        } else {
+            questionResponses.set(key, '');
+            allQuestionsAnswered = false; // If not in edit mode, mark as not all questions answered
         }
-        // if (completedStatus.get(key) === 'P') {
-        //   passCheck = true;
-        //   questionResponses.set(key, 'P');
-        // } else {
-        //   failCheck = true;
-        //   questionResponses.set(key, 'F');
-        // }
-      } else {
-        questionResponses.set(key, '')
-      }
-      const passRadio = input.buildRadio({
-        id: `${key}-pass`,
-        text: "Pass",
-        name: key,
-        isChecked: passCheck,
-        isDisabled: readOnly
-      });
-      const failRadio = input.buildRadio({
-        id: `${key}-fail`,
-        text: "Fail",
-        name: key,
-        isChecked: failCheck,
-        isDisabled: readOnly
-      });
-      passRadio.addEventListener('change', () => {
-        questionResponses.set(key, 'P')
-      })
-      failRadio.addEventListener('change', () => {
-        questionResponses.set(key, 'F')
-      })
-
-      const radioDiv = document.createElement('div')
-      radioDiv.classList.add('inspection_radioDiv')
-      radioDiv.appendChild(passRadio)
-      radioDiv.appendChild(failRadio)
-      // NA OPTION (only displayed if the inspection category is set to allow NA)
-      if (allowNA) {
-        const allowNARadio = input.buildRadio({
-          id: `${key}-na`,
-          text: "N/A",
-          name: key,
-          isChecked: naCheck,
-          isDisabled: readOnly
+        const passRadio = input.buildRadio({
+            id: `${key}-pass`,
+            text: "Pass",
+            name: key,
+            isChecked: passCheck,
+            isDisabled: readOnly
         });
-        allowNARadio.addEventListener('change', () => {
-          questionResponses.set(key, 'N');
+        const failRadio = input.buildRadio({
+            id: `${key}-fail`,
+            text: "Fail",
+            name: key,
+            isChecked: failCheck,
+            isDisabled: readOnly
         });
-        radioDiv.appendChild(allowNARadio)
-      }
-      questionContainer.appendChild(questionTitle)
-      questionContainer.appendChild(radioDiv);
-      var lineBR = document.createElement('br');
-      questionContainer.appendChild(lineBR); 
+        passRadio.addEventListener('change', () => {
+            questionResponses.set(key, 'P');
+            checkAllQuestionsAnswered();
+        });
+        failRadio.addEventListener('change', () => {
+            questionResponses.set(key, 'F');
+            checkAllQuestionsAnswered();
+        });
 
-      inspectionQuestionBody.appendChild(questionContainer);
+        const radioDiv = document.createElement('div');
+        radioDiv.classList.add('inspection_radioDiv');
+        radioDiv.appendChild(passRadio);
+        radioDiv.appendChild(failRadio);
+        
+        // NA OPTION (only displayed if the inspection category is set to allow NA)
+        if (allowNA) {
+            const allowNARadio = input.buildRadio({
+                id: `${key}-na`,
+                text: "N/A",
+                name: key,
+                isChecked: naCheck,
+                isDisabled: readOnly
+            });
+            allowNARadio.addEventListener('change', () => {
+                questionResponses.set(key, 'N');
+                checkAllQuestionsAnswered();
+            });
+            radioDiv.appendChild(allowNARadio);
+        }
+        questionContainer.appendChild(questionTitle);
+        questionContainer.appendChild(radioDiv);
+        var lineBR = document.createElement('br');
+        questionContainer.appendChild(lineBR);
 
-    })
-  }
+        inspectionQuestionBody.appendChild(questionContainer);
+    });
+
+    // Function to check if all questions are answered
+    function checkAllQuestionsAnswered() {
+        allQuestionsAnswered = true; // Reset the flag
+        questionResponses.forEach(value => {
+            if (value === '') {
+                allQuestionsAnswered = false;
+                return; // Exit forEach loop early if any question is unanswered
+            }
+        });
+
+        checkForAllRequiredFields();
+    }
+
+    // Return the result indicating if all questions are answered
+    return allQuestionsAnswered;
+}
+
 
   async function getInspectionDetailsForEdit(vehicleInspectionId) {
     const completedDetails = (await TRANS_vehicleInspectionAjax.getVehicleInspectionDetails(vehicleInspectionId)).getVehicleInspectionDetailsResult
@@ -297,6 +317,7 @@ const TRANS_vehicleInspection = (function () {
 
     vehicleDropdownData.unshift({value: '', text: ''})
     dropdown.populate(vehicleDropdown, vehicleDropdownData, selectedVehicle)
+    currentlySelectedVehicle = selectedVehicle
     if (!selectedVehicle) vehicleDropdown.classList.add('error')
   }
 
@@ -438,7 +459,24 @@ const TRANS_vehicleInspection = (function () {
     vehicleInspectionId =  null;
     readOnly =  null;
     enteredByOtherUser = null;
+    currentlySelectedVehicle = null;
   }
+
+  function checkForAllRequiredFields() {
+    if (readOnly) {
+      return;
+    }
+
+    if (!currentlySelectedVehicle || currentlySelectedVehicle === '' || allQuestionsAnswered === false) {
+        // If no vehicle is selected, disable the save button and add the 'disabled' class
+        saveBtn.disabled = true;
+        saveBtn.classList.add('disabled');
+    } else {
+        // If a vehicle is selected, enable the save button and remove the 'disabled' class
+        saveBtn.disabled = false;
+        saveBtn.classList.remove('disabled');
+    }
+}
 
   /**
    *

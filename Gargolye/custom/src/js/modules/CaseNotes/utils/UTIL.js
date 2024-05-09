@@ -59,6 +59,134 @@
   }
 
   /**
+   * Creates an instance of AsyncQueue for managing and sending updates asynchronously.
+   *
+   * @constructor
+   * @param {string} apiEndpoint - The endpoint URL where updates will be sent.
+   * @param {number} [maxQueueSize=10] - The maximum number of updates before automatically sending them.
+   */
+  function AsyncQueue(apiEndpoint, maxQueueSize = 10, onSendComplete = () => {}) {
+    this.apiEndpoint = apiEndpoint;
+    this.maxQueueSize = maxQueueSize;
+    this.onSendComplete = onSendComplete;
+
+    this.queue = {};
+    this.queueLength = 0;
+    this.failedUpdates = [];
+    this.isSending = false;
+  }
+
+  /**
+   * Adds an update to the queue. Automatically sends updates if the queue reaches maxQueueSize.
+   *
+   * @param {string} inputId - The identifier for the input being updated.
+   * @param {any} newValue - The new value for the input.
+   */
+  AsyncQueue.prototype.addUpdate = function (updateData) {
+    this.queue[updateData.id] = updateData.data;
+    this.queueLength = Object.keys(this.queue).length;
+
+    if (this.queueLength >= this.maxQueueSize) {
+      this.sendUpdates();
+    }
+  };
+
+  /**
+   * Sends updates from the queue to the server endpoint. Can be forced to send all updates regardless of queue size.
+   *
+   * @param {boolean} [force=false] - Whether to force sending of updates regardless of the current queue size.
+   */
+  AsyncQueue.prototype.sendUpdates = async function (forceUpdate = false) {
+    if (this.queueLength === 0 || (this.isSending && !forceUpdate)) {
+      this.onSendComplete([]);
+      return;
+    }
+
+    this.isSending = true;
+
+    const updatesToSend = Object.values(this.queue);
+    this.queue = {};
+    this.queueLength = 0;
+
+    const sendPromises = updatesToSend.map(async update => {
+      try {
+        const response = await _UTIL.fetchData(this.apiEndpoint, update);
+        return { success: true, data: response, update };
+      } catch (error) {
+        console.error('Error sending update:', update, error);
+        this.failedUpdates.push(update);
+        return { success: false, error: error.message, update };
+      }
+    });
+
+    const results = await Promise.all(sendPromises);
+    this.isSending = false;
+    this.onSendComplete(results);
+  };
+
+  /**
+   * Sets the callback function to be executed when sending data is complete.
+   *
+   * @param {Function} callback - The callback function to be called when sending is complete.
+   * @returns {void}
+   */
+  AsyncQueue.prototype.setSendCompleteCallback = function (callback) {
+    this.onSendComplete = callback;
+  };
+
+  /**
+   * Immediately forces sending of all updates in the queue, regardless of queue size.
+   */
+  AsyncQueue.prototype.forceSendUpdates = async function () {
+    if (this.queueLength > 0) {
+      await this.sendUpdates(true);
+    }
+  };
+
+  /**
+   * Converts a camelCase string to a title case string with spaces.
+   *
+   * @param {string} camelCaseStr - The camelCase string to be converted.
+   * @returns {string} The converted string in title case with spaces.
+   *
+   * @example
+   * // returns 'Hello There World'
+   * convertCamelCaseToTitle('helloThereWorld');
+   */
+  function convertCamelCaseToTitle(camelCaseStr) {
+    // Add a space before each uppercase letter and trim the result
+    let spacedStr = camelCaseStr.replace(/([A-Z])/g, ' $1').trim();
+
+    // Capitalize the first letter and concatenate with the rest of the string
+    return spacedStr.charAt(0).toUpperCase() + spacedStr.slice(1);
+  }
+
+  function connectionWatch() {
+    if ($.session.watchingConnection) return;
+
+    const statusPopup = new Dialog({ className: 'connectionWatchStatusPopup' });
+    const statusMessage = _DOM.createElement('p');
+    statusPopup.dialog.appendChild(statusMessage);
+    statusPopup.renderTo(document.body);
+
+    window.addEventListener('offline', event => {
+      statusMessage.innerText = 'The network connection has been lost.';
+      statusPopup.show();
+    });
+
+    window.addEventListener('online', event => {
+      statusMessage.innerText = 'You are now connected to the network.';
+      setTimeout(() => {
+        statusPopup.close();
+      }, 3000)
+    });
+
+    console.clear();
+    console.log('connection watch enabled');
+    $.session.watchingConnection = true;
+  }
+
+  /**
    * Debounces a function, ensuring that it's not called until after the specified
    * amount of time has passed since the last time it was invoked.
    *
@@ -80,44 +208,6 @@
 
       clearTimeout(timeout);
       timeout = setTimeout(later, wait);
-    };
-  }
-
-  /**
-   * Debounces a function, ensuring that it's not called until after the specified
-   * amount of time has passed since the last time it was invoked. Executes the
-   * function immediately upon the first call.
-   *
-   * @function
-   * @param {Function} func - The function to debounce.
-   * @param {Number} wait - The number of milliseconds to delay the function.
-   * @returns {Function} - Returns the debounced version of the provided function.
-   */
-  function debounce2(func, wait) {
-    let timeout;
-    let immediate = true;
-
-    return function executedFunction(...args) {
-      const context = this;
-
-      const later = function () {
-        timeout = null;
-        if (!immediate) {
-          func.apply(context, args);
-        }
-        immediate = true;
-      };
-
-      const callNow = immediate && !timeout;
-
-      clearTimeout(timeout);
-
-      timeout = setTimeout(later, wait);
-
-      if (callNow) {
-        immediate = false;
-        func.apply(context, args);
-      }
     };
   }
 
@@ -150,6 +240,20 @@
     } catch (error) {
       console.log(`There was a problem with ${service}`, error.message);
       throw error;
+    }
+  }
+
+  function getDeviceType() {
+    const ua = navigator.userAgent;
+
+    // Patterns to detect mobile and tablet devices
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    const isTablet = /iPad|Android/i.test(ua) && !/Mobile/i.test(ua);
+
+    if (isMobile) {
+      return isTablet ? 'TABLET' : 'MOBILE';
+    } else {
+      return 'DESKTOP';
     }
   }
 
@@ -320,7 +424,6 @@
    * @example
    * const original = 'reallyLongfilename.png';
    * const truncated = truncateFilename(original, 15);
-   * console.log(truncated);  // Output will be "real...ame.png"
    */
   function truncateFilename(filename, maxLength = 20) {
     const fileExtension = filename.split('.').pop();
@@ -392,7 +495,11 @@
   return {
     autoIncrementId,
     asyncSetTimeout,
+    AsyncQueue,
+    connectionWatch,
+    convertCamelCaseToTitle,
     debounce,
+    getDeviceType,
     fetchData,
     localStorageHandler,
     mergeObjects,

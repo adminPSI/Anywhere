@@ -15,6 +15,16 @@ const WagesBenefits = (() => {
     let name;
     let positionName;
     let selectedConsumersName;
+    let eligibleBenefits;
+
+    //CheckBoxs
+    let eligibleBenefitschkBox;
+    let vacationSickchkBox;
+    let medicalVisionchkbox;
+    let retirementchkBox;
+    let empDiscountchkBox;
+    let otherchkBox;
+    let otherInput;
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
@@ -57,6 +67,22 @@ const WagesBenefits = (() => {
         DiscountChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].empDiscount;
         otherChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].other;
         otherValue = CheckBoxEntries.getWagesCheckboxEntriesResult[0].otherText;
+        eligibleBenefits = CheckBoxEntries.getWagesCheckboxEntriesResult[0].eligibleBenefits;
+
+        eligibleBenefitschkBox = input.buildCheckbox({
+            text: 'Eligible For Benefits',
+            id: 'chkEligibleBenefits',
+            isChecked: eligibleBenefits == 'Y' ? true : false,
+            style: 'secondary',
+            callback: event => {
+                saveWagesChecked('EligibleForBenifit', event.target.checked, null);
+                eligibleBenefits = event.target.checked == true ? 'Y' : 'N';
+                if (event.target.checked == false) {
+                    checkBoxValidation();
+                }
+                disableCheckBox();
+            }
+        });
 
         vacationSickchkBox = input.buildCheckbox({
             text: 'Vacation/Sick',
@@ -135,6 +161,11 @@ const WagesBenefits = (() => {
         consumerNameDisplay.style.marginTop = '20px';
         addNewCardBody.appendChild(consumerNameDisplay);
 
+        var chk1Div = document.createElement('div');
+        chk1Div.style.marginTop = '20px';
+        chk1Div.appendChild(eligibleBenefitschkBox);
+        addNewCardBody.appendChild(chk1Div);
+
         var chkDiv = document.createElement('div');
         chkDiv.style.marginTop = '20px'
         chkDiv.appendChild(vacationSickchkBox);
@@ -177,8 +208,8 @@ const WagesBenefits = (() => {
         });
     }
 
-    function disableCheckBox() {
-        if ($.session.EmploymentUpdate) {
+    function disableCheckBox() { 
+        if ($.session.EmploymentUpdate && eligibleBenefits == 'Y') {
             vacationSickchkBox.classList.remove('disabled');
             medicalVisionchkbox.classList.remove('disabled');
             retirementchkBox.classList.remove('disabled');
@@ -205,7 +236,7 @@ const WagesBenefits = (() => {
         const tableOptions = {
             plain: false,
             tableId: 'employmentCommonTable',
-            columnHeadings: ['Hours/ Week', 'Hourly Wages', 'Start Date', 'End Date'],
+            columnHeadings: ['Work Hours/ Week', 'Hourly Wages', 'Start Date', 'End Date'],
             endIcon: $.session.EmploymentDelete == true ? true : false,
         };
 
@@ -215,8 +246,8 @@ const WagesBenefits = (() => {
             onClick: (e) => {
                 if ($.session.EmploymentUpdate) {
                     handleAccountTableEvents(e.target.attributes.wagesId.value)
-                }               
-            }, 
+                }
+            },
             endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',
             endIconCallback: (e) => {
                 deleteWagesBenefitsPOPUP(entry.wagesId);
@@ -506,6 +537,74 @@ const WagesBenefits = (() => {
             const result = await EmploymentAjax.saveCheckboxWagesAsync(chkboxName, IsChacked, PositionId, textboxValue, $.session.UserId);
             const { saveCheckboxWagesResult } = result;
         }
+    }
+
+    function checkBoxValidation() {
+        var vacationSick = vacationSickchkBox.querySelector('#chkVacationSick');
+        var medicalVision = medicalVisionchkbox.querySelector('#chkmedicalVision');
+        var retirement = retirementchkBox.querySelector('#chkRetirement');
+        var empDiscount = empDiscountchkBox.querySelector('#chkEmpDiscount');
+        var other = otherchkBox.querySelector('#chkOther');
+
+        if (eligibleBenefits == 'N' && (vacationSick.checked || medicalVision.checked || retirement.checked || empDiscount.checked || other.checked)) {
+            eligibleForBenifitConfirmPOPUP();
+        }
+    }
+
+    function eligibleForBenifitConfirmPOPUP() {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: async () => {
+                await saveWagesChecked('VacationSick', false, null);
+                await saveWagesChecked('Medical', false, null);
+                await saveWagesChecked('empDiscount', false, null);
+                await saveWagesChecked('Retirement', false, null);
+                await saveWagesChecked('Medical', false, null);
+                await saveWagesChecked('other', false, '');
+
+                vacationSickchkBox.querySelector('#chkVacationSick').checked = false;
+                medicalVisionchkbox.querySelector('#chkmedicalVision').checked = false;
+                retirementchkBox.querySelector('#chkRetirement').checked = false;
+                empDiscountchkBox.querySelector('#chkEmpDiscount').checked = false;
+                otherchkBox.querySelector('#chkOther').checked = false;
+                otherInput.querySelector('#otherInput').value = '';
+                disableCheckBox();
+                POPUP.hide(confirmPopup);
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+                eligibleBenefits = 'Y';   
+                eligibleBenefitschkBox.querySelector('#chkEligibleBenefits').checked = true;
+                saveWagesChecked('EligibleForBenifit', true, null);
+                disableCheckBox(); 
+            },
+        });
+
+        const message = document.createElement('p');
+
+        message.innerText = 'All benefits that this person is eligible for will be removed.  Do you want to continue?';
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
     }
 
     return {

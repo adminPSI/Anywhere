@@ -12,6 +12,8 @@ const CaseNotes = (() => {
   let selectedDate = null;
   let selectedServiceCode;
   let updatedInputs = {};
+  let allowGroupNotes = false;
+  let defaultServiceCode;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -59,9 +61,9 @@ const CaseNotes = (() => {
     caseNoteEditData = {};
     caseNoteAttachmentsEditData = [];
     attachmentsForDelete = [];
-    caseManagerId;
+    caseManagerId = $.session.PeopleId;
     selectedConsumers = [];
-    selectedServiceCode;
+    selectedServiceCode = defaultServiceCode ? defaultServiceCode : '';
     updatedInputs = {};
   }
   function resetModule() {
@@ -105,7 +107,7 @@ const CaseNotes = (() => {
     // else - enable dropdown, make required
   }
   function checkGroupNotesPermission() {
-    let allowGroupNotes;
+    allowGroupNotes;
 
     if ($.session.applicationName === 'Gatekeeper') {
       allowGroupNotes = cnData.allowGroupNotes(selectedServiceCode);
@@ -197,7 +199,6 @@ const CaseNotes = (() => {
     });
 
     const overlap = cnData.getOverlapData();
-    console.log(overlap);
 
     return overlap;
   }
@@ -439,6 +440,11 @@ const CaseNotes = (() => {
 
     const servLocData = cnData.getServiceLocationDropdownData();
     cnForm.inputs['serviceLocation'].populate(servLocData);
+    if (cnForm.formData) {
+      cnForm.inputs['serviceLocation'].setValue(cnForm.formData.serviceLocation);
+    }
+
+    onServiceCodeChange();
   }
   async function setConsumerRelatedDropdowns() {
     await updateVendorDropdownByConsumer();
@@ -453,11 +459,11 @@ const CaseNotes = (() => {
   }
   // ATTACHMENT DELETE
   async function onFileDelete(e) {
-    console.log(e.target);
-    console.log('File delete from form', e.detail);
+    // console.log(e.target);
+    // console.log('File delete from form', e.detail);
 
     attachmentsForDelete.push(e.detail);
-    console.log(attachmentsForDelete);
+    // console.log(attachmentsForDelete);
   }
   // CHANGE \ KEYUP
   function onTimeChange(target) {
@@ -540,6 +546,9 @@ const CaseNotes = (() => {
     } else {
       const isServiceFunding = cnData.isServiceFunding(selectedServiceCode);
       cnForm.inputs['serviceLocation'].toggleDisabled(!isServiceFunding);
+      if (!isServiceFunding) {
+        cnForm.inputs['serviceLocation'].setValue('');
+      }
     }
 
     if (selectedServiceCode !== '') {
@@ -750,6 +759,7 @@ const CaseNotes = (() => {
     }
   }
   async function onFormSubmit(data, submitter) {
+    toggleFormButtonsDisabled(true);
     const buttonName = submitter.name.toLowerCase();
 
     const overlaps = await timeOverlapCheck(data.startTime, data.endTime);
@@ -765,6 +775,9 @@ const CaseNotes = (() => {
       }
     }
 
+    // Fetch reviewRequired data
+    const reviewRequiredData = await cnData.fetchCaseManagerReviewData(caseManagerId);
+
     const saveData = {
       caseManagerId,
       caseNote: data.noteText ? _UTIL.removeUnsavableNoteText(data.noteText) : '',
@@ -779,7 +792,7 @@ const CaseNotes = (() => {
       locationCode: data.location ?? '',
       noteId: caseNoteId ?? 0,
       needCode: data.need ?? '',
-      reviewRequired: '',
+      reviewRequired: reviewRequiredData.reviewRequired,
       serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
       serviceCode: data.service ?? '',
       serviceLocationCode: data.serviceLocation ?? '',
@@ -790,20 +803,25 @@ const CaseNotes = (() => {
     const attachmentsForSave = await processAttachmentsForSave(data);
 
     const { isNewGroup } = await saveNote(saveData, attachmentsForSave);
+    
+    // OVERVIEW // await cnOverview.fetchData(selectedDate);
+    // OVERVIEW // cnOverview.populate();
 
-    //await cnOverview.fetchData(selectedDate);
-    //cnOverview.populate();
     cnFormToast.close();
 
     if (buttonName === 'saveandnew' || isNewGroup) {
       resetNoteData();
       cnForm.clear();
       rosterPicker.setSelectedConsumers([]);
+      cnForm.inputs['serviceCode'].setValue(selectedServiceCode);
+      onServiceCodeChange();
 
       if ($.session.applicationName === 'Gatekeeper') {
         cnDocTimer.clear();
       }
     }
+
+    toggleFormButtonsDisabled(false);
   }
 
   // ROSTER
@@ -832,14 +850,13 @@ const CaseNotes = (() => {
     onTimeChange();
 
     //re populate overview section when date change
-    // await cnOverview.fetchData(selectedDate);
-    // cnOverview.populate();
+    // OVERVIEW // await cnOverview.fetchData(selectedDate);
+    // OVERVIEW // cnOverview.populate();
   }
 
   // OVERVIEW CARDS
   //--------------------------------------------------
   async function onOverviewCardDelete(caseNoteId) {
-    console.log('delete', caseNoteId);
     deleteNote(caseNoteId);
   }
   async function onOverviewCardEdit(noteId) {
@@ -849,7 +866,6 @@ const CaseNotes = (() => {
       noteId: noteId,
     });
     caseNoteEditData = data.getCaseNoteEditJSONResult[0];
-    console.log(caseNoteEditData);
 
     caseNoteId = noteId;
     caseNoteGroupId = caseNoteEditData.groupid;
@@ -859,9 +875,12 @@ const CaseNotes = (() => {
     attachmentsForDelete = [];
 
     rosterPicker.setSelectedConsumers(selectedConsumers, true);
-    rosterPicker.toggleRosterDisabled(true, isReadOnly);
     setConsumerRelatedDropdowns();
     onServiceCodeChange(caseNoteEditData.totaldoctime);
+
+    if (!allowGroupNotes) {
+      rosterPicker.toggleRosterDisabled(true, isReadOnly);
+    }
 
     cnForm.populate({
       serviceCode: caseNoteEditData.mainbillingorservicecodeid,
@@ -910,23 +929,28 @@ const CaseNotes = (() => {
     cnForm.onSubmit(onFormSubmit);
     cnForm.onReset(onFormReset);
     cnForm.onFileDelete(onFileDelete);
-    // cnOverview.onCardEdit(onOverviewCardEdit);
-    // cnOverview.onCardDelete(onOverviewCardDelete);
+
+    // OVERVIEW // cnOverview.onCardEdit(onOverviewCardEdit);
+    // OVERVIEW // cnOverview.onCardDelete(onOverviewCardDelete);
   }
   async function populatePage() {
     await cnPhrases.InsertPhrases.fetchData();
     cnPhrases.InsertPhrases.populate();
     await rosterPicker.fetchConsumers();
     rosterPicker.populate();
-    // await cnOverview.fetchData(selectedDate);
-    // cnOverview.populate();
+    // OVERVIEW // await cnOverview.fetchData(selectedDate);
+    // OVERVIEW // cnOverview.populate();
+    if (selectedConsumers) {
+      rosterPicker.setSelectedConsumers(selectedConsumers);
+    }
   }
   async function loadPage() {
     dateNavigation.renderTo(cnDateNavWrap);
     rosterPicker.renderTo(cnRosterWrap);
     cnFormToast.renderTo(cnFormWrap);
     cnForm.renderTo(cnFormWrap);
-    // cnOverview.renderTo(moduleWrap);
+
+    // OVERVIEW // cnOverview.renderTo(moduleWrap);
     cnPhrases.renderTo(_DOM.ACTIONCENTER);
 
     attachEvents();
@@ -968,7 +992,7 @@ const CaseNotes = (() => {
 
     // Form
     cnForm = new Form({
-      elements: [
+      fields: [
         //confidential
         {
           type: 'checkbox',
@@ -996,7 +1020,7 @@ const CaseNotes = (() => {
           id: 'serviceCode',
           required: true,
           data: cnData.getServiceBillCodeDropdownData(),
-          defaultValue: cnData.getDefaultServiceCode(),
+          defaultValue: selectedServiceCode,
           includeBlankOption: true,
         },
         //location
@@ -1100,7 +1124,7 @@ const CaseNotes = (() => {
     cnFormToast = new Toast();
 
     // Overview Cards
-    //cnOverview = new CaseNotesOverview(cnData);
+    // OVERVIEW // cnOverview = new CaseNotesOverview(cnData);
 
     // Phrases
     cnPhrases = new CaseNotesPhrases();
@@ -1119,11 +1143,14 @@ const CaseNotes = (() => {
     overlapPopup = new ConfirmationPopup({ className: 'overlapWarning' });
     overlapPopup.renderTo(_DOM.ACTIONCENTER);
   }
-  async function init() {
+  async function init(fromDashboard) {
     setPermissions();
 
     selectedDate = dates.getTodaysDateObj();
     caseManagerId = $.session.PeopleId;
+    if (fromDashboard === true) {
+      selectedConsumers = [CN_CaseLoadWidget.getCurrentlyselectedConsumerId()];
+    }
 
     loadPageSkeleton();
 
@@ -1131,6 +1158,8 @@ const CaseNotes = (() => {
     cnData = new CaseNotesData();
     await cnData.fetchDropdownData();
     await cnData.fetchCaseManagerReviewData(caseManagerId);
+    defaultServiceCode = cnData.getDefaultServiceCode();
+    selectedServiceCode = defaultServiceCode;
     if ($.session.applicationName === 'Advisor') {
       await cnData.fetchConsumersThatCanHaveMileage();
     }
@@ -1138,6 +1167,8 @@ const CaseNotes = (() => {
     initComponents();
     await loadPage();
     await populatePage();
+
+    onServiceCodeChange();
 
     // if (isReadOnly) {
     //   cnForm.disableFormInputs();

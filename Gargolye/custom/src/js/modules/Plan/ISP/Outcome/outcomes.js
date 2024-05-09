@@ -81,7 +81,7 @@ const planOutcomes = (() => {
       if (!oc.reviews[o.outcomeReviewId]) {
         oc.reviews[o.outcomeReviewId] = {
           whatWillHappen: o.whatWillHappen,
-          //whenToCheckIn: o.whenToCheckIn,
+          whenToCheckIn: o.whenToCheckIn,
           whoReview: o.who,
           reviewIds: o.outcomeReviewId,
           whoResponsible: o.whoResponsible,
@@ -315,6 +315,12 @@ const planOutcomes = (() => {
     if (filteredWho && filteredWho.length > 0) {
       return filteredWho[0].teamMember === 'Case Manager' ? true : false;
     }
+  }
+
+  function isSalesforceLocationTrue(value) {
+    // Check if value exists in dropdownData.serviceVendors array and its isSalesforceLocation is 'True'
+    const vendor = dropdownData.serviceVendors.find(vendor => vendor.vendorId === value);
+    return vendor ? vendor.isSalesforceLocation === 'True' : false;
   }
 
   //*------------------------------------------------------
@@ -662,6 +668,7 @@ const planOutcomes = (() => {
       whenHowOftenValue: [],
       whenHowOftenFrequency: [],
       whenHowOftenText: [],
+      isSalesforceLocation: []
     };
 
     Object.values(saveData.responsibilities).forEach(resp => {
@@ -672,8 +679,16 @@ const planOutcomes = (() => {
       }
       if (resp.responsibleProvider === '%') {
         respData.responsibleProvider.push(0);
+        respData.isSalesforceLocation.push(false);
       } else {
-        respData.responsibleProvider.push(parseInt(resp.responsibleProvider));
+        if ($.session.applicationName === 'Advisor') {
+          resp.isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider);
+          respData.isSalesforceLocation.push(resp.isSalesforceLocation);
+          respData.responsibleProvider.push(resp.responsibleProvider);
+        } else {
+          respData.responsibleProvider.push(resp.responsibleProvider);
+          respData.isSalesforceLocation.push(false);
+        }
       }
 
       respData.whenHowOftenFrequency.push(parseInt(resp.whenHowOftenFrequency));
@@ -697,8 +712,8 @@ const planOutcomes = (() => {
 
       const vendorID =
         saveData.responsibilities[index].responsibleContact === '%'
-          ? saveData.responsibilities[index].responsibleProvider
-          : saveData.responsibilities[index].responsibleContact;
+            ? saveData.responsibilities[index].responsibleProvider
+            : saveData.responsibilities[index].responsibleContact;
       const respId = saveData.responsibilities[index].responsibilityIds;
       selectedVendors[respId] = vendorID;
 
@@ -792,6 +807,7 @@ const planOutcomes = (() => {
       whenHowOftenValue: [],
       whenHowOftenFrequency: [],
       whenHowOftenText: [],
+      isSalesforceLocation: []
     };
 
     Object.entries(updateData.responsibilities).map(async ([key, resp]) => {
@@ -813,8 +829,8 @@ const planOutcomes = (() => {
     Object.entries(updateData.responsibilities).map(async ([key, resp], index) => {
       const responsibleContact =
         resp.responsibleContact === '%' ? 0 : parseInt(resp.responsibleContact);
-      const responsibleProvider =
-        resp.responsibleProvider === '%' ? 0 : parseInt(resp.responsibleProvider);
+      const isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider);
+      const responsibleProvider = resp.responsibleProvider === '%' ? 0 : resp.responsibleProvider;
       const whenHowOftenFrequency = parseInt(resp.whenHowOftenFrequency);
       const whenHowOftenValue = resp.whenHowOftenValue;
       const whenHowOftenText = resp.whenHowOftenText;
@@ -858,6 +874,7 @@ const planOutcomes = (() => {
         respData.whenHowOftenFrequency.push(whenHowOftenFrequency);
         respData.whenHowOftenValue.push(whenHowOftenValue);
         respData.whenHowOftenText.push(whenHowOftenText);
+        respData.isSalesforceLocation.push(isSalesforceLocation);
       } else {
         const respIds = await planOutcomesAjax.insertPlanOutcomeExperienceResponsibility({
           token: $.session.Token,
@@ -867,6 +884,7 @@ const planOutcomes = (() => {
           whenHowOftenValue: [whenHowOftenValue],
           whenHowOftenFrequency: [whenHowOftenFrequency],
           whenHowOftenText: [whenHowOftenText],
+          isSalesforceLocation: [isSalesforceLocation]
         });
         updateData.responsibilities[key].responsibilityIds = respIds[0];
       }
@@ -1645,16 +1663,17 @@ const planOutcomes = (() => {
   async function insertOutcomeReview(saveData) {
     const outcomeId = saveData.outcomeId;
     const whatWillHappen = saveData.whatWillHappen;
-    //const whenToCheckIn = saveData.whenToCheckIn;
+    const whenToCheckIn = saveData.whenToCheckIn;
     const whoReview = saveData.whoReview;
     const reviewOrder = `${saveData.reviewOrder}`;
-    const contactId = parseInt(saveData.contactId);
+   // const contactId = parseInt(saveData.contactId);
+   const contactId = saveData.contactId;
 
     const reviewId = await planOutcomesAjax.insertPlanOutcomesReview({
       token: $.session.Token,
       outcomeId: outcomeId,
       whatWillHappen: [whatWillHappen],
-      whenToCheckIn: [''],
+      whenToCheckIn: [whenToCheckIn],
       whoReview: [whoReview],
       reviewOrder: [reviewOrder],
       contactId: [contactId],
@@ -1673,7 +1692,7 @@ const planOutcomes = (() => {
             showReviewsPopup(
               {
                 whatWillHappen,
-                //whenToCheckIn,
+                whenToCheckIn,
                 whoReview,
                 reviewOrder,
                 reviewIds: reviewId,
@@ -1687,12 +1706,24 @@ const planOutcomes = (() => {
       ],
       isSortable,
     );
+
+        // grabs the review alert for this specific outcome
+        const alertDiv = document.getElementById(`reviewsAlert${outcomeId}`);
+
+        // checks for missing data
+        validationCheck = await planValidation.ISPValidation(planId);
+     
+        // displays or removes button alert depending on validationCheck
+        planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
+      
+        // displays or removes alerts for tabs in the navs depending on validationCheck
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   async function updateOutcomeReview(updateData) {
     const outcomeId = updateData.outcomeId;
     const reviewIds = updateData.reviewIds;
     const whatWillHappen = updateData.whatWillHappen;
-    //const whenToCheckIn = updateData.whenToCheckIn;
+    const whenToCheckIn = updateData.whenToCheckIn;
     const whoReview = updateData.whoReview;
     //const reviewOrder = updateData.reviewOrder;
     const contactId = updateData.contactId;
@@ -1702,7 +1733,7 @@ const planOutcomes = (() => {
       outcomeId,
       reviewIds: [reviewIds],
       whatWillHappen: [whatWillHappen],
-      whenToCheckIn: [''],
+      whenToCheckIn: [whenToCheckIn],
       whoReview: [whoReview],
       contactId: [contactId],
       // reviewOrder: [reviewOrder],
@@ -1722,7 +1753,7 @@ const planOutcomes = (() => {
                 outcomeId,
                 reviewIds,
                 whatWillHappen,
-                //whenToCheckIn,
+                whenToCheckIn,
                 whoReview,
                 contactId,
                 //reviewOrder,
@@ -1734,6 +1765,18 @@ const planOutcomes = (() => {
       ],
       isSortable,
     );
+
+        // grabs the review alert for this specific outcome
+        const alertDiv = document.getElementById(`reviewsAlert${outcomeId}`);
+
+        // checks for missing data
+        validationCheck = await planValidation.ISPValidation(planId);
+     
+        // displays or removes button alert depending on validationCheck
+        planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
+      
+        // displays or removes alerts for tabs in the navs depending on validationCheck
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   async function deleteOutcomeReview(outcomeId, reviewId) {
     await planOutcomesAjax.deletePlanOutcomeReview({
@@ -1749,10 +1792,10 @@ const planOutcomes = (() => {
 
     // checks for missing data
     validationCheck = await planValidation.ISPValidation(planId);
-
+ 
     // displays or removes button alert depending on validationCheck
     planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
-
+  
     // displays or removes alerts for tabs in the navs depending on validationCheck
     planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
@@ -1762,8 +1805,10 @@ const planOutcomes = (() => {
     const doneBtn = document.querySelector('.reviewsPopup .doneBtn');
     if (inputsWithErrors) {
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
     } else {
       doneBtn.classList.remove('disabled');
+      doneBtn.disabled = false;
     }
   }
   function showReviewsPopup(popupData, isNew) {
@@ -1772,7 +1817,7 @@ const planOutcomes = (() => {
     const saveUpdateData = {
       outcomeId: popupData.outcomeId,
       whatWillHappen: popupData.whatWillHappen ? popupData.whatWillHappen : '',
-      //whenToCheckIn: popupData.whenToCheckIn ? popupData.whenToCheckIn : '',
+      whenToCheckIn: popupData.whenToCheckIn ? popupData.whenToCheckIn : '',
       whoReview: popupData.whoReview ? popupData.whoReview : '',
       reviewOrder: popupData.reviewOrder ? popupData.reviewOrder : '',
       contactId: popupData.contactId ? popupData.contactId : '',
@@ -1812,7 +1857,8 @@ const planOutcomes = (() => {
     });
     // Who Review
     const whoReviewDropdown = dropdown.build({
-      dropdownId: '',
+      dropdownId: 'whoReviewDropdown',
+      id: 'whoReviewDropdown',
       label: 'Who?',
       style: 'secondary',
       callback: (e, selectedOption) => {
@@ -1839,16 +1885,38 @@ const planOutcomes = (() => {
       },
     });
     // When To Check In
-    // const whenToCheckInInput = input.build({
-    //   label: 'When To Check In?',
-    //   type: 'text',
-    //   style: 'secondary',
-    //   value: saveUpdateData.whenToCheckIn,
-    //   charLimit: charLimits.whenToCheckIn,
-    //   forceCharLimit: true,
-    //   attributes: [{ key: 'tabindex', value: '-1' }],
-    // });
+    const whenToCheckinDropdown = dropdown.build({
+      label: 'When To Check In?',
+      type: 'text',
+      style: 'secondary',
+      callback: (e, selectedOption) => {
+       
+        saveUpdateData.whenToCheckIn = selectedOption.text;
+
+        if (saveUpdateData.whenToCheckIn === '' || saveUpdateData.whenToCheckIn === '%') {
+          whenToCheckinDropdown.classList.add('error');
+        } else {
+          whenToCheckinDropdown.classList.remove('error');
+        }
+
+        toggleReviewsPopupDoneBtn();
+      }
+    });
     // whenToCheckInInput.classList.add('disabled');
+
+    // whenToCheckinDropdown
+    function populatewhenToCheckinDropdown(whenToCheckinDropdown, whenToCheckIn) {
+      const dropdownData = [
+        { text: '', value: '' },
+        { text: 'Weekly', value: 'Weekly' },
+        { text: 'Monthly', value: 'Monthly' },
+        { text: 'Quarterly', value: 'Quarterly' },
+        { text: 'Semi-Monthly', value: 'Semi-Monthly' },
+        { text: 'Bi-Monthly', value: 'Bi-Monthly' },
+        { text: 'N/A', value: 'N/A' },
+      ];
+      dropdown.populate(whenToCheckinDropdown, dropdownData, whenToCheckIn);
+    }
 
     const doneBtn = button.build({
       text: isNew ? 'Save' : 'Update',
@@ -1857,6 +1925,7 @@ const planOutcomes = (() => {
       classNames: 'doneBtn',
       callback: async () => {
         doneBtn.classList.add('disabled');
+        doneBtn.disabled = true;
         if (isNew) {
           const tableId = `reviewsTable${saveUpdateData.outcomeId}`;
           const rowOrder = table.getRowCount(tableId) + 1;
@@ -1867,7 +1936,9 @@ const planOutcomes = (() => {
         }
 
         doneBtn.classList.remove('disabled');
+        doneBtn.disabled = false;
         POPUP.hide(reviewsPopup);
+        
 
         // grabs the review alert for this specific outcome
         const alertDiv = document.getElementById(`reviewsAlert${saveUpdateData.outcomeId}`);
@@ -1916,26 +1987,36 @@ const planOutcomes = (() => {
       whoReviewDropdown.classList.add('error');
       hasInitialErros = true;
     }
+    if (saveUpdateData.whenToCheckIn === '' || saveUpdateData.whenToCheckIn === '%') {
+      whenToCheckinDropdown.classList.add('error');
+      hasInitialErros = true;
+    }
     if (hasInitialErros) {
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
+
     }
     // end required fields
 
     if (isReadOnly) {
       whatWillHappenInput.classList.add('disabled');
       whoReviewDropdown.classList.add('disabled');
-      //whenToCheckInInput.classList.add('disabled');
+      whenToCheckinDropdown.classList.add('disabled');
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
       deleteBtn.classList.add('disabled');
     }
 
     reviewsPopup.appendChild(whatWillHappenInput);
     reviewsPopup.appendChild(whoReviewDropdown);
-    //reviewsPopup.appendChild(whenToCheckInInput);
+    reviewsPopup.appendChild(whenToCheckinDropdown);
     reviewsPopup.appendChild(btnWrap);
 
     //populateReviewsWhoDropdown(whoReviewDropdown, saveUpdateData.contactId);
-    planData.populateRelationshipDropdown(whoReviewDropdown, saveUpdateData.contactId);
+   // planData.populateRelationshipDropdown(whoReviewDropdown, saveUpdateData.contactId);
+    planData.populateOutcomesReviewWhoDropdown(whoReviewDropdown, saveUpdateData.contactId);
+
+    populatewhenToCheckinDropdown(whenToCheckinDropdown, saveUpdateData.whenToCheckIn);
 
     POPUP.show(reviewsPopup);
     DOM.autosizeTextarea();
@@ -1988,7 +2069,7 @@ const planOutcomes = (() => {
         .map(td => {
           const whatWillHappen = td.whatWillHappen;
           const whoReview = td.whoReview;
-          //const whenToCheckIn = td.whenToCheckIn;
+          const whenToCheckIn = td.whenToCheckIn;
           const rowId = `reviews${td.reviewIds}`;
 
           return {
@@ -1998,12 +2079,13 @@ const planOutcomes = (() => {
               showReviewsPopup(
                 {
                   whatWillHappen: whatWillHappen,
-                  //whenToCheckIn: whenToCheckIn,
+                  whenToCheckIn: whenToCheckIn,
                   whoReview: whoReview,
                   reviewOrder: td.reviewOrder + 1,
                   reviewIds: td.reviewIds,
                   outcomeId: td.outcomeId,
-                  contactId: td.contactId,
+                 // contactId: td.contactId,
+                 contactId: td.whoResponsible,
                 },
                 false,
               ),
@@ -2034,7 +2116,7 @@ const planOutcomes = (() => {
     reviewsDiv.appendChild(reviewsBtnAlertDiv);
 
     planValidation.reviewsValidationCheck(validationCheck, outcomeId, reviewAlertDiv);
-
+  
     return reviewsDiv;
   }
 
@@ -2395,7 +2477,7 @@ const planOutcomes = (() => {
           progressSummaryId: progressSummaryId,
         });
 
-        if (e.target.value === '') {
+        if ((e.target.value === '') && (validationCheck.outcomesData.planOutcome.length > 0)) {
           validationCheck.planProgressSummary = false;
         } else {
           validationCheck.planProgressSummary = true;

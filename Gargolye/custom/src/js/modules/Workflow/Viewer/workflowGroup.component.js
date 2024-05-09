@@ -1,16 +1,17 @@
 class WorkflowGroupComponent {
 
-    constructor(parent, {groupId, groupName, steps}, people){
+    constructor(parent, { groupId, groupName, steps }, people, responsiblePeople){
         this.groupId = groupId;
         this.name = groupName;
         this.steps = steps;  
         this.people = people;
         this.parent = parent;
+        this.responsiblePeople = responsiblePeople;   
     }
 
     render(){
 
-        let {groupId, name, steps, parent, people} = this;
+        let { groupId, name, steps, parent, people, responsiblePeople } = this;
 
         let groupContainer = document.createElement('div');
         groupContainer.classList.add("wf-group-container");
@@ -41,8 +42,8 @@ class WorkflowGroupComponent {
                 type: 'contained',
                 classNames: ['add-step-button'],
                 icon: 'add',
-                callback: () => {
-                    new EditWorkflowStepComponent(new WorkflowStepComponent({groupId: groupId, stepOrder: "" + (steps.length + 1) + ""}, people), async (editedData)=>{
+                callback: () => {   
+                    new EditWorkflowStepComponent(new WorkflowStepComponent({ groupId: groupId, stepOrder: "" + (steps.length + 1) + "" }, people, responsiblePeople ), async (editedData)=>{
                         try {
                             let result = await WorkflowViewerAjax.insertStepAsync(editedData);
                             const {insertWorkflowStepResult} = result;
@@ -97,7 +98,7 @@ class WorkflowGroupComponent {
 
         if (steps){            
             steps.map(s => {
-                groupContainer.appendChild(new WorkflowStepComponent(s, people).render());            
+                groupContainer.appendChild(new WorkflowStepComponent(s, people, responsiblePeople).render());            
             })
         }       
 

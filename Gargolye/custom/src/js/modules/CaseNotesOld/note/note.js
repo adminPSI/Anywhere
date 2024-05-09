@@ -359,7 +359,7 @@ var note = (function () {
         serviceDate,
         startTime,
         endTime,
-        vendorId: vendorInput.options[vendorInput.selectedIndex].value,
+        vendorId: vendorInput.value,
         contactCode: contactId,
         serviceLocationCode: serviceLocationId,
         caseNote: noteText, // from note input

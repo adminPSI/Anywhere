@@ -145,7 +145,9 @@ const demographics = (function () {
             name === 'zip' ||
             name === 'medicaidNumber' ||
             name === 'medicareNumber' ||
-            name === 'residentNumber'
+            name === 'residentNumber' ||
+            name === 'localID'
+           // name === 'consumerNumber'
         ) {
             input.type = 'number';
             input.pattern = '/^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/im';
@@ -177,7 +179,13 @@ const demographics = (function () {
         if (text.toLowerCase() === 'ssn') {
             return text.toUpperCase();
         }
-
+        if (text.toLowerCase() === 'localid') {
+            return 'Local ID';
+        }
+        
+        if (text.toLowerCase() === 'consumernumber') {
+            return 'Consumer #';
+        }
         const splitText = text
             .match(/([A-Z]?[^A-Z]*)/g)
             .slice(0, -1)
@@ -243,6 +251,8 @@ const demographics = (function () {
         const medicaidNumber = data.MedicaidNumber;
         const medicareNumber = data.MedicareNumber;
         const residentNumber = data.ResidentNumber;
+        const consumerNumber = data.consumerNumber;
+        const localID = data.localID;
 
         // Organization Info
         const county = data.County;
@@ -294,6 +304,8 @@ const demographics = (function () {
                 medicaidNumber,
                 medicareNumber,
                 residentNumber,
+                localID,
+                consumerNumber,
                 ssn: socialSecurityNumber,
             },
             // Organization Info
@@ -322,12 +334,13 @@ const demographics = (function () {
         wrap.classList.add('inputGroupWrap', `${title.replaceAll(' ', '').toLowerCase()}`);
 
         const heading = document.createElement('h3');
-        heading.innerText = title;
-
+        heading.innerText = title;  
         wrap.appendChild(heading);
 
         wrap.addEventListener('click', e => {
             if (!$.session.DemographicsUpdate) return;
+
+            // if (title === 'Additional Info') return;
 
             if (e.target.classList.contains('inputGroup')) {
                 if (e.target.classList.contains('unEditabled')) return;
@@ -494,6 +507,9 @@ const demographics = (function () {
                 if (name === 'ssn') {
                     saveValue = e.target.value.replaceAll('-', '');
                 }
+                if (name === 'localId') {
+                    saveValue = e.target.value
+                }
                 // save value
                 const success = await rosterAjax.updateConsumerDemographics({
                     field: name,
@@ -588,7 +604,9 @@ const demographics = (function () {
                 prop === 'dateOfBirth' ||
                 prop === 'medicaidNumber' ||
                 prop === 'medicareNumber' ||
-                prop === 'residentNumber'
+                prop === 'residentNumber' ||
+                prop === 'consumerNumber' ||
+                prop === 'localID'
             ) {
                 viewEle.classList.add('hidden');
             }
@@ -623,8 +641,14 @@ const demographics = (function () {
                 if ($.session.DemographicsViewResident) {
                     viewElements['residentNumber'].classList.remove('hidden');
                 }
-                if ($.session.DemographicsViewSSN) {
+               if ($.session.DemographicsViewSSN) {
                     viewElements['ssn'].classList.remove('hidden');
+               }
+                if ($.session.DemographicsViewConsumerNumber) {
+                    viewElements['consumerNumber'].classList.remove('hidden');
+                }
+                if ($.session.DemographicsViewLocalId) {
+                    viewElements['localID'].classList.remove('hidden');
                 }
             } else {
                 e.target.innerText = 'Show Details';
@@ -634,6 +658,8 @@ const demographics = (function () {
                 viewElements['medicareNumber'].classList.add('hidden');
                 viewElements['residentNumber'].classList.add('hidden');
                 viewElements['ssn'].classList.add('hidden');
+                viewElements['consumerNumber'].classList.add('hidden');
+                viewElements['localID'].classList.add('hidden');
             }
         });
 

@@ -10,9 +10,15 @@ const Employment = (() => {
     var selectedConsumers;
     var selectedConsumersName;
     var selectedConsumersId;
-    let isNewPositionEnable;
     //filter
     let filterValues;
+    let btnWrap;
+    let employerBtnWrap;
+    let positionBtnWrap;
+    let positionStartDateBtnWrap;
+    let positionEndDateBtnWrap;
+    let jobStandingBtnWrap;
+    let reportValues;
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
@@ -41,7 +47,6 @@ const Employment = (() => {
         if (!document.querySelector('.consumerListBtn')) roster2.miniRosterinit();
 
         landingPage = document.createElement('div');
-        var LineBr = document.createElement('br');
 
         selectedConsumersId = selectedConsumers[selectedConsumers.length - 1].id;
         $.session.consumerId = selectedConsumersId;
@@ -52,16 +57,6 @@ const Employment = (() => {
             })
         ).getConsumerNameByIDResult;
 
-        const result = await EmploymentAjax.isNewPositionEnableAsync(selectedConsumersId);
-        const { isNewPositionEnableResult } = result;
-
-        if (isNewPositionEnableResult[0].IsEmployeeEnable == '0') {
-            isNewPositionEnable = false;
-        }
-        else {
-            isNewPositionEnable = true;
-        }
-
         selectedConsumersName = name[0].FullName;
         const topButton = buildHeaderButton(selectedConsumers[0]);
         landingPage.appendChild(topButton);
@@ -71,10 +66,7 @@ const Employment = (() => {
         const filteredBy = buildFilteredBy();
         filterRow.appendChild(filteredBy);
 
-        landingPage.appendChild(LineBr);
-        landingPage.appendChild(LineBr);
         landingPage.appendChild(filterRow);
-        landingPage.appendChild(LineBr);
         EmploymentEntriesTable = await buildEmploymentEntriesTable(filterValues);
         landingPage.appendChild(EmploymentEntriesTable);
         DOM.ACTIONCENTER.appendChild(landingPage);
@@ -85,9 +77,9 @@ const Employment = (() => {
         const tableOptions = {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
-            headline: selectedConsumersName, 
+            headline: selectedConsumersName,
             columnHeadings: ['Employer', 'Position', 'Position Start Date', 'Position End Date', 'Job Standing'],
-            endIcon: false, //ToDo   //$.session.OODView == true ? true : false, 
+            endIcon: false,
         };
 
         let EmploymentsEntries = await EmploymentAjax.getEmploymentEntriesAsync(
@@ -99,20 +91,11 @@ const Employment = (() => {
             filterValues.jobStanding,
         );
 
-        const additionalInformation = newODDEntryBtn();
-        additionalInformation.innerHTML = '+ NEW ODD ENTRY';
-        additionalInformation.style = 'margin-top: -10px; width: 200px;';
-
         let tableData = EmploymentsEntries.getEmploymentEntriesResult.map((entry) => ({
             values: [entry.employer, entry.position, entry.positionStartDate == '' ? '' : moment(entry.positionStartDate).format('M/D/YYYY'), entry.positionEndDate == '' ? '' : moment(entry.positionEndDate).format('M/D/YYYY'), entry.jobStanding],
             attributes: [{ key: 'positionId', value: entry.positionId }, { key: 'PeopleName', value: entry.PeopleName }],
             onClick: (e) => {
                 handleAccountTableEvents(e)
-            },
-            endIcon: $.session.OODView == true ? '' : '', //ToDo  //additionalInformation.outerHTML : '', 
-            endIconCallback: e => {
-                // TODO
-                //buildChangePasswordPopup(userID, FirstName, LastName); 
             },
         }));
         const oTable = table.build(tableOptions);
@@ -128,14 +111,6 @@ const Employment = (() => {
         NewEmployment.refreshEmployment(positionId, name, positionName, selectedConsumersName, selectedConsumersId);
     }
 
-    function newODDEntryBtn() {
-        return button.build({
-            text: '+ NEW ODD ENTRY',
-            style: 'secondary',
-            type: 'contained',
-        });
-    }
-
     // build display of Account and button
     function buildHeaderButton(consumer) {
         consumerElement = document.createElement('div');
@@ -147,46 +122,82 @@ const Employment = (() => {
         return consumerElement;
     }
 
-    // build display of "Entry" Buttons -- "New Entry" and "New Monthly Summary"
     function buildButtonBar(consumer) {
         const buttonBar = document.createElement('div');
         buttonBar.classList.add('OODbuttonBar');
         buttonBar.style.maxHeight = '50px';
         buttonBar.style.minWidth = '100%';
 
-        const entryButtonBar = document.createElement('div');
-        const filterButtonBar = document.createElement('div');
-
-        entryButtonBar.style.width = '49%';
-        filterButtonBar.style.width = '49%';
-
-
         const newPositionBtn = button.build({
             text: '+ New Position',
             style: 'secondary',
             type: 'contained',
-            classNames: 'newEntryBtn',
-            callback: async () => { NewEmployment.refreshEmployment(positionId = undefined, '', '', selectedConsumersName, selectedConsumersId) },
+            classNames: 'entryBtn',
+            callback: async () => {
+                if (!newPositionBtn.classList.contains('disabled')) {
+                    NewEmployment.refreshEmployment(positionId = undefined, '', '', selectedConsumersName, selectedConsumersId)
+                }
+            },
         });
-        if ($.session.EmploymentUpdate && isNewPositionEnable) {
+
+        const editEmployerBtn = button.build({
+            text: 'Edit Employers',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'entryBtn',
+            callback: async () => {
+                if (!editEmployerBtn.classList.contains('disabled')) {
+                    addEditEmployers.init();
+                }
+            },
+        });
+
+
+
+        // Helper function to create the main reports button on the module page
+        function createMainReportButton(buttonsData) {
+            return button.build({
+                text: 'Reports',
+                icon: 'add',
+                style: 'secondary',
+                type: 'contained',
+                classNames: 'entryBtn',
+                callback: function () {
+                    // Iterate through each item in the buttonsData array
+                    buttonsData.forEach(function (buttonData) {
+                        buttonData.filterValues = getReportValues();
+                    });
+
+                    generateReports.showReportsPopup(buttonsData);
+                },
+            });
+        }
+        reportsBtn = createMainReportButton([{ text: 'Employee Reporting Information' }])
+
+        if ($.session.EmploymentUpdate) {
             newPositionBtn.classList.remove('disabled');
         }
         else {
             newPositionBtn.classList.add('disabled');
         }
         newPositionBtn.style.height = '50px';
-        newPositionBtn.style.minWidth = '100%';
 
         newFilterBtn = buildNewFilterBtn();
-        newFilterBtn.style.height = '50px';
-        newFilterBtn.style.minWidth = '100%';
+
+        const entryButtonBar = document.createElement('div');
+        entryButtonBar.classList.add('employmentBtnWrap');
+        entryButtonBar.style.width = '100%';
         entryButtonBar.appendChild(newPositionBtn);
-        filterButtonBar.appendChild(newFilterBtn);
 
-        filterButtonBar.style.marginLeft = '2%';
-
+        if (!$.session.InsertEmployers && !$.session.UpdateEmployers) {
+            editEmployerBtn.classList.add('disabled');
+        }
+        entryButtonBar.appendChild(editEmployerBtn);
+        if ($.session.EmploymentView) {
+            entryButtonBar.appendChild(reportsBtn);
+        }
         buttonBar.appendChild(entryButtonBar);
-        buttonBar.appendChild(filterButtonBar);
+
         return buttonBar;
     }
 
@@ -196,48 +207,203 @@ const Employment = (() => {
             token: $.session.Token,
             employer: '%',
             position: '%',
-            positionStartDate: '1900-01-01', // UTIL.formatDateFromDateObj(dates.subDays(new Date('1/1/1990'))),  
-            positionEndDate: null,// UTIL.getTodaysDate(),           
+            positionStartDate: '1900-01-01',
+            positionEndDate: null,
             jobStanding: '%',
+            EmployerID: '%',
+            positionID: '%',
+            jobStandingID: '%'
         }
+    }
 
-        return button.build({
-            text: 'Filter',
-            style: 'secondary',
-            type: 'contained',
-            callback: () => buildFilterPopUp(filterValues)
+    function getReportValues() {
+        return (reportValues = {
+            consumerID: selectedConsumersId,
+            employer: filterValues.EmployerID == undefined ? '%' : filterValues.EmployerID,
+            position: filterValues.positionID == undefined ? '%' : filterValues.positionID,
+            positionStartDate: filterValues.positionStartDate,
+            positionEndDate: filterValues.positionEndDate == null ? UTIL.getTodaysDate() : filterValues.positionEndDate,
+            jobStanding: filterValues.jobStandingID == undefined ? '%' : filterValues.jobStandingID,
         });
     }
 
 
     // build the display of the current Filter Settings (next to the Filter button) 
     function buildFilteredBy() {
-        var filteredBy = document.querySelector('.widgetFilteredBy');
-
+        var filteredBy = document.querySelector('.filteredByData');
         if (!filteredBy) {
             filteredBy = document.createElement('div');
-            filteredBy.classList.add('widgetFilteredBy');
+            filteredBy.classList.add('filteredByData');
+            filterButtonSet()
+            filteredBy.appendChild(btnWrap);
         }
 
         filteredBy.style.maxWidth = '100%';
-        const startDate = moment(filterValues.positionStartDate, 'YYYY-MM-DD').format('MM/DD/YYYY');
-        const endDate = filterValues.positionEndDate == null ? 'none' : moment(filterValues.positionEndDate, 'YYYY-MM-DD').format('MM/DD/YYYY');
+        if (filterValues.employer === '%' || filterValues.employer === 'ALL') {
+            btnWrap.appendChild(employerBtnWrap);
+            btnWrap.removeChild(employerBtnWrap);
+        } else {
+            btnWrap.appendChild(employerBtnWrap);
+        }
 
-        filteredBy.innerHTML = `<div class="filteredByData">
-			<p>                         
-                <span>Employer:</span> ${(filterValues.employer == '%') ? 'ALL' : filterValues.employer}&nbsp;&nbsp;
-			    <span>Position:</span> ${(filterValues.position == '%') ? 'ALL' : filterValues.position}&nbsp;&nbsp;
-                <span>Position Start Date:</span> ${startDate}&nbsp;&nbsp;
-			    <span> Position End Date:</span> ${endDate}&nbsp;&nbsp;   
-			    <span>Job Standing:</span> ${(filterValues.jobStanding == '%') ? 'ALL' : filterValues.jobStanding}                
-            </p>
-		  </div>`;
+        if (filterValues.position === '%' || filterValues.position === 'ALL') {
+            btnWrap.appendChild(positionBtnWrap);
+            btnWrap.removeChild(positionBtnWrap);
+        } else {
+            btnWrap.appendChild(positionBtnWrap);
+        }
+
+        if (filterValues.positionEndDate === null) {
+            btnWrap.appendChild(positionEndDateBtnWrap);
+            btnWrap.removeChild(positionEndDateBtnWrap);
+        } else {
+            btnWrap.appendChild(positionEndDateBtnWrap);
+        }
+        if (filterValues.jobStanding === '%' || filterValues.jobStanding === 'ALL') {
+            btnWrap.appendChild(jobStandingBtnWrap);
+            btnWrap.removeChild(jobStandingBtnWrap);
+        } else {
+            btnWrap.appendChild(jobStandingBtnWrap);
+        }
 
         return filteredBy;
     }
 
+    function filterButtonSet() {
+        filterBtn = button.build({
+            text: 'Filter',
+            icon: 'filter',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'filterBtnNew',
+            callback: () => { buildFilterPopUp('ALL') },
+        });
+
+        employerBtn = button.build({
+            id: 'employerBtn',
+            text: 'Employer: ' + filterValues.employer,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('employerBtn') },
+        });
+        employerCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('employerBtn') },
+        });
+
+        positionBtn = button.build({
+            id: 'positionBtn',
+            text: 'Position: ' + filterValues.position,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('positionBtn') },
+        });
+        positionCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('positionBtn') },
+        });
+
+        positionStartDateBtn = button.build({
+            id: 'positionStartDateBtn',
+            text: 'Position Start Date: ' + moment(filterValues.positionStartDate, 'YYYY-MM-DD').format('MM/DD/YYYY'),
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('positionStartDateBtn') },
+        });
+
+        positionEndDateBtn = button.build({
+            id: 'positionEndDateBtn',
+            text: 'Position End Date: ' + moment(filterValues.positionEndDate, 'YYYY-MM-DD').format('MM/DD/YYYY'),
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('positionEndDateBtn') },
+        });
+        positionEndDateCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('positionEndDateBtn') },
+        });
+
+        jobStandingBtn = button.build({
+            id: 'jobStandingBtn',
+            text: 'Job Standing: ' + filterValues.jobStanding,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('jobStandingBtn') },
+        });
+        jobStandingCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('jobStandingBtn') },
+        });
+
+        btnWrap = document.createElement('div');
+        btnWrap.classList.add('filterBtnWrap');
+        btnWrap.appendChild(filterBtn);
+
+        employerBtnWrap = document.createElement('div');
+        employerBtnWrap.classList.add('filterSelectionBtnWrap');
+        employerBtnWrap.appendChild(employerBtn);
+        employerBtnWrap.appendChild(employerCloseBtn);
+        btnWrap.appendChild(employerBtnWrap);
+
+        positionBtnWrap = document.createElement('div');
+        positionBtnWrap.classList.add('filterSelectionBtnWrap');
+        positionBtnWrap.appendChild(positionBtn);
+        positionBtnWrap.appendChild(positionCloseBtn);
+        btnWrap.appendChild(positionBtnWrap);
+
+        positionStartDateBtnWrap = document.createElement('div');
+        positionStartDateBtnWrap.classList.add('filterSelectionBtnWrap');
+        positionStartDateBtnWrap.appendChild(positionStartDateBtn);
+        btnWrap.appendChild(positionStartDateBtnWrap);
+
+        positionEndDateBtnWrap = document.createElement('div');
+        positionEndDateBtnWrap.classList.add('filterSelectionBtnWrap');
+        positionEndDateBtnWrap.appendChild(positionEndDateBtn);
+        positionEndDateBtnWrap.appendChild(positionEndDateCloseBtn);
+        btnWrap.appendChild(positionEndDateBtnWrap);
+
+        jobStandingBtnWrap = document.createElement('div');
+        jobStandingBtnWrap.classList.add('filterSelectionBtnWrap');
+        jobStandingBtnWrap.appendChild(jobStandingBtn);
+        jobStandingBtnWrap.appendChild(jobStandingCloseBtn);
+        btnWrap.appendChild(jobStandingBtnWrap);
+    }
+
+    function closeFilter(closeFilter) {
+        if (closeFilter == 'employerBtn') {
+            filterValues.employer = '%';
+        }
+        if (closeFilter == 'positionBtn') {
+            filterValues.position = '%';
+        }
+        if (closeFilter == 'positionEndDateBtn') {
+            filterValues.positionEndDate = null;
+        }
+        if (closeFilter == 'jobStandingBtn') {
+            filterValues.jobStanding = '%';
+        }
+        loadEmploymentLanding();
+    }
+
     // build Filter pop-up that displays when an "Filter" button is clicked
-    function buildFilterPopUp(filterValues) {
+    function buildFilterPopUp(IsShow) {
         // popup
         filterPopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
@@ -291,25 +457,27 @@ const Employment = (() => {
             type: 'outlined',
             callback: () => filterPopupCancelBtn()
         });
-        positionStartDate.style.width = '170px';
-        positionEndDate.style.width = '170px';
-        positionEndDate.style.marginLeft = '12px';
 
-        filterPopup.appendChild(EmployerDropdown);
-        filterPopup.appendChild(positionDropdown);
+        if (IsShow == 'ALL' || IsShow == 'employerBtn')
+            filterPopup.appendChild(EmployerDropdown);
+        if (IsShow == 'ALL' || IsShow == 'positionBtn')
+            filterPopup.appendChild(positionDropdown);
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
         btnWrap.appendChild(APPLY_BTN);
         btnWrap.appendChild(CANCEL_BTN);
 
         var dateWrap = document.createElement('div');
-        dateWrap.classList.add('dropdownWrap');
-        dateWrap.appendChild(positionStartDate);
-        dateWrap.appendChild(positionEndDate);
+        dateWrap.classList.add('dateWrap');
+        if (IsShow == 'ALL' || IsShow == 'positionStartDateBtn')
+            dateWrap.appendChild(positionStartDate);
+        if (IsShow == 'ALL' || IsShow == 'positionEndDateBtn')
+            dateWrap.appendChild(positionEndDate);
 
         // build popup
         filterPopup.appendChild(dateWrap);
-        filterPopup.appendChild(jobStandingDropdown);
+        if (IsShow == 'ALL' || IsShow == 'jobStandingBtn')
+            filterPopup.appendChild(jobStandingDropdown);
         filterPopup.appendChild(btnWrap);
 
         eventListeners();
@@ -325,6 +493,9 @@ const Employment = (() => {
         var tmpJobStanding;
         var tmpStartDate;
         var tmpEndDate;
+        var tmpEmployerID;
+        var tmppositionID;
+        var tmpjobStandingID;
 
         positionStartDate.addEventListener('change', event => {
             tmpStartDate = event.target.value;
@@ -334,12 +505,15 @@ const Employment = (() => {
         });
         EmployerDropdown.addEventListener('change', event => {
             tmpEmployer = event.target.value;
+            tmpEmployerID = event.target.options[event.target.selectedIndex].id;
         });
         positionDropdown.addEventListener('change', event => {
             tmpPosition = event.target.value;
+            tmppositionID = event.target.options[event.target.selectedIndex].id;
         });
         jobStandingDropdown.addEventListener('change', event => {
             tmpJobStanding = event.target.value;
+            tmpjobStandingID = event.target.options[event.target.selectedIndex].id;
         });
 
         APPLY_BTN.addEventListener('click', () => {
@@ -348,7 +522,10 @@ const Employment = (() => {
                 tmpPosition,
                 tmpJobStanding,
                 tmpStartDate,
-                tmpEndDate
+                tmpEndDate,
+                tmpEmployerID,
+                tmppositionID,
+                tmpjobStandingID
             });
 
             POPUP.hide(filterPopup);
@@ -363,10 +540,15 @@ const Employment = (() => {
         if (data.tmpJobStanding) filterValues.jobStanding = data.tmpJobStanding;
         if (data.tmpStartDate) filterValues.positionStartDate = data.tmpStartDate;
         if (data.tmpEndDate) filterValues.positionEndDate = data.tmpEndDate;
+        if (data.tmpEndDate == '') filterValues.positionEndDate = null;
+        if (data.tmpStartDate == '') filterValues.positionStartDate = '1900-01-01';
+
+        if (data.tmpEmployerID) filterValues.EmployerID = data.tmpEmployerID;
+        if (data.tmppositionID) filterValues.positionID = data.tmppositionID;
+        if (data.tmpjobStandingID) filterValues.jobStandingID = data.tmpjobStandingID;
     }
 
     async function populateFilterDropdown() {
-
         const {
             getPositionsResult: Positions,
         } = await EmploymentAjax.getPositionsAsync();
@@ -399,7 +581,6 @@ const Employment = (() => {
         }));
         jobStandingData.unshift({ id: null, value: '%', text: 'ALL' });
         dropdown.populate("jobStandingDropdown", jobStandingData, filterValues.jobStanding);
-
     }
 
     function filterPopupCancelBtn() {

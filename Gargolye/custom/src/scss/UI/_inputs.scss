@@ -76,6 +76,16 @@ $label_fontSize: $px14;
     }
   }
 
+  input,
+  select,
+  textarea {
+    &:disabled,
+    &[readonly] {
+      background: $gray;
+      cursor: not-allowed;
+    }
+  }
+
   //===========================================
   // TEXTAREAS
   //-------------------------------------------
@@ -109,58 +119,59 @@ $label_fontSize: $px14;
   //===========================================
   // CHECKBOXES & RADIOS
   //-------------------------------------------
-  .checkbox,
-  .radio {
-    input[type='checkbox'],
-    input[type='radio'] {
-      opacity: 0;
-      position: absolute;
+  .checkbox input[type='checkbox'],
+  .radio input[type='radio'] {
+    opacity: 0;
+    position: absolute;
 
-      &:checked ~ label::before {
-        content: '\002714';
-        background-color: $primary;
-        color: $white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+    &:checked ~ label::before {
+      content: '\002714';
+      background-color: $primary;
+      color: $white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-      &.active ~ label::before {
-        border-color: $primary;
-      }
-      &:invalid ~ label::before {
-        border-color: $error;
-      }
+    &.active ~ label::before {
+      border-color: $primary;
+    }
+    &:invalid ~ label::before {
+      border-color: $error;
+    }
+    &:disabled ~ label::before {
+      border-color: $gray;
+      cursor: not-allowed;
+    }
 
-      & ~ label {
-        display: flex;
-        align-items: center;
-        margin: 0;
+    & ~ label {
+      display: flex;
+      align-items: center;
+      margin: 0;
 
-        &::before {
-          content: '';
-          background-color: $white;
-          border: $input_border;
-          border-radius: 4px;
-          height: 20px;
-          margin: 0 6px 0 0;
-          width: 20px;
+      &::before {
+        content: '';
+        background-color: $white;
+        border: $input_border;
+        border-radius: 4px;
+        height: 20px;
+        min-height: 20px;
+        margin: 0 6px 0 0;
+        min-width: 20px;
+        width: 20px;
 
-          position: relative;
-          top: 0px;
-        }
+        position: relative;
+        top: 0px;
       }
     }
   }
 
-  .radio {
-    input[type='radio'] {
-      margin: 0 0 10px;
+  .radio input[type='radio'] {
+    margin: 0 0 10px;
 
-      label {
-        &::before {
-          border-radius: 50%;
-        }
+    & ~ label {
+      &::before {
+        border-radius: 50%;
       }
     }
   }
@@ -281,12 +292,12 @@ $label_fontSize: $px14;
       .fakelabel {
         align-items: center;
         border: 2px solid $primary;
-        border-radius: 20px;
+        border-radius: 14px;
         color: #272727;
         display: flex;
-        height: 40px;
+        height: 34px;
         flex-flow: row nowrap;
-        padding: 10px 14px;
+        padding: 0px 10px;
         font-size: 0.875rem;
         font-weight: 500;
         text-transform: uppercase;

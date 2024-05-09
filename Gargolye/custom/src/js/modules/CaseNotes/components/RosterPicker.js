@@ -55,7 +55,11 @@
     this.messageEle = _DOM.createElement('p', {
       class: 'rosterPicker__message',
       node: this.messageEleIcon,
-      text: this.options.consumerRequired ? 'Consumer(s) is required' : 'Please select a consumer',
+      text: this.options.consumerRequired
+        ? this.options.allowMultiSelect
+          ? 'Consumer(s) is required'
+          : 'Consumer is required'
+        : 'Please select a consumer',
     });
     this.messageEle.classList.toggle(
       'error',
@@ -82,6 +86,13 @@
       this.rosterCaseLoadInput.rootElement,
       this.rosterWrapEle,
     );
+  };
+
+  RosterPicker.prototype._buildMobileButton = function () {
+    this.mobileRosterBtn = new Button({
+      icon: 'peopleGroup',
+      class: ['mobileRosterBtn'],
+    });
   };
 
   /**
@@ -135,6 +146,10 @@
 
     this.rosterSearchInput.onChange(e => {
       this._filterConsumersOnSearch(e);
+    });
+    this.rosterSearchInput.onClick(e => {
+      console.log(e);
+      // this._filterConsumersOnSearch(e);
     });
 
     this.rosterCaseLoadInput.onChange(async e => {
@@ -268,7 +283,6 @@
         this.rosterWrapEle.appendChild(gridAnimationWrapper);
 
         // SET REFERENCE TO DOM NODE ON DATA OBJ
-        // console.log(this.consumers[consumer.id] === consumer);
         consumer.cardEle = rosterCard.rootElement;
       });
   };
@@ -279,8 +293,24 @@
    * @function
    * @param {Function} cbFunc Callback function to call
    */
-  RosterPicker.prototype.onConsumerSelect = function (cbFunc) {
+  RosterPicker.prototype.onConsumerSelect = function (cbFunc, opts = {}) {
     this.rosterWrapEle.addEventListener('onConsumerSelect', () => {
+      if (opts.idkyet) {
+        const selectedConsumers = Object.keys(this.selectedConsumers).reduce((acc, cv) => {
+          const consumer = this.consumers[cv];
+          acc[cv] = {
+            id: cv,
+            firstName: consumer.FN,
+            middleName: consumer.MN,
+            lastName: consumer.LN,
+          };
+          return acc;
+        }, {});
+
+        cbFunc(selectedConsumers);
+        return;
+      }
+
       cbFunc(Object.keys(this.selectedConsumers));
     });
   };
@@ -352,7 +382,7 @@
    * @function
    * @param {Array} consumerIds
    */
-  RosterPicker.prototype.setSelectedConsumers = function (consumerIds, lockdown) {
+  RosterPicker.prototype.setSelectedConsumers = function (consumerIds, lockdown = false) {
     this.clearSelectedConsumers();
 
     consumerIds.forEach(cid => {

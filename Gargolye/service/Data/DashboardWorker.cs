@@ -127,12 +127,30 @@ namespace Anywhere.service.Data
             return response;
         }
 
+        public string updateUserWidgetOrderSettings(string token, string[] updatedListOrder)
+        {
+            int orderCount = 1;
+            foreach (string listName in updatedListOrder)
+            {
+                string nameOfTab = listName;
+                if (listName == "Case Note Productivity")
+                    nameOfTab = "Case_Note_Productivity";
+                if (listName == "My Case Load")
+                    nameOfTab = "Case Load Widget"; 
+ 
+                dg.updateUserWidgetOrderSettings(token, nameOfTab, orderCount.ToString());
+                orderCount++;
+            }
+            return "true";
+        }
+
         public class UserWidgetSettings
         {
             public string widgetId { get; set; }
             public string widgetConfig { get; set; }
             public string showHide { get; set; }
             public string widgetName { get; set; }
+            public string widgetOrder { get; set; }
         }
 
         public class ProductivityWidget

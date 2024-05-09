@@ -1,6 +1,10 @@
-// let reviewRequired;
-// reviewRequired = cnData.isReviewRequired();
+// 4.  Only enable "Is there evidence of declining..." [isIndividualSkillsDeclined]
+// IF "Is there evidence that the primary caregiver.." [isPrimaryCaregiverUnavailable] answer is "No" 
+// OR ("Is there evidence that the primary caregiver." [isPrimaryCaregiverUnavailable] ansser is "Yes" 
+// AND "Is action required...' [isActionRequiredIn30Days] is "No")
 
-//TODO-ASH: NO GROUP NOTES IF DOC TIME IS ALLOWED
-//TODO-ASH: crete checkbox for corrected (review only)
-//TODO-ASH: You have selected a bill code that does not allow group notes. Please select only one consumer.
+// In GateKeeper Desktop "Is there evidence of declining skill......." is disabled when the first two questions are yes.
+
+// I didn't answer the question, but if you leave the page and come back, it has set itself to no.
+
+// hey there

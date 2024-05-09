@@ -1,5 +1,15 @@
 using Anywhere.Data;
+using Anywhere.Log;
+using CrystalDecisions.Shared;
+using Newtonsoft.Json;
+using System;
+using System.Configuration;
+using System.Data;
+using System.Text;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereAbsentWorker;
+using static Anywhere.service.Data.Authorization.AuthorizationWorker;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Anywhere.service.Data
 {
@@ -7,6 +17,10 @@ namespace Anywhere.service.Data
     {
         DataGetter dg = new DataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
+        private static Loger logger = new Loger();
+        private string gSAConnString = ConfigurationManager.ConnectionStrings["connection"].ToString();
+        StringBuilder sb = new StringBuilder();
+        Sybase di = new Data.Sybase();
 
         public GoalSpecificLocationInfo[] getGoalSpecificLocationInfoJSON(string token, string activityId)
         {
@@ -247,6 +261,202 @@ namespace Anywhere.service.Data
         {
             public string goal_type_description { get; set; }
             public string Goal_Type_ID { get; set; }
+        }
+
+        public class PDParentOutcome
+        {
+            public string outcomeType { get; set; }
+            public string outcomeStatement { get; set; }
+            public string effectiveDateStart { get; set; }
+            public string effectiveDateEnd { get; set; }
+            public string goal_id { get; set; }
+            public string location { get; set; }
+
+        }
+
+        public class PDChildOutcome
+        {
+            public string objective_Id { get; set; }
+            public string goal_id { get; set; }
+            public string frequency { get; set; }
+            public string itemnum { get; set; }
+            public string serviceType { get; set; }
+            public string serviceStatement { get; set; }
+            public string serviceStartDate { get; set; }
+            public string serviceEndDate { get; set; }
+            public string objective_type { get; set; }
+            public string objective_method { get; set; }
+            public string success_determination { get; set; }
+            public string frequency_modifier { get; set; }
+            public string frequency_occurance { get; set; }
+            public string frequency_peroid { get; set; }
+            public string location { get; set; }
+            public string duration { get; set; }
+        }
+
+        public class OutComePageData
+        {
+            public PDParentOutcome[] pageDataParent { get; set; }
+            public PDChildOutcome[] pageDataChild { get; set; }
+        }
+
+        public class OutcomeService
+        {
+            public string goal_serviceStatement { get; set; }
+            public string goal_id { get; set; }
+        }
+
+        public class ServiceFrequencyType
+        {
+            public string serviceFrequencyType_id { get; set; }
+            public string serviceFrequencyType_name { get; set; }
+        }
+
+        public class LocationType
+        {
+            public string locationDescription { get; set; }
+            public string locationID { get; set; }
+        }
+
+        public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)
+        {
+            OutComePageData pageData = new OutComePageData();
+            js.MaxJsonLength = Int32.MaxValue;
+            string parentString = getOutcomeServicsPageDataParent(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId);
+            PDParentOutcome[] parentObj = js.Deserialize<PDParentOutcome[]>(parentString);
+
+            string childString = getOutcomeServicsPageDataChildren(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId, appName);
+            PDChildOutcome[] childObj = js.Deserialize<PDChildOutcome[]>(childString);
+
+            pageData.pageDataParent = parentObj;
+            pageData.pageDataChild = childObj;
+            return pageData;
+        }
+
+        //Parent
+        public string getOutcomeServicsPageDataParent(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId)
+        {
+            try
+            {
+                string jsonResult = "";
+                sb.Clear();
+
+                sb.Append("select Goal_ID as goal_id , gt.Goal_Type_Description as outcomeType, gs.Goal_Statement as outcomeStatement , gs.Start_Date as effectiveDateStart, gs.End_Date as effectiveDateEnd ");
+                sb.Append("from dba.goals gs ");
+                sb.Append("left outer join dba.Goal_Types gt on gs.Goal_Type_ID = gt.Goal_Type_ID ");
+                sb.AppendFormat("where(gs.Start_Date <= '{0}' or gs.Start_Date is null ) ", effectiveDateEnd);
+                sb.AppendFormat("AND (gs.End_Date >= '{0}' or gs.End_Date is null) ", effectiveDateEnd);
+                sb.AppendFormat("AND (gt.Goal_Type_Description like '{0}') ", outcomeType);
+                sb.AppendFormat("AND (gs.ID = {0}) ", selectedConsumerId);
+                DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+                jsonResult = DataTableToJSONWithJSONNet(dt);
+
+                return jsonResult;
+
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+            return String.Empty;
+        }
+
+        //Child
+        public string getOutcomeServicsPageDataChildren(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)
+        {
+            try
+            {
+                string jsonResult = "";
+                sb.Clear();
+                sb.Append(" select ROW_NUMBER() OVER(ORDER BY obj.Objective_id) AS itemnum, obj.Objective_ID as objective_Id, obj.goal_id as goal_id , ");
+                sb.Append(" case When (obj.Objective_recurrance Is null or obj.Objective_recurrance = '') and (obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0) and (ctf.Caption Is null or ctf.Caption ='')  then '' ");
+                sb.Append(" when obj.Objective_recurrance Is null then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end ");
+                sb.Append(" when obj.Objective_recurrance = 'M' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end + 'per month' ");
+                sb.Append(" when obj.Objective_recurrance = 'D' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end + 'per day' ");
+                sb.Append(" when obj.Objective_recurrance = 'W' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end + 'per week' ");
+                sb.Append(" when obj.Objective_recurrance = 'H' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end + 'per hour' ");
+                sb.Append(" when obj.Objective_recurrance = 'Y' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + case when obj.Frequency_Occurance Is null or obj.Frequency_Occurance = '' or obj.Frequency_Occurance = 0 then '' else 'x ' end + 'per year' end as frequency, ");
+                if (appName == "Gatekeeper")
+                    sb.Append(" ct.Caption as serviceType, obj.Objective_Statement as serviceStatement, obj.objective_start as serviceStartDate, obj.objective_end as serviceEndDate ");
+                else
+                    sb.Append(" ct.Caption as serviceType, obj.Objective_Statement as serviceStatement, obj.Start_Date as serviceStartDate, obj.End_Date as serviceEndDate ");
+                sb.Append(" from dba.Objectives obj ");
+                sb.Append(" left outer join dba.Code_Table ct on obj.Objective_Type = ct.Code and ct.Field_ID = 'Objective_Type' and ct.Table_ID = 'Objectives' ");
+                sb.Append(" left outer join dba.Code_Table ctf on obj.Frequency_Modifier = ctf.Code and ctf.Field_ID = 'Frequency_Modifier' and ctf.Table_ID = 'Objectives' ");
+
+                DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+                jsonResult = DataTableToJSONWithJSONNet(dt);
+
+                return jsonResult;
+            }
+            catch (Exception ex)
+            {
+            }
+            return String.Empty;
+        }
+
+        public string DataTableToJSONWithJSONNet(DataTable table)
+        {
+            string JSONString = string.Empty;
+            JSONString = JsonConvert.SerializeObject(table);
+            return JSONString;
+        }
+
+        public OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)
+        {
+            string outcomeTypeString = dg.getOutcomeTypeDropDown(token);
+            OutcomeTypeForFilter[] outcomeTypeObj = js.Deserialize<OutcomeTypeForFilter[]>(outcomeTypeString);
+            return outcomeTypeObj;
+        }
+
+        public OutcomesWorker.LocationType[] getLocationDropDown(string token)
+        {
+            string locationTypeString = dg.getLocationDropDown(token);
+            LocationType[] locationTypeObj = js.Deserialize<LocationType[]>(locationTypeString);
+            return locationTypeObj;
+        }
+
+        public OutcomesWorker.PDParentOutcome[] getGoalEntriesById(string token, string goalId)
+        {
+            string goalString = dg.getGoalEntriesById(token, goalId);
+            PDParentOutcome[] goalObj = js.Deserialize<PDParentOutcome[]>(goalString);
+            return goalObj;
+        }
+
+        public OutcomesWorker.PDChildOutcome[] getObjectiveEntriesById(string token, string objectiveId)
+        {
+            string objectiveString = dg.getObjectiveEntriesById(token, objectiveId);
+            PDChildOutcome[] objectiveObj = js.Deserialize<PDChildOutcome[]>(objectiveString);
+            return objectiveObj;
+        }
+
+        public OutcomeService[] getOutcomeServiceDropDown(string token)
+        {
+            string outcomeTypeString = dg.getOutcomeServiceDropDown(token);
+            OutcomeService[] outcomeTypeObj = js.Deserialize<OutcomeService[]>(outcomeTypeString);
+            return outcomeTypeObj;
+        }
+
+        public ServiceFrequencyType[] getServiceFrequencyTypeDropDown(string token, string type)
+        {
+            string serviceFrequencyTypeString = dg.getServiceFrequencyTypeDropDown(token, type);
+            ServiceFrequencyType[] serviceFrequencyTypeObj = js.Deserialize<ServiceFrequencyType[]>(serviceFrequencyTypeString);
+            return serviceFrequencyTypeObj;
+        }
+
+        public OutcomesWorker.PDParentOutcome[] insertOutcomeInfo(string token, string startDate, string endDate, string outcomeType, string outcomeStatement, string userID, string goalId, string consumerId, string location)
+        {
+            string insertOutcomeString = dg.insertOutcomeInfo(token, startDate, endDate, outcomeType, outcomeStatement, userID, goalId, consumerId, location);
+            OutcomesWorker.PDParentOutcome[] insertOutcomeObj = js.Deserialize<OutcomesWorker.PDParentOutcome[]>(insertOutcomeString);
+            return insertOutcomeObj;
+        }
+
+        public OutcomesWorker.PDChildOutcome[] insertOutcomeServiceInfo(string token, string startDate, string endDate, string outcomeType, string servicesStatement, string ServiceType, string method, string success, string frequencyModifier, string frequency, string frequencyPeriod, string userID, string objectiveId, string consumerId, string location, string duration)
+        {
+            string insertOutcomeServiceString = dg.insertOutcomeServiceInfo(token, startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId, location, duration);
+            OutcomesWorker.PDChildOutcome[] insertOutcomeServiceObj = js.Deserialize<OutcomesWorker.PDChildOutcome[]>(insertOutcomeServiceString);
+            return insertOutcomeServiceObj;
         }
 
     }

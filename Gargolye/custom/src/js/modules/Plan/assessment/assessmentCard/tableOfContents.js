@@ -63,22 +63,31 @@
         const questionKeys = Object.keys(questionCountObj[sectionKey][questionSetKey]);
 
         questionKeys.forEach(questionKey => {
-          const { answered, required, rowOrder } =
+          const { answered, required, rowOrder, leaveblank } =
             questionCountObj[sectionKey][questionSetKey][questionKey];
           if (!rowOrder) {
             if (!answered && required) {
+              if (leaveblank !== null && !leaveblank) {
               numOfQuestionsUnawnsered++;
               sectionUnawnseredQuestions[sectionKey]++;
+              }
             }
           } else {
             if (!tableQuestionSets) tableQuestionSets = {};
             if (!tableQuestionSets[questionSetKey]) tableQuestionSets[questionSetKey] = {};
-            if (!tableQuestionSets[questionSetKey][rowOrder])
+            if (!tableQuestionSets[questionSetKey][rowOrder]) {
               tableQuestionSets[questionSetKey][rowOrder] = {
                 atLeastOneColumnAnswered: false,
-              };
-            if (answered)
+              }
+              if (leaveblank !== null && !leaveblank && !answered) {
+               // numOfQuestionsUnawnsered++;
+                sectionUnawnseredQuestions[sectionKey]++;
+            }
+              }
+           // };
+            if (answered || leaveblank)
               tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
+
           }
         });
       });
@@ -99,6 +108,12 @@
         numOfQuestionsUnawnseredDiv.innerText = numOfQuestionsUnawnsered;
         numOfQuestionsUnawnseredWrapDiv.classList.remove('hidden');
       } else {
+        numOfQuestionsUnawnseredWrapDiv.classList.add('hidden');
+      }
+
+      const isWorkingSectionComplete = planValidation.returnAssessmentValidationData();
+      if (sectionKey === '41') {
+        numOfQuestionsUnawnsered = 0;
         numOfQuestionsUnawnseredWrapDiv.classList.add('hidden');
       }
     });
@@ -138,22 +153,41 @@
     tocSectionAlertDiv.style.display = 'none';
 
     if (title === 'WORKING/ NOT WORKING') {
-      const workingAlertDiv = document.createElement('div');
-      workingAlertDiv.classList.add('workingAlertDiv');
-      workingAlertDiv.id = `workingAlert`;
-      workingAlertDiv.innerHTML = `${icons.error}`;
-      sectionHeading.appendChild(workingAlertDiv);
+      const workingAlertDivCase1 = document.createElement('div');
+      workingAlertDivCase1.classList.add('workingAlertDivCase1');
+      workingAlertDivCase1.id = `workingAlert1`;
+      workingAlertDivCase1.innerHTML = `${icons.error}`;
+      sectionHeading.appendChild(workingAlertDivCase1);
 
-      // planValidation.createTooltip(
-      //   "There must be at least one record for What's Working/What's Not Working",
-      //   workingAlertDiv,
-      // );
+      planValidation.createTooltip(
+        "There must be at least one record for What's Working/What's Not Working",
+        workingAlertDivCase1,
+      );
 
-      workingAlertDiv.style.display = 'none';
+      workingAlertDivCase1.style.display = 'none';
 
-      //if (assessmentValidationCheck.workingSectionComplete === false) {
-      //  workingAlertDiv.style.display = 'inline-block';
-      //}
+      const workingAlertDivCase2 = document.createElement('div');
+      workingAlertDivCase2.classList.add('workingAlertDivCase2');
+      workingAlertDivCase2.id = `workingAlert2`;
+      workingAlertDivCase2.innerHTML = `${icons.error}`;
+      sectionHeading.appendChild(workingAlertDivCase2);
+
+      planValidation.createTooltip(
+        "Each record must include at least one 'What's Working' or 'What's Not Working', along with a 'Who Said It?' entry",
+        workingAlertDivCase2,
+      );
+
+      workingAlertDivCase2.style.display = 'none';
+
+      if (assessmentValidationCheck.workingSectionComplete === false) {
+        let workingSectionCaseValue = planValidation.returnWorkingSectionCaseValue();
+        if (workingSectionCaseValue === 1) {
+          workingAlertDivCase1.style.display = 'inline-block';
+        }
+        else if (workingSectionCaseValue === 2) {
+          workingAlertDivCase2.style.display = 'inline-block';
+        }
+      }
     }
 
     section.appendChild(sectionHeading);
@@ -220,7 +254,7 @@
     tocInner = document.createElement('div');
     tocInner.classList.add('tableOfContents__inner');
 
-    let assessmentValidationCheck = plan.getAssessmentValidation();
+    let assessmentValidationCheck = planValidation.returnAssessmentValidationData();
 
     const tocHeader = document.createElement('h2');
     tocHeader.classList.add('tableOfContents__heading');
@@ -233,14 +267,14 @@
     tocAlertDiv.innerHTML = `${icons.error}`;
 
     // creates and shows a tip when hovering over the visible alert div
-    // planValidation.createTooltip(
-    //   'At least one section of the Assessment must be selected',
-    //   tocAlertDiv,
-    // );
+    planValidation.createTooltip(
+      'At least one section of the Assessment must be selected',
+      tocAlertDiv,
+    );
 
-    //if (assessmentValidationCheck.hasASectionApplicable === true) {
-    //  tocAlertDiv.style.display = 'none';
-    //}
+    if (assessmentValidationCheck.hasASectionApplicable === true) {
+     tocAlertDiv.style.display = 'none';
+    }
 
     const tocMain = document.createElement('div');
     tocMain.classList.add('tableOfContents__main');

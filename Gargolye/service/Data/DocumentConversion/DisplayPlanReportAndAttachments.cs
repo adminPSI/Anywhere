@@ -85,7 +85,7 @@ namespace Anywhere.service.Data.DocumentConversion
         }
         public string[] sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
         {
-            string[] sendtoDODDResult = { };
+            string[] sendtoDODDResult = new string[2];
 
             try
             {

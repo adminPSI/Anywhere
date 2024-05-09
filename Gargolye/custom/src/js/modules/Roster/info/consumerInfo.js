@@ -151,8 +151,10 @@ var consumerInfo = (function () {
         var absentMenuItem = menulist.querySelector('[data-info-task="Mark As Absent"]');
         if ((locationid === '000' || locationid === '0') && absentMenuItem !== null) {
             absentMenuItem.classList.add('hidden');
-            const index = menuNewList.findIndex(x => x.title == 'Mark As Absent');           
-            menuNewList.splice(index, 1);             
+            const index = menuNewList.findIndex(x => x.title == 'Mark As Absent');
+            if (index != -1) { 
+                menuNewList.splice(index, 1);
+            }
         } else if (absentMenuItem !== null) {
             absentMenuItem.classList.remove('hidden');
         }
@@ -195,9 +197,9 @@ var consumerInfo = (function () {
             var menuItem = document.querySelector('.menuList .progressNote');
             if (menuItem) menuItem.classList.add('hidden');
             const index = menuNewList.findIndex(x => x.title == 'Progress Notes');
-            if (index != -1) { 
+            if (index != -1) {
                 menuNewList.splice(index, 1);
-            } 
+            }
         } else {
             var menuItem = document.querySelector('.menuList .progressNote');
             if (menuItem) menuItem.classList.remove('hidden');
@@ -528,53 +530,125 @@ var consumerInfo = (function () {
             return;
         }
 
+
+        const relationshipTable = document.createElement('div');
+        relationshipTable.classList.add('relationshipTable');
+
         const relationshipHeader = document.createElement('div');
-        relationshipHeader.classList.add('relationship', 'relationship__header');
+        relationshipHeader.classList.add('relationshipTable__header');
         relationshipHeader.innerHTML = `
+      <div></div>
       <div class="relationship__name">Name</div>
       <div class="relationship__type">Relationship</div>
-      <div class="relationship__phone">Phone</div>
-    `;
-        sectionInner.appendChild(relationshipHeader);
+     `;
+        relationshipTable.appendChild(relationshipHeader);
+        sectionInner.appendChild(relationshipTable);
 
         data.forEach(d => {
-            const relationship = document.createElement('div');
-            relationship.classList.add('relationship');
-            relationship.innerHTML = `
-        <div class="relationship__name">${d.lastName}, ${d.firstName}</div>
-        <div class="relationship__type">${d.description}</div>
-        <div class="relationship__phone">		
-        ${
-                d.primaryPhone && d.primaryPhone.trim().length != 0
-                    ? `P1: <a href=tel:+1-${UTIL.formatPhoneNumber(
-                        d.primaryPhone.trim(),
-                    )}>${UTIL.formatPhoneNumber(d.primaryPhone.trim())}</a><br>`
-                    : ``
-                }
-        ${
-                d.secondaryPhone && d.secondaryPhone.trim().length != 0
-                    ? `P2: <a href=tel:+1-${UTIL.formatPhoneNumber(
-                        d.secondaryPhone.trim(),
-                    )}>${UTIL.formatPhoneNumber(d.secondaryPhone.trim())}</a><br>`
-                    : ``
-                }
-        ${
-                d.cellularPhone && d.cellularPhone.trim().length != 0
-                    ? `C: <a href=tel:+1-${UTIL.formatPhoneNumber(
-                        d.cellularPhone.trim(),
-                    )}>${UTIL.formatPhoneNumber(d.cellularPhone.trim())}</a>`
-                    : ``
-                }
-        </div>
-      `;
+            var eventName;
+            const rowWrap = document.createElement('div');
+            rowWrap.classList.add('relationshipTable__subTableWrap');
 
-            if ($.session.applicationName === 'Advisor') {
-                relationship.addEventListener('click', e =>
-                    showRelationshipDetails(section, sectionInner, d),
-                );
+            const mainDataRow = document.createElement('div');
+            mainDataRow.classList.add('relationshipTable__mainDataRow', 'relationshipTable__dataRow');
+
+            const toggleIcon = document.createElement('div');
+            toggleIcon.id = 'authToggle';
+            toggleIcon.classList.add('relationshipTable__endIcon');
+            toggleIcon.innerHTML = icons['keyArrowRight'];
+            mainDataRow.innerHTML = `
+        <div class="relationship__name">${d.lastName}, ${d.firstName}</div>
+        <div class="relationship__type">${d.description}</div>      
+      `;
+            mainDataRow.prepend(toggleIcon);
+            rowWrap.appendChild(mainDataRow);
+
+
+            const subRowWrap = document.createElement('div');
+            subRowWrap.classList.add('relationshipTable__subRowWrap');
+
+            if (d.primaryPhone && d.primaryPhone.trim().length != 0) {
+                const subDataRowPrimaryPhone = document.createElement('div');
+                subDataRowPrimaryPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
+                subDataRowPrimaryPhone.innerHTML = `<div></div> 
+                <div class="relationship__phone">
+                    ${d.primaryPhone && d.primaryPhone.trim().length != 0
+                        ? `<b>Primary Phone: </b><a href=tel:+1-${UTIL.formatPhoneNumber(
+                            d.primaryPhone.trim(),
+                        )}>${UTIL.formatPhoneNumber(d.primaryPhone.trim())}</a><br>`
+                        : ``
+                    }              
+                </div>`;
+                subRowWrap.appendChild(subDataRowPrimaryPhone);
             }
 
-            sectionInner.appendChild(relationship);
+            if (d.secondaryPhone && d.secondaryPhone.trim().length != 0) {
+                const subDataRowSecondaryPhone = document.createElement('div');
+                subDataRowSecondaryPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
+                subDataRowSecondaryPhone.innerHTML = `<div></div> 
+                <div class="relationship__phone">               
+                    ${d.secondaryPhone && d.secondaryPhone.trim().length != 0
+                        ? `<b>Secondary Phone: </b> <a href=tel:+1-${UTIL.formatPhoneNumber(
+                            d.secondaryPhone.trim(),
+                        )}>${UTIL.formatPhoneNumber(d.secondaryPhone.trim())}</a><br>`
+                        : ``
+                    }               
+                </div>`;
+                subRowWrap.appendChild(subDataRowSecondaryPhone);
+            }
+
+            if (d.cellularPhone && d.cellularPhone.trim().length != 0) {
+                const subDataRowCellularPhone = document.createElement('div');
+                subDataRowCellularPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
+                subDataRowCellularPhone.innerHTML = `<div></div> 
+                <div class="relationship__phone">              
+                    ${d.cellularPhone && d.cellularPhone.trim().length != 0
+                        ? `<b>Cellular Phone: </b> <a href=tel:+1-${UTIL.formatPhoneNumber(
+                            d.cellularPhone.trim(),
+                        )}>${UTIL.formatPhoneNumber(d.cellularPhone.trim())}</a>`
+                        : ``
+                    }
+                </div>`;
+                subRowWrap.appendChild(subDataRowCellularPhone);
+            }
+            
+            if (d.email != null && d.email != '') {
+                const subDataRowEmail = document.createElement('div');
+                subDataRowEmail.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
+                subDataRowEmail.innerHTML = `<div></div>   
+                <div class="relationship__phone">
+                    ${d.email ? `<b>Email: </b> <a href=mailto:${d.email}>${d.email}</a>`: ``}
+                </div>`;
+                subRowWrap.appendChild(subDataRowEmail);
+            }
+            
+
+
+            if ($.session.applicationName === 'Advisor') {
+                mainDataRow.addEventListener('click', e => {
+                    if (eventName != 'toggle') {
+                        showRelationshipDetails(section, sectionInner, d);
+                    }
+                    eventName = '';
+                });
+            }
+            toggleIcon.addEventListener('click', e => {
+                const toggle = document.querySelector('#authToggle')
+                eventName = 'toggle';
+                if (subRowWrap.classList.contains('active')) {
+                    // close it
+                    subRowWrap.classList.remove('active');
+                    toggleIcon.innerHTML = icons.keyArrowRight;
+                } else {
+                    // open it
+                    subRowWrap.classList.add('active');
+                    toggleIcon.innerHTML = icons.keyArrowDown;
+                }
+            });
+
+            rowWrap.appendChild(subRowWrap);
+
+            sectionInner.appendChild(rowWrap);
         });
     }
     // *schedule
@@ -844,9 +918,9 @@ var consumerInfo = (function () {
             item.appendChild(itemTitle);
             item.innerHTML += icons['keyArrowRight'];
 
-            cardInner.appendChild(item);
+            cardInner.appendChild(item); 
             menuNewList.push(mi);
-        }); 
+        });
         cardMenuList.appendChild(cardInner);
 
         return cardMenuList;
@@ -868,11 +942,11 @@ var consumerInfo = (function () {
 
         if (previousScreen == null) {
             backwordBtn.classList.remove('hidden');
-            backwordBtn.classList.add('disabled');  
+            backwordBtn.classList.add('disabled');
         }
         else {
             backwordBtn.classList.remove('hidden');
-            backwordBtn.classList.remove('disabled');    
+            backwordBtn.classList.remove('disabled');
         }
         if (nextScreen == null) {
             forwardBtn.classList.add('hidden');
@@ -882,7 +956,7 @@ var consumerInfo = (function () {
         }
 
         document.getElementById('backwordBtn').innerHTML = menuNewList[arraynumber - 1] == undefined ? null : `${icons['arrowBack']}` + '' + menuNewList[arraynumber - 1].title;
-        document.getElementById('forwardBtn').innerHTML = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title + '' + `${icons['arrowNext']}`; 
+        document.getElementById('forwardBtn').innerHTML = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title + '' + `${icons['arrowNext']}`;
 
         switch (action) {
             case 'Mark As Absent': {

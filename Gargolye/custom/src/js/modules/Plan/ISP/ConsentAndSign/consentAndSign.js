@@ -128,6 +128,7 @@ const planConsentAndSign = (() => {
       section: '',
       questionId: '0',
       vendorId: selectedMemberData.vendorId,
+      locationId: selectedMemberData.locationId,
     };
 
     let stuff = await consentAndSignAjax.insertTeamMember(data);
@@ -758,7 +759,9 @@ const planConsentAndSign = (() => {
                 isNewMember: false,
                 isReadOnly: readOnly,
                 memberData: m,
+                currentTeamMemberData: teamMemberData,
                 vendorData: vendorData,
+                clickSource: 'teamGrid',
               });
             } else {
               await csTeamMember.showPopup({
@@ -952,6 +955,7 @@ const planConsentAndSign = (() => {
           },
           currentTeamMemberData: teamMemberData,
           vendorData: vendorData,
+          clickSource: 'addVendor',
         });
       },
     });

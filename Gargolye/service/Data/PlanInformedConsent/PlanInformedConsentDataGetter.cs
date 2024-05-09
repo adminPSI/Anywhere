@@ -115,6 +115,24 @@ namespace Anywhere.service.Data.PlanInformedConsent
             }
         }
 
+        public string deletePlanRestrictiveMeasures(string token, string informedConsentId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("DeleteRestrictiveMeasures ");
+            List<string> list = new List<string>();
+            list.Add(informedConsentId);
+            string text = "CALL DBA.ANYW_ISP_DeleteRestrictiveMeasures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2APICDG", ex.Message + "ANYW_ISP_DeleteRestrictiveMeasures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2APICDG: error ANYW_ISP_DeleteRestrictiveMeasures";
+            }
+        }
+
         public string updatePlanConsentStatements(string token, string signatureId, string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology)
         {
             if (tokenValidator(token) == false) return null;

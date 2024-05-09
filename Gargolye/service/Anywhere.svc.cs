@@ -23,10 +23,12 @@ using Anywhere.service.Data.PlanIntroduction;
 using Anywhere.service.Data.PlanOutcomes;
 using Anywhere.service.Data.PlanServicesAndSupports;
 using Anywhere.service.Data.PlanSignature;
+using Anywhere.service.Data.PlanValidation;
 using Anywhere.service.Data.ReportBuilder;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.SimpleMar;
 using Anywhere.service.Data.Transportation;
+using Anywhere.service.Data.WaitingListAssessment;
 using Bytescout.PDF;
 using OODForms;
 using PDFGenerator;
@@ -47,6 +49,7 @@ using static Anywhere.service.Data.Employment.EmploymentWorker;
 using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
+using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
 namespace Anywhere
 {
@@ -110,6 +113,9 @@ namespace Anywhere
         ReportBuilderWorker rbw = new ReportBuilderWorker();
         AuthorizationWorker authWorker = new AuthorizationWorker();
         OODFormWorker OODfw = new OODFormWorker();
+        PlanValidationWorker pv = new PlanValidationWorker();
+        WaitingListWorker wlw = new WaitingListWorker();
+
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -1856,9 +1862,9 @@ namespace Anywhere
             return wfw.deleteWorkflow(token, workflowId);
         }
 
-        public WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId)
+        public WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId, string TypeId)
         {
-            return wfw.getPeopleNames(token, peopleId);
+            return wfw.getPeopleNames(token, peopleId, TypeId);
         }
 
         public WorkflowWorker.ResponsiblePartyRelationship[] getWFResponsiblePartyRelationships(string token, string workflowId)
@@ -1879,6 +1885,11 @@ namespace Anywhere
         public WorkflowWorker.WorkflowStep[] getResponsiblePartyIdforThisEditStep(string token, string stepId)
         {
             return wfw.getResponsiblePartyIdforThisEditStep(token, stepId);
+        }
+
+        public WorkflowWorker.ResponsiblePartyClassification[] getResponsiblePartyClassification(string token)
+        {
+            return wfw.getResponsiblePartyClassification(token);
         }
 
         public FormWorker.FormTemplate[] getFormTemplates(string token)
@@ -2046,6 +2057,18 @@ namespace Anywhere
             token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
             attachmentId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
             anywhereAttachmentWorker.viewCaseNoteAttachment(token, attachmentId);
+        }
+
+        public void viewWaitingListAttachment(System.IO.Stream testInput)
+        {
+            string token;
+            string attachmentId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            attachmentId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            anywhereAttachmentWorker.viewWaitingListAttachment(token, attachmentId);
         }
 
         //public void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
@@ -2262,9 +2285,9 @@ namespace Anywhere
         {
             return trW.updateTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime);
         }
-        public string updateManageTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string driverId, string otherRiderId, string vehicleId, string locationId, string billingType)
+        public string updateManageTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string driverId, string otherRiderId, string vehicleId, string locationId, string billingType, string tripName)
         {
-            return trW.updateManageTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, driverId, otherRiderId, vehicleId, locationId, billingType);
+            return trW.updateManageTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, driverId, otherRiderId, vehicleId, locationId, billingType, tripName);
         }
         public string insertUpdateTripConsumers(string token, string tripDetailId, string tripsCompletedId, string consumerId, string alternateAddress, string scheduledTime,
             string totalTravelTime, string riderStatus, string specialInstructions, string directions, string pickupOrder, string notes)
@@ -2319,17 +2342,17 @@ namespace Anywhere
             return poW.insertPlanOutcomesExperience(outcomeId, howHappened, whatHappened, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, experienceOrder);
         }
 
-        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText)
+        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
         {
-            return poW.insertPlanOutcomeExperienceResponsibility(experienceId, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText);
+            return poW.insertPlanOutcomeExperienceResponsibility(experienceId, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, isSalesforceLocation);
         }
 
-        public string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText)
+        public string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
         {
-            return poW.updatePlanOutcomeExperienceResponsibility(responsibilityIds, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText);
+            return poW.updatePlanOutcomeExperienceResponsibility(responsibilityIds, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, isSalesforceLocation);
         }
 
-        public string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, long[] contactId)
+        public string insertPlanOutcomesReview(long outcomeId, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] reviewOrder, string[] contactId)
         {
             return poW.insertPlanOutcomesReview(outcomeId, whatWillHappen, whenToCheckIn, whoReview, reviewOrder, contactId);
         }
@@ -2339,12 +2362,12 @@ namespace Anywhere
             return poW.updatePlanOutcome(token, assessmentId, outcomeId, outcome, details, history, sectionId, summaryOfProgress, status, carryOverReason);
         }
 
-        public string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText)
+        public string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
         {
-            return poW.updatePlanOutcomesExperience(outcomeId, experienceIds, howHappened, whatHappened, responsibilityIds, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText);
+            return poW.updatePlanOutcomesExperience(outcomeId, experienceIds, howHappened, whatHappened, responsibilityIds, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, isSalesforceLocation);
         }
 
-        public string updatePlanOutcomesReview(long outcomeId, string[] reviewIds, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, long[] contactId)
+        public string updatePlanOutcomesReview(long outcomeId, string[] reviewIds, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, string[] contactId)
         {
             return poW.updatePlanOutcomesReview(outcomeId, reviewIds, whatWillHappen, whenToCheckIn, whoReview, contactId);
         }
@@ -2512,6 +2535,11 @@ namespace Anywhere
             return picw.updatePlanRestrictiveMeasures(token, informedConsentId, rmIdentified, rmHRCDate, rmKeepSelfSafe, rmFadeRestriction, rmOtherWayHelpGood, rmOtherWayHelpBad, rmWhatCouldHappenGood, rmWhatCouldHappenBad);
         }
 
+         public string deletePlanRestrictiveMeasures(string token, string informedConsentId)
+        {
+            return picw.deletePlanRestrictiveMeasures(token, informedConsentId);
+        }
+
         public string updatePlanConsentStatements(string token, string signatureId, string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology)
         {
             return picw.updatePlanConsentStatements(token, signatureId, csChangeMind, csChangeMindSSAPeopleId, csContact, csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess, csResidentialOptions, csSupportsHealthNeeds, csTechnology);
@@ -2529,6 +2557,12 @@ namespace Anywhere
         {
             return psw.getTeamMemberBySalesForceId(salesForceId);
         }
+
+        public PlanSignatureWorker.Locations[] getLocationswithSalesforceId(string token)
+        {
+            return psw.getLocationswithSalesforceId(token);
+        }
+
 
         public PlanSignatureWorker.TeamMemberFromState[] getTeamMemberListFromState(long peopleId)
         {
@@ -2791,9 +2825,70 @@ namespace Anywhere
             fw.removeFormsLock(formId, userId);
         }
 
+        //Waiting List Module
+        public string deleteFromWaitingList(string[] properties)
+        {
+           return wlw.deleteFromWaitingList(properties);
+        }
+
+        public string deleteWaitingListParticipant(string token, int participantId)
+        {
+            return wlw.deleteWaitingListParticipant(token, participantId);
+        }
+
+        public LandingPageInfo[] getLandingPageForConsumer(string token, double consumerId)
+        {
+            return wlw.getLandingPageForConsumer(token, consumerId);
+        }
+
+        public FundingSources[] getWaitingListFundingSources()
+        {
+            return wlw.getWaitingListFundingSources();  
+        }
+
+        public WaitingList[] getWaitingListAssessment(int waitingListAssessmentId)
+        {
+            return wlw.getWaitingListAssessment(waitingListAssessmentId);
+        }
+
+        public string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, string valueTwo, char insertOrUpdate)
+        {
+            return wlw.insertUpdateWaitingListValue(id, linkId, propertyName, value, valueTwo, insertOrUpdate);
+        }
+
+        public SupportingDocument[] addWLSupportingDocument(string token, long waitingListInformationId, string description, char includeOnEmail, string attachmentType, string attachment)
+        {
+            return wlw.addWLSupportingDocument(token, waitingListInformationId, description, includeOnEmail, attachmentType, attachment);
+        }
+
+        public SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId)
+        { 
+            return wlw.getWLSupportingDocumentList(token, waitingListInformationId);
+        }
+
+        public string deleteSupportingDocument(string token, string attachmentId)
+        {
+            return wlw.deleteSupportingDocument(token, attachmentId);
+        }
+
+        public MemoryStream viewSupportingDocInBrowser(string token, string supportingDocumentId)
+        {
+            return wlw.viewSupportingDocInBrowser(token, supportingDocumentId);
+        }
+
+        public string generateWaitingListAssessmentReport(string token, string waitingListId)
+        {
+            return rbw.generateWaitingListAssessmentReport(token, waitingListId);
+        }
+
+        public string sendWaitingListAssessmentReport(string token, string reportScheduleId, string header, string body, string waitingListId)
+        {
+            return rbw.sendWaitingListAssessmentReport(token, reportScheduleId, header, body, waitingListId);
+        }
+        
         //OOD Module
 
-        public string generateForm4(System.IO.Stream testInput)
+       public string generateForm4(System.IO.Stream testInput)
         {
             //(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber
             string token;
@@ -2857,7 +2952,7 @@ namespace Anywhere
                 referenceNumber = "All";
             }
 
-            return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId);
+            return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
         }
 
         public string generateForm10(System.IO.Stream testInput)
@@ -3366,14 +3461,14 @@ namespace Anywhere
             return dg.resetPassword(userId, hash, newPassword, changingToHashPassword);
         }
 
-        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType)
+        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType, string accountPermission)
         {
-            return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment, transectionType);
+            return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment, transectionType, accountPermission);
         }
 
-        public ActiveAccount[] getActiveAccount(string token, string consumerId)
+        public ActiveAccount[] getActiveAccount(string token, string consumerId, string accountPermission)
         {
-            return cf.getActiveAccount(token, consumerId);
+            return cf.getActiveAccount(token, consumerId, accountPermission);
         }
 
         public Payees[] getPayees(string token, string consumerId)
@@ -3384,6 +3479,11 @@ namespace Anywhere
         public Category[] getCatogories(string token, string categoryID)
         {
             return cf.getCatogories(token, categoryID);
+        }
+
+        public Category[] getSplitCategoriesSubCategories(string token, string categoryID)
+        {
+            return cf.getSplitCategoriesSubCategories(token, categoryID);
         }
 
         public Category[] getCategoriesSubCategories(string token, string categoryID)
@@ -3406,9 +3506,9 @@ namespace Anywhere
             return cf.insertPayee(token, payeeName, address1, address2, city, state, zipcode, userId, consumerId);
         }
 
-        public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId)
+         public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId, SplitAmountData[] splitAmount, string categoryID) 
         {
-            return cf.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, userId, eventType, regId);
+            return cf.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, userId, eventType, regId, splitAmount, categoryID);
         }
 
         public ConsumerFinancesEntry[] getAccountEntriesById(string token, string registerId)
@@ -3494,9 +3594,9 @@ namespace Anywhere
             return emp.insertEmploymentPath(token, employmentPath, newStartDate, newEndDate, currentEndDate, peopleID, userID, existingPathID);
         }
 
-        public EmploymentEntriesByID insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId)
+        public EmploymentEntriesByID insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId, string typeOfEmployment)
         {
-            return emp.insertEmploymentInfo(token, startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, PositionId);
+            return emp.insertEmploymentInfo(token, startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, PositionId, typeOfEmployment);
         }
 
         public JobStanding[] getJobStandingsDropDown(string token)
@@ -3522,6 +3622,11 @@ namespace Anywhere
         public TypeOfWork[] getTypeOfWorkDropDown(string token)
         {
             return emp.getTypeOfWorkDropDown(token);
+        }
+
+        public TypeOfWork[] getTypeOfEmploymentDropDown(string token)
+        {
+            return emp.getTypeOfEmploymentDropDown(token);
         }
 
         public WagesEntries insertWages(string token, string hoursWeek, string hoursWages, string startDate, string endDate, string PositionId, string wagesID, string userID)
@@ -3569,7 +3674,7 @@ namespace Anywhere
             return emp.getWagesCheckboxEntries(token, positionID);
         }
 
-        public WorkScheduleEntries insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID)
+        public WorkScheduleEntries insertWorkSchedule(string token, string[] dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID)
         {
             return emp.insertWorkSchedule(token, dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, userID);
         }
@@ -3666,9 +3771,9 @@ namespace Anywhere
             return cf.insertEditRegisterAccount(token, selectedConsumersId, accountId, name, number, type, status, classofAccount, dateOpened, dateClosed, openingBalance, description, userId);
         }
 
-        public ActiveAccount[] getEditAccount(string token, string consumerId)
+        public ActiveAccount[] getEditAccount(string token, string consumerId, string accountPermission)
         {
-            return cf.getEditAccount(token, consumerId);
+            return cf.getEditAccount(token, consumerId, accountPermission);
         }
 
         public ConsumerFinancesWorker.ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName)
@@ -3685,6 +3790,85 @@ namespace Anywhere
             }
 
             return cf.getCFWidgetConsumers(token);
+        }
+
+        //Plan Validation
+        public PlanValidationWorker.ContactValidationData[] getContactValidationData(string token, string planId)
+        {
+            return pv.getContactValidationData(token, planId);
+        }
+
+        public PlanValidationWorker.SummaryRiskValidation[] getSummaryRiskValidationData(string token, string planId)
+        {
+            return pv.getSummaryRiskValidationData(token, planId);
+        }
+
+        public PlanValidationWorker.ServicesAndSupports getAssessmentValidationData(string token, string planId)
+        {
+            return pv.getAssessmentValidationData(token, planId);
+        }
+        public EmploymentStatus[] getEmployeeStatusDropDown(string token)
+        {
+            return emp.getEmployeeStatusDropDown(token);
+        }
+        public EmploymentPath createNewEmploymentPath(string token, string currentStatus, string pathToEmployment, string pathToStartDate, string peopleID, string userID)
+        {
+            return emp.createNewEmploymentPath(token, currentStatus, pathToEmployment, pathToStartDate, peopleID, userID);
+        }
+
+        public SplitAmountData[] getSplitRegisterAccountEntriesByID(string token, string registerId)
+        {
+            return cf.getSplitRegisterAccountEntriesByID(token, registerId);
+        }
+
+        public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)
+        {
+            return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId , appName);
+        }
+
+        public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)
+        {
+            return outcomesWorker.getOutcomeTypeDropDown(token);
+        }
+
+        public OutcomesWorker.LocationType[] getLocationDropDown(string token)
+        {
+            return outcomesWorker.getLocationDropDown(token);
+        }
+
+        public OutcomesWorker.PDParentOutcome[] getGoalEntriesById(string token, string goalId)
+        {
+            return outcomesWorker.getGoalEntriesById(token, goalId);
+        }
+
+        public OutcomesWorker.PDChildOutcome[] getObjectiveEntriesById(string token, string objectiveId)
+        {
+            return outcomesWorker.getObjectiveEntriesById(token, objectiveId);
+        }
+
+        public OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token)
+        {
+            return outcomesWorker.getOutcomeServiceDropDown(token);
+        }
+
+        public OutcomesWorker.ServiceFrequencyType[] getServiceFrequencyTypeDropDown(string token, string type)
+        {
+            return outcomesWorker.getServiceFrequencyTypeDropDown(token, type);
+        }
+
+        public OutcomesWorker.PDParentOutcome[] insertOutcomeInfo(string token, string startDate, string endDate, string outcomeType, string outcomeStatement, string userID, string goalId, string consumerId, string location)
+        {
+            return outcomesWorker.insertOutcomeInfo(token, startDate, endDate, outcomeType, outcomeStatement, userID, goalId, consumerId, location);
+        }
+
+        public OutcomesWorker.PDChildOutcome[] insertOutcomeServiceInfo(string token, string startDate, string endDate, string outcomeType, string servicesStatement, string ServiceType, string method, string success, string frequencyModifier, string frequency, string frequencyPeriod, string userID, string objectiveId, string consumerId, string location, string duration)
+        {
+            return outcomesWorker.insertOutcomeServiceInfo(token,startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId,  location,  duration);
+        }
+
+        public string updateUserWidgetOrderSettings(string token, string[] updatedListOrder)
+        {
+            return dashWork.updateUserWidgetOrderSettings(token, updatedListOrder);
         }
     }
 }

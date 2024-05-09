@@ -101,6 +101,20 @@
    * @param {String | Number} value
    */
   Input.prototype.setValue = function (value) {
+    if (this.options.attributes.type === 'date') {
+      if (!value) {
+        this.input.value = '';
+        return;
+      }
+
+      value = value.split(' ')[0];
+
+      const dateformat = dates.checkFormat(value);
+      if (dateformat === 'standard') {
+        value = dates.formateToISO(value);
+      }
+    }
+
     this.input.value = value;
   };
 
@@ -189,7 +203,7 @@
    * @param {Function} cbFunc Callback function to call
    */
   Input.prototype.onChange = function (cbFunc) {
-    this.input.addEventListener('input', e => {
+    this.input.addEventListener('onchange', e => {
       if (cbFunc) cbFunc(e);
     });
   };
@@ -202,6 +216,18 @@
    */
   Input.prototype.onKeyup = function (cbFunc) {
     this.input.addEventListener('keyup', e => {
+      if (cbFunc) cbFunc(e);
+    });
+  };
+
+  /**
+   * Handles input click event
+   *
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  Input.prototype.onClick = function (cbFunc) {
+    this.input.addEventListener('click', e => {
       if (cbFunc) cbFunc(e);
     });
   };

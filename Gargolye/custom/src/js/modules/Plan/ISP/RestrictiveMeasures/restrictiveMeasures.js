@@ -2,43 +2,81 @@ const planRestrictiveMeasures = (() => {
   let readOnly;
   let planId; // aka: assessmentId
   let rmData;
+  let rmDataArray;
   // DOM
   let rmMainWrap;
+  let addSectionBtn;
   // OTHER
   let charLimits;
 
   //*------------------------------------------------------
   //* UTIL
   //*------------------------------------------------------
-  async function updateRMResponse() {
+  async function updateRMResponse(sectionData) {
+    // const data = {
+    //   token: $.session.Token,
+    //   informedConsentId: rmData.rmID,
+    //   rmIdentified: rmData.rmIdentified,
+    //   rmHRCDate: rmData.rmHRCDate,
+    //   rmKeepSelfSafe: rmData.rmKeepSelfSafe,
+    //   rmFadeRestriction: rmData.rmFadeRestriction,
+    //   rmOtherWayHelpGood: rmData.rmOtherWayHelpGood,
+    //   rmOtherWayHelpBad: rmData.rmOtherWayHelpBad,
+    //   rmWhatCouldHappenGood: rmData.rmWhatCouldHappenGood,
+    //   rmWhatCouldHappenBad: rmData.rmWhatCouldHappenBad,
+    // };
+    const res = await restrictiveMeasuresAjax.updatePlanRestrictiveMeasures(sectionData);
+  }
+
+async function deleteRMData(rmId) {
     const data = {
-      token: $.session.Token,
-      informedConsentId: rmData.rmID,
-      rmIdentified: rmData.rmIdentified,
-      rmHRCDate: rmData.rmHRCDate,
-      rmKeepSelfSafe: rmData.rmKeepSelfSafe,
-      rmFadeRestriction: rmData.rmFadeRestriction,
-      rmOtherWayHelpGood: rmData.rmOtherWayHelpGood,
-      rmOtherWayHelpBad: rmData.rmOtherWayHelpBad,
-      rmWhatCouldHappenGood: rmData.rmWhatCouldHappenGood,
-      rmWhatCouldHappenBad: rmData.rmWhatCouldHappenBad,
+        token: $.session.Token,
+        informedConsentId: rmId,
     };
-    const res = await restrictiveMeasuresAjax.updatePlanRestrictiveMeasures(data);
-  }
-  function toggleRestrictiveMeasureQuestionsVisiblity(show) {
-    if (show) {
-      const rmQuestions = buildRestrictiveMeasureQuestions();
-      rmMainWrap.appendChild(rmQuestions);
+    const res = await restrictiveMeasuresAjax.deletePlanRestrictiveMeasures(data);
+}
+
+async function toggleRestrictiveMeasureQuestionsVisiblity(show) {
+  //const add = document.querySelector('.addSectionBtn');
+  
+  if (show) {
+      addSectionBtn.style.display = 'block';
+
+      if (rmDataArray.length === 0) {
+        restrictiveMeasuresSectionID = await restrictiveMeasuresAjax.insertPlanRestrictiveMeasures({
+          token: $.session.Token,
+          assessmentId: planId
+      });
+
+      const newSection = createNewSection(null, false, restrictiveMeasuresSectionID.informedConsentId);
+      rmMainWrap.insertBefore(newSection, addSectionBtn);
     } else {
-      const rmQuestions = document.querySelector('.rmQuestionSection');
-      rmMainWrap.removeChild(rmQuestions);
+        rmDataArray.forEach((rmData, index) => {
+            const isFirstSection = index === 0;
+            const newSection = createNewSection(rmData, isFirstSection);
+            rmMainWrap.insertBefore(newSection, addSectionBtn);
+        });
     }
+  } else {
+      const rmSections = document.querySelectorAll('.restrictiveMeasureContainer');
+      rmSections.forEach((section, index) => {
+          if (index === 0) {
+              section.style.display = 'none';
+          } else {
+              section.remove();
+          }
+      });
+      rmDataArray.forEach((rmData) => {
+        deleteRMData(rmData.informedConsentId);
+    });
+      addSectionBtn.style.display = 'none';
   }
+}
 
   //*------------------------------------------------------
   //* RESTRICTIVE MEASURE QUESTIONS
   //*------------------------------------------------------
-  function buildRestrictiveMeasureQuestions() {
+  function buildRestrictiveMeasureQuestions(sectionData) {
     const rmQuestionSection = document.createElement('div');
     rmQuestionSection.classList.add('rmQuestionSection');
 
@@ -47,7 +85,7 @@ const planRestrictiveMeasures = (() => {
     const rmHrcApprovalDate = input.build({
       label: 'Date of HRC Approval',
       type: 'date',
-      value: UTIL.formatDateToIso(rmData.rmHRCDate.split(' ')[0]),
+      value: UTIL.formatDateToIso(sectionData.rmHRCDate.split(' ')[0]),
       readonly: readOnly,
     });
     rmHrcApprovalDate.style.maxWidth = '200px';
@@ -60,7 +98,7 @@ const planRestrictiveMeasures = (() => {
       'What help do I need to keep myself safe? (describe restrictive strategies and why they are needed)';
     const rmKeepSelfSafeQuestionResp = input.build({
       type: 'textarea',
-      value: rmData.rmKeepSelfSafe,
+      value: sectionData.rmKeepSelfSafe,
       readonly: readOnly,
       charLimit: charLimits.rmKeepSelfSafe,
       forceCharLimit: true,
@@ -77,7 +115,7 @@ const planRestrictiveMeasures = (() => {
       'What is the plan to ensure the restriction is temporary in nature?';
     const rmFadeRestrictionQuestionResp = input.build({
       type: 'textarea',
-      value: rmData.rmFadeRestriction,
+      value: sectionData.rmFadeRestriction,
       readonly: readOnly,
       charLimit: charLimits.rmFadeRestriction,
       forceCharLimit: true,
@@ -96,7 +134,7 @@ const planRestrictiveMeasures = (() => {
     const rmWhatCouldHappenQuestionGoodResp = input.build({
       type: 'textarea',
       label: 'Good',
-      value: rmData.rmWhatCouldHappenGood,
+      value: sectionData.rmWhatCouldHappenGood,
       readonly: readOnly,
       charLimit: charLimits.rmWhatCouldHappenGood,
       forceCharLimit: true,
@@ -105,7 +143,7 @@ const planRestrictiveMeasures = (() => {
     const rmWhatCouldHappenQuestionBadResp = input.build({
       type: 'textarea',
       label: 'Bad',
-      value: rmData.rmWhatCouldHappenBad,
+      value: sectionData.rmWhatCouldHappenBad,
       readonly: readOnly,
       charLimit: charLimits.rmWhatCouldHappenBad,
       forceCharLimit: true,
@@ -126,7 +164,7 @@ const planRestrictiveMeasures = (() => {
     const rmOtherWayHelpQuestionGoodResp = input.build({
       type: 'textarea',
       label: 'Good things about these other options',
-      value: rmData.rmOtherWayHelpGood,
+      value: sectionData.rmOtherWayHelpGood,
       readonly: readOnly,
       charLimit: charLimits.rmOtherWayHelpGood,
       forceCharLimit: true,
@@ -135,7 +173,7 @@ const planRestrictiveMeasures = (() => {
     const rmOtherWayHelpQuestionBadResp = input.build({
       type: 'textarea',
       label: 'Bad things about these other options',
-      value: rmData.rmOtherWayHelpBad,
+      value: sectionData.rmOtherWayHelpBad,
       readonly: readOnly,
       charLimit: charLimits.rmOtherWayHelpBad,
       forceCharLimit: true,
@@ -148,25 +186,25 @@ const planRestrictiveMeasures = (() => {
 
     //* Required Fields
     //*------------------------------------
-    if (rmData.rmHRCDate === '') {
+    if (sectionData.rmHRCDate === '') {
       rmHrcApprovalDate.classList.add('error');
     }
-    if (rmData.rmKeepSelfSafe === '') {
+    if (sectionData.rmKeepSelfSafe === '') {
       rmKeepSelfSafeQuestionResp.classList.add('error');
     }
-    if (rmData.rmFadeRestriction === '') {
+    if (sectionData.rmFadeRestriction === '') {
       rmFadeRestrictionQuestionResp.classList.add('error');
     }
-    if (rmData.rmWhatCouldHappenGood === '') {
+    if (sectionData.rmWhatCouldHappenGood === '') {
       rmWhatCouldHappenQuestionGoodResp.classList.add('error');
     }
-    if (rmData.rmWhatCouldHappenBad === '') {
+    if (sectionData.rmWhatCouldHappenBad === '') {
       rmWhatCouldHappenQuestionBadResp.classList.add('error');
     }
-    if (rmData.rmOtherWayHelpGood === '') {
+    if (sectionData.rmOtherWayHelpGood === '') {
       rmOtherWayHelpQuestionGoodResp.classList.add('error');
     }
-    if (rmData.rmOtherWayHelpBad === '') {
+    if (sectionData.rmOtherWayHelpBad === '') {
       rmOtherWayHelpQuestionBadResp.classList.add('error');
     }
 
@@ -174,13 +212,13 @@ const planRestrictiveMeasures = (() => {
     //*------------------------------------
     // HRC APPROVAL DATE
     rmHrcApprovalDate.addEventListener('change', event => {
-      rmData.rmHRCDate = event.target.value;
+      sectionData.rmHRCDate = event.target.value;
       if (event.target.value !== '') {
         rmHrcApprovalDate.classList.remove('error');
       } else {
         rmHrcApprovalDate.classList.add('error');
       }
-      updateRMResponse();
+      updateRMResponse(sectionData);
     });
     // RM_KEEP_SELF_SAFE
     rmKeepSelfSafeQuestionResp.addEventListener('input', event => {
@@ -191,8 +229,8 @@ const planRestrictiveMeasures = (() => {
       }
     });
     rmKeepSelfSafeQuestionResp.addEventListener('focusout', event => {
-      rmData.rmKeepSelfSafe = event.target.value;
-      updateRMResponse();
+      sectionData.rmKeepSelfSafe = event.target.value;
+      updateRMResponse(sectionData);
     });
     // RM_FADE_RESTRICTION
     rmFadeRestrictionQuestionResp.addEventListener('input', event => {
@@ -203,8 +241,8 @@ const planRestrictiveMeasures = (() => {
       }
     });
     rmFadeRestrictionQuestionResp.addEventListener('focusout', event => {
-      rmData.rmFadeRestriction = event.target.value;
-      updateRMResponse();
+      sectionData.rmFadeRestriction = event.target.value;
+      updateRMResponse(sectionData);
     });
     // RM_WHAT_COULD_HAPPEN GOOD
     rmWhatCouldHappenQuestionGoodResp.addEventListener('input', event => {
@@ -215,8 +253,9 @@ const planRestrictiveMeasures = (() => {
       }
     });
     rmWhatCouldHappenQuestionGoodResp.addEventListener('focusout', event => {
-      rmData.rmWhatCouldHappenGood = event.target.value;
-      updateRMResponse();
+      sectionData.rmWhatCouldHappenGood = event.target.value;
+      const test = sectionData;
+      updateRMResponse(sectionData);
     });
     // RM_WHAT_COULD_HAPPEN BAD
     rmWhatCouldHappenQuestionBadResp.addEventListener('input', event => {
@@ -227,8 +266,8 @@ const planRestrictiveMeasures = (() => {
       }
     });
     rmWhatCouldHappenQuestionBadResp.addEventListener('focusout', event => {
-      rmData.rmWhatCouldHappenBad = event.target.value;
-      updateRMResponse();
+      sectionData.rmWhatCouldHappenBad = event.target.value;
+      updateRMResponse(sectionData);
     });
     // RM_OTHER_WAY_HELP GOOD
     rmOtherWayHelpQuestionGoodResp.addEventListener('input', event => {
@@ -239,8 +278,8 @@ const planRestrictiveMeasures = (() => {
       }
     });
     rmOtherWayHelpQuestionGoodResp.addEventListener('focusout', event => {
-      rmData.rmOtherWayHelpGood = event.target.value;
-      updateRMResponse();
+      sectionData.rmOtherWayHelpGood = event.target.value;
+      updateRMResponse(sectionData);
     });
     // RM_OTHER_WAY_HELP BAD
     rmOtherWayHelpQuestionBadResp.addEventListener('input', event => {
@@ -251,8 +290,8 @@ const planRestrictiveMeasures = (() => {
       }
     });
     rmOtherWayHelpQuestionBadResp.addEventListener('focusout', event => {
-      rmData.rmOtherWayHelpBad = event.target.value;
-      updateRMResponse();
+      sectionData.rmOtherWayHelpBad = event.target.value;
+      updateRMResponse(sectionData);
     });
 
     //* Build It
@@ -264,7 +303,8 @@ const planRestrictiveMeasures = (() => {
     rmQuestionSection.appendChild(rmOtherWayHelpQuestion);
 
     return rmQuestionSection;
-  }
+}
+
 
   //*------------------------------------------------------
   //* TOGGLE QUESTION
@@ -296,7 +336,7 @@ const planRestrictiveMeasures = (() => {
       isDisabled: readOnly,
       callback: () => {
         rmData.rmIdentified = 'Y';
-        updateRMResponse();
+        updateRMResponse(rmData);
         toggleRestrictiveMeasureQuestionsVisiblity(true);
         rmRestrictionsIdentifiedRadioContainer.classList.remove('error');
         DOM.autosizeTextarea();
@@ -325,8 +365,13 @@ const planRestrictiveMeasures = (() => {
                 rmData.rmOtherWayHelpBad = '';
                 rmData.rmWhatCouldHappenGood = '';
                 rmData.rmWhatCouldHappenBad = '';
-                updateRMResponse();
+                updateRMResponse(rmData);
                 toggleRestrictiveMeasureQuestionsVisiblity(false);
+
+                  // Delete data for all items in the rmDataArray
+                  rmDataArray.forEach(rmItem => {
+                    deleteRMData(rmItem.informedConsentId);
+                  });
               },
             },
             reject: {
@@ -338,7 +383,7 @@ const planRestrictiveMeasures = (() => {
           });
         } else {
           rmData.rmIdentified = 'N';
-          updateRMResponse();
+          updateRMResponse(sectionData);
         }
 
         rmRestrictionsIdentifiedRadioContainer.classList.remove('error');
@@ -357,63 +402,158 @@ const planRestrictiveMeasures = (() => {
     return rmSection;
   }
 
+  function createNewSection(rmData, isFirstSection, insertedRMID) {
+    // Create a new section container
+    const newSection = document.createElement('div');
+    newSection.classList.add('restrictiveMeasureContainer');
+
+    const sectionData = {
+      token: $.session.Token,
+      informedConsentId: rmData?.informedConsentId || insertedRMID.informedConsentId,
+      rmIdentified: 'Y',
+      rmHRCDate: rmData?.rmHRCDate || '',
+      rmKeepSelfSafe: rmData?.rmKeepSelfSafe || '',
+      rmFadeRestriction: rmData?.rmFadeRestriction || '',
+      rmWhatCouldHappenGood: rmData?.rmWhatCouldHappenGood || '',
+      rmWhatCouldHappenBad: rmData?.rmWhatCouldHappenBad || '',
+      rmOtherWayHelpGood: rmData?.rmOtherWayHelpGood || '',
+      rmOtherWayHelpBad: rmData?.rmOtherWayHelpBad || ''
+  };  
+
+    // Attach the section data to the section element
+    newSection.sectionData = sectionData;
+
+    // Create restrictive measure questions for the new section
+    const rmQuestions = buildRestrictiveMeasureQuestions(sectionData);
+    newSection.appendChild(rmQuestions);
+
+    if (!isFirstSection) {
+        const deleteButton = button.build({
+            text: 'Delete Restrictive Measure',
+            type: 'contained',
+            style: 'secondary',
+            classNames: 'deleteSectionBtn',
+            callback: () => {
+              deleteRMData(newSection.sectionData.informedConsentId);
+              newSection.remove();
+            }
+        });
+        newSection.appendChild(deleteButton);
+    }
+
+    // Return the new section
+    return newSection;
+  }
+
+function createAddSectionButton() {
+  return button.build({
+      text: 'Add Restrictive Measure',
+      type: 'contained',
+      style: 'secondary',
+      classNames: 'addSectionBtn',
+      callback: async () => {
+          restrictiveMeasuresSectionID = await restrictiveMeasuresAjax.insertPlanRestrictiveMeasures({
+              token: $.session.Token,
+              assessmentId: planId
+          });
+
+          const newSection = createNewSection(null, false, restrictiveMeasuresSectionID);
+
+          rmMainWrap.insertBefore(newSection, addSectionBtn);
+
+          // Append the button to rmMainWrap if it doesn't exist
+          if (!rmMainWrap.querySelector('.addSectionBtn')) {
+            const addSectionBtn = createAddSectionButton();
+            rmMainWrap.appendChild(addSectionBtn);
+          }
+      }
+  });
+}
+
   //*------------------------------------------------------
   //* MAIN
   //*------------------------------------------------------
   function getMarkup() {
-    // section
+    // Section
     rmMainWrap = document.createElement('div');
     rmMainWrap.classList.add('ispRestrictiveMeasures');
-    // heading
+
+    // Heading
     const heading = document.createElement('h2');
     heading.innerHTML = 'Restrictive Measures';
     heading.classList.add('sectionHeading');
     heading.style.marginBottom = '6px';
     rmMainWrap.appendChild(heading);
 
+    // Toggle Question
     const toggleQuestion = buildToggleQuestions();
     rmMainWrap.appendChild(toggleQuestion);
 
+    addSectionBtn = createAddSectionButton();
+    rmMainWrap.appendChild(addSectionBtn);
+    addSectionBtn.style.display = 'none';
+
     if (rmData.rmIdentified === 'Y') {
-      const rmQuestions = buildRestrictiveMeasureQuestions();
-      rmMainWrap.appendChild(rmQuestions);
+      addSectionBtn.style.display = 'block';
+        // Create sections for each data entry
+        rmDataArray.forEach((rmData, index) => {
+            const isFirstSection = index === 0;
+            const newSection = createNewSection(rmData, isFirstSection);
+          
+            rmMainWrap.insertBefore(newSection, addSectionBtn);
+        });
     }
 
     return rmMainWrap;
-  }
+}
 
   async function init(data) {
     planId = data.planId;
     readOnly = data.readOnly;
     charLimits = planData.getISPCharacterLimits('restrictiveMeasures');
+    let stuff;
 
-    rmData = await restrictiveMeasuresAjax.getPlanRestrictiveMeasures({
-      token: $.session.Token,
-      assessmentId: planId,
+    rmDataArray = await restrictiveMeasuresAjax.getPlanRestrictiveMeasures({
+        token: $.session.Token,
+        assessmentId: planId,
     });
 
-    if (rmData === undefined) {
-      const stuff = await restrictiveMeasuresAjax.insertPlanRestrictiveMeasures({
+    if (rmDataArray.length === 0) {
+      stuff = await restrictiveMeasuresAjax.insertPlanRestrictiveMeasures({
         token: $.session.Token,
         assessmentId: planId,
       });
-
-      rmData = {
-        rmID: stuff ? stuff.informedConsentId : '',
-        rmIdentified: '',
-        rmHRCDate: '',
-        rmKeepSelfSafe: '',
-        rmFadeRestriction: '',
-        rmOtherWayHelpGood: '',
-        rmOtherWayHelpBad: '',
-        rmWhatCouldHappenGood: '',
-        rmWhatCouldHappenBad: '',
-      };
-    } else {
-      rmData.rmID = rmData.informedConsentId;
-      delete rmData.informedConsentId;
     }
-  }
+
+    if (!Array.isArray(rmDataArray) || rmDataArray.length === 0) {
+        rmData = [{
+            token: $.session.Token,
+            informedConsentId: stuff ? stuff.informedConsentId : '',
+            rmIdentified: '',
+            rmHRCDate: '',
+            rmKeepSelfSafe: '',
+            rmFadeRestriction: '',
+            rmOtherWayHelpGood: '',
+            rmOtherWayHelpBad: '',
+            rmWhatCouldHappenGood: '',
+            rmWhatCouldHappenBad: '',
+        }];
+    } else {
+        const firstElement = rmDataArray[0];
+        rmData = {
+          token: $.session.Token,
+            informedConsentId: firstElement.informedConsentId,
+            rmIdentified: firstElement.rmIdentified === '' || firstElement.rmIdentified === 'N' ? 'N' : 'Y',
+            rmHRCDate: firstElement.rmHRCDate,
+            rmKeepSelfSafe: firstElement.rmKeepSelfSafe,
+            rmFadeRestriction: firstElement.rmFadeRestriction,
+            rmOtherWayHelpGood: firstElement.rmOtherWayHelpGood,
+            rmOtherWayHelpBad: firstElement.rmOtherWayHelpBad,
+            rmWhatCouldHappenGood: firstElement.rmWhatCouldHappenGood,
+            rmWhatCouldHappenBad: firstElement.rmWhatCouldHappenBad,
+        };
+    }
+}
 
   return {
     init,

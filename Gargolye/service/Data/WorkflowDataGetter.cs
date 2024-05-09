@@ -424,15 +424,18 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string getPeopleNames(string peopleId, DistributedTransaction transaction)
+        public string getPeopleNames(string peopleId, string TypeId, DistributedTransaction transaction)
         {
             try
             {
+                string typeId = TypeId == null ? "0" : TypeId;
+                string PeopleId = peopleId == null ? "0" : peopleId; 
                 logger.debug("getPeopleNames ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
-                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@peopleId", DbType.String, peopleId);
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@peopleId", DbType.String, PeopleId);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@typeId", DbType.String, typeId);
                 // returns people names
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_GetPeopleNames(?)", args, ref transaction);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_GetPeopleNames(?,?)", args, ref transaction);
                 return convertToJSON(returnMsg);
             }
             catch (Exception ex)
@@ -538,6 +541,25 @@ namespace Anywhere.service.Data
                 throw ex;
             }
 
+        }
+
+        public string getResponsiblePartyClassification(string token,DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getResponsiblePartyClassification ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@token", DbType.String, token);
+                // returns the responsible Party ID 
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_getResponsiblePartyClassification(?)", args, ref transaction);
+                return convertToJSON(returnMsg);
+
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_WF_getResponsiblePartyClassification()");
+                throw ex;
+            }
         }
 
         public string getWFResponsibleParties(string token, string workflowId)

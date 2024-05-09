@@ -78,13 +78,22 @@ const isp_ci_importantPlaces = (() => {
           typeOther: UTIL.removeUnsavableNoteText(typeOtherVal),
         };
         await contactInformationAjax.updatePlanContactImportantPlaces(data);
+
+        // Validation check for rows with type other. places red '!' in row if no value is typeOther
+        if (typeVal === 'Other' && typeOtherVal === '') {
+          typeValValidated = 
+            `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${typeVal}`;
+        }  else {
+          typeValValidated = typeVal;
+        }
+
         data.token = null;
         table.updateRows(
           'isp_ci_importanPlacesTable',
           [
             {
               values: [
-                typeVal,
+                typeValValidated,
                 nameVal,
                 addressVal,
                 UTIL.formatPhoneNumber(phoneVal),
@@ -212,8 +221,9 @@ const isp_ci_importantPlaces = (() => {
       text: 'save',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        saveData();
+      callback: async () => {
+        await saveData();
+        await planValidation.contactsValidationCheck();
       },
     });
     const cancelBtn = button.build({
@@ -234,9 +244,10 @@ const isp_ci_importantPlaces = (() => {
           message: 'Are you sure you would like to delete this entry?',
           accept: {
             text: 'Yes',
-            callback: () => {
-              deleteData();
+            callback: async () => {
+              await deleteData();
               POPUP.hide(popup);
+              await planValidation.contactsValidationCheck();
             },
           },
           reject: {
@@ -340,7 +351,11 @@ const isp_ci_importantPlaces = (() => {
     const errors = document.getElementById('isp-ciip-mainPopup').querySelectorAll('.error');
     if (errors.length > 0) {
       saveBtn.classList.add('disabled');
-    } else saveBtn.classList.remove('disabled');
+      saveBtn.disabled = true;
+    } else {
+      saveBtn.classList.remove('disabled');
+      saveBtn.disabled = false;
+    }
   }
 
   function buildTableMarkup() {
@@ -364,9 +379,17 @@ const isp_ci_importantPlaces = (() => {
 
     if (rawPlacesTableData) {
       const tableData = rawPlacesTableData.map(d => {
+      // Validation check for rows with type other. places red '!' in row if no value is typeOther
+      if (d.type === 'Other' && d.typeOther === '') {
+        d.typeValidated = 
+          `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${d.type}`;
+      }  else {
+        d.typeValidated = d.type;
+      }
+
         return {
           values: [
-            d.type,
+            d.typeValidated,
             d.name,
             d.address,
             UTIL.formatPhoneNumber(d.phone),
@@ -401,7 +424,7 @@ const isp_ci_importantPlaces = (() => {
 
     const table = buildTableMarkup();
     ipSection.appendChild(table);
-    ipSection.appendChild(addPlaceBtn);
+    ipSection.appendChild(addPlaceBtn)
 
     return ipSection;
   }

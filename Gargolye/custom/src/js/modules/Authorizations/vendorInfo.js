@@ -5,16 +5,30 @@ const vendorInfo = (function () {
     let userTableData = [];
     let tempUserTableData = [];
     let displayedUsers = [];
-    let newFilterBtn;
     var userTable;
 
+    let btnWrap;
+    let vendorBtnWrap;
+    let DDNumberBtnWrap;
+    let localNumberBtnWrap;
+    let goodStandingBtnWrap;
+    let homeServicesBtnWrap;
+    let takingNewReferralsBtnWrap;
+    let fundingSourceBtnWrap;
+    let serviceCodeBtnWrap;
+
+    let vendorsData;
+    let groupedVendors;
+    let vendorGroupCount;
+    let activeGroup;
+    let loadMoreVendors = [];
+    let chunkedArray;
     //filter
     let filterValues;
     function init() {
         filterValues = undefined;
-        vendorInfoLoad();      
+        vendorInfoLoad();
     }
-
 
     async function vendorInfoLoad() {
         DOM.clearActionCenter();
@@ -25,11 +39,14 @@ const vendorInfo = (function () {
 
         const filteredBy = buildFilteredBy();
         filterRow.appendChild(filteredBy);
-        topNav.classList.add('marginBottomFilter');  
-        
-        DOM.ACTIONCENTER.appendChild(topNav);
+        topNav.classList.add('marginBottomFilter');
+        LOAD_MORE_BTN = buildLoadMoreBtn();
+
+        DOM.ACTIONCENTER.appendChild(topNav);        
         DOM.ACTIONCENTER.appendChild(filterRow);
         DOM.ACTIONCENTER.appendChild(userTable);
+        DOM.ACTIONCENTER.appendChild(LOAD_MORE_BTN);
+        document.getElementById('loadMoreBtn').style.display = 'none';  
 
         SEARCH_BTN.addEventListener('click', event => {
             SEARCH_WRAP.classList.toggle('searchOpen');
@@ -40,7 +57,7 @@ const vendorInfo = (function () {
         SEARCH_INPUT.addEventListener('keyup', event => {
             tableUserSearch(event.target.value);
         });
-        loadReviewPage();
+        await loadReviewPage();
         document.getElementById('searchBtn').click();
     }
 
@@ -67,14 +84,6 @@ const vendorInfo = (function () {
             fundingSource: '%',
             serviceCode: '%',
         }
-
-        return button.build({
-            text: 'Filter',
-            icon: 'filter',
-            style: 'secondary',
-            type: 'contained',
-            callback: () => buildFilterPopUp(filterValues)
-        });
     }
 
     function buildTable() {
@@ -91,7 +100,7 @@ const vendorInfo = (function () {
         return table.build(tableOptions);
     }
 
-    function populateTable(results, IsFirstLoad) {
+    function populateTable(results) {
         userTableData = results.map(td => {
             var vendorID = td.vendorID;
             var name = td.name;
@@ -113,10 +122,14 @@ const vendorInfo = (function () {
                 ],
             };
         });
-        if (IsFirstLoad) {
-            tempUserTableData = userTableData;
-        }
+
         table.populate(userTable, userTableData, false, true);
+        if (chunkedArray.length < 2) {
+            document.getElementById('loadMoreBtn').style.display = 'none';
+        }
+        else {
+            document.getElementById('loadMoreBtn').style.display = 'block';
+        } 
     }
 
     function handleVendorInfoTableEvents(event) {
@@ -133,7 +146,7 @@ const vendorInfo = (function () {
         btnWrap.classList.add('roster-top-nav');
 
         SEARCH_BTN = buildSearchBtn();
-        newFilterBtn = buildNewFilterBtn();
+        buildNewFilterBtn();
 
         // custom search stuff
         SEARCH_WRAP = document.createElement('div');
@@ -145,7 +158,6 @@ const vendorInfo = (function () {
 
         var wrap1 = document.createElement('div');
         wrap1.classList.add('btnWrap');
-        wrap1.appendChild(newFilterBtn);
         wrap1.appendChild(SEARCH_WRAP);
 
         btnWrap.appendChild(wrap1);
@@ -163,7 +175,7 @@ const vendorInfo = (function () {
 
             if (matchesName !== -1) {
                 consumerObj = {
-                    vendorID: consumer.vendorID, 
+                    vendorID: consumer.vendorID,
                     name: consumer.name,
                     DDNumber: consumer.DDNumber,
                     localNumber: consumer.localNumber,
@@ -173,37 +185,312 @@ const vendorInfo = (function () {
                 displayedUsers.push(consumerObj);
             }
         });
-        populateTable(displayedUsers, false);
+
+        groupVendorData(displayedUsers); 
     }
 
     function buildFilteredBy() {
-        var filteredBy = document.querySelector('.widgetFilteredBy');
+        var filteredBy = document.querySelector('.filteredByData');
 
         if (!filteredBy) {
             filteredBy = document.createElement('div');
-            filteredBy.classList.add('widgetFilteredBy');
+            filteredBy.classList.add('filteredByData');
+            filterButtonSet();
+            filteredBy.appendChild(btnWrap);
         }
 
         filteredBy.style.maxWidth = '100%';
-        filteredBy.innerHTML = `<div class="filteredByData"> 
-			<p>                         
-                <span>Vendor:</span> ${(filterValues.vendor == '%') ? 'ALL' : filterValues.vendor}&nbsp;&nbsp;
-			    <span>DD Number:</span> ${(filterValues.DDNumber == '') ? 'ALL' : filterValues.DDNumber}&nbsp;&nbsp;
-                <span>Local Number:</span> ${(filterValues.localNumber == '') ? 'ALL' : filterValues.localNumber}&nbsp;&nbsp;
-                <span>In Good Standing:</span> ${(filterValues.goodStanding == '%') ? 'ALL' : filterValues.goodStanding == 'Y' ? 'Yes' : 'No'} &nbsp;&nbsp; 
-                <span>In Home Services:</span> ${(filterValues.homeServices == '%') ? 'ALL' : filterValues.homeServices == 'Y' ? 'Yes' : 'No'} &nbsp;&nbsp;
-                <span>Taking New Referrals:</span> ${(filterValues.takingNewReferrals == '%') ? 'ALL' : filterValues.takingNewReferrals == 'Y' ? 'Yes' : 'No'} &nbsp;&nbsp;
-                <span>Funding Source:</span> ${(filterValues.fundingSource == '%') ? 'ALL' : filterValues.fundingSource} &nbsp;&nbsp;
-                <span>Service Code:</span> ${(filterValues.serviceCode == '%') ? 'ALL' : filterValues.serviceCode} 
-            </p>
-		  </div>`;
+
+        if (filterValues.vendor === '%' || filterValues.vendor === 'ALL') {
+            btnWrap.appendChild(vendorBtnWrap);
+            btnWrap.removeChild(vendorBtnWrap);
+        } else {
+            btnWrap.appendChild(vendorBtnWrap);
+        }
+
+        if (filterValues.DDNumber === '') {
+            btnWrap.appendChild(DDNumberBtnWrap);
+            btnWrap.removeChild(DDNumberBtnWrap);
+        } else {
+            btnWrap.appendChild(DDNumberBtnWrap);
+        }
+
+        if (filterValues.localNumber === '') {
+            btnWrap.appendChild(localNumberBtnWrap);
+            btnWrap.removeChild(localNumberBtnWrap);
+        } else {
+            btnWrap.appendChild(localNumberBtnWrap);
+        }
+
+        if (filterValues.goodStanding === '%' || filterValues.goodStanding === 'ALL') {
+            btnWrap.appendChild(goodStandingBtnWrap);
+            btnWrap.removeChild(goodStandingBtnWrap);
+        } else {
+            btnWrap.appendChild(goodStandingBtnWrap);
+        }
+
+        if (filterValues.homeServices === '%' || filterValues.homeServices === 'ALL') {
+            btnWrap.appendChild(homeServicesBtnWrap);
+            btnWrap.removeChild(homeServicesBtnWrap);
+        } else {
+            btnWrap.appendChild(homeServicesBtnWrap);
+        }
+
+        if (filterValues.takingNewReferrals === '%' || filterValues.takingNewReferrals === 'ALL') {
+            btnWrap.appendChild(takingNewReferralsBtnWrap);
+            btnWrap.removeChild(takingNewReferralsBtnWrap);
+        } else {
+            btnWrap.appendChild(takingNewReferralsBtnWrap);
+        }
+
+        if (filterValues.fundingSource === '%' || filterValues.fundingSource === 'ALL') {
+            btnWrap.appendChild(fundingSourceBtnWrap);
+            btnWrap.removeChild(fundingSourceBtnWrap);
+        } else {
+            btnWrap.appendChild(fundingSourceBtnWrap);
+        }
+        if (filterValues.serviceCode === '%' || filterValues.serviceCode === 'ALL') {
+            btnWrap.appendChild(serviceCodeBtnWrap);
+            btnWrap.removeChild(serviceCodeBtnWrap);
+        } else {
+            btnWrap.appendChild(serviceCodeBtnWrap);
+        }
 
         return filteredBy;
     }
 
+    function filterButtonSet() {
+        filterBtn = button.build({
+            text: 'Filter',
+            icon: 'filter',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'filterBtnNew',
+            callback: () => { buildFilterPopUp('ALL') },
+        });
+
+        DDNumberBtn = button.build({
+            id: 'DDNumberBtn',
+            text: 'DD ',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtnVendorInfo',
+            callback: () => { buildFilterPopUp('DDNumberBtn') },
+        });
+
+        DDNumberBtn2 = button.build({
+            id: 'DDNumberBtn2',
+            text: 'Number: ' + filterValues.DDNumber,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('DDNumberBtn') },
+        });
+        DDNumberCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('DDNumberBtn') },
+        });
+
+        localNumberBtn = button.build({
+            id: 'localNumberBtn',
+            text: 'Local Number: ' + filterValues.localNumber,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('localNumberBtn') },
+        });
+        localNumberCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('localNumberBtn') },
+        });
+        vendorBtn = button.build({
+            id: 'vendorBtn',
+            text: 'Vendor: ' + filterValues.vendor,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('vendorBtn') },
+        });
+        vendorCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('vendorBtn') },
+        });
+
+        goodStandingBtn = button.build({
+            id: 'goodStandingBtn',
+            text: filterValues.goodStanding == 'Y' ? 'In Good Standing: Yes' : 'In Good Standing: No',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('goodStandingBtn') },
+        });
+        goodStandingCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('goodStandingBtn') },
+        });
+
+        homeServicesBtn = button.build({
+            id: 'homeServicesBtn',
+            text: filterValues.homeServices == 'Y' ? 'In Home Services: Yes' : 'In Home Services: No',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('homeServicesBtn') },
+        });
+        homeServicesCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('homeServicesBtn') },
+        });
+
+        takingNewReferralsBtn = button.build({
+            id: 'takingNewReferralsBtn',
+            text: filterValues.takingNewReferrals == 'Y' ? 'Taking New Referrals: Yes' : 'Taking New Referrals: No',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('takingNewReferralsBtn') },
+        });
+        takingNewReferralsCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('takingNewReferralsBtn') },
+        });
+
+        fundingSourceBtn = button.build({
+            id: 'fundingSourceBtn',
+            text: 'Funding Source: ' + filterValues.fundingSource,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('fundingSourceBtn') },
+        });
+        fundingSourceCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('fundingSourceBtn') },
+        });
+
+        serviceCodeBtn = button.build({
+            id: 'serviceCodeBtn',
+            text: 'Service Code: ' + filterValues.serviceCode,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('serviceCodeBtn') },
+        });
+        serviceCodeCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('serviceCodeBtn') },
+        });
+
+        btnWrap = document.createElement('div');
+        btnWrap.classList.add('filterBtnWrap');
+        btnWrap.appendChild(filterBtn);
+
+        vendorBtnWrap = document.createElement('div');
+        vendorBtnWrap.classList.add('filterSelectionBtnWrap');
+        vendorBtnWrap.appendChild(vendorBtn);
+        vendorBtnWrap.appendChild(vendorCloseBtn);
+        btnWrap.appendChild(vendorBtnWrap);
+
+        DDNumberBtnWrap = document.createElement('div');
+        DDNumberBtnWrap.classList.add('filterSelectionBtnWrap');
+        DDNumberBtnWrap.appendChild(DDNumberBtn);
+        DDNumberBtnWrap.appendChild(DDNumberBtn2);
+        DDNumberBtnWrap.appendChild(DDNumberCloseBtn)
+        btnWrap.appendChild(DDNumberBtnWrap);
+
+        localNumberBtnWrap = document.createElement('div');
+        localNumberBtnWrap.classList.add('filterSelectionBtnWrap');
+        localNumberBtnWrap.appendChild(localNumberBtn);
+        localNumberBtnWrap.appendChild(localNumberCloseBtn);
+        btnWrap.appendChild(localNumberBtnWrap);
+
+        goodStandingBtnWrap = document.createElement('div');
+        goodStandingBtnWrap.classList.add('filterSelectionBtnWrap');
+        goodStandingBtnWrap.appendChild(goodStandingBtn);
+        goodStandingBtnWrap.appendChild(goodStandingCloseBtn);
+        btnWrap.appendChild(goodStandingBtnWrap);
+
+        homeServicesBtnWrap = document.createElement('div');
+        homeServicesBtnWrap.classList.add('filterSelectionBtnWrap');
+        homeServicesBtnWrap.appendChild(homeServicesBtn);
+        homeServicesBtnWrap.appendChild(homeServicesCloseBtn);
+        btnWrap.appendChild(homeServicesBtnWrap);
+
+        takingNewReferralsBtnWrap = document.createElement('div');
+        takingNewReferralsBtnWrap.classList.add('filterSelectionBtnWrap');
+        takingNewReferralsBtnWrap.appendChild(takingNewReferralsBtn);
+        takingNewReferralsBtnWrap.appendChild(takingNewReferralsCloseBtn)
+        btnWrap.appendChild(takingNewReferralsBtnWrap);
+
+        fundingSourceBtnWrap = document.createElement('div');
+        fundingSourceBtnWrap.classList.add('filterSelectionBtnWrap');
+        fundingSourceBtnWrap.appendChild(fundingSourceBtn);
+        fundingSourceBtnWrap.appendChild(fundingSourceCloseBtn);
+        btnWrap.appendChild(fundingSourceBtnWrap);
+
+        serviceCodeBtnWrap = document.createElement('div');
+        serviceCodeBtnWrap.classList.add('filterSelectionBtnWrap');
+        serviceCodeBtnWrap.appendChild(serviceCodeBtn);
+        serviceCodeBtnWrap.appendChild(serviceCodeCloseBtn);
+        btnWrap.appendChild(serviceCodeBtnWrap);
+    }
+
+    function closeFilter(closeFilter) {
+        if (closeFilter == 'DDNumberBtn') {
+            filterValues.DDNumber = '';
+        }
+        if (closeFilter == 'localNumberBtn') {
+            filterValues.localNumber = '';
+        }
+        if (closeFilter == 'vendorBtn') {
+            filterValues.vendor = '%';
+        }
+        if (closeFilter == 'goodStandingBtn') {
+            filterValues.goodStanding = '%';
+        }
+        if (closeFilter == 'homeServicesBtn') {
+            filterValues.homeServices = '%';
+        }
+        if (closeFilter == 'fundingSourceBtn') {
+            filterValues.fundingSource = '%';
+        }
+        if (closeFilter == 'serviceCodeBtn') {
+            filterValues.serviceCode = '%';
+        }
+        if (closeFilter == 'takingNewReferralsBtn') {
+            filterValues.takingNewReferrals = '%';
+        }
+
+        vendorInfoLoad();
+    }
+
 
     // build Filter pop-up that displays when an "Filter" button is clicked
-    function buildFilterPopUp(filterValues) {
+    function buildFilterPopUp(IsShow) {
         // popup
         filterPopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
@@ -281,14 +568,22 @@ const vendorInfo = (function () {
         btnWrap.appendChild(APPLY_BTN);
         btnWrap.appendChild(CANCEL_BTN);
 
-        filterPopup.appendChild(vendorDropdown);
-        filterPopup.appendChild(DDNumberInput);
-        filterPopup.appendChild(localNumberInput);
-        filterPopup.appendChild(goodStandingDropdown);
-        filterPopup.appendChild(homeServicesDropdown);
-        filterPopup.appendChild(takingNewReferralsDropdown);
-        filterPopup.appendChild(fundingSourceDropdown);
-        filterPopup.appendChild(serviceCodeDropdown);
+        if (IsShow == 'ALL' || IsShow == 'vendorBtn')
+            filterPopup.appendChild(vendorDropdown);
+        if (IsShow == 'ALL' || IsShow == 'DDNumberBtn')
+            filterPopup.appendChild(DDNumberInput);
+        if (IsShow == 'ALL' || IsShow == 'localNumberBtn')
+            filterPopup.appendChild(localNumberInput);
+        if (IsShow == 'ALL' || IsShow == 'goodStandingBtn')
+            filterPopup.appendChild(goodStandingDropdown);
+        if (IsShow == 'ALL' || IsShow == 'homeServicesBtn')
+            filterPopup.appendChild(homeServicesDropdown);
+        if (IsShow == 'ALL' || IsShow == 'takingNewReferralsBtn')
+            filterPopup.appendChild(takingNewReferralsDropdown);
+        if (IsShow == 'ALL' || IsShow == 'fundingSourceBtn')
+            filterPopup.appendChild(fundingSourceDropdown);
+        if (IsShow == 'ALL' || IsShow == 'serviceCodeBtn')
+            filterPopup.appendChild(serviceCodeDropdown);
 
         filterPopup.appendChild(btnWrap);
 
@@ -312,10 +607,10 @@ const vendorInfo = (function () {
             tmpVendor = event.target.value;
         });
         DDNumberInput.addEventListener('input', event => {
-            tmpDDNumber = event.target.value;
+            tmpDDNumber = event.target.value.trim();
         });
         localNumberInput.addEventListener('input', event => {
-            tmpLocalNumber = event.target.value;
+            tmpLocalNumber = event.target.value.trim();
         });
         goodStandingDropdown.addEventListener('change', event => {
             tmpGoodStanding = event.target.value;
@@ -423,10 +718,10 @@ const vendorInfo = (function () {
     }
 
     // load  
-    function loadReviewPage() {
+    async function loadReviewPage() {
         var DDNum = filterValues.DDNumber == '' ? '%' : filterValues.DDNumber;
         var localNum = filterValues.localNumber == '' ? '%' : filterValues.localNumber;
-        authorizationsAjax.getVendorInfoAsync({
+        await authorizationsAjax.getVendorInfoAsync({
             vendor: filterValues.vendor,
             DDNumber: DDNum,
             localNumber: localNum,
@@ -436,22 +731,67 @@ const vendorInfo = (function () {
             fundingSource: filterValues.fundingSource,
             serviceCode: filterValues.serviceCode,
         },
-            function (results) {
-                populateTable(results, true);
+            async function (results) {
+                tempUserTableData = results;
+                vendorsData = results;
+                await groupVendorData();               
             },
         );
     }
 
+    function pouplateVendors() {  
+        if (!groupedVendors[activeGroup + 1]) {
+            document.getElementById('loadMoreBtn').style.display = 'none';
+        }
+        else {
+            document.getElementById('loadMoreBtn').style.display = 'block';
+        }
+        loadMoreVendors = loadMoreVendors.concat(groupedVendors[activeGroup]);
+        populateTable(loadMoreVendors);
+    }
+
+    async function groupVendorData(vendors) {        
+        const chunkBy = 50;
+        chunkedArray = vendors ? UTIL.chunkArray(vendors, chunkBy) : UTIL.chunkArray(vendorsData, chunkBy);
+        groupedVendors = {};
+        chunkedArray.forEach((a, index) => (groupedVendors[index] = a));
+        const vendorKeys = Object.keys(groupedVendors);
+        vendorGroupCount = vendorKeys && vendorKeys.length;
+        activeGroup = 0;
+        loadMoreVendors = groupedVendors[activeGroup];       
+        populateTable(loadMoreVendors); 
+    }
+
+    function buildLoadMoreBtn() { 
+        const btnWrap = document.createElement('div');
+        btnWrap.classList.add('loadMoreVendorBtn');
+
+        const btn = button.build({
+            id: 'loadMoreBtn',
+            text: 'Load More...', 
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                activeGroup++;
+                pouplateVendors();
+            },
+        });
+
+        btnWrap.appendChild(btn);
+
+        return btnWrap;
+    }
+
     function formatPhoneNumber(number) {
-        if (number == '' || number == ' ') return '';  
-        
+        if (number == '' || number == ' ') return '';
+
         const phoneNumber = UTIL.formatPhoneNumber(number.substr(0, 10));
         const phoneExt = number.substr(10);
 
         const phonebracket = phoneNumber.substr(0, 3);
         const phonenum = phoneNumber.substr(4, 11);
 
-        const phone = `(${phonebracket})` + ` ` + ` ${phonenum}` + ` ` + `${ phoneExt }`;   
+        const phone = `(${phonebracket})` + ` ` + ` ${phonenum}` + ` ` + `${phoneExt}`;
 
         return phone;
     }

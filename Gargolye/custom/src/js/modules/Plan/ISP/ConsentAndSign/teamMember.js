@@ -133,6 +133,7 @@ const csTeamMember = (() => {
     selectedMemberData.name = relData.firstName;
     selectedMemberData.lastName = relData.lastName.split('|')[0];
     selectedMemberData.relationship = relData.relationship;
+    selectedMemberData.email = relData.email;
 
     // update inputs with selected data
     nameInput.childNodes[0].value = selectedMemberData.name;
@@ -165,7 +166,7 @@ const csTeamMember = (() => {
     lNameInput.classList.remove('error');
     buildingNumberInput.classList.remove('error');
     emailInput.classList.remove('error');
-    dateOfBirthInput.classList.remove('error');
+    //dateOfBirthInput.classList.remove('error');
 
     // make name and relationship readonly
     nameInput.classList.add('disabled');
@@ -199,7 +200,7 @@ const csTeamMember = (() => {
       participatedNoRadio.classList.remove('disabled');
       parentOfMinorYesRadio.classList.remove('disabled');
       parentOfMinorNoRadio.classList.remove('disabled');
-      signatureTypeDropdown.classList.remove('disabled');
+      // signatureTypeDropdown.classList.remove('disabled');
       // set errors
       if (selectedMemberData.teamMember === '') {
         teamMemberDropdown.classList.add('error');
@@ -208,6 +209,12 @@ const csTeamMember = (() => {
         signatureTypeDropdown.classList.add('error');
       }
       radioDiv.classList.add('error');
+    }
+
+    if ($.session.planUpdate) {
+      signatureTypeDropdown.classList.remove('disabled');
+    } else {
+      signatureTypeDropdown.classList.add('disabled');
     }
 
     checkTeamMemberPopupForErrors();
@@ -250,8 +257,12 @@ const csTeamMember = (() => {
       (selectedMemberData.teamMember === 'Guardian' || selectedMemberData.teamMember === 'Parent/Guardian') &&
       $.session.areInSalesForce === true
     ) {
+     //   if (selectedStateGuardianSalesForceId === '') selectedStateGuardianSalesForceId = selectedMemberData.salesForceId;
+     if (isNew) {
       var continueGuardianSave = await continueSaveofGuardianTeamMember();
       if (!continueGuardianSave) return;
+     }
+     
     }
 
     teamMemberPopup.style.display = 'none';
@@ -290,7 +301,15 @@ const csTeamMember = (() => {
                 DOM.ACTIONCENTER.removeChild(savePopup);
                 POPUP.hide(teamMemberPopup);
                 planConsentAndSign.refreshTable();
-                consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
+                if (
+                  selectedMemberData.teamMember === 'Guardian' ||
+                  selectedMemberData.teamMember === 'Parent/Guardian' ||
+                  selectedMemberData.teamMember === 'Case Manager'
+                ) {
+                  //Do Nothing
+                } else {
+                  consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
+                }
               }, 700);
             } else {
               pendingSave.reject('Failed to save, please try again.');
@@ -317,7 +336,15 @@ const csTeamMember = (() => {
 
             POPUP.hide(teamMemberPopup);
             planConsentAndSign.refreshTable();
-            consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
+            if (
+              selectedMemberData.teamMember === 'Guardian' ||
+              selectedMemberData.teamMember === 'Parent/Guardian' ||
+              selectedMemberData.teamMember === 'Case Manager'
+            ) {
+              //Do Nothing
+            } else {
+              consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
+            }
           }, 700);
         } else {
           pendingSave.reject('Failed to save, please try again.');
@@ -329,7 +356,7 @@ const csTeamMember = (() => {
           }, 2000);
         }
       }
-    } else {
+    } else {  //edit
       await planConsentAndSign.updateTeamMember(selectedMemberData);
       success = true;
 
@@ -340,7 +367,15 @@ const csTeamMember = (() => {
           DOM.ACTIONCENTER.removeChild(savePopup);
           POPUP.hide(teamMemberPopup);
           planConsentAndSign.refreshTable();
-          consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
+          if (
+            selectedMemberData.teamMember === 'Guardian' ||
+            selectedMemberData.teamMember === 'Parent/Guardian' ||
+            selectedMemberData.teamMember === 'Case Manager'
+          ) {
+            //Do Nothing
+          } else {
+            consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
+          }
         }, 700);
       } else {
         pendingSave.reject('Failed to save, please try again.');
@@ -356,7 +391,7 @@ const csTeamMember = (() => {
 
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian
   async function continueSaveofGuardianTeamMember() {
-    // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
+    // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan   
     if (hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId) && $.session.areInSalesForce === true) {
       alert(
         `This team Member will not be saved. This State Guardian has already been used for a team Member in this Plan.`,
@@ -934,19 +969,6 @@ const csTeamMember = (() => {
       callback: async event => {
         selectedMemberData.teamMember = event.target.value;
 
-        // var selectedConsumer = plan.getSelectedConsumer();
-        // let stateGuardiansOb = await consentAndSignAjax.getStateGuardiansforConsumer({
-        //   peopleId: selectedConsumer.id,
-        // });
-
-        // if (
-        //   (!stateGuardiansOb || stateGuardiansOb.length === 0) &&
-        //   planConsentAndSign.isTeamMemberGuardian(selectedMemberData.teamMember)
-        // )
-        //   alert(
-        //     `No State Guardians found for this individual. No Guardian or Parent/Guardian can be entered as new team member. Enter a new guardian for this individual in the SalesForce Portal.`,
-        //   );
-
         // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
         setStateofPopupFields();
 
@@ -954,8 +976,9 @@ const csTeamMember = (() => {
         insertingConditionalFieldsintoPopup();
 
         checkTeamMemberPopupForErrors();
-      }, // end callback
-    }); // end DROP DOWN BUILD
+      },
+    });
+    teamMemberDropdown.classList.add('teamMemberDropdown');
 
     // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
     function setStateofPopupFields() {
@@ -967,7 +990,13 @@ const csTeamMember = (() => {
         participatedNoRadio.classList.remove('disabled');
         parentOfMinorYesRadio.classList.remove('disabled');
         parentOfMinorNoRadio.classList.remove('disabled');
+        // signatureTypeDropdown.classList.remove('disabled');
+      }
+
+      if ($.session.planUpdate) {
         signatureTypeDropdown.classList.remove('disabled');
+      } else {
+        signatureTypeDropdown.classList.add('disabled');
       }
 
       if ($.session.planSignatureUpdateDOB) {
@@ -984,17 +1013,16 @@ const csTeamMember = (() => {
       //*------------------------------
       if ($.session.planInsertNewTeamMember) {
         const checkIfDateBefore1900 = isDateBefore1900(dateOfBirthInput.value);
-        if (selectedMemberData.dateOfBirth !== '' && !checkIfDateBefore1900) {
-          dateOfBirthInput.classList.remove('error');
-        } else {
+        const teamMember = selectedMemberData.teamMember;
+        const isRequired =
+        teamMember !== 'Guardian' && teamMember !== 'Parent/Guardian' && teamMember !== 'Case Manager' && teamMember !== '';
+
+        if (checkIfDateBefore1900 || (isRequired && selectedMemberData.dateOfBirth === '')) {
           dateOfBirthInput.classList.add('error');
+        } else {
+          dateOfBirthInput.classList.remove('error');
         }
-        // email input not currently required
-        // if (selectedMemberData.email) {
-        //   emailInput.classList.remove('error');
-        // } else {
-        //   emailInput.classList.add('error');
-        // }
+
         if (selectedMemberData.teamMember === '') {
           teamMemberDropdown.classList.add('error');
         } else {
@@ -1104,7 +1132,7 @@ const csTeamMember = (() => {
           // selectedMemberData.csContactProviderVendorId = '';
           // selectedMemberData.csContactInput = '';
         }
-      } // end if -- isSelectedTeamMemberConsentable
+      } // end if -- isSelectedTeamMemberConsentable///
     }
 
     async function insertingFieldsBasedonGuardian(isSelectedTeamMemberGuardian) {
@@ -1126,7 +1154,6 @@ const csTeamMember = (() => {
       } // end if -- isSelectedTeamMemberGuardian
     }
 
-    teamMemberDropdown.classList.add('teamMemberDropdown');
 
     // State Guradian
     stateGuardianDropdown = dropdown.build({
@@ -1196,11 +1223,16 @@ const csTeamMember = (() => {
       readonly: isSigned || readOnly,
       callback: event => {
         selectedMemberData.dateOfBirth = event.target.value;
+
         const checkIfDateBefore1900 = isDateBefore1900(event.target.value);
-        if (selectedMemberData.dateOfBirth !== '' && !checkIfDateBefore1900) {
-          dateOfBirthInput.classList.remove('error');
-        } else {
+        const teamMember = selectedMemberData.teamMember;
+        const isRequired =
+          teamMember !== 'Guardian' && teamMember !== 'Parent/Guardian' && teamMember !== 'Case Manager' && teamMember !== '';
+
+        if (checkIfDateBefore1900 || (isRequired && selectedMemberData.dateOfBirth === '')) {
           dateOfBirthInput.classList.add('error');
+        } else {
+          dateOfBirthInput.classList.remove('error');
         }
 
         checkTeamMemberPopupForErrors();
@@ -1326,7 +1358,7 @@ const csTeamMember = (() => {
       parentOfMinorYesRadio.classList.add('disabled');
       parentOfMinorNoRadio.classList.add('disabled');
       // radioDiv.classList.remove('error');
-      signatureTypeDropdown.classList.add('disabled');
+      // signatureTypeDropdown.classList.add('disabled');
       saveTeamMemberBtn.classList.add('disabled');
       emailInput.classList.add('disabled');
     }
@@ -1335,11 +1367,13 @@ const csTeamMember = (() => {
     //*------------------------------
     if ($.session.planInsertNewTeamMember) {
       const checkIfDateBefore1900 = isDateBefore1900(dateOfBirthInput.value);
-        if (selectedMemberData.dateOfBirth !== '' && !checkIfDateBefore1900) {
-          dateOfBirthInput.classList.remove('error');
-        } else {
-          dateOfBirthInput.classList.add('error');
-        }
+      const teamMember = selectedMemberData.teamMember;
+      const isRequired = teamMember !== 'Guardian' && teamMember !== 'Parent/Guardian' && teamMember !== 'Case Manager' && teamMember !== '';
+      if (checkIfDateBefore1900 || (isRequired && selectedMemberData.dateOfBirth === '')) {
+        dateOfBirthInput.classList.add('error');
+      } else {
+        dateOfBirthInput.classList.remove('error');
+      }
       // email input is not currently required
       // if (selectedMemberData.email) {
       //   emailInput.classList.remove('error');
@@ -1372,12 +1406,18 @@ const csTeamMember = (() => {
         participatedNoRadio.classList.remove('disabled');
         parentOfMinorYesRadio.classList.remove('disabled');
         parentOfMinorNoRadio.classList.remove('disabled');
-        signatureTypeDropdown.classList.remove('disabled');
+        // signatureTypeDropdown.classList.remove('disabled');
       }
 
       if (!$.session.updateEmail) {
         emailInput.classList.add('disabled');
       }
+    }
+
+    if ($.session.planUpdate) {
+      signatureTypeDropdown.classList.remove('disabled');
+    } else {
+      signatureTypeDropdown.classList.add('disabled');
     }
 
     //* Add elements to popup

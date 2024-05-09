@@ -187,7 +187,7 @@
       const firstName = rd.firstname.toLowerCase().trim();
       const lastName = rd.lastname.toLowerCase().trim();
       const enteredBy = rd.enteredby.toLowerCase().trim();
-      const serviceName = rd.serviceName.toLowerCase().trim();
+      const serviceName = rd.serviceName?.toLowerCase().trim() || '';
 
       const searchFields = [
         `${firstName} ${lastName}`,

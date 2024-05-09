@@ -1,0 +1,162 @@
+[data-ui] {
+  .waitingList {
+    &__header {
+      align-items: center;
+      display: flex;
+      column-gap: 10px;
+      flex-flow: row wrap;
+      margin: 0 0 20px 0;
+
+      justify-content: space-between;
+
+      div {
+        display: flex;
+        flex-flow: row nowrap;
+        column-gap: 10px;
+      }
+    }
+
+    &__body {
+      display: flex;
+      flex-flow: row;
+    }
+  }
+
+  .waitingListOverview {
+    display: flex;
+    column-gap: 10px;
+    flex-flow: row;
+    width: 100%;
+
+    .ui_table {
+      flex-grow: 1;
+    }
+
+    .rosterPicker {
+      min-width: 300px;
+      max-height: calc(100vh - 200px);
+    }
+  }
+
+  // FORM
+  .waitingListAssessment {
+    display: flex;
+    flex-flow: column;
+    max-width: 1000px;
+    height: calc(100vh - 167px);
+    padding: 0 10px 20px;
+    overflow-y: scroll;
+
+    .wlPage {
+      order: 10;
+
+      h2 {
+        margin-bottom: 10px;
+      }
+
+      form {
+        flex-flow: column nowrap;
+      }
+
+      &.hiddenPage {
+        display: none;
+      }
+    }
+
+    #waitingListInfo {
+      order: 1;
+    }
+    #participants {
+      order: 2;
+
+      .ui_table {
+        margin: 0 0 10px 0;
+      }
+    }
+    #conditions {
+      order: 3;
+    }
+    #currentAvailableServices {
+      order: 4;
+    }
+    #contributingCircumstances {
+      order: 5;
+    }
+  }
+  .waitingListTableOFContents {
+    display: flex;
+    flex-flow: column;
+    min-width: 250px;
+    height: calc(100vh - 167px);
+    overflow: auto;
+
+    a {
+      color: $black;
+    }
+    p {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      flex-flow: row nowrap;
+
+      .svgIcon {
+        color: $font-error;
+        margin-left: 4px;
+      }
+
+      &.hiddenPage {
+        cursor: default;
+        pointer-events: none;
+        opacity: 0.5;
+      }
+
+      &.needs,
+      &.contributingCircumstances,
+      &.hiddenPage {
+        .svgIcon {
+          display: none;
+        }
+      }
+
+      &.formComplete {
+        .svgIcon {
+          color: $secondary;
+        }
+      }
+    }
+    .section {
+      margin: 0 0 10px 0;
+    }
+    .subsection {
+      margin: 0 0 6px 0;
+    }
+  }
+  dialog.wlEmailPopup,
+  dialog.wlDocumentPopup {
+    padding: 20px;
+  }
+
+  dialog.wlDocumentPopup {
+    .docList {
+      display: flex;
+      flex-flow: row wrap;
+      column-gap: 10px;
+      row-gap: 10px;
+      margin: 0 0 20px;
+
+      &__Item {
+        align-items: center;
+        background: lightgray;
+        border-radius: 4px;
+        display: flex;
+        flex-flow: row nowrap;
+        padding: 4px 8px;
+
+        .svgIcon {
+          color: $font-error;
+          margin-left: 4px;
+        }
+      }
+    }
+  }
+}

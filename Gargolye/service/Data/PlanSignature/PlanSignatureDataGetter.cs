@@ -51,6 +51,23 @@ namespace Anywhere.service.Data.PlanSignature
             }
         }
 
+        public string getLocationswithSalesforceId(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("ANYW_GetLocationswithSalesforceId ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_GetLocationswithSalesforceId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("669", ex.Message + "ANYW_GetLocationswithSalesforceId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "669: error ANYW_GetLocationswithSalesforceId";
+            }
+        }
 
         public string insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,

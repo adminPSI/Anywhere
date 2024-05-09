@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereWorker;
 
 namespace Anywhere.service.Data.PlanSignature
 {
@@ -86,6 +87,7 @@ namespace Anywhere.service.Data.PlanSignature
             public string vendorId { get; set; }
             public string email { get; set; }
             public string parentOfMinor { get; set; }
+            public string locationId { get; set; }
         }
 
         public class SigId
@@ -152,6 +154,19 @@ namespace Anywhere.service.Data.PlanSignature
         }
 
 
+        public Locations[] getLocationswithSalesforceId(string token)
+        {
+            string locations = psdg.getLocationswithSalesforceId(token);
+            Locations[] locationsData = js.Deserialize<Locations[]>(locations);
+            return locationsData;//test
+        }
+
+        public class Locations
+        {
+            public string ID { get; set; }
+            public string Name { get; set; }
+        }
+
         public SigId[] insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
                string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId,
@@ -208,7 +223,12 @@ namespace Anywhere.service.Data.PlanSignature
 
                     return sigObjPeop;
                 }
-                //if (salesforceId == "")
+                if (salesforceId == "")
+                {
+                //if (teamMember == "Guardian" || teamMember == "Parent/Guardian" || teamMember == "Case Manager")
+                //{
+                //    // don't make call to Salesforce
+                //} else
                 //{
                     newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
 
@@ -220,7 +240,8 @@ namespace Anywhere.service.Data.PlanSignature
                     {
                         salesforceId = "";
                     }
-                //}
+                //}                
+                }
                 if (createRelationship == "T")
                 {
 
@@ -416,8 +437,8 @@ namespace Anywhere.service.Data.PlanSignature
         public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string peopleId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
                                         bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId, string clear, string email)
         {
-            //Runs this section if we are updating the vendors and not the team member
-            if (vendorId != null)
+            //Runs this section if we are updating the vendors or facilities -- and not a team member
+            if ((vendorId != null && vendorId != "") || (contactId == null || contactId == ""))
             {
                 if (buildingNumber == null) buildingNumber = "";
                 if (dateOfBirth == null || dateOfBirth == "") dateOfBirth = "";

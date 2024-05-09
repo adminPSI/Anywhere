@@ -131,276 +131,280 @@
 
 // Consumer Section
 .incidentSection[data-card-page="consumers"] {
-  .incidentSection__body {
-    display: flex;
-    flex-flow: row nowrap;
+    .incidentSection__body {
+        display: flex;
+        flex-flow: wrap;
 
-    > * {
-      width: 100%;
-    }
-  }
-
-  .consumerError {
-    color: $font-error;
-    flex-shrink: 0;
-    width: 100%;
-    
-    &.hidden {
-      transform: translateX(-100%);
-      opacity: 0;
-    }
-  }
-
-  .consumersWrap {
-    display: flex;
-    flex-flow: row wrap;
-    flex-shrink: 0;
-    justify-content: space-around;
-    transform: translateX(10%);
-    width: 100%;
-
-    &.visible {
-      transform: translateX(-100%);
+        > * {
+            width: 100%;
+        }
     }
 
-    .incidentCard__consumer {
-      flex-basis: 32%;
-  
-      .consumerCard {
-        width: 106px;
-      }
-    }
-  }
-  .consumerSections {
-    flex-shrink: 0;
-    width: 100%;
+    .consumerError {
+        color: $font-error;
+        flex-shrink: 0;
+        width: 100%;
 
-    &.visible {
-      transform: translateX(-200%);
+        &.hidden {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
     }
+
+    .consumersWrap {
+        display: none;
+        flex-flow: row wrap;
+        flex-shrink: 0;
+        justify-content: space-around;
+        transform: translateX(10%);
+        width: 100%;
+
+        &.visible {
+            transform: translateX(1%);
+            display: flex;
+        }
+
+        .incidentCard__consumer {
+            flex-basis: 32%;
+            padding:15px;
+
+            .consumerCard {
+                width: 106px;
+            }
+        }
+    }
+    .consumerSections {
+        flex-shrink: 0;
+        width: 100%;
+        transform: translateX(-200%);
+        display :none;
+        &.visible {
+            transform: translateX(1%);
+            display:block;
+        }
 
     .topBar {// holds back btn and consumer card
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: space-between;
-      margin: 0 0 16px;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-between;
+            margin: 0 0 16px;
 
-      button {
-        margin: 0 20px 0 0;
-        width: auto;
-      }
+            button {
+                margin: 0 20px 0 0;
+                width: auto;
+            }
 
-      .backBtn {
-        &.hidden {
-          margin: 0;
-          opacity: 0;
-          pointer-events: none;
-          width: 0;
-        }
-      }
+            .backBtn {
+                &.hidden {
+                    margin: 0;
+                    opacity: 0;
+                    pointer-events: none;
+                    width: 0;
+                }
+            }
 
-      .consumerCard {
-        box-shadow: none;
-        border: none;
-        flex-grow: 1;
-        flex-flow: row nowrap;
+            .consumerCard {
+                box-shadow: none;
+                border: none;
+                flex-grow: 1;
+                flex-flow: row nowrap;
 
-        .portrait {
-          padding: 0;
-          width: 60px;
-          img {
-            position: relative;
-          }
+                .portrait {
+                    padding: 0;
+                    width: 60px;
+                    img {
+                        position: relative;
+                    }
+                }
+                .details {
+                    flex-grow: 1;
+                    padding: 10px;
+                }
+                .icons {
+                    display: none;
+                }
+            }
         }
-        .details {
-          flex-grow: 1;
-          padding: 10px;
+
+        &__inner {
+            display: flex;
+            flex-flow: row nowrap;
         }
-        .icons {
-          display: none;
+
+        &__menu {
+            border-radius: $r-sm;
+            flex-shrink: 0;
+            overflow: hidden;
+            transform: translateX(-110%);
+            width: 100%;
+
+            &.visible {
+                transform: translateX(0%);
+            }
+
+            .menuItem {
+                border-bottom: $w-sm solid rgba($black, 0.12);
+                padding: 10px 5px;
+                margin: 0 0 5px;
+                cursor: pointer;
+
+                &.removeConsumer {
+                    background: $font-error;
+                    color: $font-light;
+                }
+            }
+
+            .menuItem.sectionError {
+                border: solid red;
+                margin: -6px 0px 5px;
+            }
+
         }
-      }
     }
 
-    &__inner {
-      display: flex;
-      flex-flow: row nowrap;
-    }
-
-    &__menu {
-      border-radius: $r-sm;
-      flex-shrink: 0;
-      overflow: hidden;
-      transform: translateX(-110%);
-      width: 100%;
-
-      &.visible {
-        transform: translateX(0%);
-      }
-
-      .menuItem {
-        border-bottom: $w-sm solid rgba($black, 0.12);
-        padding: 10px 5px;
-        margin: 0 0 5px;
-        cursor: pointer;
-
-        &.removeConsumer {
-          background: $font-error;
-          color: $font-light;
-        }
-      }
-
-      .menuItem.sectionError {
-        border: solid red;
-        margin: -6px 0px 5px;
-      }
-
-    }
-  }
-
-  // sub sections
-  .consumerSections__section {
-    height: 0px;
-    flex-shrink: 0;
-    width: 100%;
-    transform: translateX(10%);
-    visibility: hidden;
-
-    &.visible {
-      height: auto;
-      visibility: visible;
-    }
-
-    &__home {
-      &.hidden {
-        display: none;
-      }
-
-      button.btn {
-        padding: 14px 0;
+    // sub sections
+    .consumerSections__section {
+        height: 0px;
+        flex-shrink: 0;
         width: 100%;
-      }
+        transform: translateX(10%);
+        visibility: hidden;
+
+        &.visible {
+            height: auto;
+            visibility: visible;
+        }
+
+        &__home {
+            &.hidden {
+                display: none;
+            }
+
+            button.btn {
+                padding: 14px 0;
+                width: 100%;
+            }
+        }
     }
-  }
-  .behaviorSection {
-    &.visible {
-      transform: translateX(-100%);
+    .behaviorSection {
+        &.visible {
+            transform: translateX(-100%);
+        }
+        .table__row {
+            > div {
+                flex-grow: 1;
+            }
+            > div:nth-child(1) {
+                width: 100px;
+            }
+            > div:nth-child(2) {
+                width: 60px;
+            }
+            > div:nth-child(3) {
+                width: 80px;
+            }
+        }
     }
-    .table__row {
-      > div {
-        flex-grow: 1;
-      }
-      > div:nth-child(1) {
-        width: 100px;
-      }
-      > div:nth-child(2) {
-        width: 60px;
-      }
-      > div:nth-child(3) {
-        width: 80px;
-      }
+    .followUpSection {
+        &.visible {
+            transform: translateX(-200%);
+        }
+        .table__row {
+            > div {
+                flex-grow: 1;
+            }
+            > div:nth-child(1) {
+                width: 100px;
+            }
+            > div:nth-child(2) {
+                width: 80px;
+            }
+            > div:nth-child(3) {
+                width: 60px;
+            }
+        }
     }
-  }
-  .followUpSection {
-    &.visible {
-      transform: translateX(-200%);
+    .injuriesSection {
+        &.visible {
+            transform: translateX(-300%);
+        }
+        .table__row {
+            > div {
+                flex-grow: 1;
+            }
+            > div:nth-child(1) {
+                width: 100px;
+            }
+            > div:nth-child(2) {
+                width: 80px;
+            }
+            > div:nth-child(3) {
+                width: 60px;
+            }
+        }
     }
-    .table__row {
-      > div {
-        flex-grow: 1;
-      }
-      > div:nth-child(1) {
-        width: 100px;
-      }
-      > div:nth-child(2) {
-        width: 80px;
-      }
-      > div:nth-child(3) {
-        width: 60px;
-      }
+    .interventionSection {
+        &.visible {
+            transform: translateX(-400%);
+        }
+        .table__row {
+            > div {
+                flex-grow: 1;
+            }
+            > div:nth-child(1) {
+                width: 100px;
+            }
+            > div:nth-child(2) {
+                width: 80px;
+            }
+            > div:nth-child(3) {
+                width: 60px;
+            }
+        }
     }
-  }
-  .injuriesSection {
-    &.visible {
-      transform: translateX(-300%);
+    .involvementSection {
+        &.visible {
+            transform: translateX(-500%);
+        }
     }
-    .table__row {
-      > div {
-        flex-grow: 1;
-      }
-      > div:nth-child(1) {
-        width: 100px;
-      }
-      > div:nth-child(2) {
-        width: 80px;
-      }
-      > div:nth-child(3) {
-        width: 60px;
-      }
+    .reportingSection {
+        &.visible {
+            transform: translateX(-600%);
+        }
+        .table__row {
+            > div {
+                flex-grow: 1;
+            }
+            > div:nth-child(1) {
+                width: 100px;
+            }
+            > div:nth-child(2) {
+                width: 80px;
+            }
+            > div:nth-child(3) {
+                width: 60px;
+            }
+        }
     }
-  }
-  .interventionSection {
-    &.visible {
-      transform: translateX(-400%);
+    .reviewSection {
+        &.visible {
+            transform: translateX(-700%);
+        }
+        .table__row {
+            > div {
+                flex-grow: 1;
+            }
+            > div:nth-child(1) {
+                width: 100px;
+            }
+            > div:nth-child(2) {
+                width: 80px;
+            }
+            > div:nth-child(3) {
+                width: 60px;
+            }
+        }
     }
-    .table__row {
-      > div {
-        flex-grow: 1;
-      }
-      > div:nth-child(1) {
-        width: 100px;
-      }
-      > div:nth-child(2) {
-        width: 80px;
-      }
-      > div:nth-child(3) {
-        width: 60px;
-      }
-    }
-  }
-  .involvementSection {
-    &.visible {
-      transform: translateX(-500%);
-    }
-  }
-  .reportingSection {
-    &.visible {
-    transform: translateX(-600%);
-    }
-    .table__row {
-      > div {
-        flex-grow: 1;
-      }
-      > div:nth-child(1) {
-        width: 100px;
-      }
-      > div:nth-child(2) {
-        width: 80px;
-      }
-      > div:nth-child(3) {
-        width: 60px;
-      }
-    }
-  }
-  .reviewSection {
-    &.visible {
-      transform: translateX(-700%);
-    }
-    .table__row {
-      > div {
-        flex-grow: 1;
-      }
-      > div:nth-child(1) {
-        width: 100px;
-      }
-      > div:nth-child(2) {
-        width: 80px;
-      }
-      > div:nth-child(3) {
-        width: 60px;
-      }
-    }
-  }
 }
 // Details Section
 .incidentSection[data-card-page="details"] {
@@ -587,4 +591,53 @@
 .filterAndReportsBtnsWrap {
   display: flex;
   gap: 10px;
+}
+
+.filterBtnNew {   
+    margin: 0px 0px 5px !important;
+    padding: 3px 10px !important;
+}
+
+.filterSelectionBtn {
+    margin: 0px 0px !important;
+    padding: 5px 5px 5px !important;
+    font-size: .875rem !important; 
+    font-weight: 500 !important;
+    text-transform: capitalize !important; 
+}
+
+.filterCloseBtn {
+    margin: 0px 0px 0px !important;
+    padding: 0px 0px 0px !important;  
+}
+
+.filterBtnWrap {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.filterSelectionBtnWrap {
+    display: flex;
+    justify-content: space-between;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 2px;
+    cursor: pointer;
+    border-color: #366a98;
+    margin-left: 4px;
+    margin-bottom: 5px; 
+}
+
+.filterSelectionFirstBtnWrap {
+    display: flex;
+    justify-content: space-between;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 2px;
+    cursor: pointer;
+    border-color: #366a98;
+    margin-left: 0px;
+    margin-bottom: 5px;
 }

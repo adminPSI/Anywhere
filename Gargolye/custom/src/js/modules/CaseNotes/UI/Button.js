@@ -15,6 +15,7 @@
     style: 'primary',
     styleType: 'contained',
     disabled: false,
+    class: [],
   };
 
   /**
@@ -29,6 +30,7 @@
    * @param {String} [options.icon] icon to include
    * @param {String} [options.style] primary(blue), secondary(green), danger(red), warning(yellow)
    * @param {String} [options.styleType] contained(filled), outlined(border, no fill), text(no fill/border)
+   * @param {Array} [options.class] additional css classes to add ['class1', 'class2']
    * @returns {Button}
    *
    * @example
@@ -52,12 +54,13 @@
    * @function
    */
   Button.prototype._build = function () {
-    const classes = ['button', this.options.style, this.options.styleType];
+    const classes = ['button', this.options.style, this.options.styleType, ...this.options.class];
     this.button = _DOM.createElement('button', {
       class: this.options.hidden ? [...classes, 'button--hidden'] : classes,
       type: this.options.attributes.type,
       name: this.options.attributes.name,
       value: this.options.attributes.value,
+      disabled: this.options.attributes.disabled,
     });
 
     if (this.options.icon) {

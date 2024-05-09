@@ -7,6 +7,13 @@
         margin-top: 10px;
     }
 
+    .questionWrapWord {
+        padding-left: 5px;
+        padding-right: 5px;
+        word-break: break-word;
+        text-align: justify;
+    }
+
     .addRouteRadioDiv {
         :first-child {
             padding-right: 20px;
@@ -658,6 +665,48 @@
             cursor: pointer;
         }
     }
+
+    .cFInputWrap {
+        display: flow;
+
+        .width37Per, .width21Per {
+            width: 97%;
+        }
+
+        @media screen and (min-width: 560px) {
+            display: flex;
+            justify-content: space-between;
+
+            .width37Per {
+                width: 37%;
+            }
+
+            .width21Per {
+                width: 21%;
+            }
+
+            .marginLeft50Per {
+                margin-left: 55.5%;
+            }
+        }
+    }
+
+    .cFTotalWrap {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        margin: 0;
+
+        > div {
+            flex-grow: 1;
+            margin: 0 5px 20px;
+            width: 45%;
+        }
+    }
+
+    .popupSize {
+        max-width: 400px !important;
+    }
 }
 
 [data-active-module="resetPassword"] {
@@ -750,19 +799,42 @@
 [data-active-module="Employment"] {
 
     .dropdown {
-        margin: 0px 5px 20px;
+        margin: 0px 0px 20px;
+    }
+
+    .popup {
+        max-width: 420px !important;
+
+        .checkbox-mtd > span::after {
+            top: -39px !important;
+            left: 14px !important;
+        }
+
+        .checkbox-mtd > input {
+            top: -7px !important;
+            margin-left : 12px !important; 
+        }
+
+        .password-error {
+            color: #db162f !important;
+        }
     }
 
     .employmentDTWrap {
         display: flow;
 
-        .width25Per, .width27Per, .width35Per {
-            width: 97%;
+        .width25Per, .width27Per, .width35Per, .width39Per, .width30Per {
+            width: 100%;
         }
 
-        .width20Per, .width30Per, .width32Per {
+        .width20Per, .width32Per, .width38Per {
+            width: 100%;
+        }
+
+        .width22Per {
             margin-left: 1.5%;
-            width: 97%;
+            width: 100%;
+            margin-bottom: 5%;
         }
 
 
@@ -797,7 +869,24 @@
             .width35Per {
                 width: 35%;
             }
+
+            .width38Per {
+                width: 38%;
+            }
+
+            .width39Per {
+                width: 39%;
+            }
+
+            .width22Per {
+                width: 22%;
+                margin-bottom: 5px;
+            }
         }
+    }
+
+    .entryBtn {
+        width: 32%;
     }
 
     .employmentBtnWrap {
@@ -818,6 +907,25 @@
         }
     }
 
+    .chkWrap {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+
+        .checkbox-mtd {
+            display: flow !important;
+            height: 30px;
+        }
+    }
+
+    .chkWeekDay {
+        width: 13%;
+        text-align: center;
+    }
+
+    .boldfont {
+        font: bold;
+    }
 
     .employmentMsgWrap {
         display: flex;
@@ -938,6 +1046,12 @@
         }
 
         .table__row {
+            &[data-plan-active='true'] {
+                > div:nth-child(4) {
+                    font-weight: bold;
+                }
+            }
+
             &.selected {
                 background: $secondary;
             }
@@ -964,6 +1078,94 @@
 
             > div:nth-child(5) {
                 width: 52px;
+            }
+        }
+    }
+
+    #employmentWorkScheduleTable {
+        .endIcon {
+            margin-left: 2px;
+            max-width: 30px !important;
+
+            @media screen and (min-width: 560px) {
+                margin-left: 2px;
+                max-width: 85px !important;
+            }
+        }
+
+        .secondendIcon {
+            margin-left: 2px;
+            max-width: 30px !important;
+
+            @media screen and (min-width: 560px) {
+                margin-left: 2px;
+                max-width: 45px !important;
+            }
+        }
+
+        .table__row {
+            &[data-plan-active='true'] {
+                > div:nth-child(4) {
+                    margin-right: 116px !important;
+                }
+            }
+
+            &[deleteHide='false'] {
+                > div:nth-child(6) {
+                    display: none;
+                }
+            }
+
+            &[copyHide='false'] {
+                > div:nth-child(5) {
+                    display: none;
+                }
+            }
+
+            &.selected {
+                background: $secondary;
+            }
+
+            > div {
+                flex-grow: 1;
+            }
+
+            > div:nth-child(1) {
+                width: 70px;
+            }
+
+            > div:nth-child(2) {
+                width: 68px;
+            }
+
+            > div:nth-child(3) {
+                width: 86px;
+            }
+
+            > div:nth-child(4) {
+                display: none;
+                width: 80px;
+            }
+
+            > div:nth-child(5) {
+                width: 70px;
+            }
+
+            > div:nth-child(6) {
+                width: 70px;
+            }
+
+
+            @media screen and (min-width: 560px) {
+                > div:nth-child(4) {
+                    display: block;
+                }
+            }
+        }
+
+        .multiSelectBtn {
+            &.enabled {
+                background: pink;
             }
         }
     }

@@ -12,12 +12,15 @@ namespace Anywhere.service.Data
         //Create key and send email
         public string generateAuthentication(string userId, string password)
         {
+            if (stringInjectionValidatorLogin(userId) == false) return null;
+            if (stringInjectionValidatorLogin(password) == false) return null;
             return adg.generateAuthentication(userId, password);
         }
 
         //Check key and log in
         public string authenticatedLogin(string userName, string genKey)
         {
+            if (stringInjectionValidatorLogin(userName) == false) return null;
             string passwordString = adg.getHashfromKey(userName, genKey);
             if (passwordString.Contains("Invalid key"))
             {
@@ -37,6 +40,23 @@ namespace Anywhere.service.Data
                 string password = passwordObj[0].Hash_Password.ToString();
                 return dg.getLogIn(userName, password);
             }
+        }
+
+        public bool stringInjectionValidatorLogin(string uncheckedString)
+        {
+            string waitFor = "WAITFOR DELAY";
+            string dropTable = "DROP TABLE";
+            string deleteFrom = "DELETE FROM";
+            string singleQuote = "'";
+            if (!string.IsNullOrWhiteSpace(uncheckedString) && (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(singleQuote) || uncheckedString.ToUpper().Contains(deleteFrom)))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
         }
 
         public class Hash

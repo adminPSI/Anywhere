@@ -28,7 +28,6 @@ namespace OODForms
 
         public string generateForm4(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
         {
-                //OODFormWorker obj = new OODFormWorker();
                 OODFormDataGetter obj = new OODFormDataGetter();
 
                 string SSinfo = obj.getSpreadsheetNameAndKey(token);
@@ -40,7 +39,6 @@ namespace OODForms
                 PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
                 string path = pathdatalist[0].path;
                 string templateFileName = "Form4MonthlyJobAndSiteDevelopment.xlsx";
-                //string templateFileName = "formulaTestFile.xlsx";
                 string ReportPath = string.Format(path, templateFileName);
 
                 long PeopleID = long.Parse(peopleIDString);
@@ -65,9 +63,6 @@ namespace OODForms
             DataTable dt;
             DataRow row;
 
-            //dt = obj.OODVendor(VendorID).Tables[0];
-            //row = dt.Rows[0];
-
             dt = obj.OODDevelopment(AuthorizationNumber).Tables[0];
             row = dt.Rows[0];
 
@@ -77,8 +72,6 @@ namespace OODForms
             string ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
 
             WS.Cell("k1").Value = ProviderName;
-
-            //WS.UnProtect();
 
             WS.Cell("k2").Value = string.Format("{0}", AuthorizationNumber);
 
@@ -90,19 +83,35 @@ namespace OODForms
             string servicename = string.Format("{0}", row["servicename"].ToString().Trim());
             WS.Cell("a12").Value = servicename;
 
-            string EmploymentGoal = String.Format("{0}", row["ReviewGoal"].ToString().Trim());
-            WS.Cell("k19").Value = EmploymentGoal;
+            DataSet ds = obj.EmpGoal(AuthorizationNumber, StartDate, EndDate);
 
-            string Staff = string.Empty;
-            string StaffWithInitals = string.Empty;
+            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                string employeeGoal = ds.Tables[0].Rows[0]["em_review_goal"].ToString();
+                string individualsInputOnSearch = ds.Tables[0].Rows[0]["IndividualsInputOnSearch"].ToString();
+
+                string potentialIssues = ds.Tables[0].Rows[0]["PotentialIssues"].ToString();
+
+                WS.Cell("K19").Value = employeeGoal;
+
+                WS.Cell("K73").Value = individualsInputOnSearch;
+
+                WS.Cell("K74").Value = potentialIssues;
+            }
+            else
+            {
+                WS.Cell("K19").Value = string.Empty;
+                WS.Cell("K73").Value = string.Empty;
+                WS.Cell("K74").Value = string.Empty;
+            }
+
             string OODStaff = string.Empty;
             string MiddleName = string.Empty;
-            DataSet ds = obj.OODStaff(AuthorizationNumber, serviceCode, StartDate, EndDate, userID);
+            ds = obj.OODStaff(AuthorizationNumber, serviceCode, StartDate, EndDate, userID);
             List<string> personInitialsList = new List<string>();
 
             if (ds.Tables.Count > 0)
             {
-                HashSet<string> uniqueInitials = new HashSet<string>();
                 DataTable dt2 = ds.Tables[0];
                 foreach (DataRow row2 in dt2.Rows)
                 {
@@ -163,17 +172,6 @@ namespace OODForms
 
             }
 
-            WS.Cell("k73").Value = row["IndividualsInputOnSearch"].ToString().Trim();
-
-            WS.Cell("k74").Value = row["PotentialIssues"].ToString().Trim();
-
-            ds = obj.EmpGoal(AuthorizationNumber, StartDate, EndDate);
-            string employeeGoal = ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0 ? ds.Tables[0].Rows[0][0].ToString() : string.Empty;
-            WS.Cell("k19").Value = employeeGoal;
-
-            DateTime oldestDate = DateTime.MaxValue;
-            DateTime newestDate = DateTime.MinValue;
-
             ds = obj.OODDevelopment2(AuthorizationNumber, StartDate, EndDate, serviceCode, userID);
             if (ds.Tables.Count > 0)
             {
@@ -182,20 +180,8 @@ namespace OODForms
                 {
                     long i = dt.Rows.IndexOf(row2) + 21;
 
-                    DateTime contactDate = Convert.ToDateTime(row2["Contact_Date"]);
-
-                    if (contactDate < oldestDate)
-                    {
-                        oldestDate = contactDate;
-                    }
-
-                    if (contactDate > newestDate)
-                    {
-                        newestDate = contactDate;
-                    }
-
-                    WS.Cell("k9").Value = oldestDate;
-                    WS.Cell("k10").Value = newestDate;
+                    WS.Cell("k9").Value = DateTime.Parse(StartDate).ToString("MM/dd/yy"); ;
+                    WS.Cell("k10").Value = DateTime.Parse(EndDate).ToString("MM/dd/yy"); ;
 
                     DateTime parsedStartTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["StartTime"]));
 
@@ -217,7 +203,7 @@ namespace OODForms
 
                     string formattedUnits = units.ToString();
 
-                    WS.Cell(String.Format("a{0}", i)).ValueAsDateTime = Convert.ToDateTime(Convert.ToDateTime(row2["Contact_Date"]).ToString("MM/dd/yyyy"));
+                    WS.Cell(String.Format("a{0}", i)).ValueAsDateTime = Convert.ToDateTime(row2["serviceDate"]);
 
                     WS.Cell(String.Format("b{0}", i)).ValueAsDateTime = DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"), row2["StartTime"]));
 
@@ -339,32 +325,21 @@ namespace OODForms
             SS.SaveToStreamXLSX(ms);
             ms.Position = 0;
 
-            templateFileName = "TemporaryFormFile.xlsx";
-            string newFilePath = string.Format(path, templateFileName);
-
-            using (FileStream fileStream = new FileStream(newFilePath, FileMode.Create, FileAccess.ReadWrite))
-            {
-                ms.WriteTo(fileStream);
-            }
-
             Attachment attachment = new Attachment
             {
-                filename = "Form4",
+                filename = "Form4.xlsx",
                 data = ms
             };
 
-            DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", newFilePath);
-
-            //obj.Form4(token, AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, serviceCode, reportPath, registrationName, registrationKey, personCompletingReport, userID);
+            DisplayAttachment(attachment);
 
             return "Success";
         }
 
-        public string generateForm8(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode)
+        public string generateForm8(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
         {
             try
             {
-                //OODFormWorker obj = new OODFormWorker();
                 OODFormDataGetter obj = new OODFormDataGetter();
 
                 string SSinfo = obj.getSpreadsheetNameAndKey(token);
@@ -377,7 +352,6 @@ namespace OODForms
                 string path = pathdatalist[0].path;
                 string templateFileName = "Form8WorkActivitiesAndAssessment.xlsx";
                 string reportPath = string.Format(path, templateFileName);
-                //string reportPath = @"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\Form8WorkActivitiesAndAssessmentBinary.xlsx";
 
                 long PeopleID = long.Parse(peopleIDString);
                 
@@ -399,10 +373,6 @@ namespace OODForms
 
                 DataTable dt;
                 DataRow row;
-                //OODFormDataGetter obj = new OODFormDataGetter();
-
-                //dt = obj.OODVendor(VendorID).Tables[0];
-                //row = dt.Rows[0];
 
                 dt = obj.OODDevelopment(AuthorizationNumber).Tables[0];
                 row = dt.Rows[0];
@@ -440,11 +410,6 @@ namespace OODForms
                             OODStaff += String.Format("{0}, ", Staff.Trim());
                         }
 
-                        //if ((WS.Cell("m6").Value) != null && Staff.ToString().Trim().Length > 0)
-                        //{
-                        //    WS.Cell("m6").Value = Staff.ToString().Trim();
-                        //}
-
                         if (Staff.ToString().Trim().Length > 0)
                         {
                             StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
@@ -476,7 +441,6 @@ namespace OODForms
 
                 }
 
-                //OODStaff = OODStaff.Remove(OODStaff.LastIndexOf(","), 1);
                 WS.Cell("m7").Value = OODStaff;
 
                 WS.Cell("m8").ValueAsDateTime = DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy"));
@@ -539,7 +503,7 @@ namespace OODForms
 
                 WS.Cell("m21").Value = obj.OODForm8GetSupportAndTransistion(AuthorizationNumber, StartDate).ToString().Trim();
 
-                ds = obj.OODForm8GetNotes(AuthorizationNumber, StartDate, EndDate);
+                ds = obj.OODForm8GetNotes(AuthorizationNumber, StartDate, EndDate, userID);
 
                 Int32 t = 23;
                 foreach (DataRow row2 in ds.Tables[0].Rows)
@@ -549,6 +513,7 @@ namespace OODForms
                     WS.Cell(String.Format("b{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["Start_Time"])); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
                     WS.Cell(String.Format("c{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["End_Time"]));
                     WS.Cell(String.Format("d{0}", t)).Value = "0";
+                    WS.Cell(String.Format("g{0}", t)).Value = row2["SAM"].ToString().Trim(); ;
                     WS.Cell(String.Format("h{0}", t)).Value = row2["Initials"].ToString().Trim();
                     WS.Cell(String.Format("i{0}", t)).Value = row2["Contact_Method"].ToString().Trim();
                     WS.Cell(String.Format("j{0}", t)).Value = row2["Behavioral_Indicators"].ToString().Trim();
@@ -588,27 +553,13 @@ namespace OODForms
                 SS.SaveToStreamXLSX(ms);
                 ms.Position = 0;
 
-                //OODFormDataGetter oodfdg = new OODFormDataGetter();
-                //string crpath = oodfdg.getFormTemplatePath(token);
-                //PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
-                //string path = pathdatalist[0].path;
-                templateFileName = "TemporaryFormFile.xlsx";
-                string newFilePath = string.Format(path, templateFileName);
-
-                using (FileStream fileStream = new FileStream(newFilePath, FileMode.Create, FileAccess.ReadWrite))
-                {
-                    ms.WriteTo(fileStream);
-                }
-
                 Attachment attachment = new Attachment
                 {
-                    filename = "Form8",
+                    filename = "Form8.xlsx",
                     data = ms
                 };
 
-                DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", newFilePath);
-
-                //obj.Form8(token, AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, serviceCode, reportPath, registrationName, registrationKey, personCompletingReport);
+                DisplayAttachment(attachment);
 
                 return "Success";
             }
@@ -767,7 +718,7 @@ namespace OODForms
                 data = pdfStream
             };
 
-            DisplayAttachment(attachment, ".pdf", "application/pdf", "test");
+            DisplayAttachmentPDF(attachment);
 
             return "Success";
             }
@@ -823,7 +774,7 @@ namespace OODForms
             return maxDate.ToString("M/d/yy");
         }
 
-        public void DisplayAttachment(Attachment attachment, string fileExtension, string contentType, string filePath)
+        public void DisplayAttachment(Attachment attachment)
         {
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
@@ -841,16 +792,10 @@ namespace OODForms
                 else
                 {
                     byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
-                    response.Clear();
-                    response.BufferOutput = true;
+                    response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
+                    response.ContentType = "application/octet-stream";
                     response.AddHeader("Transfer-Encoding", "identity");
-                    response.AddHeader("Content-Disposition", "attachment;filename=" + attachment.filename + fileExtension + ";");
-                    response.AddHeader("Content-Type", contentType);
-                    response.AddHeader("Content-Length", bytes.Length.ToString());
-                    response.AddHeader("Access-Control-Allow-Origin", "*");
-                    response.OutputStream.Write(bytes, 0, bytes.Length);
-                    response.TransmitFile(filePath);
-                    response.End();
+                    response.BinaryWrite(bytes);
                 }
             }
             catch (Exception ex)
@@ -859,7 +804,40 @@ namespace OODForms
             }
             finally
             {
-                // logger2.debug("Done?");
+                // Dispose the MemoryStream
+                attachment.data.Dispose();
+            }
+        }
+
+        public void DisplayAttachmentPDF(Attachment attachment)
+        {
+            var current = System.Web.HttpContext.Current;
+            var response = current.Response;
+            response.Buffer = true;
+            try
+            {
+                response.Clear();
+                if (attachment.filename == "")
+                {
+                    response.StatusCode = 404;
+                    response.Status = "404 Not Found";
+                }
+                else
+                {
+                    byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
+                    response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ".pdf" + ";");
+                    response.ContentType = "application/pdf";
+                    response.AddHeader("Transfer-Encoding", "identity");
+                    response.BinaryWrite(bytes);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Write("Error: " + ex.InnerException.ToString());
+            }
+            finally
+            {
+                //logger2.debug("Done?");
             }
         }
     }

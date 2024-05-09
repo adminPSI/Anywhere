@@ -140,12 +140,12 @@ namespace Anywhere.service.Data.Employment
 
         }
 
-        public string insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId, DistributedTransaction transaction)
+        public string insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId, DistributedTransaction transaction, string typeOfEmployment)
         {
             try
             {                
                 logger.debug("ANYW_insertUpdateEmploymentInfo");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[14];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[15];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDatePosition", DbType.String, startDatePosition);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDatePosition", DbType.String, endDatePosition);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@position", DbType.String, position);
@@ -160,7 +160,8 @@ namespace Anywhere.service.Data.Employment
                 args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@peopleID", DbType.Double, peopleID);
                 args[12] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userID", DbType.String, userID);
                 args[13] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@PositionId", DbType.String, PositionId);
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertUpdateEmploymentInfo(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                args[14] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@typeOfEmployment", DbType.String, typeOfEmployment); 
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertUpdateEmploymentInfo(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {
@@ -259,6 +260,21 @@ namespace Anywhere.service.Data.Employment
             catch (Exception ex)
             {
                 logger.error("WFDG", ex.Message + "ANYW_getTypeOfWorkDropDown()");
+                throw ex;
+            }
+        }
+
+        public string getTypeOfEmploymentDropDown(DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getTypeOfEmploymentDropDown");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getTypeOfEmploymentDropDown", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getTypeOfEmploymentDropDown()");
                 throw ex;
             }
         }
@@ -556,6 +572,43 @@ namespace Anywhere.service.Data.Employment
             catch (Exception ex)
             {
                 logger.error("WFDG", ex.Message + "ANYW_updatePositionTaskNumber(" + jobTaskID + "," + taskNumberToBeUpdated + ")");
+                throw ex;
+            }
+
+        }
+
+        public string getEmployeeStatusDropDown(DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getEmployeeStatusDropDown");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getEmployeeStatusDropDown", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getEmployeeStatusDropDown()");
+                throw ex;
+            }
+        }
+
+        public string createNewEmploymentPath(string token, string currentStatus, string pathToEmployment, string pathToStartDate, string peopleID, string userID, DistributedTransaction transaction)
+        {         
+            try
+            {
+                logger.debug("createNewEmploymentPath");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[5];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@currentStatus", DbType.String, currentStatus);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@pathToEmployment", DbType.String, pathToEmployment);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@pathToStartDate", DbType.String, pathToStartDate);           
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@peopleID", DbType.Double, peopleID);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userID", DbType.String, userID);
+    
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_createNewEmploymentPath(?, ?, ?, ?, ?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_createNewEmploymentPath(" + currentStatus + "," + pathToEmployment + "," + pathToStartDate + ")");
                 throw ex;
             }
 

@@ -23,11 +23,28 @@
     return Array.from(node.parentNode.children).indexOf(node);
   };
 
+  function checkDateFormat(dateString) {
+    // Regex pattern for ISO date format (YYYY-MM-DD)
+    const isoFormatPattern = /^\d{4}-\d{2}-\d{2}$/;
+    // Regex pattern for Standard format (MM/DD/YYYY)
+    const standardFormatPattern = /^\d{2}\/\d{2}\/\d{4}$/;
+
+    if (isoFormatPattern.test(dateString)) {
+      return 'ISO';
+    } else if (standardFormatPattern.test(dateString)) {
+      return 'Standard';
+    } else {
+      return 'Unknown format';
+    }
+  }
+
   /**
    * Formats the date for table view
    * @param {String} dateString  dateString format must be ISO YYYY-MM-DD
    */
   const formatDate = dateString => {
+    if (!dateString) return '';
+    if (checkDateFormat(dateString) !== 'ISO') return '';
     const date = new Date(`${dateString}T00:00`);
     return new Intl.DateTimeFormat('en-US').format(date);
   };
@@ -44,6 +61,7 @@
     rowSortable: false,
     columnSortable: false,
     allowCopy: false,
+    allowDelete: false,
   };
 
   /**
@@ -54,6 +72,7 @@
    * @param {Boolean} [options.rowSortable]     Row re ordering
    * @param {Boolean} [options.columnSortable]  Column sorting by header
    * @param {Boolean} [options.allowCopy]       Row's can be duplicated by copy
+   * @param {Boolean} [options.allowDelete]       Row's can be duplicated by copy
    */
   function Table(options) {
     // Data Init
@@ -65,6 +84,7 @@
     this.table = null;
 
     this._build();
+    this._setupEvents();
 
     // this.table = table ref
     // this.table.tHead = table header
@@ -79,14 +99,12 @@
    * Builds & Populates Table
    */
   Table.prototype._build = function () {
-    const data = this.options.data;
-
     //* create table
     this.rootElement = _DOM.createElement('div', { class: 'ui_table' });
     const tableNav = _DOM.createElement('div', { class: 'ui-table__nav' });
     this.table = _DOM.createElement('table');
     const tableBody = _DOM.createElement('tbody');
-    const tableHeader = _DOM.createElement('thead', { html: '<tr></tr>' });
+    const tableHeader = _DOM.createElement('thead', { node: _DOM.createElement('tr') });
 
     this.table.appendChild(tableHeader);
     this.table.appendChild(tableBody);
@@ -95,42 +113,44 @@
     this.rootElement.appendChild(this.table);
 
     //* populate table header
-    data.headings.forEach(heading => {
+    this.options.headings.forEach(heading => {
       const cell = _DOM.createElement('th', {
         text: heading.text,
-        class: 'sortable',
+        class: this.options.columnSortable ? 'sortable' : '',
         'data-type': heading.type,
       });
       tableHeader.rows[0].appendChild(cell);
     });
+
+    //* add col for delete
+    if (this.options.allowDelete) {
+      const cell = _DOM.createElement('th', {
+        'data-type': 'deleteRow',
+      });
+      tableHeader.rows[0].appendChild(cell);
+    }
   };
 
   /**
    * @function
    */
-  Table.prototype.populate = function () {
-    //* populate table body
-    data.rows.forEach((row, i) => {
-      const rowEle = _DOM.createElement('tr', { ...row.attributes, id: row.id });
+  Table.prototype._setupEvents = function () {
+    this.table.tBodies[0].addEventListener('click', e => {
+      if (e.target.dataset.type === 'deleteRow') {
+        const customEvent = new CustomEvent('onRowDelete', { detail: e.target.closest('tr') });
+        this.table.tBodies[0].dispatchEvent(customEvent);
+        return;
+      }
 
-      this.rows[row.id] = rowEle;
-
-      // populate row
-      row.values.forEach((rd, i) => {
-        const dataType = this.options.columns[i]?.type ?? '';
-        rd = dataType === 'date' ? formatDate(rd) : rd;
-        const cell = _DOM.createElement('td', { text: rd, 'data-type': dataType });
-        rowEle.appendChild(cell);
-      });
-
-      tableBody.appendChild(rowEle);
+      const customEvent = new CustomEvent('onRowClick', { detail: e.target.closest('tr') });
+      this.table.tBodies[0].dispatchEvent(customEvent);
     });
   };
 
   /**
    * Multi select rows w/bulk actions
    */
-  Table.prototype.multiSelect = function () {
+  Table.prototype._multiSelect = function () {
     //TODO add bulk action dropdown/list
 
     // add checkbox to header
@@ -172,7 +192,7 @@
   /**
    * Sort by column header
    */
-  Table.prototype.columnSort = function () {
+  Table.prototype._columnSort = function () {
     this.table.classList.add('colSort');
 
     this.table.tHead.addEventListener('click', e => {
@@ -242,7 +262,7 @@
   /**
    * Sort table rows (drag and drop)
    */
-  Table.prototype.rowSort = function () {
+  Table.prototype._rowSort = function () {
     //* This uses sortable.js
     //* https://github.com/SortableJS/Sortable
     return new Sortable(this.tableBody, {
@@ -272,6 +292,73 @@
       this.tableHeader.rows[0].insertBefore(td, this.tableHeader.rows[0].cells[0]);
       this.table.classList.add('sortable');
     }
+  };
+
+  /**
+   * Clears table body
+   *
+   * @function
+   */
+  Table.prototype.clear = function () {
+    this.table.tBodies[0].innerHTML = '';
+  };
+
+  /**
+   * @function
+   * @param {Array} data
+   */
+  Table.prototype.populate = function (data) {
+    this.clear();
+
+    //* populate table body
+    data.forEach((row, i) => {
+      const rowEle = _DOM.createElement('tr', { ...row.attributes, id: row.id });
+
+      this.rows[row.id] = rowEle;
+
+      // populate row
+      row.values.forEach((rd, i) => {
+        const dataType = this.options.headings[i]?.type ?? '';
+        rd = dataType === 'date' ? formatDate(rd) : rd;
+        const cell = _DOM.createElement('td', { text: rd, 'data-type': dataType });
+        rowEle.appendChild(cell);
+      });
+
+      // add col for delete
+      if (this.options.allowDelete) {
+        const cell = _DOM.createElement('td', {
+          node: Icon.getIcon('delete'),
+          'data-type': 'deleteRow',
+        });
+        rowEle.appendChild(cell);
+      }
+
+      this.table.tBodies[0].appendChild(rowEle);
+    });
+  };
+
+  /**
+   * Handles click event for table
+   *
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  Table.prototype.onRowClick = function (cbFunc) {
+    this.table.tBodies[0].addEventListener('onRowClick', e => {
+      cbFunc(e.detail.id);
+    });
+  };
+
+  /**
+   * Handles click event for row delete
+   *
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  Table.prototype.onRowDelete = function (cbFunc) {
+    this.table.tBodies[0].addEventListener('onRowDelete', e => {
+      cbFunc(e.detail.id);
+    });
   };
 
   /**

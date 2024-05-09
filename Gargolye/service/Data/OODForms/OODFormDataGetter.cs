@@ -99,12 +99,15 @@ namespace OODForms
         public DataSet OODForm8BussinessAddress(long PeopleID)
         {
             sb.Clear();
-            sb.Append("SELECT   dba.Employer.Name, dba.Employer.Address1, dba.Employer.City, dba.Employer.State, ");
+            sb.Append("SELECT DISTINCT  dba.Employer.Name, dba.Employer.Address1, dba.Employer.City, dba.Employer.State, ");
             sb.Append("dba.Employer.Zip_Code, dba.Employer.Primary_Phone ");
-            sb.Append("FROM     dba.EM_Employee_Position ");
+            sb.Append("FROM dba.EM_Employee_Position ");
             sb.Append("LEFT OUTER JOIN dba.Employer ON dba.EM_Employee_Position.Employer_ID = dba.Employer.Employer_ID ");
-            sb.AppendFormat("WHERE dba.EM_Employee_Position.People_ID = {0} ", PeopleID);
-            sb.Append("AND dba.EM_Employee_Position.End_Date IS NULL ");
+            sb.Append("LEFT OUTER JOIN emp_ood ON emp_ood.position_id = dba.EM_Employee_Position.position_id ");
+            sb.Append("LEFT OUTER JOIN people ON people.id = dba.EM_Employee_Position.People_ID ");
+            sb.AppendFormat("WHERE people.consumer_id = {0} ", PeopleID);
+            sb.AppendFormat("    AND dba.EM_Employee_Position.End_Date IS NULL ");
+            sb.AppendFormat("    AND emp_ood.position_id IS NOT NULL;");
             return di.SelectRowsDS(sb.ToString());
         }
         public string OODForm8GetSupportAndTransistion(string AuthorizationNumber, string StartDate)
@@ -173,7 +176,7 @@ namespace OODForms
 
             return Tasks;
         }
-        public DataSet OODForm8GetNotes(string AuthorizationNumber, string StartDate, string EndDate)
+        public DataSet OODForm8GetNotes(string AuthorizationNumber, string StartDate, string EndDate, string userId)
         {
             sb.Clear();
             sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
@@ -196,7 +199,7 @@ namespace OODForms
 
             sb.Clear();
             sb.AppendFormat("SELECT   dba.Case_Notes.Service_Date, DATEFORMAT(Cast(dba.Case_Notes.Start_Time AS CHAR), 'hh:mm AA') as Start_Time, DATEFORMAT(CAST(dba.Case_Notes.End_Time AS CHAR), 'hh:mm AA') AS End_Time, ");
-            sb.Append("dba.Code_Table.Caption AS Contact_Method, dba.EMP_OOD.Behavioral_Indicators, dba.EMP_OOD.Quality_Indicators, ");
+            sb.Append("dba.Code_Table.Caption AS Contact_Method, dba.EMP_OOD.Behavioral_Indicators, dba.EMP_OOD.Quality_Indicators, dba.Case_Notes.Service_Area_Modifier as SAM, ");
             sb.Append("dba.EMP_OOD.Quantity_Indicators, dba.EMP_OOD.Narrative, dba.EMP_OOD.Interventions, ");
             sb.Append("dba.People.Last_Name, dba.People.First_Name, dba.People.Middle_Name, ");
             sb.Append("'' AS Initials, dba.Case_Notes.Notes, '' AS StartTime, '' AS EndTime  ");
@@ -210,6 +213,7 @@ namespace OODForms
             sb.Append("AND dba.Code_Table.Table_ID = 'Employment_Code' ");
             sb.Append("AND Field_ID = 'ContactMethod' ");
             sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
             sb.Append("AND Last_Name > '' ");
             ds = di.SelectRowsDS(sb.ToString());
 
@@ -287,14 +291,14 @@ namespace OODForms
         public DataSet EmpGoal(string AuthorizationNumber, string StartDate, string EndDate)
         {
             sb.Clear();
-            sb.Append("SELECT DISTINCT DBA.Persons.Last_Name, DBA.Persons.Middle_Name, DBA.Persons.First_Name, em_review.em_review_goal ");
+            sb.Append("SELECT DISTINCT DBA.Persons.Last_Name, DBA.Persons.Middle_Name, DBA.Persons.First_Name, em_review.em_review_goal, DBA.EM_Review.EM_Review_Summary AS IndividualsInputOnSearch, DBA.EM_Review.EM_Review_Other_Impediments AS PotentialIssues ");
             sb.Append("FROM dba.Consumer_Services_Master ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
             sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Consumer_Services_Master.Person_Id = dba.Persons.Person_ID ");
             sb.Append("LEFT OUTER JOIN dba.em_review ON dba.Consumer_Services_Master.Reference_Number = em_review.Reference_Num ");
             sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
-            sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
+            //sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
             sb.AppendFormat("AND MONTH(em_review.em_review_date) = MONTH('{0}') AND YEAR(em_review.em_review_date) = YEAR('{0}')", StartDate);
 
 
@@ -425,7 +429,7 @@ namespace OODForms
         {
             sb.Clear();
             sb.Append("SELECT DISTINCT  DBA.Case_Notes.Case_Note_ID, dba.EM_Contacts.Contact_Date, dba.Case_Notes.Start_Time AS StartTime, ");
-            sb.Append("dba.Case_Notes.End_Time AS EndTime, dba.Case_Notes.Service_Area_Modifier AS SAMLevel, dba.Employer.Name AS Location, ");
+            sb.Append("dba.Case_Notes.End_Time AS EndTime, dba.Case_Notes.Service_Area_Modifier AS SAMLevel, dba.Employer.Name AS Location, dba.Case_Notes.Service_Date AS serviceDate, ");
             sb.Append("dba.Employer.Address1 AS LocationAddress, dba.Employer.City AS LocationCity, dba.EM_Contacts.Notes AS Comments, ");
             sb.Append("dba.EM_Contacts.Contact_Type AS ContactType, dba.EM_Contacts.Notes as Narrative, dba.Code_Table.Caption AS OutCome, dba.EM_Contacts.EM_Job_Seeker_Present AS JobSeekerPresent, ");
             sb.Append("dba.Consumer_Services_Master.Reference_Number, dba.Code_Table.Table_ID, dba.Case_Notes.Notes AS Note2, ");
