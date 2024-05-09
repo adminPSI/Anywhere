@@ -803,9 +803,10 @@ const CaseNotes = (() => {
     const attachmentsForSave = await processAttachmentsForSave(data);
 
     const { isNewGroup } = await saveNote(saveData, attachmentsForSave);
-
+    
     // OVERVIEW // await cnOverview.fetchData(selectedDate);
     // OVERVIEW // cnOverview.populate();
+
     cnFormToast.close();
 
     if (buttonName === 'saveandnew' || isNewGroup) {
@@ -928,6 +929,7 @@ const CaseNotes = (() => {
     cnForm.onSubmit(onFormSubmit);
     cnForm.onReset(onFormReset);
     cnForm.onFileDelete(onFileDelete);
+
     // OVERVIEW // cnOverview.onCardEdit(onOverviewCardEdit);
     // OVERVIEW // cnOverview.onCardDelete(onOverviewCardDelete);
   }
@@ -947,6 +949,7 @@ const CaseNotes = (() => {
     rosterPicker.renderTo(cnRosterWrap);
     cnFormToast.renderTo(cnFormWrap);
     cnForm.renderTo(cnFormWrap);
+
     // OVERVIEW // cnOverview.renderTo(moduleWrap);
     cnPhrases.renderTo(_DOM.ACTIONCENTER);
 

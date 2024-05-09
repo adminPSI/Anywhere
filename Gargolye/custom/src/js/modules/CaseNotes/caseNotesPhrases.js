@@ -48,15 +48,15 @@
           required: true,
         },
       ],
-      buttons: [
-        {
-          text: 'Cancel',
-          icon: 'cancel',
-          style: 'primary',
-          styleType: 'outlined',
-          name: 'cancel',
-        },
-      ],
+      // buttons: [
+      //   {
+      //     text: 'Cancel',
+      //     icon: 'cancel',
+      //     style: 'primary',
+      //     styleType: 'outlined',
+      //     name: 'cancel',
+      //   },
+      // ],
     });
 
     this.addPhraseForm.renderTo(this.dialog.dialog);
@@ -291,7 +291,7 @@
    */
   function CaseNotesPhrases() {
     // Data Init
-    this.AddPhrases = new CaseNotesAddPhrases();
+    this.AddPhrases = new CaseNotesAddPhrases(this);
     this.InsertPhrases = new CaseNotesInsertPhrases(this);
 
     this._build();
