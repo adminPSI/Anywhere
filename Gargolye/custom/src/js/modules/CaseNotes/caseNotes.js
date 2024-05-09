@@ -13,6 +13,7 @@ const CaseNotes = (() => {
   let selectedServiceCode;
   let updatedInputs = {};
   let allowGroupNotes = false;
+  let defaultServiceCode;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -62,7 +63,7 @@ const CaseNotes = (() => {
     attachmentsForDelete = [];
     caseManagerId = $.session.PeopleId;
     selectedConsumers = [];
-    selectedServiceCode = defaultServiceCode;
+    selectedServiceCode = defaultServiceCode ? defaultServiceCode : '';
     updatedInputs = {};
   }
   function resetModule() {
