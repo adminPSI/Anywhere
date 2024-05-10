@@ -403,7 +403,6 @@ const WaitingListAssessment = (() => {
           id: 'additionalCommentsForUnavailable',
           fullscreen: true,
           type: 'textarea',
-          required: true,
         },
       ],
     },
@@ -1063,13 +1062,11 @@ const WaitingListAssessment = (() => {
           id: 'conclusionDeterminedOn',
           type: 'date',
           label: 'Date conclusion determined:',
-          required: true,
         },
         {
           label: 'Anticipated Waiver Type',
           id: 'fundingSourceId',
           type: 'select',
-          required: true,
           includeBlankOption: true,
         },
       ],
@@ -1892,22 +1889,8 @@ const WaitingListAssessment = (() => {
 
     // immediateNeeds
     //-------------------------------
-    const isNeedActionRequiredYes = wlData.other.needsIsActionRequiredRequiredIn30Days.includes('yes');
-    const isRMActionRequiredYes = wlData.riskMitigation.rMIsActionRequiredIn3oDays.includes('yes');
-    const isAdultProtectiveServiceInvestigationChecked = wlData.riskMitigation.rMIsAdultProtectiveServiceInvestigation;
-    const isCountyBoardInvestigationChecked = wlData.riskMitigation.rMIsCountyBoardInvestigation;
-    const isLawEnforcementInvestigationChecked = wlData.riskMitigation.rMIsLawEnforcementInvestigation;
-    const isOtherInvestigationChecked = wlData.riskMitigation.rMIsOtherInvestigation;
-    if (
-      ((isAdultProtectiveServiceInvestigationChecked ||
-        isCountyBoardInvestigationChecked ||
-        isLawEnforcementInvestigationChecked ||
-        isOtherInvestigationChecked) &&
-        isRMActionRequiredYes) ||
-      isNeedActionRequiredYes
-    ) {
-      wlForms['immediateNeeds'].form.parentElement.classList.remove('hiddenPage');
-      tocLinks['immediateNeeds'].classList.remove('hiddenPage');
+    if (wlData.immediateNeeds.immNeedsRequired.includes('yes')) {
+      wlForms['immediateNeeds'].inputs['immNeedsDescription'].toggleDisabled(false);
     }
 
     // waiverEnrollment
