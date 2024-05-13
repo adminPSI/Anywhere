@@ -1906,7 +1906,7 @@ const WaitingListAssessment = (() => {
     const isPrimaryCaregiverUnavailable =
       wlForms['primaryCaregiver'].inputs['isPrimaryCaregiverUnavailable'].getValue();
     const isActionRequiredIn30Days = wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].getValue();
-    const showPages = isPrimaryCaregiverUnavailable.includes('yes') && isActionRequiredIn30Days.includes('no');
+    const showPages = isPrimaryCaregiverUnavailable.includes('no') ? true : isPrimaryCaregiverUnavailable.includes('yes') && isActionRequiredIn30Days.includes('no') ? true : false;
 
     needsWrap.classList.toggle('hiddenPage', !showPages);
     tocLinks['needs'].classList.toggle('hiddenPage', !showPages);
