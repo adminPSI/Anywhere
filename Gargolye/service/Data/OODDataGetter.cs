@@ -833,6 +833,89 @@ namespace Anywhere.service.Data
             }
         }
 
+        // Form16SummerYouthWorkExperience[]
+        public string getForm16SummerYouthWorkExperience(string token, string caseNoteId)
+        {
+            if (tokenValidator(token) == false) return null;
+
+            logger.debug("getForm8CommunityBasedAssessment" + token);
+            try
+            {
+                return dg.executeDataBaseCallJSON("CALL DBA.ANYW_OOD_getForm16SummerYouthWorkExperience('" + token + "', '" + caseNoteId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("537", ex.Message + " ANYW_OOD_getForm16SummerYouthWorkExperience('" + token + "', '" + caseNoteId + "')");
+                return "537: Error getting Form16SummerYouthWorkExperience";
+            }
+        }
+
+        public string updateForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string interventions, string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("updateForm16SummerYouthWorkExperience" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(caseNoteId);
+            list.Add(serviceDate);
+            list.Add(startTime);
+            list.Add(endTime);
+            list.Add(position);
+            list.Add(interventions);
+            list.Add(userId);
+
+            string text = "CALL DBA.ANYW_OOD_updateForm16SummerYouthWorkExperience(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                //return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_updateForm16SummerYouthWorkExperience('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + employer + "',  '" + notes + "', '" + userId +  "');", "results", "results");
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm8CommunityBasedAssessment('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + interventions + "')");
+                return "536: Error saving Form16SummerYouthWorkExperience";
+            }
+        }
+
+        public string insertForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("insertForm16SummerYouthWorkExperience" + token);
+
+            List<string> list = new List<string>();
+
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(caseNoteId);
+            list.Add(serviceDate);
+            list.Add(startTime);
+            list.Add(endTime);
+            list.Add(position);
+            list.Add(interventions);
+            list.Add(userId);
+            list.Add(serviceId);
+            list.Add(referenceNumber);
+            list.Add(caseManagerId);
+
+            string text = "CALL DBA.ANYW_OOD_insertForm16SummerYouthWorkExperience(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                // return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_insertForm16SummerYouthWorkExperience('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + employer + "',  '" + notes + "', '" + caseManagerId + "', '" + userId + "', '" + serviceId + "');", "results", "results");
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm16SummerYouthWorkExperience('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "',  '" + interventions + "')");
+                return "536: Error saving case note";
+            }
+        }
+
 
         public bool tokenValidator(string token)
         {

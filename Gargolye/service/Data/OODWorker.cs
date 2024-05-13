@@ -293,6 +293,27 @@ namespace Anywhere.service.Data
             public string serviceId { get; set; }
         }
 
+        [DataContract]
+        public class Form16SummerYouthWorkExperience
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string caseNoteId { get; set; }
+            [DataMember(Order = 2)]
+            public string serviceDate { get; set; }
+            [DataMember(Order = 3)]
+            public string startTime { get; set; }
+            [DataMember(Order = 4)]
+            public string endTime { get; set; }
+            [DataMember(Order = 5)]
+            public string interventions { get; set; }
+            [DataMember(Order = 6)]
+            public string position { get; set; }
+            [DataMember(Order = 7)]
+            public string serviceName { get; set; }
+        }
+
 
         public OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
         {
@@ -729,6 +750,15 @@ namespace Anywhere.service.Data
                 }
             
         }
+
+        // Form Form16SummerYouthWorkExperience
+        public Form16SummerYouthWorkExperience[] getForm16SummerYouthWorkExperience(string token, string caseNoteId)
+        {
+            string editDataString = Odg.getForm16SummerYouthWorkExperience(token, caseNoteId);
+            Form16SummerYouthWorkExperience[] editDataObj = js.Deserialize<Form16SummerYouthWorkExperience[]>(editDataString);
+            return editDataObj;
+        }
+
 
     }
 }

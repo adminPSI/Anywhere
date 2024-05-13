@@ -3151,6 +3151,22 @@ namespace Anywhere
             return Ow.deleteOODForm10TransportationEntry(token, OODTransportationId);
         }
 
+        public OODWorker.Form16SummerYouthWorkExperience[] getForm16SummerYouthWorkExperience(string token, string caseNoteId)
+        {
+            return Ow.getForm16SummerYouthWorkExperience(token, caseNoteId);
+        }
+
+        public string updateForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string interventions, string userId)
+        {
+            return Odg.updateForm16SummerYouthWorkExperience(token, consumerId, caseNoteId, serviceDate, startTime, endTime, position, interventions, userId);
+        }
+
+        public string insertForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        {
+            return Odg.insertForm16SummerYouthWorkExperience(token, consumerId, caseNoteId, serviceDate, startTime, endTime, position, interventions, userId, serviceId, referenceNumber, caseManagerId);
+        }
+
+
         //Case note reporting
         public CaseNoteReportBuilderWorker.ReportScheduleId[] generateCNDetailReport(string token, string userId, string billerId, string consumerId, string consumerName, string serviceStartDate, string serviceEndDate,
                                                         string location, string originallyEnteredStart, string originallyEnteredEnd, string billingCode, string service, string need, string contact, string applicationName)
