@@ -922,6 +922,79 @@ var OODAjax = (function () {
   },
   });
   }
+
+      // Form 16 -- Form16SummerYouthWorkExperience
+      function getForm16SummerYouthWorkExperience(caseNoteId, callback) {
+        $.ajax({
+          type: 'POST',
+          url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getForm16SummerYouthWorkExperience/',
+          data: '{"token":"' + $.session.Token + '", "caseNoteId":"' + caseNoteId + '"}',
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json',
+          success: function(response, status, xhr) {
+            var res = response.getForm16SummerYouthWorkExperienceResult;
+            callback(res);
+          },
+          error: function(xhr, status, error) {
+            //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+          },
+        });
+      }
+      
+      // Form 16 -- getForm16SummerYouthWorkExperience
+      function updateForm16SummerYouthWorkExperience(data, callback) {
+          data = {
+            token: $.session.Token, 
+            consumerId: data.consumerId, 
+            caseNoteId: data.caseNoteId,
+            serviceDate: data.serviceDate,
+            startTime: data.startTime,
+            endTime: data.endTime,
+            position: data.position,
+            interventions: data.interventions,
+             }
+        return $.ajax({
+        type: 'POST',
+        url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateForm16SummerYouthWorkExperience/',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function(response, status, xhr) {
+        callback(response.updateForm16SummerYouthWorkExperienceResult);
+        },
+        });
+      }
+      
+      // Form 16 -- getForm16SummerYouthWorkExperience
+      function insertForm16SummerYouthWorkExperience(data, callback) {
+        data = {
+          token: $.session.Token, 
+            consumerId: data.consumerId, 
+            caseNoteId: data.caseNoteId,
+            serviceDate: data.serviceDate,
+            startTime: data.startTime,
+            endTime: data.endTime,
+            position: data.position,
+            interventions: data.interventions,
+            userId: data.userId,
+            serviceId: data.serviceId,
+            referenceNumber: data.referenceNumber,
+            caseManagerId: data.caseManagerId,
+      
+           }
+      return $.ajax({
+      type: 'POST',
+      url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertForm16SummerYouthWorkExperience/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response, status, xhr) {
+      callback(response.insertForm16SummerYouthWorkExperienceResult);
+      },
+      });
+      }
+  
+      
   async function deleteOODForm10TransportationEntry(OODTransportationId) {
     try {
       const result = await $.ajax({
@@ -1251,6 +1324,9 @@ var OODAjax = (function () {
       insertForm10TransportationData,
       updateForm10TransportationData,
       deleteOODForm10TransportationEntry,
+      getForm16SummerYouthWorkExperience,
+      insertForm16SummerYouthWorkExperience,
+      updateForm16SummerYouthWorkExperience,
       generateForm4,
       generateForm8,
       generateForm10

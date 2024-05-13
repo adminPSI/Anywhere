@@ -290,10 +290,10 @@ const OOD = (() => {
                     e.target.attributes.OODReportType.value === 'newEntry' &&
                     e.target.attributes.formNumber.value === '16'
                 ) {
-                    OODAjax.getForm8CommunityBasedAssessment(
+                    OODAjax.getForm16SummerYouthWorkExperience(
                         e.target.attributes.Id.value,
                         function (results) {
-                            communityBasedAssessmentForm.init(
+                            summerYouthWorkExperienceForm.init(
                                 results,
                                 rowConsumer[0],
                                 undefined,

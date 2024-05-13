@@ -610,7 +610,7 @@ const summerYouthWorkExperienceForm = (() => {
       userId,
     };
     // TODO JOE: This AJAX needs to change
-    OODAjax.updateForm8CommunityBasedAssessment(data, function (results) {
+    OODAjax.updateForm16SummerYouthWorkExperience(data, function (results) {
       successfulSave.show();
       setTimeout(function () {
         successfulSave.hide();
@@ -634,7 +634,7 @@ const summerYouthWorkExperienceForm = (() => {
       caseManagerId,
     };
     // TODO JOE: This AJAX needs to change
-    OODAjax.insertForm8CommunityBasedAssessment(data, function (results) {
+    OODAjax.insertForm16SummerYouthWorkExperience(data, function (results) {
       successfulSave.show();
       if (saveType == 'saveandNew') {
         setTimeout(function () {
