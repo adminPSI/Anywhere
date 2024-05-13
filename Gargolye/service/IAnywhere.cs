@@ -20,6 +20,7 @@ using Anywhere.service.Data.PlanValidation;
 using Anywhere.service.Data.ReportBuilder;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.Transportation;
+using PDFGenerator;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -4477,7 +4478,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateForm16SummerYouthWorkExperience/")]
-        string updateForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string interventions, string userId);
+        string updateForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string groupSize, string interventions, string userId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4485,7 +4486,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertForm16SummerYouthWorkExperience/")]
-        string insertForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId);
+        string insertForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string groupSize, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId);
 
 
         [WebInvoke(Method = "POST",

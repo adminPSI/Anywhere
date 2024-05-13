@@ -30,7 +30,7 @@ const summerYouthWorkExperienceForm = (() => {
   let endTime;
   let position;  
   let interventions; // rename -- DATA -- Individual Experiences, Performance, & Interventions = case_notes.notes
-  let groupSize // add 
+  let groupSize; // add 
 
   //Case Note Data
   let caseManagerId;
@@ -606,6 +606,7 @@ const summerYouthWorkExperienceForm = (() => {
       startTime,
       endTime,
       position,
+      groupSize,
       interventions,
       userId,
     };
@@ -627,6 +628,7 @@ const summerYouthWorkExperienceForm = (() => {
       startTime,
       endTime,
       position,
+      groupSize,
       interventions,
       userId,
       serviceId,

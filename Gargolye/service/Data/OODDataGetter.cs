@@ -850,7 +850,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string updateForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string interventions, string userId)
+        public string updateForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string groupSize, string interventions, string userId)
         {
             if (tokenValidator(token) == false) return null;
             //if (stringInjectionValidator(caseNote) == false) return null;
@@ -864,6 +864,7 @@ namespace Anywhere.service.Data
             list.Add(startTime);
             list.Add(endTime);
             list.Add(position);
+            list.Add(groupSize);
             list.Add(interventions);
             list.Add(userId);
 
@@ -881,7 +882,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string insertForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        public string insertForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string groupSize, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
         {
             if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
@@ -896,6 +897,7 @@ namespace Anywhere.service.Data
             list.Add(startTime);
             list.Add(endTime);
             list.Add(position);
+            list.Add(groupSize);
             list.Add(interventions);
             list.Add(userId);
             list.Add(serviceId);

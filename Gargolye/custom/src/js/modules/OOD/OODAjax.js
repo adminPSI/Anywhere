@@ -951,6 +951,7 @@ var OODAjax = (function () {
             startTime: data.startTime,
             endTime: data.endTime,
             position: data.position,
+            groupSize: data.groupSize,
             interventions: data.interventions,
              }
         return $.ajax({
@@ -975,6 +976,7 @@ var OODAjax = (function () {
             startTime: data.startTime,
             endTime: data.endTime,
             position: data.position,
+            groupSize: data.groupSize,
             interventions: data.interventions,
             userId: data.userId,
             serviceId: data.serviceId,

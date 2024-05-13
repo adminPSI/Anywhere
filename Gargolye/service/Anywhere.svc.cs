@@ -3156,14 +3156,14 @@ namespace Anywhere
             return Ow.getForm16SummerYouthWorkExperience(token, caseNoteId);
         }
 
-        public string updateForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string interventions, string userId)
+        public string updateForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string groupSize, string interventions, string userId)
         {
-            return Odg.updateForm16SummerYouthWorkExperience(token, consumerId, caseNoteId, serviceDate, startTime, endTime, position, interventions, userId);
+            return Odg.updateForm16SummerYouthWorkExperience(token, consumerId, caseNoteId, serviceDate, startTime, endTime, position, groupSize, interventions, userId);
         }
 
-        public string insertForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        public string insertForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string groupSize, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
         {
-            return Odg.insertForm16SummerYouthWorkExperience(token, consumerId, caseNoteId, serviceDate, startTime, endTime, position, interventions, userId, serviceId, referenceNumber, caseManagerId);
+            return Odg.insertForm16SummerYouthWorkExperience(token, consumerId, caseNoteId, serviceDate, startTime, endTime, position, groupSize, interventions, userId, serviceId, referenceNumber, caseManagerId);
         }
 
 

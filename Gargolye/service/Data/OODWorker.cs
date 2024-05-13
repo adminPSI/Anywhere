@@ -311,6 +311,8 @@ namespace Anywhere.service.Data
             [DataMember(Order = 6)]
             public string position { get; set; }
             [DataMember(Order = 7)]
+            public string groupSize { get; set; }
+            [DataMember(Order = 8)]
             public string serviceName { get; set; }
         }
 
