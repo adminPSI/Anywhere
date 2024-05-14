@@ -42,6 +42,7 @@ const NewEntryCF = (() => {
     let totalAmountSaved;
     let accountPermission;
     let tempAccountPer;
+    let pageName;
 
     async function init() {
         buildNewEntryForm(registerId = undefined, attachment = undefined, attachmentID = undefined, IsNewRefresh = true);
@@ -55,6 +56,7 @@ const NewEntryCF = (() => {
             totalAmountSaved = 0;
             prevAttachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId);
             BtnName = 'UPDATE'
+            pageName = 'Update';
             regId = registerId;
             const result = await ConsumerFinancesAjax.getAccountEntriesByIDAsync(registerId);
             const { getAccountEntriesByIdResult } = result;
@@ -85,15 +87,18 @@ const NewEntryCF = (() => {
             totalAmountSaved = totalAmount;
         }
         else if (registerId && !IsNewRefresh) {
-            BtnName = 'UPDATE'
+            BtnName = 'UPDATE';
+            pageName = 'Update';
         }
         else if (registerId == 0 && attachmentID) {
             regId = 0;
             BtnName = 'SAVE';
+            pageName = 'New';
         }
         else {
             regId = 0;
             BtnName = 'SAVE';
+            pageName = 'New';
             date = UTIL.getTodaysDate();
             amount = '';
             account = '';
@@ -316,7 +321,7 @@ const NewEntryCF = (() => {
         addNewCard.classList.add("card");
         const addNewCardBody = document.createElement("div");
         addNewCardBody.classList.add("card__body");
-        addNewCard.innerHTML = `<div class="card__header">New Entry</div>`;
+        addNewCard.innerHTML = `<div class="card__header">${pageName} Entry</div>`; 
         addNewCard.appendChild(addNewCardBody)
 
         column1.appendChild(addNewCard)
@@ -1252,7 +1257,7 @@ const NewEntryCF = (() => {
         }
     }
 
-    async function populateSplitCategoryDropdown(categoryID) {
+    async function populateSplitCategoryDropdown(categoryID) { 
         const {
             getSplitCategoriesSubCategoriesResult: Category,
         } = await ConsumerFinancesAjax.getSplitCategoriesSubCategoriesAsync(categoryID);
@@ -1274,7 +1279,7 @@ const NewEntryCF = (() => {
             if (splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value != '')
                 sum += parseFloat(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value);
         }
-        totalAmount = parseFloat(sum).toFixed(2);
+        totalAmount = parseFloat(sum).toFixed(2);  
         document.getElementById('amountTotalInput').value = sum.toFixed(2);
         if (document.getElementById('newAmountInput').value == '') {
             document.getElementById('newAmountInput').value = sum.toFixed(2);
