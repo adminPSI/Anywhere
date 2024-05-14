@@ -236,7 +236,7 @@ const WagesBenefits = (() => {
         const tableOptions = {
             plain: false,
             tableId: 'employmentCommonTable',
-            columnHeadings: ['Work Hours/ Week', 'Hourly Wages', 'Start Date', 'End Date'],
+            columnHeadings: ['Avg Hours Per Week', 'Avg Wages Per Week', 'Start Date', 'End Date'],
             endIcon: $.session.EmploymentDelete == true ? true : false,
         };
 
@@ -422,11 +422,16 @@ const WagesBenefits = (() => {
     function PopupEventListeners() {
         weekHours.addEventListener('input', event => {
             hoursWeek = event.target.value;
-            if (hoursWeek.includes('.') && (hoursWeek.match(/\./g).length > 1 || hoursWeek.toString().split('.')[1].length > 2)) {
+            var reg = new RegExp('^[0-9 . $ -]+$');  
+            if (!reg.test(hoursWeek)) {
                 document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
                 return;
             }
-            if (hoursWeek.includes('-')) {
+            else if (hoursWeek.includes('.') && (hoursWeek.match(/\./g).length > 1 || hoursWeek.toString().split('.')[1].length > 2)) {
+                document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
+                return;
+            }
+            if (hoursWeek.includes('-') || hoursWeek.includes(' ')) { 
                 document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
                 return;
             }
@@ -435,11 +440,16 @@ const WagesBenefits = (() => {
 
         wagesHours.addEventListener('input', event => {
             hoursWages = event.target.value;
-            if (hoursWages.includes('.') && (hoursWages.match(/\./g).length > 1 || hoursWages.toString().split('.')[1].length > 2)) {
+            var reg = new RegExp('^[0-9 . $ -]+$');
+            if (!reg.test(hoursWages)) {
                 document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
                 return;
             }
-            if (hoursWages.includes('-')) {
+            else if (hoursWages.includes('.') && (hoursWages.match(/\./g).length > 1 || hoursWages.toString().split('.')[1].length > 2)) {
+                document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
+                return;
+            }
+            if (hoursWages.includes('-') || hoursWages.includes(' ')) {
                 document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
                 return;
             }
