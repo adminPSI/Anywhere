@@ -220,10 +220,8 @@
    * @param {Function} cbFunc Callback function to call
    */
   Form.prototype.onDelete = function (cbFunc) {
-    this.form.addEventListener('onDelete', e => {
-      e.preventDefault();
-
-      this.clear();
+      this.form.addEventListener('onDelete', e => {
+      e.preventDefault(); 
 
       cbFunc(data, e.submitter);
     });
