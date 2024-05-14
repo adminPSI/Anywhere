@@ -6725,6 +6725,22 @@ namespace Anywhere.Data
             }
         }
 
+        public string getExistingTimeEntry(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getExistingTimeEntry" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_SingleEntry_GetExistingTimeEntry('" + token + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("559", ex.Message + " ANYW_SingleEntry_GetExistingTimeEntry('" + token + "')");
+                return "559: Error getting existing time entry";
+            }
+
+        }
+
     }
 
 }

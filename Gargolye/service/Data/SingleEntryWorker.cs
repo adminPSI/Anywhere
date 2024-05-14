@@ -358,6 +358,13 @@ namespace Anywhere.service.Data
             return locationsAndResidencesObj;
         }
 
+        public SingleEntryById[] getExistingTimeEntry(string token)
+        {
+            string seByIdString = dg.getExistingTimeEntry(token);
+            SingleEntryById[] seByIdObj = js.Deserialize<SingleEntryById[]>(seByIdString);
+            return seByIdObj;
+        }
+
         public class LocationsAndResidences
         {
             public string locationId { get; set; }
