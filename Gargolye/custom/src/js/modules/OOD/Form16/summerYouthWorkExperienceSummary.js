@@ -27,8 +27,8 @@ const summerYouthWorkExperienceSummaryForm = (() => {
   let emSummaryIndivSelfAssessment; //  rename -- maybe -- selfAssessmentInput -- Individual's Self Assessment = em_review.em_sum_ind_self_assess
   let emSummaryIndivProviderAssessment; // //  rename -- maybe --providerAssessmentInput -- Provider's Summary & Recommendations = em_review.em_sum_provider_assess
   let emReviewVTS; // reviewVTSDropdown -- Has the Vocational Training Stipend… = em_review.vts_review
-  let offeredHoursNotWorked; // offeredHoursNotWorkedInput -- Additional Hours Offered = em_review.add_hours_offered (new column - see associated task on this ticket)
-  let emOfferedHoursNotWorkNumber; 
+  let offeredHoursNotWorked; 
+  let emOfferedHoursNotWorkNumber; // offeredHoursNotWorkedInput -- Additional Hours Offered = em_review.add_hours_offered (new column - see associated task on this ticket)
   // buttons
   let saveBtn;
   let saveAndNewBtn;
@@ -74,6 +74,8 @@ const summerYouthWorkExperienceSummaryForm = (() => {
       emSummaryIndivSelfAssessment = emReviewData.emSummaryIndivSelfAssessment;
       emSummaryIndivProviderAssessment = emReviewData.emSummaryIndivProviderAssessment;
       emReviewVTS = emReviewData.emReviewVTS;
+      emOfferedHoursNotWorkNumber = emReviewData.emOfferedHoursNotWorkNumber;
+      offeredHoursNotWorked = (emOfferedHoursNotWorkNumber === '0' || emOfferedHoursNotWorkNumber === '0.00' || emOfferedHoursNotWorkNumber === '') ? 'N' : 'Y';
     } else {
       userId = $.session.UserId;
       serviceId = selectedServiceId;
@@ -85,6 +87,8 @@ const summerYouthWorkExperienceSummaryForm = (() => {
       emSummaryIndivSelfAssessment = '';
       emSummaryIndivProviderAssessment = '';
       emReviewVTS = '';
+      offeredHoursNotWorked  = ''; 
+      emOfferedHoursNotWorkNumber  = '';
     }
 
     if (clickSource === 'OODGrid' && !$.session.OODUpdate) {
@@ -284,6 +288,9 @@ const summerYouthWorkExperienceSummaryForm = (() => {
     container.appendChild(wasOfferedHoursNotWorkedDropdownLabel);
     container.appendChild(wasOfferedHoursNotWorkedDropdown);
     container.appendChild(offeredHoursNotWorkedInput);
+    offeredHoursNotWorkedInput.style.visibility = 'hidden';
+    offeredHoursNotWorked = '';
+    
 
     let updatecontainer = document.createElement('div');
     updatecontainer.classList.add('updatecontainer');
@@ -499,21 +506,26 @@ const summerYouthWorkExperienceSummaryForm = (() => {
     }
 
     
-    if (!emOfferedHoursNotWorked || emOfferedHoursNotWorked === '') {
+    if (!offeredHoursNotWorked || offeredHoursNotWorked === '') {
       wasOfferedHoursNotWorkedDropdown.classList.add('error');
     } else {
       wasOfferedHoursNotWorkedDropdown.classList.remove('error');
+
+     
+
     }
 
     var numofferedHoursNotWorkedInput = offeredHoursNotWorkedInput.querySelector('input');
 
-    if (numofferedHoursNotWorkedInput.value === '' || numofferedHoursNotWorkedInput.value === 0 || numofferedHoursNotWorkedInput.value <= 0) {
+    if ((numofferedHoursNotWorkedInput.value === '' || numofferedHoursNotWorkedInput.value === 0 || numofferedHoursNotWorkedInput.value <= 0) && numofferedHoursNotWorkedInput.style.visibility === 'visible') {
       offeredHoursNotWorkedInput.classList.add('error');
     } else {
       offeredHoursNotWorkedInput.classList.remove('error');
     }
 
-
+    if (offeredHoursNotWorked === 'Y' && (numofferedHoursNotWorkedInput.value === '' || numofferedHoursNotWorkedInput.value === 0 || numofferedHoursNotWorkedInput.value <= 0)) {
+      offeredHoursNotWorkedInput.classList.add('error');
+    }
     setBtnStatus();
   }
 
@@ -610,9 +622,15 @@ const summerYouthWorkExperienceSummaryForm = (() => {
       var selectedOption = event.target.options[event.target.selectedIndex];
 
       if (selectedOption.value == 'SELECT') {
-        emOfferedHoursNotWorked = '';
+        offeredHoursNotWorked = '';
+        offeredHoursNotWorkedInput.style.visibility = 'hidden';
       } else {
-        emOfferedHoursNotWorked = selectedOption.value;
+        offeredHoursNotWorked = selectedOption.value;
+        if (offeredHoursNotWorked === 'Y') {
+          offeredHoursNotWorkedInput.style.visibility = 'visible';
+        } else {
+          offeredHoursNotWorkedInput.style.visibility = 'hidden';
+        }
       }
       checkRequiredFields();
     });
@@ -625,7 +643,7 @@ const summerYouthWorkExperienceSummaryForm = (() => {
 	
 	
     offeredHoursNotWorkedInput.addEventListener('keypress', event => {
-      offeredHoursNotWorkCount = event.target.value;
+      emOfferedHoursNotWorkNumber = event.target.value;
       if (event.key === '.' && event.target.value.indexOf('.') !== -1) {
         // event.target.value = event.target.value.substr(0, (event.target.value.length - 1))
         event.preventDefault();
