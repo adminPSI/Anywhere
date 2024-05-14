@@ -1215,3 +1215,15 @@
         }
     }
 }
+
+.groupBtnWrap {
+    display: contents;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    margin: 0;
+    width: 21%;
+
+    @media screen and (min-width: 560px) {
+        display: flex;
+    }
+}

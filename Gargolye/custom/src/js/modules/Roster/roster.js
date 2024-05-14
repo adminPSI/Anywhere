@@ -54,6 +54,7 @@ const roster2 = (function () {
     // Roster Groups/Pagination
     let rosterGroupCount;
     let activeGroup;
+    let islocationDisabled = false;
 
     var locationHasUnreadNote;
     // Selected & Active Consumers
@@ -498,6 +499,9 @@ const roster2 = (function () {
 
         populateLocationDropdown();
         populateGroupDropdown();
+
+        if (islocationDisabled)
+            LOCATION_DROPDOWN.classList.add('disabled');
     }
     // filter dropdowns
     function populateLocationDropdown() {
@@ -606,6 +610,8 @@ const roster2 = (function () {
         });
         LOCATION_DROPDOWN.addEventListener('change', event => locationDropdownEvent(event));
         async function locationDropdownEvent(event) {
+            if (islocationDisabled)
+                return;
             const selectedOption = event.target.options[event.target.selectedIndex];
             oldLocationId = selectedLocationId;
             oldLocationName = selectedLocationName;
@@ -1146,7 +1152,7 @@ const roster2 = (function () {
             // reset group when custom location is passed:
             selectedGroupId = selectedLocationId;
             selectedGroupCode = 'ALL';
-            selectedGroupName = 'Everyone';
+            selectedGroupName = 'Everyone';           
         }
         MINI_ROSTER_BTN = button.build({
             icon: 'people',
@@ -1178,11 +1184,13 @@ const roster2 = (function () {
     async function showMiniRoster(
         rosterOptions = {
             hideDate: false,
+            locationDisabled: false
         },
     ) {
         const rosterMarkup = await buildRoster({
             selectable: true,
             hideDateFilter: rosterOptions.hideDate ? true : false,
+            disabledLocation: rosterOptions.locationDisabled ? true : false, 
         });
         showMiniRosterPopup(rosterMarkup);
         totalConsumerCount = 0;
@@ -1190,7 +1198,7 @@ const roster2 = (function () {
         populateRoster();
         document.getElementById('searchBtn').click();
         //filterApply();
-        filterUpdateDisplay();
+        filterUpdateDisplay();       
     }
     /**
      * Enables or disables the mini roster button.
@@ -1543,7 +1551,7 @@ const roster2 = (function () {
 
         rosterListSelectable = selectable;
         hideDateFilter = otherOpts.hideDateFilter;
-
+        islocationDisabled = otherOpts.disabledLocation ? true :false;  
         await getRosterData();
 
         // roster
