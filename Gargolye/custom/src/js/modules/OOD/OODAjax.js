@@ -996,7 +996,79 @@ var OODAjax = (function () {
       });
       }
   
-      
+         // Form 16 -- Monthly Summary
+  function getForm16MonthlySummary(emReviewId, callback) {
+    $.ajax({
+      type: 'POST',
+      url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getForm16MonthlySummary/',
+      data: '{"token":"' + $.session.Token + '", "emReviewId":"' + emReviewId + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response, status, xhr) {
+        var res = response.getForm16MonthlySummaryResult[0];
+        callback(res);
+      },
+      error: function(xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+  
+  // Form 16 -- Monthly Summary
+  function updateForm16MonthlySummary(data, callback) {
+      data = {
+        token: $.session.Token, 
+        consumerId: data.consumerId, 
+        emReviewId: data.emReviewId,
+        emReviewDate: data.emReviewDate,
+        emReferenceNumber: data.emReferenceNumber,
+        emNextScheduledReview: data.emNextScheduledReview,
+        emSummaryIndivSelfAssessment: data.emSummaryIndivSelfAssessment,
+        emSummaryIndivProviderAssessment: data.emSummaryIndivProviderAssessment, 
+        emReviewVTS: data.emReviewVTS,
+        emOfferedHoursNotWorkNumber: data.emOfferedHoursNotWorkNumber,
+        userId: data.userId, 
+         }
+    return $.ajax({
+    type: 'POST',
+    url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateForm16MonthlySummary/',
+    data: JSON.stringify(data),
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json',
+    success: function(response, status, xhr) {
+    callback(response.updateForm16MonthlySummaryResult);
+    },
+    });
+  }
+  
+  // Form 16 -- Monthly Summary
+  function insertForm16MonthlySummary(data, callback) {
+    data = {
+      token: $.session.Token, 
+      consumerId: data.consumerId, 
+      emReviewDate: data.emReviewDate,
+      emReferenceNumber: data.emReferenceNumber,
+      emNextScheduledReview: data.emNextScheduledReview,
+      emSummaryIndivSelfAssessment: data.emSummaryIndivSelfAssessment,
+      emSummaryIndivProviderAssessment: data.emSummaryIndivProviderAssessment,
+      emReviewVTS: data.emReviewVTS,
+      emOfferedHoursNotWorkNumber: data.emOfferedHoursNotWorkNumber,
+      userId: data.userId,
+      serviceId: data.serviceId     
+       }
+  return $.ajax({
+  type: 'POST',
+  url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertForm16MonthlySummary/',
+  data: JSON.stringify(data),
+  contentType: 'application/json; charset=utf-8',
+  dataType: 'json',
+  success: function(response, status, xhr) {
+  callback(response.insertForm16MonthlySummaryResult);
+  },
+  });
+  }
+
+
   async function deleteOODForm10TransportationEntry(OODTransportationId) {
     try {
       const result = await $.ajax({
@@ -1329,6 +1401,9 @@ var OODAjax = (function () {
       getForm16SummerYouthWorkExperience,
       insertForm16SummerYouthWorkExperience,
       updateForm16SummerYouthWorkExperience,
+      getForm16MonthlySummary,
+      updateForm16MonthlySummary,
+      insertForm16MonthlySummary,
       generateForm4,
       generateForm8,
       generateForm10

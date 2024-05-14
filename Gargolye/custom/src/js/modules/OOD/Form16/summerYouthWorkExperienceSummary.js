@@ -28,7 +28,7 @@ const summerYouthWorkExperienceSummaryForm = (() => {
   let emSummaryIndivProviderAssessment; // //  rename -- maybe --providerAssessmentInput -- Provider's Summary & Recommendations = em_review.em_sum_provider_assess
   let emReviewVTS; // reviewVTSDropdown -- Has the Vocational Training Stipend… = em_review.vts_review
   let offeredHoursNotWorked; // offeredHoursNotWorkedInput -- Additional Hours Offered = em_review.add_hours_offered (new column - see associated task on this ticket)
-  let offeredHoursNotWorkNumber; 
+  let emOfferedHoursNotWorkNumber; 
   // buttons
   let saveBtn;
   let saveAndNewBtn;
@@ -185,7 +185,7 @@ const summerYouthWorkExperienceSummaryForm = (() => {
       label: 'Additional Hours Offered',
       type: 'number',
       style: 'secondary',
-      value: offeredHoursNotWorkNumber === '0' || offeredHoursNotWorkNumber === '0.00' ? '' : offeredHoursNotWorkNumber,
+      value: emOfferedHoursNotWorkNumber === '0' || emOfferedHoursNotWorkNumber === '0.00' ? '' : emOfferedHoursNotWorkNumber,
       readonly: formReadOnly,
       attributes: [{ key: 'min', value: '0' }],
     });
@@ -499,7 +499,7 @@ const summerYouthWorkExperienceSummaryForm = (() => {
     }
 
     
-    if (!offeredHoursNotWorked || offeredHoursNotWorked === '') {
+    if (!emOfferedHoursNotWorked || emOfferedHoursNotWorked === '') {
       wasOfferedHoursNotWorkedDropdown.classList.add('error');
     } else {
       wasOfferedHoursNotWorkedDropdown.classList.remove('error');
@@ -610,9 +610,9 @@ const summerYouthWorkExperienceSummaryForm = (() => {
       var selectedOption = event.target.options[event.target.selectedIndex];
 
       if (selectedOption.value == 'SELECT') {
-        emReviewVTS = '';
+        emOfferedHoursNotWorked = '';
       } else {
-        emReviewVTS = selectedOption.value;
+        emOfferedHoursNotWorked = selectedOption.value;
       }
       checkRequiredFields();
     });
@@ -719,10 +719,11 @@ const summerYouthWorkExperienceSummaryForm = (() => {
       emSummaryIndivSelfAssessment,
       emSummaryIndivProviderAssessment,
       emReviewVTS,
+      emOfferedHoursNotWorkNumber,
       userId,
     };
     // TODO JOE: need new C# and SP for Form 8
-    OODAjax.updateForm8MonthlySummary(data, function (results) {
+    OODAjax.updateForm16MonthlySummary(data, function (results) {
       successfulSave.show();
       setTimeout(function () {
         successfulSave.hide();
@@ -757,11 +758,12 @@ const summerYouthWorkExperienceSummaryForm = (() => {
       emSummaryIndivSelfAssessment,
       emSummaryIndivProviderAssessment,
       emReviewVTS,
+      emOfferedHoursNotWorkNumber,
       userId,
       serviceId,
     };
     // TODO JOE: need new C# and SP for Form 8
-    OODAjax.insertForm8MonthlySummary(data, function (results) {
+    OODAjax.insertForm16MonthlySummary(data, function (results) {
       successfulSave.show();
       if (saveType == 'saveandNew') {
         setTimeout(function () {

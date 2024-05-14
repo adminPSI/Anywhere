@@ -310,8 +310,8 @@ const OOD = (() => {
                     e.target.attributes.OODReportType.value === 'monthlySummary' &&
                     e.target.attributes.formNumber.value === '16'
                 ) {
-                    OODAjax.getForm8MonthlySummary(e.target.attributes.Id.value, function (results) {
-                        communityBasedAssessmentSummaryForm.init(
+                    OODAjax.getForm16MonthlySummary(e.target.attributes.Id.value, function (results) {
+                        summerYouthWorkExperienceSummaryForm.init(
                             results,
                             rowConsumer[0],
                             undefined,
