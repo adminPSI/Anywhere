@@ -430,7 +430,7 @@
     function initIncidentTrackingWidget() {
         const showHide = getWidgetSettings(widgetIds.incidentTracking).showHide;
         if (
-            ($.session.isASupervisor || $.session.isPSI == true) &&
+            ($.session.isASupervisor || $.session.isPSI == true)  && $.session.incidentTrackingView == true && 
             $.session.incidentTrackingPermission === 'Anywhere_Incident_Tracking'
         ) {
             (function loadIncidentTrackingWidget() {
