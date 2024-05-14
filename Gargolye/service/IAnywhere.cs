@@ -4464,12 +4464,12 @@ namespace Anywhere
             UriTemplate = "/deleteOODForm10TransportationEntry/")]
         String deleteOODForm10TransportationEntry(string token, string OODTransportationId);
 
-           [OperationContract]
+        [OperationContract]
         [WebInvoke(Method = "POST",
-            BodyStyle = WebMessageBodyStyle.Wrapped,
-            ResponseFormat = WebMessageFormat.Json,
-            RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/getForm16SummerYouthWorkExperience/")]
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getForm16SummerYouthWorkExperience/")]
         OODWorker.Form16SummerYouthWorkExperience[] getForm16SummerYouthWorkExperience(string token, string caseNoteId);
 
         [OperationContract]
@@ -5217,6 +5217,23 @@ namespace Anywhere
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/updateUserWidgetOrderSettings/")]
         string updateUserWidgetOrderSettings(string token, string[] updatedListOrder);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getExistingTimeEntry/")]
+        SingleEntryWorker.SingleEntryById[] getExistingTimeEntry(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/addConsumerToCustomGroupJSON/")]
+        string addConsumerToCustomGroupJSON(string[] consumerIDs, string groupId);
+
     }
 
 

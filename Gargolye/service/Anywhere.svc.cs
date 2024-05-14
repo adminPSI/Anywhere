@@ -1993,7 +1993,7 @@ namespace Anywhere
 
         {
             return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormAttachmentIds, priorConsumerPlanId);
-           // return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId);
+            // return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId);
         }
         #endregion
 
@@ -2535,7 +2535,7 @@ namespace Anywhere
             return picw.updatePlanRestrictiveMeasures(token, informedConsentId, rmIdentified, rmHRCDate, rmKeepSelfSafe, rmFadeRestriction, rmOtherWayHelpGood, rmOtherWayHelpBad, rmWhatCouldHappenGood, rmWhatCouldHappenBad);
         }
 
-         public string deletePlanRestrictiveMeasures(string token, string informedConsentId)
+        public string deletePlanRestrictiveMeasures(string token, string informedConsentId)
         {
             return picw.deletePlanRestrictiveMeasures(token, informedConsentId);
         }
@@ -2828,7 +2828,7 @@ namespace Anywhere
         //Waiting List Module
         public string deleteFromWaitingList(string[] properties)
         {
-           return wlw.deleteFromWaitingList(properties);
+            return wlw.deleteFromWaitingList(properties);
         }
 
         public string deleteWaitingListParticipant(string token, int participantId)
@@ -2843,7 +2843,7 @@ namespace Anywhere
 
         public FundingSources[] getWaitingListFundingSources()
         {
-            return wlw.getWaitingListFundingSources();  
+            return wlw.getWaitingListFundingSources();
         }
 
         public WaitingList[] getWaitingListAssessment(int waitingListAssessmentId)
@@ -2862,7 +2862,7 @@ namespace Anywhere
         }
 
         public SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId)
-        { 
+        {
             return wlw.getWLSupportingDocumentList(token, waitingListInformationId);
         }
 
@@ -2885,10 +2885,10 @@ namespace Anywhere
         {
             return rbw.sendWaitingListAssessmentReport(token, reportScheduleId, header, body, waitingListId);
         }
-        
+
         //OOD Module
 
-       public string generateForm4(System.IO.Stream testInput)
+        public string generateForm4(System.IO.Stream testInput)
         {
             //(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber
             string token;
@@ -3522,7 +3522,7 @@ namespace Anywhere
             return cf.insertPayee(token, payeeName, address1, address2, city, state, zipcode, userId, consumerId);
         }
 
-         public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId, SplitAmountData[] splitAmount, string categoryID) 
+        public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId, SplitAmountData[] splitAmount, string categoryID)
         {
             return cf.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, userId, eventType, regId, splitAmount, categoryID);
         }
@@ -3886,5 +3886,32 @@ namespace Anywhere
         {
             return dashWork.updateUserWidgetOrderSettings(token, updatedListOrder);
         }
+
+        public SingleEntryWorker.SingleEntryById[] getExistingTimeEntry(string token)
+        {
+            return singleEntryWorker.getExistingTimeEntry(token);
+        }
+        public string addConsumerToCustomGroupJSON(string[] consumerIDs,string groupId)
+        {
+            foreach (string consumerId in consumerIDs)
+            {
+                Int64 Num;
+                bool isNum = Int64.TryParse(groupId, out Num);
+                bool isNum2 = Int64.TryParse(consumerId, out Num);
+
+                if (isNum && isNum2)
+                {
+                    dg.addConsumerToGroup(groupId, consumerId);
+                }
+                else
+                {
+                    logger.Error("GroupId or consumerId is not a number:" + groupId + " " + consumerId);
+                    return "<error>Error parsing GroupId or consumerId</error>";
+                }
+            }
+            return groupId;
+        }
+
+
     }
 }
