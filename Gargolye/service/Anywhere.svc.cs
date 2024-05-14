@@ -3166,6 +3166,20 @@ namespace Anywhere
             return Odg.insertForm16SummerYouthWorkExperience(token, consumerId, caseNoteId, serviceDate, startTime, endTime, position, groupSize, interventions, userId, serviceId, referenceNumber, caseManagerId);
         }
 
+        public OODWorker.Form16MonthlySummary[] getForm16MonthlySummary(string token, string emReviewId)
+        {
+            return Ow.getForm16MonthlySummary(token, emReviewId);
+        }
+
+        public string updateForm16MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment,  string emSummaryIndivProviderAssessment,  string emReviewVTS, string emOfferedHoursNotWorkNumberstring, string userId)
+        {
+            return Odg.updateForm16MonthlySummary(token, consumerId, emReviewId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivProviderAssessment,  emReviewVTS, emOfferedHoursNotWorkNumberstring, userId);
+        }
+
+        public string insertForm16MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment,  string emSummaryIndivProviderAssessment,  string emReviewVTS, string emOfferedHoursNotWorkNumberstring, string userId, string serviceId)
+        {
+            return Odg.insertForm16MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivProviderAssessment,  emReviewVTS, emOfferedHoursNotWorkNumberstring, userId, serviceId);
+        }
 
         //Case note reporting
         public CaseNoteReportBuilderWorker.ReportScheduleId[] generateCNDetailReport(string token, string userId, string billerId, string consumerId, string consumerName, string serviceStartDate, string serviceEndDate,

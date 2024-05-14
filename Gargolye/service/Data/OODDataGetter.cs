@@ -918,6 +918,87 @@ namespace Anywhere.service.Data
             }
         }
 
+        // Form 16 Monthly Summary -- edit data
+        public string getForm16MonthlySummary(string token, string emReviewId)
+        {
+            if (tokenValidator(token) == false) return null;
+
+            logger.debug("getForm16MonthlySummary" + token);
+            try
+            {
+                return dg.executeDataBaseCallJSON("CALL DBA.ANYW_OOD_getForm16MonthlySummary('" + token + "', '" + emReviewId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("537", ex.Message + " ANYW_OOD_getForm16MonthlySummary('" + token + "', '" + emReviewId + "')");
+                return "537: Error getting emREview to edit";
+            }
+        }
+
+        public string updateForm16MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment,  string emSummaryIndivProviderAssessment,  string emReviewVTS, string emOfferedHoursNotWorkNumber, string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("updateForm16MonthlySummary" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(emReviewId);
+            list.Add(emReviewDate);
+            list.Add(emReferenceNumber);
+            list.Add(emNextScheduledReview);
+            list.Add(emSummaryIndivSelfAssessment);
+            list.Add(emSummaryIndivProviderAssessment);
+            list.Add(emReviewVTS);
+            list.Add(emOfferedHoursNotWorkNumber);
+            list.Add(userId);
+
+            string text = "CALL DBA.ANYW_OOD_updateForm16MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4PODG", ex.Message + "ANYW_OOD_updateForm16MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4APODG: error ANYW_OOD_updateForm16MonthlySummary";
+            }
+
+        }
+
+        public string insertForm16MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string emOfferedHoursNotWorkNumber, string userId, string serviceId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("insertForm16MonthlySummary" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(emReviewDate);
+            list.Add(emReferenceNumber);
+            list.Add(emNextScheduledReview);
+            list.Add(emSummaryIndivSelfAssessment);
+            list.Add(emSummaryIndivProviderAssessment);
+            list.Add(emReviewVTS);
+            list.Add(emOfferedHoursNotWorkNumber);
+            list.Add(userId);
+            list.Add(serviceId);
+
+            string text = "CALL DBA.ANYW_OOD_insertForm16MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4PODG", ex.Message + "ANYW_OOD_insertForm16MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4APODG: error ANYW_OOD_insertForm16MonthlySummary";
+            }
+
+        }
+
 
         public bool tokenValidator(string token)
         {

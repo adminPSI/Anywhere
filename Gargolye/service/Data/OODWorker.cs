@@ -316,6 +316,34 @@ namespace Anywhere.service.Data
             public string serviceName { get; set; }
         }
 
+        [DataContract]
+        public class Form16MonthlySummary
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string emReviewId { get; set; }
+            [DataMember(Order = 2)]
+            public string emReviewDate { get; set; }
+            [DataMember(Order = 3)]
+            public string emReferenceNumber { get; set; }
+            [DataMember(Order = 4)]
+            public string emNextScheduledReview { get; set; }
+
+            [DataMember(Order = 5)]
+            public string emSummaryIndivSelfAssessment { get; set; }
+           
+            [DataMember(Order = 6)]
+            public string emSummaryIndivProviderAssessment { get; set; }
+            
+                [DataMember(Order = 7)]
+            public string emReviewVTS { get; set; }
+
+            [DataMember(Order = 8)]
+            public string emOfferedHoursNotWorkNumber { get; set; }
+
+
+        }
 
         public OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
         {
@@ -762,5 +790,12 @@ namespace Anywhere.service.Data
         }
 
 
+        // Form 16 Monthly Summary
+        public Form16MonthlySummary[] getForm16MonthlySummary(string token, string emReviewId)
+        {
+            string editDataString = Odg.getForm16MonthlySummary(token, emReviewId);
+            Form16MonthlySummary[] editDataObj = js.Deserialize<Form16MonthlySummary[]>(editDataString);
+            return editDataObj;
+        }
     }
 }

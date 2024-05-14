@@ -4488,6 +4488,30 @@ namespace Anywhere
             UriTemplate = "/insertForm16SummerYouthWorkExperience/")]
         string insertForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string groupSize, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getForm16MonthlySummary/")]
+        OODWorker.Form16MonthlySummary[] getForm16MonthlySummary(string token, string emReviewId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/updateForm16MonthlySummary/")]
+        string updateForm16MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string emOfferedHoursNotWorkNumber,  string userId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/insertForm16MonthlySummary/")]
+        string insertForm16MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivProviderAssessment,  string emReviewVTS, string emOfferedHoursNotWorkNumber, string userId, string serviceId);
+
 
         [WebInvoke(Method = "POST",
        BodyStyle = WebMessageBodyStyle.Wrapped,
