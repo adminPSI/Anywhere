@@ -469,8 +469,8 @@ const Tier1andJDPlanForm = (() => {
       narrative,
       userId,
     };
-    // TODO JOE: This AJAX needs to change
-    OODAjax.updateForm8CommunityBasedAssessment(data, function (results) {
+  
+    OODAjax.updateForm6Tier1andJDPLan(data, function (results) {
       successfulSave.show();
       setTimeout(function () {
         successfulSave.hide();
@@ -492,8 +492,8 @@ const Tier1andJDPlanForm = (() => {
       referenceNumber,
       caseManagerId,
     };
-    // TODO JOE: This AJAX needs to change
-    OODAjax.insertForm8CommunityBasedAssessment(data, function (results) {
+    
+    OODAjax.insertForm6Tier1andJDPLan(data, function (results) {
       successfulSave.show();
       if (saveType == 'saveandNew') {
         setTimeout(function () {
