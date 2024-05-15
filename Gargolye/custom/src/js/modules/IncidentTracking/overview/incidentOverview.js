@@ -745,7 +745,7 @@ const incidentOverview = (function () {
             { id: 1, value: 'Unread', text: 'Unread' },
             { id: 2, value: 'Read', text: 'Read' },
         ]);
-        showDropdownData.unshift({ id: null, value: null, text: 'All' });
+        showDropdownData.unshift({ id: null, value: 'All', text: 'All' }); 
         dropdown.populate(showDropdown, showDropdownData, filterData.show); 
     }
 
