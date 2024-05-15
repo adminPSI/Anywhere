@@ -208,7 +208,7 @@ const WagesBenefits = (() => {
         });
     }
 
-    function disableCheckBox() { 
+    function disableCheckBox() {
         if ($.session.EmploymentUpdate && eligibleBenefits == 'Y') {
             vacationSickchkBox.classList.remove('disabled');
             medicalVisionchkbox.classList.remove('disabled');
@@ -352,10 +352,13 @@ const WagesBenefits = (() => {
         // dropdowns & inputs
         weekHours = input.build({
             id: 'weekHours',
-            type: 'text',
+            type: 'number',
             label: 'Hours Per Week',
             style: 'secondary',
             value: hoursWeek,
+            attributes: [
+                { key: 'min', value: '0' }
+            ],
         });
 
         wagesHours = input.build({
@@ -422,18 +425,15 @@ const WagesBenefits = (() => {
     function PopupEventListeners() {
         weekHours.addEventListener('input', event => {
             hoursWeek = event.target.value;
-            var reg = new RegExp('^[0-9 . $ -]+$');  
+            var reg = new RegExp('^[0-9 . $ -]+$');
             if (!reg.test(hoursWeek)) {
                 document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
-                return;
             }
             else if (hoursWeek.includes('.') && (hoursWeek.match(/\./g).length > 1 || hoursWeek.toString().split('.')[1].length > 2)) {
                 document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
-                return;
             }
-            if (hoursWeek.includes('-') || hoursWeek.includes(' ')) { 
+            if (hoursWeek.includes('-') || hoursWeek.includes(' ')) {
                 document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
-                return;
             }
             checkRequiredFieldsOfPopup();
         });
@@ -443,15 +443,12 @@ const WagesBenefits = (() => {
             var reg = new RegExp('^[0-9 . $ -]+$');
             if (!reg.test(hoursWages)) {
                 document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
-                return;
             }
             else if (hoursWages.includes('.') && (hoursWages.match(/\./g).length > 1 || hoursWages.toString().split('.')[1].length > 2)) {
                 document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
-                return;
             }
             if (hoursWages.includes('-') || hoursWages.includes(' ')) {
                 document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
-                return;
             }
             checkRequiredFieldsOfPopup();
         });
@@ -465,7 +462,9 @@ const WagesBenefits = (() => {
         });
 
         APPLY_BTN.addEventListener('click', () => {
-            saveNewWagesPopup();
+            if (!APPLY_BTN.classList.contains('disabled')) {
+                saveNewWagesPopup();
+            } 
         });
 
         CANCEL_BTN.addEventListener('click', () => {
@@ -478,14 +477,15 @@ const WagesBenefits = (() => {
         var wagesPerHour = wagesHours.querySelector('#wagesHours');
         var startDate = newStartDate.querySelector('#newStartDate');
         var endDate = newEndDate.querySelector('#newEndDate');
+        var reg = new RegExp('^[0-9 . $ -]+$');
 
-        if (weekPerHour.value === '') {
+        if (weekPerHour.value === '' || weekPerHour.value.includes('-') || !reg.test(weekPerHour.value)) {
             weekHours.classList.add('errorPopup');
         } else {
             weekHours.classList.remove('errorPopup');
         }
 
-        if (wagesPerHour.value === '' || wagesPerHour.value === '$') {
+        if (wagesPerHour.value === '' || wagesPerHour.value === '$' || wagesPerHour.value.includes('-') || !reg.test(wagesPerHour.value)) {
             wagesHours.classList.add('errorPopup');
         } else {
             wagesHours.classList.remove('errorPopup');
@@ -595,10 +595,10 @@ const WagesBenefits = (() => {
             type: 'outlined',
             callback: () => {
                 POPUP.hide(confirmPopup);
-                eligibleBenefits = 'Y';   
+                eligibleBenefits = 'Y';
                 eligibleBenefitschkBox.querySelector('#chkEligibleBenefits').checked = true;
                 saveWagesChecked('EligibleForBenifit', true, null);
-                disableCheckBox(); 
+                disableCheckBox();
             },
         });
 
