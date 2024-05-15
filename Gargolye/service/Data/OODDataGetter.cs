@@ -556,6 +556,88 @@ namespace Anywhere.service.Data
             }
         }
 
+        // Form6Tier1andJDPLan
+        public string getForm6Tier1andJDPLan(string token, string caseNoteId)
+        {
+            if (tokenValidator(token) == false) return null;
+
+            logger.debug("getForm6Tier1andJDPLan" + token);
+            try
+            {
+                return dg.executeDataBaseCallJSON("CALL DBA.ANYW_OOD_getForm6Tier1andJDPLan('" + token + "', '" + caseNoteId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("537", ex.Message + " ANYW_OOD_getForm6Tier1andJDPLan('" + token + "', '" + caseNoteId + "')");
+                return "537: Error getting getForm6Tier1andJDPLan";
+            }
+        }
+
+        public string updateForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel, string contactMethod, string narrative, string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("updateForm6Tier1andJDPLan" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(caseNoteId);
+            list.Add(serviceDate);
+            list.Add(SAMLevel);
+            list.Add(contactMethod);
+            list.Add(narrative);
+            list.Add(userId);
+
+            string text = "CALL DBA.ANYW_OOD_updateForm6Tier1andJDPLan(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                //return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_updateForm6Tier1andJDPLan('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + employer + "', '" + contactType + "', '" + jobSeekerPresent + "', '" + outcome + "', '" + TSCNotified + "', '" + bilingualSupplement + "', '" + notes + "', '" + userId +  "');", "results", "results");
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm6Tier1andJDPLan('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + SAMLevel + "', '" + contactMethod + "', '" + narrative + "')");
+                return "536: Error saving Form8CommunityBasedAssessment";
+            }
+        }
+
+        public string insertForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel, string contactMethod, string narrative, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("insertForm6Tier1andJDPLan" + token);
+
+            List<string> list = new List<string>();
+
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(caseNoteId);
+            list.Add(serviceDate);
+            list.Add(SAMLevel);
+            list.Add(contactMethod);
+            list.Add(narrative);
+            list.Add(userId);
+            list.Add(serviceId);
+            list.Add(referenceNumber);
+            list.Add(caseManagerId);
+
+            string text = "CALL DBA.ANYW_OOD_insertForm6Tier1andJDPLan(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                // return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_insertForm4MonthlyPlacementEditData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + employer + "', '" + contactType + "', '" + jobSeekerPresent + "', '" + outcome + "', '" + TSCNotified + "', '" + bilingualSupplement + "', '" + notes + "', '" + caseManagerId + "', '" + userId + "', '" + serviceId + "');", "results", "results");
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_insertForm6Tier1andJDPLan('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + SAMLevel + "', '" + contactMethod + "', '" + narrative + "')");
+                return "536: Error saving case note";
+            }
+        }
+
+
         // Form 8 Community Based Assessment
         public string getForm8CommunityBasedAssessment(string token, string caseNoteId)
         {
