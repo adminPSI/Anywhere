@@ -5,6 +5,7 @@ using Anywhere.service.Data.CaseNoteSSA;
 using Anywhere.service.Data.ConsumerFinances;
 using Anywhere.service.Data.Covid;
 using Anywhere.service.Data.Defaults;
+using Anywhere.service.Data.DocumentConversion;
 using Anywhere.service.Data.Employment;
 using Anywhere.service.Data.eSignature___OneSpan;
 using Anywhere.service.Data.Plan;
@@ -3354,6 +3355,13 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/updatePlanOutcomesReviewOrder/")]
         string updatePlanOutcomesReviewOrder(string token, long outcomeId, long reviewId, int newPos, int oldPos);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getDefaultEmailsForFinalization/")]
+        FinalizationButtonWorker.Emails[] getDefaultEmailsForFinalization();
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,

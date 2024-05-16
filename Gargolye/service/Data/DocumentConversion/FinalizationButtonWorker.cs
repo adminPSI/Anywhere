@@ -15,6 +15,8 @@ using static Anywhere.service.Data.SimpleMar.SignInUser;
 using static PSIOISP.Deserialize;
 using Anywhere.Data;
 using iTextSharp.text;
+using DocumentFormat.OpenXml.Office.CoverPageProps;
+using static Anywhere.service.Data.AnywhereWorker;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -30,18 +32,54 @@ namespace Anywhere.service.Data.DocumentConversion
         AssessmentDataGetter adg = new AssessmentDataGetter();
         DisplayPlanReportAndAttachments dpaa = new DisplayPlanReportAndAttachments();
 
-        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string consumerId)
+        public Emails[] getDefaultEmailsForFinalization()
         {
-            string[] actions = new string[3];
-            //Send to DODD
-            string[] sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, planId, consumerId);
-            //get the report in bytes
-            byte[] report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
-            //Send to ONET
-            string sendONET = sendToONET(token, report, assessmentID);
-            //Send Email
-            //string sendEmailResult = 
-            return actions;
+            string emails = aadg.getDefaultEmailsForFinalization();
+            Emails[] emailsObj = js.Deserialize<Emails[]>(emails);
+            return emailsObj;
+        }
+
+        public class Emails
+        {
+            public string setting_value { get; set; }
+        }
+        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string consumerId, string[] emailAddresses)
+        {
+            bool isTokenValid = aadg.ValidateToken(token);
+            if (isTokenValid)
+            {
+                string[] actions = new string[3];
+                //Send to DODD
+                string[] sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, planId, consumerId);
+                //get the report in bytes
+                byte[] report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
+                //Send to ONET
+                string sendONET = sendToONET(token, report, assessmentID);
+                //Send Email
+                foreach(string emailAddress in emailAddresses)
+                {
+                    string sendEmailResult = aadg.SendReportViaEmail(emailAddress, report.ToString());
+                }
+                
+                //Display Plan Report
+                displayPlanReport(report);
+
+                return actions;
+            }
+            
+            return null;
+        }
+
+        public void displayPlanReport(byte[] report)
+        {
+            Attachment attachment = new Attachment();
+            var current = System.Web.HttpContext.Current;
+            var response = current.Response;
+            response.Buffer = true;
+            response.Clear();
+            response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
+            response.ContentType = "application/pdf";
+            response.BinaryWrite(report);
         }
 
         public ReportSectionOrder[] getReportSectionOrder()
@@ -58,7 +96,7 @@ namespace Anywhere.service.Data.DocumentConversion
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
             response.Buffer = true;
-            bool isTokenValid = aadg.ValidateToken(token);
+            bool isTokenValid = true;// aadg.ValidateToken(token);
             if (toONET == false)
             {
                 pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20240512):89A5A05D0437C60A0320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");

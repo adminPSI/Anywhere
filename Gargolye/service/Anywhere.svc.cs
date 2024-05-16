@@ -115,6 +115,7 @@ namespace Anywhere
         OODFormWorker OODfw = new OODFormWorker();
         PlanValidationWorker pv = new PlanValidationWorker();
         WaitingListWorker wlw = new WaitingListWorker();
+        FinalizationButtonWorker fbw = new FinalizationButtonWorker();
 
         public AnywhereService()
         {
@@ -2315,6 +2316,11 @@ namespace Anywhere
         public string insertPlanOutcomeProgressSummary(string token, long planId, string progressSummary)
         {
             return poW.insertPlanOutcomeProgressSummary(token, planId, progressSummary);
+        }
+
+        public FinalizationButtonWorker.Emails[] getDefaultEmailsForFinalization()
+        {
+            return fbw.getDefaultEmailsForFinalization();
         }
 
         public string updatePlanOutcomeProgressSummary(string token, long progressSummaryId, string progressSummary)
