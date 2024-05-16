@@ -103,7 +103,7 @@ const Tier1andJDPlanForm = (() => {
     });
 
     contactMethodDropdown = dropdown.build({
-      label: 'Contact Method',
+      label: 'Contact Type',
       dropdownId: 'contactMethodDropdown',
       value: contactMethod,
       readonly: formReadOnly,

@@ -124,7 +124,8 @@ namespace Anywhere.service.Data
             public string code { get; set; }
             [DataMember(Order = 1)]
             public string caption { get; set; }
-
+            [DataMember(Order = 2)]
+            public string defaultGroupSize { get; set; }
         }
 
         [DataContract]
