@@ -1227,3 +1227,15 @@
         display: flex;
     }
 }
+
+.massSelectbtnWrap {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    float: right;
+}
+
+.marginRight10px{
+    margin-right: 10px; 
+}
+ 
