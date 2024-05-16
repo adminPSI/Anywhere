@@ -215,10 +215,10 @@ const OOD = (() => {
                 e.target.attributes.OODReportType.value === 'newEntry' &&
                 e.target.attributes.formNumber.value === '6'
             ) {
-                OODAjax.getForm8CommunityBasedAssessment(
+                OODAjax.getForm6Tier1andJDPLan(
                     e.target.attributes.Id.value,
                     function (results) {
-                        communityBasedAssessmentForm.init(
+                        Tier1andJDPlanForm.init(
                             results,
                             rowConsumer[0],
                             undefined,

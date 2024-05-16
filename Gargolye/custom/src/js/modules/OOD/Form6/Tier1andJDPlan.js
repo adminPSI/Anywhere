@@ -52,8 +52,7 @@ const Tier1andJDPlanForm = (() => {
     if (caseNoteData && Object.keys(caseNoteData).length !== 0) {
       userId = $.session.UserId;
       caseNoteId = caseNoteData[0].caseNoteId;
-      serviceDate = caseNoteData[0].serviceDate; //TODO JOE: Case_Notes.Service_Date
-      
+      serviceDate = caseNoteData[0].serviceDate; //TODO JOE: Case_Notes.Service_Date  
       SAMLevel = caseNoteData[0].SAMLevel; //TODO JOE: Case_Notes.Service_Area_Modifier (populates with N/A, 1, 2, or 3)
       contactMethod = caseNoteData[0].contactMethod; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.contact_method
       narrative = caseNoteData[0].narrative; //TODO JOE: emp_ood.narrative
@@ -64,9 +63,7 @@ const Tier1andJDPlanForm = (() => {
       serviceId = selectedConsumerServiceId;
       caseNoteId = '0';
       serviceDate = selectedServiceDate;
-      //serviceDate = UTIL.getTodaysDate();
       referenceNumber = selectedConsumerReferenceNumber;
-      
       SAMLevel = '';
       contactMethod = '';
       narrative = '';
@@ -350,8 +347,7 @@ const Tier1andJDPlanForm = (() => {
     }
 
     checkServiceDateInput();
-    checkStartInputTime();
-    checkEndInputTime();
+    
     setBtnStatus();
   }
 
@@ -413,8 +409,6 @@ const Tier1andJDPlanForm = (() => {
     serviceDateInput.addEventListener('change', event => {
       serviceDate = event.target.value;
       checkServiceDateInput();
-      checkStartInputTime();
-      checkEndInputTime();
       setBtnStatus();
     });
     serviceDateInput.addEventListener('keydown', event => {
@@ -469,8 +463,8 @@ const Tier1andJDPlanForm = (() => {
       narrative,
       userId,
     };
-    // TODO JOE: This AJAX needs to change
-    OODAjax.updateForm8CommunityBasedAssessment(data, function (results) {
+  
+    OODAjax.updateForm6Tier1andJDPLan(data, function (results) {
       successfulSave.show();
       setTimeout(function () {
         successfulSave.hide();
@@ -492,8 +486,8 @@ const Tier1andJDPlanForm = (() => {
       referenceNumber,
       caseManagerId,
     };
-    // TODO JOE: This AJAX needs to change
-    OODAjax.insertForm8CommunityBasedAssessment(data, function (results) {
+    
+    OODAjax.insertForm6Tier1andJDPLan(data, function (results) {
       successfulSave.show();
       if (saveType == 'saveandNew') {
         setTimeout(function () {

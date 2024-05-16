@@ -3107,6 +3107,22 @@ namespace Anywhere
             return Ow.deleteFormMonthlySummary(token, emReviewId);
         }
 
+        public OODWorker.Form6Tier1andJDPLan[] getForm6Tier1andJDPLan(string token, string caseNoteId)
+        {
+            return Ow.getForm6Tier1andJDPLan(token, caseNoteId);
+        }
+
+        public string updateForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel, string contactMethod, string narrative, string userId)
+        {
+            return Odg.updateForm6Tier1andJDPLan(token, consumerId, caseNoteId, serviceDate, SAMLevel,  contactMethod,  narrative,  userId);
+        }
+
+        public string insertForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel, string contactMethod,  string narrative, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        {
+            return Odg.insertForm6Tier1andJDPLan(token, consumerId, caseNoteId, serviceDate, SAMLevel, contactMethod, narrative, userId, serviceId, referenceNumber, caseManagerId);
+        }
+
+
         public OODWorker.Form8CommunityBasedAssessment[] getForm8CommunityBasedAssessment(string token, string caseNoteId)
         {
             return Ow.getForm8CommunityBasedAssessment(token, caseNoteId);

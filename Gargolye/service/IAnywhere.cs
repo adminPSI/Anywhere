@@ -4397,6 +4397,31 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getForm6Tier1andJDPLan/")]
+        OODWorker.Form6Tier1andJDPLan[] getForm6Tier1andJDPLan(string token, string caseNoteId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/updateForm6Tier1andJDPLan/")]
+        string updateForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate,  string SAMLevel,  string contactMethod, string narrative,  string userId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/insertForm6Tier1andJDPLan/")]
+        string insertForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel,  string contactMethod, string narrative,  string userId, string serviceId, string referenceNumber, string caseManagerId);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getForm8CommunityBasedAssessment/")]
         OODWorker.Form8CommunityBasedAssessment[] getForm8CommunityBasedAssessment(string token, string caseNoteId);
 

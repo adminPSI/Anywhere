@@ -55,6 +55,9 @@ const roster2 = (function () {
     let rosterGroupCount;
     let activeGroup;
     let islocationDisabled = false;
+    // Mass Absent Selection
+    let MASS_SELECT_ALL_BTN;
+    let MASS_DESELECT_ALL_BTN;
 
     var locationHasUnreadNote;
     // Selected & Active Consumers
@@ -809,6 +812,25 @@ const roster2 = (function () {
             classNames: locationNotesBtnClassNames,
         });
     }
+
+    function buildMassAbsentSelectAllBtn() {
+        return button.build({
+            id: 'massAbsentSelectAllBtn',
+            text: 'Select All',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'selectAllBtn',
+        });
+    }
+    function buildMassAbsentDeselectAllBtn() {
+        return button.build({
+            id:'massAbsentDeselectAllBtn',
+            text: 'Select None',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'selectAllBtn',
+        });
+    }
     function buildMassAbsentBtn() {
         var useAbsent = $.session.useAbsentFeature === 'Y' ? true : false;
 
@@ -844,6 +866,10 @@ const roster2 = (function () {
         MASS_ABSENT_BTN = buildMassAbsentBtn();
         MANAGE_GROUPS_BTN = buildManageGroupsBtn();
 
+        MASS_SELECT_ALL_BTN = buildMassAbsentSelectAllBtn();
+        MASS_DESELECT_ALL_BTN = buildMassAbsentDeselectAllBtn();
+        MASS_SELECT_ALL_BTN.classList.add('marginRight10px');
+        MASS_DESELECT_ALL_BTN.classList.add('marginRight10px');   
         // custom search stuff
         SEARCH_WRAP = document.createElement('div');
         // SEARCH_WRAP.classList.add('rosterSearch', 'searchOpen');
@@ -869,9 +895,11 @@ const roster2 = (function () {
         } else {
             var wrap1 = document.createElement('div');
             var wrap2 = document.createElement('div');
+            var wrap3 = document.createElement('div');
             wrap1.classList.add('btnWrap');
             wrap2.classList.add('btnWrap');
             wrap2.classList.add('rosterNotesAbsentGroups');
+            wrap3.classList.add('massSelectbtnWrap');
             // btns to show => search, notes, absent, groups
             wrap1.appendChild(FILTER_BTN);
             wrap1.appendChild(SEARCH_WRAP);
@@ -880,8 +908,12 @@ const roster2 = (function () {
             wrap2.appendChild(MASS_ABSENT_BTN);
             wrap2.appendChild(MANAGE_GROUPS_BTN);
 
+            wrap3.appendChild(MASS_SELECT_ALL_BTN);
+            wrap3.appendChild(MASS_DESELECT_ALL_BTN);
+
             btnWrap.appendChild(wrap1);
             btnWrap.appendChild(wrap2);
+            btnWrap.appendChild(wrap3);
         }
 
         return btnWrap;
@@ -1012,7 +1044,7 @@ const roster2 = (function () {
             child.removeAttribute('style');
         });
     }
-    function actionNavCallback(e) {
+    function actionNavCallback(e) { 
         SELECT_ALL_BTN.classList.remove('disabled');
         DESELECT_ALL_BTN.classList.remove('disabled');
 
@@ -1027,7 +1059,7 @@ const roster2 = (function () {
     }
     function buildActioNav() {
         MINI_ROSTER_DONE = button.build({
-            text: 'Done',
+            text: 'Done', 
             icon: 'checkmark',
             style: 'secondary',
             type: 'contained',
@@ -1117,8 +1149,8 @@ const roster2 = (function () {
             DESELECT_ALL_BTN.classList.add('disabled');
             MINI_ROSTER_DONE.style.display = 'none';
             MINI_ROSTER_CANCEL.style.display = 'none';
-        }     
-    } 
+        }
+    }
     /**
      * Initializes the mini roster. Removes the mini roster button, and re-adds it with new settings.
      * @param {Object} locationData - Location information Object. Only use if you need to bypass the roster's default location.
@@ -1152,7 +1184,7 @@ const roster2 = (function () {
             // reset group when custom location is passed:
             selectedGroupId = selectedLocationId;
             selectedGroupCode = 'ALL';
-            selectedGroupName = 'Everyone';           
+            selectedGroupName = 'Everyone';
         }
         MINI_ROSTER_BTN = button.build({
             icon: 'people',
@@ -1190,7 +1222,7 @@ const roster2 = (function () {
         const rosterMarkup = await buildRoster({
             selectable: true,
             hideDateFilter: rosterOptions.hideDate ? true : false,
-            disabledLocation: rosterOptions.locationDisabled ? true : false, 
+            disabledLocation: rosterOptions.locationDisabled ? true : false,
         });
         showMiniRosterPopup(rosterMarkup);
         totalConsumerCount = 0;
@@ -1198,7 +1230,7 @@ const roster2 = (function () {
         populateRoster();
         document.getElementById('searchBtn').click();
         //filterApply();
-        filterUpdateDisplay();       
+        filterUpdateDisplay();
     }
     /**
      * Enables or disables the mini roster button.
@@ -1375,7 +1407,7 @@ const roster2 = (function () {
                 $.loadedApp === 'assessmentHistory' ||
                 activeSection === 'caseNotesSSA-new' ||
                 activeSection === 'caseNotes-new'
-            ) {              
+            ) {
                 // add modules that only allow one consumer
                 if (isConsumerSelected) {
                     consumer.classList.remove('consumer-selected');
@@ -1392,11 +1424,11 @@ const roster2 = (function () {
                     consumer.classList.add('consumer-selected');
                     consumer.classList.add('highlighted');
                     addConsumerToSelectedConsumers(consumer);
-                } 
+                }
 
                 // only one consumer selection page rediret to main page without done button
                 MINI_ROSTER_DONE.setAttribute('data-action-nav', 'miniRosterDone');
-                MINI_ROSTER_DONE.click(); 
+                MINI_ROSTER_DONE.click();
             } else {
                 if (!isConsumerSelected) {
                     addConsumerToSelectedConsumers(consumer);
@@ -1417,14 +1449,14 @@ const roster2 = (function () {
                     doneBtn.classList.add('disabled');
                 }
                 return;
-            }          
+            }
 
             if (selectedConsumers.length > 0) {
                 MINI_ROSTER_DONE.classList.remove('disabled');
             } else {
                 MINI_ROSTER_DONE.classList.add('disabled');
             }
-        }); 
+        });
 
         SELECT_ALL_BTN.addEventListener('click', event => {
             var consumers = [].slice.call(ROSTER_WRAP.querySelectorAll('.consumerCard:not(.highlighted)'));
@@ -1469,6 +1501,52 @@ const roster2 = (function () {
             }
         });
 
+        MASS_SELECT_ALL_BTN.addEventListener('click', event => {
+            var consumers = [].slice.call(ROSTER_WRAP.querySelectorAll('.consumerCard:not(.highlighted)'));
+            consumers.forEach(c => {
+                if (c.classList.contains('disabled')) return;
+                var consumer = c.cloneNode(true);
+                addConsumerToSelectedConsumers(consumer);
+                c.classList.add('consumer-selected', 'highlighted');
+            });
+
+            const groupCount = Object.keys(groupedRosterConsumers).length;
+            const nextGroup = activeGroup + 1;
+            for (let i = nextGroup; i <= groupCount; i++) {
+                if (groupedRosterConsumers[i]) {
+                    groupedRosterConsumers[i].forEach(c => {
+                        var consumer = buildConsumerCard(c);
+                        if (consumer.classList.contains('disabled')) return;
+                        addConsumerToSelectedConsumers(consumer);
+                    });
+                }
+            }
+
+            console.table(selectedConsumers);
+
+            const doneBtn = document.getElementById('absentDone');
+            if (selectedConsumers.length > 0) {
+                doneBtn.classList.remove('disabled');
+            } else {
+                doneBtn.classList.add('disabled');
+            }
+
+        });
+
+        MASS_DESELECT_ALL_BTN.addEventListener('click', event => {
+            clearHighlightedConsumers();
+            clearSelectedConsumers();
+
+            console.table(selectedConsumers);
+
+            const doneBtn = document.getElementById('absentDone');
+            if (selectedConsumers.length > 0) {
+                doneBtn.classList.remove('disabled');
+            } else {
+                doneBtn.classList.add('disabled');
+            }
+        });
+
         FILTER_BTN.addEventListener('click', event => {
             buildFilterPopup('ALL');
         });
@@ -1489,10 +1567,14 @@ const roster2 = (function () {
                 rosterListSelectable = true;
                 rosterAbsent.initMassAbsent();
                 setActiveModuleSectionAttribute('roster-absent');
+                MASS_DESELECT_ALL_BTN.style.display = 'block';
+                MASS_SELECT_ALL_BTN.style.display = 'block';
             } else {
                 rosterListSelectable = false;
                 ACTION_NAV.hide();
                 setActiveModuleSectionAttribute('roster-info');
+                MASS_DESELECT_ALL_BTN.style.display = 'none';
+                MASS_SELECT_ALL_BTN.style.display = 'none';
             }
         });
 
@@ -1547,7 +1629,7 @@ const roster2 = (function () {
      *
      */
     async function buildRoster({ selectable, ...otherOpts }, callback) {
-        rosterConsumers = []; 
+        rosterConsumers = [];
 
         rosterListSelectable = selectable;
         hideDateFilter = otherOpts.hideDateFilter;
@@ -1567,6 +1649,9 @@ const roster2 = (function () {
         ROSTER_WRAP.appendChild(ROSTER_SPINNER);
         // setup event listener
         rosterEventSetup();
+
+        MASS_DESELECT_ALL_BTN.style.display = 'none';
+        MASS_SELECT_ALL_BTN.style.display = 'none';
 
         return ROSTER_WRAP;
     }

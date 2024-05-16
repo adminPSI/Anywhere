@@ -202,6 +202,26 @@ namespace Anywhere.service.Data
         }
 
         [DataContract]
+        public class Form6Tier1andJDPLan
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string caseNoteId { get; set; }
+            [DataMember(Order = 2)]
+            public string serviceDate { get; set; }
+            
+            [DataMember(Order = 3)]
+            public string SAMLevel { get; set; }
+            [DataMember(Order = 4)]
+            public string contactMethod { get; set; }
+            [DataMember(Order = 5)]
+            public string narrative { get; set; }
+            [DataMember(Order = 6)]
+            public string serviceName { get; set; }
+        }
+
+        [DataContract]
         public class Form8CommunityBasedAssessment
         {
             [DataMember(Order = 0)]
@@ -715,6 +735,16 @@ namespace Anywhere.service.Data
             Form4MonthlySummary[] editDataObj = js.Deserialize<Form4MonthlySummary[]>(editDataString);
             return editDataObj;
         }
+
+
+        // Form 6 Tier1andJDPLan
+        public Form6Tier1andJDPLan[] getForm6Tier1andJDPLan(string token, string caseNoteId)
+        {
+            string editDataString = Odg.getForm6Tier1andJDPLan(token, caseNoteId);
+            Form6Tier1andJDPLan[] editDataObj = js.Deserialize<Form6Tier1andJDPLan[]>(editDataString);
+            return editDataObj;
+        }
+
 
         public string deleteFormMonthlySummary(string token, string emReviewId)
         {

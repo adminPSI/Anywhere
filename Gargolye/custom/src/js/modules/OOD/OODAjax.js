@@ -694,7 +694,77 @@ var OODAjax = (function () {
       throw new Error(error.responseText);
     }
   }
+
+      // Form 6 -- Form6Tier1andJDPLan
+      function getForm6Tier1andJDPLan(caseNoteId, callback) {
+        $.ajax({
+          type: 'POST',
+          url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getForm6Tier1andJDPLan/',
+          data: '{"token":"' + $.session.Token + '", "caseNoteId":"' + caseNoteId + '"}',
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json',
+          success: function(response, status, xhr) {
+            var res = response.getForm6Tier1andJDPLanResult;
+            callback(res);
+          },
+          error: function(xhr, status, error) {
+            //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+          },
+        });
+      }
+      
+      // Form 6 -- Form6Tier1andJDPLan
+      function updateForm6Tier1andJDPLan(data, callback) {
+          data = {
+            token: $.session.Token, 
+            consumerId: data.consumerId, 
+            caseNoteId: data.caseNoteId,
+            serviceDate: data.serviceDate,
+            SAMLevel: data.SAMLevel,
+            contactMethod: data.contactMethod,
+            narrative: data.narrative,
+             }
+        return $.ajax({
+        type: 'POST',
+        url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateForm6Tier1andJDPLan/',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function(response, status, xhr) {
+        callback(response.updateForm6Tier1andJDPLanResult);
+        },
+        });
+      }
+      
+      // Form 6 -- Form6Tier1andJDPLan
+      function insertForm6Tier1andJDPLan(data, callback) {
+        data = {
+          token: $.session.Token, 
+            consumerId: data.consumerId, 
+            caseNoteId: data.caseNoteId,
+            serviceDate: data.serviceDate,
+            SAMLevel: data.SAMLevel,
+            contactMethod: data.contactMethod,
+            narrative: data.narrative,
+            userId: data.userId,
+            serviceId: data.serviceId,
+            referenceNumber: data.referenceNumber,
+            caseManagerId: data.caseManagerId,
+      
+           }
+      return $.ajax({
+      type: 'POST',
+      url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertForm6Tier1andJDPLan/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response, status, xhr) {
+      callback(response.insertForm6Tier1andJDPLanResult);
+      },
+      });
+      }
   
+      
     // Form 8 -- Form8CommunityBasedAssessment
     function getForm8CommunityBasedAssessment(caseNoteId, callback) {
       $.ajax({
@@ -1388,6 +1458,9 @@ var OODAjax = (function () {
       updateForm4MonthlySummary,
       insertForm4MonthlySummary,
       deleteFormMonthlySummaryAsync,
+      getForm6Tier1andJDPLan,
+      updateForm6Tier1andJDPLan,
+      insertForm6Tier1andJDPLan,
       getForm8CommunityBasedAssessment,
       updateForm8CommunityBasedAssessment,
       insertForm8CommunityBasedAssessment,
