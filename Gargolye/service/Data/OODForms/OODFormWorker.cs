@@ -771,6 +771,7 @@ namespace OODForms
                 DataTable dt;
                 DataRow row;
 
+                AuthorizationNumber = AuthorizationNumber.Replace("+", " ");
                 dt = obj.OODDevelopment(AuthorizationNumber).Tables[0];
                 row = dt.Rows[0];
 
@@ -790,52 +791,46 @@ namespace OODForms
                 WS.Cell("G4").Value = ConsumerName;
 
 
-                // string servicename = string.Format("{0}", row["servicename"].ToString().Trim()); //********NOT USED ??
+                // string servicename = string.Format("{0}", row["ServiceName"].ToString().Trim()); //********NOT USED ??
                 // WS.Cell("a12").Value = servicename;
 
-                //WS.Cell("m4").Font = new Font(WS.Cell("m4").Font.Name, WS.Cell("m4").Font.Size, FontStyle.Bold);
-                //string Staff = string.Empty;
-               // string StaffWithInitals = string.Empty;
+
+                string Staff = string.Empty;
+                string StaffWithInitals = string.Empty;
                 string OODStaff = string.Empty;
                 string MiddleName = string.Empty;
+                DataSet ds = obj.OODForm8GetDirectStaff(AuthorizationNumber, StartDate, EndDate);
 
-
-                // DataSet ds = obj.OODForm8GetDirectStaff(AuthorizationNumber, StartDate, EndDate);
-
-                DataSet ds = obj.OODStaff(AuthorizationNumber, serviceCode, StartDate, EndDate, userID);
-                List<string> personInitialsList = new List<string>();
-
-                // WS.Cell("m6").Value = personCompletingReport;
+                WS.Cell("G6").Value = personCompletingReport;
 
                 if (ds.Tables.Count > 0)
                 {
                     DataTable dt2 = ds.Tables[0];
                     foreach (DataRow row2 in dt2.Rows)
                     {
-                        string lastName = row2["Last_Name"] as string;
-                        string middleName = row2["Middle_Name"] as string;
-                        string firstName = row2["First_Name"] as string;
+                        if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
+                        {
+                            Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
+                            MiddleName = row2["Middle_Name"].ToString();
+                            OODStaff += String.Format("{0}, ", Staff.Trim());
+                        }
 
-                        char? lastInitial = null;
-                        char? middleInitial = null;
-                        char? firstInitial = null;
-
-                        if (!string.IsNullOrEmpty(lastName)) lastInitial = lastName[0];
-                        if (!string.IsNullOrEmpty(middleName)) middleInitial = middleName[0];
-                        if (!string.IsNullOrEmpty(firstName)) firstInitial = firstName[0];
-
-                        string personInitials = $"{firstName}{MiddleName}{lastName} {firstInitial}{middleInitial}{lastInitial}";     //********TOP5. Name(s) & & Initials of Provider Direct Care Staff 
-
-                        personInitialsList.Add(personInitials);
+                        if (Staff.ToString().Trim().Length > 0)
+                        {
+                            StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
+                        }
                     }
-
-                    // Combine all the initials into one string separated by commas
-                    string uniqueInitialsString = string.Join(", ", personInitialsList);     //********TOP5. Name(s) & & Initials of Provider Direct Care Staff 
-
-                    WS.Cell("G5").Value = uniqueInitialsString;
                 }
 
-                WS.Cell("G6").Value = personCompletingReport;
+                if (StaffWithInitals.Length > 0)
+                {
+                    WS.Cell("G5").Value = StaffWithInitals.ToString().Trim().Substring(0, StaffWithInitals.Length - 2);
+                }
+                else
+                {
+                    WS.Cell("G5").Value = String.Empty;
+                }
+
 
                 DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, serviceCode, StartDate, EndDate);
                 if (dsOODStaff.Tables.Count > 0)
@@ -843,26 +838,33 @@ namespace OODForms
                     DataTable dtOODStaff = dsOODStaff.Tables[0];
                     foreach (DataRow rowOODStaff in dtOODStaff.Rows)
                     {
-                        if (rowOODStaff["First_Name"].ToString().Trim().Length > 0 && rowOODStaff["Last_Name"].ToString().Trim().Length > 0)
+                        if (rowOODStaff["FirstName"].ToString().Trim().Length > 0 && rowOODStaff["LastName"].ToString().Trim().Length > 0)
                         {
-                            OODStaff = String.Format("{0} {1}, ", rowOODStaff["First_Name"], rowOODStaff["Last_Name"]);     //********TOP7. OOD Staff or OOD Contractor Name
+                            OODStaff = String.Format("{0} {1}, ", rowOODStaff["FirstName"].ToString().Trim(), rowOODStaff["LastName"].ToString().Trim());
                         }
                     }
+
                 }
 
                 WS.Cell("G7").Value = OODStaff;
 
-                WS.Cell("G8").Value = DateTime.Now.ToString("MM/dd/yy");
+                WS.Cell("G8").ValueAsDateTime = DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy"));
+
+                StartDate = DateTime.Parse(StartDate).ToString("yyyy-MM-dd");
+                WS.Cell("G9").ValueAsDateTime = DateTime.Parse(StartDate);
+
+                EndDate = DateTime.Parse(EndDate).ToString("yyyy-MM-dd");
+                WS.Cell("G10").ValueAsDateTime = DateTime.Parse(EndDate);
 
                 WS.Cell("G11").Value = "Final";      //**************TOP11. Invoice Status = "Final"
 
 
                 int cpt = row["CPT_Code"].ToString().ToUpper().Trim().LastIndexOf(":") + 2;
-               // string code = row["ServiceDescription"].ToString().ToUpper().Trim().Substring(0, cpt);  //***********TOP12.  Service Description 1 
-               // WS.Cell("G12").Value = code;
+               string code = row["ServiceDescription"].ToString().ToUpper().Trim().Substring(0, cpt);  //***********TOP12.  Service Description 1 
+                // WS.Cell("G12").Value = code; // Equation in this cell 
 
-                //WS.Cell("G15").Value = "0.00";   //************TOP13.  Vocational Training Stipend Rate = $0.00
-                //WS.Cell("G16").Value = "No";     //************TOP14.  Bilingual Supplement = No
+                WS.Cell("F15").Value = "0.00";   //************TOP13.  Vocational Training Stipend Rate = $0.00
+               WS.Cell("F16").Value = "No";     //************TOP14.  Bilingual Supplement = No
 
                 // Fill out DETAIL DATA Portion of the XLS SPREADSHEET********************************************************************************************************
 
@@ -882,26 +884,26 @@ namespace OODForms
 
                 // Fill out Bottom Summary Portion of the XLS SPREADSHEET********************************************************************************************************	
 
-                //ds = obj.OODForm8BackgroundChecks(AuthorizationNumber, StartDate);
-                //if (ds.Tables.Count > 0)
-                //{
-                //    if (ds.Tables[0].Rows.Count > 0)
-                //    {
-                //        row = ds.Tables[0].Rows[0];
-                //        WS.Cell("G85").Value = row["EM_Sum_Ind_Self_Assess"].ToString().Trim();        //*****************BOTTOM1.  Individual's Self-Assessment 
-                //        WS.Cell("G86").Value = row["EM_Sum_Provider_Assess"].ToString().Trim();		   //****************BOTTOM2.  Provider's Summary & Recommendations =
+                ds = obj.OODForm8BackgroundChecks(AuthorizationNumber, EndDate);
+                if (ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        row = ds.Tables[0].Rows[0];
+                        WS.Cell("G85").Value = row["EM_Sum_Ind_Self_Assess"].ToString().Trim();        //*****************BOTTOM1.  Individual's Self-Assessment 
+                        WS.Cell("G86").Value = row["EM_Sum_Provider_Assess"].ToString().Trim();		   //****************BOTTOM2.  Provider's Summary & Recommendations =
 
-                //        if (row["VTS_Review"].ToString().ToUpper() == "Y")
-                //        {
-                //            WS.Cell("G87").Value = "Yes";						//*************BOTTOM3.  Have you reviewed the Vocational Training Stipend (VTS) with the individual?
-                //        }
-                //        else
-                //        {
-                //            WS.Cell("G87").Value = "No";						//*************BOTTOM3.  Have you reviewed the Vocational Training Stipend (VTS) with the individual?
-                //        }
-                //    }
+                        if (row["VTS_Review"].ToString().ToUpper() == "Y")
+                        {
+                            WS.Cell("G87").Value = "Yes";						//*************BOTTOM3.  Have you reviewed the Vocational Training Stipend (VTS) with the individual?
+                        }
+                        else
+                        {
+                            WS.Cell("G87").Value = "No";						//*************BOTTOM3.  Have you reviewed the Vocational Training Stipend (VTS) with the individual?
+                        }
+                    }
 
-                //}
+                }
 
                 // Create Attachment from  the XLS SPREADSHEET********************************************************************************************************	
 
