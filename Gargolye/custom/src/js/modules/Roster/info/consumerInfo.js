@@ -1,423 +1,406 @@
 var consumerInfo = (function () {
-    var locationId;
-    var consumerId;
-    var selectedDate;
-    var consumerInfoCard;
-    var currentlyVisibleSection;
-    var hasUnreadNote;
-    var modalOverlay;
-    let menuNewList = [];
-    var currentScreen;
-    var previousScreen = '';
-    var nextScreen = '';
+  var locationId;
+  var consumerId;
+  var selectedDate;
+  var consumerInfoCard;
+  var currentlyVisibleSection;
+  var hasUnreadNote;
+  var modalOverlay;
+  let menuNewList = [];
+  var currentScreen;
+  var previousScreen = '';
+  var nextScreen = '';
 
-    function getImageOrientation(file, callback) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            var view = new DataView(e.target.result);
-            if (view.getUint16(0, false) != 0xffd8) {
-                return callback(-2);
-            }
-            var length = view.byteLength,
-                offset = 2;
-            while (offset < length) {
-                if (view.getUint16(offset + 2, false) <= 8) return callback(-1);
-                var marker = view.getUint16(offset, false);
-                offset += 2;
-                if (marker == 0xffe1) {
-                    if (view.getUint32((offset += 2), false) != 0x45786966) {
-                        return callback(-1);
-                    }
-
-                    var little = view.getUint16((offset += 6), false) == 0x4949;
-                    offset += view.getUint32(offset + 4, little);
-                    var tags = view.getUint16(offset, little);
-                    offset += 2;
-                    for (var i = 0; i < tags; i++) {
-                        if (view.getUint16(offset + i * 12, little) == 0x0112) {
-                            return callback(view.getUint16(offset + i * 12 + 8, little));
-                        }
-                    }
-                } else if ((marker & 0xff00) != 0xff00) {
-                    break;
-                } else {
-                    offset += view.getUint16(offset, false);
-                }
-            }
+  function getImageOrientation(file, callback) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var view = new DataView(e.target.result);
+      if (view.getUint16(0, false) != 0xffd8) {
+        return callback(-2);
+      }
+      var length = view.byteLength,
+        offset = 2;
+      while (offset < length) {
+        if (view.getUint16(offset + 2, false) <= 8) return callback(-1);
+        var marker = view.getUint16(offset, false);
+        offset += 2;
+        if (marker == 0xffe1) {
+          if (view.getUint32((offset += 2), false) != 0x45786966) {
             return callback(-1);
-        };
-        reader.readAsArrayBuffer(file);
-    }
+          }
 
-    // Workers
-    function formatPortraitPath(portraitPath) {
-        var splitPath = portraitPath.split('\\');
-        var newPath = '\\\\\\\\';
-        splitPath.forEach(sp => {
-            if (sp === '') return;
-            newPath += `${sp}\\\\`;
-        });
+          var little = view.getUint16((offset += 6), false) == 0x4949;
+          offset += view.getUint32(offset + 4, little);
+          var tags = view.getUint16(offset, little);
+          offset += 2;
+          for (var i = 0; i < tags; i++) {
+            if (view.getUint16(offset + i * 12, little) == 0x0112) {
+              return callback(view.getUint16(offset + i * 12 + 8, little));
+            }
+          }
+        } else if ((marker & 0xff00) != 0xff00) {
+          break;
+        } else {
+          offset += view.getUint16(offset, false);
+        }
+      }
+      return callback(-1);
+    };
+    reader.readAsArrayBuffer(file);
+  }
 
-        return newPath;
-    }
-    function updatePhotoToDefault() {
-        var targetConsumerId = consumerInfoCard.dataset.consumerid;
-        var consumerCardFromRosterList = document.querySelector(
-            `[data-consumer-id="${targetConsumerId}"]`,
-        );
-        var rosterPic = consumerCardFromRosterList.querySelector('img');
-        var infoCardPic = consumerInfoCard.querySelector('img');
-        rosterPic.setAttribute('src', './images/new-icons/default.jpg');
-        infoCardPic.setAttribute('src', './images/new-icons/default.jpg');
-        rosterPic.setAttribute('onerror', './images/new-icons/default.jpg');
-        infoCardPic.setAttribute('onerror', './images/new-icons/default.jpg');
-    }
-    async function updateConsumerPhoto(event) {
-        event.preventDefault();
-        var targetConsumerId = consumerInfoCard.dataset.consumerid;
-        var consumerCardFromRosterList = document.querySelector(
-            `[data-consumer-id="${targetConsumerId}"]`,
-        );
+  // Workers
+  function formatPortraitPath(portraitPath) {
+    var splitPath = portraitPath.split('\\');
+    var newPath = '\\\\\\\\';
+    splitPath.forEach(sp => {
+      if (sp === '') return;
+      newPath += `${sp}\\\\`;
+    });
 
-        var pic2 = consumerCardFromRosterList.querySelector('img');
-        pic2.setAttribute('src', URL.createObjectURL(event.target.files[0]));
-        var pic1 = consumerInfoCard.querySelector('img');
-        pic1.setAttribute('src', URL.createObjectURL(event.target.files[0]));
+    return newPath;
+  }
+  function updatePhotoToDefault() {
+    var targetConsumerId = consumerInfoCard.dataset.consumerid;
+    var consumerCardFromRosterList = document.querySelector(`[data-consumer-id="${targetConsumerId}"]`);
+    var rosterPic = consumerCardFromRosterList.querySelector('img');
+    var infoCardPic = consumerInfoCard.querySelector('img');
+    rosterPic.setAttribute('src', './images/new-icons/default.jpg');
+    infoCardPic.setAttribute('src', './images/new-icons/default.jpg');
+    rosterPic.setAttribute('onerror', './images/new-icons/default.jpg');
+    infoCardPic.setAttribute('onerror', './images/new-icons/default.jpg');
+  }
+  async function updateConsumerPhoto(event) {
+    event.preventDefault();
+    var targetConsumerId = consumerInfoCard.dataset.consumerid;
+    var consumerCardFromRosterList = document.querySelector(`[data-consumer-id="${targetConsumerId}"]`);
 
-        var id = `${targetConsumerId}`;
-        id = parseInt(id);
-        var portraitPath = $.session.portraitPath;
-        portraitPath = formatPortraitPath(portraitPath);
+    var pic2 = consumerCardFromRosterList.querySelector('img');
+    pic2.setAttribute('src', URL.createObjectURL(event.target.files[0]));
+    var pic1 = consumerInfoCard.querySelector('img');
+    pic1.setAttribute('src', URL.createObjectURL(event.target.files[0]));
 
-        var canvas = document.createElement('canvas');
-        canvas.height = 127;
-        canvas.width = 150;
+    var id = `${targetConsumerId}`;
+    id = parseInt(id);
+    var portraitPath = $.session.portraitPath;
+    portraitPath = formatPortraitPath(portraitPath);
 
-        var ctx = canvas.getContext('2d');
+    var canvas = document.createElement('canvas');
+    canvas.height = 127;
+    canvas.width = 150;
 
-        var imageObj = new Image(152, 127);
+    var ctx = canvas.getContext('2d');
 
-        pic2.onload = function () {
-            ctx.drawImage(pic2, 0, 0, 152, 127);
+    var imageObj = new Image(152, 127);
 
-            var srcData = canvas.toDataURL('image/jpeg');
-            srcData = srcData.replace('data:image/jpeg;base64,', '');
+    pic2.onload = function () {
+      ctx.drawImage(pic2, 0, 0, 152, 127);
 
-            rosterAjax.updatePortrait(srcData, id, portraitPath);
+      var srcData = canvas.toDataURL('image/jpeg');
+      srcData = srcData.replace('data:image/jpeg;base64,', '');
+
+      rosterAjax.updatePortrait(srcData, id, portraitPath);
 
       getImageOrientation(event.target.files[0], function (orientation) {});
-        };
-        //ctx.drawImage(imageObj, 0, 0, 152, 127);
-        var imageObjSrcVal = `#${id}`;
-        imageObj.setAttribute('src', imageObjSrcVal);
-        ctx.drawImage(imageObj, 0, 0, 152, 127);
+    };
+    //ctx.drawImage(imageObj, 0, 0, 152, 127);
+    var imageObjSrcVal = `#${id}`;
+    imageObj.setAttribute('src', imageObjSrcVal);
+    ctx.drawImage(imageObj, 0, 0, 152, 127);
 
-        //var srcData = canvas.toDataURL('image/jpeg');
-        //srcData = srcData.replace("data:image/jpeg;base64,", "");
-        //rosterAjax.updatePortrait(srcData, id, portraitPath);
+    //var srcData = canvas.toDataURL('image/jpeg');
+    //srcData = srcData.replace("data:image/jpeg;base64,", "");
+    //rosterAjax.updatePortrait(srcData, id, portraitPath);
+  }
+  function orderScheduleData(data) {
+    var tableData = [
+      {
+        id: 'startTime',
+        values: [
+          data.start.Sun,
+          data.start.Mon,
+          data.start.Tues,
+          data.start.Wed,
+          data.start.Thur,
+          data.start.Fri,
+          data.start.Sat,
+        ],
+      },
+      {
+        id: 'endTime',
+        values: [data.end.Sun, data.end.Mon, data.end.Tues, data.end.Wed, data.end.Thur, data.end.Fri, data.end.Sat],
+      },
+    ];
+
+    return tableData;
+  }
+  function toggleHideShowAbsentMenuSection(locationid) {
+    var menulist = document.querySelector('.menuList');
+    var absentMenuItem = menulist.querySelector('[data-info-task="Mark As Absent"]');
+    if ((locationid === '000' || locationid === '0') && absentMenuItem !== null) {
+      absentMenuItem.classList.add('hidden');
+      const index = menuNewList.findIndex(x => x.title == 'Mark As Absent');
+      if (index != -1) {
+        menuNewList.splice(index, 1);
+      }
+    } else if (absentMenuItem !== null) {
+      absentMenuItem.classList.remove('hidden');
     }
-    function orderScheduleData(data) {
-        var tableData = [
-            {
-                id: 'startTime',
-                values: [
-                    data.start.Sun,
-                    data.start.Mon,
-                    data.start.Tues,
-                    data.start.Wed,
-                    data.start.Thur,
-                    data.start.Fri,
-                    data.start.Sat,
-                ],
-            },
-            {
-                id: 'endTime',
-                values: [
-                    data.end.Sun,
-                    data.end.Mon,
-                    data.end.Tues,
-                    data.end.Wed,
-                    data.end.Thur,
-                    data.end.Fri,
-                    data.end.Sat,
-                ],
-            },
-        ];
+  }
+  function downloadAttachment(attachmentid) {
+    var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/getIndividualAttachment/`;
+    var successFunction = function (resp) {
+      var res = JSON.stringify(response);
+    };
 
-        return tableData;
+    var form = document.createElement('form');
+    form.setAttribute('action', action);
+    form.setAttribute('method', 'POST');
+    form.setAttribute('target', '_blank');
+    form.setAttribute('enctype', 'application/json');
+    form.setAttribute('success', successFunction);
+    var tokenInput = document.createElement('input');
+    tokenInput.setAttribute('name', 'token');
+    tokenInput.setAttribute('value', $.session.Token);
+    tokenInput.id = 'token';
+    var attachmentInput = document.createElement('input');
+    attachmentInput.setAttribute('name', 'attachmentId');
+    attachmentInput.setAttribute('value', attachmentid);
+    attachmentInput.id = 'attachmentId';
+
+    form.appendChild(tokenInput);
+    form.appendChild(attachmentInput);
+    form.style.position = 'absolute';
+    form.style.opacity = '0';
+    document.body.appendChild(form);
+
+    form.submit();
+  }
+  // Hide/Show
+  function showCard(consumer) {
+    var consumersWithUnreadNotes = roster2.getConsumersWithUnreadNotes();
+    hasUnreadNote = consumersWithUnreadNotes[consumer.dataset.consumerId];
+
+    if ($.session.selectedLocation[0] === '0') {
+      var menuItem = document.querySelector('.menuList .progressNote');
+      if (menuItem) menuItem.classList.add('hidden');
+      const index = menuNewList.findIndex(x => x.title == 'Progress Notes');
+      if (index != -1) {
+        menuNewList.splice(index, 1);
+      }
+    } else {
+      var menuItem = document.querySelector('.menuList .progressNote');
+      if (menuItem) menuItem.classList.remove('hidden');
     }
-    function toggleHideShowAbsentMenuSection(locationid) {
-        var menulist = document.querySelector('.menuList');
-        var absentMenuItem = menulist.querySelector('[data-info-task="Mark As Absent"]');
-        if ((locationid === '000' || locationid === '0') && absentMenuItem !== null) {
-            absentMenuItem.classList.add('hidden');
-            const index = menuNewList.findIndex(x => x.title == 'Mark As Absent');
-            if (index != -1) { 
-                menuNewList.splice(index, 1);
-            }
-        } else if (absentMenuItem !== null) {
-            absentMenuItem.classList.remove('hidden');
-        }
+
+    if (hasUnreadNote) {
+      var menuItem = document.querySelector('.menuList .progressNote');
+      if (menuItem) menuItem.classList.add('needsAttention');
+    } else {
+      var menuItem = document.querySelector('.menuList .progressNote');
+      if (menuItem) menuItem.classList.remove('needsAttention');
     }
-    function downloadAttachment(attachmentid) {
-        var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/getIndividualAttachment/`;
-        var successFunction = function (resp) {
-            var res = JSON.stringify(response);
-        };
 
-        var form = document.createElement('form');
-        form.setAttribute('action', action);
-        form.setAttribute('method', 'POST');
-        form.setAttribute('target', '_blank');
-        form.setAttribute('enctype', 'application/json');
-        form.setAttribute('success', successFunction);
-        var tokenInput = document.createElement('input');
-        tokenInput.setAttribute('name', 'token');
-        tokenInput.setAttribute('value', $.session.Token);
-        tokenInput.id = 'token';
-        var attachmentInput = document.createElement('input');
-        attachmentInput.setAttribute('name', 'attachmentId');
-        attachmentInput.setAttribute('value', attachmentid);
-        attachmentInput.id = 'attachmentId';
+    // shows consumer info card
+    var locationObj = roster2.getSelectedLocationObj();
+    locationId = locationObj.locationId;
+    selectedDate = roster2.getSelectedDate();
 
-        form.appendChild(tokenInput);
-        form.appendChild(attachmentInput);
-        form.style.position = 'absolute';
-        form.style.opacity = '0';
-        document.body.appendChild(form);
+    setConsumerToCard(consumer);
 
-        form.submit();
+    var rosterList = document.querySelector('.roster');
+    rosterList.classList.add('fadeOut');
+    DOM.toggleHeaderOpacity();
+
+    setTimeout(function () {
+      consumerInfoCard.classList.add('visible');
+      if (!isMobile) {
+        bodyScrollLock.disableBodyScroll(consumerInfoCard);
+      }
+      modalOverlay.classList.add('modal');
+    }, 300);
+  }
+  function closeCard() {
+    backwordBtn.classList.add('hidden');
+    forwardBtn.classList.add('hidden');
+    roster2.toggleRosterListLockdown(false);
+    progressNotes.clearAllGlobalVariables();
+    // hides consumer info card
+    // grab visible section & subsection, then hide them
+    var visibleSection = consumerInfoCard.querySelector('.infoCardSection.visible');
+    var visibleSubSection = consumerInfoCard.querySelector('.infoCardSubSection.visible');
+    if (visibleSection) visibleSection.classList.remove('visible');
+    if (visibleSubSection) visibleSubSection.classList.remove('visible');
+    // reset menuList
+    var menuList = consumerInfoCard.querySelector('.menuList');
+    menuList.classList.remove('fadeOut');
+    // hide consumer info card
+    consumerInfoCard.classList.remove('visible');
+    // wait till consumer card is hidden
+    setTimeout(function () {
+      // reshow roster list
+      var rosterList = document.querySelector('.roster');
+      rosterList.classList.remove('hidden');
+      rosterList.classList.remove('fadeOut');
+      DOM.toggleHeaderOpacity();
+      if (!isMobile) {
+        bodyScrollLock.enableBodyScroll(consumerInfoCard);
+      }
+      modalOverlay.classList.remove('modal');
+    }, 200);
+
+    currentlyVisibleSection = null;
+  }
+  function showCardSection(targetSection) {
+    // shows section
+    currentlyVisibleSection = targetSection;
+
+    var menu = consumerInfoCard.querySelector('.menuList');
+    menu.classList.add('fadeOut');
+
+    targetSection.classList.add('visible');
+  }
+  function showCardSubSection(targetSubSection) {
+    // shows sub section
+    var currentlyVisibleSubSection = consumerInfoCard.querySelector('.infoCardSubSection.visible');
+    // hide currently visible sub section
+    currentlyVisibleSubSection.classList.remove('visible');
+    // restore height of target subsection
+    targetSubSection.classList.remove('hidden');
+
+    setTimeout(function () {
+      // shrink currently visible sub section
+      currentlyVisibleSubSection.classList.add('hidden');
+      // show target sub section
+      targetSubSection.classList.add('visible');
+    }, 200);
+  }
+  function handleBackButtonClick() {
+    backwordBtn.classList.add('hidden');
+    forwardBtn.classList.add('hidden');
+    // first check to see if we are on the menulist
+    var menuList = consumerInfoCard.querySelector('.menuList');
+    var isMenuListHidden = menuList.classList.contains('fadeOut');
+    if (!isMenuListHidden) {
+      return;
     }
-    // Hide/Show
-    function showCard(consumer) {
-        var consumersWithUnreadNotes = roster2.getConsumersWithUnreadNotes();
-        hasUnreadNote = consumersWithUnreadNotes[consumer.dataset.consumerId];
 
-        if ($.session.selectedLocation[0] === '0') {
-            var menuItem = document.querySelector('.menuList .progressNote');
-            if (menuItem) menuItem.classList.add('hidden');
-            const index = menuNewList.findIndex(x => x.title == 'Progress Notes');
-            if (index != -1) {
-                menuNewList.splice(index, 1);
-            }
-        } else {
-            var menuItem = document.querySelector('.menuList .progressNote');
-            if (menuItem) menuItem.classList.remove('hidden');
-        }
+    var sectionBackBtn = document.querySelector('.sectionBackBtn');
 
-        if (hasUnreadNote) {
-            var menuItem = document.querySelector('.menuList .progressNote');
-            if (menuItem) menuItem.classList.add('needsAttention');
-        } else {
-            var menuItem = document.querySelector('.menuList .progressNote');
-            if (menuItem) menuItem.classList.remove('needsAttention');
-        }
+    // clear out section/sub section variables
+    //MAT - commenting out below due to teh fact that sometimes the back button is used while in progress notes. Still need the consumer ID at this point if adding another note
+    progressNotes.clearAllGlobalVariablesOnBack();
 
-        // shows consumer info card
-        var locationObj = roster2.getSelectedLocationObj();
-        locationId = locationObj.locationId;
-        selectedDate = roster2.getSelectedDate();
+    var visibleSection = consumerInfoCard.querySelector('.infoCardSection.visible');
+    var visibleSubSection = visibleSection.querySelector('.infoCardSubSection.visible');
 
-        setConsumerToCard(consumer);
-
-        var rosterList = document.querySelector('.roster');
-        rosterList.classList.add('fadeOut');
-        DOM.toggleHeaderOpacity();
-
-        setTimeout(function () {
-            consumerInfoCard.classList.add('visible');
-            if (!isMobile) {
-                bodyScrollLock.disableBodyScroll(consumerInfoCard);
-            }
-            modalOverlay.classList.add('modal');
-        }, 300);
-    }
-    function closeCard() {
-        backwordBtn.classList.add('hidden');
-        forwardBtn.classList.add('hidden');
-        roster2.toggleRosterListLockdown(false);
-        progressNotes.clearAllGlobalVariables();
-        // hides consumer info card
-        // grab visible section & subsection, then hide them
-        var visibleSection = consumerInfoCard.querySelector('.infoCardSection.visible');
-        var visibleSubSection = consumerInfoCard.querySelector('.infoCardSubSection.visible');
-        if (visibleSection) visibleSection.classList.remove('visible');
-        if (visibleSubSection) visibleSubSection.classList.remove('visible');
-        // reset menuList
-        var menuList = consumerInfoCard.querySelector('.menuList');
+    if (visibleSubSection) {
+      var isSubSection0Visible = visibleSubSection.classList.contains('subSec0');
+      if (isSubSection0Visible) {
+        // hide visible section & subSections
+        visibleSubSection.classList.remove('visible');
+        visibleSection.classList.remove('visible');
+        // back to menu list
         menuList.classList.remove('fadeOut');
-        // hide consumer info card
-        consumerInfoCard.classList.remove('visible');
-        // wait till consumer card is hidden
-        setTimeout(function () {
-            // reshow roster list
-            var rosterList = document.querySelector('.roster');
-            rosterList.classList.remove('hidden');
-            rosterList.classList.remove('fadeOut');
-            DOM.toggleHeaderOpacity();
-            if (!isMobile) {
-                bodyScrollLock.enableBodyScroll(consumerInfoCard);
-            }
-            modalOverlay.classList.remove('modal');
-        }, 200);
-
-        currentlyVisibleSection = null;
-    }
-    function showCardSection(targetSection) {
-        // shows section
-        currentlyVisibleSection = targetSection;
-
-        var menu = consumerInfoCard.querySelector('.menuList');
-        menu.classList.add('fadeOut');
-
-        targetSection.classList.add('visible');
-    }
-    function showCardSubSection(targetSubSection) {
-        // shows sub section
-        var currentlyVisibleSubSection = consumerInfoCard.querySelector('.infoCardSubSection.visible');
-        // hide currently visible sub section
-        currentlyVisibleSubSection.classList.remove('visible');
-        // restore height of target subsection
-        targetSubSection.classList.remove('hidden');
+        sectionBackBtn.classList.add('hidden');
+      } else {
+        // back to subSec0
+        var subSec0 = visibleSection.querySelector('.subSec0');
+        // hide visible subsection
+        visibleSubSection.classList.remove('visible');
+        // reset subSec0 height
+        subSec0.classList.remove('hidden');
 
         setTimeout(function () {
-            // shrink currently visible sub section
-            currentlyVisibleSubSection.classList.add('hidden');
-            // show target sub section
-            targetSubSection.classList.add('visible');
+          // shrink currently visible sub section
+          visibleSubSection.classList.add('hidden');
+          // show subSec0
+          subSec0.classList.add('visible');
         }, 200);
+      }
+    } else {
+      // hide visible section
+      visibleSection.classList.remove('visible');
+      // back to menu list
+      menuList.classList.remove('fadeOut');
+      sectionBackBtn.classList.add('hidden');
     }
-    function handleBackButtonClick() {
-        backwordBtn.classList.add('hidden');
-        forwardBtn.classList.add('hidden');
-        // first check to see if we are on the menulist
-        var menuList = consumerInfoCard.querySelector('.menuList');
-        var isMenuListHidden = menuList.classList.contains('fadeOut');
-        if (!isMenuListHidden) {
-            return;
-        }
+  }
+  // Populating Card Sections
+  function setConsumerToCard(consumer) {
+    var cardClone = consumer.cloneNode(true);
+    // set consumer id attribute and cache it
+    var id = consumer.dataset.consumerId;
+    consumerInfoCard.setAttribute('data-consumerId', id);
+    consumerId = id;
+    // append consumer card to info card
+    var header = consumerInfoCard.querySelector('.consumerInfoCard__heading');
+    header.innerHTML = '';
+    header.appendChild(cardClone);
+  }
+  function populateAbsentSection(section, absentData) {
+    var sectionInner = section.querySelector('.sectionInner');
+    sectionInner.innerHTML = '';
+    var absentForm = rosterAbsent.buildAbsentForm(true, consumerId, selectedDate, absentData);
+    sectionInner.appendChild(absentForm);
+  }
+  function populatePhotoSection(section) {
+    var sectionInner = section.querySelector('.sectionInner');
+    sectionInner.innerHTML = '';
 
-        var sectionBackBtn = document.querySelector('.sectionBackBtn');
-
-        // clear out section/sub section variables
-        //MAT - commenting out below due to teh fact that sometimes the back button is used while in progress notes. Still need the consumer ID at this point if adding another note
-        progressNotes.clearAllGlobalVariablesOnBack();
-
-        var visibleSection = consumerInfoCard.querySelector('.infoCardSection.visible');
-        var visibleSubSection = visibleSection.querySelector('.infoCardSubSection.visible');
-
-        if (visibleSubSection) {
-            var isSubSection0Visible = visibleSubSection.classList.contains('subSec0');
-            if (isSubSection0Visible) {
-                // hide visible section & subSections
-                visibleSubSection.classList.remove('visible');
-                visibleSection.classList.remove('visible');
-                // back to menu list
-                menuList.classList.remove('fadeOut');
-                sectionBackBtn.classList.add('hidden');
-            } else {
-                // back to subSec0
-                var subSec0 = visibleSection.querySelector('.subSec0');
-                // hide visible subsection
-                visibleSubSection.classList.remove('visible');
-                // reset subSec0 height
-                subSec0.classList.remove('hidden');
-
-                setTimeout(function () {
-                    // shrink currently visible sub section
-                    visibleSubSection.classList.add('hidden');
-                    // show subSec0
-                    subSec0.classList.add('visible');
-                }, 200);
-            }
-        } else {
-            // hide visible section
-            visibleSection.classList.remove('visible');
-            // back to menu list
-            menuList.classList.remove('fadeOut');
-            sectionBackBtn.classList.add('hidden');
-        }
-    }
-    // Populating Card Sections
-    function setConsumerToCard(consumer) {
-        var cardClone = consumer.cloneNode(true);
-        // set consumer id attribute and cache it
-        var id = consumer.dataset.consumerId;
-        consumerInfoCard.setAttribute('data-consumerId', id);
-        consumerId = id;
-        // append consumer card to info card
-        var header = consumerInfoCard.querySelector('.consumerInfoCard__heading');
-        header.innerHTML = '';
-        header.appendChild(cardClone);
-    }
-    function populateAbsentSection(section, absentData) {
-        var sectionInner = section.querySelector('.sectionInner');
-        sectionInner.innerHTML = '';
-        var absentForm = rosterAbsent.buildAbsentForm(true, consumerId, selectedDate, absentData);
-        sectionInner.appendChild(absentForm);
-    }
-    function populatePhotoSection(section) {
-        var sectionInner = section.querySelector('.sectionInner');
-        sectionInner.innerHTML = '';
-
-        var removePhotoBtn = button.build({
-            text: 'Remove Photo',
-            style: 'secondary',
-            type: 'contained',
-            callback: e => {
-                if (!$.session.DemographicsPictureDelete) {
-                    return;
-                }
-
-                rosterAjax.updatePortrait(
-                    '',
-                    parseInt(consumerId),
-                    formatPortraitPath($.session.portraitPath),
-                    () => {
-                        updatePhotoToDefault();
-                    },
-                );
-            },
-        });
+    var removePhotoBtn = button.build({
+      text: 'Remove Photo',
+      style: 'secondary',
+      type: 'contained',
+      callback: e => {
         if (!$.session.DemographicsPictureDelete) {
-            removePhotoBtn.classList.add('disabled');
+          return;
         }
 
-        var photoInput = input.build({
-            label: 'Choose Image',
-            type: 'file',
-            accept: 'image/*',
-            style: 'secondary',
-            attributes: [{ key: 'multiple', value: 'false' }],
+        rosterAjax.updatePortrait('', parseInt(consumerId), formatPortraitPath($.session.portraitPath), () => {
+          updatePhotoToDefault();
         });
-
-        sectionInner.appendChild(removePhotoBtn);
-        sectionInner.appendChild(photoInput);
-
-        photoInput.addEventListener('change', updateConsumerPhoto);
+      },
+    });
+    if (!$.session.DemographicsPictureDelete) {
+      removePhotoBtn.classList.add('disabled');
     }
-    function populateGroupSection(section) {
-        var sectionInner = section.querySelector('.sectionInner');
-        sectionInner.innerHTML = '';
-        var groupList = customGroups.buildGroupList(false, consumerId);
-        sectionInner.appendChild(groupList);
+
+    var photoInput = input.build({
+      label: 'Choose Image',
+      type: 'file',
+      accept: 'image/*',
+      style: 'secondary',
+      attributes: [{ key: 'multiple', value: 'false' }],
+    });
+
+    sectionInner.appendChild(removePhotoBtn);
+    sectionInner.appendChild(photoInput);
+
+    photoInput.addEventListener('change', updateConsumerPhoto);
+  }
+  function populateGroupSection(section) {
+    var sectionInner = section.querySelector('.sectionInner');
+    sectionInner.innerHTML = '';
+    var groupList = customGroups.buildGroupList(false, consumerId);
+    sectionInner.appendChild(groupList);
+  }
+  function populateNotesSection(section, data) {
+    var sectionInner = section.querySelector('.sectionInner');
+    sectionInner.innerHTML = '';
+
+    if (data.length === 0) {
+      sectionInner.innerHTML = `<p class="infoNotFoundMessage">No notes found.</p>`;
+      return;
     }
-    function populateNotesSection(section, data) {
-        var sectionInner = section.querySelector('.sectionInner');
-        sectionInner.innerHTML = '';
 
-        if (data.length === 0) {
-            sectionInner.innerHTML = `<p class="infoNotFoundMessage">No notes found.</p>`;
-            return;
-        }
-
-        sectionInner.innerHTML = `
+    sectionInner.innerHTML = `
       ${data
-                .map(d => {
-                    var date = d.noteDate;
-                    date = date ? date.split(' ')[0] : '';
+        .map(d => {
+          var date = d.noteDate;
+          date = date ? date.split(' ')[0] : '';
 
-                    return `
+          return `
           <div class="consumerNote">
             <div class="consumerNote__details">
               <div class="type"><span>Type:</span> ${d.description}</div>
@@ -426,74 +409,74 @@ var consumerInfo = (function () {
             <div class="consumerNote__note">${d.note}</div>
           </div>
         `;
-                })
-                .join('')}
+        })
+        .join('')}
     `;
-    }
-    function populateProgressNotesSection(section, data) {
-        var sectionInner = section.querySelector('.sectionInner');
-        sectionInner.innerHTML = '';
+  }
+  function populateProgressNotesSection(section, data) {
+    var sectionInner = section.querySelector('.sectionInner');
+    sectionInner.innerHTML = '';
 
-        var viewAllNotesSection = progressNotes.buildViewAllNotesSection(data);
-        var addNoteSection = progressNotes.buildAddNoteSection();
-        var viewSingleNoteSection = progressNotes.buildViewSingleNoteSection();
-        var addMessageSection = progressNotes.buildAddMessageSection();
+    var viewAllNotesSection = progressNotes.buildViewAllNotesSection(data);
+    var addNoteSection = progressNotes.buildAddNoteSection();
+    var viewSingleNoteSection = progressNotes.buildViewSingleNoteSection();
+    var addMessageSection = progressNotes.buildAddMessageSection();
 
-        viewAllNotesSection.classList.add('infoCardSubSection', 'subSec0', 'visible');
-        addNoteSection.classList.add('infoCardSubSection', 'subSec1', 'hidden');
-        viewSingleNoteSection.classList.add('infoCardSubSection', 'subSec2', 'hidden');
-        addMessageSection.classList.add('infoCardSubSection', 'subSec3', 'hidden');
+    viewAllNotesSection.classList.add('infoCardSubSection', 'subSec0', 'visible');
+    addNoteSection.classList.add('infoCardSubSection', 'subSec1', 'hidden');
+    viewSingleNoteSection.classList.add('infoCardSubSection', 'subSec2', 'hidden');
+    addMessageSection.classList.add('infoCardSubSection', 'subSec3', 'hidden');
 
-        sectionInner.appendChild(viewAllNotesSection);
-        sectionInner.appendChild(addNoteSection);
-        sectionInner.appendChild(viewSingleNoteSection);
-        sectionInner.appendChild(addMessageSection);
-    }
-    function populateAttachmentsSection(section, data) {
-        var sectionInner = section.querySelector('.sectionInner');
-        sectionInner.innerHTML = '';
+    sectionInner.appendChild(viewAllNotesSection);
+    sectionInner.appendChild(addNoteSection);
+    sectionInner.appendChild(viewSingleNoteSection);
+    sectionInner.appendChild(addMessageSection);
+  }
+  function populateAttachmentsSection(section, data) {
+    var sectionInner = section.querySelector('.sectionInner');
+    sectionInner.innerHTML = '';
 
-        var attachmentsList = document.createElement('div');
-        attachmentsList.classList.add('attachmentsList');
+    var attachmentsList = document.createElement('div');
+    attachmentsList.classList.add('attachmentsList');
 
-        data.forEach(d => {
-            var file = d.filename.split('.');
-            var fileType = file.pop();
-            var fileName = file.join('.');
+    data.forEach(d => {
+      var file = d.filename.split('.');
+      var fileType = file.pop();
+      var fileName = file.join('.');
 
-            var attachment = document.createElement('div');
-            attachment.classList.add('attachment');
-            attachment.setAttribute('data-attachments-id', d.attachmentid);
-            attachment.innerHTML = `
+      var attachment = document.createElement('div');
+      attachment.classList.add('attachment');
+      attachment.setAttribute('data-attachments-id', d.attachmentid);
+      attachment.innerHTML = `
         <p class="attachment__name">${fileName}</p>
         <p class="attachment__type">${fileType}</p>
         <p class="attachment__icon">${icons.download}</p>
       `;
 
-            attachment.addEventListener('click', () => {
-                downloadAttachment(d.attachmentid);
-            });
+      attachment.addEventListener('click', () => {
+        downloadAttachment(d.attachmentid);
+      });
 
-            attachmentsList.appendChild(attachment);
-        });
+      attachmentsList.appendChild(attachment);
+    });
 
-        sectionInner.appendChild(attachmentsList);
-    }
-    function showRelationshipDetails(section, sectionInner, data) {
-        // set sectionInner to display none
-        sectionInner.style.display = 'none';
-        // check for nulls
-        const companyName = data.companyName ? data.companyName : '';
-        const title = data.title ? data.title : '';
-        const addressOne = data.addressOne ? data.addressOne : '';
-        const addressTwo = data.addressTwo ? data.addressTwo : '';
-        const city = data.city ? data.city : '';
-        const state = data.state ? data.state : '';
-        const zipcode = data.zipcode ? data.zipcode : '';
-        // show data
-        const detailWrap = document.createElement('div');
-        detailWrap.classList.add('relationshipDetailWrap');
-        detailWrap.innerHTML = `
+    sectionInner.appendChild(attachmentsList);
+  }
+  function showRelationshipDetails(section, sectionInner, data) {
+    // set sectionInner to display none
+    sectionInner.style.display = 'none';
+    // check for nulls
+    const companyName = data.companyName ? data.companyName : '';
+    const title = data.title ? data.title : '';
+    const addressOne = data.addressOne ? data.addressOne : '';
+    const addressTwo = data.addressTwo ? data.addressTwo : '';
+    const city = data.city ? data.city : '';
+    const state = data.state ? data.state : '';
+    const zipcode = data.zipcode ? data.zipcode : '';
+    // show data
+    const detailWrap = document.createElement('div');
+    detailWrap.classList.add('relationshipDetailWrap');
+    detailWrap.innerHTML = `
       <div>
         <p>Company Name</p>
         <p>${companyName}</p>
@@ -509,663 +492,662 @@ var consumerInfo = (function () {
         <p>${city}, ${state} ${zipcode}</p>
       </div>
     `;
-        const donebtn = button.build({
-            text: 'Done',
-            style: 'secondary',
-            type: 'contained',
-            callback: function () {
-                section.removeChild(detailWrap);
-                sectionInner.style.display = 'block';
-            },
-        });
-        detailWrap.appendChild(donebtn);
-        section.appendChild(detailWrap);
+    const donebtn = button.build({
+      text: 'Done',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        section.removeChild(detailWrap);
+        sectionInner.style.display = 'block';
+      },
+    });
+    detailWrap.appendChild(donebtn);
+    section.appendChild(detailWrap);
+  }
+  function populateRelationshipsSection(section, data) {
+    var sectionInner = section.querySelector('.sectionInner');
+    sectionInner.innerHTML = '';
+
+    if (data.length === 0) {
+      sectionInner.innerHTML = `<p class="infoNotFoundMessage">No relationships found.</p>`;
+      return;
     }
-    function populateRelationshipsSection(section, data) {
-        var sectionInner = section.querySelector('.sectionInner');
-        sectionInner.innerHTML = '';
 
-        if (data.length === 0) {
-            sectionInner.innerHTML = `<p class="infoNotFoundMessage">No relationships found.</p>`;
-            return;
-        }
+    const relationshipTable = document.createElement('div');
+    relationshipTable.classList.add('relationshipTable');
 
-
-        const relationshipTable = document.createElement('div');
-        relationshipTable.classList.add('relationshipTable');
-
-        const relationshipHeader = document.createElement('div');
-        relationshipHeader.classList.add('relationshipTable__header');
-        relationshipHeader.innerHTML = `
+    const relationshipHeader = document.createElement('div');
+    relationshipHeader.classList.add('relationshipTable__header');
+    relationshipHeader.innerHTML = `
       <div></div>
       <div class="relationship__name">Name</div>
       <div class="relationship__type">Relationship</div>
      `;
-        relationshipTable.appendChild(relationshipHeader);
-        sectionInner.appendChild(relationshipTable);
+    relationshipTable.appendChild(relationshipHeader);
+    sectionInner.appendChild(relationshipTable);
 
-        data.forEach(d => {
-            var eventName;
-            const rowWrap = document.createElement('div');
-            rowWrap.classList.add('relationshipTable__subTableWrap');
+    data.forEach(d => {
+      var eventName;
+      const rowWrap = document.createElement('div');
+      rowWrap.classList.add('relationshipTable__subTableWrap');
 
-            const mainDataRow = document.createElement('div');
-            mainDataRow.classList.add('relationshipTable__mainDataRow', 'relationshipTable__dataRow');
+      const mainDataRow = document.createElement('div');
+      mainDataRow.classList.add('relationshipTable__mainDataRow', 'relationshipTable__dataRow');
 
-            const toggleIcon = document.createElement('div');
-            toggleIcon.id = 'authToggle';
-            toggleIcon.classList.add('relationshipTable__endIcon');
-            toggleIcon.innerHTML = icons['keyArrowRight'];
-            mainDataRow.innerHTML = `
+      const toggleIcon = document.createElement('div');
+      toggleIcon.id = 'authToggle';
+      toggleIcon.classList.add('relationshipTable__endIcon');
+      toggleIcon.innerHTML = icons['keyArrowRight'];
+      mainDataRow.innerHTML = `
         <div class="relationship__name">${d.lastName}, ${d.firstName}</div>
         <div class="relationship__type">${d.description}</div>      
       `;
-            mainDataRow.prepend(toggleIcon);
-            rowWrap.appendChild(mainDataRow);
+      mainDataRow.prepend(toggleIcon);
+      rowWrap.appendChild(mainDataRow);
 
+      const subRowWrap = document.createElement('div');
+      subRowWrap.classList.add('relationshipTable__subRowWrap');
 
-            const subRowWrap = document.createElement('div');
-            subRowWrap.classList.add('relationshipTable__subRowWrap');
-
-            if (d.primaryPhone && d.primaryPhone.trim().length != 0) {
-                const subDataRowPrimaryPhone = document.createElement('div');
-                subDataRowPrimaryPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
-                subDataRowPrimaryPhone.innerHTML = `<div></div> 
+      if (d.primaryPhone && d.primaryPhone.trim().length != 0) {
+        const subDataRowPrimaryPhone = document.createElement('div');
+        subDataRowPrimaryPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
+        subDataRowPrimaryPhone.innerHTML = `<div></div> 
                 <div class="relationship__phone">
-                    ${d.primaryPhone && d.primaryPhone.trim().length != 0
+                    ${
+                      d.primaryPhone && d.primaryPhone.trim().length != 0
                         ? `<b>Primary Phone: </b><a href=tel:+1-${UTIL.formatPhoneNumber(
                             d.primaryPhone.trim(),
-                        )}>${UTIL.formatPhoneNumber(d.primaryPhone.trim())}</a><br>`
+                          )}>${UTIL.formatPhoneNumber(d.primaryPhone.trim())}</a><br>`
                         : ``
                     }              
                 </div>`;
-                subRowWrap.appendChild(subDataRowPrimaryPhone);
-            }
+        subRowWrap.appendChild(subDataRowPrimaryPhone);
+      }
 
-            if (d.secondaryPhone && d.secondaryPhone.trim().length != 0) {
-                const subDataRowSecondaryPhone = document.createElement('div');
-                subDataRowSecondaryPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
-                subDataRowSecondaryPhone.innerHTML = `<div></div> 
+      if (d.secondaryPhone && d.secondaryPhone.trim().length != 0) {
+        const subDataRowSecondaryPhone = document.createElement('div');
+        subDataRowSecondaryPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
+        subDataRowSecondaryPhone.innerHTML = `<div></div> 
                 <div class="relationship__phone">               
-                    ${d.secondaryPhone && d.secondaryPhone.trim().length != 0
+                    ${
+                      d.secondaryPhone && d.secondaryPhone.trim().length != 0
                         ? `<b>Secondary Phone: </b> <a href=tel:+1-${UTIL.formatPhoneNumber(
                             d.secondaryPhone.trim(),
-                        )}>${UTIL.formatPhoneNumber(d.secondaryPhone.trim())}</a><br>`
+                          )}>${UTIL.formatPhoneNumber(d.secondaryPhone.trim())}</a><br>`
                         : ``
                     }               
                 </div>`;
-                subRowWrap.appendChild(subDataRowSecondaryPhone);
-            }
+        subRowWrap.appendChild(subDataRowSecondaryPhone);
+      }
 
-            if (d.cellularPhone && d.cellularPhone.trim().length != 0) {
-                const subDataRowCellularPhone = document.createElement('div');
-                subDataRowCellularPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
-                subDataRowCellularPhone.innerHTML = `<div></div> 
+      if (d.cellularPhone && d.cellularPhone.trim().length != 0) {
+        const subDataRowCellularPhone = document.createElement('div');
+        subDataRowCellularPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
+        subDataRowCellularPhone.innerHTML = `<div></div> 
                 <div class="relationship__phone">              
-                    ${d.cellularPhone && d.cellularPhone.trim().length != 0
+                    ${
+                      d.cellularPhone && d.cellularPhone.trim().length != 0
                         ? `<b>Cellular Phone: </b> <a href=tel:+1-${UTIL.formatPhoneNumber(
                             d.cellularPhone.trim(),
-                        )}>${UTIL.formatPhoneNumber(d.cellularPhone.trim())}</a>`
+                          )}>${UTIL.formatPhoneNumber(d.cellularPhone.trim())}</a>`
                         : ``
                     }
                 </div>`;
-                subRowWrap.appendChild(subDataRowCellularPhone);
-            }
-            
-            if (d.email != null && d.email != '') {
-                const subDataRowEmail = document.createElement('div');
-                subDataRowEmail.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
-                subDataRowEmail.innerHTML = `<div></div>   
+        subRowWrap.appendChild(subDataRowCellularPhone);
+      }
+
+      if (d.email != null && d.email != '') {
+        const subDataRowEmail = document.createElement('div');
+        subDataRowEmail.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
+        subDataRowEmail.innerHTML = `<div></div>   
                 <div class="relationship__phone">
-                    ${d.email ? `<b>Email: </b> <a href=mailto:${d.email}>${d.email}</a>`: ``}
+                    ${d.email ? `<b>Email: </b> <a href=mailto:${d.email}>${d.email}</a>` : ``}
                 </div>`;
-                subRowWrap.appendChild(subDataRowEmail);
-            }
-            
+        subRowWrap.appendChild(subDataRowEmail);
+      }
 
-
-            if ($.session.applicationName === 'Advisor') {
-                mainDataRow.addEventListener('click', e => {
-                    if (eventName != 'toggle') {
-                        showRelationshipDetails(section, sectionInner, d);
-                    }
-                    eventName = '';
-                });
-            }
-            toggleIcon.addEventListener('click', e => {
-                const toggle = document.querySelector('#authToggle')
-                eventName = 'toggle';
-                if (subRowWrap.classList.contains('active')) {
-                    // close it
-                    subRowWrap.classList.remove('active');
-                    toggleIcon.innerHTML = icons.keyArrowRight;
-                } else {
-                    // open it
-                    subRowWrap.classList.add('active');
-                    toggleIcon.innerHTML = icons.keyArrowDown;
-                }
-            });
-
-            rowWrap.appendChild(subRowWrap);
-
-            sectionInner.appendChild(rowWrap);
+      if ($.session.applicationName === 'Advisor') {
+        mainDataRow.addEventListener('click', e => {
+          if (eventName != 'toggle') {
+            showRelationshipDetails(section, sectionInner, d);
+          }
+          eventName = '';
         });
-    }
-    // *schedule
-    function populateScheduleTable(sectionInner, locationId) {
-        function populateTable(sectionInner, schedule) {
-            var showWeekOne = !schedule.isWeekOneEmpty;
-            var showWeekTwo = !schedule.isWeekTwoEmpty;
-
-            var tableWrap = document.querySelector('.consumerScheduleTable');
-            if (!tableWrap) {
-                var tableWrap = document.createElement('div');
-                tableWrap.classList.add('consumerScheduleTable');
-            } else {
-                tableWrap.innerHTML = '';
-            }
-
-            if (!showWeekOne && !showWeekTwo) {
-                tableWrap.innerHTML = `<p class="infoNotFoundMessage">There is nothing scheduled for this location</p>`;
-            }
-
-            var columnHeadings = ['sun', 'mon', 'tues', 'wed', 'thurs', 'fri', 'sat'];
-            var scheduleTable1 = table.build({
-                tableId: 'consumerScheduleWeekOne',
-                columnHeadings,
-            });
-            var scheduleTable2 = table.build({
-                tableId: 'consumerScheduleWeekTwo',
-                columnHeadings,
-            });
-
-            // Populate table
-            var table1Data = orderScheduleData(schedule.weekOne);
-            var table2Data = orderScheduleData(schedule.weekTwo);
-            if (showWeekOne) table.populate(scheduleTable1, table1Data);
-            if (showWeekTwo) table.populate(scheduleTable2, table2Data);
-
-            // Append table
-            if (showWeekOne) tableWrap.appendChild(scheduleTable1);
-            if (showWeekTwo) tableWrap.appendChild(scheduleTable2);
-            if (showWeekOne || showWeekTwo) sectionInner.appendChild(tableWrap);
+      }
+      toggleIcon.addEventListener('click', e => {
+        const toggle = document.querySelector('#authToggle');
+        eventName = 'toggle';
+        if (subRowWrap.classList.contains('active')) {
+          // close it
+          subRowWrap.classList.remove('active');
+          toggleIcon.innerHTML = icons.keyArrowRight;
+        } else {
+          // open it
+          subRowWrap.classList.add('active');
+          toggleIcon.innerHTML = icons.keyArrowDown;
         }
-        rosterAjax.getConsumerSchedule(locationId, consumerId, function (scheduleResults) {
-            var scheduleResultsObj = { weekOne: { start: {}, end: {} }, weekTwo: { start: {}, end: {} } };
-            var scheduleResultsObjKeys = Object.keys(scheduleResults[0]);
-            var isWeekOneEmpty = true;
-            var isWeekTwoEmpty = true;
-            scheduleResultsObjKeys.forEach(key => {
-                if (key.indexOf('2') === -1) {
-                    if (key.indexOf('End') === -1) {
-                        var newkey = key.replace('Start', '');
-                        if (!scheduleResultsObj.weekOne.start[newkey]) {
-                            scheduleResultsObj.weekOne.start[newkey] = UTIL.convertFromMilitary(
-                                scheduleResults[0][key],
-                            );
-                        }
-                    } else {
-                        var newkey = key.replace('End', '');
-                        if (!scheduleResultsObj.weekOne.end[newkey]) {
-                            scheduleResultsObj.weekOne.end[newkey] = UTIL.convertFromMilitary(
-                                scheduleResults[0][key],
-                            );
-                        }
-                    }
-                    if (scheduleResults[0][key] !== '') isWeekOneEmpty = false;
-                } else {
-                    if (key.indexOf('End') === -1) {
-                        var newkey = key.replace('Start2', '');
-                        if (!scheduleResultsObj.weekTwo.start[newkey]) {
-                            scheduleResultsObj.weekTwo.start[newkey] = UTIL.convertFromMilitary(
-                                scheduleResults[0][key],
-                            );
-                        }
-                    } else {
-                        var newkey = key.replace('End2', '');
-                        if (!scheduleResultsObj.weekTwo.end[newkey]) {
-                            scheduleResultsObj.weekTwo.end[newkey] = UTIL.convertFromMilitary(
-                                scheduleResults[0][key],
-                            );
-                        }
-                    }
+      });
 
-                    if (scheduleResults[0][key] !== '') isWeekTwoEmpty = false;
-                }
-            });
-            scheduleResultsObj.isWeekOneEmpty = isWeekOneEmpty;
-            scheduleResultsObj.isWeekTwoEmpty = isWeekTwoEmpty;
-            populateTable(sectionInner, scheduleResultsObj);
-        });
+      rowWrap.appendChild(subRowWrap);
+
+      sectionInner.appendChild(rowWrap);
+    });
+  }
+  
+  // *schedule
+  function populateScheduleTable(sectionInner, locationId) {
+    function populateTable(sectionInner, schedule) {
+      var showWeekOne = !schedule.isWeekOneEmpty;
+      var showWeekTwo = !schedule.isWeekTwoEmpty;
+
+      var tableWrap = document.querySelector('.consumerScheduleTable');
+      if (!tableWrap) {
+        var tableWrap = document.createElement('div');
+        tableWrap.classList.add('consumerScheduleTable');
+      } else {
+        tableWrap.innerHTML = '';
+      }
+
+      if (!showWeekOne && !showWeekTwo) {
+        tableWrap.innerHTML = `<p class="infoNotFoundMessage">There is nothing scheduled for this location</p>`;
+      }
+
+      var columnHeadings = ['sun', 'mon', 'tues', 'wed', 'thurs', 'fri', 'sat'];
+      var scheduleTable1 = table.build({
+        tableId: 'consumerScheduleWeekOne',
+        columnHeadings,
+      });
+      var scheduleTable2 = table.build({
+        tableId: 'consumerScheduleWeekTwo',
+        columnHeadings,
+      });
+
+      // Populate table
+      var table1Data = orderScheduleData(schedule.weekOne);
+      var table2Data = orderScheduleData(schedule.weekTwo);
+      if (showWeekOne) table.populate(scheduleTable1, table1Data);
+      if (showWeekTwo) table.populate(scheduleTable2, table2Data);
+
+      // Append table
+      if (showWeekOne) tableWrap.appendChild(scheduleTable1);
+      if (showWeekTwo) tableWrap.appendChild(scheduleTable2);
+      if (showWeekOne || showWeekTwo) sectionInner.appendChild(tableWrap);
     }
-    function populateScheduleSection(targetSection, locations) {
-        var sectionInner = targetSection.querySelector('.sectionInner');
-        sectionInner.innerHTML = '';
+    rosterAjax.getConsumerSchedule(locationId, consumerId, function (scheduleResults) {
+      var scheduleResultsObj = { weekOne: { start: {}, end: {} }, weekTwo: { start: {}, end: {} } };
+      var scheduleResultsObjKeys = Object.keys(scheduleResults[0]);
+      var isWeekOneEmpty = true;
+      var isWeekTwoEmpty = true;
+      scheduleResultsObjKeys.forEach(key => {
+        if (key.indexOf('2') === -1) {
+          if (key.indexOf('End') === -1) {
+            var newkey = key.replace('Start', '');
+            if (!scheduleResultsObj.weekOne.start[newkey]) {
+              scheduleResultsObj.weekOne.start[newkey] = UTIL.convertFromMilitary(scheduleResults[0][key]);
+            }
+          } else {
+            var newkey = key.replace('End', '');
+            if (!scheduleResultsObj.weekOne.end[newkey]) {
+              scheduleResultsObj.weekOne.end[newkey] = UTIL.convertFromMilitary(scheduleResults[0][key]);
+            }
+          }
+          if (scheduleResults[0][key] !== '') isWeekOneEmpty = false;
+        } else {
+          if (key.indexOf('End') === -1) {
+            var newkey = key.replace('Start2', '');
+            if (!scheduleResultsObj.weekTwo.start[newkey]) {
+              scheduleResultsObj.weekTwo.start[newkey] = UTIL.convertFromMilitary(scheduleResults[0][key]);
+            }
+          } else {
+            var newkey = key.replace('End2', '');
+            if (!scheduleResultsObj.weekTwo.end[newkey]) {
+              scheduleResultsObj.weekTwo.end[newkey] = UTIL.convertFromMilitary(scheduleResults[0][key]);
+            }
+          }
 
-        if (locations.length === 0) {
-            sectionInner.innerHTML = 'Consumer has no locations';
-            return;
+          if (scheduleResults[0][key] !== '') isWeekTwoEmpty = false;
         }
+      });
+      scheduleResultsObj.isWeekOneEmpty = isWeekOneEmpty;
+      scheduleResultsObj.isWeekTwoEmpty = isWeekTwoEmpty;
+      populateTable(sectionInner, scheduleResultsObj);
+    });
+  }
+  function populateScheduleSection(targetSection, locations) {
+    var sectionInner = targetSection.querySelector('.sectionInner');
+    sectionInner.innerHTML = '';
 
-        var locationDropdown = dropdown.build({
-            id: 'consumerLocationScheduleDropdown',
-            label: 'Location',
-            style: 'secondary',
-        });
-
-        var locationDropdownData = locations.map(al => {
-            return {
-                value: al.id,
-                text: al.name,
-            };
-        });
-
-        dropdown.populate(locationDropdown, locationDropdownData);
-        sectionInner.appendChild(locationDropdown);
-        locationDropdown.addEventListener('change', function (event) {
-            populateScheduleTable(sectionInner, event.target.value);
-        });
-
-        // populate table
-        populateScheduleTable(sectionInner, locationDropdownData[0].value);
+    if (locations.length === 0) {
+      sectionInner.innerHTML = 'Consumer has no locations';
+      return;
     }
 
-    function populateIntellivueSection(section, data) {
-        var sectionInner = section.querySelector('.sectionInner');
-        sectionInner.innerHTML = '';
-        var url;
+    var locationDropdown = dropdown.build({
+      id: 'consumerLocationScheduleDropdown',
+      label: 'Location',
+      style: 'secondary',
+    });
 
-        if (data.size === 0) {
-            sectionInner.innerHTML = `<p class="infoNotFoundMessage">No applications found.</p>`;
-            return;
-        }
+    var locationDropdownData = locations.map(al => {
+      return {
+        value: al.id,
+        text: al.name,
+      };
+    });
 
-        var applicationList = document.createElement('h2');
-        applicationList.innerHTML = 'Applications';
-        applicationList.classList.add('applicationList');
-        var lineBR = document.createElement('br');
-        applicationList.appendChild(lineBR);
+    dropdown.populate(locationDropdown, locationDropdownData);
+    sectionInner.appendChild(locationDropdown);
+    locationDropdown.addEventListener('change', function (event) {
+      populateScheduleTable(sectionInner, event.target.value);
+    });
 
-        sectionInner.appendChild(applicationList);
+    // populate table
+    populateScheduleTable(sectionInner, locationDropdownData[0].value);
+  }
+  function populateIntellivueSection(section, data) {
+    var sectionInner = section.querySelector('.sectionInner');
+    sectionInner.innerHTML = '';
+    var url;
 
-        for (let [k, v] of data) {
-            var appId = k;
+    if (data.size === 0) {
+      sectionInner.innerHTML = `<p class="infoNotFoundMessage">No applications found.</p>`;
+      return;
+    }
 
-            intellivue.getViewURL(consumerId, appId, res => {
-                var application = document.createElement('div');
-                application.classList.add('application');
-                application.innerHTML = `
+    var applicationList = document.createElement('h2');
+    applicationList.innerHTML = 'Applications';
+    applicationList.classList.add('applicationList');
+    var lineBR = document.createElement('br');
+    applicationList.appendChild(lineBR);
+
+    sectionInner.appendChild(applicationList);
+
+    for (let [k, v] of data) {
+      var appId = k;
+
+      intellivue.getViewURL(consumerId, appId, res => {
+        var application = document.createElement('div');
+        application.classList.add('application');
+        application.innerHTML = `
 							<p><a href="${res}" target="_blank">${v}</a></p>
 							`;
-                applicationList.appendChild(application);
-            });
-        }
-
-        //      data.forEach(appName => {
-        //          test = data.key;
-        //	var appId = data.indexOf(appName) +1;
-        //	var application = document.createElement('div');
-        //	application.classList.add('application');
-
-        //	intellivue.getViewURL(consumerId, appId, res => { application.innerHTML = `
-        //	<p><a href="${res}" target="_blank">${appName}</a></p>
-        //	`});
-
-        //	sectionInner.appendChild(application);
-        //})
-
-        sectionInner.appendChild(applicationList);
+        applicationList.appendChild(application);
+      });
     }
 
-    // Card Sections
-    function buildSections(sections) {
-        // sections = ['']
-        return sections.map((sec, index) => {
-            // section
-            var section = document.createElement('div');
-            var className = [`${sec}Section`, `sec${index + 1}`];
-            section.classList.add('infoCardSection', ...className);
-            // section inner
-            var cardInner = document.createElement('div');
-            cardInner.classList.add('sectionInner');
-            section.appendChild(cardInner);
-            return section;
-        });
-    }
-    function buildMenu() {
-        var cardMenuList = document.createElement('div');
-        cardMenuList.classList.add('menuList', 'sec0');
+    //      data.forEach(appName => {
+    //          test = data.key;
+    //	var appId = data.indexOf(appName) +1;
+    //	var application = document.createElement('div');
+    //	application.classList.add('application');
 
-        var cardInner = document.createElement('div');
-        cardInner.classList.add('sectionInner');
-        menuNewList = [];
-        if ($.session.DemographicsView === false) {
-            // pointless reset based off above session variable
-            $.session.DemographicsView = false;
-            $.session.DemographicsRelationshipsView = false;
-            $.session.viewLocationSchedulesKey = false;
-            $.session.DemographicsViewAttachments = false;
-            $.session.intellivuePermission = '';
-        }
+    //	intellivue.getViewURL(consumerId, appId, res => { application.innerHTML = `
+    //	<p><a href="${res}" target="_blank">${appName}</a></p>
+    //	`});
 
-        var menuItems = [
-            {
-                title: 'Mark As Absent',
-                icon: 'no',
-                className: 'absent',
-                visible: $.session.useAbsentFeature === 'Y' ? true : false,
-            },
-            {
-                title: 'Change Photo',
-                icon: 'camera',
-                className: 'photo',
-                visible: $.session.DemographicsPictureUpdate,
-            },
-            { title: 'Add To Group', icon: 'selectAll', className: 'group', visible: true },
-            {
-                title: 'Consumer Notes',
-                icon: 'note',
-                className: 'consumerNote',
-                visible: $.session.DemographicsNotesView,
-            },
-            {
-                title: 'Progress Notes',
-                icon: 'note',
-                className: 'progressNote',
-                visible: $.session.useProgressNotes === 'Y' ? true : false,
-            },
-            {
-                title: 'Demographics',
-                icon: 'info',
-                className: 'demographics',
-                visible: $.session.DemographicsView,
-            },
-            {
-                title: 'Relationships',
-                icon: 'people',
-                className: 'relationships',
-                visible: $.session.DemographicsRelationshipsView,
-            },
-            {
-                title: 'View Attachments',
-                icon: 'attachment',
-                className: 'attachments',
-                visible: $.session.DemographicsViewAttachments,
-            },
-            {
-                title: 'View Schedule',
-                icon: 'calendar',
-                className: 'schedule',
-                visible: $.session.viewLocationSchedulesKey,
-            },
-            {
-                title: 'Intellivue',
-                icon: 'info',
-                className: 'intellivue',
-                visible: $.session.intellivuePermission === '' ? false : true,
-            },
-        ];
-        menuItems.forEach(mi => {
-            if (!mi.visible) return;
-            var item = document.createElement('div');
-            item.setAttribute('data-info-task', mi.title);
-            item.classList.add('menuList__item', mi.className);
+    //	sectionInner.appendChild(application);
+    //})
 
-            var itemTitle = document.createElement('p');
-            itemTitle.innerHTML = mi.title;
+    sectionInner.appendChild(applicationList);
+  }
 
-            item.innerHTML = icons[mi.icon];
-            item.appendChild(itemTitle);
-            item.innerHTML += icons['keyArrowRight'];
+  // Card Sections
+  function buildSections(sections) {
+    return sections.map((sec, index) => {
+      // section
+      var section = document.createElement('div');
+      var className = [`${sec}Section`, `sec${index + 1}`];
+      section.classList.add('infoCardSection', ...className);
+      // section inner
+      var cardInner = document.createElement('div');
+      cardInner.classList.add('sectionInner');
+      section.appendChild(cardInner);
+      return section;
+    });
+  }
+  function buildMenu() {
+    var cardMenuList = document.createElement('div');
+    cardMenuList.classList.add('menuList', 'sec0');
 
-            cardInner.appendChild(item); 
-            menuNewList.push(mi);
-        });
-        cardMenuList.appendChild(cardInner);
-
-        return cardMenuList;
-    }
-    // Consumer Info Card
-    function setupCardEvents(cardMenu) {
-        cardMenu.addEventListener('click', event => {
-            var action = event.target.dataset.infoTask;
-            setupCard(action);
-        });
+    var cardInner = document.createElement('div');
+    cardInner.classList.add('sectionInner');
+    menuNewList = [];
+    if ($.session.DemographicsView === false) {
+      // pointless reset based off above session variable
+      $.session.DemographicsView = false;
+      $.session.DemographicsRelationshipsView = false;
+      $.session.viewLocationSchedulesKey = false;
+      $.session.DemographicsViewAttachments = false;
+      $.session.intellivuePermission = '';
     }
 
-    function setupCard(action) {
-        var targetSection;
-        currentScreen = action;
-        var arraynumber = menuNewList.findIndex(x => x.title == currentScreen);
-        previousScreen = menuNewList[arraynumber - 1] == undefined ? null : menuNewList[arraynumber - 1].title;
-        nextScreen = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title;
+    var menuItems = [
+      {
+        title: 'Mark As Absent',
+        icon: 'no',
+        className: 'absent',
+        visible: $.session.useAbsentFeature === 'Y' ? true : false,
+      },
+      {
+        title: 'Change Photo',
+        icon: 'camera',
+        className: 'photo',
+        visible: $.session.DemographicsPictureUpdate,
+      },
+      { title: 'Add To Group', icon: 'selectAll', className: 'group', visible: true },
+      {
+        title: 'Consumer Notes',
+        icon: 'note',
+        className: 'consumerNote',
+        visible: $.session.DemographicsNotesView,
+      },
+      {
+        title: 'Progress Notes',
+        icon: 'note',
+        className: 'progressNote',
+        visible: $.session.useProgressNotes === 'Y' ? true : false,
+      },
+      {
+        title: 'Demographics',
+        icon: 'info',
+        className: 'demographics',
+        visible: $.session.DemographicsView,
+      },
+      {
+        title: 'Relationships',
+        icon: 'people',
+        className: 'relationships',
+        visible: $.session.DemographicsRelationshipsView,
+      },
+      {
+        title: 'View Attachments',
+        icon: 'attachment',
+        className: 'attachments',
+        visible: $.session.DemographicsViewAttachments,
+      },
+      {
+        title: 'View Schedule',
+        icon: 'calendar',
+        className: 'schedule',
+        visible: $.session.viewLocationSchedulesKey,
+      },
+      {
+        title: 'Intellivue',
+        icon: 'info',
+        className: 'intellivue',
+        visible: $.session.intellivuePermission === '' ? false : true,
+      },
+      {
+        title: 'Workflow',
+        icon: 'workflow',
+        className: 'workflow',
+        visible: true,
+      },
+    ];
+    menuItems.forEach(mi => {
+      if (!mi.visible) return;
+      var item = document.createElement('div');
+      item.setAttribute('data-info-task', mi.title);
+      item.classList.add('menuList__item', mi.className);
 
-        if (previousScreen == null) {
-            backwordBtn.classList.remove('hidden');
-            backwordBtn.classList.add('disabled');
-        }
-        else {
-            backwordBtn.classList.remove('hidden');
-            backwordBtn.classList.remove('disabled');
-        }
-        if (nextScreen == null) {
-            forwardBtn.classList.add('hidden');
-        }
-        else {
-            forwardBtn.classList.remove('hidden');
-        }
+      var itemTitle = document.createElement('p');
+      itemTitle.innerHTML = mi.title;
 
-        document.getElementById('backwordBtn').innerHTML = menuNewList[arraynumber - 1] == undefined ? null : `${icons['arrowBack']}` + '' + menuNewList[arraynumber - 1].title;
-        document.getElementById('forwardBtn').innerHTML = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title + '' + `${icons['arrowNext']}`;
+      item.innerHTML = icons[mi.icon];
+      item.appendChild(itemTitle);
+      item.innerHTML += icons['keyArrowRight'];
 
-        switch (action) {
-            case 'Mark As Absent': {
-                targetSection = consumerInfoCard.querySelector('.absentSection');
-                absentAjax.selectAbsent(
-                    {
-                        token: $.session.Token,
-                        consumerId,
-                        locationId,
-                        statusDate: selectedDate,
-                    },
-                    function (results) {
-                        populateAbsentSection(targetSection, results);
-                    },
-                );
-                break;
-            }
-            case 'Change Photo': {
-                targetSection = consumerInfoCard.querySelector('.photoSection');
-                populatePhotoSection(targetSection);
-                break;
-            }
-            case 'Add To Group': {
-                targetSection = consumerInfoCard.querySelector('.groupSection');
-                populateGroupSection(targetSection);
-                break;
-            }
-            case 'Consumer Notes': {
-                targetSection = consumerInfoCard.querySelector('.notesSection');
-                rosterAjax.getDemographicsNotes(consumerId, function (results) {
-                    populateNotesSection(targetSection, results);
-                });
-                break;
-            }
-            case 'Progress Notes': {
-                targetSection = consumerInfoCard.querySelector('.progressNotesSection');
-                progressNotes.init(targetSection, locationId, consumerId);
-                progressNotes.getConsumerNotes(function (results) {
-                    populateProgressNotesSection(targetSection, results);
-                });
-                break;
-            }
-            case 'View Attachments': {
-                targetSection = consumerInfoCard.querySelector('.attachmentsSection');
-                rosterAjax.getAllAttachments(
-                    {
-                        token: $.session.Token,
-                        locationId: locationId,
-                        consumerId: consumerId,
-                        checkDate: selectedDate,
-                    },
-                    function (results) {
-                        populateAttachmentsSection(targetSection, results);
-                    },
-                );
-                break;
-            }
-            case 'View Schedule': {
-                targetSection = consumerInfoCard.querySelector('.scheduleSection');
-                rosterAjax.getConsumerScheduleLocation(consumerId, function (locationResults) {
-                    populateScheduleSection(targetSection, locationResults);
-                });
-                break;
-            }
-            case 'Demographics': {
-                targetSection = consumerInfoCard.querySelector('.demographicsSection');
-                rosterAjax.getConsumerDemographics(consumerId, function (results) {
-                    demographics.populate(targetSection, results[0], consumerId);
-                });
-                break;
-            }
-            case 'Relationships': {
-                targetSection = consumerInfoCard.querySelector('.relationshipsSection');
-                rosterAjax.getConsumerRelationships(consumerId, function (results) {
-                    populateRelationshipsSection(targetSection, results);
-                });
-                break;
-            }
-            case 'Intellivue': {
-                targetSection = consumerInfoCard.querySelector('.intellivueSection');
-                intellivue.getApplicationListHostedWithUser(function (results) {
-                    populateIntellivueSection(targetSection, results);
-                });
-                break;
-            }
-        }
+      cardInner.appendChild(item);
+      menuNewList.push(mi);
+    });
+    cardMenuList.appendChild(cardInner);
 
-        if (targetSection) {
-            var sectionBackBtn = document.querySelector('.sectionBackBtn');
-            sectionBackBtn.classList.remove('hidden');
-            showCardSection(targetSection);
-        }
+    return cardMenuList;
+  }
+
+  // Consumer Info Card
+  function setupCardEvents(cardMenu) {
+    cardMenu.addEventListener('click', event => {
+      var action = event.target.dataset.infoTask;
+      setupCard(action);
+    });
+  }
+
+  function setupCard(action) {
+    var targetSection;
+    currentScreen = action;
+    var arraynumber = menuNewList.findIndex(x => x.title == currentScreen);
+    previousScreen = menuNewList[arraynumber - 1] == undefined ? null : menuNewList[arraynumber - 1].title;
+    nextScreen = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title;
+
+    if (previousScreen == null) {
+      backwordBtn.classList.remove('hidden');
+      backwordBtn.classList.add('disabled');
+    } else {
+      backwordBtn.classList.remove('hidden');
+      backwordBtn.classList.remove('disabled');
+    }
+    if (nextScreen == null) {
+      forwardBtn.classList.add('hidden');
+    } else {
+      forwardBtn.classList.remove('hidden');
     }
 
-    function buildCard() {
-        consumerInfoCard = document.createElement('div');
-        consumerInfoCard.classList.add('consumerInfoCard');
+    document.getElementById('backwordBtn').innerHTML =
+      menuNewList[arraynumber - 1] == undefined
+        ? null
+        : `${icons['arrowBack']}` + '' + menuNewList[arraynumber - 1].title;
+    document.getElementById('forwardBtn').innerHTML =
+      menuNewList[arraynumber + 1] == undefined
+        ? null
+        : menuNewList[arraynumber + 1].title + '' + `${icons['arrowNext']}`;
 
-        var btnWrap = document.createElement('div');
-        btnWrap.classList.add('btnWrap');
-        var navBtnWrap = document.createElement('div');
-        navBtnWrap.classList.add('btnWrap');
-
-        var backBtn = button.build({
-            text: 'Back',
-            style: 'secondary',
-            type: 'text',
-            icon: 'arrowBack',
-            classNames: ['sectionBackBtn', 'hidden'],
-            callback: handleBackButtonClick,
+    switch (action) {
+      case 'Mark As Absent': {
+        targetSection = consumerInfoCard.querySelector('.absentSection');
+        absentAjax.selectAbsent(
+          {
+            token: $.session.Token,
+            consumerId,
+            locationId,
+            statusDate: selectedDate,
+          },
+          function (results) {
+            populateAbsentSection(targetSection, results);
+          },
+        );
+        break;
+      }
+      case 'Change Photo': {
+        targetSection = consumerInfoCard.querySelector('.photoSection');
+        populatePhotoSection(targetSection);
+        break;
+      }
+      case 'Add To Group': {
+        targetSection = consumerInfoCard.querySelector('.groupSection');
+        populateGroupSection(targetSection);
+        break;
+      }
+      case 'Consumer Notes': {
+        targetSection = consumerInfoCard.querySelector('.notesSection');
+        rosterAjax.getDemographicsNotes(consumerId, function (results) {
+          populateNotesSection(targetSection, results);
         });
-        var closeBtn = button.build({
-            text: 'Close',
-            style: 'secondary',
-            type: 'text',
-            icon: 'close',
-            classNames: 'consumerInfoCloseBtn',
-            callback: closeCard,
+        break;
+      }
+      case 'Progress Notes': {
+        targetSection = consumerInfoCard.querySelector('.progressNotesSection');
+        progressNotes.init(targetSection, locationId, consumerId);
+        progressNotes.getConsumerNotes(function (results) {
+          populateProgressNotesSection(targetSection, results);
         });
-
-        var backwordBtn = button.build({
-            id: 'backwordBtn',
-            text: previousScreen,
-            style: 'secondary',
-            type: 'text',
-            classNames: 'consumerInfoBackwardBtn',
+        break;
+      }
+      case 'View Attachments': {
+        targetSection = consumerInfoCard.querySelector('.attachmentsSection');
+        rosterAjax.getAllAttachments(
+          {
+            token: $.session.Token,
+            locationId: locationId,
+            consumerId: consumerId,
+            checkDate: selectedDate,
+          },
+          function (results) {
+            populateAttachmentsSection(targetSection, results);
+          },
+        );
+        break;
+      }
+      case 'View Schedule': {
+        targetSection = consumerInfoCard.querySelector('.scheduleSection');
+        rosterAjax.getConsumerScheduleLocation(consumerId, function (locationResults) {
+          populateScheduleSection(targetSection, locationResults);
         });
-        var forwardBtn = button.build({
-            id: 'forwardBtn',
-            text: nextScreen,
-            style: 'secondary',
-            type: 'text',
-            classNames: 'consumerInfoForwardBtn',
+        break;
+      }
+      case 'Demographics': {
+        targetSection = consumerInfoCard.querySelector('.demographicsSection');
+        rosterAjax.getConsumerDemographics(consumerId, function (results) {
+          demographics.populate(targetSection, results[0], consumerId);
         });
-        btnWrap.appendChild(backBtn);
-        btnWrap.appendChild(closeBtn);
-
-        navBtnWrap.appendChild(backwordBtn);
-        navBtnWrap.appendChild(forwardBtn);
-
-        var cardInner = document.createElement('div');
-        cardInner.classList.add('cardInner');
-        var cardHeading = document.createElement('div');
-        cardHeading.classList.add('consumerInfoCard__heading');
-        var cardBody = document.createElement('div');
-        cardBody.classList.add('consumerInfoCard__body');
-
-        var cardMenu = buildMenu();
-        cardBody.appendChild(cardMenu);
-
-        var sections = buildSections([
-            'absent',
-            'photo',
-            'group',
-            'notes',
-            'progressNotes',
-            'demographics',
-            'relationships',
-            'attachments',
-            'schedule',
-            'intellivue',
-        ]);
-        sections.forEach(section => {
-            cardBody.appendChild(section);
+        break;
+      }
+      case 'Relationships': {
+        targetSection = consumerInfoCard.querySelector('.relationshipsSection');
+        rosterAjax.getConsumerRelationships(consumerId, function (results) {
+          populateRelationshipsSection(targetSection, results);
         });
-
-        // Build card
-        cardInner.appendChild(cardHeading);
-        cardInner.appendChild(navBtnWrap);
-        cardInner.appendChild(cardBody);
-
-        consumerInfoCard.appendChild(btnWrap);
-        consumerInfoCard.appendChild(cardInner);
-
-        setupCardEvents(cardMenu);
-
-        modalOverlay = document.querySelector('.overlay');
-
-
-
-        document.body.appendChild(consumerInfoCard);
-
-        backwordBtn.classList.add('hidden');
-        forwardBtn.classList.add('hidden');
-        eventListeners();
-        return consumerInfoCard;
+        break;
+      }
+      case 'Intellivue': {
+        targetSection = consumerInfoCard.querySelector('.intellivueSection');
+        intellivue.getApplicationListHostedWithUser(function (results) {
+          populateIntellivueSection(targetSection, results);
+        });
+        break;
+      }
     }
 
-    function eventListeners() {
-        // Add event listener to close the card when clicking outside of it
-        modalOverlay.addEventListener('click', function (event) {
-            closeCard();
-        });
-        forwardBtn.addEventListener('click', function (event) {
-            handleBackButtonClick();
-            setupCard(nextScreen);
-        });
-        backwordBtn.addEventListener('click', function (event) {
-            handleBackButtonClick();
-            setupCard(previousScreen);
-        });
+    if (targetSection) {
+      var sectionBackBtn = document.querySelector('.sectionBackBtn');
+      sectionBackBtn.classList.remove('hidden');
+      showCardSection(targetSection);
     }
+  }
 
+  function buildCard() {
+    consumerInfoCard = document.createElement('div');
+    consumerInfoCard.classList.add('consumerInfoCard');
 
-    return {
-        buildCard,
-        showCard,
-        showCardSubSection,
-        toggleHideShowAbsentMenuSection,
-        closeCard,
-    };
+    var btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    var navBtnWrap = document.createElement('div');
+    navBtnWrap.classList.add('btnWrap');
+
+    var backBtn = button.build({
+      text: 'Back',
+      style: 'secondary',
+      type: 'text',
+      icon: 'arrowBack',
+      classNames: ['sectionBackBtn', 'hidden'],
+      callback: handleBackButtonClick,
+    });
+    var closeBtn = button.build({
+      text: 'Close',
+      style: 'secondary',
+      type: 'text',
+      icon: 'close',
+      classNames: 'consumerInfoCloseBtn',
+      callback: closeCard,
+    });
+
+    var backwordBtn = button.build({
+      id: 'backwordBtn',
+      text: previousScreen,
+      style: 'secondary',
+      type: 'text',
+      classNames: 'consumerInfoBackwardBtn',
+    });
+    var forwardBtn = button.build({
+      id: 'forwardBtn',
+      text: nextScreen,
+      style: 'secondary',
+      type: 'text',
+      classNames: 'consumerInfoForwardBtn',
+    });
+    btnWrap.appendChild(backBtn);
+    btnWrap.appendChild(closeBtn);
+
+    navBtnWrap.appendChild(backwordBtn);
+    navBtnWrap.appendChild(forwardBtn);
+
+    var cardInner = document.createElement('div');
+    cardInner.classList.add('cardInner');
+    var cardHeading = document.createElement('div');
+    cardHeading.classList.add('consumerInfoCard__heading');
+    var cardBody = document.createElement('div');
+    cardBody.classList.add('consumerInfoCard__body');
+
+    var cardMenu = buildMenu();
+    cardBody.appendChild(cardMenu);
+
+    var sections = buildSections([
+      'absent',
+      'photo',
+      'group',
+      'notes',
+      'progressNotes',
+      'demographics',
+      'relationships',
+      'attachments',
+      'schedule',
+      'intellivue',
+      'workflow'
+    ]);
+    sections.forEach(section => {
+      cardBody.appendChild(section);
+    });
+
+    // Build card
+    cardInner.appendChild(cardHeading);
+    cardInner.appendChild(navBtnWrap);
+    cardInner.appendChild(cardBody);
+
+    consumerInfoCard.appendChild(btnWrap);
+    consumerInfoCard.appendChild(cardInner);
+
+    setupCardEvents(cardMenu);
+
+    modalOverlay = document.querySelector('.overlay');
+
+    document.body.appendChild(consumerInfoCard);
+
+    backwordBtn.classList.add('hidden');
+    forwardBtn.classList.add('hidden');
+    eventListeners();
+    return consumerInfoCard;
+  }
+
+  function eventListeners() {
+    // Add event listener to close the card when clicking outside of it
+    modalOverlay.addEventListener('click', function (event) {
+      closeCard();
+    });
+    forwardBtn.addEventListener('click', function (event) {
+      handleBackButtonClick();
+      setupCard(nextScreen);
+    });
+    backwordBtn.addEventListener('click', function (event) {
+      handleBackButtonClick();
+      setupCard(previousScreen);
+    });
+  }
+
+  return {
+    buildCard,
+    showCard,
+    showCardSubSection,
+    toggleHideShowAbsentMenuSection,
+    closeCard,
+  };
 })();
