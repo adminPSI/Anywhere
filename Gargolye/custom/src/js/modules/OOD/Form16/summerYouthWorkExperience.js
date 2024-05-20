@@ -65,6 +65,7 @@ const summerYouthWorkExperienceForm = (() => {
       startTime = caseNoteData[0].startTime; //TODO JOE: Case_Notes.Start_Time
       endTime = caseNoteData[0].endTime; //TODO JOE: Case_Notes.End_Time
       position = caseNoteData[0].position;
+      groupSize = caseNoteData[0].groupSize;
       interventions = caseNoteData[0].interventions; //TODO JOE: emp_ood.interventions
       
     } else {
@@ -78,6 +79,7 @@ const summerYouthWorkExperienceForm = (() => {
       startTime = '';
       endTime = '';
       position = '';
+      groupSize = '';
       interventions = '';
     }
 
@@ -284,7 +286,7 @@ const summerYouthWorkExperienceForm = (() => {
     const { getOODPositionsResult: positions } = await OODAjax.getPositionsAsync(consumerId);
     // const templates = WorkflowViewerComponent.getTemplates();
     let data = positions.map(position => ({
-      id: position.code,
+      id: (position.defaultGroupSize && position.defaultGroupSize > 0) ? position.defaultGroupSize : '0',
       value: position.code,
       text: position.caption,
     }));
@@ -350,16 +352,19 @@ const summerYouthWorkExperienceForm = (() => {
 
   function checkRequiredFields() {
     
+    
+
     if (!position || position === '') {
       positionDropdown.classList.add('error');
-      //return 'error';
+      groupSizeInput.classList.add('disabled');
     } else {
       positionDropdown.classList.remove('error');
+      groupSizeInput.classList.remove('disabled');
+      groupSizeInput.classList.remove('error');
       // return 'success';
     }
 
     var numgroupSizeInput = groupSizeInput.querySelector('input');
-
     if (numgroupSizeInput.value === '' || numgroupSizeInput.value === 0 || numgroupSizeInput.value <= 0) {
       groupSizeInput.classList.add('error');
     } else {
@@ -509,8 +514,15 @@ const summerYouthWorkExperienceForm = (() => {
 
       if (selectedOption.value == 'SELECT') {
         position = '';
+        groupSize = '';
+        var numgroupSizeInput = groupSizeInput.querySelector('input');
+        numgroupSizeInput.value = '';
+
       } else {
         position = selectedOption.value;
+        groupSize = selectedOption.id;
+        var numgroupSizeInput = groupSizeInput.querySelector('input');
+        numgroupSizeInput.value = (selectedOption.id && selectedOption.id > 0) ? selectedOption.id : '';
       }
       checkRequiredFields();
     });

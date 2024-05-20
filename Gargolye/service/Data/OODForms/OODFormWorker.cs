@@ -728,6 +728,243 @@ namespace OODForms
             }
         }
 
+        public string generateForm16(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
+        {
+            try
+            {
+                return "Success";
+
+                OODFormDataGetter obj = new OODFormDataGetter();
+
+                string SSinfo = obj.getSpreadsheetNameAndKey(token);
+                SSInfo[] SSInfoObj = JsonConvert.DeserializeObject<SSInfo[]>(SSinfo);
+                string registrationName = SSInfoObj[0].registrationName;
+                string registrationKey = SSInfoObj[0].registrationKey;
+
+                string crpath = obj.getFormTemplatePath(token);
+                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+                string path = pathdatalist[0].path;
+                string templateFileName = "Form16SummerYouthWorkExperience.xlsx";
+                string reportPath = string.Format(path, templateFileName);
+
+                long PeopleID = long.Parse(peopleIDString);
+
+                DateTime currentDate = DateTime.Now;
+                string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
+                string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
+
+                // Gather Data for the Person Completing the Report
+                string personCompletingReportData = obj.getPersonCompletingReportName(token);
+                personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+                Spreadsheet SS = new Spreadsheet();
+                SS.RegistrationName = registrationName;
+                SS.RegistrationKey = registrationKey;
+
+                SS.LoadFromFile(reportPath);
+
+                Bytescout.Spreadsheet.Worksheet WS = SS.Worksheet(0);
+
+                DataTable dt;
+                DataRow row;
+
+                dt = obj.OODDevelopment(AuthorizationNumber).Tables[0];
+                row = dt.Rows[0];
+
+                string ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
+                WS.Cell("m1").Value = ProviderName.ToString();
+
+                WS.Cell("m2").Value = AuthorizationNumber.ToString();
+
+                WS.Cell("m3").Value = invoiceNumber.ToString();
+
+
+
+                string ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
+                WS.Cell("m4").Value = ConsumerName;
+                WS.Cell("m4").Font = new Font(WS.Cell("m4").Font.Name, WS.Cell("m4").Font.Size, FontStyle.Bold);
+
+                string Staff = string.Empty;
+                string StaffWithInitals = string.Empty;
+                string OODStaff = string.Empty;
+                string MiddleName = string.Empty;
+                DataSet ds = obj.OODForm8GetDirectStaff(AuthorizationNumber, StartDate, EndDate);
+
+                WS.Cell("m6").Value = personCompletingReport;
+
+                if (ds.Tables.Count > 0)
+                {
+                    DataTable dt2 = ds.Tables[0];
+                    foreach (DataRow row2 in dt2.Rows)
+                    {
+                        if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
+                        {
+                            Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
+                            MiddleName = row2["Middle_Name"].ToString();
+                            OODStaff += String.Format("{0}, ", Staff.Trim());
+                        }
+
+                        if (Staff.ToString().Trim().Length > 0)
+                        {
+                            StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
+                        }
+                    }
+                }
+
+                if (StaffWithInitals.Length > 0)
+                {
+                    WS.Cell("m5").Value = StaffWithInitals.ToString().Trim().Substring(0, StaffWithInitals.Length - 2);
+                }
+                else
+                {
+                    WS.Cell("m5").Value = String.Empty;
+                }
+
+
+                DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, serviceCode, StartDate, EndDate);
+                if (dsOODStaff.Tables.Count > 0)
+                {
+                    DataTable dtOODStaff = dsOODStaff.Tables[0];
+                    foreach (DataRow rowOODStaff in dtOODStaff.Rows)
+                    {
+                        if (rowOODStaff["FirstName"].ToString().Trim().Length > 0 && rowOODStaff["LastName"].ToString().Trim().Length > 0)
+                        {
+                            OODStaff = String.Format("{0} {1}, ", rowOODStaff["FirstName"].ToString().Trim(), rowOODStaff["LastName"].ToString().Trim());
+                        }
+                    }
+
+                }
+
+                WS.Cell("m7").Value = OODStaff;
+
+                WS.Cell("m8").ValueAsDateTime = DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy"));
+
+                StartDate = DateTime.Parse(StartDate).ToString("yyyy-MM-dd");
+                WS.Cell("m9").ValueAsDateTime = DateTime.Parse(StartDate);
+
+                EndDate = DateTime.Parse(EndDate).ToString("yyyy-MM-dd");
+                WS.Cell("m10").ValueAsDateTime = DateTime.Parse(EndDate);
+
+                WS.Cell("m11").Value = "Final";
+
+                WS.Cell("l15").Value = "$0.00";
+
+                if (row["ServiceDescription"].ToString().ToUpper().Contains("CBA"))
+                {
+                    WS.Cell("a12").Value = "Community Based Assessment";
+                }
+                else if (row["ServiceDescription"].ToString().ToUpper().Contains("JRTNS"))
+                {
+                    WS.Cell("a12").Value = "Job Readiness (Non-School)";
+                }
+                else if (row["ServiceDescription"].ToString().ToUpper().Contains("JRTSB"))
+                {
+                    WS.Cell("a12").Value = "Job Readiness (School)";
+                }
+                else if (row["ServiceDescription"].ToString().ToUpper().Contains("OJSUPPT"))
+                {
+                    WS.Cell("a12").Value = "On-The-Job Supports";
+                }
+                else if (row["ServiceDescription"].ToString().ToUpper().Contains("WADJ"))
+                {
+                    WS.Cell("a12").Value = "Work Adjustment";
+                }
+                else
+                {
+                    WS.Cell("a12").Value = "Service Description 1";
+                }
+
+                ds = obj.OODForm8BussinessAddress(PeopleID);
+                if (ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        row = ds.Tables[0].Rows[0];
+                        sb.Clear();
+                        sb.AppendFormat("{0}, ", row["Name"].ToString().Trim());
+                        sb.AppendFormat("{0}, {1}", row["City"].ToString().Trim(), row["State"].ToString().Trim());
+                        WS.Cell("m19").Value = sb.ToString().Trim();
+                    }
+                }
+
+                string TaskSummary = obj.OODForm8GetJobTasksSummary(AuthorizationNumber);
+                if (TaskSummary.Length > 0) ;
+                {
+                    TaskSummary = TaskSummary.Trim();
+                }
+
+                WS.Cell("m20").Value = TaskSummary;
+
+                WS.Cell("m21").Value = obj.OODForm8GetSupportAndTransistion(AuthorizationNumber, StartDate).ToString().Trim();
+
+                ds = obj.OODForm8GetNotes(AuthorizationNumber, StartDate, EndDate, userID);
+
+                Int32 t = 23;
+                foreach (DataRow row2 in ds.Tables[0].Rows)
+                {
+                    WS.Cell(String.Format("a{0}", t)).ValueAsDateTime = Convert.ToDateTime(row2["Service_date"]);// Convert.ToDateTime(Convert.ToDateTime(row2["Service_date"]).ToString("MM/dd/yyyy")); //.ToString("MM/dd/yyyy"); //DateTime.ParseExact((DateTime)row2["Service_date"],"MM/dd/yyyy",CultureInfo.InvariantCulture); 
+                    WS.Cell(String.Format("a{0}", t)).NumberFormatString = "MM/dd/yyy"; //  Bytescout.Spreadsheet.ExtendedFormat.;
+                    WS.Cell(String.Format("b{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["Start_Time"])); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
+                    WS.Cell(String.Format("c{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["End_Time"]));
+                    WS.Cell(String.Format("d{0}", t)).Value = "0";
+                    WS.Cell(String.Format("g{0}", t)).Value = row2["SAM"].ToString().Trim(); ;
+                    WS.Cell(String.Format("h{0}", t)).Value = row2["Initials"].ToString().Trim();
+                    WS.Cell(String.Format("i{0}", t)).Value = row2["Contact_Method"].ToString().Trim();
+                    WS.Cell(String.Format("j{0}", t)).Value = row2["Behavioral_Indicators"].ToString().Trim();
+                    WS.Cell(String.Format("k{0}", t)).Value = row2["Quality_Indicators"].ToString().Trim();
+                    WS.Cell(String.Format("l{0}", t)).Value = row2["Quantity_Indicators"].ToString().Trim();
+                    WS.Cell(String.Format("m{0}", t)).Value = row2["Narrative"].ToString().Trim();
+                    WS.Cell(String.Format("n{0}", t)).Value = row2["Interventions"].ToString().Trim();
+                    WS.Cell(String.Format("n{0}", t)).FontColor = System.Drawing.Color.Black;
+                    t += 1;
+                }
+
+
+                ds = obj.OODForm8BackgroundChecks(AuthorizationNumber, StartDate);
+                if (ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        row = ds.Tables[0].Rows[0];
+                        WS.Cell("m75").Value = row["EM_Sum_Ind_Self_Assess"].ToString().Trim();
+                        WS.Cell("m76").Value = row["EM_Sum_Provider_Assess"].ToString().Trim();
+
+                        if (row["VTS_Review"].ToString().ToUpper() == "Y")
+                        {
+                            WS.Cell("m79").Value = "Yes";
+                        }
+                        else
+                        {
+                            WS.Cell("m79").Value = "No";
+                        }
+                    }
+
+                }
+
+                WS.Cell("a21").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
+
+                MemoryStream ms = new MemoryStream();
+                SS.SaveToStreamXLSX(ms);
+                ms.Position = 0;
+
+                Attachment attachment = new Attachment
+                {
+                    filename = "Form8.xlsx",
+                    data = ms
+                };
+
+                DisplayAttachment(attachment);
+
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                string message = ex.ToString();
+                return message;
+            }
+        }
+
+
         public string minDate(List<form10Data> dataList)
         {
             if (dataList.Count == 0)

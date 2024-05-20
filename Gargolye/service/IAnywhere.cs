@@ -4199,6 +4199,14 @@ namespace Anywhere
         //string generateForm10(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber);
         string generateForm10(System.IO.Stream testInput);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/generateForm16/")]
+        //string generateForm8(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber);
+        string generateForm16(System.IO.Stream testInput);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

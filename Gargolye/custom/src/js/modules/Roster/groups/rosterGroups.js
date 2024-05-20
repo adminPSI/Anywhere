@@ -130,14 +130,6 @@ var customGroups = (function(){
                 var groupMembers = cg.Members.split('|');
                 var isConsumerGroupMember = groupMembers.filter(gm => gm === consumerId);
 
-                var manageConsumerAction = button.build({
-                    text: 'Add To Group',
-                    type: 'contained',
-                    style: 'secondary',
-                    attributes: [{ key: 'data-group-id', value: cg.RetrieveID }],
-                    callback: () => addToGroupEvent(manageConsumerAction)
-                });
-
                 if (!isAdmin) {
                     var itemAction = input.buildCheckbox({
                         className: 'groupCheckbox',
@@ -147,22 +139,35 @@ var customGroups = (function(){
                     });
                 } else {
                     var itemAction = button.build({
-              icon: 'delete',
+                        icon: 'delete',
                         style: 'secondary',
                         type: 'text',
                         classNames: ['groupDelete'],
               attributes: [{key: 'data-group-id', value: cg.RetrieveID}],
                         callback: () => groupDeleteEvent(itemAction)
                     });
+
+                    var manageConsumerAction = button.build({
+                        text: 'Add To Group',
+                        type: 'contained',
+                        style: 'secondary',
+                        attributes: [{ key: 'data-group-id', value: cg.RetrieveID }],
+                        callback: () => addToGroupEvent(manageConsumerAction)
+                    }); 
                 }
 
-                var btnWrap = document.createElement('div');
-                btnWrap.classList.add('groupBtnWrap');
-                btnWrap.appendChild(manageConsumerAction);
-                btnWrap.appendChild(itemAction);
 
                 item.appendChild(text);
-                item.appendChild(btnWrap);
+                if (!isAdmin) {
+                    item.appendChild(itemAction);
+                }
+                else {
+                    var btnWrap = document.createElement('div');
+                    btnWrap.classList.add('groupBtnWrap');
+                    btnWrap.appendChild(manageConsumerAction);
+                    btnWrap.appendChild(itemAction);
+                    item.appendChild(btnWrap);
+                }
                 GROUP_LIST.appendChild(item);
             });
         } else {

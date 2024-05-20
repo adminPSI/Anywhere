@@ -442,14 +442,17 @@ const WagesBenefits = (() => {
             hoursWages = event.target.value;
             var reg = new RegExp('^[0-9 . $ -]+$');
             if (!reg.test(hoursWages)) {
-                document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
+                document.getElementById('wagesHours').value = '$';
             }
             else if (hoursWages.includes('.') && (hoursWages.match(/\./g).length > 1 || hoursWages.toString().split('.')[1].length > 2)) {
-                document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
+                document.getElementById('wagesHours').value = '$';
             }
             if (hoursWages.includes('-') || hoursWages.includes(' ')) {
-                document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
+                document.getElementById('wagesHours').value = '$';
             }
+            if (hoursWages.includes('$') && hoursWages.match(/\$/g).length > 1) {
+                document.getElementById('wagesHours').value = '$';
+            }  
             checkRequiredFieldsOfPopup();
         });
         newStartDate.addEventListener('input', event => {
@@ -464,7 +467,7 @@ const WagesBenefits = (() => {
         APPLY_BTN.addEventListener('click', () => {
             if (!APPLY_BTN.classList.contains('disabled')) {
                 saveNewWagesPopup();
-            } 
+            }
         });
 
         CANCEL_BTN.addEventListener('click', () => {
@@ -484,12 +487,12 @@ const WagesBenefits = (() => {
         } else {
             weekHours.classList.remove('errorPopup');
         }
-
+   
         if (wagesPerHour.value === '' || wagesPerHour.value === '$' || wagesPerHour.value.includes('-') || !reg.test(wagesPerHour.value)) {
             wagesHours.classList.add('errorPopup');
         } else {
             wagesHours.classList.remove('errorPopup');
-        }
+        } 
 
         if (startDate.value === '' || (endDate.value != '' && startDate.value > endDate.value)) {
             newStartDate.classList.add('errorPopup');
