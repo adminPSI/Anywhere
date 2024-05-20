@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -58,7 +59,7 @@ namespace Anywhere.service.Data
             sb.Append("LEFT OUTER JOIN DBA.ANYW_ISP_Plan_Section_Applicable SectionAllowable ON DBA.anyw_isp_assessment_sections.isp_assessment_section_id = SectionAllowable.ISP_Assessment_Section_ID ");
             sb.AppendFormat("WHERE DBA.anyw_isp_consumer_assessment_answers.isp_consumer_plan_id = {0} ", AssesmentID);
             sb.AppendFormat("AND SectionAllowable.ISP_Assessment_ID = {0} ", AssesmentID); // SQL for SecionAllowable 08/17/2021
-            sb.Append("AND SectionAllowable.Applicable = 'y' ");  // SQL for SecionAllowable 
+            sb.Append("AND SectionAllowable.Applicable = 'y' ");  // SQL for SecionAllowable
             if (Assessment == true)
             {
                 sb.Append("AND dba.ANYW_ISP_Assessment_Questions.hide_on_assessment IS NULL "); // Added 02/01/21
@@ -67,6 +68,40 @@ namespace Anywhere.service.Data
             sb.Append("DBA.anyw_isp_assessment_subsections.subsection_order, ");
             sb.Append("DBA.anyw_isp_assessment_questions.question_order ");
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+
+            sb.Clear();
+            sb.Append("SELECT  COUNT(dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_subsection_id) AS Counter, ");
+            sb.Append("dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_subsection_id ");
+            sb.Append("FROM dba.ANYW_ISP_Assessment_Question_Sets ");
+            sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Assessment_Questions ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_question_set_id = dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_set_id ");
+            sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Consumer_Assessment_Answers ON dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_id = dba.ANYW_ISP_Consumer_Assessment_Answers.isp_assessment_question_id ");
+            sb.AppendFormat("WHERE dba.ANYW_ISP_Consumer_Assessment_Answers.isp_consumer_plan_id = {0} ", AssesmentID);
+            sb.Append("AND dba.ANYW_ISP_Consumer_Assessment_Answers.answer > '0' ");
+            sb.Append("GROUP BY dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_subsection_id ");
+            DataTable SCdt = di.SelectRowsDS(sb.ToString()).Tables[0];
+
+            sb.Clear();
+            sb.Append("SELECT COUNT(dba.ANYW_ISP_Consumer_Assessment_Answers.answer) AS iCount, dba.ANYW_ISP_Assessment_Subsections.subsection_title, ");
+            sb.Append("dba.ANYW_ISP_Assessment_Sections.section_order ");
+            sb.Append("FROM dba.ANYW_ISP_Assessment_Question_Sets ");
+            sb.Append("LEFT OUTER JOIN dba.ANYW_ISP_Assessment_Subsections ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_subsection_id = dba.ANYW_ISP_Assessment_Subsections.isp_assessment_subsection_id ");
+            sb.Append("LEFT OUTER JOIN dba.ANYW_ISP_Assessment_Sections ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_section_id = dba.ANYW_ISP_Assessment_Sections.isp_assessment_section_id ");
+            sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Assessment_Questions ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_question_set_id = dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_set_id ");
+            sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Consumer_Assessment_Answers ON dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_id = dba.ANYW_ISP_Consumer_Assessment_Answers.isp_assessment_question_id ");
+            sb.Append("LEFT OUTER JOIN dba.ANYW_ISP_Plan_Section_Applicable SectionAllowable ON dba.ANYW_ISP_Assessment_Sections.isp_assessment_section_id = SectionAllowable.ISP_Assessment_Section_ID ");
+            sb.AppendFormat("WHERE SectionAllowable.ISP_Assessment_ID = {0} ", AssesmentID);
+            sb.AppendFormat("AND dba.ANYW_ISP_Consumer_Assessment_Answers.isp_consumer_plan_id = {0} ", AssesmentID);
+            sb.Append("AND SectionAllowable.Applicable = 'y' ");
+            sb.Append("AND dba.ANYW_ISP_Assessment_Questions.hide_on_assessment IS NULL ");
+            sb.Append("AND dba.ANYW_ISP_Assessment_Questions.answer_style = 'CHECKOPTION' ");
+            //sb.AppendFormat("AND dba.ANYW_ISP_Assessment_Subsections.subsection_title = '{0}' ", SubSectionName);
+            //sb.AppendFormat("AND dba.ANYW_ISP_Assessment_Sections.section_order = {0} ", SectionOrder);
+            sb.Append("AND dba.ANYW_ISP_Consumer_Assessment_Answers.answer = '1' ");
+            sb.Append("GROUP BY dba.ANYW_ISP_Assessment_Subsections.subsection_title, ");
+            sb.Append("dba.ANYW_ISP_Assessment_Sections.section_order ");
+
+            DataTable HSCdt = di.SelectRowsDS(sb.ToString()).Tables[0];
+
 
             //MessageBox.Show(string.Format("AssesmentAnswers dt row count {0}",dt.Rows.Count));
 
@@ -123,26 +158,53 @@ namespace Anywhere.service.Data
                     }
                 }
 
-                sb.Clear();
-                sb.Append("SELECT   COUNT(DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id) AS Counter ");
-                sb.Append("FROM dba.ANYW_ISP_Assessment_Question_Sets ");
-                sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Assessment_Questions ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_question_set_id = dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_set_id ");
-                sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Consumer_Assessment_Answers ON dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_id = dba.ANYW_ISP_Consumer_Assessment_Answers.isp_assessment_question_id ");
-                sb.AppendFormat("WHERE   DBA.anyw_isp_consumer_assessment_answers.answer > '0' ");
-                sb.AppendFormat("AND DBA.anyw_isp_consumer_assessment_answers.isp_consumer_plan_id = {0} ", AssesmentID);
-                sb.AppendFormat("AND DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id = {0} ", row["isp_assessment_subsection_id"]);
+                //sb.Clear();
+                //sb.Append("SELECT   COUNT(DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id) AS Counter ");
+                //sb.Append("FROM dba.ANYW_ISP_Assessment_Question_Sets ");
+                //sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Assessment_Questions ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_question_set_id = dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_set_id ");
+                //sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Consumer_Assessment_Answers ON dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_id = dba.ANYW_ISP_Consumer_Assessment_Answers.isp_assessment_question_id ");
+                //sb.AppendFormat("WHERE   DBA.anyw_isp_consumer_assessment_answers.answer > '0' ");
+                //sb.AppendFormat("AND DBA.anyw_isp_consumer_assessment_answers.isp_consumer_plan_id = {0} ", AssesmentID);
+                //sb.AppendFormat("AND DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id = {0} ", row["isp_assessment_subsection_id"]);
+                //row["SubSectionCount"] = di.QueryScalar(sb.ToString());
 
-                row["SubSectionCount"] = di.QueryScalar(sb.ToString());
+                try
+                {
+                    DataRow drSC = SCdt.Select("isp_assessment_subsection_id = " + row["isp_assessment_subsection_id"]).First();
+                    row["SubSectionCount"] = drSC["Counter"];
+                }
+                catch
+                {
+                    row["SubSectionCount"] = 0;
+                }
 
                 if (row["section_order"].ToString() == "5")
+                {
                     if (row["subsection_order"].ToString() == "4")
+                    {
                         if (Convert.ToInt16(row["question_set_order"]) > 2)
                         {
                             row["question_set_order"] = Convert.ToInt16(row["question_set_order"]) + 1;
                         }
+                    }
+                }
 
-                row["HideSubSectionTitle"] = HideSubSectionTitle(AssesmentID, row["subsection_title"].ToString(), Convert.ToInt64(row["section_order"]));
 
+
+                try
+                {
+                    sb.Clear();
+                    sb.AppendFormat("subsection_title = '{0}' ", row["subsection_title"].ToString());
+                    sb.AppendFormat("AND section_order = {0} ", Convert.ToInt64(row["section_order"]));
+
+                    DataRow drHSC = HSCdt.Select(sb.ToString()).First();
+                    row["HideSubSectionTitle"] = 1;
+                }
+                catch
+                {
+                    row["HideSubSectionTitle"] = 0;
+                }
+                //row["HideSubSectionTitle"] = HideSubSectionTitle(AssesmentID, row["subsection_title"].ToString(), Convert.ToInt64(row["section_order"]));
 
             }
             DataRow rowNew = dt.NewRow();
@@ -160,6 +222,7 @@ namespace Anywhere.service.Data
 
             return dt.DataSet;
         }
+
 
         public DataSet ISPSummary(long AssesmentID, bool Assessment, string WhichISPArea, Boolean Advisor = false)
         {
