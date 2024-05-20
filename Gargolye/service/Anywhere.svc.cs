@@ -2987,6 +2987,39 @@ namespace Anywhere
 
         }
 
+        public string generateForm16(System.IO.Stream testInput)
+        {
+            string token;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string userId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+
+            if (serviceCodeId == "%25")
+            {
+                serviceCodeId = "All";
+            }
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "All";
+            }
+
+            return OODfw.generateForm16(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
+        }
+
         public Anywhere.service.Data.OODWorker.OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
         {
             return Ow.getOODEntries(token, consumerIds, serviceStartDate, serviceEndDate, userId, serviceCode, referenceNumber);

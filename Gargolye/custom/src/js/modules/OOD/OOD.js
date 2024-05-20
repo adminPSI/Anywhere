@@ -827,6 +827,11 @@ const OOD = (() => {
                     sentStatus = await OODAjax.generateForm10(data);
                     success = true;
                     break;
+
+                case 16:
+                    sentStatus = await OODAjax.generateForm16(data);
+                    //alert('Form 16 under construction.');
+                    break;
             }
         } catch (error) {
             //console.error(error);
@@ -918,10 +923,12 @@ const OOD = (() => {
         const form4Btn = buildIndividualFormBtn('Form 4 - Monthly Job & Site Development', 4);
         const form8Btn = buildIndividualFormBtn('Form 8 - Work Activities and Assessment', 8);
         const form10Btn = buildIndividualFormBtn('Form 10 - Transportation', 10);
+        const form16Btn = buildIndividualFormBtn('Form 16 - Summer Youth Experience', 16);
 
         popup.appendChild(form4Btn);
         popup.appendChild(form8Btn);
         popup.appendChild(form10Btn);
+        popup.appendChild(form16Btn);
 
         // Append to DOM
         bodyScrollLock.disableBodyScroll(popup);
