@@ -13,6 +13,7 @@ using Anywhere.Log;
 using System.Configuration;
 using System.Linq;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
+using iTextSharp.text.pdf;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -259,6 +260,69 @@ namespace OODForms
         }
 
         #endregion
+
+        public DataSet OODForm16GetNotes(string AuthorizationNumber, string StartDate, string EndDate, string userId)
+        {
+            sb.Clear();
+            sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
+            sb.Append("FROM dba.EM_Job_Task ");
+            sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+            sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
+            string listPosNumber = string.Empty;
+            DataSet ds = di.SelectRowsDS(sb.ToString());
+            string lstPositionstr = string.Empty;
+            if (ds.Tables.Count > 0)
+            {
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    List<string> lstPositions = new List<string>();
+
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        string Posnumber;
+                        Posnumber = row["Position_ID"].ToString();
+                        lstPositions.Add(Posnumber);
+                    }
+                    lstPositionstr = string.Join(",", lstPositions.ToArray());              
+                }
+            }
+
+            sb.Clear();
+            sb.AppendFormat("SELECT   dba.Case_Notes.Service_Date, DATEFORMAT(Cast(dba.Case_Notes.Start_Time AS CHAR), 'hh:mm AA') as Start_Time, DATEFORMAT(CAST(dba.Case_Notes.End_Time AS CHAR), 'hh:mm AA') AS End_Time, ");
+            sb.Append("dba.EMP_OOD.Interventions, ");
+            sb.Append("dba.People.Last_Name, dba.People.First_Name, dba.People.Middle_Name, ");
+            sb.Append("'' AS Initials, dba.Case_Notes.Notes, '' AS StartTime, '' AS EndTime  ");
+            sb.Append("FROM dba.EMP_OOD ");
+            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
+            sb.Append(" LEFT OUTER JOIN  dba.People ON dba.People.Person_ID = dba.Case_Notes.Case_Manager_ID ");
+            sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID in ({0}) ", lstPositionstr);
+            sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+            sb.Append("AND Last_Name > '' ");
+            ds = di.SelectRowsDS(sb.ToString());
+
+            if (ds.Tables.Count > 0)
+            {
+                DataTable dt = ds.Tables[0];
+                foreach (DataRow row in dt.Rows)
+                {
+                    string MN = string.Empty;
+
+                    if (row["Middle_Name"].ToString().Length > 0)
+                    {
+                        MN = row["Middle_Name"].ToString().Substring(0, 1).ToUpper();
+                    }
+
+                    row["Initials"] = String.Format("{0}{1}{2}", row["First_Name"].ToString().Substring(0, 1).ToUpper(), MN, row["Last_Name"].ToString().Substring(0, 1).ToUpper());
+                }
+            }
+
+            return ds;
+        }
 
         #region "OOD 4"
         public DataSet OODDevelopment(string AuthorizationNumber)
