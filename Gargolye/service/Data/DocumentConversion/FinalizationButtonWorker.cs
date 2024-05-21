@@ -42,14 +42,14 @@ namespace Anywhere.service.Data.DocumentConversion
         {
             public string setting_value { get; set; }
         }
-        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string consumerId, string[] emailAddresses, string[] checkBoxes)
+        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string peopleId, string[] emailAddresses, string[] checkBoxes)
         {
             bool isTokenValid = aadg.ValidateToken(token);
             if (isTokenValid)
             {
                 string[] actions = new string[3];
                 //Send to DODD
-                string[] sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, planId, consumerId);
+                string[] sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, planId, peopleId);
                 //get the report in bytes
                 byte[] report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
                 //Send to ONET

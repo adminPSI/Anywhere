@@ -135,7 +135,7 @@ const assessmentAjax = (function () {
     function finalizationActions(retrieveData) {
         //string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID
         //string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId
-        //string consumerId, string[] emailAddresses, string[] checkBoxes
+        //string peopleId, string[] emailAddresses, string[] checkBoxes
         try {
             const data = await $.ajax({
                 type: 'POST',

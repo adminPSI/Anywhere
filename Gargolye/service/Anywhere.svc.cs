@@ -2324,9 +2324,9 @@ namespace Anywhere
             return fbw.getDefaultEmailsForFinalization();
         }
 
-        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string consumerId, string[] emailAddresses, string[] checkBoxes)
+        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string peopleId, string[] emailAddresses, string[] checkBoxes)
         {
-            return fbw.finalizationActions(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, planId, consumerId, emailAddresses, checkBoxes);
+            return fbw.finalizationActions(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, planId, peopleId, emailAddresses, checkBoxes);
         }
 
             public string updatePlanOutcomeProgressSummary(string token, long progressSummaryId, string progressSummary)
