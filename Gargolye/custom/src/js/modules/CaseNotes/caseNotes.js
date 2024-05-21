@@ -391,6 +391,7 @@ const CaseNotes = (() => {
             travelTime: caseNoteEditData.traveltime,
             noteText: caseNoteEditData.casenote,
             confidential: caseNoteEditData.confidential,
+            outcomeServiceMonitoring: caseNoteEditData.outcomeServiceMonitoring,
         };
 
         if (originalNoteDataMap[inputName] !== newValue) {
@@ -807,6 +808,7 @@ const CaseNotes = (() => {
             serviceOrBillingCodeId: data.serviceCode ?? '',
             startTime: data.startTime.substring(0, 5),
             vendorId: data.vendor ?? '',
+            outcomeServiceMonitoring: data.outcomeServiceMonitoring === 'on' ? 'Y' : 'N',
         };
         const attachmentsForSave = await processAttachmentsForSave(data);
 
@@ -904,6 +906,7 @@ const CaseNotes = (() => {
             travelTime: caseNoteEditData.traveltime,
             noteText: caseNoteEditData.casenote,
             confidential: caseNoteEditData.confidential === 'Y' ? true : false,
+            outcomeServiceMonitoring: caseNoteEditData.outcomeServiceMonitoring === 'Y' ? true : false,
         });
 
         if ($.session.applicationName === 'Gatekeeper') {
@@ -1006,6 +1009,14 @@ const CaseNotes = (() => {
                     type: 'checkbox',
                     label: 'Confidential',
                     id: 'confidential',
+                },
+                //outcomeServiceMonitoring
+                {
+                    type: 'checkbox',
+                    label: 'Outcome/Service Monitoring',
+                    id: 'outcomeServiceMonitoring',
+                    hidden: $.session.applicationName === 'Advisor',
+                    //disabled: true,
                 },
                 //startTime
                 {
@@ -1167,7 +1178,7 @@ const CaseNotes = (() => {
         loadPageSkeleton();
 
         // init case notes data
-        cnData = new CaseNotesData();
+        cnData = new CaseNotesData();  
         await cnData.fetchDropdownData();
         await cnData.fetchCaseManagerReviewData(caseManagerId);
     defaultServiceCode = cnData.getDefaultServiceCode();

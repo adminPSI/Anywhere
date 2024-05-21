@@ -1261,21 +1261,19 @@ const OOD = (() => {
     }
 
     function eventListeners() {
-        serviceDateStartInput.addEventListener('change', event => {
-            filterValues.serviceDateStart = event.target.value;
-            //if (UTIL.validateDateFromInput(event.target.value)) {
-                
-            //} else {
-            //    event.target.value = filterValues.serviceDateStart;
-            //}
+        serviceDateStartInput.addEventListener('change', event => { 
+            if (event.target.value !== '') {
+                filterValues.serviceDateStart = event.target.value;
+            } else {
+                event.target.value = filterValues.serviceDateStart;
+            } 
         });
-        serviceDateEndInput.addEventListener('change', event => {
-            filterValues.serviceDateEnd = event.target.value;
-            //if (UTIL.validateDateFromInput(event.target.value)) {
-                
-            //} else {
-            //    event.target.value = filterValues.serviceDateEnd;
-            //}
+        serviceDateEndInput.addEventListener('change', event => {          
+            if (event.target.value !== '') { 
+                filterValues.serviceDateEnd = event.target.value;
+            } else {
+                event.target.value = filterValues.serviceDateEnd;
+            }
         });
         employeeDropdown.addEventListener('change', event => {
             filterValues.userId = event.target.value;

@@ -238,10 +238,10 @@ var notesOverview = (function () {
             currentFilterDisplay.classList.add('filteredByData');
             currentFilterDisplay.id = 'notesFilterDiv';
             btnWrapFilter = cnFilters.filterButtonSet(billerName, displayConsumerName, 'All', 'All', 'All', dispalyServiceDateStart, dispalyServiceDateEnd, displayDateEnteredStart, dispalyDatesEnteredEnd,
-                'All', 'All', 'All', 'All', 'All', 'All', 'All', 'No', 'All', filterValues);
+                'All', 'All', 'All', 'All', 'All', 'All', 'All', 'No', 'All', filterValues,'All');
             currentFilterDisplay.appendChild(btnWrapFilter);
             btnWrapFilter = cnFilters.ShowHideFilter(billerName, displayConsumerName, 'All', 'All', 'All', dispalyServiceDateStart, dispalyServiceDateEnd, displayDateEnteredStart, dispalyDatesEnteredEnd,
-                'All', 'All', 'All', 'All', 'All', 'All', 'All', 'No', 'All');
+                'All', 'All', 'All', 'All', 'All', 'All', 'All', 'No', 'All','All');
             currentFilterDisplay.appendChild(btnWrapFilter);
         }
 
@@ -682,6 +682,7 @@ var notesOverview = (function () {
             attachments: '%',
             noteText: '%',
             noteTextValue: '',
+            outcomeServiceMonitoring: '%', 
         };
 
         initialData(loadPage);
@@ -717,7 +718,8 @@ var notesOverview = (function () {
                 noteTextValue: '',
                 viewEntered,
                 caseloadOnly,
-                userId: $.session.UserId
+                userId: $.session.UserId,
+                outcomeServiceMonitoring: '%',
             };
         }
     }
