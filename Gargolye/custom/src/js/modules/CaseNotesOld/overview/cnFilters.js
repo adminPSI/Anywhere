@@ -13,7 +13,7 @@ const cnFilters = (function () {
         confidentialFiltercCbox,
         showOverlapscCbox;
     let billedFiltercCbox, attachmentsFiltercCbox, noteTextFiltercCbox, selectAllFilterCbox;
-    let locationDropdown, serviceDropdown, needDropdown, contactDropdown, confidentialDropdown;
+    let locationDropdown, serviceDropdown, needDropdown, contactDropdown, confidentialDropdown, outcomeServiceMonitoringDropdown;
     let billedDropdown, attachmentsDropdown, noteTextDropdown, noteTextInput;
     let activeAdditionalFilters;
     //Filter Values
@@ -24,13 +24,14 @@ const cnFilters = (function () {
     let billingServiceBtnWrap;
     let reviewStatusBtnWrap;
     let correctedBtnWrap;
+    let outcomeServiceMonitoringBtnWrap;
     let serviceDatesBtnWrap;
     let createdDatesBtnWrap;
     let locationBtnWrap;
     let serviceBtnWrap;
     let needBtnWrap;
     let contactBtnWrap;
-    let confidentialBtnWrap;
+    let confidentialBtnWrap;     
     let billedBtnWrap;
     let attachmentsBtnWrap;
     let showOverlapsBtnWrap;
@@ -65,6 +66,11 @@ const cnFilters = (function () {
         correctedDropdown = dropdown.build({
             dropdownId: 'correctedDropdown',
             label: 'Corrected',
+            style: 'secondary',
+        });
+        outcomeServiceMonitoringDropdown = dropdown.build({
+            dropdownId: 'outcomeServiceMonitoringDropdown',
+            label: 'Outcome/Service Monitoring',
             style: 'secondary',
         });
         serviceDateStartInput = input.build({
@@ -117,7 +123,7 @@ const cnFilters = (function () {
             dropdownId: 'confidentialDropdown',
             label: 'Confidential',
             style: 'secondary',
-        });
+        });       
         billedDropdown = dropdown.build({
             dropdownId: 'billedDropdown',
             label: 'Billed',
@@ -242,8 +248,10 @@ const cnFilters = (function () {
             popup.appendChild(billingCodeDropdown);
         if (IsShow == 'ALL' || IsShow == 'reviewStatusBtn')
             popup.appendChild(reviewStatusDropdown);
-        if ($.session.applicationName === 'Gatekeeper' && (IsShow == 'ALL' || IsShow == 'correctedBtn')) popup.appendChild(correctedDropdown);
-
+        if ($.session.applicationName === 'Gatekeeper' && (IsShow == 'ALL' || IsShow == 'correctedBtn'))
+            popup.appendChild(correctedDropdown);
+        if ($.session.applicationName === 'Gatekeeper' && (IsShow == 'ALL' || IsShow == 'outcomeServiceMonitoringBtn'))
+            popup.appendChild(outcomeServiceMonitoringDropdown);
         if (IsShow == 'ALL' || IsShow == 'serviceDatesBtn')
             popup.appendChild(serviceDateWrap);
         if (IsShow == 'ALL' || IsShow == 'createdDatesBtn')
@@ -396,6 +404,7 @@ const cnFilters = (function () {
         filterValues.billingCode = billingCodeDropdown.firstChild.value;
         filterValues.reviewStatus = reviewStatusDropdown.firstChild.value;
         filterValues.corrected = correctedDropdown.firstChild.value;
+        filterValues.outcomeServiceMonitoring = outcomeServiceMonitoringDropdown.firstChild.value;
         filterValues.serviceDateStart = serviceDateStartInput.firstChild.value;
         filterValues.serviceDateEnd = serviceDateEndInput.firstChild.value;
         filterValues.enteredDateStart =
@@ -434,7 +443,7 @@ const cnFilters = (function () {
             { text: 'Passed', value: 'P' },
             { text: 'Rejected', value: 'R' },
         ];
-        const condfidentialDropdownData = (billedDropdownData = attachmentDropdownData = correctedDropdownData = [
+        const condfidentialDropdownData = (billedDropdownData = attachmentDropdownData = correctedDropdownData = outcomeServiceMonitoringDropdownData = [
             { text: 'All', value: '%' },
             { text: 'Yes', value: 'Y' },
             { text: 'No', value: 'N' },
@@ -457,6 +466,7 @@ const cnFilters = (function () {
         dropdown.populate(correctedDropdown, correctedDropdownData, filterValues.corrected);
         dropdown.populate(confidentialDropdown, condfidentialDropdownData, filterValues.confidential);
         dropdown.populate(billedDropdown, billedDropdownData, filterValues.billed);
+        dropdown.populate(outcomeServiceMonitoringDropdown, outcomeServiceMonitoringDropdownData, filterValues.outcomeServiceMonitoring);
         if ($.session.applicationName === 'Gatekeeper')
             dropdown.populate(attachmentsDropdown, attachmentDropdownData, filterValues.attachments);
         dropdown.populate(noteTextDropdown, noteTextDropdownData, noteTextDefault);
@@ -619,6 +629,9 @@ const cnFilters = (function () {
         const correctedText =
             correctedDropdown != undefined && correctedDropdown.firstChild.options[correctedDropdown.firstChild.selectedIndex] != undefined ? correctedDropdown.firstChild.options[correctedDropdown.firstChild.selectedIndex]
                 .innerText : 'All';
+        const outcomeServiceMonitoringText =
+            outcomeServiceMonitoringDropdown != undefined && outcomeServiceMonitoringDropdown.firstChild.options[outcomeServiceMonitoringDropdown.firstChild.selectedIndex] != undefined ? outcomeServiceMonitoringDropdown.firstChild.options[outcomeServiceMonitoringDropdown.firstChild.selectedIndex]
+                .innerText : 'All';
         const locationText =
             locationDropdown != undefined && locationDropdown.firstChild.options[locationDropdown.firstChild.selectedIndex] != undefined ? locationDropdown.firstChild.options[locationDropdown.firstChild.selectedIndex].innerText : 'All';
         if (filterValues != undefined) filterValues.locationText = locationText;
@@ -660,12 +673,12 @@ const cnFilters = (function () {
         const dispalyDatesEnteredEnd = enteredDateEndInput != undefined && filterValues.enteredDateEnd != '' ? UTIL.formatDateFromIso(filterValues.enteredDateEnd) : filterValues.enteredDateEnd;
 
         ShowHideFilter(billerName, consumerName, billCodeText, reviewStatusText, correctedText, dispalyServiceDateStart, dispalyServiceDateEnd, displayDateEnteredStart, dispalyDatesEnteredEnd,
-            locationText, serviceText, needText, contactText, confidentialText, billedText, attachmentsText, showOverlapsText, noteTextText);
+            locationText, serviceText, needText, contactText, confidentialText, billedText, attachmentsText, showOverlapsText, noteTextText, outcomeServiceMonitoringText);
 
     }
 
     function ShowHideFilter(billerName, consumerName, billCodeText, reviewStatusText, correctedText, dispalyServiceDateStart, dispalyServiceDateEnd, displayDateEnteredStart, dispalyDatesEnteredEnd,
-        locationText, serviceText, needText, contactText, confidentialText, billedText, attachmentsText, showOverlapsText, noteTextText) {
+        locationText, serviceText, needText, contactText, confidentialText, billedText, attachmentsText, showOverlapsText, noteTextText, outcomeServiceMonitoringText) {
 
         if (!filterValues) {
             filterValues = {
@@ -689,6 +702,7 @@ const cnFilters = (function () {
                 overlaps: 'N',
                 noteText: '%',
                 noteTextValue: '',
+                outcomeServiceMonitoring: '%',
             };
         }
 
@@ -740,6 +754,16 @@ const cnFilters = (function () {
                 btnWrap.appendChild(correctedBtnWrap);
                 if (document.getElementById('correctedBtn') != null)
                     document.getElementById('correctedBtn').innerHTML = 'Corrected: ' + correctedText;
+            }
+
+            if (outcomeServiceMonitoringText === '%' || outcomeServiceMonitoringText === 'All') {
+                btnWrap.appendChild(outcomeServiceMonitoringBtnWrap);
+                btnWrap.removeChild(outcomeServiceMonitoringBtnWrap);
+            }
+            else {
+                btnWrap.appendChild(outcomeServiceMonitoringBtnWrap);
+                if (document.getElementById('outcomeServiceMonitoringBtn') != null)
+                    document.getElementById('outcomeServiceMonitoringBtn').innerHTML = 'Outcome/Service Monitoring: ' + outcomeServiceMonitoringText;
             }
         }
 
@@ -852,7 +876,7 @@ const cnFilters = (function () {
     }
 
     function filterButtonSet(billerName, displayConsumerName, billCodeText, reviewStatusText, correctedText, dispalyServiceDateStart, dispalyServiceDateEnd, displayDateEnteredStart, dispalyDatesEnteredEnd,
-        locationText, serviceText, needText, contactText, confidentialText, billedText, attachmentsText, showOverlapsText, noteTextText, filterValues) {
+        locationText, serviceText, needText, contactText, confidentialText, billedText, attachmentsText, showOverlapsText, noteTextText, filterValues, outcomeServiceMonitoringText) {
         filterBtn = button.build({
             text: 'Filter',
             icon: 'filter',
@@ -940,6 +964,22 @@ const cnFilters = (function () {
             type: 'text',
             classNames: 'filterCloseBtn',
             callback: () => { closeFilter('correctedBtn') },
+        });
+
+        outcomeServiceMonitoringBtn = button.build({
+            id: 'outcomeServiceMonitoringBtn',
+            text: 'Outcome/Service Monitoring: ' + outcomeServiceMonitoringText,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { cnFilters.init(filterValues, 'outcomeServiceMonitoringBtn') },
+        });
+        outcomeServiceMonitoringCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('outcomeServiceMonitoringBtn') },
         });
 
         serviceDatesBtn = button.build({
@@ -1135,6 +1175,14 @@ const cnFilters = (function () {
             btnWrap.appendChild(correctedBtnWrap);
         }
 
+        outcomeServiceMonitoringBtnWrap = document.createElement('div');
+        outcomeServiceMonitoringBtnWrap.classList.add('filterSelectionBtnWrap');
+        outcomeServiceMonitoringBtnWrap.appendChild(outcomeServiceMonitoringBtn);
+        outcomeServiceMonitoringBtnWrap.appendChild(outcomeServiceMonitoringCloseBtn);
+        if ($.session.applicationName === 'Gatekeeper') {
+            btnWrap.appendChild(outcomeServiceMonitoringBtnWrap);
+        }
+
         serviceDatesBtnWrap = document.createElement('div');
         serviceDatesBtnWrap.classList.add('filterSelectionBtnWrap');
         serviceDatesBtnWrap.appendChild(serviceDatesBtn);
@@ -1240,6 +1288,13 @@ const cnFilters = (function () {
             correctedDropdown.firstChild.value = 'All';
             if (correctedDropdown.firstChild.options[correctedDropdown.firstChild.selectedIndex] != undefined)
                 correctedDropdown.firstChild.options[correctedDropdown.firstChild.selectedIndex].innerText = 'All';
+        }
+
+        if (closeFilter == 'outcomeServiceMonitoringBtn') {
+            filterValues.outcomeServiceMonitoring = '%';
+            outcomeServiceMonitoringDropdown.firstChild.value = 'All';
+            if (outcomeServiceMonitoringDropdown.firstChild.options[outcomeServiceMonitoringDropdown.firstChild.selectedIndex] != undefined)
+                outcomeServiceMonitoringDropdown.firstChild.options[outcomeServiceMonitoringDropdown.firstChild.selectedIndex].innerText = 'All';
         }
 
         if (closeFilter == 'locationBtn') {
