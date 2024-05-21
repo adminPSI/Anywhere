@@ -14,6 +14,7 @@ using System.Configuration;
 using System.Linq;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
 using iTextSharp.text.pdf;
+using System.Linq.Expressions;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -322,6 +323,62 @@ namespace OODForms
             }
 
             return ds;
+        }
+
+        public DataSet OODForm16GetScheduledWorkTimes(string AuthorizationNumber, string StartDate, string EndDate, string userId)
+        {
+            try
+            {
+                sb.Clear();
+                sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
+                sb.Append("FROM dba.EM_Job_Task ");
+                sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+                sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+                sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
+                string listPosNumber = string.Empty;
+                DataSet ds = di.SelectRowsDS(sb.ToString());
+                string lstPositionstr = string.Empty;
+                if (ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        List<string> lstPositions = new List<string>();
+
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            string Posnumber;
+                            Posnumber = row["Position_ID"].ToString();
+                            lstPositions.Add(Posnumber);
+                        }
+                        lstPositionstr = string.Join(",", lstPositions.ToArray());
+                    }
+                }
+
+
+                sb.Clear();
+                sb.AppendFormat("SELECT  Distinct Em_work_schedule.start_time, Em_work_schedule.end_time ");
+                sb.Append("FROM dba.Em_work_schedule  ");
+                sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.Em_work_schedule.Position_ID = dba.EMP_OOD.Position_ID ");
+                sb.Append(" LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+                sb.Append(" LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+                sb.AppendFormat("WHERE Em_work_schedule.Position_ID in ({0}) ", 5); //lstPositionstr
+                sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
+                sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+                sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+                ds = di.SelectRowsDS(sb.ToString());
+
+                return ds;
+
+            }
+            catch (Exception)
+            {
+
+               return null;
+            }
+          
+          
         }
 
         #region "OOD 4"
