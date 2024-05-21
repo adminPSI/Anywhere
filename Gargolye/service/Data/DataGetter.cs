@@ -937,18 +937,18 @@ namespace Anywhere.Data
             }
         }
 
-        public string saveCaseNote(string token, string noteId, string caseManagerId, string consumerId, string serviceOrBillingCodeId, string locationCode, string serviceCode, string needCode, string serviceDate, string startTime, string endTime, string vendorId, string contactCode, string serviceLocationCode, string caseNote, string reviewRequired, string confidential, string corrected, string casenotemileage, string casenotetraveltime, string documentationTime)
+        public string saveCaseNote(string token, string noteId, string caseManagerId, string consumerId, string serviceOrBillingCodeId, string locationCode, string serviceCode, string needCode, string serviceDate, string startTime, string endTime, string vendorId, string contactCode, string serviceLocationCode, string caseNote, string reviewRequired, string confidential, string corrected, string casenotemileage, string casenotetraveltime, string documentationTime, string outcomeServiceMonitoring)
         {
             if (tokenValidator(token) == false) return null;
             if (stringInjectionValidator(caseNote) == false) return null;
             logger.debug("saveCaseNote" + token);
             try
             {
-                return executeDataBaseCall("CALL DBA.ANYW_CaseNotes_SaveCaseNote('" + token + "', '" + noteId + "', '" + caseManagerId + "', '" + consumerId + "', '" + serviceOrBillingCodeId + "', '" + locationCode + "', '" + serviceCode + "', '" + needCode + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + vendorId + "', '" + contactCode + "', '" + serviceLocationCode + "', '" + caseNote + "', '" + reviewRequired + "', '" + confidential + "', '" + corrected + "', '" + casenotemileage + "', '" + casenotetraveltime + "', '" + documentationTime + "');", "results", "results");
+                return executeDataBaseCall("CALL DBA.ANYW_CaseNotes_SaveCaseNote('" + token + "', '" + noteId + "', '" + caseManagerId + "', '" + consumerId + "', '" + serviceOrBillingCodeId + "', '" + locationCode + "', '" + serviceCode + "', '" + needCode + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + vendorId + "', '" + contactCode + "', '" + serviceLocationCode + "', '" + caseNote + "', '" + reviewRequired + "', '" + confidential + "', '" + corrected + "', '" + casenotemileage + "', '" + casenotetraveltime + "', '" + documentationTime + "', '" + outcomeServiceMonitoring + "');", "results", "results");
             }
             catch (Exception ex)
             {
-                logger.error("536", ex.Message + " ANYW_CaseNotes_SaveCaseNote('" + token + "', '" + noteId + "', '" + caseManagerId + "', '" + consumerId + "', '" + serviceOrBillingCodeId + "', '" + locationCode + "', '" + serviceCode + "', '" + needCode + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + vendorId + "', '" + contactCode + "', '" + serviceLocationCode + "', '" + caseNote + "', '" + reviewRequired + "', '" + confidential + "', '" + casenotemileage + "', '" + casenotetraveltime + "', '" + documentationTime + "')");
+                logger.error("536", ex.Message + " ANYW_CaseNotes_SaveCaseNote('" + token + "', '" + noteId + "', '" + caseManagerId + "', '" + consumerId + "', '" + serviceOrBillingCodeId + "', '" + locationCode + "', '" + serviceCode + "', '" + needCode + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + vendorId + "', '" + contactCode + "', '" + serviceLocationCode + "', '" + caseNote + "', '" + reviewRequired + "', '" + confidential + "', '" + casenotemileage + "', '" + casenotetraveltime + "', '" + documentationTime + "', '" + outcomeServiceMonitoring + "')");
                 return "536: Error saving case note";
             }
         }

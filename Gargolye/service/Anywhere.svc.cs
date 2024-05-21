@@ -402,10 +402,10 @@ namespace Anywhere
 
         public CaseNotesWorker.CaseNotesFilteredSearch[] caseNotesFilteredSearchJSON(string token, string billerId, string consumerId, string serviceStartDate, string serviceEndDate,
             string dateEnteredStart, string dateEnteredEnd, string billingCode, string reviewStatus, string location, string service, string need, string contact, string confidential, string corrected, string billed,
-            string attachments, string overlaps, string noteText, string applicationName)
+            string attachments, string overlaps, string noteText, string applicationName, string outcomeServiceMonitoring)
         {
             return caseNotesWorker.caseNotesFilteredSearchJSON(token, billerId, consumerId, serviceStartDate, serviceEndDate, dateEnteredStart, dateEnteredEnd,
-                billingCode, reviewStatus, location, service, need, contact, confidential, corrected, billed, attachments, overlaps, noteText, applicationName);
+                billingCode, reviewStatus, location, service, need, contact, confidential, corrected, billed, attachments, overlaps, noteText, applicationName, outcomeServiceMonitoring);
         }
 
         public AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token)
@@ -460,9 +460,9 @@ namespace Anywhere
             return dg.populateDropdownData(token);
         }
 
-        public string saveCaseNote(string token, string noteId, string caseManagerId, string consumerId, string serviceOrBillingCodeId, string locationCode, string serviceCode, string needCode, string serviceDate, string startTime, string endTime, string vendorId, string contactCode, string serviceLocationCode, string caseNote, string reviewRequired, string confidential, string corrected, string casenotemileage, string casenotetraveltime, string documentationTime)
+        public string saveCaseNote(string token, string noteId, string caseManagerId, string consumerId, string serviceOrBillingCodeId, string locationCode, string serviceCode, string needCode, string serviceDate, string startTime, string endTime, string vendorId, string contactCode, string serviceLocationCode, string caseNote, string reviewRequired, string confidential, string corrected, string casenotemileage, string casenotetraveltime, string documentationTime, string outcomeServiceMonitoring)
         {
-            return dg.saveCaseNote(token, noteId, caseManagerId, consumerId, serviceOrBillingCodeId, locationCode, serviceCode, needCode, serviceDate, startTime, endTime, vendorId, contactCode, serviceLocationCode, caseNote, reviewRequired, confidential, corrected, casenotemileage, casenotetraveltime, documentationTime);
+            return dg.saveCaseNote(token, noteId, caseManagerId, consumerId, serviceOrBillingCodeId, locationCode, serviceCode, needCode, serviceDate, startTime, endTime, vendorId, contactCode, serviceLocationCode, caseNote, reviewRequired, confidential, corrected, casenotemileage, casenotetraveltime, documentationTime, outcomeServiceMonitoring);
         }
 
         public string saveGroupCaseNote(string token, string noteId, string groupNoteId, string caseManagerId, string consumerId, string serviceOrBillingCodeId, string locationCode, string serviceCode, string needCode, string serviceDate, string startTime, string endTime, string vendorId, string contactCode, string serviceLocationCode, string caseNote, string reviewRequired, string confidential, string consumerGroupCount, string casenotemileage, string casenotetraveltime, string documentationTime)

@@ -24,6 +24,7 @@ var caseNotesAjax = (function () {
       overlaps: data.overlaps,
       noteText: data.noteText !== '' ? `%${data.noteText}%` : '',
       applicationName: $.session.applicationName,
+      outcomeServiceMonitoring: data.outcomeServiceMonitoring
     };
     if (data.overlaps === 'Y') {
       reviewTable.innerHTML = '';
@@ -356,7 +357,7 @@ var caseNotesAjax = (function () {
   }
 
   // SAVE, UPDATE, DELETE
-  function saveSingleCaseNote(data, callback) {
+    function saveSingleCaseNote(data, callback) {
     // saveCaseNote
     data = {
       token: $.session.Token,
@@ -380,6 +381,7 @@ var caseNotesAjax = (function () {
       casenotemileage: data.casenotemileage,
       casenotetraveltime: data.casenotetraveltime,
       documentationTime: data.documentationTime,
+      outcomeServiceMonitoring: data.serviceMonitoring
     };
     return $.ajax({
       type: 'POST',
