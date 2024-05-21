@@ -868,16 +868,22 @@ namespace OODForms
 
                 // Fill out DETAIL DATA Portion of the XLS SPREADSHEET********************************************************************************************************
 
-                //ds = obj.getScheduledWork(AuthorizationNumber, StartDate, EndDate, serviceCode, userID);   //*********TODO: Create getScheduledWork using the New Stored Procedure 
-                //if (ds.Tables.Count > 0)
-                //{
-                //    dt = ds.Tables[0];
-                //    foreach (DataRow row2 in dt.Rows)
-                //    {
-                //        WS.Cell("G6").Value = personCompletingReport;
-                //    }
+                ds = obj.OODForm16GetNotes(AuthorizationNumber, StartDate, EndDate, userID);
 
-                //}
+                Int32 t = 25;
+                foreach (DataRow row2 in ds.Tables[0].Rows)
+                {
+                    WS.Cell(String.Format("a{0}", t)).ValueAsDateTime = Convert.ToDateTime(row2["Service_date"]);// Convert.ToDateTime(Convert.ToDateTime(row2["Service_date"]).ToString("MM/dd/yyyy")); //.ToString("MM/dd/yyyy"); //DateTime.ParseExact((DateTime)row2["Service_date"],"MM/dd/yyyy",CultureInfo.InvariantCulture); 
+                    WS.Cell(String.Format("a{0}", t)).NumberFormatString = "MM/dd/yyy"; //  Bytescout.Spreadsheet.ExtendedFormat.;
+                    WS.Cell(String.Format("b{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["Start_Time"])); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
+                    WS.Cell(String.Format("c{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["End_Time"]));
+                    WS.Cell(String.Format("d{0}", t)).Value = "0";
+                    WS.Cell(String.Format("f{0}", t)).Value = row2["Initials"].ToString().Trim();
+                    WS.Cell(String.Format("g{0}", t)).Value = row2["Interventions"].ToString().Trim();
+                    WS.Cell(String.Format("n{0}", t)).FontColor = System.Drawing.Color.Black;
+                    t += 1;
+                }
+
 
                 //             WS.Calculate();
 
