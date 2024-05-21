@@ -72,9 +72,7 @@ const plan = (function () {
 
   async function launchWorkflowViewer() {
     let processId =
-      planType === 'Revision'
-        ? WorkflowProcess.CONSUMER_PLAN_REVISION
-        : WorkflowProcess.CONSUMER_PLAN_ANNUAL;
+      planType === 'Revision' ? WorkflowProcess.CONSUMER_PLAN_REVISION : WorkflowProcess.CONSUMER_PLAN_ANNUAL;
     await WorkflowViewerComponent.open(processId, planId);
   }
   async function dashHandler(consumer, pId, stepId) {
@@ -399,8 +397,7 @@ const plan = (function () {
           planStatus = newStatus;
         }
 
-        const message =
-          success === 1 ? 'Status successfully updated.' : 'Status was not able to be updated.';
+        const message = success === 1 ? 'Status successfully updated.' : 'Status was not able to be updated.';
         const successDiv = successfulSave.get(message, true);
         if (success !== 1) successDiv.classList.add('error');
 
@@ -464,9 +461,7 @@ const plan = (function () {
     const effectiveStart = planDates.getEffectiveStartDate();
     const formatedDate = UTIL.formatDateFromDateObj(effectiveStart);
     const splitFormatedDate = formatedDate.split('-');
-    let esDate = `${splitFormatedDate[1]}/${splitFormatedDate[2]}/${splitFormatedDate[0].substring(
-      2,
-    )}`;
+    let esDate = `${splitFormatedDate[1]}/${splitFormatedDate[2]}/${splitFormatedDate[0].substring(2)}`;
 
     if (planType === 'Annual' || planType === 'a') {
       warningMessage.innerHTML = `
@@ -574,8 +569,7 @@ const plan = (function () {
           consumerPlanId: planId,
         });
 
-        const message =
-          success === 1 ? 'Plan successfully reactivated.' : 'Unable to reactivate plan.';
+        const message = success === 1 ? 'Plan successfully reactivated.' : 'Unable to reactivate plan.';
         const successDiv = successfulSave.get(message, true);
         if (success !== 1) successDiv.classList.add('error');
 
@@ -954,31 +948,18 @@ const plan = (function () {
           prevPlanId: newType === 'a' ? planId : newPlanData.consumerPlanId,
           planType: newType.toUpperCase(),
           revisionNumber: newType === 'r' ? parseInt(newPlanData.revisionNumber) + 1 : '',
-          planYearStart: UTIL.formatDateToIso(
-            dates.formatISO(planDates.getPlanYearStartDate()).split('T')[0],
-          ),
-          planYearEnd: UTIL.formatDateToIso(
-            dates.formatISO(planDates.getPlanYearEndDate()).split('T')[0],
-          ),
-          effectiveStartDate: UTIL.formatDateToIso(
-            dates.formatISO(planDates.getEffectiveStartDate()).split('T')[0],
-          ),
-          effectiveEndDate: UTIL.formatDateToIso(
-            dates.formatISO(planDates.getEffectiveEndDate()),
-          ).split('T')[0],
-          reviewDate: UTIL.formatDateToIso(dates.formatISO(planDates.getPlanReviewDate())).split(
-            'T',
-          )[0],
+          planYearStart: UTIL.formatDateToIso(dates.formatISO(planDates.getPlanYearStartDate()).split('T')[0]),
+          planYearEnd: UTIL.formatDateToIso(dates.formatISO(planDates.getPlanYearEndDate()).split('T')[0]),
+          effectiveStartDate: UTIL.formatDateToIso(dates.formatISO(planDates.getEffectiveStartDate()).split('T')[0]),
+          effectiveEndDate: UTIL.formatDateToIso(dates.formatISO(planDates.getEffectiveEndDate())).split('T')[0],
+          reviewDate: UTIL.formatDateToIso(dates.formatISO(planDates.getPlanReviewDate())).split('T')[0],
         });
 
         if (success === 'Success') {
-          currentType.innerHTML = `<p>Current Type:</p> ${
-            planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'
-          }`;
+          currentType.innerHTML = `<p>Current Type:</p> ${planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'}`;
         }
 
-        const message =
-          success === 'Success' ? 'Type successfully updated.' : 'Type was not able to be updated.';
+        const message = success === 'Success' ? 'Type successfully updated.' : 'Type was not able to be updated.';
         const successDiv = successfulSave.get(message, true);
         if (success !== 'Success') successDiv.classList.add('error');
 
@@ -1211,8 +1192,7 @@ const plan = (function () {
     // const checkboxCheck = document.createElement('div');
     //  checkboxCheck.appendChild(includeCheckbox);
     const checkboxText = document.createElement('div');
-    checkboxText.innerHTML =
-      'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
+    checkboxText.innerHTML = 'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
     const checkboxArea = document.createElement('div');
     checkboxArea.classList.add('checkboxWrap');
     checkboxArea.appendChild(includeCheckbox);
@@ -1354,8 +1334,7 @@ const plan = (function () {
     });
 
     const checkboxText = document.createElement('div');
-    checkboxText.innerHTML =
-      'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
+    checkboxText.innerHTML = 'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
     const checkboxArea = document.createElement('div');
     checkboxArea.classList.add('checkboxWrap');
     checkboxArea.appendChild(includeCheckbox);
@@ -1475,12 +1454,15 @@ const plan = (function () {
         // });
         // }
 
-        if (sendSuccess && (sendSuccess[0] === "Successfully sent Plan to DODD." || sendSuccess[0] === "Successfully sent Plan and selected Attachments to DODD.")) {
+        if (
+          sendSuccess &&
+          (sendSuccess[0] === 'Successfully sent Plan to DODD.' ||
+            sendSuccess[0] === 'Successfully sent Plan and selected Attachments to DODD.')
+        ) {
           sendtoDODDSuccessMessage(sendSuccess);
         } else {
           sendtoDODDGeneralErrorMessage(sendSuccess);
         }
-        
 
         DODDScreen.removeChild(spinner);
         DODDScreen.appendChild(screenInner);
@@ -1508,21 +1490,19 @@ const plan = (function () {
       text: 'Copy Error to Clipboard',
       style: 'secondary',
       type: 'contained',
-    //  icon: 'checkmark',
+      //  icon: 'checkmark',
       callback: async function () {
         navigator.clipboard.writeText(sendtoDODDResponse[0]);
         // POPUP.hide(generalMessagePopup);
         overlay.show();
         showOKPopup();
-    
-  
       },
     });
     var displayDetailBtn = button.build({
       text: 'Show Error Details',
       style: 'secondary',
       type: 'contained',
-      
+
       //icon: 'checkmark',
       callback: async function () {
         POPUP.hide(generalMessagePopup);
@@ -1534,12 +1514,11 @@ const plan = (function () {
       text: 'Close',
       style: 'secondary',
       type: 'contained',
-     // classNames: 'btnWrap',
+      // classNames: 'btnWrap',
       // icon: 'checkmark',
       callback: async function () {
         POPUP.hide(generalMessagePopup);
         overlay.show();
-        
       },
     });
 
@@ -1555,66 +1534,63 @@ const plan = (function () {
   }
 
   function sendtoDODDDetailErrorMessage(sendtoDODDResponse) {
-   // alert(sendtoDODDResponse[1]);
-   var detailMessagePopup = POPUP.build({
-    id: 'saveAlertPopup',
-    classNames: 'warning',
-    hideX: true,
-  });
-  var detailBtnWrap = document.createElement('div');
-  detailBtnWrap.classList.add('btnWrap');
-  var closeBtnWrap = document.createElement('div');
-  closeBtnWrap.classList.add('btnWrap');
-  var alertokBtn = button.build({
-    text: 'Copy Error to Clipboard',
-    style: 'secondary',
-    type: 'contained',
-    // icon: 'checkmark',
-    callback: async function () {
-      navigator.clipboard.writeText(sendtoDODDResponse[0] + '        ' + sendtoDODDResponse[1]);
-     // POPUP.hide(detailMessagePopup);
-      overlay.show();
-      showOKPopup();
-    },
-  });
-  var displayGeneralBtn = button.build({
-    text: 'Hide Error Details',
-    style: 'secondary',
-    type: 'contained',
-    //icon: 'checkmark',
-    callback: async function () {
-      POPUP.hide(detailMessagePopup);
-      overlay.show();
-      sendtoDODDGeneralErrorMessage(sendtoDODDResponse);
-    },
-  });
-  var closeBtn = button.build({
-    text: 'Close',
-    style: 'secondary',
-    type: 'contained',
-   // classNames: 'btnWrap',
-    // icon: 'checkmark',
-    callback: async function () {
-      POPUP.hide(detailMessagePopup);
-      overlay.show();
-      
-    },
-  });
+    // alert(sendtoDODDResponse[1]);
+    var detailMessagePopup = POPUP.build({
+      id: 'saveAlertPopup',
+      classNames: 'warning',
+      hideX: true,
+    });
+    var detailBtnWrap = document.createElement('div');
+    detailBtnWrap.classList.add('btnWrap');
+    var closeBtnWrap = document.createElement('div');
+    closeBtnWrap.classList.add('btnWrap');
+    var alertokBtn = button.build({
+      text: 'Copy Error to Clipboard',
+      style: 'secondary',
+      type: 'contained',
+      // icon: 'checkmark',
+      callback: async function () {
+        navigator.clipboard.writeText(sendtoDODDResponse[0] + '        ' + sendtoDODDResponse[1]);
+        // POPUP.hide(detailMessagePopup);
+        overlay.show();
+        showOKPopup();
+      },
+    });
+    var displayGeneralBtn = button.build({
+      text: 'Hide Error Details',
+      style: 'secondary',
+      type: 'contained',
+      //icon: 'checkmark',
+      callback: async function () {
+        POPUP.hide(detailMessagePopup);
+        overlay.show();
+        sendtoDODDGeneralErrorMessage(sendtoDODDResponse);
+      },
+    });
+    var closeBtn = button.build({
+      text: 'Close',
+      style: 'secondary',
+      type: 'contained',
+      // classNames: 'btnWrap',
+      // icon: 'checkmark',
+      callback: async function () {
+        POPUP.hide(detailMessagePopup);
+        overlay.show();
+      },
+    });
 
-
-  detailBtnWrap.appendChild(alertokBtn);
-  detailBtnWrap.appendChild(displayGeneralBtn);
-  closeBtnWrap.appendChild(closeBtn);
-  var detailMessage = document.createElement('p');
-  detailMessage.innerHTML = sendtoDODDResponse[0] + '</br></br>' + sendtoDODDResponse[1];
-  detailMessagePopup.appendChild(detailMessage);
-  detailMessagePopup.appendChild(detailBtnWrap);
-  detailMessagePopup.appendChild(closeBtnWrap);
-  POPUP.show(detailMessagePopup);
+    detailBtnWrap.appendChild(alertokBtn);
+    detailBtnWrap.appendChild(displayGeneralBtn);
+    closeBtnWrap.appendChild(closeBtn);
+    var detailMessage = document.createElement('p');
+    detailMessage.innerHTML = sendtoDODDResponse[0] + '</br></br>' + sendtoDODDResponse[1];
+    detailMessagePopup.appendChild(detailMessage);
+    detailMessagePopup.appendChild(detailBtnWrap);
+    detailMessagePopup.appendChild(closeBtnWrap);
+    POPUP.show(detailMessagePopup);
   }
 
-  
-  function showOKPopup(){
+  function showOKPopup() {
     var OKPopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
@@ -1630,7 +1606,6 @@ const plan = (function () {
       callback: async function () {
         POPUP.hide(OKPopup);
         overlay.show();
-        
       },
     });
 
@@ -1640,10 +1615,9 @@ const plan = (function () {
     OKPopup.appendChild(OKMessage);
     OKPopup.appendChild(OKBtnWrap);
     POPUP.show(OKPopup);
-
   }
 
-  function sendtoDODDSuccessMessage(sendtoDODDResponse){
+  function sendtoDODDSuccessMessage(sendtoDODDResponse) {
     var sendtoDODDSuccessPopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
@@ -1659,17 +1633,15 @@ const plan = (function () {
       callback: async function () {
         POPUP.hide(sendtoDODDSuccessPopup);
         overlay.show();
-        
       },
     });
-   
+
     OKBtnWrap.appendChild(alertokBtn);
     var sendtoDODDSuccessMesssage = document.createElement('p');
-    sendtoDODDSuccessMesssage.innerHTML = sendtoDODDResponse[0] ;
+    sendtoDODDSuccessMesssage.innerHTML = sendtoDODDResponse[0];
     sendtoDODDSuccessPopup.appendChild(sendtoDODDSuccessMesssage);
     sendtoDODDSuccessPopup.appendChild(OKBtnWrap);
     POPUP.show(sendtoDODDSuccessPopup);
-
   }
 
   function sendToPortalAlert(sendtoPortalResponse) {
@@ -1687,7 +1659,6 @@ const plan = (function () {
       callback: async function () {
         POPUP.hide(alertPopup);
         overlay.show();
-        
       },
     });
 
@@ -1698,7 +1669,6 @@ const plan = (function () {
     alertPopup.appendChild(alertbtnWrap);
     POPUP.show(alertPopup);
   }
-
 
   function buildMorePopupMenu() {
     const morepopupmenu = document.createElement('div');
@@ -1764,18 +1734,13 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       classNames:
-        planStatus === 'C' && $.session.webPermission === 'Web'
-          ? ['sendtoPortalBtn']
-          : ['sendtoPortalBtn', 'disabled'],
+        planStatus === 'C' && $.session.webPermission === 'Web' ? ['sendtoPortalBtn'] : ['sendtoPortalBtn', 'disabled'],
     });
     const sendToDODDBtn = button.build({
       text: 'Send To DODD',
       style: 'secondary',
       type: 'contained',
-      classNames:
-        planStatus === 'C' && $.session.sendToDODD
-          ? ['sendToDODDBtn']
-          : ['sendToDODDBtn', 'disabled'],
+      classNames: planStatus === 'C' && $.session.sendToDODD ? ['sendToDODDBtn'] : ['sendToDODDBtn', 'disabled'],
     });
     const editDatesBtn = button.build({
       text: 'Change Dates',
@@ -1790,8 +1755,7 @@ const plan = (function () {
       text: 'Change Status',
       style: 'secondary',
       type: 'contained',
-      classNames:
-        planActiveStatus && $.session.planUpdate ? ['statusBtn'] : ['statusBtn', 'disabled'],
+      classNames: planActiveStatus && $.session.planUpdate ? ['statusBtn'] : ['statusBtn', 'disabled'],
     });
     const deleteBtn = button.build({
       text: 'Delete Plan',
@@ -1988,27 +1952,62 @@ const plan = (function () {
     const screen1 = document.createElement('div');
     const screen2 = document.createElement('div');
     const screen3 = document.createElement('div');
+    screen1.classList.add('screenOne', 'finalizeScreen', 'visible');
+    screen2.classList.add('screenTwo', 'finalizeScreen');
+    screen3.classList.add('screenThree', 'finalizeScreen');
+
     const actionBtn = button.build({
-      id: 'finalizePopup',
       text: 'Next',
-      callback: () => {
-        
+      callback: async () => {
+        if (currScreen === 1) {
+          if (Object.values(selectedCheckboxes).every(i => i === true)) {
+            currScreen === 2;
+            screen1.classList.remove('visible');
+            screen2.classList.add('visible');
+          }
+
+          return;
+        }
+
+        if (currScreen === 2) {
+          currScreen === 3;
+          screen2.classList.remove('visible');
+          screen3.classList.add('visible');
+
+          await assessmentAjax.finalizationActions({
+            token: $.session.Token,
+            planAttachmentIds: [...Object.values(selectedAttachmentsPlan)],
+            wfAttachmentIds: [...Object.values(selectedAttachmentsPlan)],
+            sigAttachmentIds: [''],
+            userId: $.session.User,
+            assessmentID: '',
+            peopleId: selectedConsumer.id,
+            emailAddresses: [''],
+            checkboxes: [''],
+          });
+        }
       },
     });
+
     finalizePopup.appendChild(screen1);
     finalizePopup.appendChild(screen2);
     finalizePopup.appendChild(screen3);
     finalizePopup.appendChild(actionBtn);
 
+    //----------------------------------------------
     // screen 1
-    let selectedCheckboxes = {
-      selectAllCheck: true, 
-      sendToDODDCheck: true, 
-      sendToOhioNetCheck: true, 
-      downloadReportCheck: true, 
-      emailReportCheck: true, 
+    //----------------------------------------------
+    const selectedCheckboxes = {
+      selectAllCheck: true,
+      sendToDODDCheck: true,
+      sendToOhioNetCheck: true,
+      downloadReportCheck: true,
+      emailReportCheck: true,
     };
+    const selectedEmails = {};
     const emails = await assessmentAjax.getDefaultEmailsForFinalization();
+    const checkboxWrap = document.createElement('div');
+    checkboxWrap.classList.add('checkboxes');
 
     const selectAllCheck = input.buildCheckbox({
       id: 'selectAll',
@@ -2016,7 +2015,7 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.selectAllCheck = e.target.checked;
-      }
+      },
     });
     const sendToDODDCheck = input.buildCheckbox({
       id: 'sendToDODD',
@@ -2024,7 +2023,7 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.sendToDODDCheck = e.target.checked;
-      }
+      },
     });
     const sendToOhioNetCheck = input.buildCheckbox({
       id: 'sendToOhioNet',
@@ -2032,7 +2031,7 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.sendToOhioNetCheck = e.target.checked;
-      }
+      },
     });
     const downloadReportCheck = input.buildCheckbox({
       id: 'downloadReport',
@@ -2040,7 +2039,7 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.downloadReportCheck = e.target.checked;
-      }
+      },
     });
     const emailReportCheck = input.buildCheckbox({
       id: 'emailReport',
@@ -2048,46 +2047,66 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.emailReportCheck = e.target.checked;
-      }
+      },
     });
-    screen1.appendChild(selectAllCheck);
-    screen1.appendChild(sendToDODDCheck);
-    screen1.appendChild(sendToOhioNetCheck);
-    screen1.appendChild(downloadReportCheck);
-    screen1.appendChild(emailReportCheck);
+
+    screen1.appendChild(checkboxWrap);
+    checkboxWrap.appendChild(selectAllCheck);
+    checkboxWrap.appendChild(sendToDODDCheck);
+    checkboxWrap.appendChild(sendToOhioNetCheck);
+    checkboxWrap.appendChild(downloadReportCheck);
+    checkboxWrap.appendChild(emailReportCheck);
 
     if (emails) {
       console.log(emails);
+
+      emails.forEach(email => {
+        const emailInput = input.build({
+          label: 'Email',
+          type: 'email',
+          value: email,
+          callback: e => {
+            //selectedEmails.emailInput1 = e.target.value
+          }
+        });
+        screen1.appendChild(emailInput);
+
+        //selectedEmails
+      })
+    } else {
+      const emailInput = input.build({
+        label: 'Email',
+        type: 'email',
+        callback: e => {
+          //selectedEmails.emailInput1 = e.target.value
+        }
+      });
+      screen1.appendChild(emailInput);
     }
 
-    const emailInput1 = input.build({
-      label: 'Email',
-      type: 'email',
-    });
-    const emailInput2 = input.build({
-      label: 'Email',
-      type: 'email',
-    });
-    const emailInput3 = input.build({
-      label: 'Email',
-      type: 'email',
-    });
-    const emailInput4 = input.build({
-      label: 'Email',
-      type: 'email',
-    });
-    const emailInput5 = input.build({
-      label: 'Email',
-      type: 'email',
-    });
-    screen1.appendChild(emailInput1);
-    screen1.appendChild(emailInput2);
-    screen1.appendChild(emailInput3);
-    screen1.appendChild(emailInput4);
-    screen1.appendChild(emailInput5);
+    const addEmailBtn = button.build({
+      text: 'Add Email',
+      callback: () => {
+        // if email input count is 5, return;
 
+        const emailInput = input.build({
+          label: 'Email',
+          type: 'email',
+          callback: e => {
+            //selectedEmails.emailInput1 = e.target.value
+          }
+        });
+      }
+    });
+    screen1.appendChild(addEmailBtn);
+
+    //----------------------------------------------
     // screen 2
-    // attachments? from report screen
+    //----------------------------------------------
+    const selectedAttachmentsPlan = {};
+    const selectedAttachmentsSignature = {};
+    const selectedAttachmentsWorkflow = {};
+
     const planAttBody = document.createElement('div');
     const workflowAttBody = document.createElement('div');
     const signatureAttBody = document.createElement('div');
@@ -2099,9 +2118,6 @@ const plan = (function () {
       token: $.session.Token,
       assessmentId: planId,
     });
-    const selectedAttachmentsSignature = {};
-    const selectedAttachmentsPlan = {};
-    const selectedAttachmentsWorkflow = {};
 
     let index = 0;
 
@@ -2149,7 +2165,9 @@ const plan = (function () {
       }
     }
 
+    //----------------------------------------------
     // screen 3
+    //----------------------------------------------
     const selectAllStatus = document.createElement('div');
     const sendToDODDStatus = document.createElement('div');
     const sendToOhioNetStatus = document.createElement('div');
@@ -2177,9 +2195,9 @@ const plan = (function () {
     screen3.appendChild(downloadReportStatus);
     screen3.appendChild(emailReportStatus);
 
-
     POPUP.show(finalizePopup);
   }
+
   // plan header
   function refreshGeneralInfo() {
     planHeader.removeChild(planHeaderGeneralInfoBar);
@@ -2215,27 +2233,19 @@ const plan = (function () {
 
     const formatedDate = UTIL.formatDateFromDateObj(EffectiveStartDate);
     const splitFormatedDate = formatedDate.split('-');
-    let esDate = `${splitFormatedDate[1]}/${splitFormatedDate[2]}/${splitFormatedDate[0].substring(
-      2,
-    )}`;
+    let esDate = `${splitFormatedDate[1]}/${splitFormatedDate[2]}/${splitFormatedDate[0].substring(2)}`;
 
     const formatedDate2 = UTIL.formatDateFromDateObj(EffectiveEndDate);
     const splitFormatedDate2 = formatedDate2.split('-');
-    let edDate = `${splitFormatedDate2[1]}/${
-      splitFormatedDate2[2]
-    }/${splitFormatedDate2[0].substring(2)}`;
+    let edDate = `${splitFormatedDate2[1]}/${splitFormatedDate2[2]}/${splitFormatedDate2[0].substring(2)}`;
 
     const formatedDate3 = UTIL.formatDateFromDateObj(PlanStartDate);
     const splitFormatedDate3 = formatedDate3.split('-');
-    let starDate = `${splitFormatedDate3[1]}/${
-      splitFormatedDate3[2]
-    }/${splitFormatedDate3[0].substring(2)}`;
+    let starDate = `${splitFormatedDate3[1]}/${splitFormatedDate3[2]}/${splitFormatedDate3[0].substring(2)}`;
 
     const formatedDate4 = UTIL.formatDateFromDateObj(PlanEndDate);
     const splitFormatedDate4 = formatedDate4.split('-');
-    let endDate = `${splitFormatedDate4[1]}/${
-      splitFormatedDate4[2]
-    }/${splitFormatedDate4[0].substring(2)}`;
+    let endDate = `${splitFormatedDate4[1]}/${splitFormatedDate4[2]}/${splitFormatedDate4[0].substring(2)}`;
 
     generalInfoBar = document.createElement('div');
     generalInfoBar.classList.add('generalInfo');
@@ -2518,78 +2528,76 @@ const plan = (function () {
       // TODO 100969 -- display list of User Forms for the selected Workflows
 
       if ($.session.planFormCarryover) {
+        let selectedwfForms = [];
 
-      
-         let selectedwfForms = [];
+        const wfvPopup = document.querySelector('.workflowListPopup');
+        if (wfvPopup) {
+          POPUP.hide(wfvPopup);
+        }
 
-         const wfvPopup = document.querySelector('.workflowListPopup');
-         if (wfvPopup) {
-           POPUP.hide(wfvPopup);
-         }
-
-         // *********FAKE DATA for Step Docs in a Workflow*****Albert Annual 6/23******Annual -- 279, Antnio -- 934*******************
+        // *********FAKE DATA for Step Docs in a Workflow*****Albert Annual 6/23******Annual -- 279, Antnio -- 934*******************
         //  const wfFormsData2 = [{ docId : 6052 , description : 'Expert 15 test.pdf', WFId: 934, wfName: 'Antinono 3' },
         // { docId : 6053 , description : 'FORMS -- General.pdf', WFId: 934, wfName: 'Antinono 3' },
         // { docId : 1836 , description : 'Medication -- Med Assessment.pdf', WFId: 279, wfName: 'Annual - Waver'},
-       ///  { docId : 3201 , description : 'Signed_Plan.pdf', WFId: 279, wfName: 'Annual - Waver'} ];
+        ///  { docId : 3201 , description : 'Signed_Plan.pdf', WFId: 279, wfName: 'Annual - Waver'} ];
 
-         let thisannual_plan;
-         // inserting a new plan based on a selected prior plan
-         if (priorConsumerPlanId && priorConsumerPlanId !== '') {
-           thisPreviousPlanId = priorConsumerPlanId;
-         } else {
-           // // inserting a new plan based on the most recent existing plan
-           thisannual_plan = previousPlansData.filter(wf => wf.active === 'True');
-           if (thisannual_plan && thisannual_plan.length > 0) {
-             thisPreviousPlanId = thisannual_plan[0].consumerPlanId;
-           }
-         }
-
-         const wfFormsData = await WorkflowViewerAjax.getWorkFlowFormsfromPreviousPlan({
-           token: $.session.Token,
-           selectedWFTemplateIds: selectedWorkflows.join(', '),
-           previousPlanId: thisPreviousPlanId,
-         });
-
-         const wfFormsPopup = POPUP.build({
-           classNames: ['wfFormsPopup'],
-         });
-
-         const title = document.createElement('h2');
-         title.innerHTML = 'Select forms to attach.</br>';
-         const linebr = document.createElement('div')
-         linebr.innerHTML = '</br>'
-         wfFormsPopup.appendChild(title);
-         wfFormsPopup.appendChild(linebr);
-
-         const doneBtn = button.build({
-           id: 'wfFormsContinueBtn',
-           text: 'Continue',
-           type: 'contained',
-           style: 'secondary',
-           // classNames: ['copySelectedBtn', 'disabled'],
-           classNames: 'copySelectedBtn',
-           callback: () => {
-             var selectedPreviousWfForms = planWorkflow.getselectedWorkFlowForms();
-             var wf_template_selected = selectedWorkflows;
-
-             POPUP.hide(wfFormsPopup);
-             createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
-           },
-         });
-
-         if (wfFormsData && wfFormsData.length > 0) {
-           const list = planWorkflow.buildWorkflowFormList(wfFormsData);
-           wfFormsPopup.appendChild(list);
-           wfFormsPopup.appendChild(doneBtn);
-           POPUP.show(wfFormsPopup);
-         } else {
-           createNewPlan(selectedConsumer, processId, selectedWorkflows);
-         }
-        } else {   // if ($.session.planFormCarryover 
-            createNewPlan(selectedConsumer, processId, selectedWorkflows);      
+        let thisannual_plan;
+        // inserting a new plan based on a selected prior plan
+        if (priorConsumerPlanId && priorConsumerPlanId !== '') {
+          thisPreviousPlanId = priorConsumerPlanId;
+        } else {
+          // // inserting a new plan based on the most recent existing plan
+          thisannual_plan = previousPlansData.filter(wf => wf.active === 'True');
+          if (thisannual_plan && thisannual_plan.length > 0) {
+            thisPreviousPlanId = thisannual_plan[0].consumerPlanId;
+          }
         }
-    
+
+        const wfFormsData = await WorkflowViewerAjax.getWorkFlowFormsfromPreviousPlan({
+          token: $.session.Token,
+          selectedWFTemplateIds: selectedWorkflows.join(', '),
+          previousPlanId: thisPreviousPlanId,
+        });
+
+        const wfFormsPopup = POPUP.build({
+          classNames: ['wfFormsPopup'],
+        });
+
+        const title = document.createElement('h2');
+        title.innerHTML = 'Select forms to attach.</br>';
+        const linebr = document.createElement('div');
+        linebr.innerHTML = '</br>';
+        wfFormsPopup.appendChild(title);
+        wfFormsPopup.appendChild(linebr);
+
+        const doneBtn = button.build({
+          id: 'wfFormsContinueBtn',
+          text: 'Continue',
+          type: 'contained',
+          style: 'secondary',
+          // classNames: ['copySelectedBtn', 'disabled'],
+          classNames: 'copySelectedBtn',
+          callback: () => {
+            var selectedPreviousWfForms = planWorkflow.getselectedWorkFlowForms();
+            var wf_template_selected = selectedWorkflows;
+
+            POPUP.hide(wfFormsPopup);
+            createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
+          },
+        });
+
+        if (wfFormsData && wfFormsData.length > 0) {
+          const list = planWorkflow.buildWorkflowFormList(wfFormsData);
+          wfFormsPopup.appendChild(list);
+          wfFormsPopup.appendChild(doneBtn);
+          POPUP.show(wfFormsPopup);
+        } else {
+          createNewPlan(selectedConsumer, processId, selectedWorkflows);
+        }
+      } else {
+        // if ($.session.planFormCarryover
+        createNewPlan(selectedConsumer, processId, selectedWorkflows);
+      }
     };
     planWorkflow.showWorkflowListPopup(wfvData, workflowCallback);
   }
@@ -2598,12 +2606,7 @@ const plan = (function () {
     const first = selectedConsumer.card.querySelector('.name_first');
     return `${first.innerText} ${last.innerText}`;
   }
-  async function createNewPlan(
-    selectedConsumer,
-    processId,
-    selectedWorkflows,
-    selectedPreviousWfForms,
-  ) {
+  async function createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms) {
     const EffectiveEndDate = planDates.getEffectiveEndDate();
     let edDate = UTIL.formatDateFromDateObj(EffectiveEndDate);
 
@@ -3058,15 +3061,7 @@ const plan = (function () {
   function buildOverviewTable() {
     const tableOptions = {
       plain: false,
-      columnHeadings: [
-        'Type',
-        'Rev #',
-        'Downloaded',
-        'PY Start',
-        'Eff Start',
-        'Review',
-        'Sent To DODD',
-      ],
+      columnHeadings: ['Type', 'Rev #', 'Downloaded', 'PY Start', 'Eff Start', 'Review', 'Sent To DODD'],
       tableId: 'planOverviewTable',
     };
 
@@ -3087,15 +3082,7 @@ const plan = (function () {
       }
 
       return {
-        values: [
-          type,
-          revisionNum,
-          downloadedDate,
-          startDate,
-          effectiveStart,
-          reviewDate,
-          sentToDODD,
-        ],
+        values: [type, revisionNum, downloadedDate, startDate, effectiveStart, reviewDate, sentToDODD],
         attributes: [
           { key: 'data-plan-active', value: isActive },
           { key: 'data-plan-id', value: pd.consumerPlanId },

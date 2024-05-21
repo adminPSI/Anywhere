@@ -547,6 +547,23 @@
         margin: 0 0 10px;
     }
 }
+.finalizePopup {
+  .finalizeScreen {
+    display: none;
+
+    &.visible {
+      display: block;
+    }
+  }
+
+  .checkboxes {
+    display: flex;
+    flex-flow: column;
+  }
+  .checkbox-mtd>input:checked+span:after {
+    left: -24px;
+  }
+}
 .assessment {
   &__section {
     margin: 0 0 30px;

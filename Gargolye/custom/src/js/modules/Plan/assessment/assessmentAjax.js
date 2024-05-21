@@ -106,58 +106,58 @@ const assessmentAjax = (function () {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async function getDefaultEmailsForFinalization() {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getDefaultEmailsForFinalization/',
+        data: JSON.stringify({ token: $.session.Token }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getDefaultEmailsForFinalizationResult;
+    } catch (error) {
+      console.log(error);
     }
+  }
 
-    async function getDefaultEmailsForFinalization() {
-        try {
-            const data = await $.ajax({
-                type: 'POST',
-                url:
-                    $.webServer.protocol +
-                    '://' +
-                    $.webServer.address +
-                    ':' +
-                    $.webServer.port +
-                    '/' +
-                    $.webServer.serviceName +
-                    '/getDefaultEmailsForFinalization/',
-                data: JSON.stringify(retrieveData),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-            });
+  async function finalizationActions(retrieveData) {
+    //string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID
+    //string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId
+    //string peopleId, string[] emailAddresses, string[] checkBoxes
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/finalizationActions/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
 
-            return data.getDefaultEmailsForFinalizationResult;
-        } catch (error) {
-            console.log(error);
-        }
+      return data.finalizationActionsResult;
+    } catch (error) {
+      console.log(error);
     }
-
-    async function finalizationActions(retrieveData) {
-        //string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID
-        //string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId
-        //string peopleId, string[] emailAddresses, string[] checkBoxes
-        try {
-            const data = await $.ajax({
-                type: 'POST',
-                url:
-                    $.webServer.protocol +
-                    '://' +
-                    $.webServer.address +
-                    ':' +
-                    $.webServer.port +
-                    '/' +
-                    $.webServer.serviceName +
-                    '/finalizationActions/',
-                data: JSON.stringify(retrieveData),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-            });
-
-            return data.finalizationActionsResult;
-        } catch (error) {
-            console.log(error);
-        }
-    }
+  }
 
   function getPlanAssessmentReportWithAttachments(retrieveData, callback) {
     var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/addSelectedAttachmentsToReport/`;
