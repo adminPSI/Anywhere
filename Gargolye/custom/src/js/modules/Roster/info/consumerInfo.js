@@ -633,7 +633,65 @@ var consumerInfo = (function () {
       sectionInner.appendChild(rowWrap);
     });
   }
+
+  // workflow
+  async function populateWorkflowSection(section) {
+    var sectionInner = section.querySelector('.sectionInner');
+    sectionInner.innerHTML = '';
+    
+    const workflowViewer = await WorkflowViewerComponent.get('4', consumerId);
+    const addWorkflowBtn = button.build({
+      text: 'Add Workflow(s)',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        let selectedWorkflowForms = [];
+
+        const wfvData = await getWorkflowList('4', consumerId);
+
+        const workflowList = document.createElement('div');
+        workflowList.classList.add('workflowList');
+
+        const doneBtn = button.build({
+          text: 'Done',
+          style: 'secondary',
+          type: 'contained',
+          classNames: 'disabled',
+          callback: async () => {
+
+          }
+        });
+
+        wfvData.forEach(obj => {
+          const wfvItem = document.createElement('div');
+          wfvItem.classList.add('workflowListItem');
+          wfvItem.setAttribute('data-template-id', obj.workflowTemplateId);
+          wfvItem.innerHTML = `<h4>${obj.templateName}</h4> <p>${obj.description}</p>`;
+          workflowList.appendChild(wfvItem);
+        });
+        
+        workflowList.addEventListener('click', e => {
+          if (e.target.classList.contains('workflowListItem')) {
+            const templateID = e.target.dataset.templateId;
   
+            if (!e.target.classList.contains('selected')) {
+              e.target.classList.add('selected');
+              selectedWorkflows.push(templateID);
+            } else {
+              e.target.classList.remove('selected');
+              selectedWorkflows = selectedWorkflows.filter(wf => wf !== templateID);
+            }
+  
+            selectedWorkflows.length > 0 ? doneBtn.classList.remove('disabled') : doneBtn.classList.add('disabled');
+          }
+        });
+      },
+    });
+
+    sectionInner.appendChild(workflowViewer);
+    sectionInner.appendChild(addWorkflowBtn);
+  }
+
   // *schedule
   function populateScheduleTable(sectionInner, locationId) {
     function populateTable(sectionInner, schedule) {
@@ -913,7 +971,7 @@ var consumerInfo = (function () {
     });
   }
 
-  function setupCard(action) {
+  async function setupCard(action) {
     var targetSection;
     currentScreen = action;
     var arraynumber = menuNewList.findIndex(x => x.title == currentScreen);
@@ -1026,6 +1084,10 @@ var consumerInfo = (function () {
         });
         break;
       }
+      case 'Workflow': {
+        targetSection = consumerInfoCard.querySelector('.workflowSection');
+        await populateWorkflowSection(targetSection);
+      }
     }
 
     if (targetSection) {
@@ -1102,7 +1164,7 @@ var consumerInfo = (function () {
       'attachments',
       'schedule',
       'intellivue',
-      'workflow'
+      'workflow',
     ]);
     sections.forEach(section => {
       cardBody.appendChild(section);

@@ -36,10 +36,10 @@ namespace Anywhere.service.Data
         //Gets data and populates the list on case notes page
         public CaseNotesFilteredSearch[] caseNotesFilteredSearchJSON(string token, string billerId, string consumerId, string serviceStartDate, string serviceEndDate,
             string dateEnteredStart, string dateEnteredEnd, string billingCode, string reviewStatus, string location, string service, string need, string contact, string confidential, string corrected, string billed,
-            string attachments, string overlaps, string noteText, string applicationName)
+            string attachments, string overlaps, string noteText, string applicationName, string outcomeServiceMonitoring)
         {
             string filteredString = cnfw.caseNotesFilterBuilder(token, billerId, consumerId, serviceStartDate, serviceEndDate, dateEnteredStart, dateEnteredEnd,
-                billingCode, reviewStatus, location, service, need, contact, confidential, corrected, billed, attachments, noteText, applicationName);
+                billingCode, reviewStatus, location, service, need, contact, confidential, corrected, billed, attachments, noteText, applicationName, outcomeServiceMonitoring);
             //string filteredString = dg.caseNotesFilteredSearchJSON(token, billerId, consumerId, serviceStartDate, serviceEndDate, dateEnteredStart, dateEnteredEnd,
             //    billingCode, reviewStatus, location, service, need, contact, confidential, billed, attachments, noteText);
             js.MaxJsonLength = Int32.MaxValue;
@@ -281,6 +281,7 @@ namespace Anywhere.service.Data
             public string doctimerequired { get; set; }
             public string mileagerequired { get; set; }
             public string corrected { get; set; }
+            public string outcomeServiceMonitoring { get; set; }
 
         }
 
