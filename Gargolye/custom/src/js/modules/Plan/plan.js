@@ -1976,6 +1976,178 @@ const plan = (function () {
 
     POPUP.show(morePopup);
   }
+  async function showFinalizePopup() {
+    finalizePopup = POPUP.build({
+      classNames: 'finalizePopup',
+    });
+
+    const screen1 = document.createElement('div');
+    const screen2 = document.createElement('div');
+    const screen3 = document.createElement('div');
+    const actionBtn = button.build({
+      id: 'finalizePopup',
+      text: 'Next',
+      callback: () => {
+        //
+      },
+    });
+    finalizePopup.appendChild(screen1);
+    finalizePopup.appendChild(screen2);
+    finalizePopup.appendChild(screen3);
+    finalizePopup.appendChild(actionBtn);
+
+    // screen 1
+    const selectAllCheck = input.buildCheckbox({
+      id: 'selectAll',
+      text: 'Select All',
+      isChecked: true,
+    })
+    const sendToDODDCheck = input.buildCheckbox({
+      id: 'sendToDODD',
+      text: 'Send To DODD',
+      isChecked: true,
+    })
+    const sendToOhioNetCheck = input.buildCheckbox({
+      id: 'sendToOhioNet',
+      text: 'Send to OhioDD.net',
+      isChecked: true,
+    })
+    const downloadReportCheck = input.buildCheckbox({
+      id: 'downloadReport',
+      text: 'Download Report',
+      isChecked: true,
+    })
+    const emailReportCheck = input.buildCheckbox({
+      id: 'emailReport',
+      text: 'Email Report',
+      isChecked: true,
+    })
+    screen1.appendChild(selectAllCheck);
+    screen1.appendChild(sendToDODDCheck);
+    screen1.appendChild(sendToOhioNetCheck);
+    screen1.appendChild(downloadReportCheck);
+    screen1.appendChild(emailReportCheck);
+
+    const emailInput1 = input.build({
+      label: 'Email',
+      type: 'email',
+    });
+    const emailInput2 = input.build({
+      label: 'Email',
+      type: 'email',
+    });
+    const emailInput3 = input.build({
+      label: 'Email',
+      type: 'email',
+    });
+    const emailInput4 = input.build({
+      label: 'Email',
+      type: 'email',
+    });
+    const emailInput5 = input.build({
+      label: 'Email',
+      type: 'email',
+    });
+    screen1.appendChild(emailInput1);
+    screen1.appendChild(emailInput2);
+    screen1.appendChild(emailInput3);
+    screen1.appendChild(emailInput4);
+    screen1.appendChild(emailInput5);
+
+    // screen 2
+    // attachments? from report screen
+    const planAttBody = document.createElement('div');
+    const workflowAttBody = document.createElement('div');
+    const signatureAttBody = document.createElement('div');
+    screen2.appendChild(planAttBody);
+    screen2.appendChild(workflowAttBody);
+    screen2.appendChild(signatureAttBody);
+
+    const attachments = await planAjax.getPlanAndWorkFlowAttachments({
+      token: $.session.Token,
+      assessmentId: planId,
+    });
+    const selectedAttachmentsSignature = {};
+    const selectedAttachmentsPlan = {};
+    const selectedAttachmentsWorkflow = {};
+
+    let index = 0;
+
+    if (attachments) {
+      for (const prop in attachments) {
+        attachments[prop].order = index;
+        const a = attachments[prop];
+        const attachment = document.createElement('div');
+        attachment.classList.add('attachment');
+        const description = document.createElement('p');
+        description.innerText = a.description;
+        attachment.appendChild(description);
+
+        attachment.addEventListener('click', () => {
+          if (!attachment.classList.contains('selected')) {
+            attachment.classList.add('selected');
+            if (a.sigAttachmentId) {
+              selectedAttachmentsSignature[a.order] = { ...a };
+            } else if (a.whereFrom === 'Plan') {
+              selectedAttachmentsPlan[a.order] = { ...a };
+            } else {
+              selectedAttachmentsWorkflow[a.order] = { ...a };
+            }
+          } else {
+            attachment.classList.remove('selected');
+            if (a.sigAttachmentId) {
+              delete selectedAttachmentsSignature[a.order];
+            } else if (a.whereFrom === 'Plan') {
+              delete selectedAttachmentsPlan[a.order];
+            } else {
+              delete selectedAttachmentsWorkflow[a.order];
+            }
+          }
+        });
+
+        if (a.sigAttachmentId) {
+          signatureAttBody.appendChild(attachment);
+        } else if (a.whereFrom === 'Plan') {
+          planAttBody.appendChild(attachment);
+        } else {
+          workflowAttBody.appendChild(attachment);
+        }
+
+        index++;
+      }
+    }
+
+    // screen 3
+    const selectAllStatus = document.createElement('div');
+    const sendToDODDStatus = document.createElement('div');
+    const sendToOhioNetStatus = document.createElement('div');
+    const downloadReportStatus = document.createElement('div');
+    const emailReportStatus = document.createElement('div');
+    selectAllStatus.innerHTML = '<p>Select All</p>';
+    sendToDODDStatus.innerHTML = '<p>Send to DODD</p>';
+    sendToOhioNetStatus.innerHTML = '<p>Send to OhioDD.net</p>';
+    downloadReportStatus.innerHTML = '<p>Download Report</p>';
+    emailReportStatus.innerHTML = '<p>Email Report</p>';
+    const selectAllStatusIcon = document.createElement('p');
+    const sendToDODDStatusIcon = document.createElement('p');
+    const sendToOhioNetStatusIcon = document.createElement('p');
+    const downloadReportStatusIcon = document.createElement('p');
+    const emailReportStatusIcon = document.createElement('p');
+    selectAllStatus.appendChild(selectAllStatusIcon);
+    sendToDODDStatus.appendChild(sendToDODDStatusIcon);
+    sendToOhioNetStatus.appendChild(sendToOhioNetStatusIcon);
+    downloadReportStatus.appendChild(downloadReportStatusIcon);
+    emailReportStatus.appendChild(emailReportStatusIcon);
+
+    screen3.appendChild(selectAllStatus);
+    screen3.appendChild(sendToDODDStatus);
+    screen3.appendChild(sendToOhioNetStatus);
+    screen3.appendChild(downloadReportStatus);
+    screen3.appendChild(emailReportStatus);
+
+
+    POPUP.show(finalizePopup);
+  }
   // plan header
   function refreshGeneralInfo() {
     planHeader.removeChild(planHeaderGeneralInfoBar);
@@ -2059,6 +2231,12 @@ const plan = (function () {
       type: 'contained',
       callback: showMorePopup,
     });
+    const finalizeBtn = button.build({
+      text: 'Finalize Plan',
+      style: 'secondary',
+      type: 'contained',
+      callback: showFinalizePopup,
+    });
     const backBtn = button.build({
       text: 'Back',
       style: 'secondary',
@@ -2070,6 +2248,7 @@ const plan = (function () {
     });
 
     buttonBar.appendChild(moreBtn);
+    buttonBar.appendChild(finalizeBtn);
     buttonBar.appendChild(backBtn);
 
     return buttonBar;

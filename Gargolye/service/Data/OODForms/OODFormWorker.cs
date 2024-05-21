@@ -19,6 +19,7 @@ using System.Globalization;
 using System.Web;
 using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
+using System.Web.UI.WebControls;
 
 namespace OODForms
 {
@@ -727,6 +728,206 @@ namespace OODForms
                 return ex.ToString();
             }
         }
+
+        public string generateForm16(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
+        {
+            try
+            {
+
+                OODFormDataGetter obj = new OODFormDataGetter();
+
+                string SSinfo = obj.getSpreadsheetNameAndKey(token);
+                SSInfo[] SSInfoObj = JsonConvert.DeserializeObject<SSInfo[]>(SSinfo);
+                string registrationName = SSInfoObj[0].registrationName;
+                string registrationKey = SSInfoObj[0].registrationKey;
+
+                string crpath = obj.getFormTemplatePath(token);
+                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+                string path = pathdatalist[0].path;
+                string templateFileName = "Form16SummerYouthWorkExperience.xlsx";
+                string reportPath = string.Format(path, templateFileName);
+
+                long PeopleID = long.Parse(peopleIDString);
+
+                // Fill out TOP Portion of the XLS SPREADSHEET********************************************************************************************************	
+
+                DateTime currentDate = DateTime.Now;
+                string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");  //********TOP8. Invoice Date = mm/dd/yyyy for today's date
+                string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", ""); //********TOP3.  Provider Invoice # = mmddyyyyhhmmss where mmddyyyy is the current month
+
+                // Gather Data for the Person Completing the Report
+                string personCompletingReportData = obj.getPersonCompletingReportName(token);
+                personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;   //*********TOP6. Name of Person Completing Report
+
+                Spreadsheet SS = new Spreadsheet();
+                SS.RegistrationName = registrationName;
+                SS.RegistrationKey = registrationKey;
+
+                SS.LoadFromFile(reportPath);
+
+                Bytescout.Spreadsheet.Worksheet WS = SS.Worksheet(0);
+
+                DataTable dt;
+                DataRow row;
+
+                AuthorizationNumber = AuthorizationNumber.Replace("+", " ");
+                dt = obj.OODDevelopment(AuthorizationNumber).Tables[0];
+                row = dt.Rows[0];
+
+                StartDate = DateTime.Parse(StartDate).ToString("yyyy-MM-dd");     //*******TOP9. Service Start Date = min(case_notes.service_date) for the selected consumer and reference number
+                EndDate = DateTime.Parse(EndDate).ToString("yyyy-MM-dd");         //*******TOP10. Service End Date = max(case_notes.service_date) for the selected consumer and reference number
+                WS.Cell("G9").Value = StartDate.ToString();
+                WS.Cell("G10").Value = EndDate.ToString();
+
+                string ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());  //*****TOP1. Provider Name =vendors.name for the vendor the selected consumer is tied to
+                WS.Cell("G1").Value = ProviderName.ToString();
+
+                WS.Cell("G2").Value = AuthorizationNumber.ToString(); //********TOP2.  Authorization # = Reference number selected by user on Anywhere OOD filter
+
+                WS.Cell("G3").Value = invoiceNumber.ToString();
+
+                string ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim()); //*********TOP4. Individual's Name = First and Last name of the selected consumer 
+                WS.Cell("G4").Value = ConsumerName;
+
+
+                // string servicename = string.Format("{0}", row["ServiceName"].ToString().Trim()); //********NOT USED ??
+                // WS.Cell("a12").Value = servicename;
+
+
+                string Staff = string.Empty;
+                string StaffWithInitals = string.Empty;
+                string OODStaff = string.Empty;
+                string MiddleName = string.Empty;
+                DataSet ds = obj.OODForm8GetDirectStaff(AuthorizationNumber, StartDate, EndDate);
+
+                WS.Cell("G6").Value = personCompletingReport;
+
+                if (ds.Tables.Count > 0)
+                {
+                    DataTable dt2 = ds.Tables[0];
+                    foreach (DataRow row2 in dt2.Rows)
+                    {
+                        if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
+                        {
+                            Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
+                            MiddleName = row2["Middle_Name"].ToString();
+                            OODStaff += String.Format("{0}, ", Staff.Trim());
+                        }
+
+                        if (Staff.ToString().Trim().Length > 0)
+                        {
+                            StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
+                        }
+                    }
+                }
+
+                if (StaffWithInitals.Length > 0)
+                {
+                    WS.Cell("G5").Value = StaffWithInitals.ToString().Trim().Substring(0, StaffWithInitals.Length - 2);
+                }
+                else
+                {
+                    WS.Cell("G5").Value = String.Empty;
+                }
+
+
+                DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, serviceCode, StartDate, EndDate);
+                if (dsOODStaff.Tables.Count > 0)
+                {
+                    DataTable dtOODStaff = dsOODStaff.Tables[0];
+                    foreach (DataRow rowOODStaff in dtOODStaff.Rows)
+                    {
+                        if (rowOODStaff["FirstName"].ToString().Trim().Length > 0 && rowOODStaff["LastName"].ToString().Trim().Length > 0)
+                        {
+                            OODStaff = String.Format("{0} {1}, ", rowOODStaff["FirstName"].ToString().Trim(), rowOODStaff["LastName"].ToString().Trim());
+                        }
+                    }
+
+                }
+
+                WS.Cell("G7").Value = OODStaff;
+
+                WS.Cell("G8").ValueAsDateTime = DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy"));
+
+                StartDate = DateTime.Parse(StartDate).ToString("yyyy-MM-dd");
+                WS.Cell("G9").ValueAsDateTime = DateTime.Parse(StartDate);
+
+                EndDate = DateTime.Parse(EndDate).ToString("yyyy-MM-dd");
+                WS.Cell("G10").ValueAsDateTime = DateTime.Parse(EndDate);
+
+                WS.Cell("G11").Value = "Final";      //**************TOP11. Invoice Status = "Final"
+
+
+                int cpt = row["CPT_Code"].ToString().ToUpper().Trim().LastIndexOf(":") + 2;
+               string code = row["ServiceDescription"].ToString().ToUpper().Trim().Substring(0, cpt);  //***********TOP12.  Service Description 1 
+                // WS.Cell("G12").Value = code; // Equation in this cell 
+
+                WS.Cell("F15").Value = "0.00";   //************TOP13.  Vocational Training Stipend Rate = $0.00
+               WS.Cell("F16").Value = "No";     //************TOP14.  Bilingual Supplement = No
+
+                // Fill out DETAIL DATA Portion of the XLS SPREADSHEET********************************************************************************************************
+
+                //ds = obj.getScheduledWork(AuthorizationNumber, StartDate, EndDate, serviceCode, userID);   //*********TODO: Create getScheduledWork using the New Stored Procedure 
+                //if (ds.Tables.Count > 0)
+                //{
+                //    dt = ds.Tables[0];
+                //    foreach (DataRow row2 in dt.Rows)
+                //    {
+                //        WS.Cell("G6").Value = personCompletingReport;
+                //    }
+
+                //}
+
+                //             WS.Calculate();
+
+
+                // Fill out Bottom Summary Portion of the XLS SPREADSHEET********************************************************************************************************	
+
+                ds = obj.OODForm8BackgroundChecks(AuthorizationNumber, EndDate);
+                if (ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        row = ds.Tables[0].Rows[0];
+                        WS.Cell("G85").Value = row["EM_Sum_Ind_Self_Assess"].ToString().Trim();        //*****************BOTTOM1.  Individual's Self-Assessment 
+                        WS.Cell("G86").Value = row["EM_Sum_Provider_Assess"].ToString().Trim();		   //****************BOTTOM2.  Provider's Summary & Recommendations =
+
+                        if (row["VTS_Review"].ToString().ToUpper() == "Y")
+                        {
+                            WS.Cell("G87").Value = "Yes";						//*************BOTTOM3.  Have you reviewed the Vocational Training Stipend (VTS) with the individual?
+                        }
+                        else
+                        {
+                            WS.Cell("G87").Value = "No";						//*************BOTTOM3.  Have you reviewed the Vocational Training Stipend (VTS) with the individual?
+                        }
+                    }
+
+                }
+
+                // Create Attachment from  the XLS SPREADSHEET********************************************************************************************************	
+
+                MemoryStream ms = new MemoryStream();
+                SS.SaveToStreamXLSX(ms);
+                ms.Position = 0;
+
+                Attachment attachment = new Attachment
+                {
+                    filename = "Form16.xlsx",
+                    data = ms
+                };
+
+                DisplayAttachment(attachment);
+
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                string message = ex.ToString();
+                return message;
+            }
+        }
+
 
         public string minDate(List<form10Data> dataList)
         {
