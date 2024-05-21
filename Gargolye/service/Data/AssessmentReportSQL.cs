@@ -1037,31 +1037,7 @@ namespace Anywhere.service.Data
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
         }
-
-        public long HideSubSectionTitle(long AssesmentID, string SubSectionName, long SectionOrder)
-        {
-            sb.Clear();
-            sb.Append("SELECT COUNT(dba.ANYW_ISP_Consumer_Assessment_Answers.answer) AS iCount ");
-            sb.Append("FROM dba.ANYW_ISP_Assessment_Question_Sets ");
-            sb.Append("LEFT OUTER JOIN dba.ANYW_ISP_Assessment_Subsections ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_subsection_id = dba.ANYW_ISP_Assessment_Subsections.isp_assessment_subsection_id ");
-            sb.Append("LEFT OUTER JOIN dba.ANYW_ISP_Assessment_Sections ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_section_id = dba.ANYW_ISP_Assessment_Sections.isp_assessment_section_id ");
-            sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Assessment_Questions ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_question_set_id = dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_set_id ");
-            sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Consumer_Assessment_Answers ON dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_id = dba.ANYW_ISP_Consumer_Assessment_Answers.isp_assessment_question_id ");
-            sb.Append("LEFT OUTER JOIN dba.ANYW_ISP_Plan_Section_Applicable SectionAllowable ON dba.ANYW_ISP_Assessment_Sections.isp_assessment_section_id = SectionAllowable.ISP_Assessment_Section_ID ");
-            sb.AppendFormat("WHERE SectionAllowable.ISP_Assessment_ID = {0} ", AssesmentID);
-            sb.AppendFormat("AND dba.ANYW_ISP_Consumer_Assessment_Answers.isp_consumer_plan_id = {0} ", AssesmentID);
-            sb.Append("AND SectionAllowable.Applicable = 'y' ");
-            sb.Append("AND dba.ANYW_ISP_Assessment_Questions.hide_on_assessment IS NULL ");
-            sb.Append("AND dba.ANYW_ISP_Assessment_Questions.answer_style = 'CHECKOPTION' ");
-            sb.AppendFormat("AND dba.ANYW_ISP_Assessment_Subsections.subsection_title = '{0}' ", SubSectionName);
-            sb.AppendFormat("AND dba.ANYW_ISP_Assessment_Sections.section_order = {0} ", SectionOrder);
-            sb.Append("AND dba.ANYW_ISP_Consumer_Assessment_Answers.answer = '1' ");
-            if (di.QueryScalar(sb.ToString()) > 0)
-                return 0;
-            else
-                return 1;
-        }
-
+    
     }
 }
 
