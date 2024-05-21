@@ -1976,8 +1976,12 @@ const plan = (function () {
 
     POPUP.show(morePopup);
   }
+
+  // Plan Finalization
   async function showFinalizePopup() {
-    finalizePopup = POPUP.build({
+    const currScreen = 1;
+
+    const finalizePopup = POPUP.build({
       classNames: 'finalizePopup',
     });
 
@@ -1988,7 +1992,7 @@ const plan = (function () {
       id: 'finalizePopup',
       text: 'Next',
       callback: () => {
-        //
+        
       },
     });
     finalizePopup.appendChild(screen1);
@@ -1997,36 +2001,64 @@ const plan = (function () {
     finalizePopup.appendChild(actionBtn);
 
     // screen 1
+    let selectedCheckboxes = {
+      selectAllCheck: true, 
+      sendToDODDCheck: true, 
+      sendToOhioNetCheck: true, 
+      downloadReportCheck: true, 
+      emailReportCheck: true, 
+    };
+    const emails = await assessmentAjax.getDefaultEmailsForFinalization();
+
     const selectAllCheck = input.buildCheckbox({
       id: 'selectAll',
       text: 'Select All',
       isChecked: true,
-    })
+      callback: e => {
+        selectedCheckboxes.selectAllCheck = e.target.checked;
+      }
+    });
     const sendToDODDCheck = input.buildCheckbox({
       id: 'sendToDODD',
       text: 'Send To DODD',
       isChecked: true,
-    })
+      callback: e => {
+        selectedCheckboxes.sendToDODDCheck = e.target.checked;
+      }
+    });
     const sendToOhioNetCheck = input.buildCheckbox({
       id: 'sendToOhioNet',
       text: 'Send to OhioDD.net',
       isChecked: true,
-    })
+      callback: e => {
+        selectedCheckboxes.sendToOhioNetCheck = e.target.checked;
+      }
+    });
     const downloadReportCheck = input.buildCheckbox({
       id: 'downloadReport',
       text: 'Download Report',
       isChecked: true,
-    })
+      callback: e => {
+        selectedCheckboxes.downloadReportCheck = e.target.checked;
+      }
+    });
     const emailReportCheck = input.buildCheckbox({
       id: 'emailReport',
       text: 'Email Report',
       isChecked: true,
-    })
+      callback: e => {
+        selectedCheckboxes.emailReportCheck = e.target.checked;
+      }
+    });
     screen1.appendChild(selectAllCheck);
     screen1.appendChild(sendToDODDCheck);
     screen1.appendChild(sendToOhioNetCheck);
     screen1.appendChild(downloadReportCheck);
     screen1.appendChild(emailReportCheck);
+
+    if (emails) {
+      console.log(emails);
+    }
 
     const emailInput1 = input.build({
       label: 'Email',

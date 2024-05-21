@@ -331,16 +331,11 @@ body.planActive {
 }
 .buttonBar {
   display: flex;
-  flex-grow: 1;
-  max-width: 200px;
+  column-gap: 5px;
 
   button.btn {
     margin: 0;
     padding: 0 12px;
     flex-grow: 1;
-
-    &:first-child {
-      margin-right: 8px;
-    }
   }
 }
