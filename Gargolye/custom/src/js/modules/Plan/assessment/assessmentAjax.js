@@ -108,7 +108,7 @@ const assessmentAjax = (function () {
     }
     }
 
-    function getDefaultEmailsForFinalization() {
+    async function getDefaultEmailsForFinalization() {
         try {
             const data = await $.ajax({
                 type: 'POST',
@@ -132,7 +132,7 @@ const assessmentAjax = (function () {
         }
     }
 
-    function finalizationActions(retrieveData) {
+    async function finalizationActions(retrieveData) {
         //string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID
         //string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId
         //string peopleId, string[] emailAddresses, string[] checkBoxes
