@@ -42,7 +42,7 @@ namespace Anywhere.service.Data.DocumentConversion
         {
             public string setting_value { get; set; }
         }
-        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string consumerId, string[] emailAddresses)
+        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string consumerId, string[] emailAddresses, string[] checkBoxes)
         {
             bool isTokenValid = aadg.ValidateToken(token);
             if (isTokenValid)
