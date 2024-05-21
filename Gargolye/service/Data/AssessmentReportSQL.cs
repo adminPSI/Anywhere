@@ -180,7 +180,7 @@ namespace Anywhere.service.Data
                 {
                     if (row["subsection_order"].ToString() == "4")
                     {
-                        if (Convert.ToInt16(row["question_set_order"]) > 2)
+                        if (Convert.ToInt32(row["question_set_order"]) > 2)
                         {
                             row["question_set_order"] = Convert.ToInt16(row["question_set_order"]) + 1;
                         }
