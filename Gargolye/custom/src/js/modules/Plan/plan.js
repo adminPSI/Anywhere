@@ -1958,6 +1958,8 @@ const plan = (function () {
 
     const actionBtn = button.build({
       text: 'Next',
+      style: 'secondary',
+      type: 'contained',
       callback: async () => {
         if (currScreen === 1) {
           if (Object.values(selectedCheckboxes).every(i => i === true)) {

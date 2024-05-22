@@ -49,25 +49,35 @@ var button = (function() {
       }
     }
     // Button Coloring
-    if (options.style === 'primary') {
+    if (options.style) {
+      if (options.style === 'primary') {
+        button.classList.add('btn--primary');
+      }
+      if (options.style === 'secondary') {
+        button.classList.add('btn--secondary');
+      }
+      if (options.style === 'danger') {
+        button.classList.add('btn--danger');
+      }
+    } else {
       button.classList.add('btn--primary');
     }
-    if (options.style === 'secondary') {
-      button.classList.add('btn--secondary');
-    }
-    if (options.style === 'danger') {
-      button.classList.add('btn--danger');
-    }
+    
     // Button Styling
-    if (options.type === 'text') {
-      button.classList.add('btn--text');
-    }
-    if (options.type === 'contained') {
+    if (options.type) {
+      if (options.type === 'text') {
+        button.classList.add('btn--text');
+      }
+      if (options.type === 'contained') {
+        button.classList.add('btn--contained');
+      }
+      if (options.type === 'outlined') {
+        button.classList.add('btn--outlined');
+      }
+    } else {
       button.classList.add('btn--contained');
     }
-    if (options.type === 'outlined') {
-      button.classList.add('btn--outlined');
-    }
+    
     // toggle button?
     if (options.toggle) {
       button.classList.add('btn--toggle');
