@@ -427,13 +427,13 @@ const WagesBenefits = (() => {
             hoursWeek = event.target.value;
             var reg = new RegExp('^[0-9 . $ -]+$');
             if (!reg.test(hoursWeek)) {
-                document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
+                document.getElementById('weekHours').value = '';
             }
             else if (hoursWeek.includes('.') && (hoursWeek.match(/\./g).length > 1 || hoursWeek.toString().split('.')[1].length > 2)) {
-                document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
+                document.getElementById('weekHours').value = '';
             }
             if (hoursWeek.includes('-') || hoursWeek.includes(' ')) {
-                document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
+                document.getElementById('weekHours').value = '';
             }
             checkRequiredFieldsOfPopup();
         });
