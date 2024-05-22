@@ -336,7 +336,7 @@ const isp_ci_importantPlaces = (() => {
             checkForErrors();
         });
         typeOtherInput.addEventListener('input', event => {
-            if (event.target.value === '') {
+            if (event.target.value.trim() === '') {
                 typeOtherInput.classList.add('error');
             } else {
                 typeOtherInput.classList.remove('error');

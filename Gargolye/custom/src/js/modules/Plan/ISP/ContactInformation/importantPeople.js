@@ -580,7 +580,7 @@ const isp_ci_importantPeople = (() => {
             checkForErrors();
         });
         typeOtherInput.addEventListener('input', event => {
-            if (event.target.value === '') {
+            if (event.target.value.trim() === '') {
                 typeOtherInput.classList.add('error');
             } else {
                 typeOtherInput.classList.remove('error');
