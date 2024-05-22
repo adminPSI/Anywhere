@@ -649,18 +649,18 @@ const summerYouthWorkExperienceSummaryForm = (() => {
     });
 	
 	
-    offeredHoursNotWorkedInput.addEventListener('keypress', event => {
-      emOfferedHoursNotWorkNumber = event.target.value;
-      if (event.key === '.' && event.target.value.indexOf('.') !== -1) {
+    //offeredHoursNotWorkedInput.addEventListener('keypress', event => {
+     // emOfferedHoursNotWorkNumber = event.target.value;
+      //if (event.key === '.' && event.target.value.indexOf('.') !== -1) {
         // event.target.value = event.target.value.substr(0, (event.target.value.length - 1))
-        event.preventDefault();
-        return;
-      }
-        if (event.keyCode < 48 || event.keyCode > 57) {
-          event.preventDefault();
-          return;
-      }
-    });
+     //   event.preventDefault();
+      //  return;
+    //  }
+     //   if (event.keyCode < 48 || event.keyCode > 57) {
+    //      event.preventDefault();
+    //      return;
+    //  }
+  //  });
 
     saveAndNewBtn.addEventListener('click', event => {
       // event.target.classList.add('disabled');
