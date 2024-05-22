@@ -283,7 +283,9 @@ var rosterAbsent = (function() {
             // untoggle MASS_ABSENT_BTN
             MASS_ABSENT_BTN.setAttribute('data-toggled', false);
             // clear selected consumers
+            roster2.selectNoneHighlightedConsumers();   
             roster2.clearSelectedConsumers();
+            roster2.refreshRosterList(); 
             // hide absent actionnav
             ACTION_NAV.hide();
             // hide popup
