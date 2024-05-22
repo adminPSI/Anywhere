@@ -150,6 +150,15 @@ const roster2 = (function () {
             });
         }
     }
+    function selectNoneHighlightedConsumers() {
+        if (!ROSTER_LIST) return;
+        var consumers = [].slice.call(ROSTER_WRAP.querySelectorAll('.consumerCard.highlighted'));
+        if (consumers.length > 0) {
+            consumers.forEach(c => {
+                c.classList.remove('consumer-selected', 'highlighted');
+            });
+        }
+    }
     function removeMiniRosterBtn() {
         var miniRosterBtn = document.querySelector('.consumerListBtn');
         if (miniRosterBtn) {
@@ -354,7 +363,8 @@ const roster2 = (function () {
             type: 'text',
             classNames: 'filterCloseBtn',
             callback: () => {
-                closeFilter('selectedLocationNameBtn');
+                if (!islocationDisabled) 
+                    closeFilter('selectedLocationNameBtn');
             },
         });
 
@@ -428,6 +438,7 @@ const roster2 = (function () {
             selectedGroupCode = 'ALL';
             btnWrap.removeChild(selectedGroupNameBtnWrap);
         }
+        toggleMassAbsentBtn();
         filterApply();
     }
 
@@ -869,7 +880,7 @@ const roster2 = (function () {
         MASS_SELECT_ALL_BTN = buildMassAbsentSelectAllBtn();
         MASS_DESELECT_ALL_BTN = buildMassAbsentDeselectAllBtn();
         MASS_SELECT_ALL_BTN.classList.add('marginRight10px');
-        MASS_DESELECT_ALL_BTN.classList.add('marginRight10px');   
+        MASS_DESELECT_ALL_BTN.classList.add('marginRight10px');
         // custom search stuff
         SEARCH_WRAP = document.createElement('div');
         // SEARCH_WRAP.classList.add('rosterSearch', 'searchOpen');
@@ -1044,7 +1055,7 @@ const roster2 = (function () {
             child.removeAttribute('style');
         });
     }
-    function actionNavCallback(e) { 
+    function actionNavCallback(e) {
         SELECT_ALL_BTN.classList.remove('disabled');
         DESELECT_ALL_BTN.classList.remove('disabled');
 
@@ -1059,7 +1070,7 @@ const roster2 = (function () {
     }
     function buildActioNav() {
         MINI_ROSTER_DONE = button.build({
-            text: 'Done', 
+            text: 'Done',
             icon: 'checkmark',
             style: 'secondary',
             type: 'contained',
@@ -1534,7 +1545,7 @@ const roster2 = (function () {
         });
 
         MASS_DESELECT_ALL_BTN.addEventListener('click', event => {
-            clearHighlightedConsumers();
+            selectNoneHighlightedConsumers();
             clearSelectedConsumers();
 
             console.table(selectedConsumers);
@@ -1724,5 +1735,6 @@ const roster2 = (function () {
         toggleActionCenterChildrenVisiblity,
         updateSelectedDate,
         updateSelectedLocationId,
+        selectNoneHighlightedConsumers,
     };
 })();

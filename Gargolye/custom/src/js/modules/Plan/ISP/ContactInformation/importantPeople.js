@@ -299,7 +299,7 @@ const isp_ci_importantPeople = (() => {
             dropdownId: 'isp-ciip-typeDropdown',
             label: 'Type',
             readonly: readOnly,
-        });
+        });      
         if (popupData.type === '') typeDropdown.classList.add('error');
         const typeDropdownValues = [
             { text: '', value: '' },
@@ -318,6 +318,10 @@ const isp_ci_importantPeople = (() => {
             { text: 'Primary Doctor', value: 'Primary Doctor' },
             { text: 'Support Broker', value: 'Support Broker' },
         ];
+ 
+        if (popupData.type.includes('Other')) {
+            popupData.type = 'Other';
+        }
         dropdown.populate(typeDropdown, typeDropdownValues, popupData.type);
 
         typeOtherInput = input.build({
@@ -576,7 +580,7 @@ const isp_ci_importantPeople = (() => {
             checkForErrors();
         });
         typeOtherInput.addEventListener('input', event => {
-            if (event.target.value === '') {
+            if (event.target.value.trim() === '') {
                 typeOtherInput.classList.add('error');
             } else {
                 typeOtherInput.classList.remove('error');

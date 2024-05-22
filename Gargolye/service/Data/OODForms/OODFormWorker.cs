@@ -868,6 +868,23 @@ namespace OODForms
 
                 // Fill out DETAIL DATA Portion of the XLS SPREADSHEET********************************************************************************************************
 
+                WS.Cell("G19").Value = "This is the business";
+
+                WS.Cell("B20").Value = "12-1";
+
+                DataSet dstest = obj.OODForm16GetScheduledWorkTimes(AuthorizationNumber, StartDate, EndDate, userID);
+
+                int test = dstest.Tables[0].Rows.Count;
+
+                foreach (DataRow row3 in dstest.Tables[0].Rows)
+                {
+                    string scheduledWorkTimes = row3["start_time"].ToString() + " - " + row3["end_time"].ToString();
+                    WS.Cell("B20").Value = scheduledWorkTimes;
+                }
+
+                WS.Cell("E20").Value = "12";
+                WS.Cell("B21").Value = "120";
+
                 ds = obj.OODForm16GetNotes(AuthorizationNumber, StartDate, EndDate, userID);
 
                 Int32 t = 25;

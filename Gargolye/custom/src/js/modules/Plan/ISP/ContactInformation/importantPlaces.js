@@ -165,6 +165,10 @@ const isp_ci_importantPlaces = (() => {
             { text: 'School', value: 'School' },
             { text: 'Work', value: 'Work' },
         ];
+
+        if (popupData.type.includes('Other')) {
+            popupData.type = 'Other';
+        }
         dropdown.populate(typeDropdown, typeDropdownValues, popupData.type);
 
         typeOtherInput = input.build({
@@ -332,7 +336,7 @@ const isp_ci_importantPlaces = (() => {
             checkForErrors();
         });
         typeOtherInput.addEventListener('input', event => {
-            if (event.target.value === '') {
+            if (event.target.value.trim() === '') {
                 typeOtherInput.classList.add('error');
             } else {
                 typeOtherInput.classList.remove('error');
