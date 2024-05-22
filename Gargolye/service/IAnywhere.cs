@@ -3361,7 +3361,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getDefaultEmailsForFinalization/")]
-        FinalizationButtonWorker.Emails[] getDefaultEmailsForFinalization();
+        FinalizationButtonWorker.Emails[] getDefaultEmailsForFinalization(string token);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,

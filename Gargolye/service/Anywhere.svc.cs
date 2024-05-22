@@ -2319,9 +2319,9 @@ namespace Anywhere
         }
 
         //Final
-        public FinalizationButtonWorker.Emails[] getDefaultEmailsForFinalization()
+        public FinalizationButtonWorker.Emails[] getDefaultEmailsForFinalization(string token)
         {
-            return fbw.getDefaultEmailsForFinalization();
+            return fbw.getDefaultEmailsForFinalization(token);
         }
 
         public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string peopleId, string[] emailAddresses, string[] checkBoxes)

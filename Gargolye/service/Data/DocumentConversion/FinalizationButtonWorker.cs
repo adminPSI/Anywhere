@@ -31,9 +31,9 @@ namespace Anywhere.service.Data.DocumentConversion
         AssessmentDataGetter adg = new AssessmentDataGetter();
         DisplayPlanReportAndAttachments dpaa = new DisplayPlanReportAndAttachments();
 
-        public Emails[] getDefaultEmailsForFinalization()
+        public Emails[] getDefaultEmailsForFinalization(string token)
         {
-            string emails = aadg.getDefaultEmailsForFinalization();
+            string emails = aadg.getDefaultEmailsForFinalization(token);
             Emails[] emailsObj = js.Deserialize<Emails[]>(emails);
             return emailsObj;
         }

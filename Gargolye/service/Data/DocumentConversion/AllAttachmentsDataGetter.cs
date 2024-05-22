@@ -192,19 +192,20 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
-        public string getDefaultEmailsForFinalization()
+        public string getDefaultEmailsForFinalization(string token)
         {
             logger.debug("getDefaultEmailsForFinalization");
             List<string> list = new List<string>();
+            list.Add(token);
 
-            string text = "CALL DBA.ANYW_ISP_SendReportViaEmail(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            string text = "CALL DBA.ANYW_ISP_getDefaultFinalizationEmailAddresses(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
-                return executeDataBaseCallRaw(text);
+                return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("640", ex.Message + "ANYW_ISP_SendReportViaEmail(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                logger.error("640", ex.Message + "ANYW_ISP_getDefaultFinalizationEmailAddresses(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return null;
             }
         }
