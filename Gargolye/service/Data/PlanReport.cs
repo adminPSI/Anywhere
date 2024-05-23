@@ -272,7 +272,7 @@ namespace Anywhere.service.Data
             var crViewer = new CrystalDecisions.Windows.Forms.CrystalReportViewer();
             //crName = @"C:\Work\AssesmentReports\OISPPlan.rpt";
             //cr.Load(crName);
-            cr.SetDataSource(ars.AssesmentAnswers(ID, Advisor));
+            cr.SetDataSource(ars.AssesmentAnswers(-1, Advisor));
 
             DataTable dt = ars.AssesmentHeader(ID, Advisor).Tables[0];
             cr.OpenSubreport("Header").SetDataSource(dt);

@@ -1586,6 +1586,8 @@ const roster2 = (function () {
                 setActiveModuleSectionAttribute('roster-info');
                 MASS_DESELECT_ALL_BTN.style.display = 'none';
                 MASS_SELECT_ALL_BTN.style.display = 'none';
+                selectNoneHighlightedConsumers();
+                clearSelectedConsumers(); 
             }
         });
 
