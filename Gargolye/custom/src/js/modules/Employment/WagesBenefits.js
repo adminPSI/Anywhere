@@ -355,10 +355,7 @@ const WagesBenefits = (() => {
             type: 'number',
             label: 'Hours Per Week',
             style: 'secondary',
-            value: hoursWeek,
-            attributes: [
-                { key: 'min', value: '0' }
-            ],
+            value: hoursWeek,  
         });
 
         wagesHours = input.build({
