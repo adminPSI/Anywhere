@@ -285,16 +285,16 @@ const summerYouthWorkExperienceSummaryForm = (() => {
     container.appendChild(reviewVTSDropdownLabel);
     container.appendChild(reviewVTSDropdown);
 
-    container.appendChild(wasOfferedHoursNotWorkedDropdownLabel);
-    container.appendChild(wasOfferedHoursNotWorkedDropdown);
-    container.appendChild(offeredHoursNotWorkedInput);
-    if (emOfferedHoursNotWorkNumber === '0' || emOfferedHoursNotWorkNumber === '0.00' || emOfferedHoursNotWorkNumber === '') {
-      offeredHoursNotWorkedInput.style.visibility = 'hidden';
-      offeredHoursNotWorked = '';
-    } else {
-      offeredHoursNotWorkedInput.style.visibility = 'visible';
-      offeredHoursNotWorked = 'Y';
-    }
+   // container.appendChild(wasOfferedHoursNotWorkedDropdownLabel);
+   // container.appendChild(wasOfferedHoursNotWorkedDropdown);
+  //  container.appendChild(offeredHoursNotWorkedInput);
+   // if (emOfferedHoursNotWorkNumber === '0' || emOfferedHoursNotWorkNumber === '0.00' || emOfferedHoursNotWorkNumber === '') {
+   //   offeredHoursNotWorkedInput.style.visibility = 'hidden';
+  //    offeredHoursNotWorked = '';
+  //  } else {
+   //   offeredHoursNotWorkedInput.style.visibility = 'visible';
+   //   offeredHoursNotWorked = 'Y';
+  //  }
     
     
 

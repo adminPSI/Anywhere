@@ -295,7 +295,12 @@ namespace OODForms
             sb.AppendFormat("SELECT   dba.Case_Notes.Service_Date, DATEFORMAT(Cast(dba.Case_Notes.Start_Time AS CHAR), 'hh:mm AA') as Start_Time, DATEFORMAT(CAST(dba.Case_Notes.End_Time AS CHAR), 'hh:mm AA') AS End_Time, ");
             sb.Append("dba.EMP_OOD.Interventions, ");
             sb.Append("dba.People.Last_Name, dba.People.First_Name, dba.People.Middle_Name, ");
-            sb.Append("'' AS Initials, dba.Case_Notes.Notes, '' AS StartTime, '' AS EndTime  ");
+            sb.Append("'' AS Initials, dba.Case_Notes.Notes, '' AS StartTime, '' AS EndTime,  ");
+            sb.Append("EMP_OOD.Position_ID, ");
+            sb.Append("(Select e.Name + ', ' + e.Address1 + ', ' + e.city + ', ' + e.state + ', ' + e.Zip_Code from EM_Employee_Position as ep  ");
+            sb.Append("left outer join People as p on ep.People_ID = p.ID ");
+            sb.Append("left outer join Employer as e on e.Employer_ID = ep.Employer_ID ");
+            sb.Append("where ep.Position_ID = EMP_OOD.Position_ID) as BusinessName ");
             sb.Append("FROM dba.EMP_OOD ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
             sb.Append(" LEFT OUTER JOIN  dba.People ON dba.People.Person_ID = dba.Case_Notes.Case_Manager_ID ");
@@ -303,7 +308,7 @@ namespace OODForms
             sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
             sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
             sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
-            sb.Append("AND Last_Name > '' ");
+            //sb.Append("AND Last_Name > '' ");
             ds = di.SelectRowsDS(sb.ToString());
 
             if (ds.Tables.Count > 0)
