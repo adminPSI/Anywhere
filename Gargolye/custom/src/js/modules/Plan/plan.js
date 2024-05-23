@@ -1943,7 +1943,7 @@ const plan = (function () {
 
   // Plan Finalization
   async function showFinalizePopup() {
-    const currScreen = 1;
+    let currScreen = 1;
 
     const finalizePopup = POPUP.build({
       classNames: 'finalizePopup',
@@ -1961,7 +1961,20 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
+        let checkboxesSelected;
+
         if (currScreen === 1) {
+          if (selectedCheckboxes.selectAllCheck) {
+            checkboxesSelected = ['selectAllCheck'];
+          } else {
+            checkboxesSelected = Object.entries(selectedCheckboxes).filter(([key, value]) => {
+              if (key === 'selectAllCheck') return false;
+              if (value) return true;
+            }).map(([key, value]) => {
+              return key
+            });
+          }
+
           currScreen = 2;
           screen1.classList.remove('visible');
           screen2.classList.add('visible');
@@ -1973,18 +1986,6 @@ const plan = (function () {
           currScreen = 3;
           screen2.classList.remove('visible');
           screen3.classList.add('visible');
-
-          let checkboxesSelected;
-          if (selectedCheckboxes.selectAllCheck) {
-            checkboxesSelected = ['selectAllCheck'];
-          } else {
-            checkboxesSelected = Object.entries(selectedCheckboxes).filter(([key, value]) => {
-              if (key === 'selectAllCheck') return false;
-              if (value) return true;
-            }).map(([key, value]) => {
-              return key
-            });
-          }
 
           await assessmentAjax.finalizationActions({
             token: $.session.Token,

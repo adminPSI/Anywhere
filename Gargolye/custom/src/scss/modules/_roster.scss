@@ -407,6 +407,12 @@
         transform: translateX(-1000%);
       }
     }
+    &.sec11 {
+      order: 11;
+      &.visible {
+        transform: translateX(-1100%);
+      }
+    }
   }
 }
 .absentSection {
