@@ -1943,7 +1943,7 @@ const plan = (function () {
 
   // Plan Finalization
   async function showFinalizePopup() {
-    const currScreen = 1;
+    let currScreen = 1;
 
     const finalizePopup = POPUP.build({
       classNames: 'finalizePopup',
@@ -1952,8 +1952,8 @@ const plan = (function () {
     const screen1 = document.createElement('div');
     const screen2 = document.createElement('div');
     const screen3 = document.createElement('div');
-    screen1.classList.add('screenOne', 'finalizeScreen', 'visible');
-    screen2.classList.add('screenTwo', 'finalizeScreen');
+    screen1.classList.add('finalizeSelect', 'finalizeScreen', 'visible');
+    screen2.classList.add('finalizeAttachments', 'finalizeScreen');
     screen3.classList.add('screenThree', 'finalizeScreen');
 
     const actionBtn = button.build({
@@ -1961,32 +1961,47 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
+        let checkboxesSelected;
+
         if (currScreen === 1) {
-          if (Object.values(selectedCheckboxes).every(i => i === true)) {
-            currScreen === 2;
-            screen1.classList.remove('visible');
-            screen2.classList.add('visible');
+          if (selectedCheckboxes.selectAllCheck) {
+            checkboxesSelected = ['selectAllCheck'];
+          } else {
+            checkboxesSelected = Object.entries(selectedCheckboxes).filter(([key, value]) => {
+              if (key === 'selectAllCheck') return false;
+              if (value) return true;
+            }).map(([key, value]) => {
+              return key
+            });
           }
+
+          currScreen = 2;
+          screen1.classList.remove('visible');
+          screen2.classList.add('visible');
 
           return;
         }
 
         if (currScreen === 2) {
-          currScreen === 3;
+          currScreen = 3;
           screen2.classList.remove('visible');
           screen3.classList.add('visible');
 
           await assessmentAjax.finalizationActions({
             token: $.session.Token,
             planAttachmentIds: [...Object.values(selectedAttachmentsPlan)],
-            wfAttachmentIds: [...Object.values(selectedAttachmentsPlan)],
-            sigAttachmentIds: [''],
-            userId: $.session.User,
-            assessmentID: '',
+            wfAttachmentIds: [...Object.values(selectedAttachmentsSignature)],
+            sigAttachmentIds: [...Object.values(selectedAttachmentsWorkflow)],
+            userId: $.session.UserId,
+            assessmentID: planId,
             peopleId: selectedConsumer.id,
-            emailAddresses: [''],
-            checkboxes: [''],
+            emailAddresses: [...Object.values(selectedEmails)],
+            checkboxes: [...checkboxesSelected],
           });
+        }
+
+        if (currScreen === 3) {
+          POPUP.hide(finalizePopup);
         }
       },
     });
@@ -2052,7 +2067,28 @@ const plan = (function () {
       },
     });
 
+    const addEmailBtn = button.build({
+      text: 'Add Email',
+      callback: () => {
+        if (Object.values(selectedEmails).length === 5) return;
+
+        const id = _UTIL.autoIncrementId(`email-${Object.values(selectedEmails).length}`);
+        selectedEmails[id] = '';
+
+        const emailInput = input.build({
+          label: 'Email',
+          type: 'email',
+          callback: e => {
+            selectedEmails[id] = e.target.value;
+          },
+        });
+
+        screen1.appendChild(emailInput);
+      },
+    });
+
     screen1.appendChild(checkboxWrap);
+    screen1.appendChild(addEmailBtn);
     checkboxWrap.appendChild(selectAllCheck);
     checkboxWrap.appendChild(sendToDODDCheck);
     checkboxWrap.appendChild(sendToOhioNetCheck);
@@ -2060,47 +2096,31 @@ const plan = (function () {
     checkboxWrap.appendChild(emailReportCheck);
 
     if (emails) {
-      console.log(emails);
+      emails.forEach((email, index) => {
+        const id = _UTIL.autoIncrementId(`email-${index + 1}`);
+        selectedEmails[id] = email;
 
-      emails.forEach(email => {
         const emailInput = input.build({
           label: 'Email',
           type: 'email',
-          value: email,
+          value: email.setting_value,
           callback: e => {
-            //selectedEmails.emailInput1 = e.target.value
-          }
+            selectedEmails[id] = e.target.value;
+          },
         });
-        screen1.appendChild(emailInput);
 
-        //selectedEmails
-      })
+        screen1.appendChild(emailInput);
+      });
     } else {
       const emailInput = input.build({
         label: 'Email',
         type: 'email',
         callback: e => {
           //selectedEmails.emailInput1 = e.target.value
-        }
+        },
       });
       screen1.appendChild(emailInput);
     }
-
-    const addEmailBtn = button.build({
-      text: 'Add Email',
-      callback: () => {
-        // if email input count is 5, return;
-
-        const emailInput = input.build({
-          label: 'Email',
-          type: 'email',
-          callback: e => {
-            //selectedEmails.emailInput1 = e.target.value
-          }
-        });
-      }
-    });
-    screen1.appendChild(addEmailBtn);
 
     //----------------------------------------------
     // screen 2
@@ -2112,6 +2132,9 @@ const plan = (function () {
     const planAttBody = document.createElement('div');
     const workflowAttBody = document.createElement('div');
     const signatureAttBody = document.createElement('div');
+    planAttBody.classList.add('attachWrap');
+    workflowAttBody.classList.add('attachWrap');
+    signatureAttBody.classList.add('attachWrap');
     screen2.appendChild(planAttBody);
     screen2.appendChild(workflowAttBody);
     screen2.appendChild(signatureAttBody);

@@ -563,6 +563,22 @@
   .checkbox-mtd>input:checked+span:after {
     left: -24px;
   }
+
+  .finalizeAttachments {
+    .attachWrap {
+      display: flex;
+      flex-flow: column;
+    }
+
+    .attachment {
+      cursor: pointer;
+      margin: 0 0 10px 0;
+
+      &.selected {
+        background-color: $secondary;
+      }
+    }
+  }
 }
 .assessment {
   &__section {
