@@ -1991,7 +1991,7 @@ const plan = (function () {
             planAttachmentIds: [...Object.values(selectedAttachmentsPlan)],
             wfAttachmentIds: [...Object.values(selectedAttachmentsSignature)],
             sigAttachmentIds: [...Object.values(selectedAttachmentsWorkflow)],
-            userId: $.session.User,
+            userId: $.session.UserId,
             assessmentID: planId,
             peopleId: selectedConsumer.id,
             emailAddresses: [...Object.values(selectedEmails)],
