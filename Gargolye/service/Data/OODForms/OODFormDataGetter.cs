@@ -368,7 +368,7 @@ namespace OODForms
                 sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.Em_work_schedule.Position_ID = dba.EMP_OOD.Position_ID ");
                 sb.Append(" LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
                 sb.Append(" LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-                sb.AppendFormat("WHERE Em_work_schedule.Position_ID in ({0}) ", 5); //lstPositionstr
+                sb.AppendFormat("WHERE Em_work_schedule.Position_ID in ({0}) ", 123); //lstPositionstr
                 sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
                 sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
                 sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
@@ -385,6 +385,84 @@ namespace OODForms
           
           
         }
+
+        public DataSet OODForm16GetGroupNumber(string AuthorizationNumber, string StartDate, string EndDate)
+        {
+            try
+            {
+                sb.Clear();
+                sb.AppendFormat("Select max(Case when ratio_consumers > 4 then 4 Else ratio_consumers END) as ratio_consumers from Case_Notes ");
+                sb.AppendFormat("where reference_Number = '{0}' ", AuthorizationNumber);
+                sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+                DataSet ds = di.SelectRowsDS(sb.ToString());
+                ds = di.SelectRowsDS(sb.ToString());
+
+                return ds;
+
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
+
+        }
+
+        public DataSet OODForm16ServiceHoursOffered(string AuthorizationNumber, string StartDate, string EndDate)
+        {
+            try
+            {
+                sb.Clear();
+                sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
+                sb.Append("FROM dba.EM_Job_Task ");
+                sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+                sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+                sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
+                string listPosNumber = string.Empty;
+                DataSet ds = di.SelectRowsDS(sb.ToString());
+                string lstPositionstr = string.Empty;
+                if (ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        List<string> lstPositions = new List<string>();
+
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            string Posnumber;
+                            Posnumber = row["Position_ID"].ToString();
+                            lstPositions.Add(Posnumber);
+                        }
+                        lstPositionstr = string.Join(",", lstPositions.ToArray());
+                    }
+                }
+
+
+                sb.Clear();
+                sb.AppendFormat("SELECT SUM(total_time_in_hours) AS TotalHoursSum ");
+                sb.Append("FROM ( SELECT Start_Time, End_Time,  ");
+                sb.Append("DATEDIFF(hour, CONVERT(datetime, Start_Time, 101), CONVERT(datetime, End_Time, 101)) AS total_time_in_hours ");
+                sb.Append(" FROM Em_Work_Schedule ");
+                sb.AppendFormat("WHERE Position_ID in ({0})  ", 123); //lstPositionstr
+                sb.AppendFormat(") AS SubQuery");
+                
+                ds = di.SelectRowsDS(sb.ToString());
+
+                return ds;
+
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
+
+        }
+
 
         #region "OOD 4"
         public DataSet OODDevelopment(string AuthorizationNumber)

@@ -20,6 +20,7 @@ using System.Web;
 using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 using System.Web.UI.WebControls;
+using OneSpanSign.Sdk;
 
 namespace OODForms
 {
@@ -868,22 +869,71 @@ namespace OODForms
 
                 // Fill out DETAIL DATA Portion of the XLS SPREADSHEET********************************************************************************************************
 
-                WS.Cell("G19").Value = "This is the business";
+                
 
-                WS.Cell("B20").Value = "12-1";
+                DataSet dsScheduleWorkTimes = obj.OODForm16GetScheduledWorkTimes(AuthorizationNumber, StartDate, EndDate, userID);
 
-                DataSet dstest = obj.OODForm16GetScheduledWorkTimes(AuthorizationNumber, StartDate, EndDate, userID);
+                if (dsScheduleWorkTimes.Tables[0].Rows.Count > 0) {
 
-                int test = dstest.Tables[0].Rows.Count;
+                    List<string> lstWorkTimes = new List<string>();
 
-                foreach (DataRow row3 in dstest.Tables[0].Rows)
+                    foreach (DataRow row3 in dsScheduleWorkTimes.Tables[0].Rows)
+                    {
+
+                        string scheduledWorkTime;
+                        scheduledWorkTime = row3["start_time"].ToString() + " - " + row3["end_time"].ToString() + "\r\n";
+                        lstWorkTimes.Add(scheduledWorkTime);
+                    }
+                    WS.Cell("B20").Value = string.Join(" ", lstWorkTimes.ToArray());
+
+                    
+
+                } else
                 {
-                    string scheduledWorkTimes = row3["start_time"].ToString() + " - " + row3["end_time"].ToString();
-                    WS.Cell("B20").Value = scheduledWorkTimes;
+                    WS.Cell("B20").Value = "";
+                    //WS.Cell("G19").Value = "";
                 }
 
-                WS.Cell("E20").Value = "12";
-                WS.Cell("B21").Value = "120";
+                
+
+                DataSet dsGroupNumber = obj.OODForm16GetGroupNumber(AuthorizationNumber, StartDate, EndDate);
+
+                if (dsGroupNumber.Tables[0].Rows.Count > 0) {
+
+                    foreach (DataRow row3 in dsGroupNumber.Tables[0].Rows)
+                    {
+
+                        string groupNumber;
+                        groupNumber = row3["ratio_consumers"].ToString();
+                        WS.Cell("E20").Value = groupNumber;
+                    }
+
+                } else
+                {
+                    WS.Cell("E20").Value = "";
+                }
+
+
+                // Calculate 
+
+                DataSet dsTotalHoursSum = obj.OODForm16ServiceHoursOffered(AuthorizationNumber, StartDate, EndDate);
+
+                if (dsTotalHoursSum.Tables[0].Rows.Count > 0)
+                {
+
+                    foreach (DataRow row3 in dsTotalHoursSum.Tables[0].Rows)
+                    {
+
+                        string totalHours;
+                        totalHours = row3["TotalHoursSum"].ToString();
+                        WS.Cell("B21").Value = totalHours;
+                    }
+
+                }
+                else
+                {
+                    WS.Cell("B21").Value = "";
+                }
 
                 ds = obj.OODForm16GetNotes(AuthorizationNumber, StartDate, EndDate, userID);
 
@@ -901,6 +951,7 @@ namespace OODForms
                     t += 1;
                 }
 
+                WS.Cell("G19").Value = ds.Tables[0].Rows[0]["BusinessName"].ToString();
 
                 //             WS.Calculate();
 
