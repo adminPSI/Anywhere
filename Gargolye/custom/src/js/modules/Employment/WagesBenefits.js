@@ -352,7 +352,7 @@ const WagesBenefits = (() => {
         // dropdowns & inputs
         weekHours = input.build({
             id: 'weekHours',
-            type: 'number',
+            type: 'text', 
             label: 'Hours Per Week',
             style: 'secondary',
             value: hoursWeek,  
