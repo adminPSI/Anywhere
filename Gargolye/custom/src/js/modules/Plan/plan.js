@@ -1944,6 +1944,8 @@ const plan = (function () {
   // Plan Finalization
   async function showFinalizePopup() {
     let currScreen = 1;
+    let checkboxesSelected = [];
+    let finalizationResults;
 
     const finalizePopup = POPUP.build({
       classNames: 'finalizePopup',
@@ -1961,13 +1963,12 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        let checkboxesSelected;
-
         if (currScreen === 1) {
           if (selectedCheckboxes.selectAllCheck) {
             checkboxesSelected = ['selectAllCheck'];
           } else {
             checkboxesSelected = Object.entries(selectedCheckboxes).filter(([key, value]) => {
+              // return key === 'selectAllCheck'
               if (key === 'selectAllCheck') return false;
               if (value) return true;
             }).map(([key, value]) => {
@@ -1986,21 +1987,35 @@ const plan = (function () {
           currScreen = 3;
           screen2.classList.remove('visible');
           screen3.classList.add('visible');
+          actionBtn.textContent = 'Done';
 
-          await assessmentAjax.finalizationActions({
+          finalizationResults = await assessmentAjax.finalizationActions({
             token: $.session.Token,
-            planAttachmentIds: [...Object.values(selectedAttachmentsPlan)],
-            wfAttachmentIds: [...Object.values(selectedAttachmentsSignature)],
-            sigAttachmentIds: [...Object.values(selectedAttachmentsWorkflow)],
+            planAttachmentIds: getAttachmentIds(selectedAttachmentsPlan),
+            wfAttachmentIds: getAttachmentIds(selectedAttachmentsSignature),
+            sigAttachmentIds: getAttachmentIds(selectedAttachmentsWorkflow),
             userId: $.session.UserId,
             assessmentID: planId,
             peopleId: selectedConsumer.id,
             emailAddresses: [...Object.values(selectedEmails)],
-            checkboxes: [...checkboxesSelected],
+            checkBoxes: [...checkboxesSelected],
+            extraSpace: 'false',
+            toONET: false,
+            isp: false,
+            oneSpan: false,
+            signatureOnly: false,
+            include: 'false',
+            versionID: '1'
           });
+          console.table(finalizationResults);
+
+          // TODO: once we get results update screen 3 icons
+
+          return;
         }
 
         if (currScreen === 3) {
+          actionBtn.textContent = 'Next';
           POPUP.hide(finalizePopup);
         }
       },
@@ -2023,6 +2038,7 @@ const plan = (function () {
     };
     const selectedEmails = {};
     const emails = await assessmentAjax.getDefaultEmailsForFinalization();
+    let emailCount = emails ? emails.length : 0;
     const checkboxWrap = document.createElement('div');
     checkboxWrap.classList.add('checkboxes');
 
@@ -2032,6 +2048,18 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.selectAllCheck = e.target.checked;
+
+        if (selectedCheckboxes.selectAllCheck) {
+          sendToDODDCheck.querySelector('input').checked = true;
+          sendToOhioNetCheck.querySelector('input').checked = true;
+          downloadReportCheck.querySelector('input').checked = true;
+          emailReportCheck.querySelector('input').checked = true;
+
+          selectedCheckboxes.sendToDODDCheck = true;
+          sendToOhioNetCheck.sendToDODDCheck = true;
+          downloadReportCheck.sendToDODDCheck = true;
+          emailReportCheck.sendToDODDCheck = true;
+        }
       },
     });
     const sendToDODDCheck = input.buildCheckbox({
@@ -2040,6 +2068,11 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.sendToDODDCheck = e.target.checked;
+
+        if (!e.target.checked) {
+          selectAllCheck.querySelector('input').checked = false;
+          selectedCheckboxes.selectAllCheck = false;
+        }
       },
     });
     const sendToOhioNetCheck = input.buildCheckbox({
@@ -2048,6 +2081,11 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.sendToOhioNetCheck = e.target.checked;
+
+        if (!e.target.checked) {
+          selectAllCheck.querySelector('input').checked = false;
+          selectedCheckboxes.selectAllCheck = false;
+        }
       },
     });
     const downloadReportCheck = input.buildCheckbox({
@@ -2056,6 +2094,11 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.downloadReportCheck = e.target.checked;
+
+        if (!e.target.checked) {
+          selectAllCheck.querySelector('input').checked = false;
+          selectedCheckboxes.selectAllCheck = false;
+        }
       },
     });
     const emailReportCheck = input.buildCheckbox({
@@ -2064,6 +2107,11 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.emailReportCheck = e.target.checked;
+
+        if (!e.target.checked) {
+          selectAllCheck.querySelector('input').checked = false;
+          selectedCheckboxes.selectAllCheck = false;
+        }
       },
     });
 
@@ -2098,7 +2146,7 @@ const plan = (function () {
     if (emails) {
       emails.forEach((email, index) => {
         const id = _UTIL.autoIncrementId(`email-${index + 1}`);
-        selectedEmails[id] = email;
+        selectedEmails[id] = email.setting_value;
 
         const emailInput = input.build({
           label: 'Email',
@@ -2116,7 +2164,7 @@ const plan = (function () {
         label: 'Email',
         type: 'email',
         callback: e => {
-          //selectedEmails.emailInput1 = e.target.value
+          selectedEmails['email-1'] = e.target.value;
         },
       });
       screen1.appendChild(emailInput);
@@ -2135,6 +2183,15 @@ const plan = (function () {
     planAttBody.classList.add('attachWrap');
     workflowAttBody.classList.add('attachWrap');
     signatureAttBody.classList.add('attachWrap');
+    const planHeading = document.createElement('h2');
+    const workflowHeading = document.createElement('h2');
+    const signHeading = document.createElement('h2');
+    planHeading.innerText = 'Plan Attachments';
+    workflowHeading.innerText = 'Workflow Attachments';
+    signHeading.innerText = 'Signature Attachments';
+    planAttBody.appendChild(planHeading);
+    workflowAttBody.appendChild(workflowHeading);
+    signatureAttBody.appendChild(signHeading);
     screen2.appendChild(planAttBody);
     screen2.appendChild(workflowAttBody);
     screen2.appendChild(signatureAttBody);
@@ -2193,32 +2250,42 @@ const plan = (function () {
     //----------------------------------------------
     // screen 3
     //----------------------------------------------
-    const selectAllStatus = document.createElement('div');
     const sendToDODDStatus = document.createElement('div');
     const sendToOhioNetStatus = document.createElement('div');
     const downloadReportStatus = document.createElement('div');
     const emailReportStatus = document.createElement('div');
-    selectAllStatus.innerHTML = '<p>Select All</p>';
     sendToDODDStatus.innerHTML = '<p>Send to DODD</p>';
     sendToOhioNetStatus.innerHTML = '<p>Send to OhioDD.net</p>';
     downloadReportStatus.innerHTML = '<p>Download Report</p>';
     emailReportStatus.innerHTML = '<p>Email Report</p>';
-    const selectAllStatusIcon = document.createElement('p');
     const sendToDODDStatusIcon = document.createElement('p');
     const sendToOhioNetStatusIcon = document.createElement('p');
     const downloadReportStatusIcon = document.createElement('p');
     const emailReportStatusIcon = document.createElement('p');
-    selectAllStatus.appendChild(selectAllStatusIcon);
     sendToDODDStatus.appendChild(sendToDODDStatusIcon);
     sendToOhioNetStatus.appendChild(sendToOhioNetStatusIcon);
     downloadReportStatus.appendChild(downloadReportStatusIcon);
     emailReportStatus.appendChild(emailReportStatusIcon);
 
-    screen3.appendChild(selectAllStatus);
-    screen3.appendChild(sendToDODDStatus);
-    screen3.appendChild(sendToOhioNetStatus);
-    screen3.appendChild(downloadReportStatus);
-    screen3.appendChild(emailReportStatus);
+    if (selectedCheckboxes.selectAllCheck) {
+      screen3.appendChild(sendToDODDStatus);
+      screen3.appendChild(sendToOhioNetStatus);
+      screen3.appendChild(downloadReportStatus);
+      screen3.appendChild(emailReportStatus);
+    } else {
+      if (selectedCheckboxes.sendToDODDCheck) {
+        screen3.appendChild(sendToDODDStatus);
+      }
+      if (selectedCheckboxes.sendToOhioNetCheck) {
+        screen3.appendChild(sendToOhioNetStatus);
+      }
+      if (selectedCheckboxes.downloadReportCheck) {
+        screen3.appendChild(downloadReportStatus);
+      }
+      if (selectedCheckboxes.emailReportCheck) {
+        screen3.appendChild(emailReportStatus);
+      }
+    }
 
     POPUP.show(finalizePopup);
   }
@@ -2302,7 +2369,11 @@ const plan = (function () {
       text: 'Finalize Plan',
       style: 'secondary',
       type: 'contained',
-      callback: showFinalizePopup,
+      callback: () => {
+        //if (planStatus === 'C') {
+          showFinalizePopup();
+        //}
+      },
     });
     const backBtn = button.build({
       text: 'Back',
