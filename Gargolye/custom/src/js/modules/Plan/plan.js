@@ -2000,10 +2000,10 @@ const plan = (function () {
             emailAddresses: [...Object.values(selectedEmails)],
             checkboxes: [...checkboxesSelected],
             extraSpace: 'false',
-            toONET: 'false',
-            isp: 'false',
-            oneSpan: 'false',
-            signatureOnly: 'false',
+            toONET: false,
+            isp: false,
+            oneSpan: false,
+            signatureOnly: false,
             include: 'false',
           });
           console.table(finalizationResults);
