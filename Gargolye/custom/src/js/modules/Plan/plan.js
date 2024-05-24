@@ -2036,6 +2036,18 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.selectAllCheck = e.target.checked;
+
+        if (selectedCheckboxes.selectAllCheck) {
+          sendToDODDCheck.querySelector('input').checked = true;
+          sendToOhioNetCheck.querySelector('input').checked = true;
+          downloadReportCheck.querySelector('input').checked = true;
+          emailReportCheck.querySelector('input').checked = true;
+
+          selectedCheckboxes.sendToDODDCheck = true;
+          sendToOhioNetCheck.sendToDODDCheck = true;
+          downloadReportCheck.sendToDODDCheck = true;
+          emailReportCheck.sendToDODDCheck = true;
+        }
       },
     });
     const sendToDODDCheck = input.buildCheckbox({
@@ -2044,6 +2056,11 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.sendToDODDCheck = e.target.checked;
+
+        if (!e.target.checked) {
+          selectAllCheck.querySelector('input').checked = false;
+          selectedCheckboxes.selectAllCheck = false;
+        }
       },
     });
     const sendToOhioNetCheck = input.buildCheckbox({
@@ -2052,6 +2069,11 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.sendToOhioNetCheck = e.target.checked;
+
+        if (!e.target.checked) {
+          selectAllCheck.querySelector('input').checked = false;
+          selectedCheckboxes.selectAllCheck = false;
+        }
       },
     });
     const downloadReportCheck = input.buildCheckbox({
@@ -2060,6 +2082,11 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.downloadReportCheck = e.target.checked;
+
+        if (!e.target.checked) {
+          selectAllCheck.querySelector('input').checked = false;
+          selectedCheckboxes.selectAllCheck = false;
+        }
       },
     });
     const emailReportCheck = input.buildCheckbox({
@@ -2068,6 +2095,11 @@ const plan = (function () {
       isChecked: true,
       callback: e => {
         selectedCheckboxes.emailReportCheck = e.target.checked;
+
+        if (!e.target.checked) {
+          selectAllCheck.querySelector('input').checked = false;
+          selectedCheckboxes.selectAllCheck = false;
+        }
       },
     });
 
@@ -2197,32 +2229,42 @@ const plan = (function () {
     //----------------------------------------------
     // screen 3
     //----------------------------------------------
-    const selectAllStatus = document.createElement('div');
     const sendToDODDStatus = document.createElement('div');
     const sendToOhioNetStatus = document.createElement('div');
     const downloadReportStatus = document.createElement('div');
     const emailReportStatus = document.createElement('div');
-    selectAllStatus.innerHTML = '<p>Select All</p>';
     sendToDODDStatus.innerHTML = '<p>Send to DODD</p>';
     sendToOhioNetStatus.innerHTML = '<p>Send to OhioDD.net</p>';
     downloadReportStatus.innerHTML = '<p>Download Report</p>';
     emailReportStatus.innerHTML = '<p>Email Report</p>';
-    const selectAllStatusIcon = document.createElement('p');
     const sendToDODDStatusIcon = document.createElement('p');
     const sendToOhioNetStatusIcon = document.createElement('p');
     const downloadReportStatusIcon = document.createElement('p');
     const emailReportStatusIcon = document.createElement('p');
-    selectAllStatus.appendChild(selectAllStatusIcon);
     sendToDODDStatus.appendChild(sendToDODDStatusIcon);
     sendToOhioNetStatus.appendChild(sendToOhioNetStatusIcon);
     downloadReportStatus.appendChild(downloadReportStatusIcon);
     emailReportStatus.appendChild(emailReportStatusIcon);
 
-    screen3.appendChild(selectAllStatus);
-    screen3.appendChild(sendToDODDStatus);
-    screen3.appendChild(sendToOhioNetStatus);
-    screen3.appendChild(downloadReportStatus);
-    screen3.appendChild(emailReportStatus);
+    if (selectedCheckboxes.selectAllCheck) {
+      screen3.appendChild(sendToDODDStatus);
+      screen3.appendChild(sendToOhioNetStatus);
+      screen3.appendChild(downloadReportStatus);
+      screen3.appendChild(emailReportStatus);
+    } else {
+      if (selectedCheckboxes.sendToDODDCheck) {
+        screen3.appendChild(sendToDODDStatus);
+      }
+      if (selectedCheckboxes.sendToOhioNetCheck) {
+        screen3.appendChild(sendToOhioNetStatus);
+      }
+      if (selectedCheckboxes.downloadReportCheck) {
+        screen3.appendChild(downloadReportStatus);
+      }
+      if (selectedCheckboxes.emailReportCheck) {
+        screen3.appendChild(emailReportStatus);
+      }
+    }
 
     POPUP.show(finalizePopup);
   }
