@@ -1987,6 +1987,7 @@ const plan = (function () {
           currScreen = 3;
           screen2.classList.remove('visible');
           screen3.classList.add('visible');
+          actionBtn.textContent = 'Done';
 
           finalizationResults = await assessmentAjax.finalizationActions({
             token: $.session.Token,
@@ -1998,6 +1999,12 @@ const plan = (function () {
             peopleId: selectedConsumer.id,
             emailAddresses: [...Object.values(selectedEmails)],
             checkboxes: [...checkboxesSelected],
+            extraSpace: 'false',
+            toONET: 'false',
+            isp: 'false',
+            oneSpan: 'false',
+            signatureOnly: 'false',
+            include: 'false',
           });
           console.table(finalizationResults);
 
@@ -2005,6 +2012,7 @@ const plan = (function () {
         }
 
         if (currScreen === 3) {
+          actionBtn.textContent = 'Next';
           POPUP.hide(finalizePopup);
         }
       },
@@ -2171,6 +2179,15 @@ const plan = (function () {
     planAttBody.classList.add('attachWrap');
     workflowAttBody.classList.add('attachWrap');
     signatureAttBody.classList.add('attachWrap');
+    const planHeading = document.createElement('h2');
+    const workflowHeading = document.createElement('h2');
+    const signHeading = document.createElement('h2');
+    planHeading.innerText = 'Plan Attachments';
+    workflowHeading.innerText = 'Workflow Attachments';
+    signHeading.innerText = 'Signature Attachments';
+    planAttBody.appendChild(planHeading);
+    workflowAttBody.appendChild(workflowHeading);
+    signatureAttBody.appendChild(signHeading);
     screen2.appendChild(planAttBody);
     screen2.appendChild(workflowAttBody);
     screen2.appendChild(signatureAttBody);
