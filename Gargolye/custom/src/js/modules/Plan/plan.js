@@ -1944,6 +1944,8 @@ const plan = (function () {
   // Plan Finalization
   async function showFinalizePopup() {
     let currScreen = 1;
+    let checkboxesSelected = [];
+    let finalizationResults;
 
     const finalizePopup = POPUP.build({
       classNames: 'finalizePopup',
@@ -1961,9 +1963,6 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        let checkboxesSelected = [];
-        let finalizationResults;
-
         if (currScreen === 1) {
           if (selectedCheckboxes.selectAllCheck) {
             checkboxesSelected = ['selectAllCheck'];
