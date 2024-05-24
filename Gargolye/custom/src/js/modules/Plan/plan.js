@@ -1962,6 +1962,7 @@ const plan = (function () {
       type: 'contained',
       callback: async () => {
         let checkboxesSelected;
+        let finalizationResults;
 
         if (currScreen === 1) {
           if (selectedCheckboxes.selectAllCheck) {
@@ -1987,7 +1988,7 @@ const plan = (function () {
           screen2.classList.remove('visible');
           screen3.classList.add('visible');
 
-          await assessmentAjax.finalizationActions({
+          finalizationResults = await assessmentAjax.finalizationActions({
             token: $.session.Token,
             planAttachmentIds: [...Object.values(selectedAttachmentsPlan)],
             wfAttachmentIds: [...Object.values(selectedAttachmentsSignature)],
@@ -1998,6 +1999,9 @@ const plan = (function () {
             emailAddresses: [...Object.values(selectedEmails)],
             checkboxes: [...checkboxesSelected],
           });
+          console.table(finalizationResults);
+
+          // TODO: once we get results update screen 3 icons
         }
 
         if (currScreen === 3) {
