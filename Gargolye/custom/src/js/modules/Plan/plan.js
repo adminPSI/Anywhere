@@ -1961,7 +1961,7 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        let checkboxesSelected;
+        let checkboxesSelected = [];
         let finalizationResults;
 
         if (currScreen === 1) {
