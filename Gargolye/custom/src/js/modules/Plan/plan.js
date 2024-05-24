@@ -2038,6 +2038,7 @@ const plan = (function () {
     };
     const selectedEmails = {};
     const emails = await assessmentAjax.getDefaultEmailsForFinalization();
+    let emailCount = emails ? emails.length : 0;
     const checkboxWrap = document.createElement('div');
     checkboxWrap.classList.add('checkboxes');
 
@@ -2145,7 +2146,7 @@ const plan = (function () {
     if (emails) {
       emails.forEach((email, index) => {
         const id = _UTIL.autoIncrementId(`email-${index + 1}`);
-        selectedEmails[id] = email;
+        selectedEmails[id] = email.setting_value;
 
         const emailInput = input.build({
           label: 'Email',
@@ -2163,7 +2164,7 @@ const plan = (function () {
         label: 'Email',
         type: 'email',
         callback: e => {
-          //selectedEmails.emailInput1 = e.target.value
+          selectedEmails['email-1'] = e.target.value;
         },
       });
       screen1.appendChild(emailInput);
@@ -2368,7 +2369,11 @@ const plan = (function () {
       text: 'Finalize Plan',
       style: 'secondary',
       type: 'contained',
-      callback: showFinalizePopup,
+      callback: () => {
+        //if (planStatus === 'C') {
+          showFinalizePopup();
+        //}
+      },
     });
     const backBtn = button.build({
       text: 'Back',
