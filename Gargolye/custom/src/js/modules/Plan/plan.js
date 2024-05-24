@@ -2010,6 +2010,8 @@ const plan = (function () {
           console.table(finalizationResults);
 
           // TODO: once we get results update screen 3 icons
+
+          return;
         }
 
         if (currScreen === 3) {
