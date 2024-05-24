@@ -1968,7 +1968,7 @@ const plan = (function () {
             checkboxesSelected = ['selectAllCheck'];
           } else {
             checkboxesSelected = Object.entries(selectedCheckboxes).filter(([key, value]) => {
-              return key === 'selectAllCheck'
+              // return key === 'selectAllCheck'
               if (key === 'selectAllCheck') return false;
               if (value) return true;
             }).map(([key, value]) => {
