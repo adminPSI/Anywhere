@@ -1968,6 +1968,7 @@ const plan = (function () {
             checkboxesSelected = ['selectAllCheck'];
           } else {
             checkboxesSelected = Object.entries(selectedCheckboxes).filter(([key, value]) => {
+              return key === 'selectAllCheck'
               if (key === 'selectAllCheck') return false;
               if (value) return true;
             }).map(([key, value]) => {
@@ -1990,9 +1991,9 @@ const plan = (function () {
 
           finalizationResults = await assessmentAjax.finalizationActions({
             token: $.session.Token,
-            planAttachmentIds: [...Object.values(selectedAttachmentsPlan)],
-            wfAttachmentIds: [...Object.values(selectedAttachmentsSignature)],
-            sigAttachmentIds: [...Object.values(selectedAttachmentsWorkflow)],
+            planAttachmentIds: getAttachmentIds(selectedAttachmentsPlan),
+            wfAttachmentIds: getAttachmentIds(selectedAttachmentsSignature),
+            sigAttachmentIds: getAttachmentIds(selectedAttachmentsWorkflow),
             userId: $.session.UserId,
             assessmentID: planId,
             peopleId: selectedConsumer.id,
