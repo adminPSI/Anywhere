@@ -21,6 +21,8 @@ using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 using System.Web.UI.WebControls;
 using OneSpanSign.Sdk;
+using System.Runtime.InteropServices.ComTypes;
+using static log4net.Appender.RollingFileAppender;
 
 namespace OODForms
 {
@@ -869,30 +871,159 @@ namespace OODForms
 
                 // Fill out DETAIL DATA Portion of the XLS SPREADSHEET********************************************************************************************************
 
-                
+                DateTime parsedStartDate = DateTime.ParseExact(StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime parsedEndDate = DateTime.ParseExact(EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-                DataSet dsScheduleWorkTimes = obj.OODForm16GetScheduledWorkTimes(AuthorizationNumber, StartDate, EndDate, userID);
+                List<WeekRangeDates> weekDates = new List<WeekRangeDates>();
 
-                if (dsScheduleWorkTimes.Tables[0].Rows.Count > 0) {
+                // Call the GetRange method to get the weekly intervals
+                int weekcount = 0;
+                foreach (var week in GetRange(parsedStartDate, parsedEndDate))
+                {
+                    // Console.WriteLine($"Start: {week.Start.ToShortDateString()} End: {week.End.ToShortDateString()}");
+                    weekcount = weekcount + 1;
+                    weekDates.Add(new WeekRangeDates { WeekNumber = weekcount.ToString(), StartDate = week.Start, EndDate = week.End });
 
-                    List<string> lstWorkTimes = new List<string>();
+                }
 
-                    foreach (DataRow row3 in dsScheduleWorkTimes.Tables[0].Rows)
+                // fill in the weekly entries on the EXCEL Spreadsheet
+                foreach(WeekRangeDates week in weekDates)
+                {
+                    string strStartDate = week.StartDate.ToString("yyyy-MM-dd");
+                    string strEndDate = week.EndDate.ToString("yyyy-MM-dd");
+
+                    DataSet dstest = obj.OODForm16GetNotes(AuthorizationNumber, strStartDate, strEndDate, userID);
+
+                    if (dstest.Tables[0].Rows.Count > 0)
                     {
+                        Int32 firstCell = 0;
+                        switch (week.WeekNumber)
+                        {
+                            case ("1"):
+                                firstCell = 25;
+                                WS.Cell("G19").Value = dstest.Tables[0].Rows[0]["BusinessName"].ToString();
+                                break;
+                            case ("2"):
+                                firstCell = 38;
+                                WS.Cell("G32").Value = dstest.Tables[0].Rows[0]["BusinessName"].ToString();
+                                break;
+                            case ("3"):
+                                firstCell = 51;
+                                WS.Cell("G45").Value = dstest.Tables[0].Rows[0]["BusinessName"].ToString();
+                                break;
+                            case ("4"):
+                                firstCell = 64;
+                                WS.Cell("G58").Value = dstest.Tables[0].Rows[0]["BusinessName"].ToString();
+                                break;
+                            case ("5"):
+                                firstCell = 77;
+                                WS.Cell("G71").Value = dstest.Tables[0].Rows[0]["BusinessName"].ToString();
+                                break;
+                            case ("6"):
+                                firstCell = 0;
+                                break;
+                            default:
+                                break;
+                        }
 
-                        string scheduledWorkTime;
-                        scheduledWorkTime = row3["start_time"].ToString() + " - " + row3["end_time"].ToString() + "\r\n";
-                        lstWorkTimes.Add(scheduledWorkTime);
+                        if (firstCell != 0) {
+
+                            foreach (DataRow row2 in dstest.Tables[0].Rows)
+                            {
+                                WS.Cell(String.Format("a{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(row2["Service_date"]);// Convert.ToDateTime(Convert.ToDateTime(row2["Service_date"]).ToString("MM/dd/yyyy")); //.ToString("MM/dd/yyyy"); //DateTime.ParseExact((DateTime)row2["Service_date"],"MM/dd/yyyy",CultureInfo.InvariantCulture); 
+                                WS.Cell(String.Format("a{0}", firstCell)).NumberFormatString = "MM/dd/yyy"; //  Bytescout.Spreadsheet.ExtendedFormat.;
+                                WS.Cell(String.Format("b{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["Start_Time"])); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
+                                WS.Cell(String.Format("c{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["End_Time"]));
+                                WS.Cell(String.Format("d{0}", firstCell)).Value = "0";
+                                WS.Cell(String.Format("f{0}", firstCell)).Value = row2["Initials"].ToString().Trim();
+                                WS.Cell(String.Format("g{0}", firstCell)).Value = row2["Interventions"].ToString().Trim();
+                                WS.Cell(String.Format("n{0}", firstCell)).FontColor = System.Drawing.Color.Black;
+                                firstCell += 1;
+                            }
+                            // WS.Cell("G19").Value = ds.Tables[0].Rows[0]["BusinessName"].ToString();
+                            //             WS.Calculate();
+
+                            DataSet dsScheduleWorkTimes = obj.OODForm16GetScheduledWorkTimes(AuthorizationNumber, strStartDate, strEndDate, userID);
+
+                            if (dsScheduleWorkTimes.Tables[0].Rows.Count > 0)
+                            {
+                                List<string> lstWorkTimes = new List<string>();
+
+                                foreach (DataRow row3 in dsScheduleWorkTimes.Tables[0].Rows)
+                                {
+                                    string scheduledWorkTime;
+                                    scheduledWorkTime = row3["start_time"].ToString() + " - " + row3["end_time"].ToString() + "\r\n";
+                                    lstWorkTimes.Add(scheduledWorkTime);
+                                }
+
+                                switch (week.WeekNumber)
+                                {
+                                    case ("1"):
+                                        firstCell = 25;
+                                        WS.Cell("B20").Value = string.Join(" ", lstWorkTimes.ToArray());
+                                        break;
+                                    case ("2"):
+                                        firstCell = 38;
+                                        WS.Cell("B33").Value = string.Join(" ", lstWorkTimes.ToArray());
+                                        break;
+                                    case ("3"):
+                                        firstCell = 51;
+                                        WS.Cell("B46").Value = string.Join(" ", lstWorkTimes.ToArray());
+                                        break;
+                                    case ("4"):
+                                        firstCell = 64;
+                                        WS.Cell("B59").Value = string.Join(" ", lstWorkTimes.ToArray());
+                                        break;
+                                    case ("5"):
+                                        firstCell = 77;
+                                        WS.Cell("B72").Value = string.Join(" ", lstWorkTimes.ToArray());
+                                        break;
+                                    case ("6"):
+                                        firstCell = 0;
+                                        break;
+                                    default:
+                                        break;
+                                }
+
+                            }
+                            else
+                            {
+                                WS.Cell("B20").Value = "";
+                                //WS.Cell("G19").Value = "";
+                            }
+
+
+                        }
+
+                    } else
+                    {
+                       
                     }
-                    WS.Cell("B20").Value = string.Join(" ", lstWorkTimes.ToArray());
+
+                }
+
+                //DataSet dsScheduleWorkTimes = obj.OODForm16GetScheduledWorkTimes(AuthorizationNumber, StartDate, EndDate, userID);
+
+                //if (dsScheduleWorkTimes.Tables[0].Rows.Count > 0) {
+
+                //    List<string> lstWorkTimes = new List<string>();
+
+                //    foreach (DataRow row3 in dsScheduleWorkTimes.Tables[0].Rows)
+                //    {
+
+                //        string scheduledWorkTime;
+                //        scheduledWorkTime = row3["start_time"].ToString() + " - " + row3["end_time"].ToString() + "\r\n";
+                //        lstWorkTimes.Add(scheduledWorkTime);
+                //    }
+                //    WS.Cell("B20").Value = string.Join(" ", lstWorkTimes.ToArray());
 
                     
 
-                } else
-                {
-                    WS.Cell("B20").Value = "";
-                    //WS.Cell("G19").Value = "";
-                }
+                //} else
+                //{
+                //    WS.Cell("B20").Value = "";
+                //    //WS.Cell("G19").Value = "";
+                //}
 
                 
 
@@ -934,27 +1065,6 @@ namespace OODForms
                 {
                     WS.Cell("B21").Value = "";
                 }
-
-                ds = obj.OODForm16GetNotes(AuthorizationNumber, StartDate, EndDate, userID);
-
-                Int32 t = 25;
-                foreach (DataRow row2 in ds.Tables[0].Rows)
-                {
-                    WS.Cell(String.Format("a{0}", t)).ValueAsDateTime = Convert.ToDateTime(row2["Service_date"]);// Convert.ToDateTime(Convert.ToDateTime(row2["Service_date"]).ToString("MM/dd/yyyy")); //.ToString("MM/dd/yyyy"); //DateTime.ParseExact((DateTime)row2["Service_date"],"MM/dd/yyyy",CultureInfo.InvariantCulture); 
-                    WS.Cell(String.Format("a{0}", t)).NumberFormatString = "MM/dd/yyy"; //  Bytescout.Spreadsheet.ExtendedFormat.;
-                    WS.Cell(String.Format("b{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["Start_Time"])); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
-                    WS.Cell(String.Format("c{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["End_Time"]));
-                    WS.Cell(String.Format("d{0}", t)).Value = "0";
-                    WS.Cell(String.Format("f{0}", t)).Value = row2["Initials"].ToString().Trim();
-                    WS.Cell(String.Format("g{0}", t)).Value = row2["Interventions"].ToString().Trim();
-                    WS.Cell(String.Format("n{0}", t)).FontColor = System.Drawing.Color.Black;
-                    t += 1;
-                }
-
-                WS.Cell("G19").Value = ds.Tables[0].Rows[0]["BusinessName"].ToString();
-
-                //             WS.Calculate();
-
 
                 // Fill out Bottom Summary Portion of the XLS SPREADSHEET********************************************************************************************************	
 
@@ -1002,6 +1112,51 @@ namespace OODForms
             }
         }
 
+        // BEGIN -- Form 16 -- Dealing with a passed in month date range , however the Form 16 Excel breaks down the data by the week 
+        
+        public static IEnumerable<Range> GetRange(DateTime start, DateTime end)
+        {
+            DateTime currentStart = start;
+            DateTime currentEnd = start;
+            do
+            {
+                if (currentEnd.DayOfWeek == DayOfWeek.Saturday)
+                {
+                    yield return new Range(currentStart, currentEnd);
+                    currentStart = currentEnd.AddDays(1);
+                }
+                currentEnd = currentEnd.AddDays(1);
+            } while (currentEnd <= end);
+
+            if (currentStart <= end)
+            {
+                yield return new Range(currentStart, end);
+            }
+        }
+
+        public struct Range
+        {
+            public DateTime Start { get; private set; }
+            public DateTime End { get; private set; }
+
+            public Range(DateTime start, DateTime end)
+            {
+                Start = start;
+                End = end;
+            }
+        }
+
+        public class WeekRangeDates
+        {
+            public string WeekNumber { get; set; }
+            public DateTime StartDate { get; set; }
+            public DateTime EndDate { get; set; }
+
+        }
+
+       
+
+        // END -- Form 16 -- Dealing with a passed in month date range , however the Form 16 Excel breaks down the data by the week 
 
         public string minDate(List<form10Data> dataList)
         {
@@ -1165,5 +1320,13 @@ namespace OODForms
     public static class Common
     {
         public static string gConnString;
+    }
+
+    public static class DateTimeExtensions
+    {
+        public static bool IsInRange(this DateTime dateToCheck, DateTime startDate, DateTime endDate)
+        {
+            return dateToCheck >= startDate && dateToCheck <= endDate;
+        }
     }
 }
