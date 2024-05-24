@@ -1997,7 +1997,7 @@ const plan = (function () {
             assessmentID: planId,
             peopleId: selectedConsumer.id,
             emailAddresses: [...Object.values(selectedEmails)],
-            checkboxes: [...checkboxesSelected],
+            checkBoxes: [...checkboxesSelected],
             extraSpace: 'false',
             toONET: false,
             isp: false,
