@@ -15,6 +15,7 @@ using System.Linq;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
 using iTextSharp.text.pdf;
 using System.Linq.Expressions;
+using Microsoft.Extensions.Primitives;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -308,6 +309,7 @@ namespace OODForms
             sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
             sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
             sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+            sb.Append(" ORDER BY Service_Date ASC");
             //sb.Append("AND Last_Name > '' ");
             ds = di.SelectRowsDS(sb.ToString());
 
@@ -363,12 +365,12 @@ namespace OODForms
 
 
                 sb.Clear();
-                sb.AppendFormat("SELECT  Distinct Em_work_schedule.start_time, Em_work_schedule.end_time ");
+                sb.AppendFormat("SELECT  Distinct Em_work_schedule.start_time, Em_work_schedule.end_time, Service_Date ");
                 sb.Append("FROM dba.Em_work_schedule  ");
                 sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.Em_work_schedule.Position_ID = dba.EMP_OOD.Position_ID ");
                 sb.Append(" LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
                 sb.Append(" LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-                sb.AppendFormat("WHERE Em_work_schedule.Position_ID in ({0}) ", 123); //lstPositionstr
+                sb.AppendFormat("WHERE Em_work_schedule.Position_ID in ({0}) ", lstPositionstr); //lstPositionstr
                 sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
                 sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
                 sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
@@ -390,6 +392,8 @@ namespace OODForms
         {
             try
             {
+
+
                 sb.Clear();
                 sb.AppendFormat("Select max(Case when ratio_consumers > 4 then 4 Else ratio_consumers END) as ratio_consumers from Case_Notes ");
                 sb.AppendFormat("where reference_Number = '{0}' ", AuthorizationNumber);
