@@ -846,9 +846,10 @@ function getDefaultAnywhereSettings() {
       $.session.updateIncidentCauseText = res.appendITCause === 'Y' ? true : false;
       $.session.planFormCarryover = res.planFormCarryover === 'Y' ? true : false;
       //Waiting List
-        $.session.sendWaitingListEmail = true;// res.sendWaitingListEmail === 'Y' ? true : false;
+      $.session.sendWaitingListEmail = true;// res.sendWaitingListEmail === 'Y' ? true : false;
       //Hide stuff
       $.session.useAbsentFeature = res.useAbsentFeature;
+      $.session.billableTransportation = res.billableTransportation;
       $.session.useProgressNotes = res.useProgressNotes;
       $.session.applicationName = res.application;
       $.session.portraitPath = res.portraitPath;

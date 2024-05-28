@@ -350,6 +350,7 @@ $.session.azureSTTApi = '';
 $.session.isActiveUsers = true; // to get active and inactive user both
 
 $.session.activeModule = '';
+$.session.billableTransportation = 'N';
 $(window).resize(function () {
     //resizeActionCenter();
 });

@@ -70,6 +70,10 @@
             background-color: $secondary;
         }
 
+        &[data-rider-status='N'] .consumerCardHeader {
+            background-color: $secondary;
+        }
+
         &[data-rider-status='A'] .consumerCardHeader {
             background-color: $red;
             color: $font-light;
