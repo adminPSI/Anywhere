@@ -25,6 +25,7 @@ using System.Runtime.InteropServices.ComTypes;
 using static log4net.Appender.RollingFileAppender;
 using System.Windows.Forms;
 using System.Management.Automation;
+using static Anywhere.service.Data.FormWorker;
 
 namespace OODForms
 {
@@ -341,6 +342,89 @@ namespace OODForms
 
             return "Success";
         }
+
+        public string generateForm6(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId)
+        {
+            try
+            {
+                OODFormDataGetter oodfdg = new OODFormDataGetter();
+                string pdfTronKeyResult = oodfdg.getPDFTronKey(token);
+                LicenseResponse[] pdfTronKey = JsonConvert.DeserializeObject<LicenseResponse[]>(pdfTronKeyResult);
+                pdftron.PDFNet.Initialize(pdfTronKey[0].PDFTronKey);
+
+                string crpath = oodfdg.getFormTemplatePath(token);
+                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+                string path = pathdatalist[0].path;
+                string crname = "Tier1andJDPlan_Form6.pdf";
+                string reportpath = string.Format(path, crname);
+
+                PDFDoc form6Template = new PDFDoc(reportpath);
+
+                // Gather Data for the Person Completing the Report
+                string personCompletingReportData = oodfdg.getPersonCompletingReportName(token);
+                personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+
+                var fieldData = new List<(string fieldName, string value)>
+                {
+                    
+                    ("Person Completing Report", personCompletingReport),
+                    
+                };
+
+                // Iterate through the field data and set values
+                foreach (var (fieldName, value) in fieldData)
+                {
+                    Field field = form6Template.GetField(fieldName);
+                    field.SetValue(value);
+
+                    // resets a value on the pdf so all fields show (otherwise the fields may not show correctly on finished pdf)
+                    field.RefreshAppearance();
+                }
+
+                // Iterate through the table data and set values for each row
+                //foreach (var (fieldName, value) in tableData)
+                //{
+                //    Field field = form6Template.GetField(fieldName);
+                //    field.SetValue(value);
+                //    field.RefreshAppearance();
+                //}
+
+
+
+                List<string> fieldNames = new List<string>();
+                List<string> test = new List<string>();
+                FieldIterator itr;
+
+                for (itr = form6Template.GetFieldIterator(); itr.HasNext(); itr.Next())
+                {
+                    Field field = itr.Current();
+                    string fieldName = field.GetName();
+                    fieldNames.Add(fieldName);
+
+                    string testing = field.GetType().ToString();
+                    test.Add(testing);
+                }
+
+                MemoryStream pdfStream = new MemoryStream();
+                form6Template.Save(pdfStream, SDFDoc.SaveOptions.e_linearized);
+
+                Attachment attachment = new Attachment
+                {
+                    filename = "Form6",
+                    data = pdfStream
+                };
+
+                DisplayAttachmentPDF(attachment);
+
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+        }
+
 
         public string generateForm8(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
         {

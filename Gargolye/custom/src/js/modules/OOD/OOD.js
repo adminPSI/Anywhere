@@ -819,6 +819,10 @@ const OOD = (() => {
                     sentStatus = await OODAjax.generateForm4(data);
                     break;
     
+                case 6:
+                    sentStatus = await OODAjax.generateForm6(data);
+                    break;
+
                 case 8:
                     sentStatus = await OODAjax.generateForm8(data);
                     break;
@@ -921,11 +925,13 @@ const OOD = (() => {
         popup.setAttribute('data-popup', 'true');
 
         const form4Btn = buildIndividualFormBtn('Form 4 - Monthly Job & Site Development', 4);
+        const form6Btn = buildIndividualFormBtn('Form 6 - Tier1 and JD Plan', 6);
         const form8Btn = buildIndividualFormBtn('Form 8 - Work Activities and Assessment', 8);
         const form10Btn = buildIndividualFormBtn('Form 10 - Transportation', 10);
         const form16Btn = buildIndividualFormBtn('Form 16 - Summer Youth Experience', 16);
 
         popup.appendChild(form4Btn);
+        popup.appendChild(form6Btn);
         popup.appendChild(form8Btn);
         popup.appendChild(form10Btn);
         popup.appendChild(form16Btn);
