@@ -365,10 +365,66 @@ namespace OODForms
                 personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
                 string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
 
+                DataTable dt;
+                DataRow row;
+
+                referenceNumber = referenceNumber.Replace("+", " ");
+                dt = oodfdg.OODDevelopment(referenceNumber).Tables[0];
+                row = dt.Rows[0];
+
+                string ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
+                string ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
+
+                string Staff = string.Empty;
+                string StaffWithInitals = string.Empty;
+                string OODStaff = string.Empty;
+                string MiddleName = string.Empty;
+
+                DataSet ds = oodfdg.OODForm8GetDirectStaff(referenceNumber, startDate, endDate);
+
+                if (ds.Tables.Count > 0)
+                {
+                    DataTable dt2 = ds.Tables[0];
+                    foreach (DataRow row2 in dt2.Rows)
+                    {
+                        if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
+                        {
+                            Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
+                            MiddleName = row2["Middle_Name"].ToString();
+                            OODStaff += String.Format("{0}, ", Staff.Trim());
+                        }
+
+                        if (Staff.ToString().Trim().Length > 0)
+                        {
+                            StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
+                        }
+                    }
+                }
+
+                string VRCounselor = "X";
+                string returnedData = oodfdg.getForm10PDFData(token, referenceNumber, startDate, endDate, consumerIdString, userId);
+                List<form10Data> form10DataList = JsonConvert.DeserializeObject<List<form10Data>>(returnedData);
+
+                if (form10DataList.Count > 0)
+                {
+                    VRCounselor = form10DataList[0].VR_CounselorContractor;
+                }
+
+                DateTime currentDate = DateTime.Now;
+                string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");  
+                string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
+
                 var fieldData = new List<(string fieldName, string value)>
                 {
                     
-                    ("Person Completing Report", personCompletingReport),
+                    ("Person Completing Report", personCompletingReport),  // "Person Completing Report"
+                    ("Authorization", referenceNumber), // "Authorization Number"
+                    ("Provider Name", ProviderName),  // "Provider Name"
+                    ("Individuals Name", ConsumerName),  //"Individual's Name"
+                    ("VR CounselorCoordinator", VRCounselor), // "VR Counselor/Coordinator"
+                   // ("Provider_Invoice", invoiceNumber),  //  "Provider Invoice Number"
+                   // ("Invoice_Date", invoiceNumberDate),  //Invoice Date"
+                   // ("Direct Service Staff Name and Initials", StaffWithInitals)  // "Direct Service Staff Name(s) and Initials"
                     
                 };
 
