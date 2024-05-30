@@ -270,10 +270,7 @@ var consumerInfo = (function () {
 
         setTimeout(function () {
             // shrink currently visible sub section
-            // the viewAllNotesSection can't be hidden or else add new note section doesn't work
-            if (!currentlyVisibleSubSection.classList.contains('viewAllNotesSection')) {
                 currentlyVisibleSubSection.classList.add('hidden');
-            }
             // show target sub section
             targetSubSection.classList.add('visible');
         }, 200);
