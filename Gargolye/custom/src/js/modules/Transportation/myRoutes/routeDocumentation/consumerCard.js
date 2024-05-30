@@ -78,7 +78,7 @@ const TRANS_consumerDocCard = (function () {
             icon: attendanceIcon,
             callback: (event) => {
                 updateRiderStatus(event, consumerId, cardContainer)
-                if ($.session.billableTransportation == 'Y' && cardContainer.getAttribute("data-rider-status") == 'P' && DOM.ACTIONCENTER.getAttribute('data-active-section') === 'routeDocumentation') {
+                if (section === 'routeDocumentation' && $.session.billableTransportation == 'Y' && cardContainer.getAttribute("data-rider-status") == 'P' && DOM.ACTIONCENTER.getAttribute('data-active-section') === 'routeDocumentation') {
                     billableCheckbox.style.display = 'inline-flex';
                 }
                 else {
@@ -246,7 +246,7 @@ const TRANS_consumerDocCard = (function () {
                 billableCheckbox.style.display = 'inline-flex';
                 if (batchId != '' && batchId > 0) {
                     billableCheckbox.classList.add('disabled');
-                    billableCheckbox.firstChild.setAttribute('disabled', true);  
+                    billableCheckbox.firstChild.setAttribute('disabled', true);
                 }
                 else {
                     billableCheckbox.classList.remove('disabled')
@@ -255,6 +255,8 @@ const TRANS_consumerDocCard = (function () {
             else {
                 billableCheckbox.style.display = 'none';
             }
+        } else {
+            billableCheckbox.style.display = 'none'; 
         }
 
         eventListeners(consumerId)
