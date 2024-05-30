@@ -413,19 +413,27 @@ namespace OODForms
                 DateTime currentDate = DateTime.Now;
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");  
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
+                string invoiceDate = currentDate.ToString("MM/dd/yyyy");
+                DateTime startdate = DateTime.ParseExact(startDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                string strStartDate = startdate.ToString("MM/dd/yyyy");
+                DateTime enddate = DateTime.ParseExact(endDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                string strEndDate = enddate.ToString("MM/dd/yyyy");
 
                 var fieldData = new List<(string fieldName, string value)>
                 {
-                    
-                    ("Person Completing Report", personCompletingReport),  // "Person Completing Report"
-                    ("Authorization", referenceNumber), // "Authorization Number"
-                    ("Provider Name", ProviderName),  // "Provider Name"
-                    ("Individuals Name", ConsumerName),  //"Individual's Name"
-                    ("VR CounselorCoordinator", VRCounselor), // "VR Counselor/Coordinator"
-                   // ("Provider_Invoice", invoiceNumber),  //  "Provider Invoice Number"
-                   // ("Invoice_Date", invoiceNumberDate),  //Invoice Date"
-                   // ("Direct Service Staff Name and Initials", StaffWithInitals)  // "Direct Service Staff Name(s) and Initials"
-                    
+                    ("Provider Name", ProviderName),  
+                    ("Individuals Name", ConsumerName),  
+                    ("IPE_Goal", "XXX"),         // em_employee_general.ipe for given individual
+                    ("Direct Service Staff Nam(s) and Initials", StaffWithInitals), 
+                    ("Person Completing Report", personCompletingReport),  
+                    ("VR CounselorCoordinator", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
+
+                    ("Authorization", referenceNumber), 
+                    ("Provider_Invoice_Number", invoiceNumber),  
+                    ("Service", "PBJD Tier I"),      // Select Service = services.procedure_code for selected service (match on emp_ood.reference_number and consumer_services_master.service_id)
+                    ("Invoice Date", invoiceDate),  
+                    ("Service_Start_Date_af_date", strStartDate), 
+                    ("Service_End_Date_af_date", strEndDate),
                 };
 
                 // Iterate through the field data and set values
