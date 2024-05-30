@@ -268,22 +268,25 @@ var consumerInfo = (function () {
     // restore height of target subsection
     targetSubSection.classList.remove('hidden');
 
-    setTimeout(function () {
-      // shrink currently visible sub section
-      currentlyVisibleSubSection.classList.add('hidden');
-      // show target sub section
-      targetSubSection.classList.add('visible');
-    }, 200);
-  }
-  function handleBackButtonClick() {
-    backwordBtn.classList.add('hidden');
-    forwardBtn.classList.add('hidden');
-    // first check to see if we are on the menulist
-    var menuList = consumerInfoCard.querySelector('.menuList');
-    var isMenuListHidden = menuList.classList.contains('fadeOut');
-    if (!isMenuListHidden) {
-      return;
+        setTimeout(function () {
+            // shrink currently visible sub section
+            // the viewAllNotesSection can't be hidden or else add new note section doesn't work
+            if (!currentlyVisibleSubSection.classList.contains('viewAllNotesSection')) {
+                currentlyVisibleSubSection.classList.add('hidden');
+            }
+            // show target sub section
+            targetSubSection.classList.add('visible');
+        }, 200);
     }
+    function handleBackButtonClick() {
+        backwordBtn.classList.add('hidden');
+        forwardBtn.classList.add('hidden');
+        // first check to see if we are on the menulist
+        var menuList = consumerInfoCard.querySelector('.menuList');
+        var isMenuListHidden = menuList.classList.contains('fadeOut');
+        if (!isMenuListHidden) {
+            return;
+        }
 
     var sectionBackBtn = document.querySelector('.sectionBackBtn');
 
