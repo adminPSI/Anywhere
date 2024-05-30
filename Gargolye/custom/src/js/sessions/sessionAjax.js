@@ -850,6 +850,7 @@ function getDefaultAnywhereSettings() {
       //Hide stuff
       $.session.useAbsentFeature = res.useAbsentFeature;
       $.session.billableTransportation = res.billableTransportation;
+      $.session.ohioEVVChangeDate = res.ohioEVVChangeDate;
       $.session.useProgressNotes = res.useProgressNotes;
       $.session.applicationName = res.application;
       $.session.portraitPath = res.portraitPath;

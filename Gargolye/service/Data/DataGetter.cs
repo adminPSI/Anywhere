@@ -1479,33 +1479,33 @@ namespace Anywhere.Data
         }
 
         //Single Entry
-        public string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
+        public string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertSingleEntry" + token);
             try
             {
-                return executeDataBaseCall("CALL DBA.ANYW_SingleEntry_InsertSingleEntry('" + token + "', '" + userId + "', '" + updaterId + "', '" + personId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + latitude + "', '" + longitude + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "');", "results", "results");
+                return executeDataBaseCall("CALL DBA.ANYW_SingleEntry_InsertSingleEntry('" + token + "', '" + userId + "', '" + updaterId + "', '" + personId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + latitude + "', '" + longitude + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + evvLocationType + "');", "results", "results");
             }
             catch (Exception ex)
             {
-                logger.error("558", ex.Message + " ANYW_SingleEntry_InsertSingleEntry('" + token + "', '" + userId + "', '" + updaterId + "', '" + personId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + latitude + "', '" + longitude + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "')");
+                logger.error("558", ex.Message + " ANYW_SingleEntry_InsertSingleEntry('" + token + "', '" + userId + "', '" + updaterId + "', '" + personId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + latitude + "', '" + longitude + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + evvLocationType + "')");
                 return "558: Error inserting single entry";
             }
 
         }
 
-        public string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason)
+        public string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason, string evvLocationType)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("updateSingleEntry" + token);
             try
             {
-                return executeDataBaseCall("CALL DBA.ANYW_SingleEntry_UpdateSingleEntry('" + token + "', '" + userId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + singleEntryId + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "' , '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + updateEVVReason + "');", "results", "results");
+                return executeDataBaseCall("CALL DBA.ANYW_SingleEntry_UpdateSingleEntry('" + token + "', '" + userId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + singleEntryId + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "' , '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + updateEVVReason + "', '" + evvLocationType + "');", "results", "results");
             }
             catch (Exception ex)
             {
-                logger.error("559", ex.Message + " ANYW_SingleEntry_UpdateSingleEntry('" + token + "', '" + userId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + singleEntryId + "','" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + updateEVVReason + "')");
+                logger.error("559", ex.Message + " ANYW_SingleEntry_UpdateSingleEntry('" + token + "', '" + userId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + singleEntryId + "','" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + updateEVVReason + "', '" + evvLocationType + "')");
                 return "559: Error updating single entry";
             }
 
@@ -1756,7 +1756,7 @@ namespace Anywhere.Data
         }
 
         public string getSingleEntryEvvEligibilityJSON(string token, string consumerId, string entryDate)
-        {
+        { 
             if (tokenValidator(token) == false) return null;
             logger.debug("getSingleEntryEvvEligibility" + token);
             try
