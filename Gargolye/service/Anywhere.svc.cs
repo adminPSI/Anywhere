@@ -12,7 +12,6 @@ using Anywhere.service.Data.Covid;
 using Anywhere.service.Data.Defaults;
 using Anywhere.service.Data.DocumentConversion;
 using Anywhere.service.Data.Employment;
-using Anywhere.service.Data.ESign;
 using Anywhere.service.Data.eSignature___OneSpan;
 using Anywhere.service.Data.PDF_Forms;
 using Anywhere.service.Data.Plan;
@@ -31,7 +30,6 @@ using Anywhere.service.Data.SimpleMar;
 using Anywhere.service.Data.Transportation;
 using Anywhere.service.Data.WaitingListAssessment;
 using Bytescout.PDF;
-using Newtonsoft.Json;
 using OODForms;
 using PDFGenerator;
 using System;
@@ -48,7 +46,6 @@ using static Anywhere.service.Data.CaseNotesWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
-using static Anywhere.service.Data.ESign.ESignWorker;
 using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
@@ -118,8 +115,8 @@ namespace Anywhere
         OODFormWorker OODfw = new OODFormWorker();
         PlanValidationWorker pv = new PlanValidationWorker();
         WaitingListWorker wlw = new WaitingListWorker();
-        ESignWorker esw = new ESignWorker();
-        ESignDataGetter esdg = new ESignDataGetter();
+        FinalizationButtonWorker fbw = new FinalizationButtonWorker();
+
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -405,10 +402,10 @@ namespace Anywhere
 
         public CaseNotesWorker.CaseNotesFilteredSearch[] caseNotesFilteredSearchJSON(string token, string billerId, string consumerId, string serviceStartDate, string serviceEndDate,
             string dateEnteredStart, string dateEnteredEnd, string billingCode, string reviewStatus, string location, string service, string need, string contact, string confidential, string corrected, string billed,
-            string attachments, string overlaps, string noteText, string applicationName)
+            string attachments, string overlaps, string noteText, string applicationName, string outcomeServiceMonitoring)
         {
             return caseNotesWorker.caseNotesFilteredSearchJSON(token, billerId, consumerId, serviceStartDate, serviceEndDate, dateEnteredStart, dateEnteredEnd,
-                billingCode, reviewStatus, location, service, need, contact, confidential, corrected, billed, attachments, overlaps, noteText, applicationName);
+                billingCode, reviewStatus, location, service, need, contact, confidential, corrected, billed, attachments, overlaps, noteText, applicationName, outcomeServiceMonitoring);
         }
 
         public AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token)
@@ -463,9 +460,9 @@ namespace Anywhere
             return dg.populateDropdownData(token);
         }
 
-        public string saveCaseNote(string token, string noteId, string caseManagerId, string consumerId, string serviceOrBillingCodeId, string locationCode, string serviceCode, string needCode, string serviceDate, string startTime, string endTime, string vendorId, string contactCode, string serviceLocationCode, string caseNote, string reviewRequired, string confidential, string corrected, string casenotemileage, string casenotetraveltime, string documentationTime)
+        public string saveCaseNote(string token, string noteId, string caseManagerId, string consumerId, string serviceOrBillingCodeId, string locationCode, string serviceCode, string needCode, string serviceDate, string startTime, string endTime, string vendorId, string contactCode, string serviceLocationCode, string caseNote, string reviewRequired, string confidential, string corrected, string casenotemileage, string casenotetraveltime, string documentationTime, string outcomeServiceMonitoring)
         {
-            return dg.saveCaseNote(token, noteId, caseManagerId, consumerId, serviceOrBillingCodeId, locationCode, serviceCode, needCode, serviceDate, startTime, endTime, vendorId, contactCode, serviceLocationCode, caseNote, reviewRequired, confidential, corrected, casenotemileage, casenotetraveltime, documentationTime);
+            return dg.saveCaseNote(token, noteId, caseManagerId, consumerId, serviceOrBillingCodeId, locationCode, serviceCode, needCode, serviceDate, startTime, endTime, vendorId, contactCode, serviceLocationCode, caseNote, reviewRequired, confidential, corrected, casenotemileage, casenotetraveltime, documentationTime, outcomeServiceMonitoring);
         }
 
         public string saveGroupCaseNote(string token, string noteId, string groupNoteId, string caseManagerId, string consumerId, string serviceOrBillingCodeId, string locationCode, string serviceCode, string needCode, string serviceDate, string startTime, string endTime, string vendorId, string contactCode, string serviceLocationCode, string caseNote, string reviewRequired, string confidential, string consumerGroupCount, string casenotemileage, string casenotetraveltime, string documentationTime)
@@ -629,9 +626,9 @@ namespace Anywhere
         }
 
         //Single Entry Below
-        public string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
+        public string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType)
         {
-            return dg.insertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community);
+            return dg.insertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType);
         }
 
         public SingleEntryWorker.ConsumerAndLocation[] getSelectedConsumerLocations(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
@@ -639,14 +636,14 @@ namespace Anywhere
             return singleEntryWorker.getSelectedConsumerLocations(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community);
         }
 
-        public SingleEntryWorker.ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
+        public SingleEntryWorker.ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType)
         {
-            return singleEntryWorker.preInsertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community);
+            return singleEntryWorker.preInsertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType);
         }
 
-        public string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason)
+        public string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason, string evvLocationType)
         {
-            return dg.updateSingleEntry(token, userId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, singleEntryId, inComments, odometerStart, odometerEnd, destination, reason, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, updateEVVReason);
+            return dg.updateSingleEntry(token, userId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, singleEntryId, inComments, odometerStart, odometerEnd, destination, reason, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, updateEVVReason, evvLocationType);
         }
 
         public SingleEntryWorker.SingleEntryById[] getSingleEntryByIdJSON(string token, string singleEntryId)
@@ -2321,6 +2318,17 @@ namespace Anywhere
             return poW.insertPlanOutcomeProgressSummary(token, planId, progressSummary);
         }
 
+        //Final
+        public FinalizationButtonWorker.Emails[] getDefaultEmailsForFinalization(string token)
+        {
+            return fbw.getDefaultEmailsForFinalization(token);
+        }
+
+        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string peopleId, string[] emailAddresses, string[] checkBoxes)
+        {
+            return fbw.finalizationActions(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, planId, peopleId, emailAddresses, checkBoxes);
+        }
+
         public string updatePlanOutcomeProgressSummary(string token, long progressSummaryId, string progressSummary)
         {
             return poW.updatePlanOutcomeProgressSummary(token, progressSummaryId, progressSummary);
@@ -2926,6 +2934,31 @@ namespace Anywhere
             return OODfw.generateForm4(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
         }
 
+        public string generateForm6(System.IO.Stream testInput)
+        {
+
+            string token;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string userId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+
+            return OODfw.generateForm6(token, referenceNumber, 22, peopleId, startDate, endDate, userId);
+
+        }
+
         public string generateForm8(System.IO.Stream testInput)
         {
             string token;
@@ -2982,6 +3015,39 @@ namespace Anywhere
 
             return OODfw.generateForm10(token, referenceNumber, 22, peopleId, startDate, endDate, userId);
 
+        }
+
+        public string generateForm16(System.IO.Stream testInput)
+        {
+            string token;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string userId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+
+            if (serviceCodeId == "%25")
+            {
+                serviceCodeId = "All";
+            }
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "All";
+            }
+
+            return OODfw.generateForm16(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
         }
 
         public Anywhere.service.Data.OODWorker.OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
@@ -3105,6 +3171,22 @@ namespace Anywhere
             return Ow.deleteFormMonthlySummary(token, emReviewId);
         }
 
+        public OODWorker.Form6Tier1andJDPLan[] getForm6Tier1andJDPLan(string token, string caseNoteId)
+        {
+            return Ow.getForm6Tier1andJDPLan(token, caseNoteId);
+        }
+
+        public string updateForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel, string contactMethod, string narrative, string userId)
+        {
+            return Odg.updateForm6Tier1andJDPLan(token, consumerId, caseNoteId, serviceDate, SAMLevel, contactMethod, narrative, userId);
+        }
+
+        public string insertForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel, string contactMethod, string narrative, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        {
+            return Odg.insertForm6Tier1andJDPLan(token, consumerId, caseNoteId, serviceDate, SAMLevel, contactMethod, narrative, userId, serviceId, referenceNumber, caseManagerId);
+        }
+
+
         public OODWorker.Form8CommunityBasedAssessment[] getForm8CommunityBasedAssessment(string token, string caseNoteId)
         {
             return Ow.getForm8CommunityBasedAssessment(token, caseNoteId);
@@ -3153,6 +3235,36 @@ namespace Anywhere
         public string deleteOODForm10TransportationEntry(string token, string OODTransportationId)
         {
             return Ow.deleteOODForm10TransportationEntry(token, OODTransportationId);
+        }
+
+        public OODWorker.Form16SummerYouthWorkExperience[] getForm16SummerYouthWorkExperience(string token, string caseNoteId)
+        {
+            return Ow.getForm16SummerYouthWorkExperience(token, caseNoteId);
+        }
+
+        public string updateForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string groupSize, string interventions, string userId)
+        {
+            return Odg.updateForm16SummerYouthWorkExperience(token, consumerId, caseNoteId, serviceDate, startTime, endTime, position, groupSize, interventions, userId);
+        }
+
+        public string insertForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string groupSize, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        {
+            return Odg.insertForm16SummerYouthWorkExperience(token, consumerId, caseNoteId, serviceDate, startTime, endTime, position, groupSize, interventions, userId, serviceId, referenceNumber, caseManagerId);
+        }
+
+        public OODWorker.Form16MonthlySummary[] getForm16MonthlySummary(string token, string emReviewId)
+        {
+            return Ow.getForm16MonthlySummary(token, emReviewId);
+        }
+
+        public string updateForm16MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string emOfferedHoursNotWorkNumberstring, string userId)
+        {
+            return Odg.updateForm16MonthlySummary(token, consumerId, emReviewId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivProviderAssessment, emReviewVTS, emOfferedHoursNotWorkNumberstring, userId);
+        }
+
+        public string insertForm16MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string emOfferedHoursNotWorkNumberstring, string userId, string serviceId)
+        {
+            return Odg.insertForm16MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivProviderAssessment, emReviewVTS, emOfferedHoursNotWorkNumberstring, userId, serviceId);
         }
 
         //Case note reporting
@@ -3875,107 +3987,31 @@ namespace Anywhere
             return dashWork.updateUserWidgetOrderSettings(token, updatedListOrder);
         }
 
-        // E Signatures
-        public string saveReportAndSendESignEmail(string token, ESignatureTeamMemberData[] eSignatureTeamMemberData, ESignReportData reportData)
+        public SingleEntryWorker.SingleEntryById[] getExistingTimeEntry(string token)
         {
-            return esw.saveReportAndSendESignEmail(token, eSignatureTeamMemberData, reportData);
+            return singleEntryWorker.getExistingTimeEntry(token);
         }
-
-        public string generateAuthenticationCode(string tempUserId, string latitude, string longitude)
+        public string addConsumerToCustomGroupJSON(string[] consumerIDs, string groupId)
         {
-            return esw.generateAuthenticationCode(tempUserId, latitude, longitude);
-        }
-
-        public string openESignaturesEditor(string tempUserId)
-        {
-            return esw.openESignturesEditor(tempUserId);
-        }
-
-        public LoginMessageData getSignerLoginMessageData(string tempUserId)
-        {
-            return esw.getSignerLoginMessageData(tempUserId);
-        }
-
-        public string verifyESignLogin(string tempUserId, string hashedPassword)
-        {
-            return esw.verifyESignLogin(tempUserId, hashedPassword);
-        }
-
-        public void downloadReportAfterSigning(System.IO.Stream tempUserIdInput)
-        {
-            string tempUserId;
-
-            try
+            foreach (string consumerId in consumerIDs)
             {
-                using (StreamReader reader = new StreamReader(tempUserIdInput))
+                Int64 Num;
+                bool isNum = Int64.TryParse(groupId, out Num);
+                bool isNum2 = Int64.TryParse(consumerId, out Num);
+
+                if (isNum && isNum2)
                 {
-                    string fullInput = reader.ReadToEnd();
-                    tempUserId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+                    dg.addConsumerToGroup(groupId, consumerId);
                 }
-
-                using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+                else
                 {
-                    try
-                    {
-                        string result = esdg.getReportParameters(tempUserId, transaction);
-
-                        List<ESignReportData> loginMessageDataList = JsonConvert.DeserializeObject<List<ESignReportData>>(result);
-                        if (loginMessageDataList == null || loginMessageDataList.Count == 0)
-                        {
-                            throw new Exception("No report data found for the given tempUserId.");
-                        }
-
-                        string[] planAttachmentIds = loginMessageDataList[0].planAttachmentIds.Split(',');
-                        string[] wfAttachmentIds = loginMessageDataList[0].wfAttachmentIds.Split(',');
-                        string[] sigAttachmentIds = loginMessageDataList[0].sigAttachmentIds.Split(',');
-
-                        dpra.addSelectedAttachmentsToReport(
-                            loginMessageDataList[0].token,
-                            planAttachmentIds,
-                            wfAttachmentIds,
-                            sigAttachmentIds,
-                            "",
-                            loginMessageDataList[0].assessmentID,
-                            loginMessageDataList[0].versionID,
-                            loginMessageDataList[0].extraSpace.ToString(),
-                            false,
-                            true,
-                            false,
-                            false,
-                            loginMessageDataList[0].include);
-
-                        // Commit the transaction if everything is successful
-                        transaction.Commit();
-                    }
-                    catch (Exception ex)
-                    {
-                        // Rollback the transaction in case of an error
-                        transaction.Rollback();
-
-                        // Log or handle any exceptions
-                        Console.WriteLine($"Error during transaction: {ex.Message}");
-                        throw;
-                    }
+                    logger.Error("GroupId or consumerId is not a number:" + groupId + " " + consumerId);
+                    return "<error>Error parsing GroupId or consumerId</error>";
                 }
             }
-            catch (Exception ex)
-            {
-                // Log or handle any exceptions
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            return groupId;
         }
 
-
-        public string updateESignFormValues(ESignFormData formData)
-        {
-            return esw.updateESignFormValues(formData);
-        }
-
-        public ESignerData getESignerData(string tempUserId)
-        {
-            return esw.getESignerData(tempUserId);
-        }
 
     }
 }
