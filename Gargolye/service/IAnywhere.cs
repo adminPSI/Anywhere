@@ -29,6 +29,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
+using static Anywhere.service.Data.ESign.ESignWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
@@ -5316,6 +5317,63 @@ namespace Anywhere
             UriTemplate = "/addConsumerToCustomGroupJSON/")]
         string addConsumerToCustomGroupJSON(string[] consumerIDs, string groupId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/saveReportAndSendESignEmail/")]
+        string saveReportAndSendESignEmail(string token, ESignatureTeamMemberData[] eSignatureTeamMemberData, ESignReportData reportData);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/generateAuthenticationCode/")]
+        string generateAuthenticationCode(string tempUserId, string latitude, string longitude);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getSignerLoginMessageData/")]
+        LoginMessageData getSignerLoginMessageData(string tempUserId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/verifyESignLogin/")]
+        string verifyESignLogin(string tempUserId, string hashedPassword);
+
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/openESignaturesEditor/")]
+        string openESignaturesEditor(string tempUserId);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "/downloadReportAfterSigning/")]
+        void downloadReportAfterSigning(System.IO.Stream tempUserIdInput);
+
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/updateESignFormValues/")]
+        string updateESignFormValues(ESignFormData formData);
+
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getESignerData/")]
+        ESignerData getESignerData(string tempUserId);
     }
 
 
