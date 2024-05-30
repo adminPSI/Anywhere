@@ -45,6 +45,7 @@ using static Anywhere.service.Data.Authorization.AuthorizationWorker;
 using static Anywhere.service.Data.CaseNotesWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
+using static Anywhere.service.Data.DocumentConversion.FinalizationButtonWorker;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
 using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
@@ -2324,9 +2325,9 @@ namespace Anywhere
             return fbw.getDefaultEmailsForFinalization(token);
         }
 
-        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string peopleId, string[] emailAddresses, string[] checkBoxes)
+        public FinalizationButtonWorker.ActionResults[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
         {
-            return fbw.finalizationActions(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, planId, peopleId, emailAddresses, checkBoxes);
+            return fbw.finalizationActions(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, peopleId, emailAddresses, checkBoxes);
         }
 
             public string updatePlanOutcomeProgressSummary(string token, long progressSummaryId, string progressSummary)

@@ -16,6 +16,8 @@ using static PSIOISP.Deserialize;
 using Anywhere.Data;
 using iTextSharp.text;
 using static Anywhere.service.Data.AnywhereWorker;
+using System.Net.Mail;
+using Attachment = Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments.Attachment;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -42,28 +44,106 @@ namespace Anywhere.service.Data.DocumentConversion
         {
             public string setting_value { get; set; }
         }
-        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string planId, string peopleId, string[] emailAddresses, string[] checkBoxes)
+
+        public class ActionResults
         {
+            public string[] actions { get; set; }
+            public byte[] report { get; set; }
+        }
+        public ActionResults[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
+        {
+            //selectAllCheck: true,
+            //sendToDODDCheck: true,
+            //sendToOhioNetCheck: true,
+            //downloadReportCheck: true,
+            //emailReportCheck: true,
             bool isTokenValid = aadg.ValidateToken(token);
             if (isTokenValid)
             {
-                string[] actions = new string[3];
-                //Send to DODD
-                string[] sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, planId, peopleId);
-                //get the report in bytes
-                byte[] report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
-                //Send to ONET
-                string sendONET = sendToONET(token, report, assessmentID);
-                //Send Email
-                foreach(string emailAddress in emailAddresses)
+                ActionResults[] ar = new ActionResults[2];
+                string[] sendToDODD = new string[5];
+                string sendONET = "";
+                string sendEmailResult = "";
+                int count = 0;
+                if(checkBoxes.Length == 1 && checkBoxes[0] == "selectAllCheck")
                 {
-                    string sendEmailResult = aadg.SendReportViaEmail(emailAddress, report.ToString());
+                    count = 4;
                 }
-                
-                //Display Plan Report
-                displayPlanReport(report);
+                else
+                {
+                    count = checkBoxes.Length;
+                }
+                string[] actions = new string[count];
+                byte[] report = null;
+                bool reportCreated = false;
+                int i = 0;
+                foreach(string item in checkBoxes)
+                {
+                    if(item == "sendToDODDCheck" || item == "selectAllCheck")
+                    {
+                        //Send to DODD
+                        sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, assessmentID, peopleId);
+                        actions[i] = sendToDODD[0];
+                        i++;
+                    }
+                    if (item == "sendToOhioNetCheck" || item == "selectAllCheck")
+                    {
+                        //Send to ONET
+                        if(reportCreated == false)
+                        {
+                            report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
+                            reportCreated = true;
+                        }
+                        
+                        sendONET = sendToONET(token, report, assessmentID);
+                        actions[i] = sendONET;
+                        i++;
+                    }
+                    if (item == "emailReportCheck" || item == "selectAllCheck")
+                    {
+                        if (reportCreated == false)
+                        {
+                            report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
+                            reportCreated= true;
+                        }
+                        //Send Email
+                        foreach (string emailAddress in emailAddresses)
+                        {
+                            sendEmailResult = aadg.SendReportViaEmail(emailAddress, report.ToString());
+                        }
+                        actions[i] = sendEmailResult;
+                        i++;
+                    }
+                    if (item == "downloadReportCheck" || item == "selectAllCheck")
+                    {
+                        if (reportCreated == false)
+                        {
+                            report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
+                            reportCreated = true;
+                        }
+                        ar[0].report = report;
+                        //actions[i] = report.ToString();
+                        i++;
+                        //Display Plan Report
+                        //displayPlanReport(report);
+                    }
+                }
+                //Send to DODD
+                //string[] sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, assessmentID, peopleId);
+                //get the report in bytes
+                //byte[] report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
+                //Send to ONET
+                //string sendONET = sendToONET(token, report, assessmentID);
+                //Send Email
+                //foreach(string emailAddress in emailAddresses)
+                //{
+                //    string sendEmailResult = aadg.SendReportViaEmail(emailAddress, report.ToString());
+                //}
 
-                return actions;
+                //Display Plan Report
+                //displayPlanReport(report);
+                ar[0].actions = actions;
+                return ar;
             }
             
             return null;
@@ -576,9 +656,9 @@ namespace Anywhere.service.Data.DocumentConversion
             return null;
         }
 
-        public string sendToONET(string token, byte[] finalMergedArray, string assessmentID)
+        public string sendToONET(string token, byte[] report, string assessmentID)
         {
-            string finalMergedArrayString = System.Convert.ToBase64String(finalMergedArray);
+            string finalMergedArrayString = System.Convert.ToBase64String(report);
             return aaw.insertPlanReportToBeTranferredToONET(token, finalMergedArrayString, long.Parse(assessmentID));
         }
 
