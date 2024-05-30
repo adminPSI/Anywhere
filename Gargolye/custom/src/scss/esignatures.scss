@@ -1,0 +1,178 @@
+//======================================
+// ESignatures Page Stylesheet
+//--------------------------------------
+@import './helpers/variables';
+@import './helpers/placeholders';
+@import './helpers/utilities';
+@import './helpers/typography';
+
+@import './base/reset';
+@import './base/global';
+@import './base/layout';
+
+@import './objects/buttons';
+@import './objects/dropdowns';
+@import './objects/inputs';
+@import './objects/progress';
+
+@import './objects/header';
+@import './objects/forms';
+@import './objects/popups';
+@import './UI/button';
+@import './UI/dialog';
+@import './UI/form';
+@import './UI/icon';
+@import './UI/inputs';
+@import './UI/portrait';
+@import './UI/spinner';
+@import './UI/table';
+
+@import './login';
+@import './modules/plan/ISP';
+
+
+.verifyCodeBtnWrap {
+    display: flex;
+    justify-content: space-between;
+}
+
+#sendCodeBtn {
+  margin-top: 8px;
+}
+
+.verify-btn {
+    margin-left: auto; /* Pushes the button to the right */
+}
+
+.send-code-again-btn {
+    margin-right: auto; /* Pushes the button to the left */
+    font-weight: 400;
+}
+
+.formPopup {
+  background: #fafafa;
+    border-radius: 4px;
+    left: 50%;
+    max-height: calc(100vh - 100px) important;
+    max-width: 400px;
+    overflow-y: auto important;
+    padding: 40px 12px 16px;
+    position: relative;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 96%;
+    z-index: 101;
+}
+
+#formPopup {
+  overflow-y: scroll !important;
+}
+
+.formContainer {
+  margin-top: 20px;
+  overflow-y: scroll;
+  max-height: 600px;
+  padding: 20px;
+}
+
+.consentSection {
+  background-color: #f9f9f9; /* Light gray background */
+  border: 2px solid #ccc; /* Light gray border */
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-family: Arial, sans-serif; /* Standard font for clear readability */
+}
+
+.consentSection label {
+  display: block; /* Makes the label take a new line */
+  margin: 8px 0; /* Spacing around each label */
+  font-size: 14px; /* Slightly larger font size for readability */
+}
+
+.consentSection input[type="checkbox"] {
+  margin-right: 5px; /* Space between the checkbox and the label text */
+}
+
+.consentSection div {
+  margin-bottom: 12px; /* Space between each consent statement */
+}
+
+/* Styling for labels accompanying checkboxes */
+.consentSection label {
+  cursor: pointer; /* Indicates that the label is clickable */
+  user-select: none; /* Prevents text selection for better UI experience */
+}
+
+/* Custom checkbox styling */
+.consentSection input[type="checkbox"] {
+  accent-color: #007bff; /* Uses a blue accent color for checkboxes */
+  cursor: pointer;
+}
+
+#signatureDisplay {
+  font-family: 'Dancing Script', cursive;
+  font-size: 48px;
+  color : black;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  border: 2px solid black;
+  padding: 10px;
+  min-height: 150px;
+}
+
+#signatureInput {
+  margin-top: 8px;
+  min-height: 50px !important;
+  position: relative;
+  margin: 0 auto;
+  margin-top: 10px;
+  width: 100%;
+}
+
+#eSignErrorMessage {
+  margin: 8px;
+  color: red;
+}
+
+
+.ic_questionContainer {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  margin: 0 0 10px;
+
+  .standardQuestionText,
+  .changeMindQuestionText,
+  .contactQuestionText {
+    flex-basis: 70%;
+    flex-grow: 1;
+    padding-right: 8px;
+  }
+
+  .csContactInput {
+    width: 100%;
+  }
+
+  .ic_questionRadioContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    flex-basis: 30%;
+    max-width: 50px;
+
+    &.formError {
+      outline: 2px solid $font-error;
+    }
+
+    &.disabled {
+      label {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
+
+    .radio {
+      margin-bottom: 4px;
+    }
+  }
+}
