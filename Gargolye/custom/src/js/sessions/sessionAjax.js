@@ -3,242 +3,240 @@
 }
 
 function logIn() {
-  const loginBtn = document.getElementById('loginBtn');
-  loginBtn.classList.add('disabled');
-  //need to check if code exists on device, pass either it or empty string
-  const userId = $('#username').val().trim();
-  const localDeviceId = UTIL.LS.getStorage('device', userId);
-  const insertData = {
-    userId: userId,
-    hash: $().crypt({ method: 'md5', source: $('#password1').val().trim() }),
-    deviceId: localDeviceId ? localDeviceId : '',
-  };
-  var success = false;
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/getLogIn/',
-    data: JSON.stringify(insertData),
-    contentType: 'application/json; charset=utf-8',
-    beforeSend: function () {
-      // show gif here, eg:
-      $('body').css('cursor', 'wait');
-    },
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      loginBtn.classList.remove('disabled');
-
-      const res = JSON.stringify(response);
-      const resXML = response.getLogInResult && UTIL.parseXml(response.getLogInResult);
-
-      if (resXML) {
-        const windowName = resXML.getElementsByTagName('window_name')[0];
-
-        if (windowName && windowName.innerHTML === 'Failed attempts') {
-          const count = resXML.getElementsByTagName('special_data')[0].innerHTML;
-          // $('#error').css('opacity', '1');
-          // $('#error').css('display', 'block');
-          // $('#errortext').text('Invalid username/password combination');
-
-          const overlay = document.querySelector('.overlay');
-          const loginWarningPopup = POPUP.build({
-            id: 'loginPopup',
-            hideX: true,
-          });
-          const okButton = button.build({
-            text: 'ok',
-            type: 'contained',
-            style: 'secondary',
-            callback: function () {
-              overlay.classList.remove('visible');
-              document.body.removeChild(loginWarningPopup);
-              document.getElementById('password1').value = '';
-              document.getElementById('password1').focus();
-            },
-          });
-          const message = document.createElement('p');
-
-          switch (count) {
-            case '1': {
-              message.innerHTML = `Invalid user name or password.`;
-              break;
+    const loginBtn = document.getElementById('loginBtn');
+    loginBtn.classList.add('disabled');
+    //need to check if code exists on device, pass either it or empty string
+    const userId = $('#username').val().trim();
+    const localDeviceId = UTIL.LS.getStorage('device', userId);
+    const insertData = {
+        userId: userId,
+        hash: $().crypt({
+            method: 'md5',
+            source: $('#password1').val().trim()
+        }),
+        deviceId: localDeviceId ? localDeviceId : ''
+    };
+    var success = false;
+    $.ajax({
+        type: 'POST',
+        url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getLogIn/',
+        data: JSON.stringify(insertData),
+        contentType: 'application/json; charset=utf-8',
+        beforeSend: function () {
+            // show gif here, eg:
+            $('body').css('cursor', 'wait');
+        },
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            loginBtn.classList.remove('disabled');
+            const res = JSON.stringify(response);
+            if (res.indexOf(null) != -1) {
+                $('#error').css('opacity', '1');
+                $('#error').css('display', 'block');
+                const message = `
+				Please enter a valid username. 
+				`;
+                $('#errortext').text(message);
+                return;
             }
-            case '2': {
-              message.innerHTML = `This is your second failed login attempt. If you have one more failed attempt your account will become inactive. Please use the Forgot Password link below to reset your password.`;
-              break;
-            }
-            case '3': {
-              message.innerHTML = `Your account is inactive due to the number of failed login attempts. Please contact your System Administrator to enable your account.`;
-              break;
-            }
-            default: {
-              message.innerHTML = `Your account is inactive due to the number of failed login attempts. Please contact your System Administrator to enable your account.`;
-            }
-          }
+            const resXML = response.getLogInResult && UTIL.parseXml(response.getLogInResult);
+            if (resXML) {
+                const windowName = resXML.getElementsByTagName('window_name')[0];
+                if (windowName && windowName.innerHTML === 'Failed attempts') {
+                    const count = resXML.getElementsByTagName('special_data')[0].innerHTML;
+                    // $('#error').css('opacity', '1');
+                    // $('#error').css('display', 'block');
+                    // $('#errortext').text('Invalid username/password combination');
 
-          loginWarningPopup.appendChild(message);
-          loginWarningPopup.appendChild(okButton);
-
-          overlay.classList.add('visible');
-          document.body.appendChild(loginWarningPopup);
-          okButton.focus();
-        } else if (windowName && windowName.innerHTML === 'Not active') {
-          const overlay = document.querySelector('.overlay');
-          const loginWarningPopup = POPUP.build({
-            id: 'loginPopup',
-            hideX: true,
-          });
-          const okButton = button.build({
-            text: 'ok',
-            type: 'contained',
-            style: 'secondary',
-            callback: function () {
-              overlay.classList.remove('visible');
-              document.body.removeChild(loginWarningPopup);
-              //document.getElementById("username").value = '';
-              document.getElementById('password1').value = '';
-              document.getElementById('username').focus();
-            },
-          });
-          const message = document.createElement('p');
-          message.innerHTML = `Your account is inactive. Please contact your System Administrator to enable your account.`;
-          loginWarningPopup.appendChild(message);
-          loginWarningPopup.appendChild(okButton);
-
-          overlay.classList.add('visible');
-          document.body.appendChild(loginWarningPopup);
-          okButton.focus();
-        } else if (windowName && windowName.innerHTML === 'Invalid username') {
-          const overlay = document.querySelector('.overlay');
-          const loginWarningPopup = POPUP.build({
-            id: 'loginPopup',
-            hideX: true,
-          });
-          const username = document.getElementById('username').value;
-          const okButton = button.build({
-            text: 'ok',
-            type: 'contained',
-            style: 'secondary',
-            callback: function () {
-              overlay.classList.remove('visible');
-              document.body.removeChild(loginWarningPopup);
-              //document.getElementById("username").value = '';
-              document.getElementById('password1').value = '';
-              document.getElementById('username').focus();
-            },
-          });
-          const message = document.createElement('p');
-          message.innerHTML = `Invalid user name or password.`;
-          loginWarningPopup.appendChild(message);
-          loginWarningPopup.appendChild(okButton);
-
-          overlay.classList.add('visible');
-          document.body.appendChild(loginWarningPopup);
-          okButton.focus();
-        } else {
-          if (windowName && windowName.innerHTML === '2FA') {
-            //Call below method from the popup. insertData must userName and genKey
-            const deviceId = resXML.getElementsByTagName('special_data')[0].innerHTML;
-            //const deviceId = JSON.parse(response.getLogInResult)[0]['@deviceGUID'];
-            if (localDeviceId !== deviceId) {
-              // UTIL.LS.setStorage('device', deviceId, userId);
-              $.session.deviceGUID = deviceId;
-              mfa.init();
-            } else {
-              eraseCookie('psiuser');
-              var overlay = document.createElement('div');
-              if ($('#username').val().toUpperCase() == 'PSI') {
-                $.session.isPSI = true;
-                eraseCookie('psi');
-                createCookie('psi', res, 1);
-                createCookie('psiuser', res, 1);
-                success = true;
-                document.location.href = 'anywhere.html';
-              } else {
-                eraseCookie('psi');
-                createCookie('psi', res, 1);
-                success = true;
-                document.location.href = 'anywhere.html';
-              }
-            }
-            //authenticatedLogin();
-          } else if (windowName && windowName.innerHTML === 'Invalid username') {
-            $('#error').css('opacity', '1');
-            $('#error').css('display', 'block');
-            $('#errortext').text('Invalid username/password combination');
-          } else if (res.indexOf('Invalid password') != -1) {
-            //never will be hit, needs removed
-            $('#error').css('opacity', '1');
-            $('#error').css('display', 'block');
-            $('#errortext').text('Invalid password attempt 1');
-          } else if (windowName && windowName.innerHTML === 'No demographics record') {
-            $('#error').css('opacity', '1');
-            $('#error').css('display', 'block');
-            $('#errortext').text(
-              'There is no Name in Demographics defined for your user. Please contact your system administrator to login to Anywhere.',
-            );
-          } else if (windowName && windowName.innerHTML === 'No recipient') {
-            $('#error').css('opacity', '1');
-            $('#error').css('display', 'block');
-            const message = `
+                    const overlay = document.querySelector('.overlay');
+                    const loginWarningPopup = POPUP.build({
+                        id: 'loginPopup',
+                        hideX: true
+                    });
+                    const okButton = button.build({
+                        text: 'ok',
+                        type: 'contained',
+                        style: 'secondary',
+                        callback: function () {
+                            overlay.classList.remove('visible');
+                            document.body.removeChild(loginWarningPopup);
+                            document.getElementById('password1').value = '';
+                            document.getElementById('password1').focus();
+                        }
+                    });
+                    const message = document.createElement('p');
+                    switch (count) {
+                        case '1':
+                            {
+                                message.innerHTML = `Invalid user name or password.`;
+                                break;
+                            }
+                        case '2':
+                            {
+                                message.innerHTML = `This is your second failed login attempt. If you have one more failed attempt your account will become inactive. Please use the Forgot Password link below to reset your password.`;
+                                break;
+                            }
+                        case '3':
+                            {
+                                message.innerHTML = `Your account is inactive due to the number of failed login attempts. Please contact your System Administrator to enable your account.`;
+                                break;
+                            }
+                        default:
+                            {
+                                message.innerHTML = `Your account is inactive due to the number of failed login attempts. Please contact your System Administrator to enable your account.`;
+                            }
+                    }
+                    loginWarningPopup.appendChild(message);
+                    loginWarningPopup.appendChild(okButton);
+                    overlay.classList.add('visible');
+                    document.body.appendChild(loginWarningPopup);
+                    okButton.focus();
+                } else if (windowName && windowName.innerHTML === 'Not active') {
+                    const overlay = document.querySelector('.overlay');
+                    const loginWarningPopup = POPUP.build({
+                        id: 'loginPopup',
+                        hideX: true
+                    });
+                    const okButton = button.build({
+                        text: 'ok',
+                        type: 'contained',
+                        style: 'secondary',
+                        callback: function () {
+                            overlay.classList.remove('visible');
+                            document.body.removeChild(loginWarningPopup);
+                            //document.getElementById("username").value = '';
+                            document.getElementById('password1').value = '';
+                            document.getElementById('username').focus();
+                        }
+                    });
+                    const message = document.createElement('p');
+                    message.innerHTML = `Your account is inactive. Please contact your System Administrator to enable your account.`;
+                    loginWarningPopup.appendChild(message);
+                    loginWarningPopup.appendChild(okButton);
+                    overlay.classList.add('visible');
+                    document.body.appendChild(loginWarningPopup);
+                    okButton.focus();
+                } else if (windowName && windowName.innerHTML === 'Invalid username') {
+                    const overlay = document.querySelector('.overlay');
+                    const loginWarningPopup = POPUP.build({
+                        id: 'loginPopup',
+                        hideX: true
+                    });
+                    const username = document.getElementById('username').value;
+                    const okButton = button.build({
+                        text: 'ok',
+                        type: 'contained',
+                        style: 'secondary',
+                        callback: function () {
+                            overlay.classList.remove('visible');
+                            document.body.removeChild(loginWarningPopup);
+                            //document.getElementById("username").value = '';
+                            document.getElementById('password1').value = '';
+                            document.getElementById('username').focus();
+                        }
+                    });
+                    const message = document.createElement('p');
+                    message.innerHTML = `Invalid user name or password.`;
+                    loginWarningPopup.appendChild(message);
+                    loginWarningPopup.appendChild(okButton);
+                    overlay.classList.add('visible');
+                    document.body.appendChild(loginWarningPopup);
+                    okButton.focus();
+                } else {
+                    if (windowName && windowName.innerHTML === '2FA') {
+                        //Call below method from the popup. insertData must userName and genKey
+                        const deviceId = resXML.getElementsByTagName('special_data')[0].innerHTML;
+                        //const deviceId = JSON.parse(response.getLogInResult)[0]['@deviceGUID'];
+                        if (localDeviceId !== deviceId) {
+                            // UTIL.LS.setStorage('device', deviceId, userId);
+                            $.session.deviceGUID = deviceId;
+                            mfa.init();
+                        } else {
+                            eraseCookie('psiuser');
+                            var overlay = document.createElement('div');
+                            if ($('#username').val().toUpperCase() == 'PSI') {
+                                $.session.isPSI = true;
+                                eraseCookie('psi');
+                                createCookie('psi', res, 1);
+                                createCookie('psiuser', res, 1);
+                                success = true;
+                                document.location.href = 'anywhere.html';
+                            } else {
+                                eraseCookie('psi');
+                                createCookie('psi', res, 1);
+                                success = true;
+                                document.location.href = 'anywhere.html';
+                            }
+                        }
+                        //authenticatedLogin();
+                    } else if (windowName && windowName.innerHTML === 'Invalid username') {
+                        $('#error').css('opacity', '1');
+                        $('#error').css('display', 'block');
+                        $('#errortext').text('Invalid username/password combination');
+                    } else if (res.indexOf('Invalid password') != -1) {
+                        //never will be hit, needs removed
+                        $('#error').css('opacity', '1');
+                        $('#error').css('display', 'block');
+                        $('#errortext').text('Invalid password attempt 1');
+                    } else if (windowName && windowName.innerHTML === 'No demographics record') {
+                        $('#error').css('opacity', '1');
+                        $('#error').css('display', 'block');
+                        $('#errortext').text('There is no Name in Demographics defined for your user. Please contact your system administrator to login to Anywhere.');
+                    } else if (windowName && windowName.innerHTML === 'No recipient') {
+                        $('#error').css('opacity', '1');
+                        $('#error').css('display', 'block');
+                        const message = `
               Two-Factor authentication is enabled for your organization.
               There was no valid email address or cell phone number found for your account.
               Please contact your system administrator to login to Anywhere. 
               `;
-            $('#errortext').text(message);
-          } else if (windowName && windowName.innerHTML === 'Expired password') {
-            customPasswordChange();
-          } else {
-            //errorMessage = "";
-            //alert('success: ' + res);
-            eraseCookie('psiuser');
-            var overlay = document.createElement('div');
-            if ($('permissions', res).is('*') && $('#username').val().toUpperCase() == 'PSI') {
-              $.session.isPSI = true;
-              eraseCookie('psi');
-              createCookie('psi', res, 1);
-              createCookie('psiuser', res, 1);
-              success = true;
-              document.location.href = 'anywhere.html';
-            } else if ($('permissions', res).is('*') && checkforErrors(res) == 0) {
-              eraseCookie('psi');
-              createCookie('psi', res, 1);
-              success = true;
-              document.location.href = 'anywhere.html';
-            } else if (res.indexOf('609') > -1) {
-              //$("#error").css("display", "block");
-              //checkForErrors();
-              customPasswordChange();
-            } else {
-              $('#error').css('opacity', '1');
-              $('#error').css('display', 'block');
-              if ($('#error').hasClass('hippaRestriction')) {
-                $('#errortext').text('Password cannot match a recently used password');
-              } else if ($('#error').hasClass('userInputError')) {
-                $('#errortext').text('Invalid username or password');
-              } else if (res.indexOf('608') > -1) {
-                $('#errortext').text('This user name does not exist in demographics.');
-              } else {
-                $('#errortext').text('Login unsuccessful');
-              }
+                        $('#errortext').text(message);
+                    } else if (windowName && windowName.innerHTML === 'Expired password') {
+                        customPasswordChange();
+                    } else {
+                        //errorMessage = "";
+                        //alert('success: ' + res);
+                        eraseCookie('psiuser');
+                        var overlay = document.createElement('div');
+                        if ($('permissions', res).is('*') && $('#username').val().toUpperCase() == 'PSI') {
+                            $.session.isPSI = true;
+                            eraseCookie('psi');
+                            createCookie('psi', res, 1);
+                            createCookie('psiuser', res, 1);
+                            success = true;
+                            document.location.href = 'anywhere.html';
+                        } else if ($('permissions', res).is('*') && checkforErrors(res) == 0) {
+                            eraseCookie('psi');
+                            createCookie('psi', res, 1);
+                            success = true;
+                            document.location.href = 'anywhere.html';
+                        } else if (res.indexOf('609') > -1) {
+                            //$("#error").css("display", "block");
+                            //checkForErrors();
+                            customPasswordChange();
+                        } else {
+                            $('#error').css('opacity', '1');
+                            $('#error').css('display', 'block');
+                            if ($('#error').hasClass('hippaRestriction')) {
+                                $('#errortext').text('Password cannot match a recently used password');
+                            } else if ($('#error').hasClass('userInputError')) {
+                                $('#errortext').text('Invalid username or password');
+                            } else if (res.indexOf('608') > -1) {
+                                $('#errortext').text('This user name does not exist in demographics.');
+                            } else {
+                                $('#errortext').text('Login unsuccessful');
+                            }
+                        }
+                    }
+                }
             }
-          }
+        },
+        complete: function () {
+            // hide gif here, eg:
+            $('body').css('cursor', 'auto');
         }
-      }
-    },
-    complete: function () {
-      // hide gif here, eg:
-      $('body').css('cursor', 'auto');
-    },
-  });
-  //postError("100", "This is a tricky error", "DEBUG");
+    });
+    //postError("100", "This is a tricky error", "DEBUG");
 }
 
 //Shared functionality of log in for use with change password, because of the ids for username and password on the forms
@@ -357,9 +355,7 @@ function getCustomLoginTextAndVersion(callback) {
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
-      var res = response.getCustomTextAndAnywhereVersionResult
-        .replace(/\r/g, '')
-        .replace(/\n/g, '<br>');
+      var res = response.getCustomTextAndAnywhereVersionResult.replace(/\r/g, '').replace(/\n/g, '<br>');
       //var res = JSON.stringify(response);
       callback(res);
     },
@@ -374,184 +370,171 @@ function getCustomLoginTextAndVersion(callback) {
 }
 
 function changeIt() {
-  const changeBtn = document.getElementById('changebutton');
-  changeBtn.classList.add('disabled');
-  if (checkPass() == 0) return;
-  //changeBtn.classList.add('disabled');
-  let newPW = $('#newpassword1').val();
-  newPW = newPW.replaceAll(`\\`, `\\\\`);
-  newPW = newPW.replaceAll(`"`, `\\"`);
-  newPW = newPW.replaceAll(`'`, `''`);
-  var success = false;
-  let passwordChangeError = false;
-  let inactiveUser = false;
-  let passwordReuseError = false;
-  // blur focus to prevent messages from getting removed too quickly
-  document.activeElement.blur();
-  //alert('patchIt');
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/changeLogIn/',
-    data:
-      '{"userId":"' +
-      $('#username2').val() +
-      '", "hash":"' +
-      $().crypt({
-        method: 'md5',
-        source: $('#password2').val(),
-      }) +
-      '", "newPassword":"' +
-      newPW +
-      '", "changingToHashPassword":"' +
-      $().crypt({
-        method: 'md5',
-        source: $('#newpassword1').val(),
-      }) +
-      '"}',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
-      //alert('success: ' + res);
-      if (res.indexOf('Not active') != -1) {
-        $('#error').css('opacity', '1');
-        $('#error').css('display', 'block');
-        const message = `
+    const changeBtn = document.getElementById('changebutton');
+    changeBtn.classList.add('disabled');
+    if (checkPass() == 0) return;
+    //changeBtn.classList.add('disabled');
+    let newPW = $('#newpassword1').val();
+    newPW = newPW.replaceAll(`\\`, `\\\\`);
+    newPW = newPW.replaceAll(`"`, `\\"`);
+    newPW = newPW.replaceAll(`'`, `''`);
+    var success = false;
+    let passwordChangeError = false;
+    let inactiveUser = false;
+    let passwordReuseError = false;
+    // blur focus to prevent messages from getting removed too quickly
+    document.activeElement.blur();
+    //alert('patchIt');
+    $.ajax({
+        type: 'POST',
+        url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/changeLogIn/',
+        data: '{"userId":"' + $('#username2').val() + '", "hash":"' + $().crypt({
+            method: 'md5',
+            source: $('#password2').val()
+        }) + '", "newPassword":"' + newPW + '", "changingToHashPassword":"' + $().crypt({
+            method: 'md5',
+            source: $('#newpassword1').val()
+        }) + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            var res = JSON.stringify(response);
+            if (res.indexOf(null) != -1) {
+                passwordChangeError = true;
+                return;
+            }
+            //alert('success: ' + res);
+            if (res.indexOf('Not active') != -1) {
+                $('#error').css('opacity', '1');
+                $('#error').css('display', 'block');
+                const message = `
 				Your account is inactive. Please contact your System Administrator to enable your account. 
 				`;
-        $('#errortext').text(message);
-        inactiveUser = true;
-        return;
-      }
-      if (res.indexOf('Error:611') > -1) {
-        passwordReuseError = true;
-        $('#error').css('opacity', '1');
-        $('#error').css('display', 'block');
-        const message = `
+                $('#errortext').text(message);
+                inactiveUser = true;
+                return;
+            }
+            if (res.indexOf('Error:611') > -1) {
+                passwordReuseError = true;
+                $('#error').css('opacity', '1');
+                $('#error').css('display', 'block');
+                const message = `
 				Your new password does not meet your organizations password reuse rules. Please use a different password.
 				`;
-        $('#errortext').text(message);
-        return;
-      } else if (res.indexOf('Error:610') > -1) {
-        passwordChangeError = true;
-        $('#error').addClass('userInputError');
-        $('#error').removeClass('hippaRestriction');
-      } else {
-        $('#error').removeClass('hippaRestriction');
-        $('#error').removeClass('userInputError');
-      }
-    },
-    //error: function (xhr, status, error) { alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText); },
-    complete: function () {
-      changeBtn.classList.remove('disabled');
-
-      if (inactiveUser || passwordReuseError) {
-        return;
-      }
-      if (passwordChangeError) {
-        $('#error').css('opacity', '1');
-        $('#error').css('display', 'block');
-        const message = `
+                $('#errortext').text(message);
+                return;
+            } else if (res.indexOf('Error:610') > -1) {
+                passwordChangeError = true;
+                $('#error').addClass('userInputError');
+                $('#error').removeClass('hippaRestriction');
+            } else {
+                $('#error').removeClass('hippaRestriction');
+                $('#error').removeClass('userInputError');
+            }
+        },
+        //error: function (xhr, status, error) { alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText); },
+        complete: function () {
+            changeBtn.classList.remove('disabled');
+            if (inactiveUser || passwordReuseError) {
+                return;
+            }
+            if (passwordChangeError) {
+                $('#error').css('opacity', '1');
+                $('#error').css('display', 'block');
+                const message = `
 				Invalid user name or password. 
 				`;
-        $('#errortext').text(message);
-        return;
-      }
-      overlay.init();
-      $('#password1').val($('#newpassword1').val());
-      const mainElement = document.getElementsByTagName('main')[0];
-      const passwordChangeConfPOPUP = POPUP.build({
-        hideX: true,
-      });
-      const okBtn = button.build({
-        text: 'OK',
-        style: 'secondary',
-        type: 'contained',
-        callback: () => {
-          mainElement.removeChild(passwordChangeConfPOPUP);
-          overlay.hide();
-          bodyScrollLock.enableBodyScroll(passwordChangeConfPOPUP);
-          document.body.style.overflow = 'visible';
-          backToLoginPage();
-        },
-      });
-      okBtn.style.width = '100%';
-      const message = document.createElement('p');
-      message.innerText = 'Password has been changed. You may now log in with your new password.';
-      message.style.textAlign = 'center';
-      message.style.marginBottom = '15px';
-      passwordChangeConfPOPUP.appendChild(message);
-      passwordChangeConfPOPUP.appendChild(okBtn);
-      // disable scrolling
-      bodyScrollLock.disableBodyScroll(passwordChangeConfPOPUP);
-      // show overlay
-      const overlayElement = document.querySelector('.overlay');
-      overlayElement.style.zIndex = '2';
-      passwordChangeConfPOPUP.style.zIndex = '3';
-      passwordChangeConfPOPUP.style.top = '40%';
-      overlay.show();
-      mainElement.appendChild(passwordChangeConfPOPUP);
-      // focus on ok button
-      okBtn.focus();
-    },
-  });
+                $('#errortext').text(message);
+                return;
+            }
+            overlay.init();
+            $('#password1').val($('#newpassword1').val());
+            const mainElement = document.getElementsByTagName('main')[0];
+            const passwordChangeConfPOPUP = POPUP.build({
+                hideX: true
+            });
+            const okBtn = button.build({
+                text: 'OK',
+                style: 'secondary',
+                type: 'contained',
+                callback: () => {
+                    mainElement.removeChild(passwordChangeConfPOPUP);
+                    overlay.hide();
+                    bodyScrollLock.enableBodyScroll(passwordChangeConfPOPUP);
+                    document.body.style.overflow = 'visible';
+                    backToLoginPage();
+                }
+            });
+            okBtn.style.width = '100%';
+            const message = document.createElement('p');
+            message.innerText = 'Password has been changed. You may now log in with your new password.';
+            message.style.textAlign = 'center';
+            message.style.marginBottom = '15px';
+            passwordChangeConfPOPUP.appendChild(message);
+            passwordChangeConfPOPUP.appendChild(okBtn);
+            // disable scrolling
+            bodyScrollLock.disableBodyScroll(passwordChangeConfPOPUP);
+            // show overlay
+            const overlayElement = document.querySelector('.overlay');
+            overlayElement.style.zIndex = '2';
+            passwordChangeConfPOPUP.style.zIndex = '3';
+            passwordChangeConfPOPUP.style.top = '40%';
+            overlay.show();
+            mainElement.appendChild(passwordChangeConfPOPUP);
+            // focus on ok button
+            okBtn.focus();
+        }
+    });
 }
 
 function resetIt() {
-  if ($.session.changeEmailSent) {
-    return;
-  }
-  $('#resetButton').prop('disabled', true);
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/setupPasswordResetEmail/',
-    data: '{"userName":"' + $('#username3').val() + '"}',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
-      if (res.indexOf('Inactive user') != -1) {
-        $('#error').css('opacity', '1');
-        $('#error').css('display', 'block');
-        const message = `
+    if ($.session.changeEmailSent) {
+        return;
+    }
+    $('#resetButton').prop('disabled', true);
+    $.ajax({
+        type: 'POST',
+        url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/setupPasswordResetEmail/',
+        data: '{"userName":"' + $('#username3').val() + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            var res = JSON.stringify(response);
+            if (res.indexOf(null) != -1) {
+                $('#error').css('opacity', '1');
+                $('#error').css('display', 'block');
+                const message = `
+				Please enter a valid username. 
+				`;
+                $('#errortext').text(message);
+                return;
+            }
+            if (res.indexOf('Inactive user') != -1) {
+                $('#error').css('opacity', '1');
+                $('#error').css('display', 'block');
+                const message = `
 				Your account is inactive. Please contact your System Administrator to enable your account. 
 				`;
-        $('#errortext').text(message);
-        return;
-      }
-      if (res.indexOf('No recipient') != -1) {
-        $('#error').css('opacity', '1');
-        $('#error').css('display', 'block');
-        const message = `
+                $('#errortext').text(message);
+                return;
+            }
+            if (res.indexOf('No recipient') != -1) {
+                $('#error').css('opacity', '1');
+                $('#error').css('display', 'block');
+                const message = `
 				There was no valid email address found for your account.
 				Please contact your system administrator to login to Anywhere. 
 				`;
-        $('#errortext').text(message);
-        return;
-      }
-      setUpPasswordResetMessages(res);
-      $('#resetButton').prop('disabled', false);
-    },
-    error: function (xhr, status, error) {
-      //alert("Error\n-----\n" + xhr.status + '\n-----\n' + error + '\n-----\n' + xhr.responseText);
-    },
-  });
+                $('#errortext').text(message);
+                return;
+            }
+            setUpPasswordResetMessages(res);
+            $('#resetButton').prop('disabled', false);
+        },
+        error: function (xhr, status, error) {
+            //alert("Error\n-----\n" + xhr.status + '\n-----\n' + error + '\n-----\n' + xhr.responseText);
+        }
+    });
 }
 
 function tokenCheck() {
@@ -587,16 +570,7 @@ function tokenCheck() {
 function postError(errNum, errMsg, errLvl) {
   var d = new Date();
   var curr_month = d.getMonth() + 1; //Months are zero based
-  var strDate =
-    d.getDate() +
-    '-' +
-    curr_month +
-    '-' +
-    d.getFullYear() +
-    ' ' +
-    d.getHours() +
-    ':' +
-    d.getMinutes();
+  var strDate = d.getDate() + '-' + curr_month + '-' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes();
   var dataString =
     't=' +
     strDate +
@@ -633,14 +607,7 @@ function saveDefaultLocationValueAjax(switchCase, locationId) {
       '/' +
       $.webServer.serviceName +
       '/saveDefaultLocationValue/',
-    data:
-      '{"token":"' +
-      $.session.Token +
-      '", "switchCase":"' +
-      switchCase +
-      '", "locationId":"' +
-      locationId +
-      '"}',
+    data: '{"token":"' + $.session.Token + '", "switchCase":"' + switchCase + '", "locationId":"' + locationId + '"}',
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
@@ -663,13 +630,7 @@ function saveDefaultLocationNameAjax(switchCase, locationName) {
       $.webServer.serviceName +
       '/saveDefaultLocationName/',
     data:
-      '{"token":"' +
-      $.session.Token +
-      '", "switchCase":"' +
-      switchCase +
-      '", "locationName":"' +
-      locationName +
-      '"}',
+      '{"token":"' + $.session.Token + '", "switchCase":"' + switchCase + '", "locationName":"' + locationName + '"}',
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
@@ -775,49 +736,37 @@ function getUserPermissions(callback) {
     data: '{"token":"' + $.session.Token + '"}',
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
-    success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
-      $.session.permissionString = res;
+      success: function (response, status, xhr) {
 
-      //checks if any role of employee has 'y' for viewing casenotes
-      if (
-        res.indexOf('<window_name>EnableCaseNotes</window_name><permission>Y</permission>') > -1
-      ) {
-        $.session.CaseNotesTablePermissionView = true;
-      }
-      //Check if user is supervisor and can see Admin Single Entry Module
-      if (res.indexOf('<window_name>Supervisor</window_name><permission>Y</permission>') > -1) {
-        $.session.ViewAdminSingleEntry = true;
-      }
-      //Update doc time editable
-      if (
-        res.indexOf(
-          '<window_name>UpdateDocTime</window_name><permission>Update Doc Time</permission>',
-        ) > -1 ||
-        res.indexOf(
-          '<window_name>Anywhere Case Notes</window_name><permission>Update Doc Time</permission>',
-        ) > -1
-      ) {
-        $.session.UpdateCaseNotesDocTime = true;
-      } else {
-        $.session.UpdateCaseNotesDocTime = false;
-      }
-      //View Admin Single Entry Widget
-      if (
-        res.indexOf('<window_name>SESupervisorApprove</window_name><permission>Y</permission>') > -1
-      ) {
-        $.session.SEViewAdminWidget = true;
-      }
+      $.session.permissionString = response.getUserPermissionsResult;
+
+      const caseNotesPerm = $.session.permissionString.find(obj => obj.window_name === 'EnableCaseNotes');
+      const supervisorPerm = $.session.permissionString.find(obj => obj.window_name === 'Supervisor');
+      const docTimePerm = $.session.permissionString.find(obj => obj.window_name === 'UpdateDocTime');
+      const caseNoteDocTimePerm = $.session.permissionString.find(obj => obj.window_name === 'Anywhere Case Notes');
+      const adminSEPerm = $.session.permissionString.find(obj => obj.window_name === 'SESupervisorApprove');
+
+      $.session.CaseNotesTablePermissionView = caseNotesPerm && caseNotesPerm.permission === 'Y' ? true : false;
+      $.session.ViewAdminSingleEntry = supervisorPerm && supervisorPerm.permission === 'Y' ? true : false;
+      $.session.UpdateCaseNotesDocTime =
+        docTimePerm &&
+        caseNoteDocTimePerm &&
+        docTimePerm.permission === 'Update Doc Time' &&
+        caseNoteDocTimePerm.permission === 'Update Doc Time'
+          ? true
+          : false;
+      $.session.SEViewAdminWidget = adminSEPerm && adminSEPerm.permission === 'Y' ? true : false;
+
       setSessionVariables();
+
       //check to see which modules should be disabled
       checkModulePermissions();
+
       if (callback) callback();
+
       $('#userName').text($.session.Name);
       $('#firstName').text($.session.Name);
       $('#lastName').text($.session.LName);
-    },
-    error: function (xhr, status, error) {
-      //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
     },
   });
 }
@@ -870,18 +819,16 @@ function getDefaultAnywhereSettings() {
 
       $.session.anAdmin = res.admistrator;
       $.session.defaultCaseNoteReviewDays = res.setting_value === '' ? '7' : res.setting_value;
-      $.session.defaultProgressNoteReviewDays =
-        res.notes_days_back === '' ? '99' : res.notes_days_back;
+      $.session.defaultProgressNoteReviewDays = res.notes_days_back === '' ? '99' : res.notes_days_back;
       $.session.defaultIncidentTrackingDaysBack =
         res.incidentTracking_days_back === '' ? '7' : res.incidentTracking_days_back;
-      $.session.defaultProgressNoteChecklistReviewDays =
-        res.checklist_days_back === '' ? '7' : res.checklist_days_back;
-      $.session.anywhereMinutestotimeout =
-        res.minutesToTimeout === '' ? '15' : res.minutesToTimeout;
+      $.session.defaultProgressNoteChecklistReviewDays = res.checklist_days_back === '' ? '7' : res.checklist_days_back;
+      $.session.anywhereMinutestotimeout = res.minutesToTimeout === '' ? '15' : res.minutesToTimeout;
       $.session.removeGoalsWidget = res.removeGoalsWidget === 'Y' ? true : false;
       $.session.seAdminRemoveMap = res.removeSEAdminMap === 'Y' ? true : false;
       $.session.isASupervisor = res.isASupervisor === '' ? false : true;
       $.session.sttEnabled = res.sttEnabled === 'Y' ? true : false;
+      $.session.watchingConnection = '';
       $.session.azureSTTApi = res.azureSttApi;
       $.session.reportSeconds = res.reportSeconds;
       $.session.incidentTrackingPopulateIncidentDate = res.incidentTrackingPopulateIncidentDate;
@@ -891,14 +838,15 @@ function getDefaultAnywhereSettings() {
 
       $.session.incidentTrackingShowCauseAndContributingFactors =
         res.incidentTrackingShowCauseAndContributingFactors === 'Y' ? true : false;
-      $.session.incidentTrackingShowPreventionPlan =
-        res.incidentTrackingShowPreventionPlan === 'Y' ? true : false;
+      $.session.incidentTrackingShowPreventionPlan = res.incidentTrackingShowPreventionPlan === 'Y' ? true : false;
 
       $.session.updateIncidentSummaryText = res.appendITSummary === 'Y' ? true : false;
       $.session.updateIncidentActionText = res.appendITImmediateAction === 'Y' ? true : false;
       $.session.updateIncidentPreventionText = res.appendITPreventionPlan === 'Y' ? true : false;
       $.session.updateIncidentCauseText = res.appendITCause === 'Y' ? true : false;
-
+      $.session.planFormCarryover = res.planFormCarryover === 'Y' ? true : false;
+      //Waiting List
+        $.session.sendWaitingListEmail = true;// res.sendWaitingListEmail === 'Y' ? true : false;
       //Hide stuff
       $.session.useAbsentFeature = res.useAbsentFeature;
       $.session.useProgressNotes = res.useProgressNotes;
@@ -948,6 +896,8 @@ function getDefaultAnywhereSettings() {
       $.session.defaultDSTimeClockName = res.defaulttimeclocklocationName;
       $.session.defaultWorkshopLocationValue = res.defaultworkshoplocation;
       $.session.defaultWorkshopLocation = res.defaultworkshoplocationname;
+      $.session.defaultMoneyManagementLocationValue = res.defaultMoneyManagementLocation;
+      $.session.defaultMoneyManagementLocation = res.defaultMoneyManagementLocationName; 
       //$.session.defaultDSTimeClockName = res.defaulttimeclocklocationname;
       //database state - Indiana or Ohio
       $.session.stateAbbreviation = res.stateAbbreviation;

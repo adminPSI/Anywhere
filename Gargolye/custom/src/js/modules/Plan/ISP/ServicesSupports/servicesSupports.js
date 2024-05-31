@@ -367,6 +367,79 @@ const servicesSupports = (() => {
 
     dropdown.populate(dropdownEle, data, defaultValue);
   }
+  
+  async function populateMultiSelectServiceVendorsDropdown(dropdownEle, thisSelectedArray) {
+    var test =  dropdownEle;
+    let thisfundingSourceSelectedText;
+    let thisServiceNameSelectedText;
+ 
+    let completeVendorList = [];
+ 
+    for(let i = 0; i < thisSelectedArray.length; i++) {
+    
+     thisfundingSourceSelectedText = thisSelectedArray[i].fundingSourceName;
+     thisServiceNameSelectedText = thisSelectedArray[i].serviceName;
+ 
+     const { getPaidSupportsVendorsResult: vendorNumbers } =
+       await servicesSupportsAjax.getPaidSupportsVendors(
+         thisfundingSourceSelectedText,
+         thisServiceNameSelectedText,
+       );
+ 
+       completeVendorList.push(...vendorNumbers);
+    };
+ 
+    var test6 = {vendorId: "7500002", vendorName: "RMS of Ohio, Inc."};
+    var test7 = {vendorId: "7500001", vendorName: "IHS Services"};
+    var test8 = {vendorId: "7500002", vendorName: "XX"};
+    var test9 = {vendorId: "7500001", vendorName: "XXXX"};
+   // completeVendorList.push(test6);
+   // completeVendorList.push(test6);
+   // completeVendorList.push(test7);
+    //completeVendorList.push(test7);
+   // completeVendorList.push(test8);
+   // completeVendorList.push(test9);
+ 
+       // Filter original concat list to just the vendors that have more than one in the list
+       const duplicateVendors = completeVendorList.filter((item, index, self) => {
+         return self.findIndex(t => t.vendorId === item.vendorId) !== index;
+        });
+ 
+        // need to get duplicateVendors list down to just the vendors with the correct number of occurances
+        let minOccurancePaidSupports;
+       // thisSelectedArray.length = 3
+        if (thisSelectedArray.length > 2) {
+           minOccurancePaidSupports = removeDuplicatesBasedOnCount(duplicateVendors, 'vendorId', thisSelectedArray.length);
+        } else {
+           minOccurancePaidSupports = duplicateVendors;
+        }
+        
+        let minOccurancePaidSupportsFiltered = removeDuplicateObjects(minOccurancePaidSupports, 'vendorId')
+ 
+       let vendorArray = [];
+        // vendorArray contains the duplicate vendors data in Dropdown data formnat
+        minOccurancePaidSupportsFiltered.forEach(row => {
+         let thisVendorObject = {value: row.vendorId, text: row.vendorName }
+         vendorArray.push(thisVendorObject);
+        });
+ 
+        vendorArray.sort((a, b) => {
+         const textA = a.text.toUpperCase();
+         const textB = b.text.toUpperCase();
+         return textA < textB ? -1 : textA > textB ? 1 : 0;
+       });
+ 
+       if (vendorArray.length > 0) {
+         vendorArray.unshift({ value: '', text: '[SELECT A PROVIDER]' });
+       } else {
+         vendorArray.unshift({ value: '', text: 'No Common Provider' });
+       }
+        
+       dropdown.populate(dropdownEle, vendorArray);
+ 
+         return;
+   }
+
   async function populateServiceVendorsDropdown(dropdownEle, defaultValue, ignoreGuardClauses) {
     // const data = dropdownData.serviceVendors.map(dd => {
     //   return {
@@ -855,9 +928,12 @@ const servicesSupports = (() => {
     ) {
       updateBtn.classList.remove('disabled');
       return;
+    } else {
+      updateBtn.classList.add('disabled');
+      return;
     }
 
-    updateBtn.classList.remove('disabled');
+   // updateBtn.classList.remove('disabled');
   }
   function showMultiEditPopup() {
     let multiSaveUpdateData = {
@@ -876,6 +952,15 @@ const servicesSupports = (() => {
     const message = document.createElement('p');
     message.classList.add('popupMessage');
     message.innerText = `Fields left blank will not be updated`;
+
+    // set all multiselct data 
+    let thisSelectedPaidSupportItems = [];
+    selectedPaidSupportRows.forEach(row => {
+      let thisfundingSource = getFundingSourceById(row.fundingSource);
+      let thisserviceName = getServiceNameById(row.serviceNameId);
+      let thisSelectedObject = {fundingSourceName: thisfundingSource, serviceName: thisserviceName }
+      thisSelectedPaidSupportItems.push(thisSelectedObject);
+    });
 
     // set fundingSourceDropdownSelectedText & servicesDropdownSelectedText
     const fundingSource = getFundingSourceById(selectedPaidSupportRows[0].fundingSource);
@@ -896,9 +981,9 @@ const servicesSupports = (() => {
         toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
       },
     });
-    if (!matchingRows) {
-      input.disableInputField(providerNameDropdown);
-    }
+    // if (!matchingRows) {
+    //   input.disableInputField(providerNameDropdown);
+    // }
 
     const beginDateInput = input.build({
       label: 'Begin Date',
@@ -977,7 +1062,8 @@ const servicesSupports = (() => {
     multiEditPopup.appendChild(providerNameDropdown);
     multiEditPopup.appendChild(wrap);
 
-    populateServiceVendorsDropdown(providerNameDropdown, multiSaveUpdateData.providerId);
+    // populateServiceVendorsDropdown(providerNameDropdown, multiSaveUpdateData.providerId);
+    populateMultiSelectServiceVendorsDropdown(providerNameDropdown, thisSelectedPaidSupportItems);
 
     POPUP.show(multiEditPopup);
   }
@@ -3030,6 +3116,45 @@ const servicesSupports = (() => {
 
     return modificationDiv;
   }
+
+// -- Manipulate MULTI SELECT Provider DROP DOWN DATA to display Vendors shared by all Selected Paid Supports
+// Code below (1.,2.,3.) is used to find the intersection (SQL) of the Vendor Lists associated with each selected Paid Supports
+// 1. From the original data (arr), remove the elements that don't have the minimum number
+function removeDuplicatesBasedOnCount(arr, prop, count) {
+  let occurrences = countOccurrences(arr, prop);
+  return arr.filter(obj => {
+     let key = JSON.stringify(obj[prop]);
+     return occurrences[key] >= count-1;
+  });
+ }
+// 2. IN original data (arr), count number of occurances of a property value 
+function countOccurrences(arr, prop) {
+  return arr.reduce((a, obj) => {
+     let key = JSON.stringify(obj[prop]);
+     if (!a[key]) {
+       a[key] = 0;
+     }
+     a[key]++;
+     return a;
+  }, {});
+ }
+  // 3. Now have list of elements with minimumn number of occurences, but you just need one occurance for final Vendor DropDown display
+ function removeDuplicateObjects(array, property) {
+  const uniqueIds = [];
+ 
+  const unique = array.filter(element => {
+     const isDuplicate = uniqueIds.includes(element[property]);
+ 
+     if (!isDuplicate) {
+       uniqueIds.push(element[property]);
+       return true;
+     }
+ 
+     return false;
+  });
+ 
+  return unique;
+ }
 
   // MAIN
   //------------------------------------------------------

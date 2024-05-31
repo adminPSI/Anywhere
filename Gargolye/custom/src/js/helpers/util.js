@@ -347,7 +347,7 @@ const UTIL = (function () {
   /**
    * Gets todays date
    * @param {boolean} [returnObj] - If True, function will return a Date() object rather than an ISO formated date
-   * @returns {string|object} Returns either a date object or ISO formated string depending on what is passed in returnObj
+   * @returns {string|object} Returns either a date object or ISO formated string
    */
   function getTodaysDate(returnObj) {
     // returns iso format date
@@ -479,6 +479,11 @@ const UTIL = (function () {
 
     return number < 0 ? Math.ceil(number) : Math.floor(number);
   }
+
+  function removeNonIntegerCharactersFromString(inputString) {
+    // Use a regular expression to remove non-integer characters from string
+    return inputString.replace(/[^\d]/g, '');
+}
 
   function validateTime(time) {
     const splitTime = time.split('.'); //Edge Chromium adds milliseconds to end of time when using time picker
@@ -794,7 +799,15 @@ const UTIL = (function () {
         break;
       }
       case 'ConsumerFinances': {
-        target = document.getElementById('consumerfinancessettingsdiv');
+        target = document.getElementById('cfAccountDiv');
+        break;
+      }
+      case 'CFEditAccount': {
+        target = document.getElementById('cfEditAccountDiv');
+        break;
+      }
+      case 'waitingList': {
+        target = document.getElementById('waitingListdiv');
         break;
       }
       default: {
@@ -833,6 +846,7 @@ const UTIL = (function () {
     removeDecimals,
     removeQuotes,
     toInteger,
+    removeNonIntegerCharactersFromString,
     validateTime,
     validateDateFromInput,
     warningPopup,
@@ -843,43 +857,3 @@ const UTIL = (function () {
     toggleMenuItemHighlight,
   };
 })();
-
-function autoLogout() {
-  var isPopupVisible = false;
-
-  function timerIncrement() {
-    var timeLimit = parseInt($.session.anywhereMinutestotimeout);
-    idleTime++;
-    if (idleTime === timeLimit - 1) {
-      POPUP.show(logoutPopup);
-      isPopupVisible = true;
-    }
-    if (idleTime === timeLimit) setCookieOnFail('');
-  }
-
-  var logoutMessage = `You've been inactive for a while. For security purposes, we will automatically sign you out in approximately 1 minute.`;
-  var logoutPopup = POPUP.build({});
-  logoutPopup.innerHTML += logoutMessage;
-
-  var idleTime = 0;
-  var logoutInterval = setInterval(timerIncrement, 60000);
-
-  document.addEventListener('mousemove', () => {
-    if (isPopupVisible) {
-      POPUP.hide(logoutPopup);
-      isPopupVisible = false;
-    }
-    idleTime = 0;
-    clearInterval(logoutInterval);
-    logoutInterval = setInterval(timerIncrement, 60000);
-  });
-  document.addEventListener('keydown', () => {
-    if (isPopupVisible) {
-      POPUP.hide(logoutPopup);
-      isPopupVisible = false;
-    }
-    idleTime = 0;
-    clearInterval(logoutInterval);
-    logoutInterval = setInterval(timerIncrement, 60000);
-  });
-}

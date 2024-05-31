@@ -1,6 +1,6 @@
 class WorkflowComponent {         
 
-    constructor({workflowId, name, processName, description, currentStatusId, statuses, groups}, people){
+    constructor({ workflowId, name, processName, description, currentStatusId, statuses, groups }, people, responsiblePeople){
         this.workflowId = workflowId;
         this.name = name;
         this.processName = processName;
@@ -9,6 +9,7 @@ class WorkflowComponent {
         this.statuses = statuses;
         this.groups = groups;
         this.people = people;
+        this.responsiblePeople = responsiblePeople;
     }
 
     async setStatusAsync(workflowId, statusId){
@@ -35,7 +36,7 @@ class WorkflowComponent {
 
     render() {
         
-        let {workflowId, name, currentStatusId, description, processName, groups, statuses, people, setStatusAsync, getFirstAndLastName } = this;
+        let { workflowId, name, currentStatusId, description, processName, groups, statuses, people, setStatusAsync, getFirstAndLastName, responsiblePeople } = this;
 
         let workflowContainer = document.createElement('div');
         workflowContainer.classList.add("card", "workflow");
@@ -196,16 +197,16 @@ class WorkflowComponent {
 
         if (groups) {
             groups.map(g => {
-                workflowDetailContainer.innertHtml = `${(new WorkflowGroupComponent(workflowDetailContainer, g, people).render())}`;                       
+                workflowDetailContainer.innertHtml = `${(new WorkflowGroupComponent(workflowDetailContainer, g, people, responsiblePeople).render())}`;                       
             })    
         }
-
+         
         workflowContainer.appendChild(workflowSummaryContainer);
         workflowContainer.appendChild(workflowDetailContainer);
         
         return workflowContainer;
 
-    };
+    }; 
 
     deleteConfirmation(workflowId, workflowContainer) {
         var popup = POPUP.build({

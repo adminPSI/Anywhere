@@ -1,7 +1,5 @@
 const ConsumerFinances = (() => {
-    //Inputs
-    let newFilterBtn;
-    let filterRow;
+    //Inputs  
     let ConsumerFinanceEntriesTable = [];
     let CFConsumerBtns;
     let consumerRow;
@@ -10,10 +8,22 @@ const ConsumerFinances = (() => {
     var selectedConsumers;
     var selectedConsumersName;
     var selectedConsumersId;
-
     //filter
     let accountDropdown;
     let filterValues;
+    let btnWrap;
+    let activityStartDateBtnWrap;
+    let activityEndDateBtnWrap;
+    let minamountBtnWrap;
+    let maxamountBtnWrap;
+    let transectionTypeBtnWrap;
+    let accountNameBtnWrap;
+    let payeeBtnWrap;
+    let categoryBtnWrap;
+    let enteredByBtnWrap;
+    let isattachmentBtnWrap;
+    let accountPermission;
+    let tempAccountPer;
 
     //service filter options
     let selectedConsumerIds;
@@ -38,7 +48,7 @@ const ConsumerFinances = (() => {
         }
     }
 
-    // Build OOD Module Landing Page 
+    // Build Consumer Finance Module Landing Page 
     async function loadConsumerFinanceLanding(value) {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
@@ -48,11 +58,8 @@ const ConsumerFinances = (() => {
         }
 
         if (!document.querySelector('.consumerListBtn')) roster2.miniRosterinit();
-
         landingPage = document.createElement('div');
-        var LineBr = document.createElement('br');
-
-        selectedConsumersId = selectedConsumers[0].id;
+        selectedConsumersId = selectedConsumers[selectedConsumers.length - 1].id;
         $.session.consumerId = selectedConsumersId;
         const name = (
             await ConsumerFinancesAjax.getConsumerNameByID({
@@ -60,6 +67,8 @@ const ConsumerFinances = (() => {
                 consumerId: selectedConsumersId,
             })
         ).getConsumerNameByIDResult;
+
+        getaccountPermission();
 
         selectedConsumersName = name[0].FullName;
         const topButton = buildHeaderButton(selectedConsumers[0]);
@@ -69,15 +78,56 @@ const ConsumerFinances = (() => {
 
         const filteredBy = buildFilteredBy();
         filterRow.appendChild(filteredBy);
-
-        landingPage.appendChild(LineBr);
-        landingPage.appendChild(LineBr);
         landingPage.appendChild(filterRow);
-        landingPage.appendChild(LineBr);
         ConsumerFinanceEntriesTable = await buildConsumerFinanceEntriesTable(filterValues);
         landingPage.appendChild(ConsumerFinanceEntriesTable);
         populateAccountDropdown();
         DOM.ACTIONCENTER.appendChild(landingPage);
+    }
+
+    function getaccountPermission() {
+        accountPermission = '';
+        tempAccountPer = [];
+        if ($.session.CFViewChecking)
+            tempAccountPer.push('Checking');
+
+        if ($.session.CFViewCraditCard) {
+            tempAccountPer.push('Credit Card');
+        }
+
+        if ($.session.CFViewFoodStamp) {
+            tempAccountPer.push('Food Stamps');
+        }
+
+        if ($.session.CFViewPettyCash) {
+            tempAccountPer.push('Petty Cash');
+        }
+
+        if ($.session.CFViewShaving) {
+            tempAccountPer.push('Savings');
+        }
+
+        if ($.session.CFViewChristmasClub) {
+            tempAccountPer.push('Christmas Club');
+        }
+        if ($.session.CFViewSystem20183A) {
+            tempAccountPer.push('System 2018.3A');
+        }
+        if ($.session.CFViewSystem20183) {
+            tempAccountPer.push('System 2018.3');
+        }
+        if ($.session.CFViewOhioEBT) {
+            tempAccountPer.push('Ohio EBT');
+        }
+        if ($.session.CFViewViewFoodStampDebitCardEBT) {
+            tempAccountPer.push('Food Stamp Debit Card EBT');
+        }
+
+        if (tempAccountPer.length > 0) {
+            accountPermission = tempAccountPer.toString();
+        }
+        else
+            accountPermission = '';
     }
 
     // build the listing of OOD Entries (based off of filter settings)
@@ -85,7 +135,7 @@ const ConsumerFinances = (() => {
         const tableOptions = {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
-            headline: 'Consumer: ' + selectedConsumersName,
+            headline: selectedConsumersName,
             columnHeadings: ['Date', 'Account', 'Payee', 'Category', 'Amount', 'Check No.', 'Balance', 'Entered By'],
             endIcon: true,
         };
@@ -101,25 +151,27 @@ const ConsumerFinances = (() => {
             filterValues.minamount,
             filterValues.maxamount,
             filterValues.checkNo,
-            filterValues.Balance, 
+            filterValues.Balance,
             filterValues.enteredBy,
             filterValues.isattachment,
+            filterValues.transectionType,
+            accountPermission,
         );
 
         ConsumerFinancesEntries.getAccountTransectionEntriesResult.forEach(function (entry) {
             let newDate = new Date(entry.activityDate);
             let theMonth = newDate.getMonth() + 1;
             let formatActivityDate = UTIL.leadingZero(theMonth) + '/' + UTIL.leadingZero(newDate.getDate()) + '/' + newDate.getFullYear();
-            entry.activityDate = formatActivityDate; 
+            entry.activityDate = formatActivityDate;
         });
-       
+
         let tableData = ConsumerFinancesEntries.getAccountTransectionEntriesResult.map((entry) => ({
             values: [entry.activityDate, entry.account, entry.payee, entry.category, '$' + entry.amount, entry.checkno, '$' + entry.balance, entry.enteredby],
-            attributes: [{ key: 'registerId', value: entry.ID }],
+            attributes: [{ key: 'registerId', value: entry.ID }, { key: 'data-plan-active', value: entry.isExpance }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.registerId.value)
             },
-            endIcon: entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['attachmentSmall']}`, 
+            endIcon: entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['attachmentSmall']}`,
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
@@ -142,7 +194,6 @@ const ConsumerFinances = (() => {
         return consumerElement;
     }
 
-    // build display of "Entry" Buttons -- "New Entry" and "New Monthly Summary"
     function buildButtonBar(consumer) {
         const buttonBar = document.createElement('div');
         buttonBar.classList.add('OODbuttonBar');
@@ -151,10 +202,8 @@ const ConsumerFinances = (() => {
 
         const dropdownButtonBar = document.createElement('div');
         const entryButtonBar = document.createElement('div');
-        const filterButtonBar = document.createElement('div');
-        dropdownButtonBar.style.width = '32%';
-        entryButtonBar.style.width = '32%';
-        filterButtonBar.style.width = '32%';
+        dropdownButtonBar.style.width = '49%';
+        entryButtonBar.style.width = '49%';
 
         accountDropdown = dropdown.build({
             label: "Accounts:",
@@ -165,7 +214,6 @@ const ConsumerFinances = (() => {
             filterValues.accountName = event.target.value;
             loadConsumerFinanceLanding(filterValues.accountName);
         });
-
 
         const entryBtn = button.build({
             text: '+ New Entry',
@@ -183,24 +231,16 @@ const ConsumerFinances = (() => {
         entryBtn.style.height = '50px';
         entryBtn.style.minWidth = '100%';
 
-        newFilterBtn = buildNewFilterBtn();
-        newFilterBtn.style.height = '50px';
-        newFilterBtn.style.minWidth = '100%';
+        buildNewFilterBtn();
         accountDropdown.style.minWidth = '100%';
         dropdownButtonBar.appendChild(accountDropdown);
         entryButtonBar.appendChild(entryBtn);
-        filterButtonBar.appendChild(newFilterBtn);
-
         entryButtonBar.style.marginLeft = '2%';
-        filterButtonBar.style.marginLeft = '2%';
-
         buttonBar.appendChild(dropdownButtonBar);
         buttonBar.appendChild(entryButtonBar);
-        buttonBar.appendChild(filterButtonBar);
         return buttonBar;
     }
 
-    // build Filter button, which filters the data displayed on the OOD Entries Table
     function buildNewFilterBtn() {
         if (!filterValues) filterValues = {
             token: $.session.Token,
@@ -215,68 +255,305 @@ const ConsumerFinances = (() => {
             Balance: '',
             enteredBy: '%',
             isattachment: '%',
+            transectionType: '%',
         }
-
-        return button.build({
-            text: 'Filter',
-            style: 'secondary',
-            type: 'contained',
-            callback: () => buildFilterPopUp(filterValues)
-        });
     }
 
     // Populate the Account DDL 
     async function populateAccountDropdown() {
         const {
             getActiveAccountResult: accounts,
-        } = await ConsumerFinancesAjax.getActiveAccountAsync(selectedConsumersId);
+        } = await ConsumerFinancesAjax.getActiveAccountAsync(selectedConsumersId, accountPermission);
         let data = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,
-            text: account.accountName
+            text: account.accountName + ' - $' + (account.totalBalance == '' ? '0.00' : account.totalBalance)
         }));
-        data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
+        if (data.length > 0)
+            data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
         dropdown.populate("accountDropdown", data, filterValues.accountName);
     }
 
     // build the display of the current Filter Settings (next to the Filter button) 
     function buildFilteredBy() {
-        var filteredBy = document.querySelector('.widgetFilteredBy');
+        var filteredBy = document.querySelector('.filteredByData');
 
         if (!filteredBy) {
             filteredBy = document.createElement('div');
-            filteredBy.classList.add('widgetFilteredBy');
+            filteredBy.classList.add('filteredByData');
+            filterButtonSet();
+            filteredBy.appendChild(btnWrap);
         }
 
         filteredBy.style.maxWidth = '100%';
-        const startDate = moment(filterValues.activityStartDate, 'YYYY-MM-DD').format('M/D/YYYY');
-        const endDate = moment(filterValues.activityEndDate, 'YYYY-MM-DD').format('M/D/YYYY');
 
-        filteredBy.innerHTML = `<div class="filteredByData">
-			<p>
-                <span>From Date:</span> ${startDate}&nbsp;&nbsp;
-			    <span>To date:</span> ${endDate}&nbsp;&nbsp;
-                <span>Min Amount:</span>$ ${filterValues.minamount}&nbsp;&nbsp;
-                <span>Max Amount:</span>$ ${filterValues.maxamount}&nbsp;&nbsp;
-                <span>Account:</span> ${(filterValues.accountName == '%') ? 'ALL' : filterValues.accountName}&nbsp;&nbsp;
-			    <span>Payee:</span> ${(filterValues.payee == '%') ? 'ALL' : filterValues.payee}&nbsp;&nbsp;
-			    <span>Category:</span> ${(filterValues.category == '%') ? 'ALL' : filterValues.category} &nbsp;&nbsp;
-                <span>Last Updated By:</span> ${(filterValues.enteredBy == '%') ? 'ALL' : filterValues.userName} &nbsp;
-                <span>Has Attachment:</span>${(filterValues.isattachment == '%') ? 'ALL' : filterValues.isattachment} 
-            </p>
-		  </div>`;
+        if (filterValues.transectionType === '%' || filterValues.transectionType === 'ALL') {
+            btnWrap.appendChild(transectionTypeBtnWrap);
+            btnWrap.removeChild(transectionTypeBtnWrap);
+        } else {
+            btnWrap.appendChild(transectionTypeBtnWrap);
+        }
 
+        if (filterValues.accountName === '%' || filterValues.accountName === 'ALL') {
+            btnWrap.appendChild(accountNameBtnWrap);
+            btnWrap.removeChild(accountNameBtnWrap);
+        } else {
+            btnWrap.appendChild(accountNameBtnWrap);
+        }
+
+        if (filterValues.payee === '%' || filterValues.payee === 'ALL') {
+            btnWrap.appendChild(payeeBtnWrap);
+            btnWrap.removeChild(payeeBtnWrap);
+        } else {
+            btnWrap.appendChild(payeeBtnWrap);
+        }
+
+        if (filterValues.category === '%' || filterValues.category === 'ALL') {
+            btnWrap.appendChild(categoryBtnWrap);
+            btnWrap.removeChild(categoryBtnWrap);
+        } else {
+            btnWrap.appendChild(categoryBtnWrap);
+        }
+
+        if (filterValues.enteredBy === '%' || filterValues.enteredBy === 'ALL') {
+            btnWrap.appendChild(enteredByBtnWrap);
+            btnWrap.removeChild(enteredByBtnWrap);
+        } else {
+            btnWrap.appendChild(enteredByBtnWrap);
+        }
+        if (filterValues.isattachment === '%' || filterValues.isattachment === 'ALL') {
+            btnWrap.appendChild(isattachmentBtnWrap);
+            btnWrap.removeChild(isattachmentBtnWrap);
+        } else {
+            btnWrap.appendChild(isattachmentBtnWrap);
+        }
         return filteredBy;
     }
 
+    function filterButtonSet() {
+        filterBtn = button.build({
+            text: 'Filter',
+            icon: 'filter',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'filterBtnNew',
+            callback: () => { buildFilterPopUp('ALL') },
+        });
+        activityStartDateBtn = button.build({
+            id: 'activityStartDateBtn',
+            text: 'From Date: ' + moment(filterValues.activityStartDate, 'YYYY-MM-DD').format('M/D/YYYY'),
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('activityStartDateBtn') },
+        });
+        activityEndDateBtn = button.build({
+            id: 'activityEndDateBtn',
+            text: 'To date: ' + moment(filterValues.activityEndDate, 'YYYY-MM-DD').format('M/D/YYYY'),
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('activityEndDateBtn') },
+        });
+        minamountBtn = button.build({
+            id: 'minamountBtn',
+            text: 'Min Amount: $' + filterValues.minamount,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('minamountBtn') },
+        });
+        maxamountBtn = button.build({
+            id: 'maxamountBtn',
+            text: 'Max Amount: $' + filterValues.maxamount,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('maxamountBtn') },
+        });
+        transectionTypeBtn = button.build({
+            id: 'transectionTypeBtn',
+            text: filterValues.transectionType == 'false' ? 'Transaction Type: Deposit' : 'Transaction Type: Expense',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('transectionTypeBtn') },
+        });
+        transectionTypeCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('transectionTypeBtn') },
+        });
+        accountNameBtn = button.build({
+            id: 'accountNameBtn',
+            text: 'Account: ' + filterValues.accountName,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('accountNameBtn') },
+        });
+        accountNameCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('accountNameBtn') },
+        });
+        payeeBtn = button.build({
+            id: 'payeeBtn',
+            text: 'Payee: ' + filterValues.payee,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('payeeBtn') },
+        });
+        payeeCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('payeeBtn') },
+        });
+        categoryBtn = button.build({
+            id: 'categoryBtn',
+            text: 'Category: ' + filterValues.category,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('categoryBtn') },
+        });
+        categoryCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('categoryBtn') },
+        });
+        enteredByBtn = button.build({
+            id: 'enteredByBtn',
+            text: 'Last Updated By: ' + filterValues.userName,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('enteredByBtn') },
+        });
+        enteredByCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('enteredByBtn') },
+        });
+        isattachmentBtn = button.build({
+            id: 'isattachmentBtn',
+            text: 'Has Attachment: ' + filterValues.isattachment,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { buildFilterPopUp('isattachmentBtn') },
+        });
+        isattachmentCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('isattachmentBtn') },
+        });
+
+        btnWrap = document.createElement('div');
+        btnWrap.classList.add('filterBtnWrap');
+        btnWrap.appendChild(filterBtn);
+
+        activityStartDateBtnWrap = document.createElement('div');
+        activityStartDateBtnWrap.classList.add('filterSelectionBtnWrap');
+        activityStartDateBtnWrap.appendChild(activityStartDateBtn);
+        btnWrap.appendChild(activityStartDateBtnWrap);
+
+        activityEndDateBtnWrap = document.createElement('div');
+        activityEndDateBtnWrap.classList.add('filterSelectionBtnWrap');
+        activityEndDateBtnWrap.appendChild(activityEndDateBtn);
+        btnWrap.appendChild(activityEndDateBtnWrap);
+
+        minamountBtnWrap = document.createElement('div');
+        minamountBtnWrap.classList.add('filterSelectionBtnWrap');
+        minamountBtnWrap.appendChild(minamountBtn);
+        btnWrap.appendChild(minamountBtnWrap);
+
+        maxamountBtnWrap = document.createElement('div');
+        maxamountBtnWrap.classList.add('filterSelectionBtnWrap');
+        maxamountBtnWrap.appendChild(maxamountBtn);
+        btnWrap.appendChild(maxamountBtnWrap);
+
+        transectionTypeBtnWrap = document.createElement('div');
+        transectionTypeBtnWrap.classList.add('filterSelectionBtnWrap');
+        transectionTypeBtnWrap.appendChild(transectionTypeBtn);
+        transectionTypeBtnWrap.appendChild(transectionTypeCloseBtn);
+        btnWrap.appendChild(transectionTypeBtnWrap);
+
+        accountNameBtnWrap = document.createElement('div');
+        accountNameBtnWrap.classList.add('filterSelectionBtnWrap');
+        accountNameBtnWrap.appendChild(accountNameBtn);
+        accountNameBtnWrap.appendChild(accountNameCloseBtn);
+        btnWrap.appendChild(accountNameBtnWrap);
+
+        payeeBtnWrap = document.createElement('div');
+        payeeBtnWrap.classList.add('filterSelectionBtnWrap');
+        payeeBtnWrap.appendChild(payeeBtn);
+        payeeBtnWrap.appendChild(payeeCloseBtn);
+        btnWrap.appendChild(payeeBtnWrap);
+
+        categoryBtnWrap = document.createElement('div');
+        categoryBtnWrap.classList.add('filterSelectionBtnWrap');
+        categoryBtnWrap.appendChild(categoryBtn);
+        categoryBtnWrap.appendChild(categoryCloseBtn)
+        btnWrap.appendChild(categoryBtnWrap);
+
+        enteredByBtnWrap = document.createElement('div');
+        enteredByBtnWrap.classList.add('filterSelectionBtnWrap');
+        enteredByBtnWrap.appendChild(enteredByBtn);
+        enteredByBtnWrap.appendChild(enteredByCloseBtn);
+        btnWrap.appendChild(enteredByBtnWrap);
+
+        isattachmentBtnWrap = document.createElement('div');
+        isattachmentBtnWrap.classList.add('filterSelectionBtnWrap');
+        isattachmentBtnWrap.appendChild(isattachmentBtn);
+        isattachmentBtnWrap.appendChild(isattachmentCloseBtn);
+        btnWrap.appendChild(isattachmentBtnWrap);
+    }
+
+    function closeFilter(closeFilter) {
+        if (closeFilter == 'transectionTypeBtn') {
+            filterValues.transectionType = '%';
+        }
+        if (closeFilter == 'accountNameBtn') {
+            filterValues.accountName = '%';
+        }
+        if (closeFilter == 'payeeBtn') {
+            filterValues.payee = '%';
+        }
+        if (closeFilter == 'enteredByBtn') {
+            filterValues.enteredBy = '%';
+        }
+        if (closeFilter == 'isattachmentBtn') {
+            filterValues.isattachment = '%';
+        }
+        if (closeFilter == 'categoryBtn') {
+            filterValues.category = '%';
+        }
+        loadConsumerFinanceLanding();
+    }
+
     // build Filter pop-up that displays when an "Filter" button is clicked
-    function buildFilterPopUp(filterValues) {
+    function buildFilterPopUp(IsShow) {
         // popup
         filterPopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
             hideX: true,
         });
 
+        // dropdowns & inputs
         fromDateInput = input.build({
             id: 'fromDateInput',
             type: 'date',
@@ -284,7 +561,6 @@ const ConsumerFinances = (() => {
             style: 'secondary',
             value: filterValues.activityStartDate,
         });
-
 
         toDateInput = input.build({
             id: 'toDateInput',
@@ -310,7 +586,11 @@ const ConsumerFinances = (() => {
             value: '$' + ((filterValues.maxamount) ? filterValues.maxamount : ''),
         });
 
-        // dropdowns & inputs
+        transectionTypeFilterDropdown = dropdown.build({
+            label: "Transaction Type",
+            dropdownId: "transectionTypeFilterDropdown",
+        });
+
         accountFilterDropdown = dropdown.build({
             label: "Account",
             dropdownId: "accountFilterDropdown",
@@ -352,13 +632,6 @@ const ConsumerFinances = (() => {
             type: 'outlined',
             callback: () => filterPopupCancelBtn()
         });
-        fromDateInput.style.width = '170px';
-        toDateInput.style.width = '170px';
-        minAmountInput.style.width = '170px';
-        maxAmountInput.style.width = '170px';
-        toDateInput.style.marginLeft = '12px';
-        maxAmountInput.style.marginLeft = '12px';
-
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
@@ -366,24 +639,34 @@ const ConsumerFinances = (() => {
         btnWrap.appendChild(CANCEL_BTN);
 
         var dateWrap = document.createElement('div');
-        dateWrap.classList.add('dropdownWrap');
-        dateWrap.appendChild(fromDateInput);
-        dateWrap.appendChild(toDateInput);
+        dateWrap.classList.add('dateWrap');
+        if (IsShow == 'ALL' || IsShow == 'activityStartDateBtn')
+            dateWrap.appendChild(fromDateInput);
+        if (IsShow == 'ALL' || IsShow == 'activityEndDateBtn')
+            dateWrap.appendChild(toDateInput);
 
         var amountWrap = document.createElement('div');
-        amountWrap.classList.add('dropdownWrap');
-        amountWrap.appendChild(minAmountInput);
-        amountWrap.appendChild(maxAmountInput);
+        amountWrap.classList.add('dateWrap');
+        if (IsShow == 'ALL' || IsShow == 'minamountBtn')
+            amountWrap.appendChild(minAmountInput);
+        if (IsShow == 'ALL' || IsShow == 'maxamountBtn')
+            amountWrap.appendChild(maxAmountInput);
 
         // build popup
         filterPopup.appendChild(dateWrap);
         filterPopup.appendChild(amountWrap);
-        filterPopup.appendChild(accountFilterDropdown);
-
-        filterPopup.appendChild(payeeDropdown);
-        filterPopup.appendChild(categoryDropdown);
-        filterPopup.appendChild(lastUpdateDropdown);
-        filterPopup.appendChild(isAttachedDropdown);
+        if (IsShow == 'ALL' || IsShow == 'transectionTypeBtn')
+            filterPopup.appendChild(transectionTypeFilterDropdown);
+        if (IsShow == 'ALL' || IsShow == 'accountNameBtn')
+            filterPopup.appendChild(accountFilterDropdown);
+        if (IsShow == 'ALL' || IsShow == 'payeeBtn')
+            filterPopup.appendChild(payeeDropdown);
+        if (IsShow == 'ALL' || IsShow == 'categoryBtn')
+            filterPopup.appendChild(categoryDropdown);
+        if (IsShow == 'ALL' || IsShow == 'enteredByBtn')
+            filterPopup.appendChild(lastUpdateDropdown);
+        if (IsShow == 'ALL' || IsShow == 'isattachmentBtn')
+            filterPopup.appendChild(isAttachedDropdown);
 
         filterPopup.appendChild(btnWrap);
         eventListeners();
@@ -403,6 +686,7 @@ const ConsumerFinances = (() => {
         var tmppayee;
         var tmpcategory;
         var tmpisattachment;
+        var tmptransectionType;
 
         fromDateInput.addEventListener('change', event => {
             tmpactivityStartDate = event.target.value;
@@ -424,7 +708,9 @@ const ConsumerFinances = (() => {
                 document.getElementById('minAmountInput').value = minAmount.substring(0, minAmount.length - 1);
                 return;
             }
-            tmpminAmount = minAmount.replace('$', '');
+
+            tmpminAmount = minAmount.trim().replace('$', '');
+            tmpminAmount = parseFloat(tmpminAmount).toFixed(2);
         });
 
         maxAmountInput.addEventListener('keyup', event => {
@@ -438,13 +724,17 @@ const ConsumerFinances = (() => {
                 document.getElementById('maxAmountInput').value = maxAmount.substring(0, maxAmount.length - 1);
                 return;
             }
-            tmpmaxAmount = maxAmount.replace('$', '');
+            tmpmaxAmount = maxAmount.trim().replace('$', '');  
+            tmpmaxAmount = parseFloat(tmpmaxAmount).toFixed(2); 
         });
 
+        transectionTypeFilterDropdown.addEventListener('change', event => {
+            tmptransectionType = event.target.value;
+        });
         accountFilterDropdown.addEventListener('change', event => {
             tmpaccountName = event.target.value;
         });
-        lastUpdateDropdown.addEventListener('change', event => { 
+        lastUpdateDropdown.addEventListener('change', event => {
             tmpenteredBy = event.target.options[event.target.selectedIndex].innerHTML == 'ALL' ? '%' : event.target.options[event.target.selectedIndex].id; //event.target.options[event.target.selectedIndex].innerHTML;
             filterValues.userName = event.target.options[event.target.selectedIndex].innerHTML;
         });
@@ -459,7 +749,7 @@ const ConsumerFinances = (() => {
         });
 
         APPLY_BTN.addEventListener('click', () => {
-            if (!APPLY_BTN.classList.contains('disabled')) { 
+            if (!APPLY_BTN.classList.contains('disabled')) {
                 updateFilterData({
                     tmpactivityStartDate,
                     tmpactivityEndDate,
@@ -469,7 +759,8 @@ const ConsumerFinances = (() => {
                     tmpenteredBy,
                     tmppayee,
                     tmpcategory,
-                    tmpisattachment
+                    tmpisattachment,
+                    tmptransectionType
                 });
                 POPUP.hide(filterPopup);
                 loadConsumerFinanceLanding();
@@ -478,7 +769,7 @@ const ConsumerFinances = (() => {
 
     }
 
-    function updateFilterData(data) { 
+    function updateFilterData(data) {
         if (data.tmpactivityStartDate) filterValues.activityStartDate = data.tmpactivityStartDate;
         if (data.tmpactivityEndDate) filterValues.activityEndDate = data.tmpactivityEndDate;
         if (data.tmpminAmount) filterValues.minamount = data.tmpminAmount;
@@ -488,13 +779,14 @@ const ConsumerFinances = (() => {
         if (data.tmppayee) filterValues.payee = data.tmppayee;
         if (data.tmpcategory) filterValues.category = data.tmpcategory;
         if (data.tmpisattachment) filterValues.isattachment = data.tmpisattachment;
+        if (data.tmptransectionType) filterValues.transectionType = data.tmptransectionType;
     }
 
     function checkValidationOfFilter() {
         var fromDate = fromDateInput.querySelector('#fromDateInput');
         var toDate = toDateInput.querySelector('#toDateInput');
 
-        if (fromDate.value > toDate.value ) {
+        if (fromDate.value > toDate.value) {
             toDateInput.classList.add('errorPopup');
         } else {
             toDateInput.classList.remove('errorPopup');
@@ -515,7 +807,7 @@ const ConsumerFinances = (() => {
     async function populateFilterDropdown() {
         const {
             getActiveAccountResult: accounts,
-        } = await ConsumerFinancesAjax.getActiveAccountAsync(selectedConsumersId);
+        } = await ConsumerFinancesAjax.getActiveAccountAsync(selectedConsumersId, accountPermission);
         let accountData = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,
@@ -526,7 +818,7 @@ const ConsumerFinances = (() => {
 
         const {
             getPayeesResult: Payees,
-        } = await ConsumerFinancesAjax.getPayeesAsync($.session.consumerId);  
+        } = await ConsumerFinancesAjax.getPayeesAsync($.session.consumerId);
         let payeeData = Payees.map((payees) => ({
             id: payees.CategoryID,
             value: payees.Description,
@@ -551,7 +843,7 @@ const ConsumerFinances = (() => {
         } = await ConsumerFinancesAjax.getActiveEmployeesAsync();
         let data = employees.map((employee) => ({
             id: employee.userId,
-            value: employee.userId, 
+            value: employee.userId,
             text: employee.userName
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' });
@@ -563,6 +855,13 @@ const ConsumerFinances = (() => {
         ]);
         condfidentialDropdownData.unshift({ id: null, value: '%', text: 'ALL' });
         dropdown.populate("isAttachedDropdown", condfidentialDropdownData, filterValues.isattachment);
+
+        const TransectionTypeDropdownData = ([
+            { text: 'Deposit', value: 'false' },
+            { text: 'Expense', value: 'true' },
+        ]);
+        TransectionTypeDropdownData.unshift({ id: null, value: '%', text: 'ALL' });
+        dropdown.populate("transectionTypeFilterDropdown", TransectionTypeDropdownData, filterValues.transectionType);
     }
 
     function filterPopupCancelBtn() {
@@ -572,6 +871,19 @@ const ConsumerFinances = (() => {
     function init() {
         setActiveModuleAttribute('ConsumerFinances');
         DOM.clearActionCenter();
+
+        let defaultCFLocation = defaults.getLocation('moneyManagement');
+        if (defaultCFLocation === '') {
+            defaults.setLocation('moneyManagement', 0);
+            defaultCFLocation = "0";
+        }
+        roster2.miniRosterinit({
+            locationId: defaultCFLocation,
+            locationName: '',
+        }, {
+            hideDate: true,
+        });
+
         roster2.showMiniRoster();
     }
 
@@ -579,5 +891,6 @@ const ConsumerFinances = (() => {
         init,
         handleActionNavEvent,
         loadConsumerFinanceLanding,
+        getaccountPermission,
     };
 })(); 

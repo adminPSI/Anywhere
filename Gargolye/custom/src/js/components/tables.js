@@ -122,14 +122,14 @@ var table = (function () {
         // table can be element or tableID
         // data = [{ id="", values=[], attributes=[{}], onClick}] = oneRow
         // isSortable = sortable=true?false
-
+    
         if (typeof table === 'string') {
             var table = document.getElementById(table);
         }
-
+    
         const tableBody = table.querySelector('.table__body');
         tableBody.innerHTML = '';
-
+    
         data.forEach(d => {
             // build row
             const row = document.createElement('div');
@@ -147,6 +147,11 @@ var table = (function () {
                 });
             }
 
+            // Add error class to row if there is an error
+            if (d.hasError) {
+                row.classList.add('errorRow');
+            }
+
             // set onclick
             if (d.onClick && !disabled) {
                 row.addEventListener('click', async e => {
@@ -161,23 +166,23 @@ var table = (function () {
             if (!disabled) {
                 row.classList.add('disabledRow');
             }
-
+    
             // add drag handle
             if (isSortable) {
                 var cell = document.createElement('div');
                 cell.classList.add('dragHandle');
                 cell.innerHTML = icons.drag;
-
+    
                 row.appendChild(cell);
             }
-
+    
             // populate row cells
             d.values.forEach(v => {
                 const cell = document.createElement('div');
                 cell.innerHTML = v;
                 row.appendChild(cell);
-            });          
-
+            });
+    
             if (d.endIcon) {
                 const cell = document.createElement('div');
                 cell.classList.add('endIcon');
@@ -185,7 +190,7 @@ var table = (function () {
                 cell.addEventListener('click', d.endIconCallback);
                 row.appendChild(cell);
             }
-
+    
             if (d.secondendIcon) {
                 const cell = document.createElement('div');
                 cell.classList.add('secondendIcon');
@@ -193,7 +198,7 @@ var table = (function () {
                 cell.addEventListener('click', d.secondendIconCallback);
                 row.appendChild(cell);
             }
-            
+    
             if (disabled !== true) {
                 if (d.onCopyClick) {
                     const cell = document.createElement('div');
@@ -203,34 +208,39 @@ var table = (function () {
                     row.appendChild(cell);
                 }
             }
-
+    
             tableBody.appendChild(row);
         });
     }
 
     function addRows(table, rowData, isSortable) {
         // table can be element or tableID
-        // data = [{ id="", values=[], attributes=[{}], onClick}] = oneRow
-        // sortable = sortable=true?false
-
+        // data = [{ id="", values=[], attributes=[{}], onClick, hasError }] = oneRow
+        // isSortable = true/false
+    
         if (typeof table === 'string') {
             var table = document.getElementById(table);
         }
-
+    
         const tableBody = table.querySelector('.table__body');
-
+    
         rowData.forEach(d => {
             // build row
             const row = document.createElement('div');
             row.classList.add('table__row');
-
+    
             if (d.id) row.id = d.id;
             if (d.attributes) {
                 d.attributes.forEach(a => {
                     row.setAttribute(a.key, a.value);
                 });
             }
-
+    
+            // Add errorRow class if hasError is true
+            if (d.hasError) {
+                row.classList.add('errorRow');
+            }
+    
             if (d.onClick) {
                 row.addEventListener('click', e => {
                     if (e.target === row) {
@@ -239,21 +249,21 @@ var table = (function () {
                 });
                 row.classList.add('customLink');
             }
-
+    
             if (isSortable) {
                 var cell = document.createElement('div');
                 cell.classList.add('dragHandle');
                 cell.innerHTML = icons.drag;
                 row.appendChild(cell);
             }
-
+    
             // populate row cells
             d.values.forEach(v => {
                 const cell = document.createElement('div');
                 cell.innerHTML = v;
                 row.appendChild(cell);
             });
-
+    
             if (d.onCopyClick) {
                 const cell = document.createElement('div');
                 cell.classList.add('copyIcon');
@@ -261,21 +271,22 @@ var table = (function () {
                 cell.addEventListener('click', d.onCopyClick);
                 row.appendChild(cell);
             }
-
+    
             tableBody.appendChild(row);
         });
     }
+    
 
     function updateRows(table, rowData, isSortable) {
         // table can be element or tableID
-        // data = [{ id="", values=[], attributes=[{}], onClick}] = oneRow
-        // isSortable = true?false
+        // data = [{ id="", values=[], attributes=[{}], onClick, hasError }] = oneRow
+        // isSortable = true/false
         if (typeof table === 'string') {
             var table = document.getElementById(table);
         }
-
+    
         const tableBody = table.querySelector('.table__body');
-
+    
         rowData.forEach(d => {
             // get & clear row
             const rowId = `#${d.id}`;
@@ -283,7 +294,17 @@ var table = (function () {
             oldRow.innerHTML = '';
             const newRow = oldRow.cloneNode(true);
             tableBody.replaceChild(newRow, oldRow);
-
+    
+            // Remove errorRow class if it exists and hasError is false
+            if (!d.hasError) {
+                newRow.classList.remove('errorRow');
+            }
+    
+            // Add errorRow class if hasError is true and the class is not already on the row
+            if (d.hasError && !newRow.classList.contains('errorRow')) {
+                newRow.classList.add('errorRow');
+            }
+    
             if (d.onClick) {
                 newRow.addEventListener('click', e => {
                     if (e.target === newRow) {
@@ -292,21 +313,21 @@ var table = (function () {
                 });
                 newRow.classList.add('customLink');
             }
-
+    
             if (isSortable) {
                 var cell = document.createElement('div');
                 cell.classList.add('dragHandle');
                 cell.innerHTML = icons.drag;
                 newRow.appendChild(cell);
             }
-
+    
             // populate row cells
             d.values.forEach(v => {
                 const cell = document.createElement('div');
                 cell.innerHTML = v;
                 newRow.appendChild(cell);
             });
-
+    
             if (d.onCopyClick) {
                 const cell = document.createElement('div');
                 cell.classList.add('copyIcon');
@@ -316,6 +337,7 @@ var table = (function () {
             }
         });
     }
+    
 
     function deleteRow(rowId) {
         const row = document.getElementById(rowId);

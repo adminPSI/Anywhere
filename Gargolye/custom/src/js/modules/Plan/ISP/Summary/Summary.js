@@ -1299,6 +1299,7 @@ const planSummary = (function () {
   // KNOWN & LIKELY RISKS TABLES
   //--------------------------------------------------------------------
   async function addRisksTableRow(data) {
+    // Extracting values from data
     const sectionTitle = data.sectionTitle;
     const secTitle = sectionTitle.replaceAll(' ', '');
     const row = data.row;
@@ -1311,81 +1312,96 @@ const planSummary = (function () {
     const questionSetId = data.questionSetId;
     const rowId = `planRisksTable${secTitle}${row}`;
 
+    // Checking for errors
+    const hasError = whatIsRisk && (!whatSupportLooksLike || !levelOfSupervision || !whoResponsible);
+
+    // Incrementing selected vendors
     if (whoResponsible) {
-      if (selectedVendors[whoResponsible]) {
-        selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
-      } else {
-        selectedVendors[whoResponsible] = 1;
-      }
+        if (selectedVendors[whoResponsible]) {
+            selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
+        } else {
+            selectedVendors[whoResponsible] = 1;
+        }
     }
 
+    // Adding the row to the table
     table.addRows(
-      `planRisksTable${secTitle}`,
-      [
-        {
-          id: rowId,
-          values: [
-            sectionTitle,
-            whatIsRisk,
-            whatSupportLooksLike,
-            levelOfSupervision,
-            whoResponsibleText,
-          ],
-          attributes: [
-            { key: 'data-questionSetId', value: questionSetId },
+        `planRisksTable${secTitle}`,
+        [
             {
-              key: 'data-answerIds',
-              value: `${data.whatIsRisk.answerId}|${data.whatSupportLooksLike.answerId}|${data.riskSupervision.answerId}|${data.whoResponsible.answerId}`,
+                id: rowId,
+                values: [
+                    sectionTitle,
+                    whatIsRisk,
+                    whatSupportLooksLike,
+                    levelOfSupervision,
+                    whoResponsibleText,
+                ],
+                attributes: [
+                    { key: 'data-questionSetId', value: questionSetId },
+                    {
+                        key: 'data-answerIds',
+                        value: `${data.whatIsRisk.answerId}|${data.whatSupportLooksLike.answerId}|${data.riskSupervision.answerId}|${data.whoResponsible.answerId}`,
+                    },
+                ],
+                onClick: e => {
+                    const rowOrderFromID = e.target.id.replace(`planRisksTable${secTitle}`, '');
+                    showRisksTablePopup(
+                        {
+                            ...data,
+                            row: rowOrderFromID,
+                        },
+                        false,
+                        false,
+                    );
+                },
+                onCopyClick: e => {
+                    if (isReadOnly) return;
+                    showRisksTablePopup(
+                        {
+                            sectionTitle,
+                            row: '',
+                            questionSetId,
+                            whatIsRisk: {
+                                answer: whatIsRisk,
+                            },
+                            whatSupportLooksLike: {
+                                answer: whatSupportLooksLike,
+                            },
+                            riskSupervision: {
+                                answer: riskSupervision,
+                            },
+                            whoResponsible: {
+                                answer: whoResponsible,
+                            },
+                        },
+                        true,
+                        true,
+                    );
+                },
+                // Add the hasError property to the row object
+                hasError: hasError,
             },
-          ],
-          onClick: e => {
-            const rowOrderFromID = e.target.id.replace(`planRisksTable${secTitle}`, '');
-            showRisksTablePopup(
-              {
-                ...data,
-                row: rowOrderFromID,
-              },
-              false,
-              false,
-            );
-          },
-          onCopyClick: e => {
-            if (isReadOnly) return;
-
-            showRisksTablePopup(
-              {
-                sectionTitle,
-                row: '',
-                questionSetId,
-                whatIsRisk: {
-                  answer: whatIsRisk,
-                },
-                whatSupportLooksLike: {
-                  answer: whatSupportLooksLike,
-                },
-                riskSupervision: {
-                  answer: riskSupervision,
-                },
-                whoResponsible: {
-                  answer: whoResponsible,
-                },
-              },
-              true,
-              true,
-            );
-          },
-        },
-      ],
-      isSortable,
+        ],
+        isSortable,
     );
 
+    if (hasError) {
+      planValidation.setSummaryRiskValidation(false);
+      planValidation.alertCheckSummaryRisksValidation();
+    } else {
+      planValidation.setSummaryRiskValidation(true);
+      planValidation.alertCheckSummaryRisksValidation();
+    }
+
     const SummaryData = await summaryAjax.getAssessmentSummaryQuestions({
-      token: $.session.Token,
-      anywAssessmentId: planId,
+        token: $.session.Token,
+        anywAssessmentId: planId,
     });
     summaryData = mapSummaryData(SummaryData);
-  }
+}
   async function updateRisksTableRow(data, oldData) {
+    // Extracting values from data
     const sectionTitle = data.sectionTitle;
     const secTitle = sectionTitle.replaceAll(' ', '');
     const row = data.row;
@@ -1398,92 +1414,106 @@ const planSummary = (function () {
     const questionSetId = data.questionSetId;
     const rowId = `planRisksTable${secTitle}${row}`;
 
+    // Checking for errors
+    const hasError = whatIsRisk && (!whatSupportLooksLike || !levelOfSupervision || !whoResponsible);
+
+    // Update selected vendors if responsible party changed
     if (Object.keys(oldData).length) {
-      if (oldData.whoResponsible.answer !== whoResponsible) {
-        // remove old
-        if (oldData.whoResponsible.answer !== '') {
-          if (selectedVendors[oldData.whoResponsible.answer] === 1) {
-            delete selectedVendors[oldData.whoResponsible.answer];
-          } else {
-            selectedVendors[oldData.whoResponsible.answer] = selectedVendors[whoResponsible] - 1;
-          }
+        if (oldData.whoResponsible.answer !== whoResponsible) {
+            // remove old
+            if (oldData.whoResponsible.answer !== '') {
+                if (selectedVendors[oldData.whoResponsible.answer] === 1) {
+                    delete selectedVendors[oldData.whoResponsible.answer];
+                } else {
+                    selectedVendors[oldData.whoResponsible.answer] = selectedVendors[whoResponsible] - 1;
+                }
+            }
+            // add new
+            if (whoResponsible) {
+                if (selectedVendors[whoResponsible]) {
+                    selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
+                } else {
+                    selectedVendors[whoResponsible] = 1;
+                }
+            }
         }
-        // add new
-        if (whoResponsible) {
-          if (selectedVendors[whoResponsible]) {
-            selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
-          } else {
-            selectedVendors[whoResponsible] = 1;
-          }
-        }
-      }
     }
 
+    // Updating the row in the table
     table.updateRows(
-      `planRisksTable${secTitle}`,
-      [
-        {
-          id: rowId,
-          values: [
-            sectionTitle,
-            whatIsRisk,
-            whatSupportLooksLike,
-            levelOfSupervision,
-            whoResponsibleText,
-          ],
-          attributes: [
-            { key: 'data-questionSetId', value: questionSetId },
+        `planRisksTable${secTitle}`,
+        [
             {
-              key: 'data-answerIds',
-              value: `${data.whatIsRisk.answerId}|${data.whatSupportLooksLike.answerId}|${data.riskSupervision.answerId}|${data.whoResponsible.answerId}`,
+                id: rowId,
+                values: [
+                    sectionTitle,
+                    whatIsRisk,
+                    whatSupportLooksLike,
+                    levelOfSupervision,
+                    whoResponsibleText,
+                ],
+                attributes: [
+                    { key: 'data-questionSetId', value: questionSetId },
+                    {
+                        key: 'data-answerIds',
+                        value: `${data.whatIsRisk.answerId}|${data.whatSupportLooksLike.answerId}|${data.riskSupervision.answerId}|${data.whoResponsible.answerId}`,
+                    },
+                ],
+                onClick: e => {
+                    const rowOrderFromID = e.target.id.replace(`planRisksTable${secTitle}`, '');
+                    showRisksTablePopup(
+                        {
+                            ...data,
+                            row: rowOrderFromID,
+                        },
+                        false,
+                        false,
+                    );
+                },
+                onCopyClick: e => {
+                    if (isReadOnly) return;
+                    showRisksTablePopup(
+                        {
+                            sectionTitle,
+                            row: '',
+                            questionSetId,
+                            whatIsRisk: {
+                                answer: whatIsRisk,
+                            },
+                            whatSupportLooksLike: {
+                                answer: whatSupportLooksLike,
+                            },
+                            riskSupervision: {
+                                answer: riskSupervision,
+                            },
+                            whoResponsible: {
+                                answer: whoResponsible,
+                            },
+                        },
+                        true,
+                        true,
+                    );
+                },
+                hasError: hasError,
             },
-          ],
-          onClick: e => {
-            const rowOrderFromID = e.target.id.replace(`planRisksTable${secTitle}`, '');
-            showRisksTablePopup(
-              {
-                ...data,
-                row: rowOrderFromID,
-              },
-              false,
-              false,
-            );
-          },
-          onCopyClick: e => {
-            if (isReadOnly) return;
-            showRisksTablePopup(
-              {
-                sectionTitle,
-                row: '',
-                questionSetId,
-                whatIsRisk: {
-                  answer: whatIsRisk,
-                },
-                whatSupportLooksLike: {
-                  answer: whatSupportLooksLike,
-                },
-                riskSupervision: {
-                  answer: riskSupervision,
-                },
-                whoResponsible: {
-                  answer: whoResponsible,
-                },
-              },
-              true,
-              true,
-            );
-          },
-        },
-      ],
-      isSortable,
+        ],
+        isSortable,
     );
 
+    if (hasError) {
+      planValidation.setSummaryRiskValidation(false);
+      planValidation.alertCheckSummaryRisksValidation();
+    } else {
+      planValidation.setSummaryRiskValidation(true);
+      planValidation.alertCheckSummaryRisksValidation();
+    }
+
     const SummaryData = await summaryAjax.getAssessmentSummaryQuestions({
-      token: $.session.Token,
-      anywAssessmentId: planId,
+        token: $.session.Token,
+        anywAssessmentId: planId,
     });
     summaryData = mapSummaryData(SummaryData);
-  }
+}
   // markup
   //------------------
   function toggleRisksDoneBtn() {
@@ -1491,8 +1521,10 @@ const planSummary = (function () {
     const doneBtn = document.querySelector('.risksPopup .doneBtn');
     if (inputsWithErrors) {
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
     } else {
       doneBtn.classList.remove('disabled');
+      doneBtn.disabled = false;
     }
   }
   function showRisksTablePopup(popupData, isNew, isCopy) {
@@ -1621,7 +1653,7 @@ const planSummary = (function () {
       readonly: isReadOnly,
       callback: (e, selectedOption) => {
         whoResponsible = selectedOption.value;
-        if (selectedOption === '') {
+        if (whoResponsible === '') {
           whoResponsibleDropdown.classList.add('error');
         } else {
           whoResponsibleDropdown.classList.remove('error');
@@ -1757,6 +1789,7 @@ const planSummary = (function () {
         }
 
         doneBtn.classList.remove('disabled');
+        doneBtn.disabled = false;
         POPUP.hide(risksPopup);
       },
     });
@@ -1858,6 +1891,7 @@ const planSummary = (function () {
     }
     if (hasInitialErros) {
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
     }
     // end required fields
 
@@ -1868,6 +1902,7 @@ const planSummary = (function () {
       levelsOfSupervisionDropdown.classList.add('disabled');
       whoResponsibleDropdown.classList.add('disabled');
       doneBtn.classList.add('disabled');
+      doneBtn.disabled = true;
       deleteBtn.classList.add('disabled');
     }
 
@@ -1920,6 +1955,8 @@ const planSummary = (function () {
         const levelOfSupervision = getLevelOfSupervisionById(riskSupervision);
         const secTitle = sectionTitle.replaceAll(' ', '');
         const questionSetId = val.whatIsRisk.questionSetId;
+
+        const hasError = whatIsRisk && (!whatSupportLooksLike || !levelOfSupervision || !whoResponsible);
 
         if (whoResponsible) {
           if (selectedVendors[whoResponsible]) {
@@ -1982,6 +2019,7 @@ const planSummary = (function () {
               false,
             );
           },
+          hasError: hasError,
           onCopyClick: isRowEmpty
             ? false
             : e => {
@@ -2014,6 +2052,15 @@ const planSummary = (function () {
     });
 
     table.populate(risksTable, tableData, isSortable);
+
+    const sectionHasErrors = tableData.some(row => row.hasError);
+    if (sectionHasErrors) {
+      planValidation.setSummaryRiskValidation(false);
+      planValidation.alertCheckSummaryRisksValidation();
+    } else {
+      planValidation.setSummaryRiskValidation(true);
+      planValidation.alertCheckSummaryRisksValidation();
+    }
 
     return risksTable;
   }
@@ -2078,17 +2125,7 @@ const planSummary = (function () {
 
   function checkForPaidSupports(numOfPaidSupports) {
     hasPaidSupports = numOfPaidSupports > 0;
-    if (hasPaidSupports) {
-      if (additionalSummaryData.aloneTimeAmount === '') {
-        amountOfTimeQuestion.classList.add('error');
-      }
-      if (additionalSummaryData.providerBackUp === '') {
-        backupPlanQuestion.classList.add('error');
-      }
-    } else {
-      amountOfTimeQuestion.classList.remove('error');
-      backupPlanQuestion.classList.remove('error');
-    }
+    
   }
   function getAdditionalSummaryQuestionMarkup() {
     const additionalQuestionDiv = document.createElement('div');
@@ -2110,11 +2147,6 @@ const planSummary = (function () {
       classNames: 'autosize',
       onBlurCallback: event => {
         additionalSummaryData.aloneTimeAmount = event.target.value;
-        if (hasPaidSupports) {
-          if (additionalSummaryData.aloneTimeAmount === '') {
-            amountOfTimeQuestion.classList.add('error');
-          } else amountOfTimeQuestion.classList.remove('error');
-        } else amountOfTimeQuestion.classList.remove('error');
         const submitData = {
           anywAssessmentId: planId,
           aloneTimeAmount: UTIL.removeUnsavableNoteText(additionalSummaryData.aloneTimeAmount),
@@ -2122,15 +2154,6 @@ const planSummary = (function () {
         };
         summaryAjax.updateAdditionalAssessmentSummaryAnswers(submitData);
       },
-    });
-    amountOfTimeQuestion.addEventListener('keyup', e => {
-      if (hasPaidSupports) {
-        if (e.target.value === '') {
-          amountOfTimeQuestion.classList.add('error');
-        } else amountOfTimeQuestion.classList.remove('error');
-      } else {
-        amountOfTimeQuestion.classList.remove('error');
-      }
     });
     amountOfTimeWrap.appendChild(amountOfTimePrompt);
     amountOfTimeWrap.appendChild(amountOfTimeQuestion);
@@ -2149,13 +2172,6 @@ const planSummary = (function () {
       forceCharLimit: true,
       onBlurCallback: event => {
         additionalSummaryData.providerBackUp = event.target.value;
-        if (hasPaidSupports) {
-          if (additionalSummaryData.providerBackUp === '') {
-            backupPlanQuestion.classList.add('error');
-          } else backupPlanQuestion.classList.remove('error');
-        } else {
-          backupPlanQuestion.classList.remove('error');
-        }
         const submitData = {
           anywAssessmentId: planId,
           aloneTimeAmount: UTIL.removeUnsavableNoteText(additionalSummaryData.aloneTimeAmount),
@@ -2164,30 +2180,12 @@ const planSummary = (function () {
         summaryAjax.updateAdditionalAssessmentSummaryAnswers(submitData);
       },
     });
-    backupPlanQuestion.addEventListener('keyup', e => {
-      if (hasPaidSupports) {
-        if (e.target.value === '') {
-          backupPlanQuestion.classList.add('error');
-        } else backupPlanQuestion.classList.remove('error');
-      } else {
-        backupPlanQuestion.classList.remove('error');
-      }
-    });
 
     backupPlanWrap.appendChild(backupPlanPrompt);
     backupPlanWrap.appendChild(backupPlanQuestion);
 
     additionalQuestionDiv.appendChild(amountOfTimeWrap);
     additionalQuestionDiv.appendChild(backupPlanWrap);
-
-    if (hasPaidSupports && !isReadOnly) {
-      if (additionalSummaryData.aloneTimeAmount === '') {
-        amountOfTimeQuestion.classList.add('error');
-      }
-      if (additionalSummaryData.providerBackUp === '') {
-        backupPlanQuestion.classList.add('error');
-      }
-    }
 
     if (isReadOnly) {
       amountOfTimeQuestion.classList.add('disabled');

@@ -73,7 +73,9 @@ namespace Anywhere.service.Data
             }
 
             MemoryStream ms = new MemoryStream();
-            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+            //ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Removed on 10/18/2023
+            var ios = cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Added on 10/18/2023
+            ios.CopyTo(ms); 
             return ms;
         }
     }

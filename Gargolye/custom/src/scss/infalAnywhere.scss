@@ -15,130 +15,131 @@
 @import './objects/dropdowns';
 @import './objects/inputs';
 
-@import './components/forms';
-@import './components/header';
-@import './components/navigation';
-@import './components/popups';
-@import './components//tables';
+@import './objects/forms';
+@import './objects/header';
+@import './objects/navigation';
+@import './objects/popups';
+@import './objects//tables';
 
 @import './modules/dashboard';
-
 
 //============================
 // infalAnywhere.html specific styles
 //----------------------------
 
 .infalTimeMemoPopup {
-    .popup__header {
-        margin-bottom: 25px;
+  .popup__header {
+    margin-bottom: 25px;
+  }
+  .btnWrap {
+    display: flex;
+    > button {
+      flex-grow: 1;
     }
-    .btnWrap {
-        display: flex;
-        > button {
-            flex-grow: 1;
-        }
-        > button:first-child {
-            margin-right: 15px;
-        }
+    > button:first-child {
+      margin-right: 15px;
     }
+  }
 }
 
 .grid-container.infal-grid {
-    position: static;
-    left: 0;
-    width: auto;
+  position: static;
+  left: 0;
+  width: auto;
 }
 
 .infal-header {
-    background: $white;
-    border-bottom: $w-xl solid $secondary;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-.infal-header-btn{
-    margin: 0;
+  background: $white;
+  border-bottom: $w-xl solid $secondary;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.infal-header-btn {
+  margin: 0;
 }
 
-.infal-actioncenter{
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
-    grid-gap: 1rem;
-    padding: 20px 0;
+.infal-actioncenter {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-gap: 1rem;
+  padding: 20px 0;
 }
 
 #timeDisplaySection {
-    padding: 0 0 15px ;
+  padding: 0 0 15px;
 }
 #jobSelectionSection {
-    display: flex;
-    flex-direction: row
+  display: flex;
+  flex-direction: row;
 }
 
 #timeMessageSection {
-    padding: 15px 0 0;
+  padding: 15px 0 0;
 }
 #clockedInStatusMessage {
-    padding: 0 0 15px;
-    color: rgba(0, 0, 0, 0.6);
-    font-style: italic;
+  padding: 0 0 15px;
+  color: rgba(0, 0, 0, 0.6);
+  font-style: italic;
 }
 .infalClockInOutBtn {
-    margin: 0 auto 20px auto;
-    padding: 15px 50px;
-    width: 35%;
+  margin: 0 auto 20px auto;
+  padding: 15px 50px;
+  width: 35%;
 }
 
 .infalWidget {
-    max-width: 700px;
-    flex-grow: 1;
-
+  max-width: 700px;
+  flex-grow: 1;
 }
 .dropdown {
-    margin: 0 10px 20px 0;
-    flex: 1 1 auto;
+  margin: 0 10px 20px 0;
+  flex: 1 1 auto;
 }
 .grid-container {
-    height: inherit;
+  height: inherit;
 }
 .infal-actioncenter {
-    .table__header-row,
-    .table__row {
-      > div {
-        margin: 0 15px 0 0;
-      }
-      > div:last-child {
-        margin: 0;
-      }
-      > div:nth-child(1) {// Job
-        flex-grow: 1;
-        max-width: 400px;
-        width: 60px;
-      }
-      > div:nth-child(2) { // Time In
-        width: 80px;
-      }
-      > div:nth-child(3) { // Time Out
-        width: 80px;
-      }
+  .table__header-row,
+  .table__row {
+    > div {
+      margin: 0 15px 0 0;
     }
+    > div:last-child {
+      margin: 0;
+    }
+    > div:nth-child(1) {
+      // Job
+      flex-grow: 1;
+      max-width: 400px;
+      width: 60px;
+    }
+    > div:nth-child(2) {
+      // Time In
+      width: 80px;
+    }
+    > div:nth-child(3) {
+      // Time Out
+      width: 80px;
+    }
+  }
 }
 
 .table {
-    &__row.containsMemo{
-        background: #ffc1074a;
-    }
+  &__row.containsMemo {
+    background: #ffc1074a;
+  }
 }
 
 @media (max-width: 550px) {
-    .dropdown {
-        margin: 0 0 20px;
-    }
-    #jobSelectionSection {
-        flex-direction: column;
-    }
-    .infalClockInOutBtn {
-        width: 100%;
-    }
- }
+  .dropdown {
+    margin: 0 0 20px;
+  }
+  #jobSelectionSection {
+    flex-direction: column;
+  }
+  .infalClockInOutBtn {
+    width: 100%;
+  }
+}

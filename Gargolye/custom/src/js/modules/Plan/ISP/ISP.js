@@ -158,6 +158,31 @@ const ISP = (function () {
       navItem.classList.add('planISP__navItem');
       navItem.innerHTML = `${section.title}`;
 
+      if (section.title === 'Summary') {
+        const summaryAlertDiv = document.createElement('div');
+        summaryAlertDiv.classList.add('summaryAlertDiv');
+        summaryAlertDiv.id = 'summaryAlert';
+        summaryAlertDiv.innerHTML = `${icons.error}`;
+        navItem.appendChild(summaryAlertDiv);
+        summaryAlertDiv.style.display = 'none';
+
+        // creates and shows a tip when hovering over the visible alert div
+        planValidation.createTooltip(
+          'There is data missing on this tab that is required by DODD',
+          summaryAlertDiv,
+        );
+
+        let summaryRisksValidation = planValidation.returnSummaryRisksValidation();
+
+        // If a plan returns an error on the validation check, show the alert div
+        if (!summaryRisksValidation)
+        {
+          summaryAlertDiv.style.display = 'flex';
+        } else {
+          summaryAlertDiv.style.display = 'none';
+        }
+      }
+
       // if the section is 'Outcomes' run an initial validation check on the section
       if (section.title === 'Outcomes') {
         const outcomesAlertDiv = document.createElement('div');
@@ -168,16 +193,48 @@ const ISP = (function () {
         outcomesAlertDiv.style.display = 'none';
 
         // creates and shows a tip when hovering over the visible alert div
-        // planValidation.createTooltip(
-        //   'There is data missing on this tab that is required by DODD',
-        //   outcomesAlertDiv,
-        // );
+        planValidation.createTooltip(
+          'There is data missing on this tab that is required by DODD',
+          outcomesAlertDiv,
+        );
 
         // If a plan returns an error on the validation check, show the alert div
-        if (validationCheck.complete === false) {
-          outcomesAlertDiv.style.display = 'flex';
-        } else {
+        if (validationCheck.missingExperiences.length === 0 && validationCheck.missingReviews.length === 0) 
+        {
           outcomesAlertDiv.style.display = 'none';
+       } else {
+          outcomesAlertDiv.style.display = 'flex';
+       }
+       
+       if (validationCheck.complete === false) {
+         outcomesAlertDiv.style.display = 'flex';
+      } else {
+         outcomesAlertDiv.style.display = 'none';
+      }
+      }
+
+      // if the section is 'Outcomes' run an initial validation check on the section
+      if (section.title === 'Contacts') {
+        const contactsAlertDiv = document.createElement('div');
+        contactsAlertDiv.classList.add('contactsAlertDiv');
+        contactsAlertDiv.id = 'contactsAlert';
+        contactsAlertDiv.innerHTML = `${icons.error}`;
+        navItem.appendChild(contactsAlertDiv);
+        contactsAlertDiv.style.display = 'none';
+
+        // creates and shows a tip when hovering over the visible alert div
+        planValidation.createTooltip(
+          'There is data missing on this tab that is required by DODD',
+          contactsAlertDiv,
+        );
+
+        let contactValidationCheck = planValidation.getContactValidation();
+
+        if (!contactValidationCheck.importantPeople || !contactValidationCheck.importantPlaces || !contactValidationCheck.bestWayToConnect)
+        {
+          contactsAlertDiv.style.display = 'flex';
+        } else {
+          contactsAlertDiv.style.display = 'none';
         }
       }
 
@@ -245,9 +302,6 @@ const ISP = (function () {
     } else {
       readOnly = false;
     }
-
-    validationCheck = plan.getISPValidation();
-    planValidation.getAssessmentValidation(planId);
 
     ispNav = buildNavigation();
     ispDiv.appendChild(ispNav);

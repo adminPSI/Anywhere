@@ -20,6 +20,24 @@ var timeApproval = (function () {
     var employeeName;
     var status;
     var statusText;
+
+    let btnWrap;
+    let supervisorBtnWrap;
+    let locationBtnWrap;
+    let statusBtnWrap;
+    let employeeBtnWrap;
+    let workCodeBtnWrap;
+    let startDateBtnWrap;
+    let endDateBtnWrap;
+
+    var tmpSupervisorId;
+    var tmpSupervisorName;
+    var tmpLocationId;
+    var tmpLocationName;
+    var tmpEmployeeId;
+    var tmpEmployeeName;
+    var tmpStatus;
+    var tmpStatusText;
     //-DOM------------------
     var reviewTable;
     var mulitSelectBtn;
@@ -529,29 +547,238 @@ var timeApproval = (function () {
     // Filtering
     //------------------------------------
     function buildFilteredBy() {
-        var filteredBy = document.querySelector('.widgetFilteredBy');
+        var filteredBy = document.querySelector('.filteredByData');
 
         if (!filteredBy) {
             filteredBy = document.createElement('div');
-            filteredBy.classList.add('widgetFilteredBy');
+            filteredBy.classList.add('filteredByData');
+            filterButtonSet();
+            filteredBy.appendChild(btnWrap);
+        }
+
+        if (document.getElementById('startDateBtn') != null) {
+            document.getElementById('startDateBtn').innerHTML = 'From Date: ' + moment(startDate, 'YYYY-MM-DD').format('M/D/YYYY');
+            document.getElementById('endDateBtn').innerHTML = 'To Date: ' + moment(endDate, 'YYYY-MM-DD').format('M/D/YYYY');
+            document.getElementById('supervisorBtn').innerHTML = 'Supervisor: ' + supervisorName;
         }
 
 
-        const StartDate = moment(startDate, 'YYYY-MM-DD').format('M/D/YYYY');
-        const EndDate = moment(endDate, 'YYYY-MM-DD').format('M/D/YYYY');
+        if (employeeName === 'All' || employeeName === '') {  
+            btnWrap.appendChild(employeeBtnWrap);
+            btnWrap.removeChild(employeeBtnWrap);
+        }
+        else {
+            btnWrap.appendChild(employeeBtnWrap);
+            if (document.getElementById('employeeBtn') != null)
+                document.getElementById('employeeBtn').innerHTML = 'Employee: ' + employeeName;
+        }
 
-        filteredBy.innerHTML = `<div class="filteredByData">
-       <p><span>From Date:</span> ${StartDate}</p>
-	    <p><span>To Date:</span> ${EndDate}</p>  
-        <p><span>Supervisor:</span> ${supervisorName}</p>
-        <p><span>Employee:</span> ${employeeName}</p>
-        <p><span>Location:</span> ${locationName}</p>
-        <p><span>Status:</span> ${statusText}</p>
-        <p><span>Work Code:</span> ${workCodeName}</p>
-      </div>`;
+        if (locationName === 'All' || locationName === '%') {
+            btnWrap.appendChild(locationBtnWrap);
+            btnWrap.removeChild(locationBtnWrap);
+        }
+        else {
+            btnWrap.appendChild(locationBtnWrap);
+            if (document.getElementById('locationBtn') != null)
+                document.getElementById('locationBtn').innerHTML = 'Location: ' + locationName;
+        }
+
+        if (statusText === 'All' || statusText === '%') {
+            btnWrap.appendChild(statusBtnWrap);
+            btnWrap.removeChild(statusBtnWrap);
+        } else {
+            btnWrap.appendChild(statusBtnWrap);
+            if (document.getElementById('statusBtn') != null)
+                document.getElementById('statusBtn').innerHTML = 'Status: ' + statusText;
+        }
+
+
+        if (workCodeName === 'All' || workCodeName === '%') {
+            btnWrap.appendChild(workCodeBtnWrap);
+            btnWrap.removeChild(workCodeBtnWrap);
+        }
+        else {
+            btnWrap.appendChild(workCodeBtnWrap);
+            if (document.getElementById('workCodeBtn') != null)
+                document.getElementById('workCodeBtn').innerHTML = 'Work Code: ' + workCodeName;
+        }
 
         return filteredBy;
     }
+
+    function filterButtonSet() {
+        filterBtn = button.build({
+            text: 'Filter',
+            icon: 'filter',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'filterBtnNew',
+            callback: () => { showFilterPopup('ALL') },
+        });
+
+        supervisorBtn = button.build({
+            id: 'supervisorBtn',
+            text: 'Supervisor: ' + supervisorName,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('supervisorBtn') },
+        });
+
+        locationBtn = button.build({
+            id: 'locationBtn',
+            text: 'Location: ' + locationName,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('locationBtn') },
+        });
+        locationCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('locationBtn') },
+        });
+
+        statusBtn = button.build({
+            id: 'statusBtn',
+            text: 'Consumer: ' + statusText,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('statusBtn') },
+        });
+        statusCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('statusBtn') },
+        });
+
+        employeeBtn = button.build({
+            id: 'employeeBtn',
+            text: 'Employee: ' + employeeName,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('employeeBtn') },
+        });
+        employeeCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('employeeBtn') },
+        });
+
+        workCodeBtn = button.build({
+            id: 'workCodeBtn',
+            text: 'Work Code: ' + workCodeName,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('workCodeBtn') },
+        });
+        workCodeCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('workCodeBtn') },
+        });
+
+        startDateBtn = button.build({
+            id: 'startDateBtn',
+            text: 'From Date: ' + UTIL.formatDateFromIso(startDate),
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('startDateBtn') },
+        });
+
+        endDateBtn = button.build({
+            id: 'endDateBtn',
+            text: 'To Date: ' + UTIL.formatDateFromIso(endDate),
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('endDateBtn') },
+        });
+
+        btnWrap = document.createElement('div');
+        btnWrap.classList.add('filterBtnWrap');
+        btnWrap.appendChild(filterBtn);
+
+        startDateBtnWrap = document.createElement('div');
+        startDateBtnWrap.classList.add('filterSelectionBtnWrap');
+        startDateBtnWrap.appendChild(startDateBtn);
+        btnWrap.appendChild(startDateBtnWrap);
+
+        endDateBtnWrap = document.createElement('div');
+        endDateBtnWrap.classList.add('filterSelectionBtnWrap');
+        endDateBtnWrap.appendChild(endDateBtn);
+        btnWrap.appendChild(endDateBtnWrap);
+
+        supervisorBtnWrap = document.createElement('div');
+        supervisorBtnWrap.classList.add('filterSelectionBtnWrap');
+        supervisorBtnWrap.appendChild(supervisorBtn);
+        btnWrap.appendChild(supervisorBtnWrap);
+
+        locationBtnWrap = document.createElement('div');
+        locationBtnWrap.classList.add('filterSelectionBtnWrap');
+        locationBtnWrap.appendChild(locationBtn);
+        locationBtnWrap.appendChild(locationCloseBtn);
+        btnWrap.appendChild(locationBtnWrap);
+
+        statusBtnWrap = document.createElement('div');
+        statusBtnWrap.classList.add('filterSelectionBtnWrap');
+        statusBtnWrap.appendChild(statusBtn);
+        statusBtnWrap.appendChild(statusCloseBtn);
+        btnWrap.appendChild(statusBtnWrap);
+
+        employeeBtnWrap = document.createElement('div');
+        employeeBtnWrap.classList.add('filterSelectionBtnWrap');
+        employeeBtnWrap.appendChild(employeeBtn);
+        employeeBtnWrap.appendChild(employeeCloseBtn);
+        btnWrap.appendChild(employeeBtnWrap);
+
+        workCodeBtnWrap = document.createElement('div');
+        workCodeBtnWrap.classList.add('filterSelectionBtnWrap');
+        workCodeBtnWrap.appendChild(workCodeBtn);
+        workCodeBtnWrap.appendChild(workCodeCloseBtn);
+        btnWrap.appendChild(workCodeBtnWrap);
+    }
+
+    function closeFilter(closeFilter) {
+        if (closeFilter == 'locationBtn') {
+            locationName = 'All';
+            locationId = '%';
+            tmpLocationId = '%';
+            tmpLocationName = 'All';
+        }
+        if (closeFilter == 'statusBtn') {
+            statusText = 'All';
+            status = '%';
+            tmpStatus = '%';
+            tmpStatusText = 'All';
+        }
+        if (closeFilter == 'employeeBtn') {
+            employeeId = '';
+            employeeName = 'All';
+            tmpEmployeeId = '';
+            tmpEmployeeName = 'All';
+        }
+        if (closeFilter == 'workCodeBtn') {
+            workCodeId = '%';
+            workCodeName = 'All';
+            tmpWorkCodeId = '%';
+            tmpWorkCodeName = 'All';
+        }
+        filterApply();
+    }
+
     function updateFilterData(data) {
         if (data.tmpSupervisorId) supervisorId = data.tmpSupervisorId;
         if (data.tmpSupervisorName) supervisorName = data.tmpSupervisorName;
@@ -724,14 +951,14 @@ var timeApproval = (function () {
         return select;
     }
     function setupFilterEvents() {
-        var tmpSupervisorId;
-        var tmpSupervisorName;
-        var tmpLocationId;
-        var tmpLocationName;
-        var tmpEmployeeId;
-        var tmpEmployeeName;
-        var tmpStatus;
-        var tmpStatusText;
+        tmpSupervisorId;
+        tmpSupervisorName;
+        tmpLocationId;
+        tmpLocationName;
+        tmpEmployeeId;
+        tmpEmployeeName;
+        tmpStatus;
+        tmpStatusText;
         tmpStartDate;
         tmpEndDate;
 
@@ -791,59 +1018,7 @@ var timeApproval = (function () {
                 // if (tmpEmployeeId !== "") {
                 //   showMap = true
                 // } else showMap = false
-
-                if (tmpWorkCodeId) workCodeId = tmpWorkCodeId;
-                if (tmpWorkCodeName) workCodeName = tmpWorkCodeName;
-
-                updateFilterData({
-                    tmpSupervisorId,
-                    tmpSupervisorName,
-                    tmpLocationId,
-                    tmpLocationName,
-                    tmpEmployeeId,
-                    tmpEmployeeName,
-                    tmpStatus,
-                    tmpStatusText,
-                    tmpWorkCodeId,
-                    tmpWorkCodeName,
-                    tmpStartDate,
-                    tmpEndDate
-                });
-
-                //reformat startDate
-                const StartDate = moment(startDate, 'YYYY-MM-DD').format('M/D/YYYY');
-                const EndDate = moment(endDate, 'YYYY-MM-DD').format('M/D/YYYY');
-
-                var filteredBy = document.querySelector('.widgetFilteredBy');
-                filteredBy.innerHTML = `<div class="filteredByData">
-        <p><span>From Date:</span> ${StartDate}</p>
-	    <p><span>To Date:</span> ${EndDate}</p> 
-        <p><span>Supervisor:</span> ${supervisorName}</p>
-        <p><span>Employee:</span> ${employeeName}</p>
-        <p><span>Location:</span> ${locationName}</p>
-        <p><span>Status:</span> ${statusText}</p>
-        <p><span>Work Code:</span> ${workCodeName}</p>
-      </div>`;
-
-                mulitSelectBtn.classList.remove('disabled');
-                mulitSelectBtn.classList.remove('enabled');
-                selectAllBtn.classList.remove('enabled');
-
-                enableMultiEdit = false;
-                enableSelectAll = false;
-
-                selectedRows = [];
-                var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
-                highlightedRows.forEach(row => row.classList.remove('selected'));
-
-                startDate = payPeriod.start;
-                endDate = payPeriod.end;
-
-                getDropdownData(function () {
-                    loadReviewPage();
-                });
-
-
+                filterApply();
             }
             IsFilterDisable = true;
         });
@@ -860,7 +1035,86 @@ var timeApproval = (function () {
             tmpEndDate = endDate;
         });
     }
-    function showFilterPopup() {
+
+    function filterApply() {
+        if (tmpWorkCodeId) workCodeId = tmpWorkCodeId;
+        if (tmpWorkCodeName) workCodeName = tmpWorkCodeName;
+
+        updateFilterData({
+            tmpSupervisorId,
+            tmpSupervisorName,
+            tmpLocationId,
+            tmpLocationName,
+            tmpEmployeeId,
+            tmpEmployeeName,
+            tmpStatus,
+            tmpStatusText,
+            tmpWorkCodeId,
+            tmpWorkCodeName,
+            tmpStartDate,
+            tmpEndDate
+        });
+       
+        document.getElementById('startDateBtn').innerHTML = 'From Date: ' + moment(startDate, 'YYYY-MM-DD').format('M/D/YYYY');
+        document.getElementById('endDateBtn').innerHTML = 'To Date: ' + moment(endDate, 'YYYY-MM-DD').format('M/D/YYYY');
+        document.getElementById('supervisorBtn').innerHTML = 'Supervisor: ' + supervisorName;
+
+        if (employeeName === 'All' || employeeName === '') {
+            btnWrap.appendChild(employeeBtnWrap);
+            btnWrap.removeChild(employeeBtnWrap);
+        }
+        else {
+            btnWrap.appendChild(employeeBtnWrap);
+            document.getElementById('employeeBtn').innerHTML = 'Employee: ' + employeeName;
+        }
+
+        if (locationName === 'All' || locationName === '%') {
+            btnWrap.appendChild(locationBtnWrap);
+            btnWrap.removeChild(locationBtnWrap);
+        }
+        else {
+            btnWrap.appendChild(locationBtnWrap);
+            document.getElementById('locationBtn').innerHTML = 'Location: ' + locationName;
+        }
+
+        if (statusText === 'All' || statusText === '%') {
+            btnWrap.appendChild(statusBtnWrap);
+            btnWrap.removeChild(statusBtnWrap);
+        } else {
+            btnWrap.appendChild(statusBtnWrap);
+            document.getElementById('statusBtn').innerHTML = 'Status: ' + statusText;
+        }
+
+
+        if (workCodeName === 'All' || workCodeName === '%') {
+            btnWrap.appendChild(workCodeBtnWrap);
+            btnWrap.removeChild(workCodeBtnWrap);
+        }
+        else {
+            btnWrap.appendChild(workCodeBtnWrap);
+            document.getElementById('workCodeBtn').innerHTML = 'Work Code: ' + workCodeName;
+        } 
+
+        mulitSelectBtn.classList.remove('disabled');
+        mulitSelectBtn.classList.remove('enabled');
+        selectAllBtn.classList.remove('enabled');
+
+        enableMultiEdit = false;
+        enableSelectAll = false;
+
+        selectedRows = [];
+        var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+        highlightedRows.forEach(row => row.classList.remove('selected'));
+
+        startDate = payPeriod.start;
+        endDate = payPeriod.end;
+
+        getDropdownData(function () {
+            loadReviewPage();
+        });
+
+    }
+    function showFilterPopup(IsShow) {
         filterPopup = POPUP.build({ hideX: true });
 
         supervisorDropdown = buildSupervisorDropdown();
@@ -902,15 +1156,22 @@ var timeApproval = (function () {
 
         const dateWrap = document.createElement('div');
         dateWrap.classList.add('dateWrap', 'btnWrap');
-        dateWrap.appendChild(startDateInput);
-        dateWrap.appendChild(endDateInput);
+        if (IsShow == 'ALL' || IsShow == 'startDateBtn')
+            dateWrap.appendChild(startDateInput);
+        if (IsShow == 'ALL' || IsShow == 'endDateBtn')
+            dateWrap.appendChild(endDateInput);
 
-        filterPopup.appendChild(supervisorDropdown);
-        filterPopup.appendChild(employeeDropdown);
-        filterPopup.appendChild(locationDropdown);
-        filterPopup.appendChild(statusDropdown);
+        if (IsShow == 'ALL' || IsShow == 'supervisorBtn')
+            filterPopup.appendChild(supervisorDropdown);
+        if (IsShow == 'ALL' || IsShow == 'employeeBtn')
+            filterPopup.appendChild(employeeDropdown);
+        if (IsShow == 'ALL' || IsShow == 'locationBtn')
+            filterPopup.appendChild(locationDropdown);
+        if (IsShow == 'ALL' || IsShow == 'statusBtn')
+            filterPopup.appendChild(statusDropdown);
         filterPopup.appendChild(dateWrap);
-        filterPopup.appendChild(workCodeDropdown);
+        if (IsShow == 'ALL' || IsShow == 'workCodeBtn')
+            filterPopup.appendChild(workCodeDropdown);
         filterPopup.appendChild(btnWrap);
 
         setupFilterEvents();
@@ -1345,7 +1606,7 @@ var timeApproval = (function () {
             element.classList.add('seRecordActivity');
             element.id = `${seID}-seRecordActivity`;
             element.innerText = `${status}: ${dateVal} - ${timeVal} - ${user}`;
-           // if (rejected) element.classList.add('rejected'); //add red text to the message for rejected records
+            // if (rejected) element.classList.add('rejected'); //add red text to the message for rejected records
             const tableRow = document.getElementById(seID);
             tableRow.appendChild(element);
         }
@@ -1412,14 +1673,6 @@ var timeApproval = (function () {
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('actionButtonWrap');
 
-        filterBtn = button.build({
-            text: 'Filter',
-            icon: 'filter',
-            style: 'secondary',
-            type: 'contained',
-            classNames: 'filterBtn',
-            callback: showFilterPopup,
-        });
         mulitSelectBtn = button.build({
             text: 'Multi Select',
             icon: 'multiSelect',
@@ -1437,7 +1690,6 @@ var timeApproval = (function () {
             callback: enableSelectAllRows,
         });
 
-        btnWrap.appendChild(filterBtn);
         btnWrap.appendChild(mulitSelectBtn);
         btnWrap.appendChild(selectAllBtn);
 
@@ -1622,7 +1874,7 @@ var timeApproval = (function () {
         workCodeData = await timeEntry.getWorkCodes();
 
         //displayPayPeriodPopup();
-        if (payPeriod.start && payPeriod.end) { 
+        if (payPeriod.start && payPeriod.end) {
             startDate = payPeriod.start;
             endDate = payPeriod.end;
         }

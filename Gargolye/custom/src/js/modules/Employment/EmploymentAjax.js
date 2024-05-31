@@ -180,7 +180,7 @@ var EmploymentAjax = (function () {
     }
 
     async function insertEmploymentInfoAsync(
-        startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, PositionId
+        startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, PositionId, typeOfEmployment
     ) {
         try {
             const result = await $.ajax({
@@ -210,6 +210,7 @@ var EmploymentAjax = (function () {
                     peopleID: peopleID,
                     userID: userID,
                     PositionId: PositionId,
+                    typeOfEmployment: typeOfEmployment,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -337,6 +338,32 @@ var EmploymentAjax = (function () {
                     '/' +
                     $.webServer.serviceName +
                     '/getTypeOfWorkDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getTypeOfEmploymentDropDownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getTypeOfEmploymentDropDown/',
                 data: JSON.stringify({
                     token: $.session.Token,
 
@@ -717,7 +744,7 @@ var EmploymentAjax = (function () {
                 '{"token":"' +
                 $.session.Token +
                 '","wagesID":"' +
-                dataObj.wagesID +               
+                dataObj.wagesID +
                 '"}',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
@@ -743,7 +770,7 @@ var EmploymentAjax = (function () {
             dataType: 'json',
             success: function (response) {
                 var res = response.deleteWorkScheduleResult;
-                callback(res); 
+                callback(res);
             },
             error: function (xhr, status, error) { },
         });
@@ -769,6 +796,64 @@ var EmploymentAjax = (function () {
             },
             error: function (xhr, status, error) { },
         });
+    }
+
+    async function getEmployeeStatusDropDownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getEmployeeStatusDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function createNewEmploymentPathAsync(
+        currentStatus, pathToEmployment, pathToStartDate, peopleID, userID
+    ) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/createNewEmploymentPath/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    currentStatus: currentStatus,
+                    pathToEmployment: pathToEmployment,
+                    pathToStartDate: pathToStartDate,
+                    peopleID: peopleID,
+                    userID: userID
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
     }
 
     return {
@@ -799,5 +884,8 @@ var EmploymentAjax = (function () {
         deleteWagesBenefits,
         deleteWorkSchedule,
         deletePostionTask,
+        getEmployeeStatusDropDownAsync,
+        createNewEmploymentPathAsync,
+        getTypeOfEmploymentDropDownAsync,
     };
 })();

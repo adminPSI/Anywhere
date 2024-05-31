@@ -349,7 +349,7 @@ const consumerFinanceAttachment = (() => {
                 attachmentBtn.classList.remove('hasAttachments');
             }
 
-            NewEntryCF.buildNewEntryForm(this.regId, this.attachmentsForQuestion, attachmentsToAdd)
+            NewEntryCF.buildNewEntryForm(this.regId, this.attachmentsForQuestion, attachmentsToAdd, false)
         }
     }
 

@@ -20,9 +20,10 @@
   * {
     pointer-events: none;
   }
-  
+
   // Button Colors
-  &--primary {// light btn
+  &--primary {
+    // light btn
     background: $btn-light;
     border-color: $btn-light;
 
@@ -34,7 +35,8 @@
       color: $btn-light;
     }
   }
-  &--secondary {// dark btn
+  &--secondary {
+    // dark btn
     background: $btn-dark;
     border-color: $btn-dark;
 
@@ -46,7 +48,8 @@
       color: $btn-dark;
     }
   }
-  &--danger {// red btn
+  &--danger {
+    // red btn
     background: red;
     border-color: red;
 
@@ -134,25 +137,25 @@
 }
 
 .dropdownWrap {
-    display: flex;
-    flex-flow: row wrap;
-    margin: 0 0 0;
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 0 0;
 
-    button {
-        flex-grow: 1;
-        margin: 0 1% 0 0;
+  button {
+    flex-grow: 1;
+    margin: 0 1% 0 0;
 
-        &:last-child() {
-            margin: 0;
-        }
+    &:last-child() {
+      margin: 0;
     }
+  }
 }
 
 // Disabled
 .btn.disabled,
 .btn-icon.disabled {
-  background: rgba(0, 0, 0, .2);
-  color: rgba(0, 0, 0, .4);
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(0, 0, 0, 0.4);
   pointer-events: none;
   &.btn--text {
     background: none;
@@ -178,7 +181,30 @@
 }
 
 // Toggle Button
-.btn[data-toggled="true"],
-.btn-icon[data-toggled="true"] {
+.btn[data-toggled='true'],
+.btn-icon[data-toggled='true'] {
   background: $bg-dark2;
+}
+
+button.moduleFilterBtn {
+  width: 100%;
+}
+
+button.floatingActionBtn {
+  border-radius: $r-circle;
+  box-shadow: $shadow-m2;
+  cursor: pointer;
+  margin: 0;
+  min-width: auto;
+  padding: 2px;
+  position: fixed;
+  bottom: 20px;
+  right: 24px;
+  height: 64px;
+  width: 64px;
+
+  svg {
+    margin: 0;
+    width: 90%;
+  }
 }

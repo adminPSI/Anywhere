@@ -22,6 +22,8 @@ var timeEntryReview = (function () {
     var workCodeName;
     var startDate;
     var endDate;
+    var splitStartDate;
+    var splitEndDate;
     var tmpLocationId;
     var tmpLocationName;
     var tmpWorkCodeId;
@@ -41,6 +43,11 @@ var timeEntryReview = (function () {
     var selectedRows = []; // array of row ids
     //-TABLE DATA------------------
     var entriesByDate; // original results array
+
+    let btnWrap;
+    let payPeriodBtnWrap;
+    let locationNameBtnWrap;
+    let workCodeNameBtnWrap;
 
     // Util
     //------------------------------------
@@ -160,7 +167,7 @@ var timeEntryReview = (function () {
                     mulitSelectBtn.classList.remove('enabled');
                 }, 1000);
             })
-      .catch(function (error) {});
+            .catch(function (error) { });
     }
     function submitEntry(updateObj) {
         singleEntryAjax.updateSingleEntryStatus(updateObj, function () {
@@ -222,31 +229,137 @@ var timeEntryReview = (function () {
     // Filtering
     //------------------------------------
     function buildFilteredBy() {
-        var filteredBy = document.querySelector('.widgetFilteredBy');
-
-        if (!filteredBy) {
-            filteredBy = document.createElement('div');
-            filteredBy.classList.add('widgetFilteredBy');
-        }
+        var filteredBy = document.querySelector('.filteredByData');
 
         startDate = payPeriod.start;
         endDate = payPeriod.end;
         //reformat startDate and endDate
-        var splitStartDate = startDate.split('-');
-        var splitEndDate = endDate.split('-');
+        splitStartDate = startDate.split('-');
+        splitEndDate = endDate.split('-');
 
-        filteredBy.innerHTML = `<div class="filteredByData">
-      <p><span>Pay Period:</span> ${UTIL.leadingZero(splitStartDate[1])}/${UTIL.leadingZero(
-            splitStartDate[2],
-        )}/${splitStartDate[0].slice(2, 4)} - ${UTIL.leadingZero(splitEndDate[1])}/${UTIL.leadingZero(
-            splitEndDate[2],
-        )}/${splitEndDate[0].slice(2, 4)}</p>
-      <p><span>Location:</span> ${locationName}</p>
-      <p><span>Work Code:</span> ${workCodeName}</p>
-    </div>`;
+        if (!filteredBy) {
+            filteredBy = document.createElement('div');
+            filteredBy.classList.add('filteredByData');
+            filterButtonSet()
+            filteredBy.appendChild(btnWrap);
+        }
+
+        if (document.getElementById('payPeriodBtn') != null)
+            document.getElementById('payPeriodBtn').innerHTML = 'Pay Period: ' + UTIL.leadingZero(splitStartDate[1]) + '/' + UTIL.leadingZero(splitStartDate[2],)
+                + '/' + splitStartDate[0].slice(2, 4) + ' - ' + UTIL.leadingZero(splitEndDate[1]) + '/' + UTIL.leadingZero(splitEndDate[2],)
+                + '/' + splitEndDate[0].slice(2, 4);
+
+
+        if (locationName === '%' || locationName === 'All') {
+            btnWrap.appendChild(locationNameBtnWrap);
+            btnWrap.removeChild(locationNameBtnWrap);
+        } else {
+            btnWrap.appendChild(locationNameBtnWrap);
+            if (document.getElementById('locationNameBtn') != null)
+                document.getElementById('locationNameBtn').innerHTML = 'Location: ' + locationName;
+        }
+
+        if (workCodeName === '%' || workCodeName === 'All') {
+            btnWrap.appendChild(workCodeNameBtnWrap);
+            btnWrap.removeChild(workCodeNameBtnWrap);
+        } else {
+            btnWrap.appendChild(workCodeNameBtnWrap);
+            if (document.getElementById('workCodeNameBtn') != null)
+                document.getElementById('workCodeNameBtn').innerHTML = 'Work Code: ' + workCodeName;
+        }
 
         return filteredBy;
     }
+
+    function filterButtonSet() {
+        filterBtn = button.build({
+            text: 'Filter',
+            style: 'secondary',
+            type: 'contained',
+            icon: 'filter',
+            classNames: 'filterBtnNew',
+            callback: () => {
+                showFilterPopup('ALL');
+            },
+        });
+
+        payPeriodBtn = button.build({
+            id: 'payPeriodBtn',
+            text: 'Pay Period: ' + UTIL.leadingZero(splitStartDate[1]) + '/' + UTIL.leadingZero(splitStartDate[2],) + '/' + splitStartDate[0].slice(2, 4) + ' - ' + UTIL.leadingZero(splitEndDate[1]) + '/' + UTIL.leadingZero(splitEndDate[2],) + '/' + splitEndDate[0].slice(2, 4),
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('payPeriodBtn') },
+        });
+
+        locationNameBtn = button.build({
+            id: 'locationNameBtn',
+            text: 'Location: ' + locationName,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('locationNameBtn') },
+        });
+        locationNameCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('locationNameBtn') },
+        });
+
+        workCodeNameBtn = button.build({
+            id: 'workCodeNameBtn',
+            text: 'Work Code: ' + workCodeName,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('workCodeNameBtn') },
+        });
+        workCodeNameCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('workCodeNameBtn') },
+        });
+
+        btnWrap = document.createElement('div');
+        btnWrap.classList.add('filterBtnWrap');
+        btnWrap.appendChild(filterBtn);
+
+        payPeriodBtnWrap = document.createElement('div');
+        payPeriodBtnWrap.classList.add('filterSelectionBtnWrap');
+        payPeriodBtnWrap.appendChild(payPeriodBtn);
+        btnWrap.appendChild(payPeriodBtnWrap);
+
+        locationNameBtnWrap = document.createElement('div');
+        locationNameBtnWrap.classList.add('filterSelectionBtnWrap');
+        locationNameBtnWrap.appendChild(locationNameBtn);
+        locationNameBtnWrap.appendChild(locationNameCloseBtn);
+        btnWrap.appendChild(locationNameBtnWrap);
+
+        workCodeNameBtnWrap = document.createElement('div');
+        workCodeNameBtnWrap.classList.add('filterSelectionBtnWrap');
+        workCodeNameBtnWrap.appendChild(workCodeNameBtn);
+        workCodeNameBtnWrap.appendChild(workCodeNameCloseBtn);
+        btnWrap.appendChild(workCodeNameBtnWrap); 
+    }
+
+    function closeFilter(closeFilter) {
+        if (closeFilter == 'workCodeNameBtn') {
+            tmpWorkCodeName = 'All';
+            workCodeName = 'All';
+            tmpWorkCodeId = '%';
+        }
+        if (closeFilter == 'locationNameBtn') {
+            tmpLocationId = '%';
+            locationName = 'All';  
+            tmpLocationName = 'All'; 
+        } 
+        applyFilter();
+    }
+
     function populateLocationDropdown() {
         var data = locationData.map(l => {
             return {
@@ -287,82 +400,95 @@ var timeEntryReview = (function () {
         });
 
         applyBtn.addEventListener('click', function () {
-            if (tmpLocationId || tmpWorkCodeId) {
-                locationId = tmpLocationId;
-                workCodeId = tmpWorkCodeId;
-
-                if (locationId !== '%' || workCodeId !== '%') {
-                    populateTable(
-                        entriesByDate.filter(e => {
-                            if (tmpLocationId && tmpWorkCodeId) {
-                                wcAbbreviation = workCodeName.split(' ')[0];
-                                if (tmpLocationId === '%') {
-                                    return e.WCCode === wcAbbreviation;
-                                } else if (tmpWorkCodeId === '%') {
-                                    return e.Location_ID === locationId;
-                                } else {
-                                    return e.Location_ID === locationId && e.WCCode === wcAbbreviation;
-                                }
-                            }
-                            if (tmpLocationId && !tmpWorkCodeId) {
-                                return e.Location_ID === locationId;
-                            }
-
-                            if (tmpWorkCodeId && !tmpLocationId) {
-                                wcAbbreviation = workCodeName.split(' ')[0];
-                                return e.WCCode === wcAbbreviation;
-                            }
-                        }),
-                    );
-                } else {
-                    populateTable(entriesByDate);
-                }
-
-                ACTION_NAV.hide();
-                mulitSelectBtn.classList.remove('enabled');
-                mulitSelectBtn.classList.remove('disabled');
-                selectAllBtn.classList.remove('enabled');
-                selectAllBtn.classList.remove('disabled');
-                enableMultiEdit = false;
-                enableSelectAll = false;
-                selectedRows = [];
-                var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
-                highlightedRows.forEach(row => row.classList.remove('selected'));
-            }
-
-            if (tmpLocationName) locationName = tmpLocationName;
-            if (tmpWorkCodeName) workCodeName = tmpWorkCodeName;
-
-            startDate = payPeriod.start;
-            endDate = payPeriod.end;
-            //reformat startDate and endDate
-            var splitStartDate = startDate.split('-');
-            var splitEndDate = endDate.split('-');
-
-            var filteredBy = document.querySelector('.widgetFilteredBy');
-            filteredBy.innerHTML = `<div class="filteredByData">
-        <p><span>Pay Period:</span> ${UTIL.leadingZero(splitStartDate[1])}/${UTIL.leadingZero(
-                splitStartDate[2],
-            )}/${splitStartDate[0].slice(2, 4)} - ${UTIL.leadingZero(splitEndDate[1])}/${UTIL.leadingZero(
-                splitEndDate[2],
-            )}/${splitEndDate[0].slice(2, 4)}</p>
-        <p><span>Location:</span> ${locationName}</p>
-        <p><span>Work Code:</span> ${workCodeName}</p>
-      </div>`;
-
-            startDate = payPeriod.start;
-            endDate = payPeriod.end;
-
-            //load review page for the selected pay period
-            refreshPage(payPeriod);
-
+            applyFilter()
             POPUP.hide(filterPopup);
         });
         cancelBtn.addEventListener('click', function () {
             POPUP.hide(filterPopup);
         });
     }
-    function showFilterPopup() {
+
+    function applyFilter() {
+        if (tmpLocationId || tmpWorkCodeId) {
+            locationId = tmpLocationId;
+            workCodeId = tmpWorkCodeId;
+
+            if (locationId !== '%' || workCodeId !== '%') {
+                populateTable(
+                    entriesByDate.filter(e => {
+                        if (tmpLocationId && tmpWorkCodeId) {
+                            wcAbbreviation = workCodeName.split(' ')[0];
+                            if (tmpLocationId === '%') {
+                                return e.WCCode === wcAbbreviation;
+                            } else if (tmpWorkCodeId === '%') {
+                                return e.Location_ID === locationId;
+                            } else {
+                                return e.Location_ID === locationId && e.WCCode === wcAbbreviation;
+                            }
+                        }
+                        if (tmpLocationId && !tmpWorkCodeId) {
+                            return e.Location_ID === locationId;
+                        }
+
+                        if (tmpWorkCodeId && !tmpLocationId) {
+                            wcAbbreviation = workCodeName.split(' ')[0];
+                            return e.WCCode === wcAbbreviation;
+                        }
+                    }),
+                );
+            } else {
+                populateTable(entriesByDate);
+            }
+
+            ACTION_NAV.hide();
+            mulitSelectBtn.classList.remove('enabled');
+            mulitSelectBtn.classList.remove('disabled');
+            selectAllBtn.classList.remove('enabled');
+            selectAllBtn.classList.remove('disabled');
+            enableMultiEdit = false;
+            enableSelectAll = false;
+            selectedRows = [];
+            var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+            highlightedRows.forEach(row => row.classList.remove('selected'));
+        }
+
+        if (tmpLocationName) locationName = tmpLocationName;
+        if (tmpWorkCodeName) workCodeName = tmpWorkCodeName;
+
+        startDate = payPeriod.start;
+        endDate = payPeriod.end;
+        //reformat startDate and endDate
+        var splitStartDate = startDate.split('-');
+        var splitEndDate = endDate.split('-');  
+
+        if (document.getElementById('payPeriodBtn') != null)
+            document.getElementById('payPeriodBtn').innerHTML = 'Pay Period: ' + UTIL.leadingZero(splitStartDate[1]) + '/' + UTIL.leadingZero(splitStartDate[2],)
+                + '/' + splitStartDate[0].slice(2, 4) + ' - ' + UTIL.leadingZero(splitEndDate[1]) + '/' + UTIL.leadingZero(splitEndDate[2],)
+                + '/' + splitEndDate[0].slice(2, 4);
+
+        if (locationName === '%' || locationName === 'All') {
+            btnWrap.appendChild(locationNameBtnWrap);
+            btnWrap.removeChild(locationNameBtnWrap);
+        } else {
+            btnWrap.appendChild(locationNameBtnWrap);
+            document.getElementById('locationNameBtn').innerHTML = 'Location: ' + locationName;
+        }
+
+        if (workCodeName === '%' || workCodeName === 'All') {
+            btnWrap.appendChild(workCodeNameBtnWrap);
+            btnWrap.removeChild(workCodeNameBtnWrap);
+        } else {
+            btnWrap.appendChild(workCodeNameBtnWrap);
+            document.getElementById('workCodeNameBtn').innerHTML = 'Work Code: ' + workCodeName;
+        }
+
+        startDate = payPeriod.start;
+        endDate = payPeriod.end;
+
+        //load review page for the selected pay period
+        refreshPage(payPeriod);
+    }
+    function showFilterPopup(IsShow) {
         // popup
         filterPopup = POPUP.build({
             classNames: 'timeEntryReviewFilterPopup',
@@ -402,9 +528,12 @@ var timeEntryReview = (function () {
         btnWrap.appendChild(cancelBtn);
 
         // Build Popup
-        filterPopup.appendChild(payPeriodsDropdown);
-        filterPopup.appendChild(locationDropdown);
-        filterPopup.appendChild(workCodeDropdown);
+        if (IsShow == 'ALL' || IsShow == 'payPeriodBtn')
+            filterPopup.appendChild(payPeriodsDropdown);
+        if (IsShow == 'ALL' || IsShow == 'locationNameBtn')
+            filterPopup.appendChild(locationDropdown);
+        if (IsShow == 'ALL' || IsShow == 'workCodeNameBtn')
+            filterPopup.appendChild(workCodeDropdown);
         filterPopup.appendChild(btnWrap);
 
         // populate drodown
@@ -603,7 +732,7 @@ var timeEntryReview = (function () {
             var abbStatus = td.Anywhere_Status;
             var consumersPresent = td.Number_Consumers_Present;
             const transportationUnits = td.Transportation_Units;
-            var comments = td.Comments;  
+            var comments = td.Comments;
             var isValid;
             var workCodeData = workCodes.filter(wc => wc.workcodeid === td.Work_Code_ID);
 
@@ -623,14 +752,14 @@ var timeEntryReview = (function () {
             const iconsBox = document.createElement('div');
             iconsBox.classList.add('iconsBox');
             iconsBox.appendChild(additionalInformation);
-  
-            if (comments !== '' && comments !== null && comments.trim() !== '') {     
+
+            if (comments !== '' && comments !== null && comments.trim() !== '') {
                 const commentsBox = document.createElement('div');
                 commentsBox.classList.add('commentsBox');
                 commentsBox.innerHTML = icons.note;
                 iconsBox.appendChild(commentsBox);
-            }  
-              
+            }
+
             return {
                 id: entryId,
                 values: [
@@ -735,14 +864,6 @@ var timeEntryReview = (function () {
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('actionButtonWrap');
 
-        filterBtn = button.build({
-            text: 'Filter',
-            icon: 'filter',
-            style: 'secondary',
-            type: 'contained',
-            classNames: 'filterBtn',
-            callback: showFilterPopup,
-        });
         mulitSelectBtn = button.build({
             text: 'Multi Select',
             icon: 'multiSelect',
@@ -760,9 +881,8 @@ var timeEntryReview = (function () {
             callback: enableSelectAllRows,
         });
 
-        btnWrap.appendChild(filterBtn);
         btnWrap.appendChild(mulitSelectBtn);
-        btnWrap.appendChild(selectAllBtn);
+        btnWrap.appendChild(selectAllBtn); 
 
         return btnWrap;
     }

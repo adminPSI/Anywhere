@@ -1,6 +1,6 @@
 var ConsumerFinancesAjax = (function () {
     // OOD Main/Landing Page
-    async function getAccountTransectionEntriesAsync(consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment) {
+    async function getAccountTransectionEntriesAsync(consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment, transectionType, accountPermission) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -40,6 +40,10 @@ var ConsumerFinancesAjax = (function () {
                     enteredBy +
                     '", "isattachment":"' +
                     isattachment +
+                    '", "transectionType":"' +
+                    transectionType +
+                    '", "accountPermission":"' +
+                    accountPermission +
                     '"}',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -49,8 +53,8 @@ var ConsumerFinancesAjax = (function () {
             throw new Error(error.responseText);
         }
     }
-    // OOD Main/Landing Page
-    async function getActiveAccountAsync(ConsumersId) {
+
+    async function getActiveAccountAsync(ConsumersId, accountPermission) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -65,7 +69,8 @@ var ConsumerFinancesAjax = (function () {
                     '/getActiveAccount/',
                 data: JSON.stringify({
                     token: $.session.Token,
-                    consumerId: ConsumersId, 
+                    consumerId: ConsumersId,
+                    accountPermission: accountPermission,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -91,7 +96,7 @@ var ConsumerFinancesAjax = (function () {
                     '/getPayees/',
                 data: JSON.stringify({
                     token: $.session.Token,
-                    consumerId: ConsumersId, 
+                    consumerId: ConsumersId,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -209,7 +214,7 @@ var ConsumerFinancesAjax = (function () {
                     state: payeestate,
                     zipcode: payeezipcode,
                     userId: $.session.UserId,
-                    consumerId: $.session.consumerId 
+                    consumerId: $.session.consumerId
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -221,7 +226,7 @@ var ConsumerFinancesAjax = (function () {
     }
 
     async function insertAccountAsync(
-        date, amount, amountType, AccountID, payee, CategoryID, subCategory, checkNo, description, attachmentID, attachmentDesc, receipt, BtnName, regId
+        date, amount, amountType, AccountID, payee, CategoryID, subCategory, checkNo, description, attachmentID, attachmentDesc, receipt, BtnName, regId, splitAmount, categoryID
     ) {
         try {
             const result = await $.ajax({
@@ -251,7 +256,9 @@ var ConsumerFinancesAjax = (function () {
                     receipt: receipt,
                     userId: $.session.UserId,
                     eventType: BtnName,
-                    regId: regId
+                    regId: regId,
+                    splitAmount: splitAmount,
+                    categoryID: categoryID
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -334,7 +341,7 @@ var ConsumerFinancesAjax = (function () {
                 data: JSON.stringify({
                     token: $.session.Token,
 
-                }),              
+                }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
@@ -401,7 +408,7 @@ var ConsumerFinancesAjax = (function () {
             });
         } catch (error) {
             console.log(error.responseText);
-        }      
+        }
     }
 
     async function getCFAttachmentsList(retrieveData) {
@@ -511,6 +518,180 @@ var ConsumerFinancesAjax = (function () {
         }
     }
 
+    async function getEditAccountInfoByIdAsync(accountId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getEditAccountInfoById/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "accountId":"' +
+                    accountId +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getAccountClassAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getAccountClass/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function insertEditRegisterAccountAsync(
+        selectedConsumersId, accountId, name, number, type, status, classofAccount, dateOpened, dateClosed, openingBalance, description
+    ) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertEditRegisterAccount/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    selectedConsumersId: selectedConsumersId,
+                    accountId: accountId,
+                    name: name,
+                    number: number,
+                    type: type,
+                    status: status,
+                    classofAccount: classofAccount,
+                    dateOpened: dateOpened,
+                    dateClosed: dateClosed,
+                    openingBalance: openingBalance,
+                    description: description,
+                    userId: $.session.UserId
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getEditAccountAsync(ConsumersId, accountPermission) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getEditAccount/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    consumerId: ConsumersId,
+                    accountPermission: accountPermission,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getSplitRegisterAccountEntriesByIDAsync(registerId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getSplitRegisterAccountEntriesByID/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "registerId":"' +
+                    registerId +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getSplitCategoriesSubCategoriesAsync(CategoryID) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getSplitCategoriesSubCategories/', 
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    categoryID: CategoryID,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
     return {
         getAccountTransectionEntriesAsync,
         getActiveAccountAsync,
@@ -526,8 +707,14 @@ var ConsumerFinancesAjax = (function () {
         addCFAttachment,
         deleteCFAttachment,
         getCFAttachmentsList,
-        getConsumerNameByID, 
+        getConsumerNameByID,
         viewCFAttachment,
-        getCategoriesSubCategoriesAsync,   
+        getCategoriesSubCategoriesAsync,
+        getEditAccountInfoByIdAsync,
+        getAccountClassAsync,
+        insertEditRegisterAccountAsync,
+        getEditAccountAsync,
+        getSplitRegisterAccountEntriesByIDAsync,
+        getSplitCategoriesSubCategoriesAsync
     };
 })();

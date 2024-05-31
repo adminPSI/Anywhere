@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.IncidentTrackingWorker;
+using static Anywhere.service.Data.PlanSignature.PlanSignatureWorker;
 
 namespace Anywhere.service.Data
 {
@@ -232,9 +233,37 @@ namespace Anywhere.service.Data
             return strBuilder.ToString();
         }
 
+        //public UserPermissions[] getUserPermissions(string token)
+        //{
+        //    string permissionString = dg.getUserPermissions(token);
+        //    UserPermissions[] dropdownObj = js.Deserialize<UserPermissions[]>(permissionString);
+        //    return dropdownObj;
+        //}
+
+        public class UserPermissions
+        {
+            public string window_name { get; set; }
+            public string permission { get; set; }
+            public string special_data { get; set; }
+        }
+
         public bool ValidateToken(string token)
         {
             return dg.validateToken(token);
+        }
+
+        public PermissionObject[] getUserPermissions(string token)
+        {
+            string permissionString = dg.getUserPermissions(token);
+            PermissionObject[] permissionObj = js.Deserialize<PermissionObject[]>(permissionString);
+            return permissionObj;
+        }
+
+        public class PermissionObject
+        {
+            public string window_name { get; set; }
+            public string permission { get; set; }
+            public string special_data { get; set; }
         }
 
         public class StartAndEndWeek
@@ -442,6 +471,7 @@ namespace Anywhere.service.Data
             public string id { get; set; }
             public string FN { get; set; }
             public string LN { get; set; }
+            public string dob { get; set; }
             public string LId { get; set; }
             public string IDa { get; set; }
             public string SD { get; set; }
@@ -545,6 +575,10 @@ namespace Anywhere.service.Data
             public string appendITImmediateAction { get; set; }
             public string appendITPreventionPlan { get; set; }
             public string appendITCause { get; set; }
+            public string planFormCarryover { get; set; }
+            public string sendWaitingListEmail { get; set; }
+            public string defaultMoneyManagementLocation { get; set; }
+            public string defaultMoneyManagementLocationName { get; set; }
 
         }
 
@@ -593,6 +627,7 @@ namespace Anywhere.service.Data
         public PlanInformedConsentWorker.InformedConsentSSAs[] getConsumerswithSaleforceIds(string token)
         {
             string consumersString = dg.getConsumerswithSaleforceIds(token);
+            js.MaxJsonLength = Int32.MaxValue;
             PlanInformedConsentWorker.InformedConsentSSAs[] consumersObj = js.Deserialize<PlanInformedConsentWorker.InformedConsentSSAs[]>(consumersString);
             return consumersObj;
         }
@@ -627,6 +662,9 @@ namespace Anywhere.service.Data
         {
             //Check login type
             //return dg.getLogIn(userId, hash);
+            if (stringInjectionValidatorLogin(userId) == false) return null;
+            if (stringInjectionValidatorLogin(hash) == false) return null;
+            if (stringInjectionValidatorLogin(deviceId) == false) return null;
             string loginType = dg.checkLoginType();
             LoginType[] loginTypeObj = js.Deserialize<LoginType[]>(loginType);
             string type = loginTypeObj[0].setting_value.ToString();
@@ -661,6 +699,23 @@ namespace Anywhere.service.Data
                 return dg.getLogIn(userId, hash);
             }
         }
+        public bool stringInjectionValidatorLogin(string uncheckedString)
+        {
+            string waitFor = "WAITFOR DELAY";
+            string dropTable = "DROP TABLE";
+            string deleteFrom = "DELETE FROM";
+            string singleQuote = "'";
+            if (!string.IsNullOrWhiteSpace(uncheckedString) && (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(singleQuote) || uncheckedString.ToUpper().Contains(deleteFrom)))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
 
         public class LoginType
         {

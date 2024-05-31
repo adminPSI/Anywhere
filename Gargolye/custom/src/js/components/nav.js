@@ -51,6 +51,15 @@ const MODULE_MENU = (function () {
     const utilMenu = document.querySelector('.util-menu');
     let moduleMenu;
 
+    const elementsWithClass = document.querySelectorAll('.route-link');
+
+    // Add an event listener to each element
+    elementsWithClass.forEach(element => {
+        element.addEventListener('click', event => {
+            event.preventDefault();
+        });
+    });
+        
     async function handleMenuClick(event) {
         const target = event.target;
 
@@ -68,6 +77,13 @@ const MODULE_MENU = (function () {
             moduleMenu.classList.remove('menu-visible');
             bodyScrollLock.enableBodyScroll(moduleMenu);
             loadApp(target.dataset.loadModule);
+
+            // Get a reference to the overlay element
+            const overlay = document.querySelector('.overlay');
+
+            if (overlay.classList.contains('visible')) {
+                overlay.classList.remove('visible');
+            }
 
             return;
         }
@@ -122,6 +138,8 @@ const MODULE_MENU = (function () {
         document.getElementById('CFButton').removeAttribute("title");
         document.getElementById('AdminButton').removeAttribute("title");
         document.getElementById('resetButton').removeAttribute("title");
+        document.getElementById('accountButton').removeAttribute("title");
+        document.getElementById('editaccountButton').removeAttribute("title");
     }
 
     function addAttr() {
@@ -145,6 +163,8 @@ const MODULE_MENU = (function () {
         document.getElementById('CFButton').setAttribute("title", "Money Management");
         document.getElementById('AdminButton').setAttribute("title", "Administration");
         document.getElementById('resetButton').setAttribute("title", "Reset Passwords");
+        document.getElementById('accountButton').setAttribute("title", "Account Register");
+        document.getElementById('editaccountButton').setAttribute("title", "Edit Account");
     }
 
     return { init };
@@ -194,11 +214,11 @@ const UTIL_MENU = (function () {
                     document.querySelector('.submenu.menu-visible').classList.remove('menu-visible');
                     return;
                 }
-                if (event.target.dataset.action === 'trainingVideos') {
+                if (event.target.dataset.action === 'trainingVideos') { 
                     const url =
                         $.session.applicationName === 'Advisor'
-                            ? 'http://www.primarysolutions.net/customercare/65465489432134874230-2/'
-                            : 'http://www.primarysolutions.net/customercare/6546541321877453120-14861520/';
+                            ? 'https://primarysolutions.net/technology/advisor-support/'
+                            : 'https://primarysolutions.net/technology/gatekeeper-support/';
 
                     const win = window.open(url, '_blank');
                     win.focus();

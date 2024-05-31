@@ -1,4 +1,5 @@
-﻿using System;
+﻿using iTextSharp.text;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel.Web;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereAttachmentWorker;
 
 namespace Anywhere.service.Data
 {
@@ -445,6 +447,16 @@ namespace Anywhere.service.Data
             [DataMember(Order = 2)]
             public string actionId { get; set; }
         }
+
+        [DataContract]
+        public class ResponsiblePartyClassification
+        {
+            [DataMember(Order = 0)]
+            public string typeID { get; set; }
+            [DataMember(Order = 1)]
+            public string description { get; set; }
+
+        }
         #endregion
 
         #region WORKFLOW METHODS
@@ -516,7 +528,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public PeopleName[] getPeopleNames(string token, string peopleId)
+        public PeopleName[] getPeopleNames(string token, string peopleId, string TypeId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -524,7 +536,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    PeopleName[] people = js.Deserialize<PeopleName[]>(wfdg.getPeopleNames(peopleId, transaction));
+                    PeopleName[] people = js.Deserialize<PeopleName[]>(wfdg.getPeopleNames(peopleId, TypeId, transaction));
                     return people;
                 }
                 catch (Exception ex)
@@ -582,6 +594,24 @@ namespace Anywhere.service.Data
                     js.MaxJsonLength = Int32.MaxValue;
                     // if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
                     WorkflowStep[] steps = js.Deserialize<WorkflowStep[]>(wfdg.getResponsiblePartyIDforThisEditStep(stepId, transaction));
+                    return steps;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public ResponsiblePartyClassification[] getResponsiblePartyClassification(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    ResponsiblePartyClassification[] steps = js.Deserialize<ResponsiblePartyClassification[]>(wfdg.getResponsiblePartyClassification(token, transaction));
                     return steps;
                 }
                 catch (Exception ex)
@@ -675,8 +705,8 @@ namespace Anywhere.service.Data
 
                         try
                         {
-                            //string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", "", priorConsumerPlanId, transaction_insertWF);
-                            string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", transaction_insertWF);
+                            string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", "", priorConsumerPlanId, transaction_insertWF);
+                            //string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", transaction_insertWF);
 
                             workflowIds.Add(workflowId);
                         }
@@ -717,7 +747,7 @@ namespace Anywhere.service.Data
 
         }
 
-        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions)
+        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -725,8 +755,8 @@ namespace Anywhere.service.Data
                 {
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
 
-                    //return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "True", "", "", transaction);
-                    return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "True", transaction);
+                    return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "True", "", "", transaction);
+                    // return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "True", transaction);
 
                 }
                 catch (Exception ex)
@@ -1329,7 +1359,7 @@ namespace Anywhere.service.Data
                 case "[Step Name]":
                     dictPlaceHolderValuesforStep.Add(param, thisStep.StepName);
                     break;
-                  
+
             }
 
             return dictPlaceHolderValuesforStep;
@@ -1451,6 +1481,26 @@ namespace Anywhere.service.Data
                                 // return "Notification sent.";
                                 break;
                             case 3:
+                                // 'set plan status'
+                                string[] planStatusParameter3 = new string[] { };
+                                if (!string.IsNullOrEmpty(thisAction.WF_Action_Parameters))
+                                {
+                                    planStatusParameter3 = thisAction.WF_Action_Parameters.Split('=');
+                                }
+
+                                string returnPlan3 = wfdg.getPlanfromWorkFlowId(thisAction.WF_ID, transaction);
+
+                                PlanInfo[] thesePlans3 = js.Deserialize<PlanInfo[]>(returnPlan3);
+
+                                if (planStatusParameter3.Length > 1)
+                                {
+                                    foreach (PlanInfo thisPlan in thesePlans3)
+                                    {
+                                        int returnPlanStatus = pdg.updateConsumerPlanSetStatus(thisPlan.consumerPlanId, planStatusParameter3[1], transaction);
+                                    }
+                                }
+
+                                break;
                             case 4:
                                 // 'set plan status'
                                 string[] planStatusParameter = new string[] { };
@@ -1898,15 +1948,15 @@ namespace Anywhere.service.Data
         }
 
 
-        //public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions, string priorConsumerPlanId)
-        public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId)
+        public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorConsumerPlanId)
+        //public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
-                    //return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", wantedFormDescriptions, priorConsumerPlanId, transaction);
-                    return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", transaction);
+                    return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", wantedFormAttachmentIds, priorConsumerPlanId, transaction);
+                    //return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", transaction);
                 }
                 catch (Exception ex)
                 {
@@ -1927,8 +1977,8 @@ namespace Anywhere.service.Data
 
 
 
-        //string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, string wantedFormDescriptions, string priorConsumerPlanId, DistributedTransaction transaction_insertWFDetails)
-        string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, DistributedTransaction transaction_insertWFDetails)
+        string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, string wantedFormAttachmentIds, string priorConsumerPlanId, DistributedTransaction transaction_insertWFDetails)
+        // string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, DistributedTransaction transaction_insertWFDetails)
         {
 
             try
@@ -1992,7 +2042,20 @@ namespace Anywhere.service.Data
                 List<WorkflowTemplateStep> steps = js.Deserialize<List<WorkflowTemplateStep>>(wfdg.getWorkflowTemplateSteps(null, transaction_insertWFDetails));
                 List<WorkflowTemplateStepEvent> events = js.Deserialize<List<WorkflowTemplateStepEvent>>(wfdg.getWorkflowTemplateStepEvents(null, transaction_insertWFDetails));
                 List<WorkflowTemplateStepEventAction> actions = js.Deserialize<List<WorkflowTemplateStepEventAction>>(wfdg.getWorkflowTemplateStepEventActions(null, transaction_insertWFDetails));
-                //List<WorkflowTemplateStepDocument> documents = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowTemplateStepDocuments(null, wantedFormDescriptions, priorConsumerPlanId, transaction_insertWFDetails));
+                // -- Get PreviousPlan StepId 
+                List<WorkflowTemplateStepDocument> selecteddocuments = new List<WorkflowTemplateStepDocument>();
+
+                if (!string.IsNullOrEmpty(wantedFormAttachmentIds)) {
+                    string[] attachmentIds = wantedFormAttachmentIds.Split(',');
+                    foreach (string attachmentID in attachmentIds)
+                    {
+                        String previousPlanStepId = wfdg.getWorkflowStepIdfromPreviousPlan(priorConsumerPlanId, attachmentID);
+                        WorkflowTemplateStepDocument[] selecteddocument = js.Deserialize<WorkflowTemplateStepDocument[]>(wfdg.getWorkflowStepDocuments(previousPlanStepId, attachmentID, priorConsumerPlanId, transaction_insertWFDetails));
+                        selecteddocuments.Add(selecteddocument[0]);
+                    }
+
+                }
+
                 List<WorkflowTemplateStepDocument> documents = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowTemplateStepDocuments(null, transaction_insertWFDetails));
 
                 // Get relationships data used for getting responsible party relationships
@@ -2089,9 +2152,22 @@ namespace Anywhere.service.Data
 
                         foreach (WorkflowTemplateStepDocument d in documents.FindAll(p => p.stepId == s.stepId))
                         {
-                            // insert step documents
-                            String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                            // insert template step documents
+                            // what if a selected doc is one of the template docs (edited) -- you don't want both versions just the edited version
+                            bool isSelected = selecteddocuments.Any(sel => sel.description == d.description);
+                            if (!isSelected)
+                            {
+                                String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                            }
                         }
+
+                        foreach (WorkflowTemplateStepDocument d in selecteddocuments.FindAll(p => p.stepId == s.stepId))
+                        {
+                            // insert selected step documents
+                            String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+
+                        }
+
                     }
                 }
                 //MAT Commented out below because the transaction was failing due to being Commited here

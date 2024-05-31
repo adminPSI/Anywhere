@@ -169,6 +169,11 @@ const isp_ci_importantPeople = (() => {
       const emailVal = document.getElementById('isp-ciip-emailInput').value;
       const typeOtherVal = document.getElementById('isp-ciip-typeOther').value;
 
+      let thisPhone = (extVal !== '') ? UTIL.formatPhoneNumber(phoneVal) + '  ext. ' + extVal : UTIL.formatPhoneNumber(phoneVal);
+      let thisPhone2 = (phoneVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  : '';
+       thisPhone2 = (extVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  + '  ext. ' + extVal2 : UTIL.formatPhoneNumber(phoneVal2);
+    
+
       if (isNew) {
         //Insert
         // UNSAVABLE NOTE TEXT IS REMOVED IN BACKEND ON INSERTS
@@ -195,7 +200,7 @@ const isp_ci_importantPeople = (() => {
           'isp_ci_importantPeopleTable',
           [
             {
-              values: [typeVal, nameVal, addressVal, emailVal, UTIL.formatPhoneNumber(phoneVal)],
+              values: [typeVal, nameVal, addressVal, emailVal, thisPhone + '\n' + thisPhone2],
               id: `ci-impPeople-${importantPersonId}`,
               onClick: () => {
                 tablePopup(data, false);
@@ -206,6 +211,15 @@ const isp_ci_importantPeople = (() => {
         );
       } else {
         //Update
+         
+         // Validation check for rows with type other. places red '!' in row if no value is typeOther
+         if (typeVal === 'Other' && typeOtherVal === '') {
+          typeValValidated = 
+            `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${typeVal}`;
+         }  else {
+          typeValValidated = typeVal;
+         }
+
         const data = {
           token: $.session.Token,
           importantPersonId: popupData.importantPersonId,
@@ -225,8 +239,10 @@ const isp_ci_importantPeople = (() => {
         table.updateRows(
           'isp_ci_importantPeopleTable',
           [
+            
             {
-              values: [typeVal, nameVal, addressVal, emailVal, UTIL.formatPhoneNumber(phoneVal)],
+              
+              values: [typeValValidated, nameVal, addressVal, emailVal, thisPhone + '\n' + thisPhone2],
               id: `ci-impPeople-${popupData.importantPersonId}`,
               onClick: () => {
                 tablePopup(data, false);
@@ -412,8 +428,9 @@ const isp_ci_importantPeople = (() => {
       text: 'save',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        saveData();
+      callback: async () => {
+        await saveData();
+        await planValidation.contactsValidationCheck();
       },
     });
     const cancelBtn = button.build({
@@ -434,9 +451,10 @@ const isp_ci_importantPeople = (() => {
           message: 'Are you sure you would like to delete this entry?',
           accept: {
             text: 'Yes',
-            callback: () => {
-              deleteData();
+            callback: async () => {
+              await deleteData();
               POPUP.hide(popup);
+              await planValidation.contactsValidationCheck();
             },
           },
           reject: {
@@ -574,7 +592,11 @@ const isp_ci_importantPeople = (() => {
     const errors = document.getElementById('isp-ciip-mainPopup').querySelectorAll('.error');
     if (errors.length > 0) {
       saveBtn.classList.add('disabled');
-    } else saveBtn.classList.remove('disabled');
+      saveBtn.disabled = true;
+    } else {
+      saveBtn.classList.remove('disabled');
+      saveBtn.disabled = false;
+    }
   }
 
   function buildTableMarkup() {
@@ -598,8 +620,19 @@ const isp_ci_importantPeople = (() => {
 
     if (rawPeopleTableData) {
       const tableData = rawPeopleTableData.map(d => {
+        let thisPhone = (d.phoneExt !== '') ? UTIL.formatPhoneNumber(d.phone) + '  ext. ' + d.phoneExt : UTIL.formatPhoneNumber(d.phone);
+        let thisPhone2 = (d.phone2 !== '') ? UTIL.formatPhoneNumber(d.phone2)  : '';
+         thisPhone2 = (d.phone2Ext !== '') ? UTIL.formatPhoneNumber(d.phone2)  + '  ext. ' + d.phone2Ext : UTIL.formatPhoneNumber(d.phone2);
+
+         // Validation check for rows with type other. places red '!' in row if no value is typeOther
+         if (d.type === 'Other' && d.typeOther === '') {
+          d.typeValidated = 
+            `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${d.type}`;
+         }  else {
+          d.typeValidated = d.type;
+         }
         return {
-          values: [d.type, d.name, d.address, d.email, UTIL.formatPhoneNumber(d.phone)],
+          values: [d.typeValidated, d.name, d.address, d.email, thisPhone + '\n' + thisPhone2],
           id: `ci-impPeople-${d.importantPersonId}`,
           onClick: () => {
             tablePopup(d, false);
@@ -625,6 +658,7 @@ const isp_ci_importantPeople = (() => {
       type: 'contained',
       callback: () => tablePopup(null, true),
     });
+
     if (readOnly) addPersonBtn.classList.add('disabled');
 
     const table = buildTableMarkup();

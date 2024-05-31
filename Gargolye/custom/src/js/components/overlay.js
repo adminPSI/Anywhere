@@ -8,6 +8,7 @@ var overlay = (function() {
     overlay.classList.add('visible');
   }
   function init() {
+    multiTabs.newTabOpen();
     overlay = document.querySelector('.overlay');
     overlay.addEventListener('click', event => {
       // Special code for IE

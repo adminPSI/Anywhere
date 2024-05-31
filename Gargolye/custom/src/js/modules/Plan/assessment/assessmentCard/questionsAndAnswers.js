@@ -29,6 +29,21 @@
   let isSortable;
   let readonly;
 
+  function checkArrayConsistency(arr) {
+    if (arr.length === 0) {
+      return 'noMatch'; // or you can return null or undefined based on your use case
+    }
+
+    const firstElement = arr[0];
+    for (let i = 1; i < arr.length; i++) {
+      if (arr[i] !== firstElement) {
+        return 'noMatch';
+      }
+    }
+
+    return firstElement;
+  }
+
   //* TEMP FUNCTION FOR RE-ORDERING ROWS ON DELETE
   function updateRowOrderAfterDelete(grid, questionSetId) {
     // grab all rows inside grid after delete
@@ -62,7 +77,7 @@
 
   // Utils
   //------------------------------------
-  function addAnswer(id, answer, answerRow, skipped) {
+  async function addAnswer(id, answer, answerRow, skipped) {
     assessmentAjax.updateConsumerAssessmentAnswer({
       answerId: id,
       answerText: answer ? answer : '',
@@ -212,7 +227,7 @@
         const questionKeys = Object.keys(sectionQuestionCount[sectionKey][questionSetKey]);
 
         questionKeys.forEach(questionKey => {
-          const { answered, required, rowOrder } =
+          const { answered, required, rowOrder, leaveblank } =
             sectionQuestionCount[sectionKey][questionSetKey][questionKey];
           let questionDiv;
 
@@ -222,6 +237,8 @@
             if (!questionDiv) return;
             if (answered && required) questionDiv.classList.remove('unawnsered');
             if (!answered && required) questionDiv.classList.add('unawnsered');
+            if (!answered && required && !leaveblank) questionDiv.classList.add('unawnsered');
+
             if (!required) questionDiv.classList.remove('unawnsered');
           } else {
             // Table Questions
@@ -237,8 +254,7 @@
                 rowElement,
               };
             }
-            if (answered)
-              tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
+            if (answered || leaveblank) tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
           }
         });
 
@@ -304,25 +320,13 @@
     });
   }
   // Events
-  function handleAssessmentChangeEvents(e) {
+  async function handleAssessmentChangeEvents(e) {
     if (e.target.id.includes('applicable')) {
       let target = e.target.id;
       let sectionID = target.match(/\d+/)[0];
       let applied = e.target.checked ? 'Y' : 'N';
 
-      // Find the object with matching sectionId and obtain the index
-      // const matchingIndex = assessmentValidationCheck.sectionsApplicable.findIndex(
-      //   obj => obj.sectionId === sectionID,
-      // );
-
-      // Update the value if a match is found
-      // if (matchingIndex !== -1) {
-      //   assessmentValidationCheck.sectionsApplicable[matchingIndex].applicable = applied;
-      //   //(assessmentValidationCheck.sectionsApplicable[matchingIndex]).applicable === 'Y' ? 'N' : 'Y';
-      // }
-
-      // checks entire assessments for validation errors
-      // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+      planValidation.updateSectionApplicability(sectionID, applied);
 
       return;
     }
@@ -332,7 +336,9 @@
       const isForRow = e.target.dataset.isforrow;
       // ids for associated textarea question/anwser
       let answerId = e.target.dataset.answerid;
+      let questionId = e.target.dataset.questionid;
       let setId = e.target.dataset.setid;
+      let sectionID = e.target.dataset.sectionid;
 
       if (isForRow === 'false') {
         addAnswer(answerId, '', '', skipped);
@@ -341,27 +347,38 @@
         if (isChecked) {
           textAreaInput.value = '';
           input.disableInputField(textAreaInput);
+          sectionQuestionCount[sectionID][setId][questionId].leaveblank = true;
         } else {
           input.enableInputField(textAreaInput);
+          sectionQuestionCount[sectionID][setId][questionId].leaveblank = false;
         }
       } else {
         const questionSet = document.getElementById(`set${setId}`);
-        const questionSetGridRows = [
-          ...questionSet.querySelectorAll('.grid__row:not(.grid__rowHeader)'),
-        ];
+        let sectionID = questionSet.parentElement.parentElement.id
+        sectionID = sectionID.replace(/\D/g, "");
+        const questionSetGridRows = [...questionSet.querySelectorAll('.grid__row:not(.grid__rowHeader)')];
         const questionSetActionButtons = [...questionSet.querySelectorAll('.gridActionRow button')];
+        let questionSetId = e.target.dataset.setid;
+       // let sectionID = e.target.dataset.sectionid;
         questionSetGridRows.forEach(row => {
           const rowCells = row.querySelectorAll('.grid__cell');
+          
           rowCells.forEach(cell => {
             const cellInput = cell.querySelector('.input-field__input');
+            let questionRowId = cell.id;
+          questionRowId = questionRowId.replace(/\D/g, "");
 
             addAnswer(cellInput.id, '', '', skipped);
 
             if (isChecked) {
               cellInput.value = '';
               input.disableInputField(cellInput);
+              //sectionQuestionCount[sectionID][setId][questionId].leaveblank = true;
+             sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = true;
             } else {
               input.enableInputField(cellInput);
+              //sectionQuestionCount[sectionID][setId][questionId].leaveblank = false;
+             sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = false;
             }
           });
         });
@@ -373,6 +390,8 @@
           }
         });
       }
+
+      tableOfContents.showUnansweredQuestionCount();
 
       return;
     }
@@ -411,37 +430,31 @@
       if (type === 'checkbox') {
         answer = e.target.checked === true ? '1' : '0';
         addAnswer(answerId, answer);
-        sectionQuestionCount[sectionId][setId][questionId].answered =
-          e.target.checked === true ? true : false;
+        sectionQuestionCount[sectionId][setId][questionId].answered = e.target.checked === true ? true : false;
 
-        //const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
+        const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
 
-        // if (
-        //   questionIdCategory !== 'Variable not found in the object' &&
-        //   questionIdCategory !== 'noSupport'
-        // ) {
-        //   assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] =
-        //     e.target.checked;
-        // }
+        let assessmentValidationCheck = planValidation.returnAssessmentValidationData();
 
-        // if (questionIdCategory === 'noSupport') {
-        //   assessmentValidationCheck.servicesAndSupportsChecked[sectionId] = {
-        //     ...assessmentValidationCheck.servicesAndSupportsChecked[sectionId], // Preserve existing properties
-        //     noSupport: true, // Set noSupport to true
-        //   };
+        if (questionIdCategory !== 'Variable not found in the object' && questionIdCategory !== 'noSupport') {
+          planValidation.updateAssessmentValidationProperty(sectionId, questionIdCategory, e.target.checked);
+        }
 
-        //   for (const key in assessmentValidationCheck.servicesAndSupportsChecked[sectionId]) {
-        //     if (key !== 'noSupport') {
-        //       assessmentValidationCheck.servicesAndSupportsChecked[sectionId][key] = false;
-        //     }
-        //   }
-        // }
+        if (questionIdCategory === 'noSupport') {
+          planValidation.updateAssessmentValidationProperty(sectionId, 'noSupport', true);
 
-        // // checks the status of the buttons and adds/removes error class if needed for specific section
-        // planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck, sectionId);
+          for (const key in assessmentValidationCheck.servicesAndSupportsChecked[sectionId]) {
+            if (key !== 'noSupport') {
+              planValidation.updateAssessmentValidationProperty(sectionId, key, false);
+            }
+          }
+        }
 
-        // // checks entire assessments for validation errors
-        // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+        // checks the status of the buttons and adds/removes error class if needed for specific section
+        planValidation.servicesAndSupportsBtnCheck(sectionId);
+
+        // checks entire assessments for validation errors
+        planValidation.updatedAssessmenteValidation();
       }
       if (type === 'radio') {
         const radioLabelText = e.target.nextSibling.innerHTML;
@@ -453,37 +466,24 @@
         answer = e.target.value;
 
         if (answer !== '') {
-          addAnswer(answerId, answer);
+           await addAnswer(answerId, answer);
 
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
-
-            if (sectionId === '41') {
-              // assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-              //   assessmentValidationCheck,
-              //   answer,
-              //   answerId,
-              // );
-              // // checks entire assessments for validation errors
-              // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
-            }
           }
         } else {
-          addAnswer(answerId);
+          await addAnswer(answerId);
 
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
+        }
 
-          // assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-          //   assessmentValidationCheck,
-          //   answer,
-          //   answerId,
-          // );
-          // // checks entire assessments for validation errors
-          // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+        if (sectionId === '41') {
+          await planValidation.updateAnswerWorkingSection(assessmentId);
+          tableOfContents.showUnansweredQuestionCount();
         }
       }
       if (type === 'select-one') {
@@ -499,13 +499,7 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
           }
 
-          // assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-          //   assessmentValidationCheck,
-          //   answer,
-          //   answerId,
-          // );
-          // // checks entire assessments for validation errors
-          // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+          planValidation.updateAnswerWorkingSection(assessmentId);
         } else {
           addAnswer(answerId);
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
@@ -513,13 +507,7 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
-          // assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-          //   assessmentValidationCheck,
-          //   answer,
-          //   answerId,
-          // );
-          // // checks entire assessments for validation errors
-          // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+          planValidation.updateAnswerWorkingSection(assessmentId);
         }
       }
       if (type === 'date') {
@@ -552,6 +540,8 @@
           }
         }
       }
+      
+      tableOfContents.showUnansweredQuestionCount();
 
       return;
     }
@@ -644,25 +634,22 @@
       readOnly = true;
     }
 
-    // number of paid supports attached to this section
-    // let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
-    // let additionalSupportCount =
-    //   assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
-    // let professionalReferralCounts =
-    //   assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
-    // let potentialOutcomeCount =
-    //   assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
+    //number of paid supports attached to this section
+    let assessmentValidationCheck = planValidation.returnAssessmentValidationData();
 
-    // // returns true if the section has been checked
-    // let paidSupportChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport;
-    // let additionalSupportChecked =
-    //   assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport ||
-    //   assessmentValidationCheck.servicesAndSupportsChecked[id].technology ||
-    //   assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource;
-    // let professionalReferralChecked =
-    //   assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral;
-    // let potentialOutcomeChecked =
-    //   assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome;
+    let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
+    let additionalSupportCount = assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
+    let professionalReferralCounts = assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
+    let potentialOutcomeCount = assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
+
+    // returns true if the section has been checked
+    let paidSupportChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport;
+    let additionalSupportChecked =
+      assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport ||
+      assessmentValidationCheck.servicesAndSupportsChecked[id].technology ||
+      assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource;
+    let professionalReferralChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral;
+    let potentialOutcomeChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome;
 
     const outcomesBtn = button.build({
       //text: `Add Outcome (${potentialOutcomeCount})`,
@@ -675,7 +662,7 @@
       },
     });
     const paidSupportBtn = button.build({
-        //text: `Add Paid Support (${paidSupportCount})`,
+      //text: `Add Paid Support (${paidSupportCount})`,
       text: 'Add Paid Support',
       style: 'secondary',
       type: 'contained',
@@ -690,8 +677,8 @@
       },
     });
     const additionalSupportBtn = button.build({
-        /*text: `Add Additional Support (${additionalSupportCount})`,*/
-        text: 'Add Additional Support',
+      /*text: `Add Additional Support (${additionalSupportCount})`,*/
+      text: 'Add Additional Support',
       style: 'secondary',
       type: 'contained',
       id: `additionalSupportBtn${id}`,
@@ -705,8 +692,8 @@
       },
     });
     const profRefBtn = button.build({
-        /*text: `Add Professional Referral (${professionalReferralCounts})`,*/
-        text: 'Add Professional Referral',
+      /*text: `Add Professional Referral (${professionalReferralCounts})`,*/
+      text: 'Add Professional Referral',
       style: 'secondary',
       type: 'contained',
       id: `profRefBtn${id}`,
@@ -727,26 +714,26 @@
       profRefBtn.classList.add('disabled');
     }
 
-    // Add error class to buttons that are checked and have 0 outcomes attached to them
-    //if (paidSupportChecked && paidSupportCount === 0) {
-    //  paidSupportBtn.classList.add('error');
-      // assessmentValidationCheck.complete = false;
-      // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
-    //}
+    //Add error class to buttons that are checked and have 0 outcomes attached to them
+    if (paidSupportChecked && paidSupportCount === 0) {
+      paidSupportBtn.classList.add('error');
+      planValidation.updateAssessmentValidationSection('complete', false);
+    }
 
-    // if (additionalSupportChecked && additionalSupportCount === 0) {
-    //   additionalSupportBtn.classList.add('error');
-    //   assessmentValidationCheck.complete = false;
-    // }
+    if (additionalSupportChecked && additionalSupportCount === 0) {
+      additionalSupportBtn.classList.add('error');
+      planValidation.updateAssessmentValidationSection('complete', false);
+    }
 
-    // if (professionalReferralChecked && professionalReferralCounts === 0) {
-    //   profRefBtn.classList.add('error');
-    //   assessmentValidationCheck.complete = false;
-    // }
+    if (professionalReferralChecked && professionalReferralCounts === 0) {
+      profRefBtn.classList.add('error');
+      planValidation.updateAssessmentValidationSection('complete', false);
+    }
 
-    //if (potentialOutcomeChecked && potentialOutcomeCount === 0) {
-    //  outcomesBtn.classList.add('error');
-    //}
+    if (potentialOutcomeChecked && potentialOutcomeCount === 0) {
+      outcomesBtn.classList.add('error');
+      planValidation.updateAssessmentValidationSection('complete', false);
+    }
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
@@ -790,9 +777,7 @@
   //---------
   async function deleteSelectedRows(grid, gridBody, questionSetId) {
     const planId = plan.getCurrentPlanId();
-    const successfulDelete = await assessment.deleteGridRows(planId, questionSetId, [
-      selectedRow.id,
-    ]);
+    const successfulDelete = await assessment.deleteGridRows(planId, questionSetId, [selectedRow.id]);
     gridBody.removeChild(selectedRow.target);
     addAnswer(selectedRow.id);
 
@@ -949,7 +934,7 @@
       }
 
       Object.entries(rowQuestions).forEach(([questionKey, questionData], index) => {
-        const { id: questionId, text, answerText, answerId, answerStyle } = questionData;
+        const { id: questionId, text, answerText, answerId, answerStyle, skipped } = questionData;
         const questionRowId = `${questionId}${rowKey}`;
 
         if (rowIndex === 0) {
@@ -962,6 +947,7 @@
             answered: answerText && answerText !== '' ? true : false,
             required: false,
             rowOrder: rowKey,
+            leaveblank: skipped === 'N' ? false : true,
           };
         }
 
@@ -1047,6 +1033,7 @@
       grid.classList.add('sortableTable');
     }
 
+    let isLeftBlankCheckboxChecked = [];
     const rowOrderKeys = Object.keys(questions);
     rowOrderKeys.forEach((rok, rowIndex) => {
       const gridHeaderRow = buildGridHeaderRow();
@@ -1054,22 +1041,18 @@
 
       const questionOrderKeys = Object.keys(questions[rok]);
       questionOrderKeys.forEach((qok, questionIndex) => {
-        const {
-          id: questionId,
-          text,
-          answerText,
-          answerId,
-          answerStyle,
-          prompt,
-        } = questions[rok][qok];
+        const { id: questionId, text, answerText, answerId, answerStyle, prompt, skipped } = questions[rok][qok];
 
         const questionRowId = `${questionId}${rok}`;
+
+        isLeftBlankCheckboxChecked.push(skipped);
 
         if (answerStyle !== 'STATICTEXT') {
           sectionQuestionCount[sectionId][questionSetId][questionRowId] = {
             answered: false,
             required: false,
             rowOrder: rok,
+            leaveblank: skipped === 'N' ? false : true,
           };
 
           if (answerText && answerText !== '') {
@@ -1123,6 +1106,18 @@
       }
       gridBody.appendChild(gridRow);
     });
+    rowOrderKeys.forEach((rok, rowIndex) => {
+      const questionOrderKeys = Object.keys(questions[rok]);
+      questionOrderKeys.forEach((qok, questionIndex) => {
+        const { id: questionId, text, answerText, answerId, answerStyle, prompt, skipped } = questions[rok][qok];
+        const questionRowId = `${questionId}${rok}`;
+
+        if (!areAllGridAnswersEmpty && skipped === 'Y') {
+          addAnswer(answerId, answerText, rok, 'N');
+          sectionQuestionCount[sectionId][questionSetId][questionRowId].leaveblank = false;
+        }
+      });
+    });
     grid.appendChild(gridBody);
 
     if (allowRowInsert === 'True') {
@@ -1155,6 +1150,8 @@
       gridActionRow.appendChild(cancelDeleteRowsBtn);
       grid.appendChild(gridActionRow);
 
+      let currentRowOrder;
+
       grid.addEventListener('click', async e => {
         const gridRows = [...grid.querySelectorAll('.grid__body .grid__row')];
 
@@ -1182,11 +1179,13 @@
         }
 
         if (target === addRowBtn) {
+          const gridBody = target.closest('.grid').querySelector('.grid__body');
           const planId = plan.getCurrentPlanId();
           const newRowData = await assessment.insertAssessmentGridRowAnswers(planId, questionSetId);
           const gridRow = document.createElement('div');
           gridRow.classList.add('grid__row');
-          gridRow.id = `roworder${rowOrderKeys.length + 1}`;
+          currentRowOrder = gridBody.querySelectorAll('.grid__row').length + 1;
+          gridRow.id = `roworder${currentRowOrder}`;
 
           if (isSortable) {
             var cell = document.createElement('div');
@@ -1197,15 +1196,15 @@
           }
 
           newRowData.forEach((nrd, index) => {
-            let { answerId, answerRow, answerText, answerStyle, questionId, hideOnAssessment } =
-              nrd;
+            let { answerId, answerRow, answerText, answerStyle, questionId, hideOnAssessment, skipped } = nrd;
             const isAnswered = answerText && answerText !== '' ? true : false;
-            const questionRowId = `${questionId}${rowOrderKeys.length + 1}`;
+            const questionRowId = `${questionId}${currentRowOrder}`;
             if (hideOnAssessment === '1') return;
 
             sectionQuestionCount[sectionId][questionSetId][questionRowId] = {
               answered: false,
-              rowOrder: rowOrderKeys.length + 1,
+              rowOrder: currentRowOrder,
+              leaveblank: skipped === 'N' ? false : true,
             };
 
             const colName = COL_NAME_MAP[index];
@@ -1328,10 +1327,15 @@
           }
           const colInput = firstCol.querySelector('.input-field__input');
           colInput.focus();
+
+          if (sectionId === '41') {
+            await planValidation.updateAnswerWorkingSection(assessmentId);
+            tableOfContents.showUnansweredQuestionCount();
+          }
         }
         if (target === deleteRowsBtn) {
           if (deleteRowsActive) {
-            deleteSelectedRows(grid, gridBody, questionSetId);
+            await deleteSelectedRows(grid, gridBody, questionSetId);
 
             questionIds.forEach(qId => {
               const key = `${qId}${selectedRow.id}`;
@@ -1350,8 +1354,14 @@
               grid.classList.add('unanswered');
               toggleIntentionallyBlankCheckbox('', questionSetId, false);
             }
+
+            if (sectionId === '41') {
+              await planValidation.updateAnswerWorkingSection(assessmentId);
+              tableOfContents.showUnansweredQuestionCount();
+            }
           }
 
+          currentRowOrder = gridBody.querySelectorAll('.grid__row').length + 1;
           deleteRowsActive = !deleteRowsActive;
 
           if (deleteRowsActive) {
@@ -1382,18 +1392,23 @@
 
     if (questionSetId !== '182') {
       // intentionally blank checkbox
+      let isChecked = checkArrayConsistency(isLeftBlankCheckboxChecked);
+      isChecked = !areAllGridAnswersEmpty ? 'N' : isChecked;
+
       const intentionallyBlankCheckbox = input.buildCheckbox({
         text: 'Intentionally left blank',
         id: `intentionallyBlankCheckbox${questionSetId}`,
         className: 'intentionallyBlankCheckbox',
-        isChecked: false, //skipped === 'Y' ? true : false,
+        isChecked: isChecked === 'Y' ? true : false,
         isDisabled: readonly,
         attributes: [
           { key: 'data-setid', value: questionSetId },
           { key: 'data-isforrow', value: true },
         ],
       });
+
       grid.appendChild(intentionallyBlankCheckbox);
+
       if (!areAllGridAnswersEmpty) {
         input.disableInputField(intentionallyBlankCheckbox);
       }
@@ -1406,15 +1421,7 @@
   // Text, checkboxes, radio
   //---------
   function buildTextInput(data) {
-    const {
-      answerId,
-      answerText,
-      conditionalQuestionId,
-      conditionalAnswerText,
-      sectionId,
-      setId,
-      questionId,
-    } = data;
+    const { answerId, answerText, conditionalQuestionId, conditionalAnswerText, sectionId, setId, questionId } = data;
 
     const questionInputMarkup = input.build({
       type: 'text',
@@ -1438,13 +1445,11 @@
         if (readonly || !$.session.planUpdate) {
           input.disableInputField(questionInputMarkup);
         }
-        sectionQuestionCount[sectionId][setId][questionId].answered =
-          answerText === '' ? false : true;
+        sectionQuestionCount[sectionId][setId][questionId].answered = answerText === '' ? false : true;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
       }
     } else {
-      sectionQuestionCount[sectionId][setId][questionId].answered =
-        answerText === '' ? false : true;
+      sectionQuestionCount[sectionId][setId][questionId].answered = answerText === '' ? false : true;
       sectionQuestionCount[sectionId][setId][questionId].required = true;
       if (readonly || !$.session.planUpdate) {
         input.disableInputField(questionInputMarkup);
@@ -1454,15 +1459,7 @@
     return questionInputMarkup;
   }
   function buildTextareaInput(data) {
-    const {
-      answerId,
-      answerText,
-      conditionalQuestionId,
-      conditionalAnswerText,
-      sectionId,
-      setId,
-      questionId,
-    } = data;
+    const { answerId, answerText, conditionalQuestionId, conditionalAnswerText, sectionId, setId, questionId } = data;
 
     let charLimit = 10000;
 
@@ -1489,13 +1486,11 @@
         if (readonly || !$.session.planUpdate) {
           input.disableInputField(questionInputMarkup);
         }
-        sectionQuestionCount[sectionId][setId][questionId].answered =
-          answerText === '' ? false : true;
+        sectionQuestionCount[sectionId][setId][questionId].answered = answerText === '' ? false : true;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
       }
     } else {
-      sectionQuestionCount[sectionId][setId][questionId].answered =
-        answerText === '' ? false : true;
+      sectionQuestionCount[sectionId][setId][questionId].answered = answerText === '' ? false : true;
       sectionQuestionCount[sectionId][setId][questionId].required = true;
       if (readonly || !$.session.planUpdate) {
         input.disableInputField(questionInputMarkup);
@@ -1518,15 +1513,11 @@
 
     const isChecked = answerText && answerText === '1' ? true : false;
 
-    // const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
+    const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
 
-    // if (
-    //   questionIdCategory !== 'Variable not found in the object' &&
-    //   questionIdCategory !== 'noSupport'
-    // ) {
-    //   assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] =
-    //     isChecked;
-    // }
+    if (questionIdCategory !== 'Variable not found in the object' && questionIdCategory !== 'noSupport') {
+      planValidation.updateAssessmentValidationProperty(sectionId, questionIdCategory, isChecked);
+    }
 
     const questionInputMarkup = input.buildNativeCheckbox({
       id: answerId,
@@ -1656,12 +1647,12 @@
 
     let addAttachmentButton = false;
 
-    if (subSectionId && subSectionsWithAttachments.includes(subSectionId))
-      addAttachmentButton = true;
+    if (subSectionId && subSectionsWithAttachments.includes(subSectionId)) addAttachmentButton = true;
 
     sectionQuestionCount[sectionId][setId][questionId] = {
       answered: null,
       required: null,
+      leaveblank: skipped === 'N' ? false : true,
     };
 
     const question = document.createElement('div');
@@ -1809,13 +1800,7 @@
     if (setType !== 'GRID') {
       const questionOrderKeys = Object.keys(questions);
       questionOrderKeys.forEach(qoKey => {
-        const questionWrap = buildQuestionMarkup(
-          setId,
-          questions[qoKey],
-          sectionId,
-          readOnly,
-          subsectionId,
-        );
+        const questionWrap = buildQuestionMarkup(setId, questions[qoKey], sectionId, readOnly, subsectionId);
         questionSetWrap.appendChild(questionWrap);
       });
     } else {
@@ -1947,7 +1932,7 @@
     subSectionsWithAttachments = [];
     charLimits = planData.getAllISPcharacterLimts();
     readonly = readOnly;
-    // assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
+    assessmentValidationCheck = await planValidation.returnAssessmentValidationData();
 
     if (!$.session.planUpdate) {
       isSortable = false;

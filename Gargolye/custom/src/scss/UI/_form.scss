@@ -1,0 +1,26 @@
+[data-ui] {
+  //===========================================
+  // FORM
+  //-------------------------------------------
+  form {
+    align-content: flex-start;
+    column-gap: 10px;
+    display: flex;
+    flex-flow: row wrap;
+
+    fieldset {
+      margin: 0 0 20px 0;
+    }
+
+    legend {
+      margin-bottom: 8px;
+    }
+  }
+
+  .formButtons {
+    display: flex;
+    justify-content: flex-end;
+    column-gap: 10px;
+    width: 100%;
+  }
+}

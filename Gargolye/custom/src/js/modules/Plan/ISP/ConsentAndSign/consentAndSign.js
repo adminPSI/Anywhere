@@ -86,6 +86,8 @@ const planConsentAndSign = (() => {
       name: selectedMemberData.name,
       lastName: selectedMemberData.lastName,
       participated: selectedMemberData.participated,
+      parentOfMinor: selectedMemberData.parentOfMinor,
+      email: selectedMemberData.email,
       relationship: selectedMemberData.relationship ? selectedMemberData.relationship : '',
       // sign/disent
       signature: selectedMemberData.signature,
@@ -126,6 +128,7 @@ const planConsentAndSign = (() => {
       section: '',
       questionId: '0',
       vendorId: selectedMemberData.vendorId,
+      locationId: selectedMemberData.locationId,
     };
 
     let stuff = await consentAndSignAjax.insertTeamMember(data);
@@ -206,6 +209,7 @@ const planConsentAndSign = (() => {
       vendorId: selectedMemberData.vendorId,
       // for clearing signature
       clear: clearSignature ? 't' : 'f',
+      email: selectedMemberData.email,
     };
 
     // Gets the connection between the selected vendor name and the correct vendorId
@@ -755,7 +759,9 @@ const planConsentAndSign = (() => {
                 isNewMember: false,
                 isReadOnly: readOnly,
                 memberData: m,
+                currentTeamMemberData: teamMemberData,
                 vendorData: vendorData,
+                clickSource: 'teamGrid',
               });
             } else {
               await csTeamMember.showPopup({
@@ -949,6 +955,7 @@ const planConsentAndSign = (() => {
           },
           currentTeamMemberData: teamMemberData,
           vendorData: vendorData,
+          clickSource: 'addVendor',
         });
       },
     });

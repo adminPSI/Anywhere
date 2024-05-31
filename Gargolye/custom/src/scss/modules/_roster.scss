@@ -188,36 +188,36 @@
 // Consumer Info Card
 //------------------------
 .consumerInfoCloseBtn {
-    // back to roster btn
-    margin: 0 0 12px 0;
+  // back to roster btn
+  margin: 0 0 12px 0;
 }
 
 .consumerInfoForwardBtn {
-    font-size: 12.5px !important; 
-    text-align: right;
+  font-size: 12.5px !important;
+  text-align: right;
 
-    svg {
-        width: 24px;
-        vertical-align: middle;
-    }
+  svg {
+    width: 24px;
+    vertical-align: middle;
+  }
 
-    @media screen and (min-width: 450px) {
-        font-size: 14.5px !important;
-    }
+  @media screen and (min-width: 450px) {
+    font-size: 14.5px !important;
+  }
 }
 
 .consumerInfoBackwardBtn {
-    font-size: 12.5px !important;
-    text-align: left;
+  font-size: 12.5px !important;
+  text-align: left;
 
-    svg {
-        width: 24px;
-        vertical-align: middle;
-    }
+  svg {
+    width: 24px;
+    vertical-align: middle;
+  }
 
-    @media screen and (min-width: 450px) {
-        font-size: 14.5px !important;
-    }
+  @media screen and (min-width: 450px) {
+    font-size: 14.5px !important;
+  }
 }
 
 .sectionBackBtn {
@@ -439,12 +439,13 @@
         pointer-events: none;
         cursor: default;
       }
-      .demoPhones{
+      .demoPhones {
         pointer-events: all;
       }
 
       svg {
         width: 24px;
+        margin-bottom: -3px;
       }
 
       .view {
@@ -1095,4 +1096,122 @@
       width: 420px;
     }
   }
+}
+
+.relationshipTable {
+    border-radius: $r-sm;
+    overflow: hidden;
+    font-size: 16px;
+
+    &__endIcon {
+        flex-grow: 0;
+        width: 24px;
+        max-width: 40px;
+        margin: 0;
+        pointer-events: all;
+        padding: 0;
+        cursor: pointer;
+
+        svg {
+            width: 24px;
+            cursor: pointer;
+        }
+    }
+
+    &__subTableWrap {
+        font-size: 14px;
+    }
+
+    &__header,
+    &__subHeader {
+        background: $bg-dark;
+        color: $font-light;
+        padding: 12px 6px;
+    }
+
+    &__header,
+    &__subHeader,
+    &__dataRow {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+
+        > div {
+            flex-grow: 1;
+            margin: 0 5px 0 0;
+            padding: 0 5px;
+        }
+
+        div:first-child {
+            padding-left: 0;
+        }
+    }
+
+    &__mainDataRow,
+    &__subDataRow {
+        * {
+        }
+    }
+
+    &__mainDataRow {
+        cursor: pointer;
+        padding: 10px 6px;
+        border: $w-sm solid rgba($black, 0.12);
+        border-top: none;
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    &__subDataRow {
+        padding: 8px 6px;
+        border: $w-sm solid rgba($black, 0.12);
+        border-top: none;
+    }
+
+    &__subRowWrap {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
+    // COLUMN WIDTHS
+    &__header,
+    &__mainDataRow {
+        div:nth-child(1) {
+            // TOGGLE ICON
+            flex-grow: 0;
+            width: 32px;
+            max-width: 32px;
+            pointer-events: all;
+        }
+
+        div:nth-child(2) {
+            // Name
+            width: 150px;
+            max-width: 300px;
+            pointer-events: none;
+        }
+
+        div:nth-child(3) {
+            // Relationship
+            width: 80px;
+            max-width: 150px;
+            pointer-events: none;
+        }
+    }
+
+    &__subHeader,
+    &__subDataRow {
+        div:nth-child(1) {
+            // ITEM NUM
+            width: 30px;
+            flex-grow: 0;
+        }
+
+        div:nth-child(2) {
+            // ITEM NUM
+            width: 300px;
+        }
+    }
 }

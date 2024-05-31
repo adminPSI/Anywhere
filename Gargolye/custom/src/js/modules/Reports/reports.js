@@ -15,9 +15,9 @@ const generateReports = (() =>  {
     });
   }
 
-  function passFilterValuesForReport(reportType, filterValues) {
-    generateReportsAjax.generateReport(reportType, filterValues, checkIfReportIsReadyInterval);
-  }
+    function passFilterValuesForReport(reportType, filterValues) {
+        generateReportsAjax.generateReport(reportType, filterValues, checkIfReportIsReadyInterval);
+    }
 
   // Helper function to create report buttons
   function createIndividualReportButton(text, filterValues) {
@@ -34,7 +34,7 @@ const generateReports = (() =>  {
 
         // set report running to true to stop mulitple reports being ran, run report, then show popup while report runs in background
         reportRunning = true;
-        passFilterValuesForReport(text, filterValues);
+          passFilterValuesForReport(text, filterValues); 
         showWarningPopup(text, filterValues);
       },
     });
@@ -117,7 +117,6 @@ const generateReports = (() =>  {
     POPUP.show(reportWarningPopup);
   }
 
-  // Function to check if a report is ready at a specified interval
   function checkIfReportIsReadyInterval(res) {
     // Get the interval in seconds from the session and convert it to milliseconds
     seconds = parseInt($.session.reportSeconds);
@@ -128,6 +127,7 @@ const generateReports = (() =>  {
       await checkIfReportExists(res); // Call the function to check if the report exists
     }, intSeconds); // The interval in milliseconds between checks
   }
+
 
   // Async function to check if a report exists
   async function checkIfReportExists(res) {
@@ -154,5 +154,6 @@ const generateReports = (() =>  {
     checkIfReportIsReadyInterval,
     checkIfReportExists,
     callReport,
+    showWarningPopup,
   };
 })();

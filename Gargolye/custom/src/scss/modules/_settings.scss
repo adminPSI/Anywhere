@@ -1,215 +1,256 @@
 .submenu {
-  .menuTopDisplay {
-    margin-bottom: 8px;
-  }
+    .menuTopDisplay {
+        margin-bottom: 8px;
+    }
 }
 
 .settingMenuCard {
-  margin-bottom: 5px;
-  background: #fff;
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: $shadow-m2;
-  padding: 0px 7px;
+    margin-bottom: 5px;
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: $shadow-m2;
+    padding: 0px 7px;
 
-  .header {
-    color: #fffffff0;
-    padding: 8px 0 5px 9px;
-    margin-bottom: 15px;
-    background: $bg-dark2;
-    box-shadow: 1px 0px 6px #0000006b;
-    margin-left: -7px;
-    margin-right: -7px;
-  }
+    .header {
+        color: #fffffff0;
+        padding: 8px 0 5px 9px;
+        margin-bottom: 15px;
+        background: $bg-dark2;
+        box-shadow: 1px 0px 6px #0000006b;
+        margin-left: -7px;
+        margin-right: -7px;
+    }
 }
 
 .submenu.util-menu__defaults {
-  -webkit-overflow-scrolling: touch;
-  overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
 
-  .settingMenuCard {
-    .checkboxWrap {
-      text-align: right;
+    .settingMenuCard {
+        .checkboxWrap {
+            text-align: right;
+        }
+        .checkbox {
+            padding-bottom: 15px;
+        }
+        .defaultLocationDD {
+            margin-bottom: 2px;
+        }
+        .rllCheckbox {
+            padding-bottom: 10px;
+        }
     }
-    .checkbox {
-      padding-bottom: 15px;
-    }
-    .defaultLocationDD {
-      margin-bottom: 2px;
-    }
-    .rllCheckbox {
-      padding-bottom: 10px;
-    }
-  }
 }
 
 // Widget Settings
 .util-menu__widgetSettings {
-  -webkit-overflow-scrolling: touch;
-  overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
 
-  .widgetsContainer {
-    display: flex;
-    flex-flow: row wrap;
-  }
+    .widgetsContainer {
+        display: flex;
+        flex-flow: row wrap;
+    }
 
-  .widgetWrap {
-    overflow: hidden;
-    position: relative;
-    margin: 0 0 10px;
-    border-radius: 4px;
-    width: 100%;
+    .widgetWrap {
+        overflow: hidden;
+        position: relative;
+        margin: 0 0 10px;
+        border-radius: 4px;
+        width: 100%;
+        transform: translateY(-100%);
+        max-height: 0px;
+        opacity: 0;
 
-    // settings order based off widget order
-    &.customlinks {
-      order: 1;
-    }
-    &.absentconsumers {
-      order: 2;
-    }
-    &.casenoteproductivity {
-      order: 3;
-    }
-    &.mycaseload {
-      order: 4;
-    }
-    &.rejectedcasenotes {
-      order: 5;
-    }
-    &.planto-dolist {
-      order: 6;
-    }
-    &.locationprogressnotes {
-      order: 7;
-    }
-    &.myunapprovedtimeentries {
-      order: 8;
-    }
-    &.consumerprogressnotes {
-      order: 9;
-    }
-    &.timeentryreview {
-      order: 10;
-    }
-    &.dayservicetimeclock {
-      order: 11;
-    }
-    &.hoursworked {
-      order: 12;
-    }
-    &.myschedule {
-      order: 13;
-    }
-    &.dailyservices {
-      order: 14;
-    }
-    &.dayservices {
-      order: 15;
-    }
-    &.incidenttracking {
-      order: 16;
-    }
-  }
 
-  .widgetHeader {
-    align-items: center;
-    background: $bg-dark2;
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 5px 10px 10px;
-    position: relative;
-    z-index: 1;
-    cursor: pointer;
-
-    .checkbox-mtd > span {
-      font-size: 14px;
-    }
-    .checkbox-mtd:before {
-      background-color: $btn-light;
-    }
-  }
-
-  .widgetBody {
-    background-color: $btn-light;
-    transform: translateY(-100%);
-    transition: all 200ms linear;
-    max-height: 0px;
-    opacity: 0;
-
-    .widgetBody__Inner {
-      padding: 20px 5px 10px;
-
-      .settingsCheckBox {
-        margin: 0 0 20px;
-
-        span {
-          font-size: 14px;
+        &.active {
+            transform: translateY(0);
+            max-height: fit-content;
+            opacity: 1;
         }
-      }
-
-      button {
-        margin: 0 0 5px;
-      }
     }
 
-    &.active {
-      transform: translateY(0);
-      max-height: fit-content;
-      opacity: 1;
+    .widgetHeader {
+        align-items: center;
+        background: $bg-dark2;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 5px 10px 5px;
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
+
+        .checkbox-mtd > span {
+            font-size: 14px;
+        }
+        .checkbox-mtd:before {
+            background-color: $btn-light;
+        }
     }
-  }
+
+    .widgetBody {
+        background-color: $btn-light;
+        transition: all 200ms linear;
+
+        .widgetBody__Inner {
+            padding: 20px 5px 10px;
+
+            .settingsCheckBox {
+                margin: 0 0 20px;
+
+                span {
+                    font-size: 14px;
+                }
+            }
+        }
+    }
 }
 
 
 // My Information
 .util-menu__info {
-  position: relative;
-  -webkit-overflow-scrolling: touch;
-  overflow-y: auto;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
 
-  .informationSection {
-    margin: 0 0 10px;
+    .informationSection {
+        margin: 0 0 10px;
 
-    > p {
-      background: $secondary;
-      padding: 6px;
-      font-weight: 500;
+        > p {
+            background: $secondary;
+            padding: 6px;
+            font-weight: 500;
+        }
+
+        &__body {
+            background: $bg-light;
+            padding: 12px 10px 6px;
+
+            p {
+                color: $font-error;
+            }
+        }
     }
 
-    &__body {
-      background: $bg-light;
-      padding: 12px 10px 6px;
+    .stateZipWrap {
+        display: flex;
+        width: 100%;
 
-      p {
-        color: $font-error;
-      }
+        > div:first-child {
+            max-width: 100px;
+            margin-right: 10px;
+        }
+        > div:last-child {
+            flex-grow: 1;
+        }
     }
-  }
 
-  .stateZipWrap {
+    .updateInformationBtn {
+        background: $secondary;
+        width: 100%;
+    }
+
+    .successfulSavePopup {
+        position: absolute;
+        background: $primary;
+        color: $font-light;
+        left: 0px;
+        top: 20%;
+        width: 100%
+    }
+}
+
+#settingTable {
+    box-shadow: none !important;
+    min-width: 340px;
+    transform: translateY(-100%);
+    max-height: 0px;
+    opacity: 0;
+
+    &.active {
+        transform: translateY(0);
+        max-height: fit-content;
+        opacity: 1;
+    }
+
+    .checkbox-mtd > span {
+        font-size: 14px;
+    }
+
+    .checkbox-mtd:before {
+        background-color: $btn-light;
+    }
+
+    .endIcon {
+        max-width: 60px;
+        font-size: 1rem;
+    }
+
+    &__subRowWrap {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
+
+    &.sortableTable {
+        .dragHandle {
+            max-width: 17px;
+        }
+
+        .table__row.header {
+            display: none;
+        }
+
+        .table__row {
+            cursor: pointer;
+            background: #81b941;
+            margin-bottom: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 400;
+            border-radius: 4px;
+
+            &[data-plan-active='true'] {
+                > div:nth-child(2) {
+                    margin-bottom: 2%;
+                }
+            }
+
+            > div {
+                flex-grow: 1;
+                margin: 0 5px 0 0;
+            }
+
+            > div:nth-child(1) {
+                flex-basis: 20px;
+                color: black;
+                font-size: 1rem;
+            }
+
+            > div:nth-child(2) {
+                flex-basis: 120px;
+                word-break: break-all;
+                font-size: 1rem;
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                    margin-bottom: -2%;
+                }
+            }
+
+            > div:nth-child(3) {
+                flex-basis: 80px;
+                font-size: 1rem;
+            }
+        }
+    }
+}
+
+.btnWrap {
     display: flex;
-    width: 100%;
-
-    > div:first-child {
-      max-width: 100px;
-      margin-right: 10px;
-    }
-    > div:last-child {
-      flex-grow: 1;
-    }
-  }
-
-  .updateInformationBtn {
-    background: $secondary;
-    width: 100%;
-  }
-
-  .successfulSavePopup {
-    position: absolute;
-    background: $primary;
-    color: $font-light;
-    left: 0px;
-    top: 20%;
-    width: 100%
-  }
+    justify-content: space-between;
 }

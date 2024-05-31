@@ -330,18 +330,41 @@ const consentAndSignAjax = (() => {
     }
   }
 
+  async function getLocationswithSalesforceId() {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getLocationswithSalesforceId/',
+        data: JSON.stringify({ token: $.session.Token }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.getLocationswithSalesforceIdResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
+
   // INSERT
   //-------------------------------------
   async function insertTeamMember(retrieveData) {
     //* NO NEED TO REMOVE UNSAVABLE NOTE TEXT, THIS IS DONE IN BACKEND
     //*--------------------------------------------------------------------
     // token, assessmentId
-    // teamMember, name, lastName, relationship, participated,
+    // teamMember, name, lastName, relationship, participated, parentOfMinor
     // signature, dateSigned, dissentAreaDisagree, dissentHowToAddress, dissentDate
     // contactId, peopleId, buildingNumber, dateOfBirth, planYearStart, planYearEnd
     // csChangeMind, csChangeMindSSAPeopleId, csContact, csContactProviderVendorId, csContactInput
     // csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess, csResidentialOptions, csSupportsHealthNeeds, csTechnology,
-    // useExisting, relationshipImport, consumerId, createRelationship, isVeendor(bool)
+    // useExisting, relationshipImport, consumerId, createRelationship, isVeendor(bool), email, parentOfMinor
     try {
       const data = await $.ajax({
         type: 'POST',
@@ -560,6 +583,7 @@ const consentAndSignAjax = (() => {
     getConsumerOrganizationId,
     getCaseManagersfromOptionsTable,
     getConsumerswithSaleforceIds,
+    getLocationswithSalesforceId,
     updateTeamMember,
     updatePlanConsentStatements,
     updateTableRowOrder,

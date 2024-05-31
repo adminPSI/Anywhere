@@ -1,0 +1,24 @@
+//===========================================
+// CONSUMER PICTURE
+//-------------------------------------------
+[data-ui] {
+  .portrait {
+    height: 60px;
+    margin: 0 10px 0 0;
+    overflow: hidden;
+    position: relative;
+    width: 60px;
+
+    img {
+      height: auto;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: auto;
+    }
+  }
+}

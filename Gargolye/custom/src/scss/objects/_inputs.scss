@@ -18,8 +18,8 @@
 }
 
 .input-field__input:focus {
-    background-color: #E8E8E8;
-    }
+  background-color: #e8e8e8;
+}
 
 .input-field--primary {
   color: $input-blur--light;
@@ -38,7 +38,7 @@
   }
 }
 .checkAlign > span::after {
-    left: 138px !important;
+  left: 138px !important;
 }
 // Speech to text icon
 .sttInputIcon {
@@ -58,24 +58,24 @@
 }
 
 .eyeInputIcon {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    width: 22px !important;
-    margin: 0px; 
-     transition: 0.2s; 
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 22px !important;
+  margin: 0px;
+  transition: 0.2s;
 
-    svg {
-        margin: 0px;
-    }
+  svg {
+    margin: 0px;
+  }
 }
 
 .input-field--secondary {
-    color: $input-blur--dark;
+  color: $input-blur--dark;
 
-    &--focused {
-        color: $input-focus--dark;       
-    }
+  &--focused {
+    color: $input-focus--dark;
+  }
 }
 .input-field.error {
   color: $font-error !important;
@@ -94,22 +94,22 @@
   }
 }
 .input-field.errorPopup {
+  color: $font-error !important;
+
+  .notched-outline {
     color: $font-error !important;
+    border-color: $font-error !important;
+  }
 
-    .notched-outline {
-        color: $font-error !important;
-        border-color: $font-error !important;
-    }
+  .notched-outline__leading,
+  .notched-outline__notch,
+  .notched-outline__trailing {
+    border-color: $font-error !important;
+  }
 
-    .notched-outline__leading,
-    .notched-outline__notch,
-    .notched-outline__trailing {
-        border-color: $font-error !important;
-    }
-
-    .input-field__input {
-        color: $black !important;
-    }
+  .input-field__input {
+    color: $black !important;
+  }
 }
 .input-field.warning {
   color: $font-warning;
@@ -158,33 +158,33 @@
 
 // Hidden Input
 .checkbox-mtd > input {
-    appearance: none;
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    background-color: rgba(0, 0, 0, 0.6);
-    border-radius: 50%;
-    box-shadow: none;
-    display: block;
-    height: 40px;
-    position: absolute;
-    left: -10px;
-    top: -8px;
-    margin: 0;
-    outline: none;
-    opacity: 0;
-    pointer-events: none;
-    transform: scale(1);
-    transition: opacity 0.3s, transform 0.2s;
-    width: 40px;
-    z-index: -1;
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  box-shadow: none;
+  display: block;
+  height: 40px;
+  position: absolute;
+  left: -10px;
+  top: -8px;
+  margin: 0;
+  outline: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1);
+  transition: opacity 0.3s, transform 0.2s;
+  width: 40px;
+  z-index: -1;
 }
 
 // Text
 .checkbox-mtd > span {
-    cursor: pointer;
-    display: inline-block;
-    font-weight: $normal;
-    width: 100%;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: $normal;
+  width: 100%;
 }
 
 // Box
@@ -203,59 +203,69 @@
 }
 // Checkmark
 .checkbox-mtd > span::after {
-    content: '';
-    border: solid 2px transparent;
-    border-right: none;
-    border-top: none;
-    display: block;
-    height: 5px;
-    position: absolute;
-    top: 4px;
-    left: 1px;
-    transform: translate(3px, 4px) rotate(-45deg);
-    width: 10px;
+  content: '';
+  border: solid 2px transparent;
+  border-right: none;
+  border-top: none;
+  display: block;
+  height: 5px;
+  position: absolute;
+  top: 4px;
+  left: 1px;
+  transform: translate(3px, 4px) rotate(-45deg);
+  width: 10px;
 }
 // Checked
 .checkbox-mtd > input:checked {
-    background-color: rgb(33, 150, 243);
+  background-color: rgb(33, 150, 243);
 }
 
 .checkbox-mtd > input:checked + span::after {
-    border-color: $primary;
+  border-color: $primary;
 }
 // Active
 .checkbox-mtd > input:active {
-    opacity: 1;
-    transform: scale(0);
-    transition: transform 0s, opacity 0s;
+  opacity: 1;
+  transform: scale(0);
+  transition: transform 0s, opacity 0s;
 }
 
 .checkbox-mtd > input:checked:active + span::before {
-    border-color: transparent;
-    background-color: rgba(0, 0, 0, 0.6);
+  border-color: transparent;
+  background-color: rgba(0, 0, 0, 0.6);
 }
 // ERROR!!!
 .checkbox-mtd.error::before {
-    border: 2px solid $font-error;
+  border: 2px solid $font-error;
 }
 // Not really errror
 .checkbox-mtd.redButNotError::before {
-    border: 2px solid $font-error;
+  border: 2px solid $font-error;
 }
 
 .checkbox-mtd.redButNotError > span {
-    color: $font-error;
+  color: $font-error;
 }
 // Disabled
 .checkbox-mtd.disabled > input {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .input-field.textarea {
-    height: auto !important;
+  height: auto !important;
 }
 
 textarea.autosize {
-    height: auto;
-    min-height: 100px !important;
+  height: auto;
+  min-height: 100px !important;
+}
+
+input[type='time']::-webkit-clear-button {
+  display: none;
+}
+input[type='time']::-ms-clear {
+  display: none;
+}
+input[type='radio' i]:focus {
+  outline: 1px solid #0075ff;
 }
