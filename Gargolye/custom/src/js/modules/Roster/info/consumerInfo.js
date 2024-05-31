@@ -270,7 +270,7 @@ var consumerInfo = (function () {
 
         setTimeout(function () {
             // shrink currently visible sub section
-                currentlyVisibleSubSection.classList.add('hidden');
+            currentlyVisibleSubSection.classList.add('hidden');
             // show target sub section
             targetSubSection.classList.add('visible');
         }, 200);
