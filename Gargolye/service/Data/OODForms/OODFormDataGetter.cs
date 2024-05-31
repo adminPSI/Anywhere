@@ -665,6 +665,34 @@ namespace OODForms
         }
         #endregion
 
+        #region "OOD Form 6"
+        public DataSet OODForm6GetVRCounselor(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate)
+        {
+            try
+            {
+        
+        sb.Clear();
+                sb.Append("Select p.first_name + ' ' + p.last_name as VR_CounselorContractor from consumer_services_master cs ");
+                sb.Append("left outer join persons p on cs.Person_ID = p.Person_ID ");
+                sb.AppendFormat("where cs.Consumer_ID = {0} and cs.reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
+               
+               // DataSet ds = di.SelectRowsDS(sb.ToString());
+                return di.SelectRowsDS(sb.ToString());
+
+               // return ds;
+
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
+
+        }
+
+        #endregion
+
         public string getPersonCompletingReportName(string token)
         {
             if (tokenValidator(token) == false) return null;

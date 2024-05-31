@@ -401,13 +401,14 @@ namespace OODForms
                     }
                 }
 
-                string VRCounselor = "X";
-                string returnedData = oodfdg.getForm10PDFData(token, referenceNumber, startDate, endDate, consumerIdString, userId);
-                List<form10Data> form10DataList = JsonConvert.DeserializeObject<List<form10Data>>(returnedData);
+                string VRCounselor = "XX";
+                DataSet dsVR = oodfdg.OODForm6GetVRCounselor(referenceNumber, consumerIdString, startDate, endDate);
+                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
 
-                if (form10DataList.Count > 0)
+                if (dsVR.Tables[0].Rows.Count > 0)
                 {
-                    VRCounselor = form10DataList[0].VR_CounselorContractor;
+                    //VRCounselor = form6DataList[0].VR_CounselorContractor;
+                    VRCounselor = dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString();
                 }
 
                 DateTime currentDate = DateTime.Now;
@@ -1661,6 +1662,26 @@ namespace OODForms
                 //logger2.debug("Done?");
             }
         }
+    }
+
+    public class form6Data
+    {
+        public string providerName { get; set; }
+        public string individualsName { get; set; }
+        public string IPEGoal { get; set; }
+        public string nameAndInitials { get; set; }
+        public string personCompletingReport { get; set; }
+        public string VR_CounselorContractor { get; set; }
+        public string authorizationNumber { get; set; }
+        public string providerInvoiceNumber { get; set; }
+        public string selectedService { get; set; }
+        public string bilingual{ get; set; }
+        public string SAMLevel{ get; set; }
+        public string invoiceDate { get; set; }
+        public string serviceStartDate { get; set; }
+        public string serviceEndDate { get; set; }
+        
+
     }
 
     public class form10Data
