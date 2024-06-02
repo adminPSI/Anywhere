@@ -1868,9 +1868,11 @@ var timeEntryCard = (function () {
 
         let reasoncode = evvReasonCode == null || evvReasonCode == '%' || evvReasonCode == undefined ? 99 : evvReasonCode;
         reasonCodeValue = dropdownData.find(x => x.value == reasoncode).text;   
-        if (document.getElementById('reasonInput') != null && document.getElementById('reasonInput') != undefined)
-            document.getElementById('reasonInput').value = reasonCodeValue;   
-
+        if (document.getElementById('reasonInput') != null && document.getElementById('reasonInput') != undefined) {
+            evvReasonCode = dropdownData.find(x => x.value == reasoncode).value;  
+            document.getElementById('reasonInput').value = reasonCodeValue; 
+        }
+              
         const locationTypeDropdownData = ([
             { id: 1, value: 1, text: "1 - Home" },
             { id: 2, value: 2, text: "2 - Community" },
@@ -2343,7 +2345,7 @@ var timeEntryCard = (function () {
         defaultTimesChanged ? (wrap4.style.display = 'flex') : (wrap4.style.display = 'none');
         if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
             wrap4.appendChild(reasonInput); 
-            wrap4.appendChild(locationTypeDropdown);               
+            wrap4.appendChild(locationTypeDropdown);
         }
         else {
             wrap4.appendChild(reasonDropdown);
