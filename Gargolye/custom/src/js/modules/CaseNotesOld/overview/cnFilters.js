@@ -1383,5 +1383,6 @@ const cnFilters = (function () {
         init,
         filterButtonSet,
         ShowHideFilter,
+        updateCurrentFilterDisplay,
     };
 })();

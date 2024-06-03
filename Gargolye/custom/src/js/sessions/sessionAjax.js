@@ -340,6 +340,135 @@ function strongPasswordValue() {
   });
 }
 
+async function setESignaturesMessage() {
+   // Function to handle sending the code
+   async function sendCode() {
+    sendBtn.textContent = 'Sending code...';
+    sendBtn.style.backgroundColor = '#cccccc'; 
+    
+    try {
+        // Retrieve user's current position
+        const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        
+        const { latitude, longitude } = position.coords;
+
+        //sends the code to the signers email with latitude and longitude
+        const generatedCodeSuccessfully = await _UTIL.fetchData('generateAuthenticationCode', { tempUserId, latitude, longitude });
+
+        // Update the html on the login page
+        if (generatedCodeSuccessfully.generateAuthenticationCodeResult === 'success') {
+            updateHTMLAfterCodeSent();
+        } else {
+            popupMessageText.textContent = 'Incorrect Code: Please try again.';
+        }
+    } catch (error) {
+        // Handle errors when accessing geolocation
+        console.error('Error accessing geolocation:', error.message);
+    }
+}
+
+
+  const params = new URLSearchParams(window.location.search);
+
+  // Get the value of the "TempUser" parameter
+  const tempUserId = params.get('tempUser');
+
+  const loginMessageData = await _UTIL.fetchData('getSignerLoginMessageData', { tempUserId });
+  let redactedName = loginMessageData.getSignerLoginMessageDataResult.maskedFirstName + ' ' + loginMessageData.getSignerLoginMessageDataResult.maskedLastName;
+  let signerEmail = loginMessageData.getSignerLoginMessageDataResult.tempUserEmail;
+
+  let messageDiv = document.getElementById('redactedNamesMessage');
+
+  let popupMessageText = document.createElement('p')
+  popupMessageText.textContent = 
+    `The document shared with you contains information about ${redactedName}. To confirm your identity
+    we'll send a code to ${signerEmail}.`;
+
+    const sendBtn = button.build({
+      id: 'sendCodeBtn',
+      text: 'Send Code',
+      style: 'secondary',
+      type: 'contained',
+      classNames: ['btn-login'],
+      callback: () => {
+        sendCode();
+      },
+    });
+
+    messageDiv.appendChild(popupMessageText);
+    messageDiv.appendChild(sendBtn);
+
+  // Function to update HTML after sending the code
+  function updateHTMLAfterCodeSent() {
+    // Update the inner HTML
+    messageDiv.innerHTML =
+        `<p id='eSignLoginMessage'>
+          The document shared with you contains information about ${redactedName}. To open the document, enter the code we just emailed to ${signerEmail}.
+         <p>
+         <p id='eSignErrorMessage'><p>
+          <div class="input-field">
+            <input id="verificationCode" class="input-field__input" type="text" autocomplete="off" />
+            <div class="notched-outline">
+                <div class="notched-outline__leading"></div>
+                <div class="notched-outline__notch">
+                    <label for="verificationCode" class="floating-label">Verification Code</label>
+                </div>
+                <div class="notched-outline__trailing"></div>
+            </div>
+        </div>
+        <div class="verifyCodeBtnWrap"></div>`;
+
+    // Get the verifyCodeBtnWrap div
+    const verifyCodeBtnWrap = document.querySelector('.verifyCodeBtnWrap');
+
+    // Create and append the buttons
+    const sendCodeAgainBtn = document.createElement('button');
+    sendCodeAgainBtn.textContent = 'Send Code Again';
+    sendCodeAgainBtn.className = 'sendCodeAgainBtn';
+    sendCodeAgainBtn.addEventListener('click', function() {
+      sendCode();
+    });
+    verifyCodeBtnWrap.appendChild(sendCodeAgainBtn);
+
+    const verifyBtn = button.build({
+      id: 'sendCodeBtn',
+      text: 'Verify',
+      style: 'secondary',
+      type: 'contained',
+      classNames: ['btn-login'],
+      callback: () => {
+        checkVerificationCode(tempUserId);
+      },
+    });
+
+    verifyCodeBtnWrap.appendChild(verifyBtn);
+  }
+
+}
+
+async function checkVerificationCode(tempUserId) {
+  const passwordInput = document.getElementById('verificationCode').value;
+
+  // Hash the value using MD5
+  const hashedPassword = $().crypt({
+    method: 'md5',
+    source: passwordInput
+  });
+  const codeVerification = await _UTIL.fetchData('verifyESignLogin', { tempUserId, hashedPassword });
+    
+  if (codeVerification.verifyESignLoginResult === 'Success') {
+    document.querySelector('main').innerHTML = '';
+      // open the E-Signature form     
+      esignatures.init(tempUserId);  
+  } else {
+    // Display the error or reason for failure
+    const errorMessageDiv = document.getElementById('eSignErrorMessage');
+    errorMessageDiv.innerText = codeVerification.verifyESignLoginResult;
+  }
+}
+
 function getCustomLoginTextAndVersion(callback) {
   $.ajax({
     type: 'POST',
@@ -846,9 +975,11 @@ function getDefaultAnywhereSettings() {
       $.session.updateIncidentCauseText = res.appendITCause === 'Y' ? true : false;
       $.session.planFormCarryover = res.planFormCarryover === 'Y' ? true : false;
       //Waiting List
-        $.session.sendWaitingListEmail = true;// res.sendWaitingListEmail === 'Y' ? true : false;
+      $.session.sendWaitingListEmail = true;// res.sendWaitingListEmail === 'Y' ? true : false;
       //Hide stuff
       $.session.useAbsentFeature = res.useAbsentFeature;
+      $.session.billableTransportation = res.billableTransportation;
+      $.session.ohioEVVChangeDate = res.ohioEVVChangeDate;
       $.session.useProgressNotes = res.useProgressNotes;
       $.session.applicationName = res.application;
       $.session.portraitPath = res.portraitPath;

@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Anywhere</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+			default-src 'self'; 
+			script-src 'unsafe-inline' 'self'; 
+			connect-src 'self'; 
+			img-src 'self'; 
+			style-src 'self' 'unsafe-inline';
+			base-uri 'self';
+			object-src 'none';"
+    />
+    <link rel="icon" sizes="192x192" href="/webroot/Images/mobileIcons/AdvisorLogo - 192.png" />
+    <link rel="icon" sizes="128x128" href="/webroot/Images/mobileIcons/AdvisorLogo - 128.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="60x60"
+      href="/webroot/Images/mobileIcons/AdvisorLogo - 60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="/webroot/Images/mobileIcons/AdvisorLogo - 76.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href="/webroot/Images/mobileIcons/AdvisorLogo - 120.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="/webroot/Images/mobileIcons/AdvisorLogo - 152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/webroot/Images/mobileIcons/AdvisorLogo - 180.png"
+    />
+
+    <link href="dist/css/esignatures.min.css" rel="stylesheet" />
+
+  </head>
+  <body>
+    <header class="site-header">
+      <img class="anywhere-logo" src="/webroot/Images/logo/logo_anywhere.png" alt="Anywhere Logo" />
+    </header>
+
+    <main>
+      <div class="login-forms">
+        <div class="login-forms--inner">
+            <div id="redactedNamesMessage"></div>
+        </div>
+      </div>
+    </main>
+
+    <div id="actioncenter" class="actioncenter"></div>
+
+    <div class="overlay"></div>
+
+    <mainbodycell id="mainbody" class="mainbodycell"></mainbodycell>
+    <mobiledetector id="mobiledetector"></mobiledetector>
+
+    <script src="./dist/lib/js/jquery-1.8.3.min.js"></script>
+    <script src="./dist/lib/js/jquery.crypt.js"></script>
+    <script src="./session/connections.js"></script>
+    <script src="./dist/js/bundle.js"></script>
+    <script src="./WebViewer/lib/webviewer.min.js"></script>
+
+    <script>
+
+      function ShowIEAlert() {
+        if (isIE()) {
+          $('form input').attr('disabled', 'disabled');
+          alert(
+            'You are using an internet browser that is no longer HIPAA compliant.  To log into Anywhere you must upgrade or switch to a HIPAA compliant browser.',
+          );
+        }
+      }
+      function isIE() {
+        var ua = window.navigator.userAgent; //Check the userAgent property of the window.navigator object
+        var msie = ua.indexOf('MSIE '); // IE 10 or older
+
+        return msie > 0;
+      }
+      function setCustomLogo() {
+        var imgHolder = document.querySelector('.custom-logo');
+        var img = new Image();
+        img.src = './images/custom-logo/customLogo.jpg';
+        img.onload = function () {
+          imgHolder.appendChild(img);
+        };
+        img.onerror = function () {
+          // console.clear();
+        };
+      }
+
+      $(document).ready(function () {
+
+        eraseCookie('psiuser');
+        ShowIEAlert();
+        setCustomLogo();
+        setESignaturesMessage();
+        overlay.init();
+      });
+    </script>
+  </body>
+</html>

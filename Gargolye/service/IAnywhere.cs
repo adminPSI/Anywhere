@@ -29,6 +29,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
+using static Anywhere.service.Data.ESign.ESignWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
@@ -754,7 +755,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/insertSingleEntry/")]
-        string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community);
+        string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -771,7 +772,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/preInsertSingleEntry/")]
-        SingleEntryWorker.ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community);
+        SingleEntryWorker.ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -779,7 +780,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateSingleEntry/")]
-        string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason);
+        string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason, string evvLocationType);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -2728,7 +2729,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/getPeopleNames/")]
-        WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId ,string TypeId);
+        WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId, string TypeId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4189,6 +4190,16 @@ namespace Anywhere
         string generateForm4(System.IO.Stream testInput);
         //string generateForm4(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber);
 
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/generateForm6/")]
+        //string generateForm10(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber);
+        string generateForm6(System.IO.Stream testInput);
+
         [OperationContract]
         [WebInvoke(Method = "POST",
            BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -4422,7 +4433,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateForm6Tier1andJDPLan/")]
-        string updateForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate,  string SAMLevel,  string contactMethod, string narrative,  string userId);
+        string updateForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel, string contactMethod, string narrative, string userId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4430,7 +4441,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertForm6Tier1andJDPLan/")]
-        string insertForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel,  string contactMethod, string narrative,  string userId, string serviceId, string referenceNumber, string caseManagerId);
+        string insertForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel, string contactMethod, string narrative, string userId, string serviceId, string referenceNumber, string caseManagerId);
 
 
         [OperationContract]
@@ -4551,7 +4562,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateForm16MonthlySummary/")]
-        string updateForm16MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string emOfferedHoursNotWorkNumber,  string userId);
+        string updateForm16MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string emOfferedHoursNotWorkNumber, string userId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4559,7 +4570,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertForm16MonthlySummary/")]
-        string insertForm16MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivProviderAssessment,  string emReviewVTS, string emOfferedHoursNotWorkNumber, string userId, string serviceId);
+        string insertForm16MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string emOfferedHoursNotWorkNumber, string userId, string serviceId);
 
 
         [WebInvoke(Method = "POST",
@@ -4695,7 +4706,7 @@ namespace Anywhere
                  ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/insertAccount/")]
-          ConsumerFinancesWorker.AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId, SplitAmountData[] splitAmount, string categoryID); 
+        ConsumerFinancesWorker.AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId, SplitAmountData[] splitAmount, string categoryID);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5204,7 +5215,7 @@ namespace Anywhere
       UriTemplate = "/createNewEmploymentPath/")]
         EmploymentWorker.EmploymentPath createNewEmploymentPath(string token, string currentStatus, string pathToEmployment, string pathToStartDate, string peopleID, string userID);
 
-		[OperationContract]
+        [OperationContract]
         [WebInvoke(Method = "POST",
                BodyStyle = WebMessageBodyStyle.Wrapped,
                ResponseFormat = WebMessageFormat.Json,
@@ -5217,7 +5228,7 @@ namespace Anywhere
               ResponseFormat = WebMessageFormat.Json,
               RequestFormat = WebMessageFormat.Json,
               UriTemplate = "/getOutcomeServicsPageData/")]
-        OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId , string appName);
+        OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5307,6 +5318,63 @@ namespace Anywhere
             UriTemplate = "/addConsumerToCustomGroupJSON/")]
         string addConsumerToCustomGroupJSON(string[] consumerIDs, string groupId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/saveReportAndSendESignEmail/")]
+        string saveReportAndSendESignEmail(string token, ESignatureTeamMemberData[] eSignatureTeamMemberData, ESignReportData reportData);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/generateAuthenticationCode/")]
+        string generateAuthenticationCode(string tempUserId, string latitude, string longitude);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getSignerLoginMessageData/")]
+        LoginMessageData getSignerLoginMessageData(string tempUserId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/verifyESignLogin/")]
+        string verifyESignLogin(string tempUserId, string hashedPassword);
+
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/openESignaturesEditor/")]
+        string openESignaturesEditor(string tempUserId);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "/downloadReportAfterSigning/")]
+        void downloadReportAfterSigning(System.IO.Stream tempUserIdInput);
+
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/updateESignFormValues/")]
+        string updateESignFormValues(ESignFormData formData);
+
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getESignerData/")]
+        ESignerData getESignerData(string tempUserId);
     }
 
 

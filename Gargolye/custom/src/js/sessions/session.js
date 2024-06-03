@@ -350,6 +350,8 @@ $.session.azureSTTApi = '';
 $.session.isActiveUsers = true; // to get active and inactive user both
 
 $.session.activeModule = '';
+$.session.billableTransportation = 'N';
+$.session.ohioEVVChangeDate = '';
 $(window).resize(function () {
     //resizeActionCenter();
 });

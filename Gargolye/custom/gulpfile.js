@@ -21,7 +21,7 @@ const paths = {
     html: './src/*.html',
     js: ['./src/js/**/*.js'],
     lib: './src/lib/**',
-    scss: ['./src/scss/anywhere.scss', './src/scss/login.scss', './src/scss/infalAnywhere.scss'],
+    scss: ['./src/scss/anywhere.scss', './src/scss/login.scss', './src/scss/infalAnywhere.scss', './src/scss/esignatures.scss'],
   },
   watch: {
     scss: './src/**/*.scss',

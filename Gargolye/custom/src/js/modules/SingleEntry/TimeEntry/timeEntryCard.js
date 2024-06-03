@@ -16,6 +16,7 @@ var timeEntryCard = (function () {
     var locationDropdown;
     var workCodeDropdown;
     var reasonDropdown;
+    var locationTypeDropdown;
     // inputs
     var dateInput;
     var startTimeInput;
@@ -66,6 +67,7 @@ var timeEntryCard = (function () {
     //EVV
     var evvReasonCodeObj;
     var evvReasonCode;
+    var locationTypeCode;
     var sendEvvData;
     var wcServiceType;
     var reasonRequired; // true || false
@@ -107,6 +109,9 @@ var timeEntryCard = (function () {
     var tmpReason = null;
     var tmpLicenseplate = null;
     var isEVVSingleEntry = false;
+    var reasonCodeValue;
+    var eVVChangeDate; 
+    var todayDate;
 
     // Action Nav
     //------------------------------------
@@ -225,7 +230,8 @@ var timeEntryCard = (function () {
                 deviceType: deviceOS,
                 evvReason: evvReasonCode,
                 attest: attestCheckbox.getElementsByTagName('input')[0].checked ? 'Y' : 'N',
-                community: communityCheckbox.getElementsByTagName('input')[0].checked ? 'Y' : 'N',
+                community: communityCheckbox.getElementsByTagName('input')[0].checked ? 'Y' : 'N',              
+                evvLocationType: locationTypeCode,
             };
         } else {
             data = {
@@ -282,6 +288,7 @@ var timeEntryCard = (function () {
                 community: communityCheckbox.getElementsByTagName('input')[0].checked ? 'Y' : 'N',
                 updateEVVReason:
                     $.session.singleEntrycrossMidnight && !defaultStartTimeChanged ? 'false' : 'true',
+                evvLocationType: locationTypeCode,
             };
         }
 
@@ -387,7 +394,7 @@ var timeEntryCard = (function () {
         endTime = ed.End_Time === '23:59:59' ? '00:00' : ed.End_Time;
         totalHours = ed.Check_Hours;
         noteText = ed.Comments;
-
+        locationTypeCode = ed.locationTypeCode;
         //get the rejection reason
         await singleEntryAjax.getSingleEntryById(singleEntryId, results => {
             entryData = results;
@@ -474,6 +481,7 @@ var timeEntryCard = (function () {
         evvCommunity = null;
         evvReasonCode = null;
         endTimeClicks = 0;
+        locationTypeCode = null;
     }
     function clearCard() {
         // clear inputs & dropdowns
@@ -487,7 +495,7 @@ var timeEntryCard = (function () {
         endInput.value = '';
         endTime = null;
         hoursInput.value = '';
-        endTimeClicks = 0;
+        endTimeClicks = 0; 
 
         const reasonCodeDropdown = reasonDropdown.querySelector('select');
         reasonCodeDropdown.value = '';
@@ -502,6 +510,7 @@ var timeEntryCard = (function () {
         evvAttest = null;
         evvCommunity = null;
         evvReasonCode = null;
+        locationTypeCode = null;
 
         // clear selected consumers
         if (isEdit) {
@@ -1388,7 +1397,7 @@ var timeEntryCard = (function () {
                 ) {
                     if (document.querySelector('.timeCard__evv').style.display !== 'none') {
                         reasonDropdown.classList.add('error');
-                    }
+                    }  
 
                     // roster2.toggleMiniRosterBtnVisible(false);
                 } else {
@@ -1537,6 +1546,10 @@ var timeEntryCard = (function () {
             evvReasonCode = event.target.value;
             checkPermissions();
         });
+        locationTypeDropdown.addEventListener('change', event => {
+            locationTypeCode = event.target.value;
+            checkPermissions();
+        });
         attestCheckbox.addEventListener('change', event => {
             checkAttestStatus();
         });
@@ -1645,7 +1658,7 @@ var timeEntryCard = (function () {
                 reasonCodeDropdown.value = '%';
                 evvReasonCode = '%';
                 reasonDropdown.classList.add('error');
-            }
+            }  
 
             await evvCheck();
             setTotalHours();
@@ -1675,7 +1688,7 @@ var timeEntryCard = (function () {
                     newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult);
                 } else {
                     timeEntry.getEntryData(keyStartStop);
-                }               
+                }
             }
             if (saveOrUpdate === 'Update') timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop);
         });
@@ -1685,7 +1698,7 @@ var timeEntryCard = (function () {
             saveBtn.classList.add('disabled');
             saveOrUpdate = event.target.dataset.insertType;
 
-            const saveAndUpdate = true; 
+            const saveAndUpdate = true;
             if (saveOrUpdate === 'Save') {
                 const result = await singleEntryAjax.getExistingTimeEntry();
                 const { getExistingTimeEntryResult } = result;
@@ -1852,7 +1865,20 @@ var timeEntryCard = (function () {
         });
         dropdownData.unshift({ value: '%', text: '' });
         dropdown.populate(reasonDropdown, dropdownData, evvReasonCode);
-    }
+
+        let reasoncode = evvReasonCode == null || evvReasonCode == '%' || evvReasonCode == undefined ? 99 : evvReasonCode;
+        reasonCodeValue = dropdownData.find(x => x.value == reasoncode).text;   
+        if (document.getElementById('reasonInput') != null && document.getElementById('reasonInput') != undefined) {
+            evvReasonCode = dropdownData.find(x => x.value == reasoncode).value;  
+            document.getElementById('reasonInput').value = reasonCodeValue; 
+        }
+              
+        const locationTypeDropdownData = ([
+            { id: 1, value: 1, text: "1 - Home" },
+            { id: 2, value: 2, text: "2 - Community" },
+        ]);
+        dropdown.populate(locationTypeDropdown, locationTypeDropdownData, locationTypeCode);
+    } 
     async function populateCard(useAllWorkCodes) {
         payPeriodData = timeEntry.getPayPeriods(false);
         locationData = timeEntry.getLocations();
@@ -1963,7 +1989,7 @@ var timeEntryCard = (function () {
                     wcServiceType === 'A' &&
                     sendEvvData === 'Y' &&
                     (reasonRequired === true || isEVVSingleEntry)
-                ) {
+                ) { 
                     showEvv();
                     // evvCheckConsumerEligibilityExistingConsumers();
                 } else {
@@ -1988,7 +2014,7 @@ var timeEntryCard = (function () {
                 if (defaultEndTimeChanged || defaultTimesChanged) {
                     showEvv();
                     // checkRequiredFields();
-                    // await evvCheckConsumerEligibilityExistingConsumers();
+                    // await evvCheckConsumerEligibilityExistingConsumers();                   
                 } else {
                     reasonRequired = false;
                     document.querySelector('.timeCard__evv').style.display = 'none';
@@ -2089,7 +2115,10 @@ var timeEntryCard = (function () {
 
     function showEvv() {
         populateReasonCodeDropdown();
-        document.querySelector('.timeCard__evv').style.display = 'flex';
+        document.querySelector('.timeCard__evv').style.display = 'flex'; 
+        if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate && locationTypeCode == null) {
+            locationTypeCode = '1';
+        }  
     }
 
     function checkAttestStatus() {
@@ -2133,6 +2162,26 @@ var timeEntryCard = (function () {
             label: 'Reason Code',
             style: 'secondary',
             readonly: false,
+        });
+    }
+
+    function buildLocationTypeDropdown() {
+        return dropdown.build({
+            dropdownId: 'locationTypeDropdown',
+            label: 'Location Type',
+            style: 'secondary',
+            readonly: false,
+        });
+    }
+
+    function buildEVVReasontext() {
+        return input.build({
+            id: 'reasonInput',
+            type: 'text',
+            label: 'Reason Code',
+            style: 'secondary',
+            value: reasonCodeValue, 
+            readonly: true,
         });
     }
     // inputs
@@ -2247,7 +2296,9 @@ var timeEntryCard = (function () {
         locationDropdown = buildLocationDropdown();
         workCodeDropdown = buildWorkCodeDropdown();
         reasonDropdown = buildEVVReasonDropdown();
+        locationTypeDropdown = buildLocationTypeDropdown();
         // inputs
+        reasonInput = buildEVVReasontext();
         dateInput = buildDateInput();
         startTimeInput = buildStartTimeInput();
         endTimeInput = buildEndTimeInput();
@@ -2289,8 +2340,17 @@ var timeEntryCard = (function () {
 
         // evv wrap
         // hide evv stuff initially
+        eVVChangeDate = $.session.ohioEVVChangeDate != '' ? new Date($.session.ohioEVVChangeDate.split('-').join('/')) : '';
+        todayDate = new Date(UTIL.getTodaysDate().split('-').join('/'));  
         defaultTimesChanged ? (wrap4.style.display = 'flex') : (wrap4.style.display = 'none');
-        wrap4.appendChild(reasonDropdown);
+        if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
+            wrap4.appendChild(reasonInput); 
+            wrap4.appendChild(locationTypeDropdown);
+        }
+        else {
+            wrap4.appendChild(reasonDropdown);
+        }
+           
         wrap4.appendChild(attestCheckbox);
 
         section.appendChild(wrap1);

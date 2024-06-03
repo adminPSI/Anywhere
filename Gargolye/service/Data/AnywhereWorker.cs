@@ -579,6 +579,8 @@ namespace Anywhere.service.Data
             public string sendWaitingListEmail { get; set; }
             public string defaultMoneyManagementLocation { get; set; }
             public string defaultMoneyManagementLocationName { get; set; }
+            public string billableTransportation { get; set; }
+            public string ohioEVVChangeDate { get; set; }
 
         }
 
