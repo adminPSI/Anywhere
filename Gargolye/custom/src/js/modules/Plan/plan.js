@@ -2018,6 +2018,9 @@ const plan = (function () {
         }
 
         if (currScreen === 2) {
+          const spinner = PROGRESS.SPINNER.get('Finalizing Plan...');
+          screen3.insertBefore(spinner, screen3.firstChild);
+
           currScreen = 3;
           screen2.classList.remove('visible');
           screen3.classList.add('visible');
@@ -2042,45 +2045,54 @@ const plan = (function () {
             versionID: '1',
           });
           console.table(finalizationResults);
+          spinner.remove();
 
           handleReportStream(finalizationResults.report);
           const resultsObj = mapResultsObj(finalizationResults.actions);
           console.log('actions', finalizationResults.actions);
           console.log('resultsObj', resultsObj);
 
-          // TODO: once we get results update screen 3 icons
-          // icons.checkmark || icons.close
           if (selectedCheckboxes.selectAllCheck) {
+            screen3.appendChild(sendToDODDStatus);
+            screen3.appendChild(sendToOhioNetStatus);
+            screen3.appendChild(downloadReportStatus);
+            screen3.appendChild(emailReportStatus);
+
             sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'success' ? icons.checkmark : icons.close;
             sendToDODDStatusIcon.classList.toggle(resultsObj.DODD === 'success', 'success');
             sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'success' ? icons.checkmark : icons.close;
             sendToDODDStatusIcon.classList.toggle(resultsObj.ONET === 'success', 'success');
             downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'success' ? icons.checkmark : icons.close;
             sendToDODDStatusIcon.classList.toggle(resultsObj.REPORT === 'success', 'success');
-            emailReportStatusIcon.innerHTML = icons.checkmark ? resultsObj.EMAIL === 'success' : icons.close;
+            emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'success' ? icons.checkmark : icons.close;
             sendToDODDStatusIcon.classList.toggle(resultsObj.EMAIL === 'success', 'success');
+
             console.log('ONET', resultsObj.ONET);
             console.log('DODD', resultsObj.DODD);
             console.log('REPORT', resultsObj.REPORT);
             console.log('EMAIL', resultsObj.EMAIL);
           } else {
             if (selectedCheckboxes.sendToDODDCheck) {
+              screen3.appendChild(sendToDODDStatus);
               sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'success' ? icons.checkmark : icons.close;
               sendToDODDStatusIcon.classList.toggle(resultsObj.DODD === 'success', 'success');
               console.log('DODD', resultsObj.DODD);
             }
             if (selectedCheckboxes.sendToOhioNetCheck) {
+              screen3.appendChild(sendToOhioNetStatus);
               sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'success' ? icons.checkmark : icons.close;
               sendToDODDStatusIcon.classList.toggle(resultsObj.ONET === 'success', 'success');
               console.log('ONET', resultsObj.ONET);
             }
             if (selectedCheckboxes.downloadReportCheck) {
+              screen3.appendChild(downloadReportStatus);
               downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'success' ? icons.checkmark : icons.close;
               sendToDODDStatusIcon.classList.toggle(resultsObj.REPORT === 'success', 'success');
               console.log('REPORT', resultsObj.REPORT);
             }
             if (selectedCheckboxes.emailReportCheck) {
-              emailReportStatusIcon.innerHTML = icons.checkmark ? resultsObj.EMAIL === 'success' : icons.close;
+              screen3.appendChild(emailReportStatus);
+              emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'success' ? icons.checkmark : icons.close;
               sendToDODDStatusIcon.classList.toggle(resultsObj.EMAIL === 'success', 'success');
               console.log('EMAIL', resultsObj.EMAIL);
             }
@@ -2379,26 +2391,6 @@ const plan = (function () {
     sendToOhioNetStatus.appendChild(sendToOhioNetStatusIcon);
     downloadReportStatus.appendChild(downloadReportStatusIcon);
     emailReportStatus.appendChild(emailReportStatusIcon);
-
-    if (selectedCheckboxes.selectAllCheck) {
-      screen3.appendChild(sendToDODDStatus);
-      screen3.appendChild(sendToOhioNetStatus);
-      screen3.appendChild(downloadReportStatus);
-      screen3.appendChild(emailReportStatus);
-    } else {
-      if (selectedCheckboxes.sendToDODDCheck) {
-        screen3.appendChild(sendToDODDStatus);
-      }
-      if (selectedCheckboxes.sendToOhioNetCheck) {
-        screen3.appendChild(sendToOhioNetStatus);
-      }
-      if (selectedCheckboxes.downloadReportCheck) {
-        screen3.appendChild(downloadReportStatus);
-      }
-      if (selectedCheckboxes.emailReportCheck) {
-        screen3.appendChild(emailReportStatus);
-      }
-    }
 
     POPUP.show(finalizePopup);
   }
