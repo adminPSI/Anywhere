@@ -960,7 +960,212 @@ const planConsentAndSign = (() => {
       },
     });
 
+    function buildReportsScreen() {
+      const screen = document.createElement('div');
+      screen.id = 'reportsScreen';
+      screen.classList.add('screen');
+  
+      const attachmentsWrap = document.createElement('div');
+      attachmentsWrap.classList.add('attachmentsWrap');
+      const attachHeading = document.createElement('p');
+      attachHeading.classList.add('attachmentsHeading');
+      attachHeading.innerText = `Please select the attachment(s) that should be included with the report.`;
+      attachmentsWrap.appendChild(attachHeading);
+  
+      const planAttWrap = document.createElement('div');
+      planAttWrap.classList.add('planAttWrap');
+      const workflowAttWrap = document.createElement('div');
+      workflowAttWrap.classList.add('workflowAttWrap');
+      const signatureAttWrap = document.createElement('div');
+      signatureAttWrap.classList.add('signatureAttWrap');
+      attachmentsWrap.appendChild(planAttWrap);
+      attachmentsWrap.appendChild(workflowAttWrap);
+      attachmentsWrap.appendChild(signatureAttWrap);
+  
+      const planHeading = document.createElement('h2');
+      const workflowHeading = document.createElement('h2');
+      const signHeading = document.createElement('h2');
+      planHeading.innerText = 'Plan Attachments';
+      workflowHeading.innerText = 'Workflow Attachments';
+      signHeading.innerText = 'Signature Attachments';
+      planAttWrap.appendChild(planHeading);
+      workflowAttWrap.appendChild(workflowHeading);
+      signatureAttWrap.appendChild(signHeading);
+  
+      planAttBody = document.createElement('div');
+      signatureAttBody = document.createElement('div');
+      workflowAttBody = document.createElement('div');
+      planAttWrap.appendChild(planAttBody);
+      signatureAttWrap.appendChild(signatureAttBody);
+      workflowAttWrap.appendChild(workflowAttBody);
+  
+      screen.appendChild(attachmentsWrap);
+  
+      return screen;
+    }
+
+    async function showESignaturesPopup() {    
+      ESignaturesPopup = POPUP.build({
+        id: 'sendESignaturesPopup',
+        header: 'Send E-Sign Emails',
+      });
+
+      const morepopupmenu = document.createElement('div');
+      morepopupmenu.classList.add('moreMenuPopup__menu', 'visible');
+
+      let include = 'N';
+
+      let reportsScreen = buildReportsScreen();
+
+            teamMemberData;
+
+            const selectedAttachmentsPlan = {};
+            const selectedAttachmentsWorkflow = {};
+            const selectedAttachmentsSignature = {};
+        
+            // clear out body before each run to prevent dups
+            planAttBody.innerHTML = '';
+            workflowAttBody.innerHTML = '';
+            signatureAttBody.innerHTML = '';
+        
+            // Show Attachements
+            const attachments = await planAjax.getPlanAndWorkFlowAttachments({
+              token: $.session.Token,
+              assessmentId: planId, //TODO
+            });
+        
+            let index = 0;
+        
+            if (attachments) {
+              for (const prop in attachments) {
+                attachments[prop].order = index;
+                const a = attachments[prop];
+                const attachment = document.createElement('div');
+                attachment.classList.add('attachment');
+                const description = document.createElement('p');
+                description.innerText = a.description;
+                attachment.appendChild(description);
+        
+                attachment.addEventListener('click', () => {
+                  if (!attachment.classList.contains('selected')) {
+                    attachment.classList.add('selected');
+                    if (a.sigAttachmentId) {
+                      selectedAttachmentsSignature[a.order] = { ...a };
+                    } else if (a.whereFrom === 'Plan') {
+                      selectedAttachmentsPlan[a.order] = { ...a };
+                    } else {
+                      selectedAttachmentsWorkflow[a.order] = { ...a };
+                    }
+                  } else {
+                    attachment.classList.remove('selected');
+                    if (a.sigAttachmentId) {
+                      delete selectedAttachmentsSignature[a.order];
+                    } else if (a.whereFrom === 'Plan') {
+                      delete selectedAttachmentsPlan[a.order];
+                    } else {
+                      delete selectedAttachmentsWorkflow[a.order];
+                    }
+                  }
+                });
+        
+                if (a.sigAttachmentId) {
+                  signatureAttBody.appendChild(attachment);
+                } else if (a.whereFrom === 'Plan') {
+                  planAttBody.appendChild(attachment);
+                } else {
+                  workflowAttBody.appendChild(attachment);
+                }
+        
+                index++;
+              }
+            }
+        
+            // checkbox
+            includeCheckbox = input.buildCheckbox({
+              id: 'reportCheckbox',
+              // className: 'reportCheckbox',
+              isChecked: include === 'Y' ? true : false,
+            });
+        
+            includeCheckbox.addEventListener('change', event => {
+              include = event.target.checked ? 'Y' : 'N';
+            });
+        
+            const doneBtn = button.build({
+              text: 'Done',
+              style: 'secondary',
+              type: 'contained',
+              callback: async () => {
+                // build & show spinner
+                const spinner = PROGRESS.SPINNER.get('Sending E-Sign Request...');
+                const screenInner = reportsScreen.querySelector('.attachmentsWrap');
+                reportsScreen.removeChild(doneBtn);
+                reportsScreen.removeChild(checkboxArea);
+                reportsScreen.removeChild(screenInner);
+                reportsScreen.appendChild(spinner);
+                // generate report
+                  const planAttachmentIds = plan.getAttachmentIds(selectedAttachmentsPlan);
+                  const wfAttachmentIds = plan.getAttachmentIds(selectedAttachmentsWorkflow);
+                  const sigAttachmentIds = plan.getAttachmentIds(selectedAttachmentsSignature);
+
+                  const url = new URL(window.location.href);
+                  const webpageURL = url.origin + url.pathname.substring(0, url.pathname.lastIndexOf('/') + 1);
+
+                  const eSignatureTeamMemberData = teamMemberData
+                    .filter(member => member.signatureType === '4' && member.signature === '')
+                    .map(member => ({
+                        peopleId: member.peopleId,
+                        planId: member.planId,
+                        signatureId: member.signatureId,
+                        webpageURL
+                    }));
+
+                  _UTIL.fetchData('saveReportAndSendESignEmail',
+                    {
+                      token: $.session.Token,
+                      eSignatureTeamMemberData,
+                      reportData: {
+                        assessmentID: planId,
+                        versionID: '1',
+                        extraSpace: false,
+                        planAttachmentIds,
+                        wfAttachmentIds,
+                        sigAttachmentIds,
+                        DODDFlag: 'false',
+                        signatureOnly: false,
+                        include
+                      }
+                    }
+                  );
+
+                // remove spinner
+                reportsScreen.removeChild(spinner);
+                reportsScreen.appendChild(screenInner);
+                reportsScreen.classList.remove('visible');
+                POPUP.hide(ESignaturesPopup);
+              },
+            });
+        
+            // add checkbox
+            const checkboxCheck = document.createElement('div');
+             checkboxCheck.appendChild(includeCheckbox);
+            const checkboxText = document.createElement('div');
+            checkboxText.innerHTML = 'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
+            const checkboxArea = document.createElement('div');
+            checkboxArea.classList.add('checkboxWrap');
+            checkboxArea.appendChild(includeCheckbox);
+            checkboxArea.appendChild(checkboxText);
+            reportsScreen.appendChild(checkboxArea);
+            reportsScreen.appendChild(doneBtn);
+  
+      morepopupmenu.appendChild(reportsScreen);
+      ESignaturesPopup.appendChild(morepopupmenu);
+  
+      POPUP.show(ESignaturesPopup);
+    }
+
     let sendDocumentToOneSpanBtn;
+    let requestESignaturesBtn;
     if ($.session.oneSpan) {
       sendDocumentToOneSpanBtn = oneSpan.buildSendDocumentToOneSpanBtn(planId);
 
@@ -980,6 +1185,27 @@ const planConsentAndSign = (() => {
       document.addEventListener('data-update', function (event) {
         oneSpan.shouldBeDisabled(sendDocumentToOneSpanBtn, event.detail.data);
       });
+    } else {
+      requestESignaturesBtn = button.build({
+        id: 'sig_addMember',
+        text: 'REQUEST E-SIGNATURES',
+        style: 'secondary',
+        type: 'contained',
+        callback: async () => {
+            showESignaturesPopup()
+          }
+        });
+
+        // initial check for esignatures btn
+        const filteredTeamMemberData = teamMemberData.filter(member => member.signatureType === '4' && member.signature === '');
+        if (filteredTeamMemberData.length === 0) {
+            requestESignaturesBtn.classList.add('disabled');
+        }
+
+        // Checks for any changes in the team members and the signature type
+      document.addEventListener('data-update', function (event) {
+        oneSpan.shouldBeDisabled(requestESignaturesBtn, event.detail.data, '4');
+      });
     }
 
     const btnWrap = document.createElement('div');
@@ -990,6 +1216,8 @@ const planConsentAndSign = (() => {
 
     if ($.session.oneSpan) {
       btnWrap.appendChild(sendDocumentToOneSpanBtn);
+    } else {
+      btnWrap.appendChild(requestESignaturesBtn);
     }
 
     tableWrap.appendChild(btnWrap);

@@ -60,6 +60,7 @@ namespace Anywhere.service.Data.ESign
 			 string planId,
 			 string signatureId,
 			 string webpageURL,
+			 string reportDataID,
 			 DistributedTransaction transaction)
 		{
 			if (tokenValidator(token) == false) return null;
@@ -71,7 +72,8 @@ namespace Anywhere.service.Data.ESign
 				{ "@peopleId", peopleId },
 				{ "@planId", planId },
 				{ "@signatureId", signatureId },
-				{ "@webpageURL", webpageURL }
+				{ "@webpageURL", webpageURL },
+				{ "@reportDataID", reportDataID },
 			};
 
 			try
