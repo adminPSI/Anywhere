@@ -18,6 +18,7 @@ using iTextSharp.text;
 using static Anywhere.service.Data.AnywhereWorker;
 using System.Net.Mail;
 using Attachment = Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments.Attachment;
+using iTextSharp.text.pdf.qrcode;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -48,9 +49,9 @@ namespace Anywhere.service.Data.DocumentConversion
         public class ActionResults
         {
             public string[] actions { get; set; }
-            public byte[] report { get; set; }
+            public MemoryStream report { get; set; }
         }
-        public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
+        public ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
         {
             //selectAllCheck: true,
             //sendToDODDCheck: true,
@@ -60,7 +61,7 @@ namespace Anywhere.service.Data.DocumentConversion
             bool isTokenValid = aadg.ValidateToken(token);
             if (isTokenValid)
             {
-                ActionResults[] ar = new ActionResults[1];
+                //ActionResults[] ar = new ActionResults[1];
                 string[] sendToDODD = new string[5];
                 string sendONET = "";
                 string sendEmailResult = "";
@@ -122,7 +123,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             reportCreated = true;
                         }
                         //ar[0].report.Equals(report); //= report;
-                        actions[i] = report.ToString();
+                        //actions[i] = report.ToString();
                         i++;
                         
                         //Display Plan Report
@@ -144,7 +145,14 @@ namespace Anywhere.service.Data.DocumentConversion
                 //Display Plan Report
                 //displayPlanReport(report);
                 //ar[0].actions.Equals(actions);
-                return actions;
+                MemoryStream reportStream = new MemoryStream();
+                reportStream.Write(report, 0, report.Length);
+                ActionResults ar = new ActionResults
+                {
+                    actions = actions,
+                    report = reportStream
+                };
+                return ar;
             }
             
             return null;
