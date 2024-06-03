@@ -691,6 +691,76 @@ namespace OODForms
 
         }
 
+        public DataSet OODForm6GetIPEGoal(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate)
+        {
+            try
+            {
+
+                sb.Clear();
+                sb.Append("Select eg.IPE as IPEGoal from em_employee_general eg ");
+                sb.Append("left outer join people p on p.ID = eg.People_ID ");
+                sb.AppendFormat("where p.Consumer_Id = '{0}' ", strConsumerId);
+
+                // DataSet ds = di.SelectRowsDS(sb.ToString());
+                return di.SelectRowsDS(sb.ToString());
+
+                // return ds;
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public DataSet OODForm6GetService(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate)
+        {
+            try
+            {
+
+                sb.Clear();
+                sb.Append("Select s.procedure_Code as service from consumer_services_master cs ");
+                sb.Append("left outer join emp_ood eo on eo.reference_number = cs.service_Id ");
+                sb.Append("left outer join services s on s.Service_ID = cs.service_ID ");
+                sb.AppendFormat("where cs.Consumer_ID = {0} and cs.reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
+
+                // DataSet ds = di.SelectRowsDS(sb.ToString());
+                return di.SelectRowsDS(sb.ToString());
+
+                // return ds;
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public DataSet OODForm6GetSAMandBilingual(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate, string userID)
+        {
+            try
+            {
+
+                sb.Clear();
+                sb.Append("select cn.Case_note_ID as casenoteId, emp.Position_ID as positionID, cn.Service_Area_Modifier as SAMLevel, em.Bilingual_Supplement as bilingualSupplement from Case_Notes as cn ");
+                sb.Append("left outer join EM_Contacts as em on cn.case_Note_ID = em.case_Note_ID ");
+                sb.Append("left outer join consumer_services_master as csm on cn.Reference_Number = csm.Reference_Number ");
+                sb.Append("LEFT OUTER JOIN dba.EMP_OOD as emp ON cn.Case_Note_ID = emp.Case_Note_ID ");
+                sb.AppendFormat("where csm.Consumer_ID = {0} and csm.reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
+                sb.AppendFormat("AND cn.Service_Date BETWEEN '{0}' AND '{1}' and  cn.Original_User_ID LIKE '{2}' ", StartDate, EndDate, userID);
+
+                // DataSet ds = di.SelectRowsDS(sb.ToString());
+                return di.SelectRowsDS(sb.ToString());
+
+                // return ds;
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         #endregion
 
         public string getPersonCompletingReportName(string token)
