@@ -2049,26 +2049,38 @@ const plan = (function () {
           // TODO: once we get results update screen 3 icons
           // icons.checkmark || icons.close
           if (selectedCheckboxes.selectAllCheck) {
-            sendToDODDStatusIcon.innerHTML = icons.checkmark;
-            sendToOhioNetStatusIcon.innerHTML = icons.checkmark;
-            downloadReportStatusIcon.innerHTML = icons.checkmark;
-            emailReportStatusIcon.innerHTML = icons.checkmark;
+            sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'success' ? icons.checkmark : icons.close;
+            sendToDODDStatusIcon.classList.toggle(resultsObj.DODD === 'success', 'success');
+            sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'success' ? icons.checkmark : icons.close;
+            sendToDODDStatusIcon.classList.toggle(resultsObj.ONET === 'success', 'success');
+            downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'success' ? icons.checkmark : icons.close;
+            sendToDODDStatusIcon.classList.toggle(resultsObj.REPORT === 'success', 'success');
+            emailReportStatusIcon.innerHTML = icons.checkmark ? resultsObj.EMAIL === 'success' : icons.close;
+            sendToDODDStatusIcon.classList.toggle(resultsObj.EMAIL === 'success', 'success');
+            console.log('ONET', resultsObj.ONET);
+            console.log('DODD', resultsObj.DODD);
+            console.log('REPORT', resultsObj.REPORT);
+            console.log('EMAIL', resultsObj.EMAIL);
           } else {
             if (selectedCheckboxes.sendToDODDCheck) {
               sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'success' ? icons.checkmark : icons.close;
               sendToDODDStatusIcon.classList.toggle(resultsObj.DODD === 'success', 'success');
+              console.log('DODD', resultsObj.DODD);
             }
             if (selectedCheckboxes.sendToOhioNetCheck) {
               sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'success' ? icons.checkmark : icons.close;
-              sendToDODDStatusIcon.classList.toggle(resultsObj.DODD === 'success', 'success');
+              sendToDODDStatusIcon.classList.toggle(resultsObj.ONET === 'success', 'success');
+              console.log('ONET', resultsObj.ONET);
             }
             if (selectedCheckboxes.downloadReportCheck) {
-              downloadReportStatusIcon.innerHTML = resultsObj.DODD === 'success' ? icons.checkmark : icons.close;
-              sendToDODDStatusIcon.classList.toggle(resultsObj.DODD === 'success', 'success');
+              downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'success' ? icons.checkmark : icons.close;
+              sendToDODDStatusIcon.classList.toggle(resultsObj.REPORT === 'success', 'success');
+              console.log('REPORT', resultsObj.REPORT);
             }
             if (selectedCheckboxes.emailReportCheck) {
               emailReportStatusIcon.innerHTML = icons.checkmark ? resultsObj.EMAIL === 'success' : icons.close;
-              sendToDODDStatusIcon.classList.toggle(resultsObj.DODD === 'success', 'success');
+              sendToDODDStatusIcon.classList.toggle(resultsObj.EMAIL === 'success', 'success');
+              console.log('EMAIL', resultsObj.EMAIL);
             }
           }
 
