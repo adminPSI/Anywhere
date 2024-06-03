@@ -556,12 +556,49 @@
     }
   }
 
+  .finalizeheading {
+    margin: 0 0 8px 0;
+  }
+
   .checkboxes {
     display: flex;
     flex-flow: column;
   }
   .checkbox-mtd>input:checked+span:after {
     left: -24px;
+  }
+
+  .emailWrap {
+    align-items: center;
+    display: flex;
+    flex-flow: row nowrap;
+    margin: 0 0 10px 0;
+
+    div.input-field {
+      flex-grow: 1;
+      margin: 0;
+    }
+    > span {
+      color: $font-error;
+      width: 48px;
+    }
+  }
+
+  .finalizeStatus {
+    align-items: center;
+    display: flex;
+    flex-flow: row nowrap;
+
+    > span {
+      color: $font-error;
+      width: 48px;
+    }
+
+    &.success {
+      > span {
+        color: $secondary;
+      }
+    }
   }
 
   .finalizeAttachments {
@@ -577,6 +614,10 @@
       &.selected {
         background-color: $secondary;
       }
+    }
+
+    .checkbox-mtd>input:checked+span:after {
+      top: 16px;
     }
   }
 }
