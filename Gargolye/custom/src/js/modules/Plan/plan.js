@@ -1970,6 +1970,16 @@ const plan = (function () {
     screen2.classList.add('finalizeAttachments', 'finalizeScreen');
     screen3.classList.add('screenThree', 'finalizeScreen');
 
+    const heading1 = document.createElement('p');
+    const heading2 = document.createElement('p');
+    heading1.classList.add('finalizeheading');
+    heading2.classList.add('finalizeheading');
+    heading1.innerHTML = 'Please select the actions that should take place';
+    heading2.innerHTML = 'Please select the attachment(s) that should be included with the report.';
+
+    screen1.appendChild(heading1);
+    screen2.appendChild(heading2);
+
     const actionBtn = button.build({
       text: 'Next',
       style: 'secondary',

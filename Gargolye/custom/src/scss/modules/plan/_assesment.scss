@@ -556,6 +556,10 @@
     }
   }
 
+  .finalizeheading {
+    margin: 0 0 8px 0;
+  }
+
   .checkboxes {
     display: flex;
     flex-flow: column;
@@ -575,6 +579,7 @@
       margin: 0;
     }
     > span {
+      color: $font-error;
       width: 48px;
     }
   }
