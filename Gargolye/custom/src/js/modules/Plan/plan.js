@@ -1942,10 +1942,22 @@ const plan = (function () {
   }
 
   // Plan Finalization
+  function handleReportStream(report) {
+    const arr = report;
+    const byteArray = new Uint8Array(arr);
+    const blob = new Blob([byteArray], { type: 'application/pdf' });
+    if ($.session.browser == 'Explorer' || $.session.browser == 'Mozilla') {
+      window.navigator.msSaveOrOpenBlob(blob, 'report.pdf');
+    } else {
+      var fileURL = URL.createObjectURL(blob);
+      window.open(fileURL);
+    }
+  }
   async function showFinalizePopup() {
     let currScreen = 1;
     let checkboxesSelected = [];
     let finalizationResults;
+    let includeInAssessment = 'false';
 
     const finalizePopup = POPUP.build({
       classNames: 'finalizePopup',
@@ -1967,13 +1979,15 @@ const plan = (function () {
           if (selectedCheckboxes.selectAllCheck) {
             checkboxesSelected = ['selectAllCheck'];
           } else {
-            checkboxesSelected = Object.entries(selectedCheckboxes).filter(([key, value]) => {
-              // return key === 'selectAllCheck'
-              if (key === 'selectAllCheck') return false;
-              if (value) return true;
-            }).map(([key, value]) => {
-              return key
-            });
+            checkboxesSelected = Object.entries(selectedCheckboxes)
+              .filter(([key, value]) => {
+                // return key === 'selectAllCheck'
+                if (key === 'selectAllCheck') return false;
+                if (value) return true;
+              })
+              .map(([key, value]) => {
+                return key;
+              });
           }
 
           currScreen = 2;
@@ -2004,12 +2018,34 @@ const plan = (function () {
             isp: false,
             oneSpan: false,
             signatureOnly: false,
-            include: 'false',
-            versionID: '1'
+            include: includeInAssessment,
+            versionID: '1',
           });
           console.table(finalizationResults);
 
+          handleReportStream(finalizationResults.report);
+
           // TODO: once we get results update screen 3 icons
+          // icons.checkmark || icons.close
+          if (selectedCheckboxes.selectAllCheck) {
+            sendToDODDStatusIcon.innerHTML = icons.checkmark;
+            sendToOhioNetStatusIcon.innerHTML = icons.checkmark;
+            downloadReportStatusIcon.innerHTML = icons.checkmark;
+            emailReportStatusIcon.innerHTML = icons.checkmark;
+          } else {
+            if (selectedCheckboxes.sendToDODDCheck) {
+              sendToDODDStatusIcon.innerHTML = icons.checkmark;
+            }
+            if (selectedCheckboxes.sendToOhioNetCheck) {
+              sendToOhioNetStatusIcon.innerHTML = icons.checkmark;
+            }
+            if (selectedCheckboxes.downloadReportCheck) {
+              downloadReportStatusIcon.innerHTML = icons.checkmark;
+            }
+            if (selectedCheckboxes.emailReportCheck) {
+              emailReportStatusIcon.innerHTML = icons.checkmark;
+            }
+          }
 
           return;
         }
@@ -2038,7 +2074,6 @@ const plan = (function () {
     };
     const selectedEmails = {};
     const emails = await assessmentAjax.getDefaultEmailsForFinalization();
-    let emailCount = emails ? emails.length : 0;
     const checkboxWrap = document.createElement('div');
     checkboxWrap.classList.add('checkboxes');
 
@@ -2117,11 +2152,16 @@ const plan = (function () {
 
     const addEmailBtn = button.build({
       text: 'Add Email',
+      style: 'secondary',
+      type: 'contained',
       callback: () => {
-        if (Object.values(selectedEmails).length === 5) return;
+        //if (Object.values(selectedEmails).length === 5) return;
 
         const id = _UTIL.autoIncrementId(`email-${Object.values(selectedEmails).length}`);
         selectedEmails[id] = '';
+
+        const wrap = document.createElement('div');
+        wrap.classList.add('emailWrap');
 
         const emailInput = input.build({
           label: 'Email',
@@ -2131,7 +2171,19 @@ const plan = (function () {
           },
         });
 
-        screen1.appendChild(emailInput);
+        const deleteEmail = document.createElement('span');
+        deleteEmail.innerHTML = icons.delete;
+        deleteEmail.addEventListener('click', () => {
+          wrap.remove();
+          delete selectedEmails[id];
+          addEmailBtn.classList.toggle(Object.values(selectedEmails).length === 5, 'disabled');
+        });
+
+        wrap.appendChild(emailInput);
+        wrap.appendChild(deleteEmail);
+        screen1.appendChild(wrap);
+        
+        addEmailBtn.classList.toggle(Object.values(selectedEmails).length === 5, 'disabled');
       },
     });
 
@@ -2145,8 +2197,15 @@ const plan = (function () {
 
     if (emails) {
       emails.forEach((email, index) => {
+        if (email.setting_value === '') {
+          return;
+        }
+
         const id = _UTIL.autoIncrementId(`email-${index + 1}`);
         selectedEmails[id] = email.setting_value;
+
+        const wrap = document.createElement('div');
+        wrap.classList.add('emailWrap');
 
         const emailInput = input.build({
           label: 'Email',
@@ -2157,17 +2216,18 @@ const plan = (function () {
           },
         });
 
-        screen1.appendChild(emailInput);
+        const deleteEmail = document.createElement('span');
+        deleteEmail.innerHTML = icons.delete;
+        deleteEmail.addEventListener('click', () => {
+          wrap.remove();
+          delete selectedEmails[id];
+          addEmailBtn.classList.toggle(Object.values(selectedEmails).length === 5, 'disabled');
+        });
+
+        wrap.appendChild(emailInput);
+        wrap.appendChild(deleteEmail);
+        screen1.appendChild(wrap);
       });
-    } else {
-      const emailInput = input.build({
-        label: 'Email',
-        type: 'email',
-        callback: e => {
-          selectedEmails['email-1'] = e.target.value;
-        },
-      });
-      screen1.appendChild(emailInput);
     }
 
     //----------------------------------------------
@@ -2246,6 +2306,16 @@ const plan = (function () {
         index++;
       }
     }
+
+    const includeInAssessmentCheck = input.buildCheckbox({
+      id: 'includeInAssessmentCheck',
+      text: 'Include Important to, Important For, Skills and Abilities, and Risks in assessment',
+      isChecked: false,
+      callback: e => {
+        includeInAssessment = e.target.checked ? 'true' : 'false';
+      },
+    });
+    screen2.appendChild(includeInAssessmentCheck);
 
     //----------------------------------------------
     // screen 3
@@ -2371,7 +2441,7 @@ const plan = (function () {
       type: 'contained',
       callback: () => {
         //if (planStatus === 'C') {
-          showFinalizePopup();
+        showFinalizePopup();
         //}
       },
     });
