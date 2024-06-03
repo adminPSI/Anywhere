@@ -2058,14 +2058,14 @@ const plan = (function () {
             screen3.appendChild(downloadReportStatus);
             screen3.appendChild(emailReportStatus);
 
-            sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'success' ? icons.checkmark : icons.close;
-            sendToDODDStatusIcon.classList.toggle(resultsObj.DODD === 'success', 'success');
-            sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'success' ? icons.checkmark : icons.close;
-            sendToDODDStatusIcon.classList.toggle(resultsObj.ONET === 'success', 'success');
-            downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'success' ? icons.checkmark : icons.close;
-            sendToDODDStatusIcon.classList.toggle(resultsObj.REPORT === 'success', 'success');
-            emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'success' ? icons.checkmark : icons.close;
-            sendToDODDStatusIcon.classList.toggle(resultsObj.EMAIL === 'success', 'success');
+            sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'Success' ? icons.checkmark : icons.close;
+            sendToDODDStatusIcon.classList.toggle(resultsObj.DODD === 'Success', 'success');
+            sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'Success' ? icons.checkmark : icons.close;
+            sendToDODDStatusIcon.classList.toggle(resultsObj.ONET === 'Success', 'success');
+            downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'Success' ? icons.checkmark : icons.close;
+            sendToDODDStatusIcon.classList.toggle(resultsObj.REPORT === 'Success', 'success');
+            emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'Success' ? icons.checkmark : icons.close;
+            sendToDODDStatusIcon.classList.toggle(resultsObj.EMAIL === 'Success', 'success');
 
             console.log('ONET', resultsObj.ONET);
             console.log('DODD', resultsObj.DODD);
@@ -2074,28 +2074,29 @@ const plan = (function () {
           } else {
             if (selectedCheckboxes.sendToDODDCheck) {
               screen3.appendChild(sendToDODDStatus);
-              sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'success' ? icons.checkmark : icons.close;
-              sendToDODDStatusIcon.classList.toggle(resultsObj.DODD === 'success', 'success');
-              console.log('DODD', resultsObj.DODD);
+              sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'Success' ? icons.checkmark : icons.close;
+              sendToDODDStatusIcon.classList.toggle(resultsObj.DODD === 'Success', 'success');
             }
             if (selectedCheckboxes.sendToOhioNetCheck) {
               screen3.appendChild(sendToOhioNetStatus);
-              sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'success' ? icons.checkmark : icons.close;
-              sendToDODDStatusIcon.classList.toggle(resultsObj.ONET === 'success', 'success');
-              console.log('ONET', resultsObj.ONET);
+              sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'Success' ? icons.checkmark : icons.close;
+              sendToDODDStatusIcon.classList.toggle(resultsObj.ONET === 'Success', 'success');
             }
             if (selectedCheckboxes.downloadReportCheck) {
               screen3.appendChild(downloadReportStatus);
-              downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'success' ? icons.checkmark : icons.close;
-              sendToDODDStatusIcon.classList.toggle(resultsObj.REPORT === 'success', 'success');
-              console.log('REPORT', resultsObj.REPORT);
+              downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'Success' ? icons.checkmark : icons.close;
+              sendToDODDStatusIcon.classList.toggle(resultsObj.REPORT === 'Success', 'success');
             }
             if (selectedCheckboxes.emailReportCheck) {
               screen3.appendChild(emailReportStatus);
-              emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'success' ? icons.checkmark : icons.close;
-              sendToDODDStatusIcon.classList.toggle(resultsObj.EMAIL === 'success', 'success');
-              console.log('EMAIL', resultsObj.EMAIL);
+              emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'Success' ? icons.checkmark : icons.close;
+              sendToDODDStatusIcon.classList.toggle(resultsObj.EMAIL === 'Success', 'success');
             }
+
+            console.log('DODD', resultsObj.DODD);
+            console.log('ONET', resultsObj.ONET);
+            console.log('REPORT', resultsObj.REPORT);
+            console.log('EMAIL', resultsObj.EMAIL);
           }
 
           return;
