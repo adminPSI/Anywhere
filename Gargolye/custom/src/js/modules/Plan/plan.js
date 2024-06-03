@@ -2045,6 +2045,8 @@ const plan = (function () {
 
           handleReportStream(finalizationResults.report);
           const resultsObj = mapResultsObj(finalizationResults.actions);
+          console.log('actions', finalizationResults.actions);
+          console.log('resultsObj', resultsObj);
 
           // TODO: once we get results update screen 3 icons
           // icons.checkmark || icons.close
