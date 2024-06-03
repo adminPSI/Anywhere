@@ -590,7 +590,14 @@
     flex-flow: row nowrap;
 
     > span {
+      color: $font-error;
       width: 48px;
+    }
+
+    &.success {
+      > span {
+        color: $secondary;
+      }
     }
   }
 
