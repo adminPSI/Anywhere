@@ -2495,7 +2495,9 @@ const plan = (function () {
     });
 
     buttonBar.appendChild(moreBtn);
-    buttonBar.appendChild(finalizeBtn);
+    if ($.session.applicationName === 'Gatekeeper') {
+      buttonBar.appendChild(finalizeBtn);
+    }
     buttonBar.appendChild(backBtn);
 
     return buttonBar;
