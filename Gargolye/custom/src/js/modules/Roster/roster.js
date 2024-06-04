@@ -267,9 +267,9 @@ const roster2 = (function () {
             var firstName = rc.FN.toLowerCase();
             var lastName = rc.LN.toLowerCase();
             var middleName = rc.MN.toLowerCase(); //
-            var fullName = `${firstName} ${middleName} ${lastName}`;
-            var fullNameReversed = `${lastName} ${firstName} ${middleName}`;
-            var matchesName = fullName.indexOf(searchValue);
+            var fullName = `${lastName}, ${middleName} ${firstName}`; 
+            var fullNameReversed = `${lastName}, ${firstName} ${middleName}`; 
+            var matchesName = fullName.indexOf(searchValue);  
             var matchesNameReverse = fullNameReversed.indexOf(searchValue);
 
             return matchesName !== -1 || matchesNameReverse !== -1;
