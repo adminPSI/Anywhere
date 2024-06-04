@@ -2047,7 +2047,10 @@ const plan = (function () {
           console.table(finalizationResults);
           spinner.remove();
 
-          handleReportStream(finalizationResults.report);
+            if (finalizationResults.report != null) {
+                handleReportStream(finalizationResults.report);
+            }
+          
           const resultsObj = mapResultsObj(finalizationResults.actions);
           console.log('actions', finalizationResults.actions);
           console.log('resultsObj', resultsObj);

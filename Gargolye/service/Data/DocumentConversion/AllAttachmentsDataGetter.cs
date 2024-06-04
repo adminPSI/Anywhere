@@ -183,7 +183,8 @@ namespace Anywhere.service.Data.DocumentConversion
             string text = "CALL DBA.ANYW_ISP_SendReportViaEmail(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
-                return executeDataBaseCallRaw(text);
+                executeDataBaseCallJSON(text);
+                return "Success";
             }
             catch (Exception ex)
             {
