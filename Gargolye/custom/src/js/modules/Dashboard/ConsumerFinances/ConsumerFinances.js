@@ -135,7 +135,7 @@
             return {
                 id: r.ID,
                 value: r.FullName,
-                text: r.FullName
+                text: r.FullName               
             }
         });
         data.unshift({ id: null, value: '%', text: 'ALL' });
@@ -195,14 +195,22 @@
                 id: ID,
                 values: [name, account, balance == '' ? '' : '$' + balance, lastTransaction == '' ? '' : moment(lastTransaction).format('MM/DD/YY')],
                 attributes: [
-                    { key: 'data-consumer-id', value: ID }, 
+                    { key: 'data-consumer-id', value: td.Id }, { key: 'consumerId', value: td.Id }, { key: 'registerId', value: td.registerId } 
                 ],
+                onClick: (e) => {  
+                    handleAccountTableEvents(e.target.attributes.consumerId.value,e.target.attributes.registerId.value)
+                },
             };
         });
 
         table.populate(cfTable, cfTableData);
         PROGRESS__ANYWHERE.SPINNER.hide(widgetBody, "Loading");
     }
+
+    function handleAccountTableEvents(consumerId, registerId) {
+        $.session.consumerId = consumerId;
+        NewEntryCF.buildNewEntryForm(registerId); 
+    } 
 
     function init() {
         if (!cfWidgetLocationName) cfWidgetLocationName = '%';

@@ -3394,6 +3394,7 @@ const plan = (function () {
     setSelectedConsumer,
     setRevisionNumber,
     getISPValidation,
+    getAttachmentIds,
     setPlanType,
     setPlanId,
     setPlanStatus,
