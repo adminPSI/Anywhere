@@ -92,7 +92,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         if (sendToDODD[0].Contains("Exception"))
                         {
                             actions[i] = "DODD Failed";
-                            doddFailed = true;
+                            doddFailed = false;
                         }
                         else
                         {
