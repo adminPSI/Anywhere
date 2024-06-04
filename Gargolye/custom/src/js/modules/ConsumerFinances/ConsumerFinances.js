@@ -58,9 +58,15 @@ const ConsumerFinances = (() => {
         }
 
         if (!document.querySelector('.consumerListBtn')) roster2.miniRosterinit();
-        landingPage = document.createElement('div');
-        selectedConsumersId = selectedConsumers[selectedConsumers.length - 1].id;
-        $.session.consumerId = selectedConsumersId;
+        landingPage = document.createElement('div'); 
+        if (selectedConsumers != undefined) {
+            selectedConsumersId = selectedConsumers[selectedConsumers.length - 1].id;
+            $.session.consumerId = selectedConsumersId;
+        } else {
+            dashboard.load();
+            return;  
+        }
+       
         const name = (
             await ConsumerFinancesAjax.getConsumerNameByID({
                 token: $.session.Token,

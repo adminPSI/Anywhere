@@ -210,8 +210,10 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string balance { get; set; }
             [DataMember(Order = 3)]
             public string account { get; set; }
-            [DataMember(Order = 3)]
+            [DataMember(Order = 4)]
             public string Id { get; set; }
+            [DataMember(Order = 5)]
+            public string registerId { get; set; }
         }
 
         public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType, string accountPermission)

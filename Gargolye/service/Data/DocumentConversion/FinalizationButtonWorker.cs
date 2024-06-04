@@ -19,6 +19,10 @@ using static Anywhere.service.Data.AnywhereWorker;
 using System.Net.Mail;
 using Attachment = Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments.Attachment;
 using iTextSharp.text.pdf.qrcode;
+using static Anywhere.service.Data.AnywhereAttachmentWorker;
+using System.Text;
+using System.Collections;
+
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -49,7 +53,7 @@ namespace Anywhere.service.Data.DocumentConversion
         public class ActionResults
         {
             public string[] actions { get; set; }
-            public MemoryStream report { get; set; }
+            public byte[] report { get; set; }
         }
         public ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
         {
@@ -65,6 +69,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 string[] sendToDODD = new string[5];
                 string sendONET = "";
                 string sendEmailResult = "";
+                bool doddFailed = false;
                 int count = 0;
                 if(checkBoxes.Length == 1 && checkBoxes[0] == "selectAllCheck")
                 {
@@ -84,10 +89,19 @@ namespace Anywhere.service.Data.DocumentConversion
                     {
                         //Send to DODD
                         sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, assessmentID, peopleId);
-                        actions[i] = sendToDODD[0];
+                        if (sendToDODD[0].Contains("Exception"))
+                        {
+                            actions[i] = "DODD Failed";
+                            doddFailed = false;
+                        }
+                        else
+                        {
+                            actions[i] = "DODD Success";
+                        }
+                        
                         i++;
                     }
-                    if (item == "sendToOhioNetCheck" || item == "selectAllCheck")
+                    if ((item == "sendToOhioNetCheck" || item == "selectAllCheck") && doddFailed == false)
                     {
                         //Send to ONET
                         if(reportCreated == false)
@@ -97,10 +111,15 @@ namespace Anywhere.service.Data.DocumentConversion
                         }
                         
                         sendONET = sendToONET(token, report, assessmentID);
-                        actions[i] = sendONET;
+                        actions[i] = "ONET " + sendONET;
                         i++;
                     }
-                    if (item == "emailReportCheck" || item == "selectAllCheck")
+                    else
+                    {
+                        actions[i] = "ONET Failed";
+                        i++;
+                    }
+                    if ((item == "emailReportCheck" || item == "selectAllCheck") && doddFailed == false)
                     {
                         if (reportCreated == false)
                         {
@@ -108,14 +127,40 @@ namespace Anywhere.service.Data.DocumentConversion
                             reportCreated= true;
                         }
                         //Send Email
+                        string binary = "";
+                        string s = System.Text.Encoding.UTF8.GetString(report, 0, report.Length);
+                        int len = s.Length;
+
+                        for (int j = 0; j < len; j++)
+                        {
+                            binary += (char)s[j];
+                        }
+
+                        string abString = System.Convert.ToBase64String(report);//System.Convert.ToBase64String(Encoding.ASCII.GetBytes(binary));
+
+
+
                         foreach (string emailAddress in emailAddresses)
                         {
-                            sendEmailResult = aadg.SendReportViaEmail(emailAddress, report.ToString());
+                            sendEmailResult = aadg.SendReportViaEmail(emailAddress, abString);
                         }
-                        actions[i] = sendEmailResult;
+                        if(sendEmailResult == "Success")
+                        {
+                            actions[i] = "EMAIL " + sendEmailResult;
+                        }
+                        else
+                        {
+                            actions[i] = "EMAIL Failed";
+                        }
+                        
                         i++;
                     }
-                    if (item == "downloadReportCheck" || item == "selectAllCheck")
+                    else
+                    {
+                        actions[i] = "EMAIL Failed";
+                        i++;
+                    }
+                    if ((item == "downloadReportCheck" || item == "selectAllCheck") && doddFailed == false)
                     {
                         if (reportCreated == false)
                         {
@@ -123,11 +168,25 @@ namespace Anywhere.service.Data.DocumentConversion
                             reportCreated = true;
                         }
                         //ar[0].report.Equals(report); //= report;
-                        //actions[i] = report.ToString();
-                        i++;
+                        if(report.Length > 250)
+                        {
+                            actions[i] = "REPORT Success";
+                        }
+                        else
+                        {
+                            actions[i] = "REPORT Failed";
+                        }
                         
+                        i++;
+
                         //Display Plan Report
                         //displayPlanReport(report);
+                    }
+                    else
+                    {
+                        actions[i] = "REPORT Failed";
+                        report = null;
+                        i++;
                     }
                 }
                 //Send to DODD
@@ -145,12 +204,17 @@ namespace Anywhere.service.Data.DocumentConversion
                 //Display Plan Report
                 //displayPlanReport(report);
                 //ar[0].actions.Equals(actions);
-                MemoryStream reportStream = new MemoryStream();
-                reportStream.Write(report, 0, report.Length);
+                if(report != null)
+                {
+                    MemoryStream reportStream = new MemoryStream(report);
+                }
+                
+                //reportStream.Write(report, 0, report.Length);
+                //reportStream.Close();
                 ActionResults ar = new ActionResults
                 {
                     actions = actions,
-                    report = reportStream
+                    report = report
                 };
                 return ar;
             }

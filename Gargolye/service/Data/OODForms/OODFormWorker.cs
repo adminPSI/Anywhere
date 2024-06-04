@@ -401,15 +401,69 @@ namespace OODForms
                     }
                 }
 
-                string VRCounselor = "XX";
+                string VRCounselor = "";
                 DataSet dsVR = oodfdg.OODForm6GetVRCounselor(referenceNumber, consumerIdString, startDate, endDate);
                 // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
 
                 if (dsVR.Tables[0].Rows.Count > 0)
                 {
-                    //VRCounselor = form6DataList[0].VR_CounselorContractor;
-                    VRCounselor = dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString();
+                    if (!string.IsNullOrEmpty(dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString()))
+                    {
+                        VRCounselor = dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString();
+                    }
+                    else
+                    {
+                        VRCounselor = "NONE FOUND";
+                    }
                 }
+
+                string IPEGoal = "";
+                DataSet dsIPE = oodfdg.OODForm6GetIPEGoal(referenceNumber, consumerIdString, startDate, endDate);
+                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+
+                if (dsIPE.Tables[0].Rows.Count > 0)
+                { 
+                    if (!string.IsNullOrEmpty(dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString()))        
+                    {
+                        IPEGoal = dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString();
+                    } else
+                    {
+                        IPEGoal = "NONE FOUND";
+                    }
+                }
+
+                string service = "";
+                DataSet dsService = oodfdg.OODForm6GetService(referenceNumber, consumerIdString, startDate, endDate);
+                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+
+                if (dsService.Tables[0].Rows.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(dsService.Tables[0].Rows[0]["service"].ToString()))
+                    {
+                        service = dsService.Tables[0].Rows[0]["service"].ToString();
+                    }
+                    else
+                    {
+                        service = "PBJD Tier I";
+                    }
+                }
+
+                string bilingual = "";  // SAMLevel
+                string SAMLevel = "";  // bilingualSupplement
+                DataSet dsSAMandBilingual = oodfdg.OODForm6GetSAMandBilingual(referenceNumber, consumerIdString, startDate, endDate, userId);
+
+                if (dsSAMandBilingual.Tables[0].Rows.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString()))
+                    {
+                        SAMLevel = dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString();
+                    }
+                    else
+                    {
+                        SAMLevel = "NONE FOUND";
+                    }
+                }
+
 
                 DateTime currentDate = DateTime.Now;
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");  
@@ -424,14 +478,14 @@ namespace OODForms
                 {
                     ("Provider Name", ProviderName),  
                     ("Individuals Name", ConsumerName),  
-                    ("IPE_Goal", "XXX"),         // em_employee_general.ipe for given individual
+                    ("IPE_Goal", IPEGoal),         // em_employee_general.ipe for given individual
                     ("Direct Service Staff Nam(s) and Initials", StaffWithInitals), 
                     ("Person Completing Report", personCompletingReport),  
                     ("VR CounselorCoordinator", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
 
                     ("Authorization", referenceNumber), 
                     ("Provider_Invoice_Number", invoiceNumber),  
-                    ("Service", "PBJD Tier I"),      // Select Service = services.procedure_code for selected service (match on emp_ood.reference_number and consumer_services_master.service_id)
+                    ("Service", service),      // Select Service = services.procedure_code for selected service (match on emp_ood.reference_number and consumer_services_master.service_id)
                     ("Invoice Date", invoiceDate),  
                     ("Service_Start_Date_af_date", strStartDate), 
                     ("Service_End_Date_af_date", strEndDate),
@@ -1674,7 +1728,7 @@ namespace OODForms
         public string VR_CounselorContractor { get; set; }
         public string authorizationNumber { get; set; }
         public string providerInvoiceNumber { get; set; }
-        public string selectedService { get; set; }
+        public string service { get; set; }
         public string bilingual{ get; set; }
         public string SAMLevel{ get; set; }
         public string invoiceDate { get; set; }

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Drawing.Imaging;
+using Newtonsoft.Json.Linq;
 
 namespace Anywhere.service.Data.ESign
 {
@@ -21,11 +22,14 @@ namespace Anywhere.service.Data.ESign
                 foreach (var teamMemberData in eSignatureTeamMemberData)
                 {
                     // Saves relavant report parameters so report can be ran when signer logs in
-                    esdg.saveESignReportData(token, reportData.assessmentID, reportData.versionID, reportData.planAttachmentIds, reportData.wfAttachmentIds, reportData.sigAttachmentIds,
+                    string esigRdId = esdg.saveESignReportData(token, reportData.assessmentID, reportData.versionID, reportData.planAttachmentIds, reportData.wfAttachmentIds, reportData.sigAttachmentIds,
                         reportData.include.ToString(), teamMemberData.peopleId, transaction);
 
-                    // Sends out the email to the signer with a link for them to log in with
-                    esdg.sendESignaturesRequestEmail(token, teamMemberData.peopleId, teamMemberData.planId, teamMemberData.signatureId, teamMemberData.webpageURL, transaction);
+                        var jsonArray = JArray.Parse(esigRdId);
+                        string reportDataID = jsonArray[0]["ESig_RD_ID"].ToString();
+
+                        // Sends out the email to the signer with a link for them to log in with
+                        esdg.sendESignaturesRequestEmail(token, teamMemberData.peopleId, teamMemberData.planId, teamMemberData.signatureId, teamMemberData.webpageURL, reportDataID, transaction);
                 }
 
                 return "success";
