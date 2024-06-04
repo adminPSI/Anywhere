@@ -668,19 +668,19 @@
     transform: translateX(10%);
 
     &.visible {
-      transform: translateX(-100%);
+      transform: translateX(0%);
     }
   }
 
   .subSec2 {
     &.visible {
-      transform: translateX(-200%);
+      transform: translateX(0%);
     }
   }
 
   .subSec3 {
     &.visible {
-      transform: translateX(-300%);
+      transform: translateX(0%);
     }
   }
 
