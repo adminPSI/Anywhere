@@ -79,7 +79,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 {
                     count = checkBoxes.Length;
                 }
-                string[] actions = new string[count];
+                string[] actions = new string[20];
                 byte[] report = null;
                 bool reportCreated = false;
                 int i = 0;
@@ -92,7 +92,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         if (sendToDODD[0].Contains("Exception"))
                         {
                             actions[i] = "DODD Failed";
-                            doddFailed = false;
+                            doddFailed = true;
                         }
                         else
                         {
@@ -185,7 +185,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     else
                     {
                         actions[i] = "REPORT Failed";
-                        report = null;
+                        //report = null;
                         i++;
                     }
                 }
