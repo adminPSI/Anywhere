@@ -1317,7 +1317,13 @@ namespace OODForms
                         foreach (DataRow row2 in dsScheduleWorkTimes.Tables[0].Rows)
                         {
                             //string scheduledWorkTime;
-                            string scheduledWorkTime = row2["start_time"].ToString() + " - " + row2["end_time"].ToString() + "\r\n";
+                            DateTime thisStartTime = DateTime.ParseExact(row2["start_time"].ToString(), "HH:mm:ss", CultureInfo.InvariantCulture);
+                            DateTime thisEndTime = DateTime.ParseExact(row2["end_time"].ToString(), "HH:mm:ss", CultureInfo.InvariantCulture);
+
+                            string thisStartTimeAMPM = thisStartTime.ToString("hh\\:mm tt");
+                            string thisEndTimeAMPM =  thisEndTime.ToString("hh\\:mm tt");
+
+                            string scheduledWorkTime = thisStartTimeAMPM + " - " + thisEndTimeAMPM + "\r\n";
                             string scheduledWorkTimeServiceDate = row2["Service_Date"].ToString();
                             scheduledTimes.Add(new form16ScheduledWorkTimes {Service_Date = scheduledWorkTimeServiceDate, Time_Range = scheduledWorkTime });
                         }

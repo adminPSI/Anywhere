@@ -935,12 +935,12 @@ var consumerInfo = (function () {
         className: 'intellivue',
         visible: $.session.intellivuePermission === '' ? false : true,
       },
-      {
-        title: 'Workflow',
-        icon: 'workflow',
-        className: 'workflow',
-        visible: true,
-      },
+      // {
+      //   title: 'Workflow',
+      //   icon: 'workflow',
+      //   className: 'workflow',
+      //   visible: true,
+      // },
     ];
     menuItems.forEach(mi => {
       if (!mi.visible) return;
@@ -1084,10 +1084,10 @@ var consumerInfo = (function () {
         });
         break;
       }
-      case 'Workflow': {
-        targetSection = consumerInfoCard.querySelector('.workflowSection');
-        await populateWorkflowSection(targetSection);
-      }
+      // case 'Workflow': {
+      //   targetSection = consumerInfoCard.querySelector('.workflowSection');
+      //   await populateWorkflowSection(targetSection);
+      // }
     }
 
     if (targetSection) {
@@ -1164,7 +1164,7 @@ var consumerInfo = (function () {
       'attachments',
       'schedule',
       'intellivue',
-      'workflow',
+      //'workflow',
     ]);
     sections.forEach(section => {
       cardBody.appendChild(section);
