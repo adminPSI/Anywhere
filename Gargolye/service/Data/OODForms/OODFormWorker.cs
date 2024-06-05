@@ -937,7 +937,7 @@ namespace OODForms
             }
         }
 
-        public string generateForm16(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
+        public string generateForm16(string token, string AuthorizationNumber, string consumerIDString, string StartDate, string EndDate, string serviceCode, string userID)
         {
             try
             {
@@ -955,7 +955,7 @@ namespace OODForms
                 string templateFileName = "Form16SummerYouthWorkExperience.xlsx";
                 string reportPath = string.Format(path, templateFileName);
 
-                long PeopleID = long.Parse(peopleIDString);
+                long PeopleID = long.Parse(consumerIDString);
 
                 // Fill out TOP Portion of the XLS SPREADSHEET********************************************************************************************************	
 
@@ -1007,7 +1007,7 @@ namespace OODForms
                 string StaffWithInitals = string.Empty;
                 string OODStaff = string.Empty;
                 string MiddleName = string.Empty;
-                DataSet ds = obj.OODForm8GetDirectStaff(AuthorizationNumber, StartDate, EndDate);
+                DataSet ds = obj.OODForm16GetDirectStaff(AuthorizationNumber, consumerIDString, StartDate, EndDate);
 
                 WS.Cell("G6").Value = personCompletingReport;
 
@@ -1025,7 +1025,7 @@ namespace OODForms
 
                         if (Staff.ToString().Trim().Length > 0)
                         {
-                            StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
+                            StaffWithInitals += String.Format("{0} ({1}), ", Staff, row2["Initials"].ToString());
                         }
                     }
                 }
