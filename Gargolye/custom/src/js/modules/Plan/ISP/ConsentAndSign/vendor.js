@@ -181,6 +181,7 @@ const csVendor = (() => {
         { text: 'Digital', value: '1' },
         { text: 'In-Person', value: '2' },
         { text: 'No Signature Required', value: '3' },
+        { text: 'E-Digital', value: '4' },
       ],
       type,
     );
@@ -258,6 +259,9 @@ const csVendor = (() => {
       }
       case '3': {
         return 'No Signature Required';
+      }
+      case '4': {
+        return 'E-Digital';
       }
       default: {
         return '';
