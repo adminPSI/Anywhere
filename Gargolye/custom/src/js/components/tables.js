@@ -334,13 +334,13 @@ var table = (function () {
                 cell.innerHTML = v;
                 newRow.appendChild(cell);
             });
-
+  
             if (d.endIcon) {
                 const cell = document.createElement('div');
                 cell.classList.add('endIcon');
                 cell.innerHTML = d.endIcon;
                 cell.addEventListener('click', d.endIconCallback);
-                row.appendChild(cell);
+                newRow.appendChild(cell);
             }
     
             if (d.onCopyClick) {
