@@ -1007,7 +1007,7 @@ namespace OODForms
                 string StaffWithInitals = string.Empty;
                 string OODStaff = string.Empty;
                 string MiddleName = string.Empty;
-                DataSet ds = obj.OODForm16GetDirectStaff(AuthorizationNumber, consumerIDString, StartDate, EndDate);
+                DataSet ds = obj.OODForm8GetDirectStaff(AuthorizationNumber, StartDate, EndDate);
 
                 WS.Cell("G6").Value = personCompletingReport;
 
@@ -1040,15 +1040,15 @@ namespace OODForms
                 }
 
 
-                DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, serviceCode, StartDate, EndDate);
+                DataSet dsOODStaff = obj.OODForm16GetOODStaff(AuthorizationNumber, consumerIDString, StartDate, EndDate);
                 if (dsOODStaff.Tables.Count > 0)
                 {
                     DataTable dtOODStaff = dsOODStaff.Tables[0];
                     foreach (DataRow rowOODStaff in dtOODStaff.Rows)
                     {
-                        if (rowOODStaff["FirstName"].ToString().Trim().Length > 0 && rowOODStaff["LastName"].ToString().Trim().Length > 0)
+                        if (rowOODStaff["First_Name"].ToString().Trim().Length > 0 && rowOODStaff["Last_Name"].ToString().Trim().Length > 0)
                         {
-                            OODStaff = String.Format("{0} {1}, ", rowOODStaff["FirstName"].ToString().Trim(), rowOODStaff["LastName"].ToString().Trim());
+                            OODStaff = String.Format("{0} {1} ", rowOODStaff["First_Name"].ToString().Trim(), rowOODStaff["Last_Name"].ToString().Trim());
                         }
                     }
 

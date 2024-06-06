@@ -413,7 +413,7 @@ namespace OODForms
 
         }
 
-        public DataSet OODForm16GetDirectStaff(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate)
+        public DataSet OODForm16GetOODStaff(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate)
         {
             try
             {
