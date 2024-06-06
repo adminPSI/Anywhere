@@ -1117,6 +1117,7 @@ const planConsentAndSign = (() => {
                         peopleId: member.peopleId,
                         planId: member.planId,
                         signatureId: member.signatureId,
+                        vendorId: member.vendorId,
                         webpageURL
                     }));
 

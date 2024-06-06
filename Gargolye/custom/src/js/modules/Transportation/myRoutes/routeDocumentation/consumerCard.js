@@ -80,6 +80,7 @@ const TRANS_consumerDocCard = (function () {
                 updateRiderStatus(event, consumerId, cardContainer)
                 if (section === 'routeDocumentation' && $.session.billableTransportation == 'Y' && cardContainer.getAttribute("data-rider-status") == 'P' && DOM.ACTIONCENTER.getAttribute('data-active-section') === 'routeDocumentation') {
                     billableCheckbox.style.display = 'inline-flex';
+                    billableCheckbox.click();  
                 }
                 else {
                     billableCheckbox.style.display = 'none';

@@ -413,6 +413,49 @@ namespace OODForms
 
         }
 
+        public DataSet OODForm16GetDirectStaff(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate)
+        {
+            try
+            {
+
+
+                sb.Clear();
+                sb.Append("Select p.First_Name as First_Name, p.Middle_Name as Middle_Name, p.Last_Name as Last_Name, ");
+                sb.Append("(SELECT SUBSTRING(p.First_Name, 1, 1) + CASE WHEN p.Middle_Name IS NOT NULL THEN SUBSTRING(p.Middle_Name, 1, 1) ELSE '' END + SUBSTRING(p.Last_Name, 1, 1)) AS Initials ");
+                sb.Append("from Persons as p ");
+               // sb.Append("left outer join people pe on p.Person_ID = pe.Person_ID ");
+                sb.Append("left outer join consumer_services_master as csm on p.Person_ID = csm.Person_ID ");
+                sb.AppendFormat("where csm.consumer_id = {0} and Reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
+                DataSet ds = di.SelectRowsDS(sb.ToString());
+                ds = di.SelectRowsDS(sb.ToString());
+
+                if (ds.Tables.Count > 0)
+                {
+                    DataTable dt = ds.Tables[0];
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        string mi = string.Empty;
+                        if (row["Middle_Name"].ToString().Length > 0)
+                        {
+                            mi = row["Middle_Name"].ToString().Substring(0, 1).ToUpper();
+                        }
+
+                        row["Initials"] = String.Format("{0}{1}{2}", row["First_Name"].ToString().Substring(0, 1).ToUpper(), mi, row["Last_Name"].ToString().Substring(0, 1).ToUpper());
+                    }
+                }
+
+                return ds;
+
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
+
+        }
+
         public DataSet OODForm16ServiceHoursOffered(string AuthorizationNumber, string StartDate, string EndDate)
         {
             try

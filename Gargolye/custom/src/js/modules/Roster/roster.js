@@ -267,9 +267,9 @@ const roster2 = (function () {
             var firstName = rc.FN.toLowerCase();
             var lastName = rc.LN.toLowerCase();
             var middleName = rc.MN.toLowerCase(); //
-            var fullName = `${lastName}, ${middleName} ${firstName}`; 
-            var fullNameReversed = `${lastName}, ${firstName} ${middleName}`; 
-            var matchesName = fullName.indexOf(searchValue);  
+            var fullName = `${lastName}, ${middleName} ${firstName}`;
+            var fullNameReversed = `${lastName}, ${firstName} ${middleName}`;
+            var matchesName = fullName.indexOf(searchValue);
             var matchesNameReverse = fullNameReversed.indexOf(searchValue);
 
             return matchesName !== -1 || matchesNameReverse !== -1;
@@ -363,7 +363,7 @@ const roster2 = (function () {
             type: 'text',
             classNames: 'filterCloseBtn',
             callback: () => {
-                if (!islocationDisabled) 
+                if (!islocationDisabled)
                     closeFilter('selectedLocationNameBtn');
             },
         });
@@ -989,14 +989,16 @@ const roster2 = (function () {
             consumerCard.classList.add('highlighted', 'consumer-selected');
         }
 
-        if ($.loadedApp === 'outcomes') {
-            consumerCard.classList.remove('disabled');
-        } else {
-            if ((isActive && isActive.length >= 1) || !isAllowed) {
-                consumerCard.classList.add('disabled');
-            } else {
+
+        if ((isActive && isActive.length >= 1) || !isAllowed) {
+            if ($.loadedApp === 'outcomes') {
                 consumerCard.classList.remove('disabled');
+                consumerCard.classList.add('disabledClickable');
+            } else {
+                consumerCard.classList.add('disabled');
             }
+        } else {
+            consumerCard.classList.remove('disabled');
         }
 
         const portrait = document.createElement('div');
@@ -1240,7 +1242,7 @@ const roster2 = (function () {
         await getRosterConsumersData();
         populateRoster();
         document.getElementById('searchBtn').click();
-        //filterApply();
+        //filterApply();   
         filterUpdateDisplay();
     }
     /**
@@ -1587,7 +1589,7 @@ const roster2 = (function () {
                 MASS_DESELECT_ALL_BTN.style.display = 'none';
                 MASS_SELECT_ALL_BTN.style.display = 'none';
                 selectNoneHighlightedConsumers();
-                clearSelectedConsumers(); 
+                clearSelectedConsumers();
             }
         });
 
@@ -1701,7 +1703,7 @@ const roster2 = (function () {
         totalConsumerCount = 0;
         await getRosterConsumersData();
         populateRoster();
-        document.getElementById('searchBtn').click();
+        document.getElementById('searchBtn').click(); 
         filterUpdateDisplay();
     }
 

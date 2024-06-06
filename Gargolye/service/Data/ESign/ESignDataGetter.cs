@@ -25,6 +25,7 @@ namespace Anywhere.service.Data.ESign
 			string sigAttachmentIds,
 			string include,
 			string peopleId,
+			string vendorId,
 			DistributedTransaction transaction)
 		{
 			if (tokenValidator(token) == false) return null;
@@ -34,6 +35,7 @@ namespace Anywhere.service.Data.ESign
 			{
 				{ "@token", token },
                 { "@peopleId", peopleId },
+				{ "version", versionId },
                 { "@assessmentId", assessmentId },
 				{ "@versionId", versionId },
 				{ "@planAttachmentIds", planAttachmentIds },
@@ -59,6 +61,7 @@ namespace Anywhere.service.Data.ESign
 			 string peopleId,
 			 string planId,
 			 string signatureId,
+			 string vendorId,
 			 string webpageURL,
 			 string reportDataID,
 			 DistributedTransaction transaction)
@@ -72,6 +75,7 @@ namespace Anywhere.service.Data.ESign
 				{ "@peopleId", peopleId },
 				{ "@planId", planId },
 				{ "@signatureId", signatureId },
+				{ "@vendorId", vendorId },
 				{ "@webpageURL", webpageURL },
 				{ "@reportDataID", reportDataID },
 			};
