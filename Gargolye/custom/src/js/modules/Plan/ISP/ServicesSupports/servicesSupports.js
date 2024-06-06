@@ -2127,11 +2127,17 @@ const servicesSupports = (() => {
                     id: rowId,
                     values: tableValues,
                     onClick: () => {
-                        showAddAdditionalSupportPopup(asData, false, false, charLimits);
-                    }, 
-                    endIcon: isReadOnly == true ? `${icons['Empty']}` : `${icons['copy']}`,
+                        if (isReadOnly == true)
+                            return;
+                        else
+                            showAddAdditionalSupportPopup(asData, false, false, charLimits);
+                    },
+                    endIcon: isReadOnly == true ? '' : `${icons['copy']}`,
                     endIconCallback: (e) => {
-                        showAddAdditionalSupportPopup(asData, true, false, charLimits);
+                        if (isReadOnly == true)
+                            return;
+                        else
+                            showAddAdditionalSupportPopup(asData, true, false, charLimits);
                     },
                 },
             ],
@@ -2162,13 +2168,19 @@ const servicesSupports = (() => {
                     id: rowId,
                     values: tableValues,
                     onClick: () => {
-                        showAddAdditionalSupportPopup(asData, false, false, charLimits);
-                    }, 
-                    endIcon: isReadOnly == true ? `${icons['Empty']}` : `${icons['copy']}`,
-                    endIconCallback: (e) => {
-                        showAddAdditionalSupportPopup(asData, true, false, charLimits);
+                        if (isReadOnly == true)
+                            return;
+                        else 
+                            showAddAdditionalSupportPopup(asData, false, false, charLimits);
                     },
-                },
+                    endIcon: isReadOnly == true ? '' : `${icons['copy']}`,       
+                    endIconCallback: (e) => {
+                        if (isReadOnly == true)
+                            return;
+                        else
+                            showAddAdditionalSupportPopup(asData, true, false, charLimits);
+                    },
+                }, 
             ],
             isSortable,
         );
@@ -2588,11 +2600,17 @@ const servicesSupports = (() => {
                         values: tableValues,
                         attributes: [{ key: 'sectionId', value: asData.assessmentAreaId }],
                         onClick: () => {
-                            showAddAdditionalSupportPopup(asData, false, false, charLimits);
+                            if (isReadOnly == true)
+                                return;
+                            else
+                                showAddAdditionalSupportPopup(asData, false, false, charLimits);
                         },
-                        endIcon: isReadOnly == true ? `${icons['Empty']}` :`${icons['copy']}`, 
+                        endIcon: isReadOnly == true ? '' : `${icons['copy']}`,
                         endIconCallback: (e) => {
-                            showAddAdditionalSupportPopup(asData, true, false, charLimits); 
+                            if (isReadOnly == true)
+                                return;
+                            else
+                                showAddAdditionalSupportPopup(asData, true, false, charLimits);
                         },
                     };
                 });

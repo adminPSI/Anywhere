@@ -70,6 +70,10 @@ namespace Anywhere.service.Data.DocumentConversion
                 string sendONET = "";
                 string sendEmailResult = "";
                 bool doddFailed = false;
+                bool doddChecked = false;
+                bool onetChecked = false;
+                bool emailChecked = false;
+                bool reportChecked = false;
                 int count = 0;
                 if(checkBoxes.Length == 1 && checkBoxes[0] == "selectAllCheck")
                 {
@@ -79,7 +83,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 {
                     count = checkBoxes.Length;
                 }
-                string[] actions = new string[20];
+                string[] actions = new string[count];
                 byte[] report = null;
                 bool reportCreated = false;
                 int i = 0;
@@ -92,7 +96,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         if (sendToDODD[0].Contains("Exception"))
                         {
                             actions[i] = "DODD Failed";
-                            doddFailed = true;
+                            doddFailed = false;
                         }
                         else
                         {
@@ -116,8 +120,14 @@ namespace Anywhere.service.Data.DocumentConversion
                     }
                     else
                     {
-                        actions[i] = "ONET Failed";
-                        i++;
+                        
+                        if (!onetChecked)
+                        {
+                            onetChecked = true;
+                            actions[i] = "ONET Failed";
+                            i++;
+                        }
+                        
                     }
                     if ((item == "emailReportCheck" || item == "selectAllCheck") && doddFailed == false)
                     {
@@ -157,8 +167,13 @@ namespace Anywhere.service.Data.DocumentConversion
                     }
                     else
                     {
-                        actions[i] = "EMAIL Failed";
-                        i++;
+                        if (!emailChecked)
+                        {
+                            emailChecked = true;
+                            actions[i] = "EMAIL Failed";
+                            i++;
+                        }
+                        
                     }
                     if ((item == "downloadReportCheck" || item == "selectAllCheck") && doddFailed == false)
                     {
@@ -184,9 +199,14 @@ namespace Anywhere.service.Data.DocumentConversion
                     }
                     else
                     {
-                        actions[i] = "REPORT Failed";
-                        //report = null;
-                        i++;
+                        if (!reportChecked)
+                        {
+                            reportChecked = true;
+                            actions[i] = "REPORT Failed";
+                            //report = null;
+                            i++;
+                        }
+                        
                     }
                 }
                 //Send to DODD
