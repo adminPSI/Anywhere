@@ -23,13 +23,13 @@ namespace Anywhere.service.Data.ESign
                 {
                     // Saves relavant report parameters so report can be ran when signer logs in
                     string esigRdId = esdg.saveESignReportData(token, reportData.assessmentID, reportData.versionID, reportData.planAttachmentIds, reportData.wfAttachmentIds, reportData.sigAttachmentIds,
-                        reportData.include.ToString(), teamMemberData.peopleId, transaction);
+                        reportData.include.ToString(), teamMemberData.peopleId, teamMemberData.vendorId, transaction);
 
                         var jsonArray = JArray.Parse(esigRdId);
                         string reportDataID = jsonArray[0]["ESig_RD_ID"].ToString();
 
                         // Sends out the email to the signer with a link for them to log in with
-                        esdg.sendESignaturesRequestEmail(token, teamMemberData.peopleId, teamMemberData.planId, teamMemberData.signatureId, teamMemberData.webpageURL, reportDataID, transaction);
+                        esdg.sendESignaturesRequestEmail(token, teamMemberData.peopleId, teamMemberData.planId, teamMemberData.signatureId, teamMemberData.vendorId, teamMemberData.webpageURL, reportDataID, transaction);
                 }
 
                 return "success";
@@ -229,6 +229,7 @@ namespace Anywhere.service.Data.ESign
             public string peopleId { get; set; }
             public string planId { get; set; }
             public string signatureId { get; set; }
+            public string vendorId { get; set; }
             public string webpageURL { get; set; }
         }
 
