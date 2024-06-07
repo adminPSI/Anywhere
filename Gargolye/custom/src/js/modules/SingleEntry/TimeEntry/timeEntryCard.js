@@ -1866,10 +1866,16 @@ var timeEntryCard = (function () {
         dropdownData.unshift({ value: '%', text: '' });
         dropdown.populate(reasonDropdown, dropdownData, evvReasonCode);
 
-        let reasoncode = evvReasonCode == null || evvReasonCode == '%' || evvReasonCode == undefined ? 99 : evvReasonCode;
-        reasonCodeValue = dropdownData.find(x => x.value == reasoncode).text;   
-        if (document.getElementById('reasonInput') != null && document.getElementById('reasonInput') != undefined) {
-            evvReasonCode = dropdownData.find(x => x.value == reasoncode).value;  
+         
+        if (evvReasonCode == null || evvReasonCode == '%' || evvReasonCode == undefined || evvReasonCode == '99') {
+            evvReasonCode = '99';
+            reasonCodeValue = '99 - Documentation on file supports manual change';
+        }
+        else {
+            reasonCodeValue = dropdownData.find(x => x.value == evvReasonCode).text; 
+        }
+         
+        if (document.getElementById('reasonInput') != null && document.getElementById('reasonInput') != undefined) {           
             document.getElementById('reasonInput').value = reasonCodeValue; 
         }
               
