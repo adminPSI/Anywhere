@@ -90,7 +90,7 @@ const TRANS_consumerDocCard = (function () {
         const billableCheckbox = input.buildCheckbox({
             id: 'billableCheckbox',
             text: 'Billable',
-            isChecked: riderStatus == 'N' ? true : false,
+            isChecked: riderStatus == 'P' ? true : false,
             callback: () => setCheckForBillable(event.target, consumerId, cardContainer),
         });
 
@@ -423,12 +423,12 @@ const TRANS_consumerDocCard = (function () {
 
     function setCheckForBillable(event, consumerId, cardContainer) {
         if (event.checked) {
-            updateData = { consumerId: consumerId, key: 'riderStatus', value: 'N' }
-            cardContainer.setAttribute("data-rider-status", 'N');
-        }
-        else {
             updateData = { consumerId: consumerId, key: 'riderStatus', value: 'P' }
             cardContainer.setAttribute("data-rider-status", 'P');
+        }
+        else {
+            updateData = { consumerId: consumerId, key: 'riderStatus', value: 'N' }
+            cardContainer.setAttribute("data-rider-status", 'N');
         }
         updateSectionConsumerData(updateData); 
     }
