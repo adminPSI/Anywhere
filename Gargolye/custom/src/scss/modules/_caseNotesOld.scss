@@ -232,22 +232,37 @@
     }
     // New Case Note (SSA) -- Attachment Btn and Confidential Checkbox
     .inputSSAWrap {
-        display: flex;
-        flex-flow: row wrap;
-        justify-content: space-between;
+        display: flow;
         margin: 0 0 5px;
         width: 100%;
 
-        checkbox {
+        .checkbox-mtd {
             margin: 0 0 13px !important;
+            width: 180%;
         }
 
         button {
             flex-grow: 1;
             margin: 0 20px 0 30px;
+            width: 140%;
+            margin-bottom: 15%;
 
             &:last-child() {
                 margin: 0;
+            }
+        }
+
+        @media screen and (min-width: 560px) {
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: space-between;
+
+            button {
+                width: 80%;
+            }
+
+            .checkbox-mtd {
+                width: 102% !important;
             }
         }
     }

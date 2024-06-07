@@ -1433,8 +1433,7 @@ var noteSSA = (function () {
      
         chkboxWrap.appendChild(confidentialCheckbox);   
        
-        if ($.session.applicationName === 'Gatekeeper') {   
-            serviceMonitoringCheckbox.style.width = '102%';  
+        if ($.session.applicationName === 'Gatekeeper') {    
             chkboxWrap.appendChild(serviceMonitoringCheckbox); 
             if (cnBatched) {
                 serviceMonitoringCheckbox.firstChild.setAttribute('disabled', true);
