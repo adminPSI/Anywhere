@@ -96,7 +96,7 @@
         text-align: center;
         color: $orange;
     }
-    
+
     #creditMessage {
         margin-bottom: 20px;
         font-style: italic;
@@ -234,12 +234,17 @@
     .inputSSAWrap {
         display: flex;
         flex-flow: row wrap;
-        margin: 0 0 15px;
-        width: 400px;
+        justify-content: space-between;
+        margin: 0 0 5px;
+        width: 100%;
+
+        checkbox {
+            margin: 0 0 13px !important;
+        }
 
         button {
             flex-grow: 1;
-            margin: 0 20px 0 0;
+            margin: 0 20px 0 30px;
 
             &:last-child() {
                 margin: 0;
@@ -252,26 +257,25 @@
             // &.hidden {
             //     display: none;
             // }
-
             // &.selected {
             //     background: $secondary;
             // }
 
             > div {
-               // display: flex;
+                // display: flex;
                 flex-grow: 1;
-               // margin: 0 5px 0 0;
+                // margin: 0 5px 0 0;
             }
 
             > div:last-child {
                 margin: 0;
-              }
+            }
 
             > div:nth-child(1) {
                 // service date
                 flex-basis: 225px;
-             justify-content: left;
-             max-width: 225px;
+                justify-content: left;
+                max-width: 225px;
             }
 
             > div:nth-child(2) {
@@ -280,7 +284,7 @@
                 justify-content: left;
                 max-width: 225px;
             }
-            
+
             > div:nth-child(3) {
                 // end time
                 flex-basis: 225px;
@@ -297,81 +301,83 @@
 
             > div:nth-child(5) {
                 // date created
-              //  display: none;
-              flex-basis: 225px;
-              justify-content: left;
-              max-width: 225px;
-            }//
+                //  display: none;
+                flex-basis: 225px;
+                justify-content: left;
+                max-width: 225px;
+            }
+            //
 
             > div:nth-child(6) {
                 // user updated
-               // display: none;
-               flex-basis: 225px;
-               justify-content: left;
-               max-width: 225px;
+                // display: none;
+                flex-basis: 225px;
+                justify-content: left;
+                max-width: 225px;
             }
 
             > div:nth-child(7) {
                 // group count
-              //  display: none;
-              flex-basis: 225px;
-             justify-content: left;
-             max-width: 225px;
+                //  display: none;
+                flex-basis: 225px;
+                justify-content: left;
+                max-width: 225px;
             }
 
             > div:nth-child(8) {
                 // attach icom
-              // display: none;
-              flex-basis: 100px;
-             justify-content: left;
-             max-width: 100px;
+                // display: none;
+                flex-basis: 100px;
+                justify-content: left;
+                max-width: 100px;
             }
 
 
             @media screen and (max-width: 560px) {
                 > div:nth-child(1) {
                     // service date
-                   display: block;
+                    display: block;
                 }
-    
+
                 > div:nth-child(2) {
                     // start time
                     display: block;
                 }
-                
+
                 > div:nth-child(3) {
                     // end time
                     display: none;
                 }
-    
+
                 > div:nth-child(4) {
                     // name
                     display: block;
                 }
-    
+
                 > div:nth-child(5) {
                     // date created
                     display: none;
-                }//
-    
+                }
+                //
+
                 > div:nth-child(6) {
                     // user updated
-                   // display: none;
-                   display: none;
+                    // display: none;
+                    display: none;
                 }
-    
+
                 > div:nth-child(7) {
                     // group count
-                  //  display: none;
-                  display: none;
+                    //  display: none;
+                    display: none;
                 }
-    
+
                 > div:nth-child(8) {
                     // attach icom
-                  // display: none;
-                  display: none;
+                    // display: none;
+                    display: none;
                 }
-           }
+            }
         }
     }
 
@@ -506,14 +512,15 @@
     .reviewMessage {
         display: flex;
         flex-direction: row;
-    
-    .correctedCheckbox {
-        display: flex;
-        font-size: 14px;
-        margin: auto;
+
+        .correctedCheckbox {
+            display: flex;
+            font-size: 14px;
+            margin: auto;
+        }
     }
-}
-    .width100Per{
+
+    .width100Per {
         width: 100%;
     }
 }

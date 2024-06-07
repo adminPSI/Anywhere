@@ -1423,20 +1423,29 @@ var noteSSA = (function () {
             docTime.appendChild(buildDocTime());
         }
 
-        var controlWrap = document.createElement('div');
-        controlWrap.classList.add('inputSSAWrap');
-        if ($.session.applicationName === 'Gatekeeper') controlWrap.appendChild(attachmentsBtn);
-        controlWrap.appendChild(confidentialCheckbox);
-        if ($.session.applicationName === 'Gatekeeper') {            
-            serviceMonitoringCheckbox.classList.add('width100Per');
+        var controlWrap = document.createElement('div'); 
+        controlWrap.classList.add('inputSSAWrap'); 
+        var chkboxWrap = document.createElement('div');
+        chkboxWrap.style.width = '51%';
+
+        var btnAttachWrap = document.createElement('div');
+        btnAttachWrap.style.width = '49%';
+     
+        chkboxWrap.appendChild(confidentialCheckbox);   
+       
+        if ($.session.applicationName === 'Gatekeeper') {   
+            serviceMonitoringCheckbox.style.width = '102%';  
+            chkboxWrap.appendChild(serviceMonitoringCheckbox); 
             if (cnBatched) {
                 serviceMonitoringCheckbox.firstChild.setAttribute('disabled', true);
                 serviceMonitoringCheckbox.classList.add('disabled');
             }
-        }
+        }  
+        if ($.session.applicationName === 'Gatekeeper') btnAttachWrap.appendChild(attachmentsBtn);
+        controlWrap.appendChild(chkboxWrap);
+        controlWrap.appendChild(btnAttachWrap);
 
-        grid_col_2.appendChild(controlWrap);
-        grid_col_2.appendChild(serviceMonitoringCheckbox);
+        grid_col_2.appendChild(controlWrap);      
         grid_col_2.appendChild(vendorDropdown);
         grid_col_2.appendChild(locationDropdown);
         grid_col_2.appendChild(needDropdown);
