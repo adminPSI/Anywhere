@@ -281,7 +281,11 @@
             div.classList.add('systemMessagesWidget');
             div.innerHTML = html.systemMessages;
             widgets.push(div);
-            setupFuncs.push(linksAndMessages.init);
+
+            // Check if setupFuncs already contains linksAndMessages.init (stops duplicate messages and links)
+            if (!setupFuncs.includes(linksAndMessages.init)) {
+                setupFuncs.push(linksAndMessages.init);
+            }
         })();
     }
 
