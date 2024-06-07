@@ -79,8 +79,9 @@ const TRANS_consumerDocCard = (function () {
             callback: (event) => {
                 updateRiderStatus(event, consumerId, cardContainer)
                 if (section === 'routeDocumentation' && $.session.billableTransportation == 'Y' && cardContainer.getAttribute("data-rider-status") == 'P' && DOM.ACTIONCENTER.getAttribute('data-active-section') === 'routeDocumentation') {
-                    billableCheckbox.style.display = 'inline-flex';
-                    billableCheckbox.click();  
+                    billableCheckbox.style.display = 'inline-flex'; 
+                    billableCheckbox.querySelector('#billableCheckbox').checked = true;
+                    setDefaultCheckForBillable(consumerId, cardContainer);  
                 }
                 else {
                     billableCheckbox.style.display = 'none';
@@ -257,7 +258,7 @@ const TRANS_consumerDocCard = (function () {
                 billableCheckbox.style.display = 'none';
             }
         } else {
-            billableCheckbox.style.display = 'none'; 
+            billableCheckbox.style.display = 'none';
         }
 
         eventListeners(consumerId)
@@ -430,7 +431,13 @@ const TRANS_consumerDocCard = (function () {
             updateData = { consumerId: consumerId, key: 'riderStatus', value: 'N' }
             cardContainer.setAttribute("data-rider-status", 'N');
         }
-        updateSectionConsumerData(updateData); 
+        updateSectionConsumerData(updateData);
+    }
+
+    function setDefaultCheckForBillable(consumerId, cardContainer) {
+        updateData = { consumerId: consumerId, key: 'riderStatus', value: 'P' }
+        cardContainer.setAttribute("data-rider-status", 'P');
+        updateSectionConsumerData(updateData);
     }
 
     function updateSectionConsumerData(updateData) {
