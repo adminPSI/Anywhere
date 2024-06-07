@@ -173,9 +173,9 @@
 
       const nameCombinations = [
         `${firstName} ${middleName} ${lastName}`,
-        `${lastName} ${firstName} ${middleName}`,
+        `${lastName}, ${firstName} ${middleName}`,
         `${firstName} ${lastName}`,
-        `${lastName} ${firstName}`,
+        `${lastName}, ${firstName}`,
         `${firstName} ${middleName}`,
         `${middleName} ${lastName}`,
       ];

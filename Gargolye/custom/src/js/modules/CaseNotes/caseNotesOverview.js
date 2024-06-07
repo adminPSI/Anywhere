@@ -194,7 +194,7 @@
 
             const searchFields = [
                 `${firstName} ${lastName}`,
-                `${lastName} ${firstName}`,
+                `${lastName}, ${firstName}`,
                 firstName,
                 lastName,
                 enteredBy,
