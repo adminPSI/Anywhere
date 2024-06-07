@@ -252,6 +252,7 @@ const CN_CaseLoadWidget = (function () {
                 setActiveModuleSectionAttribute('caseNotes-new');
                 UTIL.toggleMenuItemHighlight('casenotes');
                 actioncenter.dataset.activeModule = 'casenotes';
+                $.loadedApp = 'casenotes';
                 CaseNotes.init(true);
             },
         });
