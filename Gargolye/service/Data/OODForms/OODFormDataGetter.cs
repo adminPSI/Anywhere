@@ -762,7 +762,7 @@ namespace OODForms
             {
 
                 sb.Clear();
-                sb.Append("Select s.procedure_Code as service from consumer_services_master cs ");
+                sb.Append("Select s.name as service from consumer_services_master cs ");
                 sb.Append("left outer join emp_ood eo on eo.reference_number = cs.service_Id ");
                 sb.Append("left outer join services s on s.Service_ID = cs.service_ID ");
                 sb.AppendFormat("where cs.Consumer_ID = {0} and cs.reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);

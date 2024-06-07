@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel.Web;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAttachmentWorker;
+using static Anywhere.service.Data.WorkflowWorker;
 
 namespace Anywhere.service.Data
 {
@@ -702,18 +703,18 @@ namespace Anywhere.service.Data
                 {
                     using (DistributedTransaction transaction_insertWF = new DistributedTransaction(DbHelper.ConnectionString))
                     {
-
+                        string workflowId = "";
                         try
                         {
-                            string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", "", priorConsumerPlanId, transaction_insertWF);
+                            workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", "", priorConsumerPlanId, transaction_insertWF);
                             //string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", transaction_insertWF);
 
                             workflowIds.Add(workflowId);
                         }
                         catch (Exception ex)
                         {
-                            transaction_insertWF.Rollback();
-                            throw new Exception("A problem occured while inserting the " + template.name + " automated workflow template: " + ex.Message);
+                            // transaction_insertWF.Rollback();
+                            //  throw new Exception("A problem occured while inserting the " + template.name + " automated workflow template: " + ex.Message);
                         }
                     }
                 }

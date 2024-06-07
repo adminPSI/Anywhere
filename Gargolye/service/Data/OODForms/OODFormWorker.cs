@@ -1048,7 +1048,7 @@ namespace OODForms
                     {
                         if (rowOODStaff["First_Name"].ToString().Trim().Length > 0 && rowOODStaff["Last_Name"].ToString().Trim().Length > 0)
                         {
-                            OODStaff = String.Format("{0} {1} ", rowOODStaff["First_Name"].ToString().Trim(), rowOODStaff["Last_Name"].ToString().Trim());
+                            OODStaff = String.Format("{0} {1} ({2}) ", rowOODStaff["First_Name"].ToString().Trim(), rowOODStaff["Last_Name"].ToString().Trim(), rowOODStaff["Initials"].ToString().Trim());
                         }
                     }
 
@@ -1068,8 +1068,8 @@ namespace OODForms
 
 
                 int cpt = row["CPT_Code"].ToString().ToUpper().Trim().LastIndexOf(":") + 2;
-               string code = row["ServiceDescription"].ToString().ToUpper().Trim().Substring(0, cpt);  //***********TOP12.  Service Description 1 
-                // WS.Cell("G12").Value = code; // Equation in this cell 
+               string code = row["ServiceName"].ToString().ToUpper().Trim();  //***********TOP12.  Service Description 1 
+                 WS.Cell("A12").Value = code; // Equation in this cell 
 
                 WS.Cell("F15").Value = "0.00";   //************TOP13.  Vocational Training Stipend Rate = $0.00
                WS.Cell("F16").Value = "No";     //************TOP14.  Bilingual Supplement = No
@@ -1320,8 +1320,8 @@ namespace OODForms
                             DateTime thisStartTime = DateTime.ParseExact(row2["start_time"].ToString(), "HH:mm:ss", CultureInfo.InvariantCulture);
                             DateTime thisEndTime = DateTime.ParseExact(row2["end_time"].ToString(), "HH:mm:ss", CultureInfo.InvariantCulture);
 
-                            string thisStartTimeAMPM = thisStartTime.ToString("hh\\:mm tt");
-                            string thisEndTimeAMPM =  thisEndTime.ToString("hh\\:mm tt");
+                            string thisStartTimeAMPM = thisStartTime.ToString("hh\\:mm");
+                            string thisEndTimeAMPM =  thisEndTime.ToString("hh\\:mm");
 
                             string scheduledWorkTime = thisStartTimeAMPM + " - " + thisEndTimeAMPM + "\r\n";
                             string scheduledWorkTimeServiceDate = row2["Service_Date"].ToString();
