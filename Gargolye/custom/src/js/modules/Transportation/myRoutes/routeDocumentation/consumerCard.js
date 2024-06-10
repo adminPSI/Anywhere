@@ -77,8 +77,8 @@ const TRANS_consumerDocCard = (function () {
             type: "text",
             icon: attendanceIcon,
             callback: (event) => {
-                updateRiderStatus(event, consumerId, cardContainer)
-                if (section === 'routeDocumentation' && $.session.billableTransportation == 'Y' && cardContainer.getAttribute("data-rider-status") == 'P' && DOM.ACTIONCENTER.getAttribute('data-active-section') === 'routeDocumentation') {
+                updateRiderStatus(event, consumerId, cardContainer) 
+                if ((section === 'editRoute' || section === 'routeDocumentation') && $.session.billableTransportation == 'Y' && cardContainer.getAttribute("data-rider-status") == 'P' && (DOM.ACTIONCENTER.getAttribute('data-active-section') === 'routeDocumentation' || DOM.ACTIONCENTER.getAttribute('data-active-section') === 'editRoute')) {
                     billableCheckbox.style.display = 'inline-flex'; 
                     billableCheckbox.querySelector('#billableCheckbox').checked = true;
                     setDefaultCheckForBillable(consumerId, cardContainer);  
@@ -242,8 +242,10 @@ const TRANS_consumerDocCard = (function () {
             // scheduledTimeInput.classList.add('disabled')
             // travelMinInput.classList.add('disabled')
             // noteInput.classList.add('disabled')
-            pickupOrderInput.classList.add('disabled')
-
+            pickupOrderInput.classList.add('disabled')        
+        } 
+ 
+        if (section === 'editRoute' || section === 'routeDocumentation') {
             if ($.session.billableTransportation == 'Y' && (riderStatus === 'P' || riderStatus === 'N')) {
                 billableCheckbox.style.display = 'inline-flex';
                 if (batchId != '' && batchId > 0) {
@@ -259,7 +261,7 @@ const TRANS_consumerDocCard = (function () {
             }
         } else {
             billableCheckbox.style.display = 'none';
-        }
+        } 
 
         eventListeners(consumerId)
 
