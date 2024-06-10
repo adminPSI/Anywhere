@@ -83,7 +83,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 {
                     count = checkBoxes.Length;
                 }
-                string[] actions = new string[count];
+                string[] actions = new string[4];
                 byte[] report = null;
                 bool reportCreated = false;
                 int i = 0;
@@ -96,7 +96,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         if (sendToDODD[0].Contains("Exception"))
                         {
                             actions[i] = "DODD Failed";
-                            doddFailed = false;
+                            doddFailed = true;
                         }
                         else
                         {
@@ -104,6 +104,17 @@ namespace Anywhere.service.Data.DocumentConversion
                         }
                         
                         i++;
+                    }
+                    else
+                    {
+
+                        if (!doddChecked && !checkBoxes.Contains("sendToDODDCheck") && !checkBoxes.Contains("selectAllCheck"))
+                        {
+                            doddChecked = true;
+                            actions[i] = "DODD Failed";
+                            i++;
+                        }
+
                     }
                     if ((item == "sendToOhioNetCheck" || item == "selectAllCheck") && doddFailed == false)
                     {
@@ -121,7 +132,12 @@ namespace Anywhere.service.Data.DocumentConversion
                     else
                     {
                         
-                        if (!onetChecked)
+                        if (!onetChecked && !checkBoxes.Contains("sendToOhioNetCheck") && !checkBoxes.Contains("selectAllCheck"))
+                        {
+                            onetChecked = true;
+                            actions[i] = "ONET Failed";
+                            i++;
+                        }else if (doddFailed)
                         {
                             onetChecked = true;
                             actions[i] = "ONET Failed";
@@ -167,7 +183,12 @@ namespace Anywhere.service.Data.DocumentConversion
                     }
                     else
                     {
-                        if (!emailChecked)
+                        if (!emailChecked && !checkBoxes.Contains("emailReportCheck") && !checkBoxes.Contains("selectAllCheck"))
+                        {
+                            emailChecked = true;
+                            actions[i] = "EMAIL Failed";
+                            i++;
+                        }else if (doddFailed)
                         {
                             emailChecked = true;
                             actions[i] = "EMAIL Failed";
@@ -199,11 +220,17 @@ namespace Anywhere.service.Data.DocumentConversion
                     }
                     else
                     {
-                        if (!reportChecked)
+                        if (!reportChecked && !checkBoxes.Contains("downloadReportCheck") && !checkBoxes.Contains("selectAllCheck"))
                         {
                             reportChecked = true;
                             actions[i] = "REPORT Failed";
                             //report = null;
+                            i++;
+                        }
+                        else if (doddFailed)
+                        {
+                            reportChecked = true;
+                            actions[i] = "REPORT Failed";
                             i++;
                         }
                         
