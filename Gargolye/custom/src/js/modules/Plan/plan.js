@@ -395,6 +395,11 @@ const plan = (function () {
             status: newStatus,
           });
           planStatus = newStatus;
+          if (planStatus === 'C') {
+            finalizeBtn.classList.remove('disabled');
+          } else {
+            finalizeBtn.classList.add('disabled');
+          }
         }
 
         const message = success === 1 ? 'Status successfully updated.' : 'Status was not able to be updated.';
@@ -1943,6 +1948,8 @@ const plan = (function () {
 
   // Plan Finalization
   function handleReportStream(report) {
+    if (!report) return;
+
     const arr = report;
     const byteArray = new Uint8Array(arr);
     const blob = new Blob([byteArray], { type: 'application/pdf' });
@@ -2047,9 +2054,16 @@ const plan = (function () {
           console.table(finalizationResults);
           spinner.remove();
 
-            if (finalizationResults.report != null) {
-                handleReportStream(finalizationResults.report);
-            }
+          if (!finalizationResults) {
+            const errorMessage = document.createElement('div');
+            errorMessage.innerHTML = `finalizationActions results: ${finalizationResults}`;
+            screen3.appendChild(errorMessage);
+            return;
+          }
+
+          if (finalizationResults) {
+            handleReportStream(finalizationResults.report);
+          }
           
           const resultsObj = mapResultsObj(finalizationResults.actions);
           console.log('actions', finalizationResults.actions);
@@ -2474,16 +2488,18 @@ const plan = (function () {
       type: 'contained',
       callback: showMorePopup,
     });
-    const finalizeBtn = button.build({
+    finalizeBtn = button.build({
       text: 'Finalize Plan',
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        //if (planStatus === 'C') {
         showFinalizePopup();
-        //}
       },
     });
+    if (planStatus !== 'C') {
+      finalizeBtn.classList.add('disabled');
+    }
+
     const backBtn = button.build({
       text: 'Back',
       style: 'secondary',
@@ -2495,7 +2511,7 @@ const plan = (function () {
     });
 
     buttonBar.appendChild(moreBtn);
-    if ($.session.applicationName === 'Gatekeeper') {
+    if ($.session.applicationName === 'Gatekeeper' && $.session.planUpdate) {
       buttonBar.appendChild(finalizeBtn);
     }
     buttonBar.appendChild(backBtn);
