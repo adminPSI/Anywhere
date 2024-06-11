@@ -1685,7 +1685,7 @@ var timeEntryCard = (function () {
             if (saveOrUpdate === 'Save') {
                 const result = await singleEntryAjax.getExistingTimeEntry();
                 const { getExistingTimeEntryResult } = result;
-                if (getExistingTimeEntryResult.length > 0) {
+                if (getExistingTimeEntryResult.length > 0 && $.session.anyRequireEndTime == 'Y') {
                     newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult);
                 } else {
                     timeEntry.getEntryData(keyStartStop);
@@ -1703,7 +1703,7 @@ var timeEntryCard = (function () {
             if (saveOrUpdate === 'Save') {
                 const result = await singleEntryAjax.getExistingTimeEntry();
                 const { getExistingTimeEntryResult } = result;
-                if (getExistingTimeEntryResult.length > 0) {
+                if (getExistingTimeEntryResult.length > 0 && $.session.anyRequireEndTime == 'Y') {
                     newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult);
                 } else {
                     timeEntry.getEntryData(keyStartStop, saveAndUpdate);
@@ -2138,7 +2138,9 @@ var timeEntryCard = (function () {
         document.querySelector('.timeCard__evvattestChk').style.display = 'flex';
         if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
             document.querySelector('.timeCard__LocationEvv').style.display = 'flex';
-            locationTypeCode == null(locationTypeCode = '1')
+            if (locationTypeCode == null) {
+                locationTypeCode = '1';
+            }
         }
     }
 
