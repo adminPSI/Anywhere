@@ -2096,7 +2096,7 @@ var timeEntryCard = (function () {
             disableCardFields();
 
             if (isEVVSingleEntry && sendEvvData === 'Y' && eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
-                populateLocationTypeDropdown();  
+                populateLocationTypeDropdown();
                 document.querySelector('.timeCard__LocationEvv').style.display = 'flex';
             }
         });
@@ -2135,10 +2135,10 @@ var timeEntryCard = (function () {
     function showEvv() {
         populateReasonCodeDropdown();
         document.querySelector('.timeCard__evv').style.display = 'flex';
-        document.querySelector('.timeCard__evvattestChk').style.display = 'flex';  
-        document.querySelector('.timeCard__LocationEvv').style.display = 'flex'; 
-        if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate && locationTypeCode == null) {
-            locationTypeCode = '1';
+        document.querySelector('.timeCard__evvattestChk').style.display = 'flex';
+        if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
+            document.querySelector('.timeCard__LocationEvv').style.display = 'flex';
+            locationTypeCode == null(locationTypeCode = '1')
         }
     }
 
@@ -2371,11 +2371,13 @@ var timeEntryCard = (function () {
         todayDate = new Date(UTIL.getTodaysDate().split('-').join('/'));
         if (defaultTimesChanged) {
             (wrap4.style.display = 'flex');
-            (wrap5.style.display = 'flex');
+            if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate)
+                (wrap5.style.display = 'flex');
             (wrap6.style.display = 'flex');
         } else {
             (wrap4.style.display = 'none');
-            (wrap5.style.display = 'none');
+            if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate)
+                (wrap5.style.display = 'none');
             (wrap6.style.display = 'none');
         }
         if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
@@ -2385,11 +2387,12 @@ var timeEntryCard = (function () {
         else {
             wrap4.appendChild(reasonDropdown);
         }
-         
+
         wrap6.appendChild(attestCheckbox);
         wrap7.appendChild(wrap4);
-        wrap7.appendChild(wrap5);
-        wrap7.appendChild(wrap6); 
+        if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate)
+            wrap7.appendChild(wrap5);
+        wrap7.appendChild(wrap6);
 
         section.appendChild(wrap1);
         section.appendChild(wrap2);
