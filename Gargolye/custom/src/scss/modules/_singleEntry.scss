@@ -119,12 +119,68 @@
     &__evv {
         display: flex;
         flex-flow: row wrap;
+
         .dropdown {
             flex-grow: 1;
         }
         > div {
+            margin: 0 0 20px;
+        }
+
+        > label {
+            margin: 0 5px 20px;
+            align-self: flex-end;
+        }
+    }
+
+    &__evvLocationEvv {
+        display: flex;
+        flex-flow: row wrap;
+
+        .dropdown {
+            flex-grow: 1;
+        }
+
+        > div {
             margin: 0 5px 20px;
         }
+
+        > label {
+            margin: 0 0 20px;
+            align-self: flex-end;
+        }
+    }
+
+    &__LocationEvv {
+        display: flex;
+        flex-flow: row wrap;
+        width: 40%;  
+
+        .dropdown {
+            flex-grow: 1;
+        }
+        > div {
+            margin: 0 0 20px;
+        }
+
+        > label {
+            margin: 0 5px 20px;
+            align-self: flex-end;
+        }
+    }
+
+    &__evvattestChk {
+        display: flex;
+        flex-flow: row wrap;
+
+        .dropdown {
+            flex-grow: 1;
+        }
+
+        > div {
+            margin: 0 0 20px;
+        }
+
         > label {
             margin: 0 5px 20px;
             align-self: flex-end;
