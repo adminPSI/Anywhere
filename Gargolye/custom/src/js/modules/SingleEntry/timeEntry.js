@@ -455,7 +455,7 @@ var timeEntry = (function () {
             updateSingleEntry(isAdminEdit, payPeriod, updateData);
         }
     }
-    function deleteEntry(entryId, isAdminEdit, payperiod) {
+    function deleteEntry(entryId, isAdminEdit, payPeriod) {
         if (!entryId) return;
 
         singleEntryAjax.deleteSingleEntryRecord(entryId, function (results) {
@@ -465,7 +465,7 @@ var timeEntry = (function () {
                 if (isAdminEdit) {
                     timeApproval.refreshPage(payPeriod);
                 } else {
-                    timeEntryReview.refreshPage(payperiod);
+                    timeEntryReview.refreshPage(payPeriod); 
                 }
             }, 1000);
         });
@@ -1271,7 +1271,7 @@ var timeEntry = (function () {
             // If location settings are not required, resume normal funcionality
             const result = await singleEntryAjax.getExistingTimeEntry();
             const { getExistingTimeEntryResult } = result;
-            if (getExistingTimeEntryResult.length > 0) {
+            if (getExistingTimeEntryResult.length > 0 && $.session.anyRequireEndTime == 'Y') {
                 newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult); 
             }
             else {

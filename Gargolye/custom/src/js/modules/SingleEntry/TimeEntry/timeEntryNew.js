@@ -29,8 +29,10 @@ var newTimeEntry = (function () {
                 singleEntryAjax.getSingleEntryById(getExistingTimeEntryResult[0].Single_Entry_ID, results => {
                     singleEntryAjax.getSingleEntryConsumersPresent(getExistingTimeEntryResult[0].Single_Entry_ID, consumers => {
                         editTimeEntry.init({
+                            isOrginUser : true,
                             entry: results,
                             consumers: consumers,
+                            isAdminEdit: true,
                             payPeriod,
                             recordActivityElement: null,
                         });
