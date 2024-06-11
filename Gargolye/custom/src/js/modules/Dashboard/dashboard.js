@@ -267,7 +267,10 @@
             div2.classList.add('customLinksWidget');
             div2.innerHTML = html.customLinks;
             widgets.push(div2);
-            setupFuncs.push(linksAndMessages.init);
+            // Check if setupFuncs already contains linksAndMessages.init (stops duplicate messages and links)
+            if (!setupFuncs.includes(linksAndMessages.init)) { 
+                setupFuncs.push(linksAndMessages.init);
+            }
         })();
     }
 

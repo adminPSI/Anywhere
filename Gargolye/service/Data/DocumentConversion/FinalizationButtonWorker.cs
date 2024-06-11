@@ -93,7 +93,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     {
                         //Send to DODD
                         sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, assessmentID, peopleId);
-                        if (sendToDODD[0].Contains("Exception"))
+                        if (sendToDODD[0].Contains("Error") || sendToDODD[0].Contains("Failure"))
                         {
                             actions[i] = "DODD Failed";
                             doddFailed = true;

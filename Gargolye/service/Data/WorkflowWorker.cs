@@ -713,8 +713,8 @@ namespace Anywhere.service.Data
                         }
                         catch (Exception ex)
                         {
-                            // transaction_insertWF.Rollback();
-                            //  throw new Exception("A problem occured while inserting the " + template.name + " automated workflow template: " + ex.Message);
+                            transaction_insertWF.Rollback();
+                            throw new Exception("A problem occured while inserting the " + template.name + " automated workflow template: " + ex.Message);
                         }
                     }
                 }
