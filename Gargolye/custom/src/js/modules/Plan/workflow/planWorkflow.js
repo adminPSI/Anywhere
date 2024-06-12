@@ -9,7 +9,7 @@ const planWorkflow = (() => {
     const wfvData = await WorkflowViewerAjax.getManualWorkflowList({
       token: $.session.Token,
       processId,
-      planId: planId ? planId : 0,
+      referenceId: planId ? planId : 0,
     });
 
     workflowListData = wfvData;

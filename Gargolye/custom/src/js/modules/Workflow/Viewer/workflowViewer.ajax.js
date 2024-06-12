@@ -489,8 +489,9 @@ const WorkflowViewerAjax = (() => {
 
   async function getManualWorkflowList(retrieveData) {
     try {
-      //token, processId
-      //processId = 2 for annual and 3 for revision
+      // token
+      // processId = 2 for annual and 3 for revision
+      // planId = aka referenceId
       const result = await $.ajax({
         type: 'POST',
         url:

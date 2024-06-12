@@ -2936,7 +2936,7 @@ const plan = (function () {
           referenceId: currentPlanId,
           peopleId: selectedConsumer.id,
           wantedFormAttachmentIds: thiswfForms,
-          priorConsumerPlanId: thisPreviousPlanId,
+          priorReferenceId: thisPreviousPlanId,
         });
         workflowIds.push(workflowId);
       }
