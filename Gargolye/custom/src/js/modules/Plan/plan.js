@@ -2075,8 +2075,10 @@ const plan = (function () {
             screen3.appendChild(downloadReportStatus);
             screen3.appendChild(emailReportStatus);
 
-            sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'Success' ? icons.checkmark : icons.close;
-            sendToDODDStatus.classList.toggle(resultsObj.DODD === 'Success', 'success');
+            if ($.session.sendToDODD) {
+              sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'Success' ? icons.checkmark : icons.close;
+              sendToDODDStatus.classList.toggle(resultsObj.DODD === 'Success', 'success');
+            }
             sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'Success' ? icons.checkmark : icons.close;
             sendToDODDStatus.classList.toggle(resultsObj.ONET === 'Success', 'success');
             downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'Success' ? icons.checkmark : icons.close;
@@ -2084,8 +2086,10 @@ const plan = (function () {
             emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'Success' ? icons.checkmark : icons.close;
             sendToDODDStatus.classList.toggle(resultsObj.EMAIL === 'Success', 'success');
 
+            if ($.session.sendToDODD) {
+              console.log('DODD', resultsObj.DODD);
+            }
             console.log('ONET', resultsObj.ONET);
-            console.log('DODD', resultsObj.DODD);
             console.log('REPORT', resultsObj.REPORT);
             console.log('EMAIL', resultsObj.EMAIL);
           } else {
@@ -2219,6 +2223,7 @@ const plan = (function () {
       },
     });
 
+
     const addEmailBtn = button.build({
       text: 'Add Email',
       style: 'secondary',
@@ -2259,7 +2264,11 @@ const plan = (function () {
     screen1.appendChild(checkboxWrap);
     screen1.appendChild(addEmailBtn);
     checkboxWrap.appendChild(selectAllCheck);
-    checkboxWrap.appendChild(sendToDODDCheck);
+    if ($.session.sendToDODD) {
+      checkboxWrap.appendChild(sendToDODDCheck);
+    } else {
+      selectedCheckboxes.sendToDODDCheck = false;
+    }
     checkboxWrap.appendChild(sendToOhioNetCheck);
     checkboxWrap.appendChild(downloadReportCheck);
     checkboxWrap.appendChild(emailReportCheck);
@@ -2305,6 +2314,9 @@ const plan = (function () {
     const selectedAttachmentsPlan = {};
     const selectedAttachmentsSignature = {};
     const selectedAttachmentsWorkflow = {};
+    
+    const attachWraper = document.createElement('div');
+    attachWraper.classList.add('attachMainWrap');
 
     const planAttBody = document.createElement('div');
     const workflowAttBody = document.createElement('div');
@@ -2321,9 +2333,11 @@ const plan = (function () {
     planAttBody.appendChild(planHeading);
     workflowAttBody.appendChild(workflowHeading);
     signatureAttBody.appendChild(signHeading);
-    screen2.appendChild(planAttBody);
-    screen2.appendChild(workflowAttBody);
-    screen2.appendChild(signatureAttBody);
+    attachWraper.appendChild(planAttBody);
+    attachWraper.appendChild(workflowAttBody);
+    attachWraper.appendChild(signatureAttBody);
+    
+    screen2.appendChild(attachWraper);
 
     const attachments = await planAjax.getPlanAndWorkFlowAttachments({
       token: $.session.Token,

@@ -602,14 +602,26 @@
   }
 
   .finalizeAttachments {
+    .attachMainWrap {
+      min-height: 400px;
+      margin: 0 0 15px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
     .attachWrap {
       display: flex;
       flex-flow: column;
+
+      h2 {
+        margin: 0 0 10px;
+      }
     }
 
     .attachment {
       cursor: pointer;
       margin: 0 0 10px 0;
+      padding: 5px;
 
       &.selected {
         background-color: $secondary;
