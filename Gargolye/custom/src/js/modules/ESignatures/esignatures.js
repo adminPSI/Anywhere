@@ -293,7 +293,7 @@ const esignatures = (function () {
     });
     submitBtn.classList.add('disabled');
 
-    if (esignerData.teamMemberType === 'Parent/Guardian' || esignerData.teamMemberType === 'Parent' || esignerData.teamMemberType === 'Guardian') {
+    if (esignerData.teamMemberType === 'Parent/Guardian' || esignerData.teamMemberType === 'Parent' || esignerData.teamMemberType === 'Guardian' || esignerData.teamMemberType === 'Person Supported') {
       questions = buildConsentSection();
       formContainer.appendChild(questions);
     }

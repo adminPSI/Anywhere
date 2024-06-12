@@ -35,7 +35,7 @@ namespace Anywhere.service.Data.ESign
 			{
 				{ "@token", token },
                 { "@peopleId", peopleId },
-				{ "version", versionId },
+				{ "vendorId", vendorId },
                 { "@assessmentId", assessmentId },
 				{ "@versionId", versionId },
 				{ "@planAttachmentIds", planAttachmentIds },
