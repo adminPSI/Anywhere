@@ -2061,7 +2061,7 @@ const plan = (function () {
             return;
           }
 
-          if (finalizationResults) {
+          if (finalizationResults && selectedCheckboxes.downloadReportCheck) {
             handleReportStream(finalizationResults.report);
           }
           
@@ -2097,27 +2097,26 @@ const plan = (function () {
               screen3.appendChild(sendToDODDStatus);
               sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'Success' ? icons.checkmark : icons.close;
               sendToDODDStatus.classList.toggle('success', resultsObj.DODD === 'Success');
+              console.log('DODD', resultsObj.DODD);
             }
             if (selectedCheckboxes.sendToOhioNetCheck) {
               screen3.appendChild(sendToOhioNetStatus);
               sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'Success' ? icons.checkmark : icons.close;
               sendToDODDStatus.classList.toggle('success', resultsObj.ONET === 'Success');
+              console.log('ONET', resultsObj.ONET);
             }
             if (selectedCheckboxes.downloadReportCheck) {
               screen3.appendChild(downloadReportStatus);
               downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'Success' ? icons.checkmark : icons.close;
               sendToDODDStatus.classList.toggle('success', resultsObj.REPORT === 'Success');
+              console.log('REPORT', resultsObj.REPORT);
             }
             if (selectedCheckboxes.emailReportCheck) {
               screen3.appendChild(emailReportStatus);
               emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'Success' ? icons.checkmark : icons.close;
               sendToDODDStatus.classList.toggle('success', resultsObj.EMAIL === 'Success');
+              console.log('EMAIL', resultsObj.EMAIL);
             }
-
-            console.log('DODD', resultsObj.DODD);
-            console.log('ONET', resultsObj.ONET);
-            console.log('REPORT', resultsObj.REPORT);
-            console.log('EMAIL', resultsObj.EMAIL);
           }
 
           return;
