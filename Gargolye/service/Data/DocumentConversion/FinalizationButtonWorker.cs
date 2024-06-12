@@ -74,6 +74,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 bool onetChecked = false;
                 bool emailChecked = false;
                 bool reportChecked = false;
+                bool downloadReportCheck = false;
                 int count = 0;
                 if(checkBoxes.Length == 1 && checkBoxes[0] == "selectAllCheck")
                 {
@@ -206,6 +207,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         //ar[0].report.Equals(report); //= report;
                         if(report.Length > 250)
                         {
+                            downloadReportCheck = true;
                             actions[i] = "REPORT Success";
                         }
                         else
@@ -251,13 +253,17 @@ namespace Anywhere.service.Data.DocumentConversion
                 //Display Plan Report
                 //displayPlanReport(report);
                 //ar[0].actions.Equals(actions);
-                if(report != null)
+                if(report != null && downloadReportCheck)
                 {
                     MemoryStream reportStream = new MemoryStream(report);
                 }
-                
+
                 //reportStream.Write(report, 0, report.Length);
                 //reportStream.Close();
+                if (!downloadReportCheck)
+                {
+                    report = null;
+                }
                 ActionResults ar = new ActionResults
                 {
                     actions = actions,

@@ -95,6 +95,8 @@ $.session.UpdateCaseNotesDocTime = false;
 $.session.batchedNoteEdit = false;
 $.session.groupNoteAttemptWithDocTime = false;
 $.session.sendToDODD = false;
+$.session.sendToPortal = false;
+
 $.session.dobString = '';
 //remove section when ready for testing.  Forcing all features on.
 //$.session.CaseNotesView = true;
@@ -653,6 +655,9 @@ function setSessionVariables() {
             }
             if (tmpPerm == 'Send to DODD' || $.session.isPSI == true) {
                 $.session.sendToDODD = true;
+            }
+            if (tmpPerm == 'Send to Portal' || $.session.isPSI == true) {
+                $.session.sendToPortal = true;
             }
             if (tmpPerm == 'Insert New Team Member' || $.session.isPSI == true) {
                 $.session.planInsertNewTeamMember = true;
