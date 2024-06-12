@@ -1949,14 +1949,14 @@ namespace Anywhere.service.Data
         }
 
 
-        public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorConsumerPlanId)
+        public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorReferenceId)
         //public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
-                    return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", wantedFormAttachmentIds, priorConsumerPlanId, transaction);
+                    return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", wantedFormAttachmentIds, priorReferenceId, transaction);
                     //return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", transaction);
                 }
                 catch (Exception ex)
@@ -2217,9 +2217,9 @@ namespace Anywhere.service.Data
 
 
 
-        public ManualWorkflowList[] getManualWorkflowList(string token, string processId, string planId)
+        public ManualWorkflowList[] getManualWorkflowList(string token, string processId, string referenceId)
         {
-            string wfList = wfdg.getManualWorkflowList(token, processId, planId);
+            string wfList = wfdg.getManualWorkflowList(token, processId, referenceId);
             ManualWorkflowList[] wfListObj = js.Deserialize<ManualWorkflowList[]>(wfList);
             return wfListObj;
         }

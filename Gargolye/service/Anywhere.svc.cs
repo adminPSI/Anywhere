@@ -1922,9 +1922,9 @@ namespace Anywhere
             return wfw.getWorkflows(token, processId, referenceId);
         }
 
-        public WorkflowWorker.ManualWorkflowList[] getManualWorkflowList(string token, string processId, string planId)
+        public WorkflowWorker.ManualWorkflowList[] getManualWorkflowList(string token, string processId, string referenceId)
         {
-            return wfw.getManualWorkflowList(token, processId, planId);
+            return wfw.getManualWorkflowList(token, processId, referenceId);
         }
 
         public WorkflowWorker.WorkflowTemplateStepDocument[] getWorkFlowFormsfromPreviousPlan(string token, string selectedWFTemplateIds, string previousPlanId)
@@ -1994,11 +1994,11 @@ namespace Anywhere
             return wfw.processWorkflowStepEvent(token, thisEvent);
         }
 
-        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorConsumerPlanId)
+        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorReferenceId)
         //public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId)
 
         {
-            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormAttachmentIds, priorConsumerPlanId);
+            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormAttachmentIds, priorReferenceId);
             // return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId);
         }
         #endregion
