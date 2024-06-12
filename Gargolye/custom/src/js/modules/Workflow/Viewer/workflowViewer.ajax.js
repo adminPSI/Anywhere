@@ -542,7 +542,7 @@ const WorkflowViewerAjax = (() => {
     try {
       //token, templateId, peopleId, referenceId, wantedFormIds
       //referenceId is isp_consumer_plan_id,
-      //priorConsumerPlanId
+      //priorReferenceId
       const result = await $.ajax({
         type: 'POST',
         url:
