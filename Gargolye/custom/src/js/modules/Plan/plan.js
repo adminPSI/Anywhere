@@ -2079,8 +2079,10 @@ const plan = (function () {
               sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'Success' ? icons.checkmark : icons.close;
               sendToDODDStatus.classList.toggle('success', resultsObj.DODD === 'Success');
             }
-            sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'Success' ? icons.checkmark : icons.close;
-            sendToDODDStatus.classList.toggle('success', resultsObj.ONET === 'Success');
+            if ($.session.sendToPortal) {
+              sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'Success' ? icons.checkmark : icons.close;
+              sendToDODDStatus.classList.toggle('success', resultsObj.ONET === 'Success');
+            }
             downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'Success' ? icons.checkmark : icons.close;
             sendToDODDStatus.classList.toggle('success', resultsObj.REPORT === 'Success');
             emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'Success' ? icons.checkmark : icons.close;
@@ -2089,7 +2091,9 @@ const plan = (function () {
             if ($.session.sendToDODD) {
               console.log('DODD', resultsObj.DODD);
             }
-            console.log('ONET', resultsObj.ONET);
+            if ($.session.sendToPortal) {
+              console.log('ONET', resultsObj.ONET);
+            }
             console.log('REPORT', resultsObj.REPORT);
             console.log('EMAIL', resultsObj.EMAIL);
           } else {
@@ -2157,15 +2161,21 @@ const plan = (function () {
         selectedCheckboxes.selectAllCheck = e.target.checked;
 
         if (selectedCheckboxes.selectAllCheck) {
-          sendToDODDCheck.querySelector('input').checked = true;
-          sendToOhioNetCheck.querySelector('input').checked = true;
-          downloadReportCheck.querySelector('input').checked = true;
-          emailReportCheck.querySelector('input').checked = true;
+          if ($.session.sendToDODD) {
+            sendToDODDCheck.querySelector('input').checked = true;
+            selectedCheckboxes.sendToDODDCheck = true;
+          }
 
-          selectedCheckboxes.sendToDODDCheck = true;
-          sendToOhioNetCheck.sendToDODDCheck = true;
-          downloadReportCheck.sendToDODDCheck = true;
-          emailReportCheck.sendToDODDCheck = true;
+          if ($.session.sendToPortal) {
+            sendToOhioNetCheck.querySelector('input').checked = true;
+            selectedCheckboxes.sendToOhioNetCheck = true;
+          }
+
+          downloadReportCheck.querySelector('input').checked = true;
+          selectedCheckboxes.downloadReportCheck = true;
+
+          emailReportCheck.querySelector('input').checked = true;
+          selectedCheckboxes.emailReportCheck = true;
         }
       },
     });
@@ -2268,7 +2278,11 @@ const plan = (function () {
     } else {
       selectedCheckboxes.sendToDODDCheck = false;
     }
-    checkboxWrap.appendChild(sendToOhioNetCheck);
+    if ($.session.sendToPortal) {
+      checkboxWrap.appendChild(sendToOhioNetCheck);
+    } else {
+      selectedCheckboxes.sendToOhioNetCheck = false;
+    }
     checkboxWrap.appendChild(downloadReportCheck);
     checkboxWrap.appendChild(emailReportCheck);
 
