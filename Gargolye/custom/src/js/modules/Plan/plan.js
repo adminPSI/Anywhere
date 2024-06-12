@@ -2081,12 +2081,12 @@ const plan = (function () {
             }
             if ($.session.sendToPortal) {
               sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'Success' ? icons.checkmark : icons.close;
-              sendToDODDStatus.classList.toggle('success', resultsObj.ONET === 'Success');
+              sendToOhioNetStatus.classList.toggle('success', resultsObj.ONET === 'Success');
             }
             downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'Success' ? icons.checkmark : icons.close;
-            sendToDODDStatus.classList.toggle('success', resultsObj.REPORT === 'Success');
+            downloadReportStatus.classList.toggle('success', resultsObj.REPORT === 'Success');
             emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'Success' ? icons.checkmark : icons.close;
-            sendToDODDStatus.classList.toggle('success', resultsObj.EMAIL === 'Success');
+            emailReportStatus.classList.toggle('success', resultsObj.EMAIL === 'Success');
 
             if ($.session.sendToDODD) {
               console.log('DODD', resultsObj.DODD);
@@ -2106,19 +2106,19 @@ const plan = (function () {
             if (selectedCheckboxes.sendToOhioNetCheck) {
               screen3.appendChild(sendToOhioNetStatus);
               sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'Success' ? icons.checkmark : icons.close;
-              sendToDODDStatus.classList.toggle('success', resultsObj.ONET === 'Success');
+              sendToOhioNetStatus.classList.toggle('success', resultsObj.ONET === 'Success');
               console.log('ONET', resultsObj.ONET);
             }
             if (selectedCheckboxes.downloadReportCheck) {
               screen3.appendChild(downloadReportStatus);
               downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'Success' ? icons.checkmark : icons.close;
-              sendToDODDStatus.classList.toggle('success', resultsObj.REPORT === 'Success');
+              downloadReportStatus.classList.toggle('success', resultsObj.REPORT === 'Success');
               console.log('REPORT', resultsObj.REPORT);
             }
             if (selectedCheckboxes.emailReportCheck) {
               screen3.appendChild(emailReportStatus);
               emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'Success' ? icons.checkmark : icons.close;
-              sendToDODDStatus.classList.toggle('success', resultsObj.EMAIL === 'Success');
+              emailReportStatus.classList.toggle('success', resultsObj.EMAIL === 'Success');
               console.log('EMAIL', resultsObj.EMAIL);
             }
           }
