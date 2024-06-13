@@ -641,7 +641,7 @@ var consumerInfo = (function () {
 
     rosterWorkflow.init(consumerId);
     
-    const workflowViewer = await WorkflowViewerComponent.get('4', consumerId);
+    const workflowViewer = await WorkflowViewerComponent.get(4, consumerId);
     const addWorkflowBtn = button.build({
       text: 'Add Workflow(s)',
       style: 'secondary',
