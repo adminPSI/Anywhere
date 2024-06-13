@@ -146,6 +146,14 @@
         flex-grow: 1;
         padding: 8px 10px 10px;
     }
+
+    .inactiveDetails {
+        background: #f10927;
+        flex-grow: 1;
+        padding: 8px 10px 10px;
+        font-style:italic;
+    }
+
     .name {
         color: $font-light;
         overflow: hidden;
@@ -160,14 +168,15 @@
         padding: 2px;
         top: 0px;
         right: 0px;
+
         .absentIcon {
             font-size: 22px;
         }
+
         svg {
             width: 24px;
         }
     }
-
     // Selected
     &.highlighted {
         .details {
@@ -181,7 +190,7 @@
         opacity: 0.5;
     }
 
-    &.disabledClickable { 
+    &.disabledClickable {
         opacity: 0.5;
     }
     // error

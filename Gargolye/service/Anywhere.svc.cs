@@ -180,14 +180,14 @@ namespace Anywhere
             return anywhereWorker.getConsumerGroupsJSON(locationId, token);
         }
 
-        public string getConsumersByGroup(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate)
+        public string getConsumersByGroup(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate, string isActive)
         {
             Int64 Num;
             bool isNum = Int64.TryParse(retrieveId, out Num);
 
             if (isNum)
             {
-                return dg.getConsumersByGroup(groupCode, retrieveId, token, serviceDate, daysBackDate);
+                return dg.getConsumersByGroup(groupCode, retrieveId, token, serviceDate, daysBackDate, isActive);
             }
             else
             {
@@ -196,14 +196,14 @@ namespace Anywhere
             }
         }
 
-        public AnywhereWorker.ConsumersByGroup[] getConsumersByGroupJSON(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate)
+        public AnywhereWorker.ConsumersByGroup[] getConsumersByGroupJSON(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate, string isActive)
         {
             Int64 Num;
             bool isNum = Int64.TryParse(retrieveId, out Num);
 
             if (isNum)
             {
-                return anywhereWorker.getConsumersByGroupJSON(groupCode, retrieveId, token, serviceDate, daysBackDate);
+                return anywhereWorker.getConsumersByGroupJSON(groupCode, retrieveId, token, serviceDate, daysBackDate, isActive);
             }
             else
             {

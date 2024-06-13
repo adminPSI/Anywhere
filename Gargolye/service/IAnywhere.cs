@@ -118,7 +118,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getConsumersByGroup/")]
-        string getConsumersByGroup(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate);
+        string getConsumersByGroup(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate, string isActive);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -126,7 +126,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getConsumersByGroupJSON/")]
-        AnywhereWorker.ConsumersByGroup[] getConsumersByGroupJSON(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate);
+        AnywhereWorker.ConsumersByGroup[] getConsumersByGroupJSON(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate, string isActive);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

@@ -331,7 +331,7 @@ var noteSSA = (function () {
                 serviceDate,
                 startTime,
                 endTime,
-                vendorId: vendorInput.options[vendorInput.selectedIndex].value,
+                vendorId: vendorInput.options[vendorInput.selectedIndex] == undefined ? '' : vendorInput.options[vendorInput.selectedIndex].value,
                 contactCode: contactId,
                 serviceLocationCode: serviceLocationId,
                 caseNote: noteText, // from note input

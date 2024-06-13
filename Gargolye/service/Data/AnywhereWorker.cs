@@ -458,9 +458,9 @@ namespace Anywhere.service.Data
         //    public string description { get; set; }
         //}
 
-        public ConsumersByGroup[] getConsumersByGroupJSON(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate)
+        public ConsumersByGroup[] getConsumersByGroupJSON(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate, string isActive)
         {
-            string consumersByGroupString = dg.getConsumersByGroupJSON(groupCode, retrieveId, token, serviceDate, daysBackDate);
+            string consumersByGroupString = dg.getConsumersByGroupJSON(groupCode, retrieveId, token, serviceDate, daysBackDate, isActive);
             js.MaxJsonLength = Int32.MaxValue;
             ConsumersByGroup[] consumersByGroupObj = js.Deserialize<ConsumersByGroup[]>(consumersByGroupString);
             return consumersByGroupObj;

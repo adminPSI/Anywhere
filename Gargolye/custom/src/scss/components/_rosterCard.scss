@@ -2,27 +2,37 @@
 // ROSTER CARD
 //-------------------------------------------
 [data-ui] {
-  .rosterCard {
-    display: flex;
-    cursor: pointer;
-    flex-flow: row nowrap;
-    overflow: hidden;
+    .rosterCard {
+        display: flex;
+        cursor: pointer;
+        flex-flow: row nowrap;
+        overflow: hidden;
 
-    * {
-      pointer-events: none;
-    }
+        * {
+            pointer-events: none;
+        }
 
-    .portrait {
-      border-radius: 50%;
-      height: 60px;
-      width: 60px;
-    }
+        .portrait {
+            border-radius: 50%;
+            height: 60px;
+            width: 60px;
+        }
 
-    .details {
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: center;
-      white-space: nowrap;
+        .details {
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .inactiveDetails {
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+            white-space: nowrap;
+            background: #f10927;
+            font-style: italic;
+            color: white;
+        }
     }
-  }
 }
