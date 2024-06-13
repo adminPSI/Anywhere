@@ -167,7 +167,7 @@ var progressNotes = (function() {
     
 		// Iterate over all sections and make them hidden so the next and back button works correctly
 		sections.forEach(section => {
-			if (section.classList.contains('visible')) {
+			if (section && section.classList.contains('visible')) {
 				section.classList.remove('visible');
 				section.classList.add('hidden');
 			}
