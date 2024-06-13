@@ -96,7 +96,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, assessmentID, peopleId);
                         if (sendToDODD[0].Contains("Error") || sendToDODD[0].Contains("Failure") || sendToDODD[0].Contains("Exception"))
                         {
-                            actions[i] = "DODD Failed";
+                            actions[i] = "DODD " + sendToDODD[0];//"DODD Failed";
                             doddFailed = true;
                         }
                         else
@@ -154,14 +154,14 @@ namespace Anywhere.service.Data.DocumentConversion
                             reportCreated= true;
                         }
                         //Send Email
-                        string binary = "";
-                        string s = System.Text.Encoding.UTF8.GetString(report, 0, report.Length);
-                        int len = s.Length;
+                        //string binary = "";
+                        //string s = System.Text.Encoding.UTF8.GetString(report, 0, report.Length);
+                        //int len = s.Length;
 
-                        for (int j = 0; j < len; j++)
-                        {
-                            binary += (char)s[j];
-                        }
+                        //for (int j = 0; j < len; j++)
+                        //{
+                        //    binary += (char)s[j];
+                        //}
 
                         string abString = System.Convert.ToBase64String(report);//System.Convert.ToBase64String(Encoding.ASCII.GetBytes(binary));
 
