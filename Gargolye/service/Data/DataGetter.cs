@@ -166,7 +166,7 @@ namespace Anywhere.Data
         /// <param name="ListCode"></param>
         /// <param name="retrieveId"></param>
         /// <returns></returns> 
-        public string getConsumersByGroup(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate)
+        public string getConsumersByGroup(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate, string isActive)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getConsumersByGroup");
@@ -174,11 +174,11 @@ namespace Anywhere.Data
             try
             {
 
-                return executeDataBaseCall("CALL DBA.ANYW_Roster_GetConsumersByGroup('" + groupCode + "'," + retrieveId + ",'" + token + "','" + serviceDate + "','" + daysBackDate + "');", "c", "c");
+                return executeDataBaseCall("CALL DBA.ANYW_Roster_GetConsumersByGroup('" + groupCode + "'," + retrieveId + ",'" + token + "','" + serviceDate + "','" + daysBackDate + "','" + isActive + "');", "c", "c");
             }
             catch (Exception ex)
             {
-                logger.error("504", ex.Message + " ANYW_Roster_GetConsumersByGroup('" + groupCode + "'," + retrieveId + ",'" + token + "','" + serviceDate + "','" + daysBackDate + "')", token);
+                logger.error("504", ex.Message + " ANYW_Roster_GetConsumersByGroup('" + groupCode + "'," + retrieveId + ",'" + token + "','" + serviceDate + "','" + daysBackDate + "','" + isActive + "')", token);
                 return "504: Error getting Custom Groups";
             }
         }
@@ -189,18 +189,18 @@ namespace Anywhere.Data
         /// <param name="ListCode"></param>
         /// <param name="retrieveId"></param>
         /// <returns></returns> 
-        public string getConsumersByGroupJSON(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate)
+        public string getConsumersByGroupJSON(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate, string isActive)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getConsumersByGroup");
 
             try
             {
-                return executeDataBaseCallJSON("CALL DBA.ANYW_Roster_GetConsumersByGroup('" + groupCode + "'," + retrieveId + ",'" + token + "','" + serviceDate + "','" + daysBackDate + "');");
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Roster_GetConsumersByGroup('" + groupCode + "'," + retrieveId + ",'" + token + "','" + serviceDate + "','" + daysBackDate + "','" + isActive + "');");
             }
             catch (Exception ex)
             {
-                logger.error("504", ex.Message + " ANYW_Roster_GetConsumersByGroup('" + groupCode + "'," + retrieveId + ",'" + token + "','" + serviceDate + "','" + daysBackDate + "')", token);
+                logger.error("504", ex.Message + " ANYW_Roster_GetConsumersByGroup('" + groupCode + "'," + retrieveId + ",'" + token + "','" + serviceDate + "','" + daysBackDate + "','" + isActive + "')", token);
                 return "504: Error getting Custom Groups";
             }
         }

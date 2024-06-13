@@ -36,10 +36,12 @@ const roster2 = (function () {
     let selectedGroupId;
     let selectedGroupName;
     let hideDateFilter;
+    let selectedActive;
 
     let btnWrap;
     let filteredDateBtnWrap;
     let selectedLocationNameBtnWrap;
+    let selectedActiveBtnWrap;
     let selectedGroupNameBtnWrap;
     let totalConsumerCountBtnWrap;
     var filteredDate;
@@ -329,6 +331,17 @@ const roster2 = (function () {
                 document.getElementById('selectedGroupNameBtn').innerHTML = 'Group: ' + selectedGroupName;
         }
 
+        if ($.loadedApp === 'roster' || ($.session.applicationName == 'Gatekeeper' && $.loadedApp === 'casenotes')) {
+            if (selectedActive === '%' || selectedActive === 'All') {
+                btnWrap.appendChild(selectedActiveBtnWrap);
+                btnWrap.removeChild(selectedActiveBtnWrap);
+            } else {
+                btnWrap.appendChild(selectedActiveBtnWrap);
+                if (document.getElementById('selectedActiveBtn') != null)
+                    document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactive?: ' + selectedActive;
+            }
+        }
+
         if (document.getElementById('totalConsumerCountBtn') != null)
             document.getElementById('totalConsumerCountBtn').innerHTML = 'Total Consumer Count: ' + totalConsumerCount;
 
@@ -388,6 +401,26 @@ const roster2 = (function () {
             },
         });
 
+        selectedActiveBtn = button.build({
+            id: 'selectedActiveBtn',
+            text: 'Show Inactive?: ' + selectedActive,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => {
+                buildFilterPopup('selectedActiveBtn');
+            },
+        });
+        selectedActiveCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => {
+                closeFilter('selectedActiveBtn');
+            },
+        });
+
         totalConsumerCountBtn = button.build({
             id: 'totalConsumerCountBtn',
             text: 'Total Consumer Count: ' + totalConsumerCount,
@@ -416,6 +449,14 @@ const roster2 = (function () {
         selectedGroupNameBtnWrap.appendChild(selectedGroupNameCloseBtn);
         btnWrap.appendChild(selectedGroupNameBtnWrap);
 
+        if ($.loadedApp === 'roster' || ($.session.applicationName == 'Gatekeeper' && $.loadedApp === 'casenotes')) {
+            selectedActiveBtnWrap = document.createElement('div');
+            selectedActiveBtnWrap.classList.add('filterSelectionBtnWrap');
+            selectedActiveBtnWrap.appendChild(selectedActiveBtn);
+            selectedActiveBtnWrap.appendChild(selectedActiveCloseBtn);
+            btnWrap.appendChild(selectedActiveBtnWrap);
+        }
+
         totalConsumerCountBtnWrap = document.createElement('div');
         totalConsumerCountBtnWrap.classList.add('filterSelectionBtnWrap');
         totalConsumerCountBtnWrap.appendChild(totalConsumerCountBtn);
@@ -437,6 +478,10 @@ const roster2 = (function () {
             selectedGroupName = 'Everyone';
             selectedGroupCode = 'ALL';
             btnWrap.removeChild(selectedGroupNameBtnWrap);
+        }
+        if (closeFilter == 'selectedActiveBtn') {
+            selectedActive = '%';
+            btnWrap.removeChild(selectedActiveBtnWrap);
         }
         toggleMassAbsentBtn();
         filterApply();
@@ -473,6 +518,15 @@ const roster2 = (function () {
 
         return groupDropdown;
     }
+    function buildActiveDropdown() {
+        var activeDropdown = dropdown.build({
+            dropdownId: 'rosterActiveDropdown',
+            label: 'Show Inactive?',
+            style: 'secondary',
+        });
+
+        return activeDropdown;
+    }
     function buildFilterPopup(IsShow) {
         // popup
         FILTER_POPUP = POPUP.build({
@@ -483,6 +537,7 @@ const roster2 = (function () {
         DATE_INPUT = buildDateInput();
         LOCATION_DROPDOWN = buildLocationDropdown();
         GROUP_DROPDOWN = buildGroupDropdown();
+        ACTIVE_DROPDOWN = buildActiveDropdown();
         // apply filters button
         APPLY_BTN = button.build({
             text: 'Apply',
@@ -505,6 +560,9 @@ const roster2 = (function () {
         }
         if (IsShow == 'ALL' || IsShow == 'selectedLocationNameBtn') FILTER_POPUP.appendChild(LOCATION_DROPDOWN);
         if (IsShow == 'ALL' || IsShow == 'selectedGroupNameBtn') FILTER_POPUP.appendChild(GROUP_DROPDOWN);
+        if ($.loadedApp === 'roster' || ($.session.applicationName == 'Gatekeeper' && $.loadedApp === 'casenotes')) {
+            if (IsShow == 'ALL' || IsShow == 'selectedActiveBtn') FILTER_POPUP.appendChild(ACTIVE_DROPDOWN);
+        }
         FILTER_POPUP.appendChild(btnWrap);
 
         setupFilterEvent();
@@ -513,6 +571,7 @@ const roster2 = (function () {
 
         populateLocationDropdown();
         populateGroupDropdown();
+        populateActiveDropdown();
 
         if (islocationDisabled)
             LOCATION_DROPDOWN.classList.add('disabled');
@@ -606,6 +665,15 @@ const roster2 = (function () {
             selectedGroupId = data[0].attributes[0].value;
         }
     }
+
+    function populateActiveDropdown() {
+        const activeDropdownData = ([
+            { id: 1, value: 'Yes', text: 'Yes' },
+            { id: 2, value: 'No', text: 'No' },
+        ]);
+        activeDropdownData.unshift({ id: null, value: '%', text: 'All' });
+        dropdown.populate("rosterActiveDropdown", activeDropdownData, selectedActive);
+    }
     // filter events
     function setupFilterEvent() {
         var oldDate;
@@ -665,6 +733,10 @@ const roster2 = (function () {
             selectedGroupId = selectedOption.dataset.retrieveid;
             selectedGroupName = selectedOption.innerHTML;
         });
+        ACTIVE_DROPDOWN.addEventListener('change', event => {
+            var selectedOption = event.target.options[event.target.selectedIndex];
+            selectedActive = selectedOption.value;
+        });
         APPLY_BTN.addEventListener('click', async () => {
             POPUP.hide(FILTER_POPUP);
             filterApply();
@@ -709,6 +781,17 @@ const roster2 = (function () {
         }
         if (document.getElementById('totalConsumerCountBtn') != null)
             document.getElementById('totalConsumerCountBtn').innerHTML = 'Total Consumer Count: ' + totalConsumerCount;
+
+        if ($.loadedApp === 'roster' || ($.session.applicationName == 'Gatekeeper' && $.loadedApp === 'casenotes')) {
+            if (selectedActive === '%' || selectedActive === 'All') {
+                btnWrap.appendChild(selectedActiveBtnWrap);
+                btnWrap.removeChild(selectedActiveBtnWrap);
+            } else {
+                btnWrap.appendChild(selectedActiveBtnWrap);
+                if (document.getElementById('selectedActiveBtn') != null)
+                    document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactive?: ' + selectedActive;
+            }
+        }
 
         if (!rosterListSelectable) {
             consumerInfo.toggleHideShowAbsentMenuSection(selectedLocationId);
@@ -958,6 +1041,7 @@ const roster2 = (function () {
         const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
         const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
         const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
+        const isInactive = consumerData.IDa == '' ? false : true;
         let isAllowed;
         if (!allowedConsumerIds) {
             isAllowed = true;
@@ -1007,7 +1091,10 @@ const roster2 = (function () {
         const d = new Date();
         const time = d.getTime();
         portrait.classList.add('portrait');
-        details.classList.add('details');
+        if (isInactive)
+            details.classList.add('inactiveDetails');
+        else
+            details.classList.add('details');
         alertIcons.classList.add('icons');
         portrait.innerHTML = `''`;
         portrait.innerHTML = `
@@ -1239,6 +1326,7 @@ const roster2 = (function () {
         });
         showMiniRosterPopup(rosterMarkup);
         totalConsumerCount = 0;
+        selectedActive = 'No';
         await getRosterConsumersData();
         populateRoster();
         document.getElementById('searchBtn').click();
@@ -1306,6 +1394,7 @@ const roster2 = (function () {
             selectedGroupId,
             selectedLocationId,
             selectedDate,
+            selectedActive,
         };
 
         if (!rosterConsumers || rosterConsumers.length === 0 || forceGroupFilter) {
@@ -1701,9 +1790,10 @@ const roster2 = (function () {
         rosterAbsent.init();
 
         totalConsumerCount = 0;
+        selectedActive = 'No';
         await getRosterConsumersData();
         populateRoster();
-        document.getElementById('searchBtn').click(); 
+        document.getElementById('searchBtn').click();
         filterUpdateDisplay();
     }
 
