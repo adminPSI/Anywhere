@@ -1507,8 +1507,6 @@ const plan = (function () {
       text: 'Show Error Details',
       style: 'secondary',
       type: 'contained',
-
-      //icon: 'checkmark',
       callback: async function () {
         POPUP.hide(generalMessagePopup);
         overlay.show();
@@ -1946,7 +1944,7 @@ const plan = (function () {
     POPUP.show(morePopup);
   }
 
-  // Plan Finalization
+  //* Plan Finalization
   function handleReportStream(report) {
     if (!report) return;
 
@@ -2031,7 +2029,6 @@ const plan = (function () {
           currScreen = 3;
           screen2.classList.remove('visible');
           screen3.classList.add('visible');
-          actionBtn.textContent = 'Done';
 
           finalizationResults = await assessmentAjax.finalizationActions({
             token: $.session.Token,
@@ -2054,13 +2051,6 @@ const plan = (function () {
           console.table(finalizationResults);
           spinner.remove();
 
-          if (!finalizationResults) {
-            const errorMessage = document.createElement('div');
-            errorMessage.innerHTML = `finalizationActions results: ${finalizationResults}`;
-            screen3.appendChild(errorMessage);
-            return;
-          }
-
           if (finalizationResults && selectedCheckboxes.downloadReportCheck) {
             handleReportStream(finalizationResults.report);
           }
@@ -2076,6 +2066,10 @@ const plan = (function () {
             screen3.appendChild(emailReportStatus);
 
             if ($.session.sendToDODD) {
+              if (resultsObj.DODD !== 'Success') {
+                sendtoDODDGeneralErrorMessage(resultsObj.DODD);
+              }
+
               sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'Success' ? icons.checkmark : icons.close;
               sendToDODDStatus.classList.toggle('success', resultsObj.DODD === 'Success');
             }
@@ -2087,39 +2081,30 @@ const plan = (function () {
             downloadReportStatus.classList.toggle('success', resultsObj.REPORT === 'Success');
             emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'Success' ? icons.checkmark : icons.close;
             emailReportStatus.classList.toggle('success', resultsObj.EMAIL === 'Success');
-
-            if ($.session.sendToDODD) {
-              console.log('DODD', resultsObj.DODD);
-            }
-            if ($.session.sendToPortal) {
-              console.log('ONET', resultsObj.ONET);
-            }
-            console.log('REPORT', resultsObj.REPORT);
-            console.log('EMAIL', resultsObj.EMAIL);
           } else {
             if (selectedCheckboxes.sendToDODDCheck) {
+              if (resultsObj.DODD !== 'Success') {
+                sendtoDODDGeneralErrorMessage(resultsObj.DODD);
+              }
+
               screen3.appendChild(sendToDODDStatus);
               sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'Success' ? icons.checkmark : icons.close;
               sendToDODDStatus.classList.toggle('success', resultsObj.DODD === 'Success');
-              console.log('DODD', resultsObj.DODD);
             }
             if (selectedCheckboxes.sendToOhioNetCheck) {
               screen3.appendChild(sendToOhioNetStatus);
               sendToOhioNetStatusIcon.innerHTML = resultsObj.ONET === 'Success' ? icons.checkmark : icons.close;
               sendToOhioNetStatus.classList.toggle('success', resultsObj.ONET === 'Success');
-              console.log('ONET', resultsObj.ONET);
             }
             if (selectedCheckboxes.downloadReportCheck) {
               screen3.appendChild(downloadReportStatus);
               downloadReportStatusIcon.innerHTML = resultsObj.REPORT === 'Success' ? icons.checkmark : icons.close;
               downloadReportStatus.classList.toggle('success', resultsObj.REPORT === 'Success');
-              console.log('REPORT', resultsObj.REPORT);
             }
             if (selectedCheckboxes.emailReportCheck) {
               screen3.appendChild(emailReportStatus);
               emailReportStatusIcon.innerHTML = resultsObj.EMAIL === 'Success' ? icons.checkmark : icons.close;
               emailReportStatus.classList.toggle('success', resultsObj.EMAIL === 'Success');
-              console.log('EMAIL', resultsObj.EMAIL);
             }
           }
 
@@ -2127,7 +2112,7 @@ const plan = (function () {
         }
 
         if (currScreen === 3) {
-          actionBtn.textContent = 'Next';
+          actionBtn.remove();
           POPUP.hide(finalizePopup);
         }
       },

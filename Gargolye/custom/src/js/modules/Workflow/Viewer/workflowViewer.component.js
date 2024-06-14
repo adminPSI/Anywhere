@@ -1,6 +1,7 @@
 const WorkflowViewerComponent = (function () {
   let viewerContainer;
   let formTemplates;
+  let peopleId;
 
   // NEW
   //-----------------------------------------
@@ -9,8 +10,10 @@ const WorkflowViewerComponent = (function () {
     return workflowsComponent.render();
   }
   async function getWorkflowData(processId, referenceId) {
-    const attachmentInputs = document.querySelector('.generalInfo');
-    var peopleId = attachmentInputs.dataset.peopleId;
+    if (!peopleId) {
+      const attachmentInputs = document.querySelector('.generalInfo');
+      peopleId = attachmentInputs.dataset.peopleId;
+    }
 
     const { getPeopleNamesResult: people } = await WorkflowViewerAjax.getPeopleNamesAsync(peopleId, '0');
 
@@ -56,8 +59,9 @@ const WorkflowViewerComponent = (function () {
 
     return container;
   }
-  async function get(processId, ref_id) {
+  async function get(processId, ref_id, consumerId) {
     if (Object.keys(WorkflowProcess).find(key => WorkflowProcess[key] === processId)) {
+      peopleId = consumerId;
       viewerContainer = buildViewer();
       await loadData(processId, ref_id);
       return viewerContainer;

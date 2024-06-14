@@ -268,22 +268,22 @@ var consumerInfo = (function () {
     // restore height of target subsection
     targetSubSection.classList.remove('hidden');
 
-        setTimeout(function () {
-            // shrink currently visible sub section
-            currentlyVisibleSubSection.classList.add('hidden');
-            // show target sub section
-            targetSubSection.classList.add('visible');
-        }, 200);
+    setTimeout(function () {
+      // shrink currently visible sub section
+      currentlyVisibleSubSection.classList.add('hidden');
+      // show target sub section
+      targetSubSection.classList.add('visible');
+    }, 200);
+  }
+  function handleBackButtonClick() {
+    backwordBtn.classList.add('hidden');
+    forwardBtn.classList.add('hidden');
+    // first check to see if we are on the menulist
+    var menuList = consumerInfoCard.querySelector('.menuList');
+    var isMenuListHidden = menuList.classList.contains('fadeOut');
+    if (!isMenuListHidden) {
+      return;
     }
-    function handleBackButtonClick() {
-        backwordBtn.classList.add('hidden');
-        forwardBtn.classList.add('hidden');
-        // first check to see if we are on the menulist
-        var menuList = consumerInfoCard.querySelector('.menuList');
-        var isMenuListHidden = menuList.classList.contains('fadeOut');
-        if (!isMenuListHidden) {
-            return;
-        }
 
     var sectionBackBtn = document.querySelector('.sectionBackBtn');
 
@@ -639,17 +639,13 @@ var consumerInfo = (function () {
     var sectionInner = section.querySelector('.sectionInner');
     sectionInner.innerHTML = '';
 
-    rosterWorkflow.init(consumerId);
-    
-    const workflowViewer = await WorkflowViewerComponent.get(4, consumerId);
-    const addWorkflowBtn = button.build({
-      text: 'Add Workflow(s)',
-      style: 'secondary',
-      type: 'contained',
-      callback: async () => {
-        rosterWorkflow.showAddWorkflowPopup();
-      },
+    rosterWorkflow.init(consumerId, ({ workflowViewer, addWorkflowBtn }) => {
+      sectionInner.innerHTML = '';
+      sectionInner.appendChild(workflowViewer);
+      sectionInner.appendChild(addWorkflowBtn);
     });
+
+    const { workflowViewer, addWorkflowBtn } = await rosterWorkflow.getWorkflowScreen();
 
     sectionInner.appendChild(workflowViewer);
     sectionInner.appendChild(addWorkflowBtn);
