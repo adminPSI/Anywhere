@@ -253,7 +253,6 @@ const esignatures = (function () {
 
         var paragraph = document.createElement('p');
         paragraph.textContent = 'You have successfully signed this plan! You will receive a confirmation email shortly. The Case Manager will also be notified that you signed the plan. Please close your browser tab to complete the process.';
-        paragraph.style.marginBottom = '10px';
 
         const downloadPlanBtn = button.build({
           id: 'downloadPlanBtn',
@@ -264,7 +263,6 @@ const esignatures = (function () {
             generateReportDownload(tempUserId);
           },
         });
-        downloadPlanBtn.style.width = '50%';
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
