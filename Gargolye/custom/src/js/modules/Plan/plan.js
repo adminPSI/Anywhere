@@ -1482,6 +1482,7 @@ const plan = (function () {
   }
 
   function sendtoDODDGeneralErrorMessage(sendtoDODDResponse) {
+    console.log('sendtoDODDGeneralErrorMessage', sendtoDODDResponse[0]);
     var generalMessagePopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
@@ -1537,7 +1538,7 @@ const plan = (function () {
   }
 
   function sendtoDODDDetailErrorMessage(sendtoDODDResponse) {
-    // alert(sendtoDODDResponse[1]);
+    console.log('sendtoDODDDetailErrorMessage', sendtoDODDResponse[1]);
     var detailMessagePopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
@@ -1959,6 +1960,7 @@ const plan = (function () {
     const secondPart = words.slice(middleIndex).join(' ');
 
     // Return the two parts in an array
+    console.log('splitStringSentence', [firstPart, secondPart]);
     return [firstPart, secondPart];
 }
   function handleReportStream(report) {
