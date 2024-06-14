@@ -1945,6 +1945,22 @@ const plan = (function () {
   }
 
   //* Plan Finalization
+  function splitStringSentence(sentence) {
+    // Split the sentence into words
+    const words = sentence.split(' ');
+
+    // Calculate the middle index
+    const middleIndex = Math.floor(words.length / 2);
+
+    // Join the first half of the words into a string
+    const firstPart = words.slice(0, middleIndex).join(' ');
+
+    // Join the second half of the words into a string
+    const secondPart = words.slice(middleIndex).join(' ');
+
+    // Return the two parts in an array
+    return [firstPart, secondPart];
+}
   function handleReportStream(report) {
     if (!report) return;
 
@@ -2067,7 +2083,7 @@ const plan = (function () {
 
             if ($.session.sendToDODD) {
               if (resultsObj.DODD !== 'Success') {
-                sendtoDODDGeneralErrorMessage(resultsObj.DODD);
+                sendtoDODDGeneralErrorMessage(splitStringSentence(resultsObj.DODD));
               }
 
               sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'Success' ? icons.checkmark : icons.close;
@@ -2084,7 +2100,7 @@ const plan = (function () {
           } else {
             if (selectedCheckboxes.sendToDODDCheck) {
               if (resultsObj.DODD !== 'Success') {
-                sendtoDODDGeneralErrorMessage(resultsObj.DODD);
+                sendtoDODDGeneralErrorMessage(splitStringSentence(resultsObj.DODD));
               }
 
               screen3.appendChild(sendToDODDStatus);
