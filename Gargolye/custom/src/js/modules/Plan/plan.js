@@ -2085,7 +2085,7 @@ const plan = (function () {
 
             if ($.session.sendToDODD) {
               if (resultsObj.DODD !== 'Success') {
-                sendtoDODDGeneralErrorMessage(splitStringSentence(resultsObj.DODD));
+                sendtoDODDGeneralErrorMessage([resultsObj.DODD]);
               }
 
               sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'Success' ? icons.checkmark : icons.close;
@@ -2102,7 +2102,7 @@ const plan = (function () {
           } else {
             if (selectedCheckboxes.sendToDODDCheck) {
               if (resultsObj.DODD !== 'Success') {
-                sendtoDODDGeneralErrorMessage(splitStringSentence(resultsObj.DODD));
+                sendtoDODDGeneralErrorMessage([resultsObj.DODD]);
               }
 
               screen3.appendChild(sendToDODDStatus);
