@@ -112,7 +112,7 @@ const rosterWorkflow = (() => {
               let workflowId = await WorkflowViewerAjax.copyWorkflowtemplateToRecord({
                 token: $.session.Token,
                 templateId: wftemplateId,
-                referenceId: 0,
+                referenceId: selectedConsumerId,
                 peopleId: selectedConsumerId,
               });
               workflowIds.push(workflowId);
@@ -148,7 +148,7 @@ const rosterWorkflow = (() => {
   }
   
   async function buildWorkflowScreen() {
-    const workflowViewer = await WorkflowViewerComponent.get(4, 0, selectedConsumerId);
+    const workflowViewer = await WorkflowViewerComponent.get(4, selectedConsumerId, true);
 
     const addWorkflowBtn = button.build({
       text: 'Add Workflow(s)',
