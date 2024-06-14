@@ -112,6 +112,7 @@ var timeEntryCard = (function () {
     var reasonCodeValue;
     var eVVChangeDate;
     var todayDate;
+    var isEndTimeChangePermission;
 
     // Action Nav
     //------------------------------------
@@ -1513,6 +1514,36 @@ var timeEntryCard = (function () {
         }
 
         checkRequiredFields();
+
+        if (isEndTimeChangePermission) {
+            workCodeDropdown.classList.add('disabled');
+            disableInput(startTimeInput);
+            disableInput(totalHoursInput);
+            enableInput(endTimeInput);
+            disableInput(locationDropdown);
+            disableInput(dateInput);
+            disableInput(noteInput);
+            if (reasonDropdown) disableInput(reasonDropdown);
+            if (licenseplateInput) disableInput(licenseplateInput);
+            disableInput(workCodeDropdown);
+            if (locationTypeDropdown) disableInput(locationTypeDropdown);
+            dateInput.classList.remove('error');
+            noteInput.classList.remove('error');
+            workCodeDropdown.classList.remove('error');
+            startTimeInput.classList.remove('error');
+            deleteBtn.classList.remove('disabled');
+            endTimeInput.classList.remove('error');  
+            if (endTime != null && endTime < startTime) {
+                endTimeInput.classList.add('error');
+                saveBtn.classList.add('disabled');
+                saveAndSumbitBtn.classList.add('disabled');  
+            }
+            else {
+                endTimeInput.classList.remove('error');
+                saveBtn.classList.remove('disabled');
+                saveAndSumbitBtn.classList.remove('disabled');
+            }
+        }
     }
 
     // Events
@@ -1976,6 +2007,28 @@ var timeEntryCard = (function () {
         ) {
             saveBtn.classList.add('disabled');
             saveAndSumbitBtn.classList.add('disabled');
+        }
+
+        if (isEndTimeChangePermission) {
+            card.classList.remove('disabled');
+            saveBtn.classList.add('disabled');
+            saveAndSumbitBtn.classList.add('disabled');
+            deleteBtn.classList.remove('disabled');
+            roster2.toggleMiniRosterBtnVisible(false);
+            workCodeDropdown.classList.add('disabled');
+            locationDropdown.classList.add('disabled');
+            startTimeInput.classList.add('disabled');
+            endTimeInput.classList.remove('disabled');
+            reasonDropdown.classList.add('disabled');
+            attestCheckbox.classList.add('disabled');
+            transportationBtn.classList.add('disabled');
+            dateInput.classList.add('disabled');
+            noteInput.classList.add('disabled');
+            rejectionReasonInput.classList.add('disabled');
+            locationTypeDropdown.classList.add('disabled');
+            dateInput.classList.remove('error');
+            noteInput.classList.remove('error');
+            endTimeInput.classList.remove('error'); 
         }
     }
     // EVV
@@ -2478,7 +2531,7 @@ var timeEntryCard = (function () {
         return btnWrap;
     }
 
-    async function buildCard(options, editData, consumersPresent, payperiod) {
+    async function buildCard(options, editData, consumersPresent, payperiod, isOnlyEndTimeChangePermission = false) {
         // options = {isEdit}
         saveUserId = null;
         personId = null;
@@ -2486,6 +2539,7 @@ var timeEntryCard = (function () {
         isEdit = opts.isEdit;
         isAdminEdit = opts.isAdminEdit;
 
+        isEndTimeChangePermission = isOnlyEndTimeChangePermission;
         if (editData && editData.length > 0) {
             setEditDataValues(editData);
             payPeriod = payperiod;
