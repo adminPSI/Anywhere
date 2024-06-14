@@ -1980,8 +1980,8 @@ const plan = (function () {
     const obj = {};
 
     results.forEach(r => {
-      const [action, result] = r.split(' ');
-      obj[action] = result;
+      const [action, result, ...rest] = r.split(' ');
+      obj[action] = rest && rest.length ? `${result},${rest}`.replaceAll(',', ' ') : result;
     });
 
     return obj;
@@ -2085,7 +2085,7 @@ const plan = (function () {
 
             if ($.session.sendToDODD) {
               if (resultsObj.DODD !== 'Success') {
-                sendtoDODDGeneralErrorMessage([resultsObj.DODD]);
+                sendtoDODDGeneralErrorMessage(splitStringSentence(resultsObj.DODD));
               }
 
               sendToDODDStatusIcon.innerHTML = resultsObj.DODD === 'Success' ? icons.checkmark : icons.close;
@@ -2102,7 +2102,7 @@ const plan = (function () {
           } else {
             if (selectedCheckboxes.sendToDODDCheck) {
               if (resultsObj.DODD !== 'Success') {
-                sendtoDODDGeneralErrorMessage([resultsObj.DODD]);
+                sendtoDODDGeneralErrorMessage(splitStringSentence(resultsObj.DODD));
               }
 
               screen3.appendChild(sendToDODDStatus);
