@@ -57,7 +57,7 @@ const rosterWorkflow = (() => {
   async function showAddWorkflowPopup() {
     const wfPopup = POPUP.build({
       header: 'Select workflow(s) to attach.',
-      id: 'workflow_addWorkflowPopup',
+      id: 'rosterworkflow_addWorkflowPopup',
     });
 
     // Workflow List
@@ -143,10 +143,12 @@ const rosterWorkflow = (() => {
 
     wfPopup.appendChild(workflowList);
     wfPopup.appendChild(btnWrap);
+
+    POPUP.show(wfPopup);
   }
   
   async function buildWorkflowScreen() {
-    const workflowViewer = await WorkflowViewerComponent.get(4, 0, consumerId);
+    const workflowViewer = await WorkflowViewerComponent.get(4, 0, selectedConsumerId);
 
     const addWorkflowBtn = button.build({
       text: 'Add Workflow(s)',
