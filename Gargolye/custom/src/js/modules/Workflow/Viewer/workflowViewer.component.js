@@ -10,10 +10,9 @@ const WorkflowViewerComponent = (function () {
     return workflowsComponent.render();
   }
   async function getWorkflowData(processId, referenceId) {
-    if (!peopleId) {
-      const attachmentInputs = document.querySelector('.generalInfo');
-      peopleId = attachmentInputs.dataset.peopleId;
-    }
+    const attachmentInputs = document.querySelector('.generalInfo');
+    peopleId = attachmentInputs.dataset.peopleId;
+    
 
     const { getPeopleNamesResult: people } = await WorkflowViewerAjax.getPeopleNamesAsync(peopleId, '0');
 
@@ -33,13 +32,32 @@ const WorkflowViewerComponent = (function () {
 
     return workflowData;
   }
+  async function getWorkflowDataForRoster(processId, referenceId) {
+    const { getPeopleNamesResult: people } = await WorkflowViewerAjax.getPeopleNamesAsync(referenceId, '0');
+
+    const { getPeopleNamesResult: responsiblePeople } = await WorkflowViewerAjax.getPeopleNamesAsync(referenceId, '-1');
+
+    const { getWorkflowsResult: workflows } = await WorkflowViewerAjax.getWorkflowsAsync(processId, referenceId);
+
+    const { getFormTemplatesResult: templates } = await WorkflowViewerAjax.getFormTemplatesAsync();
+
+    workflowData = {
+      people: people,
+      workflows: workflows,
+      templates: templates,
+      responsiblePeople: responsiblePeople,
+    };
+    formTemplates = templates;
+
+    return workflowData;
+  }
 
   // retrieves templates from function buildWorkflowComponents
   getTemplates = () => formTemplates;
 
-  async function loadData(processId, referenceId) {
+  async function loadData(processId, referenceId, fromRoster) {
     try {
-      const data = await getWorkflowData(processId, referenceId);
+      const data = fromRoster ? await getWorkflowDataForRoster(processId, referenceId) : await getWorkflowData(processId, referenceId);
       const viewerContent = buildWorkflowComponents(data);
       viewerContainer.appendChild(viewerContent);
     } catch (error) {
@@ -59,11 +77,10 @@ const WorkflowViewerComponent = (function () {
 
     return container;
   }
-  async function get(processId, ref_id, consumerId) {
+  async function get(processId, ref_id, fromRoster) {
     if (Object.keys(WorkflowProcess).find(key => WorkflowProcess[key] === processId)) {
-      peopleId = consumerId;
       viewerContainer = buildViewer();
-      await loadData(processId, ref_id);
+      await loadData(processId, ref_id, fromRoster);
       return viewerContainer;
     } else {
       console.error('Invalid processId');

@@ -2046,6 +2046,7 @@ const plan = (function () {
 
           currScreen = 3;
           actionBtn.textContent = 'done';
+          actionBtn.style.display = 'none';
           screen2.classList.remove('visible');
           screen3.classList.add('visible');
 
@@ -2069,6 +2070,7 @@ const plan = (function () {
           });
           console.table(finalizationResults);
           spinner.remove();
+          actionBtn.style.display = 'block';
 
           if (finalizationResults && selectedCheckboxes.downloadReportCheck) {
             handleReportStream(finalizationResults.report);
