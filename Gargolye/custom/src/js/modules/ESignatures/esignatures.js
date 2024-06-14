@@ -249,10 +249,11 @@ const esignatures = (function () {
         const updateQuestions = await _UTIL.fetchData('updateESignFormValues', { formData });
 
         const downloadExitPopup = document.createElement('div');
-        downloadExitPopup.classList.add('popup');
+        downloadExitPopup.classList.add('popup', 'downloadExitPopup');
 
         var paragraph = document.createElement('p');
-        paragraph.textContent = 'You have successfully signed this plan! You will receive a confirmation email shortly. The Case Manager will also be notified that you signed the plan.';
+        paragraph.textContent = 'You have successfully signed this plan! You will receive a confirmation email shortly. The Case Manager will also be notified that you signed the plan. Please close your browser tab to complete the process.';
+        paragraph.style.marginBottom = '10px';
 
         const downloadPlanBtn = button.build({
           id: 'downloadPlanBtn',
@@ -263,22 +264,12 @@ const esignatures = (function () {
             generateReportDownload(tempUserId);
           },
         });
-
-        const exitBtn = button.build({
-          id: 'exitBtn',
-          text: 'Exit',
-          style: 'secondary',
-          type: 'contained',
-          callback: () => {
-            window.location.href = 'about:blank';
-          },
-        });
+        downloadPlanBtn.style.width = '50%';
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
         btnWrap.appendChild(paragraph);
         btnWrap.appendChild(downloadPlanBtn);
-        btnWrap.appendChild(exitBtn);
 
         downloadExitPopup.appendChild(paragraph);
         downloadExitPopup.appendChild(btnWrap);

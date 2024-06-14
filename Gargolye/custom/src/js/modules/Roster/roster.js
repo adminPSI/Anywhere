@@ -338,7 +338,7 @@ const roster2 = (function () {
             } else {
                 btnWrap.appendChild(selectedActiveBtnWrap);
                 if (document.getElementById('selectedActiveBtn') != null)
-                    document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactive?: ' + selectedActive;
+                    document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactives: ' + selectedActive;
             }
         }
 
@@ -403,7 +403,7 @@ const roster2 = (function () {
 
         selectedActiveBtn = button.build({
             id: 'selectedActiveBtn',
-            text: 'Show Inactive?: ' + selectedActive,
+            text: 'Show Inactives: ' + selectedActive,
             style: 'secondary',
             type: 'text',
             classNames: 'filterSelectionBtn',
@@ -789,7 +789,7 @@ const roster2 = (function () {
             } else {
                 btnWrap.appendChild(selectedActiveBtnWrap);
                 if (document.getElementById('selectedActiveBtn') != null)
-                    document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactive?: ' + selectedActive;
+                    document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactives: ' + selectedActive;
             }
         }
 
@@ -1737,7 +1737,8 @@ const roster2 = (function () {
 
         rosterListSelectable = selectable;
         hideDateFilter = otherOpts.hideDateFilter;
-        islocationDisabled = otherOpts.disabledLocation ? true :false;  
+        islocationDisabled = otherOpts.disabledLocation ? true : false;  
+        selectedActive = 'No';
         await getRosterData();
 
         // roster

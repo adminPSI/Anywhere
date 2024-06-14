@@ -35,6 +35,7 @@ var newTimeEntry = (function () {
                             isAdminEdit: true,
                             payPeriod,
                             recordActivityElement: null,
+                            isOnlyEndTimeChangePermission : true,
                         });
                     });
                 });

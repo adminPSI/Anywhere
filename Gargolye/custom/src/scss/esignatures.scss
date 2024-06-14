@@ -176,3 +176,21 @@
     }
   }
 }
+
+.downloadExitPopup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  p {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .btnWrap {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+  }
+}

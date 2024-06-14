@@ -17,7 +17,7 @@ var reportsAjax = (function(){
           window.open(fileURL);
         }
         reports.handledProcessedReport();
-      }
+      }//
     });
   }
   
