@@ -57,7 +57,7 @@ const rosterWorkflow = (() => {
   async function showAddWorkflowPopup() {
     const wfPopup = POPUP.build({
       header: 'Select workflow(s) to attach.',
-      id: 'rosterworkflow_addWorkflowPopup',
+      id: 'workflow_addWorkflowPopup',
     });
 
     // Workflow List
