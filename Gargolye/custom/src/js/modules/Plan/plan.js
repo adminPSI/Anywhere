@@ -2045,6 +2045,7 @@ const plan = (function () {
           screen3.insertBefore(spinner, screen3.firstChild);
 
           currScreen = 3;
+          actionBtn.textContext = 'done';
           screen2.classList.remove('visible');
           screen3.classList.add('visible');
 
