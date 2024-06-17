@@ -1947,8 +1947,8 @@ const plan = (function () {
 
   //* Plan Finalization
   function splitStringSentence(sentence) {
-    const firstPart = sentence.slice(0, 71);
-    const secondPart = sentence.slice(71, sentence.length);
+    const firstPart = sentence.slice(0, 82);
+    const secondPart = sentence.slice(82, sentence.length);
     return [firstPart, secondPart];
 }
   function handleReportStream(report) {
