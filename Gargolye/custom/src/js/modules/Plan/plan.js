@@ -1947,20 +1947,8 @@ const plan = (function () {
 
   //* Plan Finalization
   function splitStringSentence(sentence) {
-    // Split the sentence into words
-    const words = sentence.split(' ');
-
-    // Calculate the middle index
-    const middleIndex = Math.floor(words.length / 2);
-
-    // Join the first half of the words into a string
-    const firstPart = words.slice(0, middleIndex).join(' ');
-
-    // Join the second half of the words into a string
-    const secondPart = words.slice(middleIndex).join(' ');
-
-    // Return the two parts in an array
-    console.log('splitStringSentence', [firstPart, secondPart]);
+    const firstPart = sentence.slice(0, 71);
+    const secondPart = sentence.slice(71, sentance.length);
     return [firstPart, secondPart];
 }
   function handleReportStream(report) {
