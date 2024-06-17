@@ -413,7 +413,7 @@ namespace OODForms
                     }
                     else
                     {
-                        VRCounselor = "NONE FOUND";
+                        VRCounselor = "";
                     }
                 }
 
@@ -428,7 +428,7 @@ namespace OODForms
                         IPEGoal = dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString();
                     } else
                     {
-                        IPEGoal = "NONE FOUND";
+                        IPEGoal = "";
                     }
                 }
 
@@ -460,7 +460,7 @@ namespace OODForms
                     }
                     else
                     {
-                        SAMLevel = "NONE FOUND";
+                        SAMLevel = "";
                     }
                 }
 
@@ -479,7 +479,7 @@ namespace OODForms
                     ("Provider Name", ProviderName),  
                     ("Individuals Name", ConsumerName),  
                     ("IPE_Goal", IPEGoal),         // em_employee_general.ipe for given individual
-                    ("Direct Service Staff Nam(s) and Initials", StaffWithInitals), 
+                    ("Direct Service Staff Nam(s) and Initials", ""), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
                     ("Person Completing Report", personCompletingReport),  
                     ("VR CounselorCoordinator", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
 
