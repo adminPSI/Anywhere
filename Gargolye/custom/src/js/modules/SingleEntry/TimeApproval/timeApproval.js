@@ -1846,7 +1846,9 @@ var timeApproval = (function () {
         startDate = payperiod.start;
         endDate = payperiod.end;
 
-        loadReviewPage();
+        getDropdownData(function () {
+            loadReviewPage();
+        }); 
     }
 
     function showSubmitError(messageText) {

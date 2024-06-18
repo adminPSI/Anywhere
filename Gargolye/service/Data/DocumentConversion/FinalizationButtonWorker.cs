@@ -67,6 +67,8 @@ namespace Anywhere.service.Data.DocumentConversion
             {
                 //ActionResults[] ar = new ActionResults[1];
                 string[] sendToDODD = new string[5];
+                string[] sendToDODDCombined = new string[1];
+                string valueForDODD = "";
                 string sendONET = "";
                 string sendEmailResult = "";
                 bool doddFailed = false;
@@ -94,9 +96,13 @@ namespace Anywhere.service.Data.DocumentConversion
                     {
                         //Send to DODD
                         sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, assessmentID, peopleId);
+                        foreach(string item2 in sendToDODD)
+                        {
+                            valueForDODD = valueForDODD + item2;
+                        }
                         if (sendToDODD[0].Contains("Error") || sendToDODD[0].Contains("Failure") || sendToDODD[0].Contains("Exception"))
                         {
-                            actions[i] = "DODD " + sendToDODD[0];//"DODD Failed";
+                            actions[i] = "DODD " + valueForDODD;//"DODD Failed";
                             doddFailed = true;
                         }
                         else
@@ -138,7 +144,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             onetChecked = true;
                             actions[i] = "ONET Failed";
                             i++;
-                        }else if (doddFailed)
+                        }else if (doddFailed && !onetChecked)
                         {
                             onetChecked = true;
                             actions[i] = "ONET Failed";
@@ -189,7 +195,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             emailChecked = true;
                             actions[i] = "EMAIL Failed";
                             i++;
-                        }else if (doddFailed)
+                        }else if (doddFailed && !emailChecked)
                         {
                             emailChecked = true;
                             actions[i] = "EMAIL Failed";
@@ -229,7 +235,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             //report = null;
                             i++;
                         }
-                        else if (doddFailed)
+                        else if (doddFailed && !reportChecked)
                         {
                             reportChecked = true;
                             actions[i] = "REPORT Failed";

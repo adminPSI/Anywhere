@@ -333,7 +333,7 @@ var progressNotes = (function() {
 			type: 'textarea',
 			label: 'Message',
 			style: 'secondary',
-			classNames: 'newMessageInput',
+			classNames: ['newMessageInput', 'autosize'],
 		});
 		var sendButton = button.build({
 			text: 'Send',
@@ -387,7 +387,7 @@ var progressNotes = (function() {
 			type: 'textarea',
 			label: 'Message',
 			style: 'secondary',
-			classNames: 'newMessageInput',
+			classNames: ['newMessageInput', 'autosize'],
 		});
 		var sendButton = button.build({
 			text: 'Send',

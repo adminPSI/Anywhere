@@ -25,7 +25,8 @@ var newTimeEntry = (function () {
             callback: function () {
                 POPUP.hide(endDateWarningPopup);
                 let payPeriod = timeEntry.getCurrentPayPeriod(false);
-
+               
+                let isDisabled = getExistingTimeEntryResult[0].Anywhere_Closed === 'False' ? false : true;
                 singleEntryAjax.getSingleEntryById(getExistingTimeEntryResult[0].Single_Entry_ID, results => {
                     singleEntryAjax.getSingleEntryConsumersPresent(getExistingTimeEntryResult[0].Single_Entry_ID, consumers => {
                         editTimeEntry.init({
@@ -35,7 +36,7 @@ var newTimeEntry = (function () {
                             isAdminEdit: true,
                             payPeriod,
                             recordActivityElement: null,
-                            isOnlyEndTimeChangePermission : true,
+                            isOnlyEndTimeChangePermission: isDisabled,
                         });
                     });
                 });
