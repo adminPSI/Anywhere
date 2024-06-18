@@ -64,7 +64,7 @@ const rosterWorkflow = (() => {
     //-----------------------
     const wfvData = await WorkflowViewerAjax.getManualWorkflowList({
       token: $.session.Token,
-      processId: '4',
+      processId: 4,
       referenceId: selectedConsumerId,
     });
 
@@ -148,7 +148,7 @@ const rosterWorkflow = (() => {
   }
   
   async function buildWorkflowScreen() {
-    const workflowViewer = await WorkflowViewerComponent.get('4', selectedConsumerId, true);
+    const workflowViewer = await WorkflowViewerComponent.get(4, selectedConsumerId, true);
 
     const addWorkflowBtn = button.build({
       text: 'Add Workflow(s)',
