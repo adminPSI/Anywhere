@@ -327,8 +327,8 @@ var customGroups = (function(){
         rosterGroups = groupData;
         location = roster2.getSelectedLocationObj();
         locationId = location.locationId;
-        if (document.getElementById('mini_roster') != null)
-            document.getElementById('mini_roster').style.display = 'none';
+        // if (document.getElementById('mini_roster') != null)
+        //     document.getElementById('mini_roster').style.display = 'none';
     }
 
     return {
