@@ -2335,6 +2335,7 @@ var timeEntryCard = (function () {
             label: 'Note',
             style: 'secondary',
             type: 'textarea',
+            classNames: 'autosize',
             value: noteText,
         }));
     }
