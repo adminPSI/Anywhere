@@ -472,6 +472,7 @@ namespace Anywhere.service.Data
             public string rejected_time { get; set; }
             public string supervisorId { get; set; }
             public string locationTypeCode { get; set; }
+            public string Anywhere_Closed { get; set; }
         }
 
         public class SEFilteredListResults
