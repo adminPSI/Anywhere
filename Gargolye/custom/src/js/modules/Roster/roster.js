@@ -332,14 +332,9 @@ const roster2 = (function () {
         }
 
         if ($.loadedApp === 'roster' || ($.session.applicationName == 'Gatekeeper' && $.loadedApp === 'casenotes')) {
-            if (selectedActive === '%' || selectedActive === 'All') {
-                btnWrap.appendChild(selectedActiveBtnWrap);
-                btnWrap.removeChild(selectedActiveBtnWrap);
-            } else {
-                btnWrap.appendChild(selectedActiveBtnWrap);
-                if (document.getElementById('selectedActiveBtn') != null)
-                    document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactives: ' + selectedActive;
-            }
+            btnWrap.appendChild(selectedActiveBtnWrap);
+            if (document.getElementById('selectedActiveBtn') != null)
+                document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactives: ' + selectedActive;
         }
 
         if (document.getElementById('totalConsumerCountBtn') != null)
@@ -411,15 +406,6 @@ const roster2 = (function () {
                 buildFilterPopup('selectedActiveBtn');
             },
         });
-        selectedActiveCloseBtn = button.build({
-            icon: 'Delete',
-            style: 'secondary',
-            type: 'text',
-            classNames: 'filterCloseBtn',
-            callback: () => {
-                closeFilter('selectedActiveBtn');
-            },
-        });
 
         totalConsumerCountBtn = button.build({
             id: 'totalConsumerCountBtn',
@@ -453,7 +439,6 @@ const roster2 = (function () {
             selectedActiveBtnWrap = document.createElement('div');
             selectedActiveBtnWrap.classList.add('filterSelectionBtnWrap');
             selectedActiveBtnWrap.appendChild(selectedActiveBtn);
-            selectedActiveBtnWrap.appendChild(selectedActiveCloseBtn);
             btnWrap.appendChild(selectedActiveBtnWrap);
         }
 
@@ -479,10 +464,7 @@ const roster2 = (function () {
             selectedGroupCode = 'ALL';
             btnWrap.removeChild(selectedGroupNameBtnWrap);
         }
-        if (closeFilter == 'selectedActiveBtn') {
-            selectedActive = '%';
-            btnWrap.removeChild(selectedActiveBtnWrap);
-        }
+
         toggleMassAbsentBtn();
         filterApply();
     }
@@ -669,9 +651,8 @@ const roster2 = (function () {
     function populateActiveDropdown() {
         const activeDropdownData = ([
             { id: 1, value: 'Yes', text: 'Yes' },
-            { id: 2, value: 'No', text: 'No' },
+            { id: 2, value: 'No', text: 'No' }, 
         ]);
-        activeDropdownData.unshift({ id: null, value: '%', text: 'All' });
         dropdown.populate("rosterActiveDropdown", activeDropdownData, selectedActive);
     }
     // filter events
@@ -783,14 +764,9 @@ const roster2 = (function () {
             document.getElementById('totalConsumerCountBtn').innerHTML = 'Total Consumer Count: ' + totalConsumerCount;
 
         if ($.loadedApp === 'roster' || ($.session.applicationName == 'Gatekeeper' && $.loadedApp === 'casenotes')) {
-            if (selectedActive === '%' || selectedActive === 'All') {
-                btnWrap.appendChild(selectedActiveBtnWrap);
-                btnWrap.removeChild(selectedActiveBtnWrap);
-            } else {
-                btnWrap.appendChild(selectedActiveBtnWrap);
-                if (document.getElementById('selectedActiveBtn') != null)
-                    document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactives: ' + selectedActive;
-            }
+            btnWrap.appendChild(selectedActiveBtnWrap);
+            if (document.getElementById('selectedActiveBtn') != null)
+                document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactives: ' + selectedActive;
         }
 
         if (!rosterListSelectable) {
@@ -918,7 +894,7 @@ const roster2 = (function () {
     }
     function buildMassAbsentDeselectAllBtn() {
         return button.build({
-            id:'massAbsentDeselectAllBtn',
+            id: 'massAbsentDeselectAllBtn',
             text: 'Select None',
             style: 'secondary',
             type: 'contained',
@@ -1737,7 +1713,7 @@ const roster2 = (function () {
 
         rosterListSelectable = selectable;
         hideDateFilter = otherOpts.hideDateFilter;
-        islocationDisabled = otherOpts.disabledLocation ? true : false;  
+        islocationDisabled = otherOpts.disabledLocation ? true : false;
         selectedActive = 'No';
         await getRosterData();
 
