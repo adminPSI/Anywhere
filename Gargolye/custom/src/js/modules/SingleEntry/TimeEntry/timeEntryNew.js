@@ -23,14 +23,20 @@ var newTimeEntry = (function () {
             style: 'secondary',
             type: 'contained',
             callback: function () {
-                POPUP.hide(endDateWarningPopup);
+                POPUP.hide(endDateWarningPopup);               
                 let payPeriod = timeEntry.getCurrentPayPeriod(false);
-               
                 let isDisabled = getExistingTimeEntryResult[0].Anywhere_Closed === 'False' ? false : true;
+                if (isDisabled == false) {
+                    let payPeriodData = timeEntry.getPayPeriods(false);
+                    var dateofService = getExistingTimeEntryResult[0].Date_of_Service.split(' ')[0];
+                    let timeStart = UTIL.formatDateToIso(dateofService);
+                    payPeriod = payPeriodData.find(x => timeStart >= x.start && timeStart <= x.end);
+                } 
+                 
                 singleEntryAjax.getSingleEntryById(getExistingTimeEntryResult[0].Single_Entry_ID, results => {
                     singleEntryAjax.getSingleEntryConsumersPresent(getExistingTimeEntryResult[0].Single_Entry_ID, consumers => {
                         editTimeEntry.init({
-                            isOrginUser : true,
+                            isOrginUser: true,
                             entry: results,
                             consumers: consumers,
                             isAdminEdit: true,
