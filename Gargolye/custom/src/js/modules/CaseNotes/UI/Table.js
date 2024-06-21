@@ -357,9 +357,13 @@
    */
   Table.prototype.onRowDelete = function (cbFunc) {
     this.table.tBodies[0].addEventListener('onRowDelete', e => {
-      cbFunc(e.detail.id);
+      cbFunc(e.detail, e.detail.id);
     });
   };
+
+  Table.prototype.removeRow = function (row) {
+    row.remove();
+  }
 
   /**
    * Renders Table markup to the specified DOM node.

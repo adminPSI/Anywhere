@@ -91,12 +91,14 @@ const WaitingListOverview = (() => {
         moduleBody,
       });
     });
-    wlReviewTable.onRowDelete(async rowId => {
+    wlReviewTable.onRowDelete(async (row, rowId) => {
       // call delete procedure
       // remove row from table
-      await _UTIL.fetchData('deleteWaitingListAssessment', {
+      const resp = await _UTIL.fetchData('deleteWaitingListAssessment', {
         waitingListId: parseInt(rowId),
       });
+
+      wlReviewTable.removeRow(row)
     })
   }
 
