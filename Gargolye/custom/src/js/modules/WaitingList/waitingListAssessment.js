@@ -45,6 +45,11 @@ const WaitingListAssessment = (() => {
       enabled: true,
       formElements: [
         {
+          id: 'interviewDate',
+          type: 'date',
+          label: 'Interviewed Date',
+        },
+        {
           id: 'personCompleting',
           label: 'Name of person completing assessment',
           type: 'text',
@@ -1492,6 +1497,7 @@ const WaitingListAssessment = (() => {
         currentLivingArrangement: assessmentData.currentLivingArrangement,
         livingArrangementOther: assessmentData.livingArrangementOther,
         areasPersonNeedsHelp: assessmentData.areasPersonNeedsHelp,
+        interviewDate: assessmentData.interviewDate,
       },
       conditions: {
         otherThanMentalHealth: assessmentData.otherThanMentalHealth,

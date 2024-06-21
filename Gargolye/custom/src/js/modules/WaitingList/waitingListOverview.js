@@ -94,6 +94,9 @@ const WaitingListOverview = (() => {
     wlReviewTable.onRowDelete(async rowId => {
       // call delete procedure
       // remove row from table
+      await _UTIL.fetchData('deleteWaitingListAssessment', {
+        waitingListId: parseInt(rowId),
+      });
     })
   }
 
