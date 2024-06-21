@@ -51,7 +51,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
 
         public string deleteWaitingListAssessment(string token, int waitingListId)
         {
-            return dg.deleteWaitingListParticipant(token, waitingListId);
+            return dg.deleteWaitingListAssessment(token, waitingListId);
         }
 
         public string deleteWaitingListParticipant(string token, int participantId)
