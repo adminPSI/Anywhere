@@ -2850,6 +2850,11 @@ namespace Anywhere
             return wlw.deleteFromWaitingList(properties);
         }
 
+        public string deleteWaitingListAssessment(string token, int waitingListId)
+        {
+            return wlw.deleteWaitingListParticipant(token, waitingListId);
+        }
+
         public string deleteWaitingListParticipant(string token, int participantId)
         {
             return wlw.deleteWaitingListParticipant(token, participantId);

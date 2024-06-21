@@ -49,6 +49,11 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return fundSourceObj;
         }
 
+        public string deleteWaitingListAssessment(string token, int waitingListId)
+        {
+            return dg.deleteWaitingListParticipant(token, waitingListId);
+        }
+
         public string deleteWaitingListParticipant(string token, int participantId)
         {
             return dg.deleteWaitingListParticipant(token, participantId);
@@ -222,6 +227,13 @@ namespace Anywhere.service.Data.WaitingListAssessment
                 case "conclusionResult":
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "conclusion_result";
+                    idNameForWhere = "WLA_Waiting_List_Information_ID";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
+                    // Handle areasPersonNeedsHelp
+                    break;
+                case "interviewDate":
+                    tableName = "WLA_Waiting_List_Information";
+                    columnName = "interview_date";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
                     return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     // Handle areasPersonNeedsHelp
