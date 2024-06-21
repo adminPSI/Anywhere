@@ -13,12 +13,12 @@ const rosterGroupIndividuals = (function () {
                 await customGroupsAjax.addConsumerToCustomGroup(selectedConsumerIDs, groupId);   
                 roster2.clearSelectedConsumers();  
                 roster2.clearActiveConsumers();  
-                customGroups.loadManageGroupsPage();              
+                customGroups.loadManageGroupsPage();                 
                 break;
             }
             case "miniRosterCancel": {
                 roster2.clearSelectedConsumers();
-                customGroups.loadManageGroupsPage();
+                customGroups.loadManageGroupsPage();                 
                 break;
             }
         }
@@ -30,8 +30,9 @@ const rosterGroupIndividuals = (function () {
         DOM.scrollToTopOfPage();
         DOM.clearActionCenter();
         setActiveModuleSectionAttribute("roster-GroupIndividuals");
-        await roster2.miniRosterinit(null, { hideDate: true, locationDisabled: true });
-        document.getElementById('mini_roster').click();
+        roster2.miniRosterinit(null, { hideDate: true, locationDisabled: true });
+        roster2.showMiniRoster();    
+        roster2.removeMiniRosterBtn(); 
     }
     return {
         init,
