@@ -66,6 +66,7 @@ const rosterWorkflow = (() => {
       token: $.session.Token,
       processId: 4,
       referenceId: selectedConsumerId,
+      notPlan: 't'
     });
 
     const workflowList = document.createElement('div');

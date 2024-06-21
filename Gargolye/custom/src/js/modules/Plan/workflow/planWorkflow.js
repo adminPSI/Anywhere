@@ -10,6 +10,7 @@ const planWorkflow = (() => {
       token: $.session.Token,
       processId,
       referenceId: planId ? planId : 0,
+      notPlan: 'f'
     });
 
     workflowListData = wfvData;
