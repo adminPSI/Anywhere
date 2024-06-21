@@ -101,7 +101,7 @@ const WaitingListAssessment = (() => {
           id: 'otherThanMentalHealth',
           type: 'radiogroup',
           required: true,
-          groupLabel: `Does this person have a condition that is attributable to a mental or physical impairment or combination of mental and physical impairments, other than an impairment cuased solely by mental illness?`,
+          groupLabel: `Does this person have a condition that is attributable to a mental or physical impairment or combination of mental and physical impairments, other than an impairment caused solely by mental illness?`,
           fields: [
             { type: 'radio', label: 'Yes', value: 'yes', id: 'otherThanMentalHealthyes' },
             { type: 'radio', label: 'No', value: 'no', id: 'otherThanMentalHealthno' },
@@ -338,7 +338,7 @@ const WaitingListAssessment = (() => {
           id: 'isPrimaryCaregiverUnavailable',
           required: true,
           groupLabel:
-            'Is there evidence that the primary caregiver has a declining or chronic condition or is facing other unforseen circumstances that will limit his or her ability to care for the individual?',
+            'Is there evidence that the primary caregiver has a declining or chronic condition or is facing other unforeseen circumstances that will limit his or her ability to care for the individual?',
           fields: [
             { type: 'radio', label: 'Yes', value: 'yes', id: 'isPrimaryCaregiverUnavailableyes' },
             { type: 'radio', label: 'No', value: 'no', id: 'isPrimaryCaregiverUnavailableno' },
@@ -383,7 +383,7 @@ const WaitingListAssessment = (() => {
           disabled: true,
         },
         {
-          label: `List documentation used to verify presence of caregiver's condition,if not already described above: `,
+          label: `List documentation used to verify presence of caregiver's condition, if not already described above: `,
           id: 'declinedSkillsDocumentation',
           fullscreen: true,
           type: 'textarea',
@@ -955,7 +955,7 @@ const WaitingListAssessment = (() => {
           type: 'radiogroup',
           id: 'unmetNeedsHas',
           groupLabel: 'Does the individual have an identified need?',
-          note: 'This will be selected automatically as the information below is entered.',
+          note: 'This will be selected automatically as the information above is entered.',
           required: true,
           fields: [
             { type: 'radio', label: 'Yes', value: 'yes', id: 'unmetNeedsHasyes' },
@@ -1023,7 +1023,7 @@ const WaitingListAssessment = (() => {
             {
               type: 'checkbox',
               label:
-                'The individual has unmet needs that require enrollment in a waiver at this time to address circumstances presenting an immmediate risk of harm',
+                'The individual has unmet needs that require enrollment in a waiver at this time to address circumstances presenting an immediate risk of harm',
               id: 'conclusionUnmetNeeds',
             },
             {
@@ -1311,7 +1311,8 @@ const WaitingListAssessment = (() => {
   }
   function checkIsAssessmentComplete() {
     const incompleteSections = Object.values(tocLinks).filter(link => {
-      return !link.classList.contains('hiddenPage') && !link.classList.contains('formComplete') && !link.classList.contains('parent');
+      console.log('link', link);
+      return !link.classList.contains('hiddenPage') && !link.classList.contains('formComplete') && !link.classList.contains('parent') && !link.classList.contains('conclusion');
     });
 
     isAssessmentComplete = incompleteSections.length > 0 ? false : true;
@@ -3398,13 +3399,13 @@ const WaitingListAssessment = (() => {
           type: 'text',
           label: 'Name of Participant',
           id: 'participantName',
-          required: true,
+          //required: true,
         },
         {
           type: 'text',
           label: 'Relationship to Individual',
           id: 'participantRelationship',
-          required: true,
+          //required: true,
         },
       ],
     });

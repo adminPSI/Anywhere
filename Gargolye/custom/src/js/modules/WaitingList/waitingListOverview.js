@@ -91,6 +91,10 @@ const WaitingListOverview = (() => {
         moduleBody,
       });
     });
+    wlReviewTable.onRowDelete(async rowId => {
+      // call delete procedure
+      // remove row from table
+    })
   }
 
   // MAIN
@@ -118,6 +122,7 @@ const WaitingListOverview = (() => {
     // Review Table
     wlReviewTable = new Table({
       columnSortable: true,
+      allowDelete: true,
       headings: [
         {
           text: 'Interview Date',

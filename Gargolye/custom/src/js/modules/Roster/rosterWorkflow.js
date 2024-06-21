@@ -126,6 +126,8 @@ const rosterWorkflow = (() => {
 
           await displayWFwithMissingResponsibleParties(workflowIds);
         }
+
+        POPUP.hide(wfPopup);
       }
     });
     const cancelBtn = button.build({
