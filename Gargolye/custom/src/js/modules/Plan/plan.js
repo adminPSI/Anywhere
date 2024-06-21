@@ -1947,7 +1947,7 @@ const plan = (function () {
 
   //* Plan Finalization
   function splitStringSentence(sentence) {
-    const splitsentence = sentence.split('||||');
+    const splitsentence = sentence.split('||');
     const firstPart = splitsentence[0];
     const secondPart = splitsentence[1];
     return [firstPart, secondPart];
