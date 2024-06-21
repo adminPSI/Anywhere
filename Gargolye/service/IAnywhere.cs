@@ -4112,6 +4112,14 @@ namespace Anywhere
            BodyStyle = WebMessageBodyStyle.Wrapped,
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/deleteWaitingListAssessment/")]
+        string deleteWaitingListAssessment(string token, int waitingListId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/deleteSupportingDocument/")]
         string deleteSupportingDocument(string token, string attachmentId);
 
