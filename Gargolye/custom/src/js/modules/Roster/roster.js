@@ -1017,7 +1017,7 @@ const roster2 = (function () {
         const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
         const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
         const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
-        const isInactive = consumerData.IDa == '' ? false : true;
+        const isInactive = $.session.applicationName === 'Advisor' ? consumerData.IDa == '' ? false : true : consumerData.statusCode == 'A' ? false : true; 
         let isAllowed;
         if (!allowedConsumerIds) {
             isAllowed = true;

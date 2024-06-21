@@ -283,7 +283,7 @@
             .forEach(consumer => {
                 // ROSTER CARD
                 const gridAnimationWrapper = _DOM.createElement('div', { class: 'rosterCardWrap' });
-                const inActive = consumer.IDa == '' ? false : true; 
+                const inActive = $.session.applicationName === 'Advisor' ? consumer.IDa == '' ? false : true : consumer.statusCode == 'A' ? false : true; 
                 const rosterCard = new RosterCard({
                     consumerId: consumer.id,
                     firstName: consumer.FN,
