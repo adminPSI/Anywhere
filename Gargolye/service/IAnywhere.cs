@@ -2785,7 +2785,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/getManualWorkflowList/")]
-        WorkflowWorker.ManualWorkflowList[] getManualWorkflowList(string token, string processId, string referenceId);
+        WorkflowWorker.ManualWorkflowList[] getManualWorkflowList(string token, string processId, string referenceId, string notPlan);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

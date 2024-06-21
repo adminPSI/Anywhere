@@ -2217,9 +2217,9 @@ namespace Anywhere.service.Data
 
 
 
-        public ManualWorkflowList[] getManualWorkflowList(string token, string processId, string referenceId)
+        public ManualWorkflowList[] getManualWorkflowList(string token, string processId, string referenceId, string notPlan)
         {
-            string wfList = wfdg.getManualWorkflowList(token, processId, referenceId);
+            string wfList = wfdg.getManualWorkflowList(token, processId, referenceId, notPlan);
             ManualWorkflowList[] wfListObj = js.Deserialize<ManualWorkflowList[]>(wfList);
             return wfListObj;
         }

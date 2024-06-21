@@ -1264,13 +1264,14 @@ namespace Anywhere.service.Data
 
         }
 
-        public string getManualWorkflowList(string token, string processId, string planId)
+        public string getManualWorkflowList(string token, string processId, string planId, string notPlan)
         {
             logger.debug("getLocationsJSON ");
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(processId);
             list.Add(planId);
+            list.Add(notPlan);
             string text = "CALL DBA.DBA.ANYW_WF_GetManualWorkflowList(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
