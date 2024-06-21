@@ -98,7 +98,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, assessmentID, peopleId);
                         foreach(string item2 in sendToDODD)
                         {
-                            valueForDODD = valueForDODD + item2;
+                            valueForDODD = valueForDODD + "||" + item2 ;
                         }
                         if (sendToDODD[0].Contains("Error") || sendToDODD[0].Contains("Failure") || sendToDODD[0].Contains("Exception"))
                         {
