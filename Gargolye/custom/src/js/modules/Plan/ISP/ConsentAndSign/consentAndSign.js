@@ -1187,26 +1187,26 @@ const planConsentAndSign = (() => {
         oneSpan.shouldBeDisabled(sendDocumentToOneSpanBtn, event.detail.data);
       });
     } else {
-      // requestESignaturesBtn = button.build({
-      //   id: 'sig_addMember',
-      //   text: 'REQUEST E-SIGNATURES',
-      //   style: 'secondary',
-      //   type: 'contained',
-      //   callback: async () => {
-      //       showESignaturesPopup()
-      //     }
-      //   });
+      requestESignaturesBtn = button.build({
+        id: 'sig_addMember',
+        text: 'REQUEST E-SIGNATURES',
+        style: 'secondary',
+        type: 'contained',
+        callback: async () => {
+            showESignaturesPopup()
+          }
+        });
 
-      //   // initial check for esignatures btn
-      //   const filteredTeamMemberData = teamMemberData.filter(member => member.signatureType === '4' && member.signature === '');
-      //   if (filteredTeamMemberData.length === 0) {
-      //       requestESignaturesBtn.classList.add('disabled');
-      //   }
+        // initial check for esignatures btn
+        const filteredTeamMemberData = teamMemberData.filter(member => member.signatureType === '4' && member.signature === '');
+        if (filteredTeamMemberData.length === 0) {
+            requestESignaturesBtn.classList.add('disabled');
+        }
 
-      //   // Checks for any changes in the team members and the signature type
-      // document.addEventListener('data-update', function (event) {
-      //   oneSpan.shouldBeDisabled(requestESignaturesBtn, event.detail.data, '4');
-      // });
+        // Checks for any changes in the team members and the signature type
+      document.addEventListener('data-update', function (event) {
+        oneSpan.shouldBeDisabled(requestESignaturesBtn, event.detail.data, '4');
+      });
     }
 
     const btnWrap = document.createElement('div');
@@ -1218,7 +1218,7 @@ const planConsentAndSign = (() => {
     if ($.session.oneSpan) {
       btnWrap.appendChild(sendDocumentToOneSpanBtn);
     } else {
-      //btnWrap.appendChild(requestESignaturesBtn);
+      btnWrap.appendChild(requestESignaturesBtn);
     }
 
     tableWrap.appendChild(btnWrap);

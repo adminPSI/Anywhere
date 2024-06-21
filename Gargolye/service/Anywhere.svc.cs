@@ -1922,9 +1922,9 @@ namespace Anywhere
             return wfw.getWorkflows(token, processId, referenceId);
         }
 
-        public WorkflowWorker.ManualWorkflowList[] getManualWorkflowList(string token, string processId, string referenceId)
+        public WorkflowWorker.ManualWorkflowList[] getManualWorkflowList(string token, string processId, string referenceId, string notPlan)
         {
-            return wfw.getManualWorkflowList(token, processId, referenceId);
+            return wfw.getManualWorkflowList(token, processId, referenceId, notPlan);
         }
 
         public WorkflowWorker.WorkflowTemplateStepDocument[] getWorkFlowFormsfromPreviousPlan(string token, string selectedWFTemplateIds, string previousPlanId)
