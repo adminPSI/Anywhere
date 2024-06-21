@@ -478,6 +478,7 @@ namespace Anywhere.service.Data
             public string conL { get; set; }
             public string MN { get; set; }
             public string residentNumber { get; set; }
+            public string statusCode { get; set; } 
         }
 
         public RosterLocations[] getLocationsJSON(string token)
