@@ -87,7 +87,7 @@
             id: 'inactivetoggle',
             name: 'inactive',
             checked: false,
-            hidden: $.session.applicationName === 'Advisor',  
+            hidden: $.session.applicationName === 'Advisor',
         });
 
         this.rootElement.append(
@@ -249,7 +249,7 @@
                 retrieveId: '0',
                 serviceDate: dates.formatISO(todaysDate, { representation: 'date' }),
                 daysBackDate: daysBackDate,
-                isActive: this.selectedActive, 
+                isActive: this.selectedActive,
             });
             this.consumers = data.getConsumersByGroupJSONResult.reduce((acc, cv) => {
                 acc[cv.id] = cv;
@@ -283,13 +283,13 @@
             .forEach(consumer => {
                 // ROSTER CARD
                 const gridAnimationWrapper = _DOM.createElement('div', { class: 'rosterCardWrap' });
-                const inActive = $.session.applicationName === 'Advisor' ? consumer.IDa == '' ? false : true : consumer.statusCode == 'A' ? false : true; 
+                const inActive = $.session.applicationName === 'Advisor' ? consumer.IDa == '' || consumer.IDa == undefined ? false : true : consumer.statusCode == 'A' ? false : true;
                 const rosterCard = new RosterCard({
                     consumerId: consumer.id,
                     firstName: consumer.FN,
                     middleName: consumer.MN,
                     lastName: consumer.LN,
-                    isInactive: inActive, 
+                    isInactive: inActive,
                 });
                 rosterCard.renderTo(gridAnimationWrapper);
 

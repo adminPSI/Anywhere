@@ -1016,8 +1016,8 @@ const roster2 = (function () {
         const isSelected = selectedConsumers && selectedConsumers.filter(sc => sc.id === consumerData.id);
         const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
         const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
-        const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
-        const isInactive = $.session.applicationName === 'Advisor' ? consumerData.IDa == '' ? false : true : consumerData.statusCode == 'A' ? false : true; 
+        const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';  
+        const isInactive = $.session.applicationName === 'Advisor' ? consumerData.IDa == undefined || consumerData.IDa == '' ? false : true : consumerData.statusCode == 'A' ? false : true; 
         let isAllowed;
         if (!allowedConsumerIds) {
             isAllowed = true;
@@ -1049,7 +1049,7 @@ const roster2 = (function () {
             consumerCard.classList.add('highlighted', 'consumer-selected');
         }
 
-
+        
         if ((isActive && isActive.length >= 1) || !isAllowed) {
             if ($.loadedApp === 'outcomes') {
                 consumerCard.classList.remove('disabled');
@@ -1066,7 +1066,7 @@ const roster2 = (function () {
         const alertIcons = document.createElement('div');
         const d = new Date();
         const time = d.getTime();
-        portrait.classList.add('portrait');
+        portrait.classList.add('portrait'); 
         if (isInactive)
             details.classList.add('inactiveDetails');
         else
