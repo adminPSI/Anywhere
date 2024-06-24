@@ -606,7 +606,10 @@ var timeEntryCard = (function () {
                 }
                 break;
             default:
-                roster2.setAllowedConsumers(['%']);
+                if (isEndTimeChangePermission) 
+                    roster2.setAllowedConsumers([]);  
+                else
+                    roster2.setAllowedConsumers(['%']);
                 if (callback) callback();
                 break;
         }
