@@ -2852,7 +2852,7 @@ namespace Anywhere
 
         public string deleteWaitingListAssessment(string token, int waitingListId)
         {
-            return wlw.deleteWaitingListParticipant(token, waitingListId);
+            return wlw.deleteWaitingListAssessment(token, waitingListId);
         }
 
         public string deleteWaitingListParticipant(string token, int participantId)

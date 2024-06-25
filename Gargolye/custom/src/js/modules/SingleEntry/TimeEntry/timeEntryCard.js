@@ -582,7 +582,7 @@ var timeEntryCard = (function () {
 
         return allowedConsumers;
     }
-    async function setAllowedConsumers(callback) {
+    async function setAllowedConsumers(callback) {   
         switch (isBillable) {
             case 'Y':
                 switch (isAdminEdit) {
@@ -593,7 +593,7 @@ var timeEntryCard = (function () {
                             roster2.setAllowedConsumers(results);
                             if (callback) callback();
                         } else {
-                            roster2.setAllowedConsumers([]);
+                            roster2.setAllowedConsumers(['%']); 
                             if (callback) callback();
                         }
                         break;
@@ -606,7 +606,10 @@ var timeEntryCard = (function () {
                 }
                 break;
             default:
-                roster2.setAllowedConsumers([]);
+                if (isEndTimeChangePermission) 
+                    roster2.setAllowedConsumers([]);  
+                else
+                    roster2.setAllowedConsumers(['%']);
                 if (callback) callback();
                 break;
         }
