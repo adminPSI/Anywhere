@@ -21,27 +21,26 @@
                }, document.getElementById('viewer'))
                   .then(instance => {
                       console.log('success with S3 file');
-                      var FitMode = instance.FitMode;
-                      instance.setFitMode(FitMode.FitWidth);
+                      var FitMode = instance.UI.FitMode;
+                      instance.UI.setFitMode(FitMode.FitWidth);
                   // hide the ribbons
-                   instance.disableElements(['ribbons']);
+                   instance.UI.disableElements(['ribbons']);
                   // instance.disableFeatures([instance.Feature.Download]);
                   // set the default toolbar group to the Shapes group
                     //  instance.setToolbarGroup(['toolbarGroup-Shapes']);
                       // call methods from instance, docViewer and annotManager as needed
       
-                      const { docViewer, annotManager } = instance;
+                      const docViewer = instance.Core.documentViewer; 
+                      const annotManager = instance.Core.annotationManager;
       
                       // -- Save PDF with Annotations -- https://www.pdftron.com/documentation/web/guides/get-file-data-with-viewer/
       
                       // Add header button that will get file data on click
-                      instance.setHeaderItems(header => {
+                      instance.UI.setHeaderItems(header => {
                           header.push({
-                              type: 'actionButton',
-                             // img: '../../../../images/new-icons/default.png',
-                            // img: 'icon-annotation-status-accepted',
-                             img: 'icon-tool-pen-fill',
-                              title: 'Save Current Data',
+                            type: 'actionButton',
+                            img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path class="fill-path" d="M17.59 3.59c-.38-.38-.89-.59-1.42-.59H5c-1.11 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7.83c0-.53-.21-1.04-.59-1.41l-2.82-2.83zM12 19c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm1-10H7c-1.1 0-2-.9-2-2s.9-2 2-2h6c1.1 0 2 .9 2 2s-.9 2-2 2z"/></svg>',
+                            title: 'Save Current Data',
                               onClick: async () => {
                                  const doc = docViewer.getDocument();
                                  const xfdfString = await annotManager.exportAnnotations();
@@ -105,16 +104,16 @@
       
                       // const arr = new Uint8Array(bytes);
                       const blob = new Blob([bytes], { type: 'application/pdf' });
-                      instance.loadDocument(blob, { filename: templateName + '.pdf'});
-                      instance.disableElements(['toolsHeader']);
+                      instance.Core.documentViewer.loadDocument(blob, { filename: templateName + '.pdf'});
+                      instance.UI.disableElements(['toolsHeader']);
                      // instance.disableElements(['toolbarGroup-Shapes']);
                     //  instance.disableElements(['toolbarGroup-Edit']);
                     //  instance.disableElements(['toolbarGroup-Insert']);
                       // you can also access major namespaces from the instance as follows:
                       const Tools = instance.Tools;
-                       const Annotations = instance.Annotations;
+                      const Annotations = instance.Annotations;
                        
-                      docViewer.on('documentLoaded', async () => {
+                      docViewer.addEventListener('documentLoaded', async () => {
                           //docViewer.setOptions({ enableAnnotations: false });
                          // docViewer.zoomTo(docViewer.getZoom() + 1.75);
                           // call methods relating to the loaded document
@@ -149,21 +148,20 @@
                }, document.getElementById('viewer'))
                   .then(instance => {
                       console.log('success with S3 file');
-                      var FitMode = instance.FitMode;
-                      instance.setFitMode(FitMode.FitWidth);
+                      var FitMode = instance.UI.FitMode;
+                      instance.UI.setFitMode(FitMode.FitWidth);
                   // hide the ribbons
-                   instance.disableElements(['ribbons']);
+                   instance.UI.disableElements(['ribbons']);
                  //  instance.disableFeatures([instance.Feature.Download]);
                
-                      const { docViewer, annotManager } = instance;
+                      const docViewer = instance.Core.documentViewer;
+                      const annotManager = instance.Core.annotationManager
                                     
-                      instance.setHeaderItems(header => {
+                      instance.UI.setHeaderItems(header => {
                           header.push({
-                              type: 'actionButton',
-                              // img: '../../../../images/new-icons/default.png',
-                             // img: 'icon-annotation-status-accepted',
-                             img: 'icon-tool-pen-fill',
-                              title: 'Save Current Data',
+                            type: 'actionButton',
+                            img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path class="fill-path" d="M17.59 3.59c-.38-.38-.89-.59-1.42-.59H5c-1.11 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7.83c0-.53-.21-1.04-.59-1.41l-2.82-2.83zM12 19c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm1-10H7c-1.1 0-2-.9-2-2s.9-2 2-2h6c1.1 0 2 .9 2 2s-.9 2-2 2z"/></svg>',
+                            title: 'Save Current Data',
                               onClick: async () => {
 
                               try{
@@ -270,19 +268,14 @@
       
                       // const arr = new Uint8Array(bytes);
                       const blob = new Blob([bytes], { type: 'application/pdf' });
-                      instance.loadDocument(blob, { filename: 'myfile.pdf'});
-                      instance.disableElements(['toolsHeader']);
+                      instance.UI.loadDocument(blob, { filename: 'myfile.pdf'});
+                      instance.UI.disableElements(['toolsHeader']);
                        
-                      docViewer.on('documentLoaded', async () => {
+                      docViewer.addEventListener('documentLoaded', async () => {
                           try {
-
-                              const doc = docViewer.getDocument();
-                              const xfdfString = await annotManager.exportAnnotations();
-                                                    
-                              const data = await doc.getFileData({
-                                   // saves the document with annotations in it
-                                   xfdfString
-                               });
+                              annotManager.exportAnnotations().then(xfdfString => {
+                                const doc =  docViewer.getDocument();
+                              });
 
                           } catch {
 
@@ -323,22 +316,21 @@
                }, document.getElementById('viewer'))
                   .then(instance => {
                       console.log('success with S3 file');
-                      var FitMode = instance.FitMode;
-                      instance.setFitMode(FitMode.FitWidth);
+                      var FitMode = instance.UI.FitMode;
+                      instance.UI.setFitMode(FitMode.FitWidth);
                   // hide the ribbons
-                   instance.disableElements(['ribbons']);
+                   instance.UI.disableElements(['ribbons']);
                  //  instance.disableFeatures([instance.Feature.Download]);
                
-                      const { docViewer, annotManager } = instance;
+                      const docViewer = instance.Core.documentViewer;
+                      const annotManager = instance.Core.annotationManager;
                                     
-                      instance.setHeaderItems(header => {
+                      instance.UI.setHeaderItems(header => {
                         if ($.session.formsUpdate) { 
                           header.push({
-                              type: 'actionButton',
-                              // img: '../../../../images/new-icons/default.png',
-                             // img: 'icon-annotation-status-accepted',
-                             img: 'icon-tool-pen-fill',
-                              title: 'Save Current Data',
+                            type: 'actionButton',
+                            img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path class="fill-path" d="M17.59 3.59c-.38-.38-.89-.59-1.42-.59H5c-1.11 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7.83c0-.53-.21-1.04-.59-1.41l-2.82-2.83zM12 19c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm1-10H7c-1.1 0-2-.9-2-2s.9-2 2-2h6c1.1 0 2 .9 2 2s-.9 2-2 2z"/></svg>',
+                            title: 'Save Current Data',
                               onClick: async () => {
 
                               try{
@@ -464,10 +456,10 @@
       
                       // const arr = new Uint8Array(bytes);
                       const blob = new Blob([bytes], { type: 'application/pdf' });
-                      instance.loadDocument(blob, { filename: 'myfile.pdf'});
-                      instance.disableElements(['toolsHeader']);
+                      docViewer.loadDocument(blob, { filename: 'myfile.pdf'});
+                      instance.UI.disableElements(['toolsHeader']);
                        
-                      docViewer.on('documentLoaded', async () => {
+                      docViewer.addEventListener('documentLoaded', async () => {
                           try {
 
                               const doc = docViewer.getDocument();
@@ -515,22 +507,21 @@
              }, document.getElementById('viewer'))
                 .then(instance => {
                     console.log('success with S3 file');
-                    var FitMode = instance.FitMode;
-                    instance.setFitMode(FitMode.FitWidth);
+                    var FitMode = instance.UI.FitMode;
+                    instance.UI.setFitMode(FitMode.FitWidth);
                 // hide the ribbons
-                 instance.disableElements(['ribbons']);
+                 instance.UI.disableElements(['ribbons']);
                //  instance.disableFeatures([instance.Feature.Download]);
              
-                    const { docViewer, annotManager } = instance;
+                    const docViewer = instance.Core.documnetViewer;
+                    const annotManager = instance.Core.annotationManager;
                                   
-                    instance.setHeaderItems(header => {
+                    instance.UI.setHeaderItems(header => {
                       if ($.session.formsUpdate) { 
                         header.push({
-                            type: 'actionButton',
-                            // img: '../../../../images/new-icons/default.png',
-                           // img: 'icon-annotation-status-accepted',
-                           img: 'icon-tool-pen-fill',
-                            title: 'Save Current Data',
+                          type: 'actionButton',
+                          img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path class="fill-path" d="M17.59 3.59c-.38-.38-.89-.59-1.42-.59H5c-1.11 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7.83c0-.53-.21-1.04-.59-1.41l-2.82-2.83zM12 19c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm1-10H7c-1.1 0-2-.9-2-2s.9-2 2-2h6c1.1 0 2 .9 2 2s-.9 2-2 2z"/></svg>',
+                          title: 'Save Current Data',
                             onClick: async () => {
                                     const doc = docViewer.getDocument();
                                     const xfdfString = await annotManager.exportAnnotations();
@@ -656,10 +647,10 @@
     
                     // const arr = new Uint8Array(bytes);
                     const blob = new Blob([bytes], { type: 'application/pdf' });
-                    instance.loadDocument(blob, { filename: 'myfile.pdf'});
-                    instance.disableElements(['toolsHeader']);
+                    instance.Core.documentViewer.loadDocument(blob, { filename: 'myfile.pdf'});
+                    instance.UI.disableElements(['toolsHeader']);
                      
-                    docViewer.on('documentLoaded', async () => {
+                    docViewer.addEventListener('documentLoaded', async () => {
                         try {
 
                             const doc = docViewer.getDocument();
