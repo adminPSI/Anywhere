@@ -3,6 +3,9 @@ const esignatures = (function () {
   let submitBtn;
   let esignerData = {};
   let formData = {};
+  let ssaDropdownData;
+  let providerDropdownData;
+  let paidSupportProviders; 
 
   function generateReportDownload(tempUserId) {
     esignaturesAjax.downloadReportAfterSigning({ tempUserId },
@@ -83,20 +86,183 @@ const esignatures = (function () {
       return dissentWrap;
     }
 
+    function getVendorDropdownData() {
+      const nonPaidSupportData = providerDropdownData.filter(
+        provider => paidSupportProviders.indexOf(provider.vendorId) < 0,
+      );
+      const paidSupportData = providerDropdownData.filter(
+        provider => paidSupportProviders.indexOf(provider.vendorId) >= 0,
+      );
+      const nonPaidSupportDropdownData = nonPaidSupportData.map(dd => {
+        return {
+          value: dd.vendorId,
+          text: dd.vendorName,
+        };
+      });
+      const paidSupportDropdownData = paidSupportData.map(dd => {
+        return {
+          value: dd.vendorId,
+          text: dd.vendorName,
+        };
+      });
+      return {
+        paidSupport: paidSupportDropdownData,
+        nonPaidSupport: nonPaidSupportDropdownData,
+      };
+    }
+    function getSSADropdownData() {
+      const data = ssaDropdownData.map(ssa => {
+        return {
+          value: ssa.id,
+          text: ssa.name,
+        };
+      });
+  
+      if ($.session.applicationName === 'Advisor') {
+        data.unshift({ value: '', text: '[SELECT A QIDP]' });
+      } else {
+        data.unshift({ value: '', text: '[SELECT AN SSA]' });
+      }
+  
+      return data;
+    }
+
+    function populateDropdownSSA(ssaDropdown, csChangeMindSSAPeopleId) {
+      const csChangeMindQuestionDropdownData = getSSADropdownData();
+  
+      dropdown.populate(ssaDropdown, csChangeMindQuestionDropdownData, csChangeMindSSAPeopleId);
+    }
+  
+    function populateDropdownVendor(vendorDropdown, csContactProviderVendorId) {
+      //* VENDOR DROPDOWN
+      const contactQuestionDropdownData = getVendorDropdownData();
+      const nonGroupedDropdownData = [{ value: '', text: '[SELECT A PROVIDER]' }];
+      const paidSupportGroup = {
+        groupLabel: 'Paid Support Providers',
+        groupId: 'isp_ic_providerDropdown_paidSupportProviders',
+        dropdownValues: contactQuestionDropdownData.paidSupport,
+      };
+      const nonPaidSupportGroup = {
+        groupLabel: 'Other Providers',
+        groupId: 'isp_ic_providerDropdown_nonPaidSupportProviders',
+        dropdownValues: contactQuestionDropdownData.nonPaidSupport,
+      };
+  
+      const groupDropdownData = [];
+      if (contactQuestionDropdownData.paidSupport.length > 0) {
+        groupDropdownData.push(paidSupportGroup);
+      }
+  
+      groupDropdownData.push(nonPaidSupportGroup);
+  
+      dropdown.groupingPopulate({
+        dropdown: vendorDropdown,
+        data: groupDropdownData,
+        nonGroupedData: nonGroupedDropdownData,
+        defaultVal: csContactProviderVendorId,
+      });
+    }
+
+     // set/update width
+  function setSSADropdownInitialWidth(popup, csChangeMindSSAPeopleId) {
+    const ssaDropdown = popup.querySelector('#isp_ic_ssaDropdown');
+    ssaDropdown.value = csChangeMindSSAPeopleId;
+    let ssaWidth = 150;
+    if (ssaDropdown.selectedIndex !== -1) {
+      ssaWidth = ssaDropdown.options[ssaDropdown.selectedIndex].text.length * 10;
+    }
+    ssaDropdown.style.width = `${ssaWidth}px`;
+  }
+  function setVendorDropdownInitialWidth(popup, csContactProviderVendorId) {
+    const vendorContactDropdown = popup.querySelector('#isp_ic_vendorContactDropdown');
+    vendorContactDropdown.value = csContactProviderVendorId;
+    const vendorWidth =
+      (vendorContactDropdown.options[vendorContactDropdown.selectedIndex].text.length + 3) * 10;
+
+    vendorContactDropdown.style.width = `${vendorWidth}px`;
+  }
+  function updateSSADropdownWidth(popup) {
+    const ssaDropdown = popup.querySelector('#isp_ic_ssaDropdown');
+    const hidden_opt = popup.querySelector('#isp_ic_ssaDropdown__width_tmp_option');
+    hidden_opt.innerHTML = ssaDropdown.options[ssaDropdown.selectedIndex].textContent;
+    const hidden_sel = popup.querySelector('#isp_ic_ssaDropdown__width_tmp_select');
+    hidden_sel.style.display = 'initial';
+    ssaDropdown.style.width = hidden_sel.clientWidth + 22 + 'px';
+    hidden_sel.style.display = 'none';
+  }
+  function updateVendorDropdownWidth(popup) {
+    const vendorContactDropdown = popup.querySelector('#isp_ic_vendorContactDropdown');
+    const hidden_opt = popup.querySelector('#isp_ic_vendorContactDropdown__width_tmp_option');
+    hidden_opt.innerHTML =
+      vendorContactDropdown.options[vendorContactDropdown.selectedIndex].textContent;
+    const hidden_sel = popup.querySelector('#isp_ic_vendorContactDropdown__width_tmp_select');
+    hidden_sel.style.display = 'initial';
+    vendorContactDropdown.style.width = hidden_sel.clientWidth + 22 + 'px';
+    hidden_sel.style.display = 'none';
+  }
+
     function buildStandardQuestionSet() {
+      const changeMindQuestion = document.createElement('div');
+      changeMindQuestion.classList.add('changeMindQuestion');
+      changeMindQuestion.classList.add('ic_questionContainer');
+  
+      //Question Text Element, Will contain dropdown too
+      const csChangeMindQuestionText = document.createElement('div');
+      csChangeMindQuestionText.classList.add('changeMindQuestionText');
+  
+      //SSA Inline Dropdown
+      const csChangeMindQuestionDropdown = dropdown.inlineBuild({
+        dropdownId: 'isp_ic_ssaDropdown',
+      });
+
+      // populate
+      populateDropdownSSA(csChangeMindQuestionDropdown, esignerData.ssaPeopleId);
+  
+      // Build Out Question with dropdown
+      csChangeMindQuestionText.innerHTML = `<span>I understand that I can change my mind at any time. I just need to let</span> `;
+      csChangeMindQuestionText.appendChild(csChangeMindQuestionDropdown);
+      csChangeMindQuestionText.innerHTML += ` <span>know.</span>`;
+      changeMindQuestion.appendChild(csChangeMindQuestionText);
+
+      const contactQuestion = document.createElement('div');
+    contactQuestion.classList.add('contactQuestion');
+
+    // Inner Wrap for just Dropdown and Radios *for safari
+    const wrap = document.createElement('div');
+    wrap.classList.add('ic_questionContainer');
+
+    //Question Text Element, Will contain dropdown too
+    const contactQuestionText = document.createElement('div');
+    contactQuestionText.classList.add('contactQuestionText');
+
+    //SSA Inline Dropdown
+    const csContactQuestionDropdown = dropdown.inlineBuild({
+      dropdownId: 'isp_ic_vendorContactDropdown',
+    });
+
+    // populate
+    populateDropdownVendor(csContactQuestionDropdown, esignerData.vendorId);
+
+    // Build Out Question with dropdown
+    contactQuestionText.innerHTML = `I understand I can contact someone at `;
+    contactQuestionText.appendChild(csContactQuestionDropdown);
+    contactQuestionText.innerHTML += ' if I want to file a complaint.';
+    wrap.appendChild(contactQuestionText);
+    contactQuestion.appendChild(wrap);
+
       const standardQuestions = [
-        {
-          id: 'csChangeMind',
-          text: `I understand that I can change my mind at any time. I just need to let ${esignerData.ssaName} know`,
-          options: ['Yes', 'No'],
-          defaultVal: ""
-        },
-        {
-          id: 'csContact',
-          text: `I understand I can contact someone at ${esignerData.vendorName} if I want to file a complaint.`,
-          options: ['Yes', 'No'],
-          defaultVal: ""
-        },
+        // {
+        //   id: 'csChangeMind',
+        //   text: `I understand that I can change my mind at any time. I just need to let ${esignerData.ssaName} know`,
+        //   options: ['Yes', 'No'],
+        //   defaultVal: ""
+        // },
+        // {
+        //   id: 'csContact',
+        //   text: `I understand I can contact someone at ${esignerData.vendorName} if I want to file a complaint.`,
+        //   options: ['Yes', 'No'],
+        //   defaultVal: ""
+        // },
         {
           id: 'csSupportsHealthNeeds',
           text: 'I agree this plan contains supports to meet my health and welfare needs.',
@@ -149,6 +315,9 @@ const esignatures = (function () {
     
       const standardQuestionsWrap = document.createElement('div');
       standardQuestionsWrap.classList.add('standardQuestionsWrap');
+
+      standardQuestionsWrap.appendChild(changeMindQuestion);
+      standardQuestionsWrap.appendChild(contactQuestion);
     
       standardQuestions.forEach(question => {
         const questionContainer = document.createElement('div');
@@ -344,6 +513,21 @@ const esignatures = (function () {
       dissentHowToAddress: '',
       applicationName: esignerData.applicationName
     };
+
+    async function loadDropdownData() {
+      providerDropdownData = await consentAndSignAjax.getPlanInformedConsentVendors({
+        token: $.session.Token,
+        peopleid: esignerData.peopleId,
+      });
+      // this is where the DDL gets its data -- people, user permissions, etc tables
+      ssaDropdownData = await consentAndSignAjax.getPlanInformedConsentSSAs({
+        token: $.session.Token,
+      });
+    }
+
+    await loadDropdownData();
+
+    paidSupportProviders = servicesSupports.getSelectedVendorIds();
 
     displayFormPopup(tempUserId);
   }
