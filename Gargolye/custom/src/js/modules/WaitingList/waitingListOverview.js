@@ -98,8 +98,8 @@ const WaitingListOverview = (() => {
         waitingListId: parseInt(rowId),
       });
 
-      wlReviewTable.removeRow(row)
-    })
+      wlReviewTable.removeRow(row);
+    });
   }
 
   // MAIN

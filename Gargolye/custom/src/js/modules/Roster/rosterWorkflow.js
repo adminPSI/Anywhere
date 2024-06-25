@@ -1,6 +1,5 @@
 const rosterWorkflow = (() => {
   let selectedConsumerId;
-  let selectedWorkflows = [];
 
   async function displayWFwithMissingResponsibleParties(workflowIds) {
     if (workflowIds.length == 0) return false;
@@ -55,6 +54,8 @@ const rosterWorkflow = (() => {
   }
 
   async function showAddWorkflowPopup() {
+    let selectedWorkflows = [];
+    
     const wfPopup = POPUP.build({
       header: 'Select workflow(s) to attach.',
       id: 'workflow_addWorkflowPopup',
