@@ -163,44 +163,6 @@ const esignatures = (function () {
       });
     }
 
-     // set/update width
-  function setSSADropdownInitialWidth(popup, csChangeMindSSAPeopleId) {
-    const ssaDropdown = popup.querySelector('#isp_ic_ssaDropdown');
-    ssaDropdown.value = csChangeMindSSAPeopleId;
-    let ssaWidth = 150;
-    if (ssaDropdown.selectedIndex !== -1) {
-      ssaWidth = ssaDropdown.options[ssaDropdown.selectedIndex].text.length * 10;
-    }
-    ssaDropdown.style.width = `${ssaWidth}px`;
-  }
-  function setVendorDropdownInitialWidth(popup, csContactProviderVendorId) {
-    const vendorContactDropdown = popup.querySelector('#isp_ic_vendorContactDropdown');
-    vendorContactDropdown.value = csContactProviderVendorId;
-    const vendorWidth =
-      (vendorContactDropdown.options[vendorContactDropdown.selectedIndex].text.length + 3) * 10;
-
-    vendorContactDropdown.style.width = `${vendorWidth}px`;
-  }
-  function updateSSADropdownWidth(popup) {
-    const ssaDropdown = popup.querySelector('#isp_ic_ssaDropdown');
-    const hidden_opt = popup.querySelector('#isp_ic_ssaDropdown__width_tmp_option');
-    hidden_opt.innerHTML = ssaDropdown.options[ssaDropdown.selectedIndex].textContent;
-    const hidden_sel = popup.querySelector('#isp_ic_ssaDropdown__width_tmp_select');
-    hidden_sel.style.display = 'initial';
-    ssaDropdown.style.width = hidden_sel.clientWidth + 22 + 'px';
-    hidden_sel.style.display = 'none';
-  }
-  function updateVendorDropdownWidth(popup) {
-    const vendorContactDropdown = popup.querySelector('#isp_ic_vendorContactDropdown');
-    const hidden_opt = popup.querySelector('#isp_ic_vendorContactDropdown__width_tmp_option');
-    hidden_opt.innerHTML =
-      vendorContactDropdown.options[vendorContactDropdown.selectedIndex].textContent;
-    const hidden_sel = popup.querySelector('#isp_ic_vendorContactDropdown__width_tmp_select');
-    hidden_sel.style.display = 'initial';
-    vendorContactDropdown.style.width = hidden_sel.clientWidth + 22 + 'px';
-    hidden_sel.style.display = 'none';
-  }
-
     function buildStandardQuestionSet() {
       const changeMindQuestion = document.createElement('div');
       changeMindQuestion.classList.add('changeMindQuestion');
