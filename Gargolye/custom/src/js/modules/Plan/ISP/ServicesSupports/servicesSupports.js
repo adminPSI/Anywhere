@@ -1996,6 +1996,20 @@ const servicesSupports = (() => {
             },
         });
 
+        // Set the data type for each header, for sorting purposes
+        const headers = paidSupportsTable.querySelectorAll('.header div');
+        headers[1].setAttribute('data-type', 'string'); // Assessment Area
+        headers[2].setAttribute('data-type', 'string'); // Funding Source
+        headers[3].setAttribute('data-type', 'string'); // Service Name
+        headers[4].setAttribute('data-type', 'string'); // Provider Name
+        headers[5].setAttribute('data-type', 'string'); // Scope of Service/ What support looks like
+        headers[6].setAttribute('data-type', 'string'); // How Often / How Much
+        headers[7].setAttribute('data-type', 'date'); // Begin Date
+        headers[8].setAttribute("data-type", "date"); // End Date 
+
+
+        table.sortTableByHeader(paidSupportsTable);  
+
         const btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
 
@@ -2572,6 +2586,16 @@ const servicesSupports = (() => {
             },
         });
 
+        // Set the data type for each header, for sorting purposes
+        const headers = additionalSupportsTable.querySelectorAll('.header div');
+        headers[1].setAttribute('data-type', 'string'); // Assessment Area
+        headers[2].setAttribute('data-type', 'string'); // Who Supports
+        headers[3].setAttribute('data-type', 'string'); // What Support Looks Like
+        headers[4].setAttribute('data-type', 'string'); // When/How Often
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(additionalSupportsTable);
+
         const addRowBtn = button.build({
             text: 'Add Additional Support',
             style: 'secondary',
@@ -2955,6 +2979,17 @@ const servicesSupports = (() => {
                 });
             },
         });
+
+
+        // Set the data type for each header, for sorting purposes
+        const headers = professionalReferralsTable.querySelectorAll('.header div');
+        headers[1].setAttribute('data-type', 'string'); // Assessment Area
+        headers[2].setAttribute('data-type', 'string'); // New or Existing
+        headers[3].setAttribute('data-type', 'string'); // Who Supports 
+        headers[4].setAttribute('data-type', 'string'); // Reason for Referral
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(professionalReferralsTable);
 
         const addRowBtn = button.build({
             text: 'Add Referral',

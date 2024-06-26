@@ -633,6 +633,18 @@ const isp_ci_importantPeople = (() => {
             },
         });
 
+        // Set the data type for each header, for sorting purposes
+        const headers = peopleTable.querySelectorAll('.header div');
+        headers[1].setAttribute('data-type', 'string'); // Type
+        headers[2].setAttribute('data-type', 'string'); // Name
+        headers[3].setAttribute('data-type', 'string'); // Address
+        headers[4].setAttribute('data-type', 'string'); // Email
+        headers[5].setAttribute('data-type', 'number'); // Phone
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(peopleTable);
+
+
         if (readOnly) peopleTable.classList.add('disableDrag');
 
         if (rawPeopleTableData) {
