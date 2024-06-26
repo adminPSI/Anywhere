@@ -582,15 +582,19 @@ var timeEntryCard = (function () {
 
         return allowedConsumers;
     }
-    async function setAllowedConsumers(callback) {   
+    async function setAllowedConsumers(callback) {  
         switch (isBillable) {
             case 'Y':
                 switch (isAdminEdit) {
                     case true:
                         if ($.session.SingleEntryEditTimeEntry) {
-                            results = (await singleEntryAjax.getSingleEntryUsersByLocation(locationId, entryDate))
-                                .getSingleEntryUsersByLocationJSONResult;
-                            roster2.setAllowedConsumers(results);
+                            if (isEndTimeChangePermission) // this is for if pay period is closed than disabled to delete counsumers
+                                roster2.setAllowedConsumers([]);
+                            else {
+                                results = (await singleEntryAjax.getSingleEntryUsersByLocation(locationId, entryDate))
+                                    .getSingleEntryUsersByLocationJSONResult;
+                                roster2.setAllowedConsumers(results);
+                            }
                             if (callback) callback();
                         } else {
                             roster2.setAllowedConsumers(['%']); 
@@ -606,10 +610,7 @@ var timeEntryCard = (function () {
                 }
                 break;
             default:
-                if (isEndTimeChangePermission) 
-                    roster2.setAllowedConsumers([]);  
-                else
-                    roster2.setAllowedConsumers(['%']);
+                roster2.setAllowedConsumers(['%']);
                 if (callback) callback();
                 break;
         }
@@ -2545,7 +2546,7 @@ var timeEntryCard = (function () {
 
         isEndTimeChangePermission = isOnlyEndTimeChangePermission;
         if (editData && editData.length > 0) {
-            setEditDataValues(editData);
+            await setEditDataValues(editData);  
             payPeriod = payperiod;
             if (consumersPresent.length > 0) evvReasonCode = consumersPresent[0].evvReasonCode;
             if (evvReasonCode) defaultTimesChanged = true;

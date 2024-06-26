@@ -389,6 +389,22 @@ const isp_ci_importantPlaces = (() => {
             },
         });
 
+        // Set the data type for each header, for sorting purposes
+        let number = 0;
+        const headers = placesTable.querySelectorAll('.header div');
+        if (headers.count > 6)
+            number = 1;
+        headers[0 + number].setAttribute('data-type', 'string'); // Type
+        headers[1 + number].setAttribute('data-type', 'string'); // Name
+        headers[2 + number].setAttribute('data-type', 'string'); // Address
+        headers[3 + number].setAttribute('data-type', 'number'); // Phone
+        headers[4 + number].setAttribute('data-type', 'string'); // Schedule
+        headers[5 + number].setAttribute('data-type', 'string'); // Acuity
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(placesTable);
+
+
         if (readOnly) placesTable.classList.add('disableDrag');
 
         if (rawPlacesTableData) {

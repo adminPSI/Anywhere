@@ -247,7 +247,7 @@ const isp_ci_importantPeople = (() => {
                 let typeValueUpdate = typeValValidated;
                 if (typeVal == 'Other' && typeOtherVal != '') {
                     typeValueUpdate = typeValValidated + ' - ' + typeOtherVal;
-                } 
+                }
 
                 table.updateRows(
                     'isp_ci_importantPeopleTable',
@@ -299,7 +299,7 @@ const isp_ci_importantPeople = (() => {
             dropdownId: 'isp-ciip-typeDropdown',
             label: 'Type',
             readonly: readOnly,
-        });      
+        });
         if (popupData.type === '') typeDropdown.classList.add('error');
         const typeDropdownValues = [
             { text: '', value: '' },
@@ -318,7 +318,7 @@ const isp_ci_importantPeople = (() => {
             { text: 'Primary Doctor', value: 'Primary Doctor' },
             { text: 'Support Broker', value: 'Support Broker' },
         ];
- 
+
         if (popupData.type.includes('Other')) {
             popupData.type = 'Other';
         }
@@ -632,6 +632,21 @@ const isp_ci_importantPeople = (() => {
                 });
             },
         });
+
+        // Set the data type for each header, for sorting purposes
+        let number = 0;
+        const headers = peopleTable.querySelectorAll('.header div');
+        if (headers.count > 5)
+            number = 1;
+        headers[0 + number].setAttribute('data-type', 'string'); // Type
+        headers[1 + number].setAttribute('data-type', 'string'); // Name
+        headers[2 + number].setAttribute('data-type', 'string'); // Address
+        headers[3 + number].setAttribute('data-type', 'string'); // Email
+        headers[4 + number].setAttribute('data-type', 'number'); // Phone
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(peopleTable);
+
 
         if (readOnly) peopleTable.classList.add('disableDrag');
 
