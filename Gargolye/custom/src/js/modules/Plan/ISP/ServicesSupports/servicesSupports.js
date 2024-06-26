@@ -1995,20 +1995,23 @@ const servicesSupports = (() => {
                 });
             },
         });
-
+ 
+        let number = 0;
         // Set the data type for each header, for sorting purposes
         const headers = paidSupportsTable.querySelectorAll('.header div');
-        headers[1].setAttribute('data-type', 'string'); // Assessment Area
-        headers[2].setAttribute('data-type', 'string'); // Funding Source
-        headers[3].setAttribute('data-type', 'string'); // Service Name
-        headers[4].setAttribute('data-type', 'string'); // Provider Name
-        headers[5].setAttribute('data-type', 'string'); // Scope of Service/ What support looks like
-        headers[6].setAttribute('data-type', 'string'); // How Often / How Much
-        headers[7].setAttribute('data-type', 'date'); // Begin Date
-        headers[8].setAttribute("data-type", "date"); // End Date 
+        if (headers.count > 8) 
+            number = 1;
 
+        headers[0 + number].setAttribute('data-type', 'string'); // Assessment Area
+        headers[1 + number].setAttribute('data-type', 'string'); // Funding Source
+        headers[2 + number].setAttribute('data-type', 'string'); // Service Name
+        headers[3 + number].setAttribute('data-type', 'string'); // Provider Name
+        headers[4 + number].setAttribute('data-type', 'string'); // Scope of Service/ What support looks like
+        headers[5 + number].setAttribute('data-type', 'string'); // How Often / How Much
+        headers[6 + number].setAttribute('data-type', 'date'); // Begin Date
+        headers[7 + number].setAttribute("data-type", "date"); // End Date 
 
-        table.sortTableByHeader(paidSupportsTable);  
+        table.sortTableByHeader(paidSupportsTable);
 
         const btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
@@ -2184,17 +2187,17 @@ const servicesSupports = (() => {
                     onClick: () => {
                         if (isReadOnly == true)
                             return;
-                        else 
+                        else
                             showAddAdditionalSupportPopup(asData, false, false, charLimits);
                     },
-                    endIcon: isReadOnly == true ? '' : `${icons['copy']}`,       
+                    endIcon: isReadOnly == true ? '' : `${icons['copy']}`,
                     endIconCallback: (e) => {
                         if (isReadOnly == true)
                             return;
                         else
                             showAddAdditionalSupportPopup(asData, true, false, charLimits);
                     },
-                }, 
+                },
             ],
             isSortable,
         );
@@ -2586,12 +2589,16 @@ const servicesSupports = (() => {
             },
         });
 
+        let number = 0;
         // Set the data type for each header, for sorting purposes
         const headers = additionalSupportsTable.querySelectorAll('.header div');
-        headers[1].setAttribute('data-type', 'string'); // Assessment Area
-        headers[2].setAttribute('data-type', 'string'); // Who Supports
-        headers[3].setAttribute('data-type', 'string'); // What Support Looks Like
-        headers[4].setAttribute('data-type', 'string'); // When/How Often
+        if (headers.length > 4) 
+            number = 1;
+
+        headers[0 + number].setAttribute('data-type', 'string'); // Assessment Area
+        headers[1 + number].setAttribute('data-type', 'string'); // Who Supports
+        headers[2 + number].setAttribute('data-type', 'string'); // What Support Looks Like
+        headers[3 + number].setAttribute('data-type', 'string'); // When/How Often
 
         // Call function to allow table sorting by clicking on a header.
         table.sortTableByHeader(additionalSupportsTable);
@@ -2982,11 +2989,14 @@ const servicesSupports = (() => {
 
 
         // Set the data type for each header, for sorting purposes
+        let number = 0;
         const headers = professionalReferralsTable.querySelectorAll('.header div');
-        headers[1].setAttribute('data-type', 'string'); // Assessment Area
-        headers[2].setAttribute('data-type', 'string'); // New or Existing
-        headers[3].setAttribute('data-type', 'string'); // Who Supports 
-        headers[4].setAttribute('data-type', 'string'); // Reason for Referral
+        if (headers.count > 4)
+            number = 1;
+        headers[0 + number].setAttribute('data-type', 'string'); // Assessment Area
+        headers[1 + number].setAttribute('data-type', 'string'); // New or Existing
+        headers[2 + number].setAttribute('data-type', 'string'); // Who Supports 
+        headers[3 + number].setAttribute('data-type', 'string'); // Reason for Referral
 
         // Call function to allow table sorting by clicking on a header.
         table.sortTableByHeader(professionalReferralsTable);

@@ -30,24 +30,24 @@
       > div:nth-child(1) {
         // assessment area
         display: block;
-        width: 115px;
+        width: 135px;
         max-width: 156px;
       }
       > div:nth-child(2) {
         // funding source
         display: none;
         width: 80px;
-        max-width: 124px;
+        max-width: 95px;
       }
       > div:nth-child(3) {
         // service name
         display: none;
-        width: 80px;
+        width: 140px;
       }
       > div:nth-child(4) {
         // provider name
         display: none;
-        width: 111px;
+        width: 125px;
       }
       > div:nth-child(5) {
         // scope of service
@@ -58,14 +58,14 @@
       > div:nth-child(6) {
         // how often/how much
         display: none;
-        width: 130px;
+        width: 100px;
         max-width: 140px;
       }
       > div:nth-child(7) {
         // begin
         display: block;
-        min-width: 86px;
-        max-width: 90px;
+        min-width: 95px; 
+        max-width: 100px;
       }
       > div:nth-child(8) {
         // end date

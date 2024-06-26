@@ -726,11 +726,15 @@ const planConsentAndSign = (() => {
         });
 
         // Set the data type for each header, for sorting purposes
+        let number = 0;
         const headers = teamMemberTable.querySelectorAll('.header div');
-        headers[1].setAttribute('data-type', 'string'); // Team Member
-        headers[2].setAttribute('data-type', 'string'); // Name
-        headers[3].setAttribute('data-type', 'string'); // Participated
-        headers[4].setAttribute('data-type', 'string'); // Signature Type
+        if (headers.count > 4)
+            number = 1;
+
+        headers[0 + number].setAttribute('data-type', 'string'); // Team Member
+        headers[1 + number].setAttribute('data-type', 'string'); // Name
+        headers[2 + number].setAttribute('data-type', 'string'); // Participated
+        headers[3 + number].setAttribute('data-type', 'string'); // Signature Type
 
         // Call function to allow table sorting by clicking on a header.
         table.sortTableByHeader(teamMemberTable);

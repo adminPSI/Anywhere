@@ -2050,11 +2050,15 @@ const planOutcomes = (() => {
             },
         });
         reviewsTable.classList.add('reviewsTable');
-
+   
         // Set the data type for each header, for sorting purposes
+        let number = 0;
         const headers = reviewsTable.querySelectorAll('.header div');
-        headers[1].setAttribute('data-type', 'string'); // What will progress look like
-        headers[2].setAttribute('data-type', 'string'); // Who ?
+        if (headers.length > 2) {
+            number = 1;
+        } 
+        headers[0 + number].setAttribute('data-type', 'string'); // What will progress look like
+        headers[1 + number].setAttribute('data-type', 'string'); // Who ? 
 
         // Call function to allow table sorting by clicking on a header.
         table.sortTableByHeader(reviewsTable);
