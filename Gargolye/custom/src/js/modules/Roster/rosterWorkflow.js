@@ -175,7 +175,7 @@ const rosterWorkflow = (() => {
   function init(consumerId, onResetViewerFunc) {
     onResetViewer = onResetViewerFunc;
     selectedConsumerId = consumerId;
-    $.workflow.consumerId = selectedConsumerId;
+    $.workflowConsumerId = selectedConsumerId;
   }
 
   return {
