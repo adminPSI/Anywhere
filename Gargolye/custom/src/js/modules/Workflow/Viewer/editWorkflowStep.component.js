@@ -270,8 +270,15 @@ class EditWorkflowStepComponent {
     }
 
     async poplateResponsibleDropDownbyTypeID(typeID) {
-        const attachmentInputs = document.querySelector('.generalInfo');
-        var peopleId = attachmentInputs.dataset.peopleId;  
+        let peopleId;
+
+        if ($.loadedApp === 'plan') {
+            const attachmentInputs = document.querySelector('.generalInfo');
+            peopleId = attachmentInputs.dataset.peopleId;  
+        } else {
+            peopleId = $.workflow.consumerId;
+        }
+        
         const { 
             getPeopleNamesResult: people,
         } = await WorkflowViewerAjax.getPeopleNamesAsync(peopleId, typeID);   
@@ -283,6 +290,4 @@ class EditWorkflowStepComponent {
         data.unshift({ id: null, value: '', text: '' }); //ADD Blank value  
         dropdown.populate("responsibleDropdown", data, '');
     }
-
-
 }
