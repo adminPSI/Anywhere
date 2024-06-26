@@ -5,25 +5,23 @@ const esignatures = (function () {
   let formData = {};
   let ssaDropdownData;
   let providerDropdownData;
-  let paidSupportProviders; 
+  let paidSupportProviders;
 
   function generateReportDownload(tempUserId) {
-    esignaturesAjax.downloadReportAfterSigning({ tempUserId },
-      () => {
-        const arr = success._buffer;
-        const byteArray = new Uint8Array(arr);
-        const blob = new Blob([byteArray], { type: 'application/pdf' });
-        if ($.session.browser === 'Explorer' || $.session.browser === 'Mozilla') {
-          window.navigator.msSaveOrOpenBlob(blob, 'report.pdf');
-        } else {
-          const fileURL = URL.createObjectURL(blob);
-          window.open(fileURL);
-        }
+    esignaturesAjax.downloadReportAfterSigning({ tempUserId }, () => {
+      const arr = success._buffer;
+      const byteArray = new Uint8Array(arr);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      if ($.session.browser === 'Explorer' || $.session.browser === 'Mozilla') {
+        window.navigator.msSaveOrOpenBlob(blob, 'report.pdf');
+      } else {
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL);
+      }
 
-        reports.handledProcessedReport();
-        return 'success';
-      },
-    );
+      reports.handledProcessedReport();
+      return 'success';
+    });
   }
 
   async function displayFormPopup(tempUserId) {
@@ -55,7 +53,7 @@ const esignatures = (function () {
 
       dissentAreaDisagree = input.build({
         label: 'Area Team Member Disagrees',
-        value: "",
+        value: '',
         type: 'textarea',
         readonly: false,
         classNames: 'autosize',
@@ -68,7 +66,7 @@ const esignatures = (function () {
 
       dissentHowToAddress = input.build({
         label: 'How to Address',
-        value: "",
+        value: '',
         type: 'textarea',
         readonly: false,
         classNames: 'autosize',
@@ -117,22 +115,26 @@ const esignatures = (function () {
           text: ssa.name,
         };
       });
-  
+
       if ($.session.applicationName === 'Advisor') {
         data.unshift({ value: '', text: '[SELECT A QIDP]' });
       } else {
         data.unshift({ value: '', text: '[SELECT AN SSA]' });
       }
-  
+
       return data;
     }
 
     function populateDropdownSSA(ssaDropdown, csChangeMindSSAPeopleId) {
       const csChangeMindQuestionDropdownData = getSSADropdownData();
-  
+
       dropdown.populate(ssaDropdown, csChangeMindQuestionDropdownData, csChangeMindSSAPeopleId);
+
+      ssaDropdown.addEventListener('change', (event) => {
+        formData.csChangeMindSSAPeopleId = event.target.value;
+      });
     }
-  
+
     function populateDropdownVendor(vendorDropdown, csContactProviderVendorId) {
       //* VENDOR DROPDOWN
       const contactQuestionDropdownData = getVendorDropdownData();
@@ -147,19 +149,23 @@ const esignatures = (function () {
         groupId: 'isp_ic_providerDropdown_nonPaidSupportProviders',
         dropdownValues: contactQuestionDropdownData.nonPaidSupport,
       };
-  
+
       const groupDropdownData = [];
       if (contactQuestionDropdownData.paidSupport.length > 0) {
         groupDropdownData.push(paidSupportGroup);
       }
-  
+
       groupDropdownData.push(nonPaidSupportGroup);
-  
+
       dropdown.groupingPopulate({
         dropdown: vendorDropdown,
         data: groupDropdownData,
         nonGroupedData: nonGroupedDropdownData,
         defaultVal: csContactProviderVendorId,
+      });
+
+      vendorDropdown.addEventListener('change', (event) => {
+        formData.csContactProviderVendorId = event.target.value;
       });
     }
 
@@ -167,50 +173,82 @@ const esignatures = (function () {
       const changeMindQuestion = document.createElement('div');
       changeMindQuestion.classList.add('changeMindQuestion');
       changeMindQuestion.classList.add('ic_questionContainer');
-  
+
       //Question Text Element, Will contain dropdown too
       const csChangeMindQuestionText = document.createElement('div');
       csChangeMindQuestionText.classList.add('changeMindQuestionText');
-  
-      //SSA Inline Dropdown
+
       const csChangeMindQuestionDropdown = dropdown.inlineBuild({
         dropdownId: 'isp_ic_ssaDropdown',
       });
 
-      // populate
       populateDropdownSSA(csChangeMindQuestionDropdown, esignerData.ssaPeopleId);
-  
+
       // Build Out Question with dropdown
       csChangeMindQuestionText.innerHTML = `<span>I understand that I can change my mind at any time. I just need to let</span> `;
       csChangeMindQuestionText.appendChild(csChangeMindQuestionDropdown);
       csChangeMindQuestionText.innerHTML += ` <span>know.</span>`;
       changeMindQuestion.appendChild(csChangeMindQuestionText);
 
+      const csChangeMindRadioContainer = document.createElement('div');
+      csChangeMindRadioContainer.classList.add('ic_questionRadioContainer', 'formError');
+      ['Yes', 'No'].forEach(option => {
+        const radio = input.buildRadio({
+          id: `csChangeMind-${option}`,
+          text: option,
+          name: 'csChangeMind',
+          callback: () => {
+            formData.csChangeMind = option === 'Yes' ? 'Y' : 'N';
+            csChangeMindRadioContainer.classList.remove('formError');
+            validateForm();
+          },
+        });
+        csChangeMindRadioContainer.appendChild(radio);
+      });
+      changeMindQuestion.appendChild(csChangeMindRadioContainer);
+
       const contactQuestion = document.createElement('div');
-    contactQuestion.classList.add('contactQuestion');
+      contactQuestion.classList.add('contactQuestion');
 
-    // Inner Wrap for just Dropdown and Radios *for safari
-    const wrap = document.createElement('div');
-    wrap.classList.add('ic_questionContainer');
+      // Inner Wrap for just Dropdown and Radios *for safari
+      const wrap = document.createElement('div');
+      wrap.classList.add('ic_questionContainer');
 
-    //Question Text Element, Will contain dropdown too
-    const contactQuestionText = document.createElement('div');
-    contactQuestionText.classList.add('contactQuestionText');
+      //Question Text Element, Will contain dropdown too
+      const contactQuestionText = document.createElement('div');
+      contactQuestionText.classList.add('contactQuestionText');
 
-    //SSA Inline Dropdown
-    const csContactQuestionDropdown = dropdown.inlineBuild({
-      dropdownId: 'isp_ic_vendorContactDropdown',
-    });
+      //SSA Inline Dropdown
+      const csContactQuestionDropdown = dropdown.inlineBuild({
+        dropdownId: 'isp_ic_vendorContactDropdown',
+      });
 
-    // populate
-    populateDropdownVendor(csContactQuestionDropdown, esignerData.vendorId);
+      // populate
+      populateDropdownVendor(csContactQuestionDropdown, esignerData.vendorId);
 
-    // Build Out Question with dropdown
-    contactQuestionText.innerHTML = `I understand I can contact someone at `;
-    contactQuestionText.appendChild(csContactQuestionDropdown);
-    contactQuestionText.innerHTML += ' if I want to file a complaint.';
-    wrap.appendChild(contactQuestionText);
-    contactQuestion.appendChild(wrap);
+      // Build Out Question with dropdown
+      contactQuestionText.innerHTML = `I understand I can contact someone at `;
+      contactQuestionText.appendChild(csContactQuestionDropdown);
+      contactQuestionText.innerHTML += ' if I want to file a complaint.';
+      wrap.appendChild(contactQuestionText);
+      contactQuestion.appendChild(wrap);
+
+      const csContactRadioContainer = document.createElement('div');
+      csContactRadioContainer.classList.add('ic_questionRadioContainer', 'formError');
+      ['Yes', 'No'].forEach(option => {
+        const radio = input.buildRadio({
+          id: `csContact-${option}`,
+          text: option,
+          name: 'csContact',
+          callback: () => {
+            formData.csContact = option === 'Yes' ? 'Y' : 'N';
+            csContactRadioContainer.classList.remove('formError');
+            validateForm();
+          },
+        });
+        csContactRadioContainer.appendChild(radio);
+      });
+      wrap.appendChild(csContactRadioContainer);
 
       const standardQuestions = [
         // {
@@ -229,72 +267,72 @@ const esignatures = (function () {
           id: 'csSupportsHealthNeeds',
           text: 'I agree this plan contains supports to meet my health and welfare needs.',
           options: ['Yes', 'No'],
-          defaultVal: ""
+          defaultVal: '',
         },
         {
           id: 'csSupportsHealthNeeds',
           text: 'I agree this plan contains supports to meet my health and welfare needs.',
           options: ['Yes', 'No'],
-          defaultVal: ""
+          defaultVal: '',
         },
         {
           id: 'csRightsReviewed',
           text: 'Individual rights have been reviewed with me.',
           options: ['Yes', 'No'],
-          defaultVal: ""
+          defaultVal: '',
         },
         {
           id: 'csAgreeToPlan',
           text: 'I understand the purpose, benefits, and potential risks. I agree and consent to this entire plan.',
           options: ['Yes', 'No'],
-          defaultVal: ""
+          defaultVal: '',
         },
         {
           id: 'csTechnology',
           text: 'Technology solutions have been explored with my team and me.',
           options: ['Yes', 'No'],
-          defaultVal: ""
+          defaultVal: '',
         },
         {
           id: 'csFCOPExplained',
           text: 'Free Choice Of Provider has been explained to me.',
           options: ['Yes', 'No', 'N/A'],
-          defaultVal: ""
+          defaultVal: '',
         },
         {
           id: 'csDueProcess',
           text: 'I have been given my due process rights.',
           options: ['Yes', 'No', 'N/A'],
-          defaultVal: ""
+          defaultVal: '',
         },
         {
           id: 'csResidentialOptions',
           text: 'I have been given information on residential options.',
           options: ['Yes', 'No', 'N/A'],
-          defaultVal: ""
+          defaultVal: '',
         },
       ];
-    
+
       const standardQuestionsWrap = document.createElement('div');
       standardQuestionsWrap.classList.add('standardQuestionsWrap');
 
       standardQuestionsWrap.appendChild(changeMindQuestion);
       standardQuestionsWrap.appendChild(contactQuestion);
-    
+
       standardQuestions.forEach(question => {
         const questionContainer = document.createElement('div');
         questionContainer.classList.add('ic_questionContainer');
         const questionText = document.createElement('p');
         questionText.classList.add('standardQuestionText');
         questionText.innerText = question.text;
-    
+
         const questionRadioContainer = document.createElement('div');
         questionRadioContainer.classList.add('ic_questionRadioContainer');
-    
+
         if (question.defaultVal === '') {
           questionRadioContainer.classList.add('formError');
         }
-    
+
         question.options.forEach(option => {
           const radio = input.buildRadio({
             id: `${question.id}-${option}`,
@@ -321,45 +359,45 @@ const esignatures = (function () {
           });
           questionRadioContainer.appendChild(radio);
         });
-    
+
         questionContainer.appendChild(questionText);
         questionContainer.appendChild(questionRadioContainer);
-    
+
         standardQuestionsWrap.appendChild(questionContainer);
       });
-    
+
       return standardQuestionsWrap;
     }
 
     function buildConsentSection() {
       const consentWrap = document.createElement('div');
       consentWrap.classList.add('consentWrap');
-    
+
       const consentHeader = document.createElement('h3');
       consentHeader.classList.add('h3Title');
       consentHeader.innerText = 'Consent Statements';
       consentWrap.appendChild(consentHeader);
-    
+
       const standardQuestions = buildStandardQuestionSet();
-    
+
       consentWrap.appendChild(standardQuestions);
-    
+
       return consentWrap;
     }
 
     function validateForm() {
       const radios = document.querySelectorAll('.ic_questionRadioContainer input[type="radio"]');
       const signatureInput = document.getElementById('signatureInput');
-    
+
       let allFilled = true;
-    
+
       radios.forEach(radio => {
         const name = radio.name;
         if (!document.querySelector(`input[name="${name}"]:checked`)) {
           allFilled = false;
         }
       });
-    
+
       if (signatureInput.value === '' || !allFilled) {
         if (!submitBtn.classList.contains('disabled')) {
           submitBtn.classList.add('disabled');
@@ -383,7 +421,8 @@ const esignatures = (function () {
         downloadExitPopup.classList.add('popup', 'downloadExitPopup');
 
         var paragraph = document.createElement('p');
-        paragraph.textContent = 'You have successfully signed this plan! You will receive a confirmation email shortly. The Case Manager will also be notified that you signed the plan. Please close your browser tab to complete the process.';
+        paragraph.textContent =
+          'You have successfully signed this plan! You will receive a confirmation email shortly. The Case Manager will also be notified that you signed the plan. Please close your browser tab to complete the process.';
 
         const downloadPlanBtn = button.build({
           id: 'downloadPlanBtn',
@@ -413,7 +452,12 @@ const esignatures = (function () {
     });
     submitBtn.classList.add('disabled');
 
-    if (esignerData.teamMemberType === 'Parent/Guardian' || esignerData.teamMemberType === 'Parent' || esignerData.teamMemberType === 'Guardian' || esignerData.teamMemberType === 'Person Supported') {
+    if (
+      esignerData.teamMemberType === 'Parent/Guardian' ||
+      esignerData.teamMemberType === 'Parent' ||
+      esignerData.teamMemberType === 'Guardian' ||
+      esignerData.teamMemberType === 'Person Supported'
+    ) {
       questions = buildConsentSection();
       formContainer.appendChild(questions);
     }
@@ -435,7 +479,6 @@ const esignatures = (function () {
       validateForm();
       signatureDisplay.textContent = event.target.value;
     });
-    
 
     formContainer.appendChild(signatureDisplay);
     formContainer.appendChild(signatureInput);
@@ -473,7 +516,7 @@ const esignatures = (function () {
       csTechnology: '',
       dissentAreaDisagree: '',
       dissentHowToAddress: '',
-      applicationName: esignerData.applicationName
+      applicationName: esignerData.applicationName,
     };
 
     async function loadDropdownData() {
