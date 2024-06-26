@@ -55,7 +55,7 @@ const rosterWorkflow = (() => {
 
   async function showAddWorkflowPopup() {
     let selectedWorkflows = [];
-    
+
     const wfPopup = POPUP.build({
       header: 'Select workflow(s) to attach.',
       id: 'workflow_addWorkflowPopup',
@@ -175,6 +175,7 @@ const rosterWorkflow = (() => {
   function init(consumerId, onResetViewerFunc) {
     onResetViewer = onResetViewerFunc;
     selectedConsumerId = consumerId;
+    $.workflowConsumerId = selectedConsumerId;
   }
 
   return {

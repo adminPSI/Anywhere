@@ -273,8 +273,9 @@ namespace Anywhere.service.Data.ESign
             public string teamMemberType { get; set; }
             public string applicationName { get; set; }
             public string ssaName { get; set; }
+            public string ssaPeopleId { get; set; }
             public string vendorName { get; set; }
-
+            public string vendorId { get; set; }
         }
 
 

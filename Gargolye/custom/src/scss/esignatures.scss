@@ -112,13 +112,17 @@
 
 #signatureDisplay {
   font-family: 'Dancing Script', cursive;
-  font-size: 48px;
+  font-size: 80px;
   color : black;
   margin-top: 8px;
   margin-bottom: 8px;
   border: 2px solid black;
   padding: 10px;
   min-height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 #signatureInput {
