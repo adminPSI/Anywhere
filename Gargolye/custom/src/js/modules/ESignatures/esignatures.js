@@ -129,10 +129,6 @@ const esignatures = (function () {
       const csChangeMindQuestionDropdownData = getSSADropdownData();
 
       dropdown.populate(ssaDropdown, csChangeMindQuestionDropdownData, csChangeMindSSAPeopleId);
-
-      ssaDropdown.addEventListener('change', (event) => {
-        formData.csChangeMindSSAPeopleId = event.target.value;
-      });
     }
 
     function populateDropdownVendor(vendorDropdown, csContactProviderVendorId) {
@@ -163,10 +159,6 @@ const esignatures = (function () {
         nonGroupedData: nonGroupedDropdownData,
         defaultVal: csContactProviderVendorId,
       });
-
-      vendorDropdown.addEventListener('change', (event) => {
-        formData.csContactProviderVendorId = event.target.value;
-      });
     }
 
     function buildStandardQuestionSet() {
@@ -189,6 +181,10 @@ const esignatures = (function () {
       csChangeMindQuestionText.appendChild(csChangeMindQuestionDropdown);
       csChangeMindQuestionText.innerHTML += ` <span>know.</span>`;
       changeMindQuestion.appendChild(csChangeMindQuestionText);
+
+      changeMindQuestion.addEventListener('change', (event) => {
+        formData.csChangeMindSSAPeopleId = event.target.value;
+      });
 
       const csChangeMindRadioContainer = document.createElement('div');
       csChangeMindRadioContainer.classList.add('ic_questionRadioContainer', 'formError');
@@ -225,6 +221,10 @@ const esignatures = (function () {
 
       // populate
       populateDropdownVendor(csContactQuestionDropdown, esignerData.vendorId);
+
+      contactQuestion.addEventListener('change', (event) => {
+        formData.csContactProviderVendorId = event.target.value;
+      });
 
       // Build Out Question with dropdown
       contactQuestionText.innerHTML = `I understand I can contact someone at `;
