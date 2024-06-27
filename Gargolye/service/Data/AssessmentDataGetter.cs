@@ -74,6 +74,23 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string getReportTitle(string planId)
+        {
+            logger.debug("getConsumerAssessment ");
+            List<string> list = new List<string>();
+            list.Add(planId);
+            string text = "CALL DBA.ANYW_ISP_GetReportTitle(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2ADG", ex.Message + "ANYW_ISP_GetReportTitle(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ADG: error ANYW_ISP_GetReportTitle";
+            }
+        }
+
         public string insertConsumerPlan(string token, string consumerId, string planType, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string active, string reviewDate, string salesForceCaseManagerId)
         {
             if (tokenValidator(token) == false) return null;

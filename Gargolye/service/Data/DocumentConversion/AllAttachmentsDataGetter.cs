@@ -174,12 +174,13 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
-        public string SendReportViaEmail(string email, string report)
+        public string SendReportViaEmail(string email, string report, string reportTitle)
         {
             logger.debug("GetAttachmentData " + email);
             List<string> list = new List<string>();
             list.Add(email);
             list.Add(report);
+            list.Add(reportTitle);
             string text = "CALL DBA.ANYW_ISP_SendReportViaEmail(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

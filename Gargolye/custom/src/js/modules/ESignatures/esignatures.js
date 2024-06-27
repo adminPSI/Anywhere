@@ -183,7 +183,10 @@ const esignatures = (function () {
       changeMindQuestion.appendChild(csChangeMindQuestionText);
 
       changeMindQuestion.addEventListener('change', (event) => {
-        formData.csChangeMindSSAPeopleId = event.target.value;
+        // if event.target.value = 'on' then it wont set the formdata value. 'on' means the radio was changed
+        if (event.target.value !== 'on') {
+          formData.csChangeMindSSAPeopleId = event.target.value;
+        }
       });
 
       const csChangeMindRadioContainer = document.createElement('div');
@@ -223,7 +226,10 @@ const esignatures = (function () {
       populateDropdownVendor(csContactQuestionDropdown, esignerData.vendorId);
 
       contactQuestion.addEventListener('change', (event) => {
-        formData.csContactProviderVendorId = event.target.value;
+        // if event.target.value = 'on' then it wont set the formdata value. 'on' means the radio was changed
+        if (event.target.value !== 'on') {
+          formData.csContactProviderVendorId = event.target.value;
+        }
       });
 
       // Build Out Question with dropdown

@@ -55,6 +55,19 @@ namespace Anywhere.service.Data.DocumentConversion
             public string[] actions { get; set; }
             public byte[] report { get; set; }
         }
+
+        public class ReportTitle
+        {
+            public string reportTitle { get; set; }
+        }
+
+        public string getReportTitle(string assessmentID)
+        {           
+            string rtString = adg.getReportTitle(assessmentID);
+            ReportTitle[] rtObj = js.Deserialize<ReportTitle[]>(rtString);
+
+            return rtObj[0].reportTitle.ToString();
+        }
         public ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
         {
             //selectAllCheck: true,
@@ -78,6 +91,8 @@ namespace Anywhere.service.Data.DocumentConversion
                 bool reportChecked = false;
                 bool downloadReportCheck = false;
                 int count = 0;
+
+                string reportTitle = getReportTitle(assessmentID);
                 if(checkBoxes.Length == 1 && checkBoxes[0] == "selectAllCheck")
                 {
                     count = 4;
@@ -128,7 +143,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         //Send to ONET
                         if(reportCreated == false)
                         {
-                            report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
+                            report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, reportTitle);
                             reportCreated = true;
                         }
                         
@@ -156,7 +171,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     {
                         if (reportCreated == false)
                         {
-                            report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
+                            report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, reportTitle);
                             reportCreated= true;
                         }
                         //Send Email
@@ -168,14 +183,14 @@ namespace Anywhere.service.Data.DocumentConversion
                         //{
                         //    binary += (char)s[j];
                         //}
-
+                        
                         string abString = System.Convert.ToBase64String(report);//System.Convert.ToBase64String(Encoding.ASCII.GetBytes(binary));
 
 
 
                         foreach (string emailAddress in emailAddresses)
                         {
-                            sendEmailResult = aadg.SendReportViaEmail(emailAddress, abString);
+                            sendEmailResult = aadg.SendReportViaEmail(emailAddress, abString, reportTitle);
                         }
                         if(sendEmailResult == "Success")
                         {
@@ -207,7 +222,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     {
                         if (reportCreated == false)
                         {
-                            report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
+                            report = createReportArray(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, reportTitle);
                             reportCreated = true;
                         }
                         //ar[0].report.Equals(report); //= report;
@@ -302,7 +317,7 @@ namespace Anywhere.service.Data.DocumentConversion
             return reportOrderObj;
         }
 
-        public byte[] createReportArray(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include)
+        public byte[] createReportArray(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string reportTitle)
         {
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
@@ -772,7 +787,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 }
 
 
-                byte[] finalMergedArray = concatAndAddContent(allAttachments);
+                byte[] finalMergedArray = concatAndAddContent(allAttachments, reportTitle);
                 //if (toONET == true)
                 //{
                 //    string finalMergedArrayString = System.Convert.ToBase64String(finalMergedArray);
@@ -1071,7 +1086,7 @@ namespace Anywhere.service.Data.DocumentConversion
 
         }
 
-        public static byte[] concatAndAddContent(List<byte[]> pdfByteContent)
+        public static byte[] concatAndAddContent(List<byte[]> pdfByteContent, string reportTitle)
         {
 
             using (var ms = new MemoryStream())
@@ -1094,7 +1109,7 @@ namespace Anywhere.service.Data.DocumentConversion
                                 copy.AddDocument(reader);
                             }
                         }
-
+                        doc.AddTitle(reportTitle);
                         doc.Close();
                     }
                 }
