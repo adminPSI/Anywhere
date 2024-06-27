@@ -1136,7 +1136,7 @@ const planConsentAndSign = (() => {
                             webpageURL
                         }));
 
-                    _UTIL.fetchData('saveReportAndSendESignEmail',
+                    const successfulSend = await _UTIL.fetchData('saveReportAndSendESignEmail',
                         {
                             token: $.session.Token,
                             eSignatureTeamMemberData,
@@ -1159,6 +1159,40 @@ const planConsentAndSign = (() => {
                     reportsScreen.appendChild(screenInner);
                     reportsScreen.classList.remove('visible');
                     POPUP.hide(ESignaturesPopup);
+
+                    let sendESignaturesEmailPopup = POPUP.build({
+                      id: 'sendESignaturesEmailPopup',
+                      hideX: true
+                    });
+              
+                    let message;
+                    if (successfulSend.saveReportAndSendESignEmailResult === 'success') {
+                      message = 'All requests for digital signatures have been sent'
+                    } else {
+                      message = 'Something went wrong sending digital signatures. Please try again.'
+                    }
+
+                    const messageElement = document.createElement('p');
+                    messageElement.innerText = message;
+            
+                    //* ACTION BUTTONS
+                    //*----------------------------------
+                    const btnWrap = document.createElement('div');
+                    btnWrap.classList.add('btnWrap');
+                    const closeBtn = button.build({
+                      text: 'Close',
+                      style: 'secondary',
+                      type: 'contained',
+                      callback: () => {
+                        POPUP.hide(sendESignaturesEmailPopup);
+                      },
+                    });
+                
+                    btnWrap.appendChild(closeBtn);
+                    sendESignaturesEmailPopup.appendChild(messageElement);
+                    sendESignaturesEmailPopup.appendChild(btnWrap);
+                
+                    POPUP.show(sendESignaturesEmailPopup);
                 },
             });
 
