@@ -218,7 +218,16 @@ class FormsWorkflowStepComponent {
     }));
 
     let hasAssignedFormTypes = $.session.formsFormtype ? '1' : '0';
-    let selectedConsumer = roster2.getActiveConsumers()[0];
+    let selectedConsumer;
+
+    if ($.loadedApp === 'plan') {
+      selectedConsumer = roster2.getActiveConsumers()[0];
+    } else {
+      selectedConsumer = {
+        id: $.workflowConsumerId
+      }
+    }
+    
     const { getconsumerFormsResult: consumerForms } = await formsAjax.getconsumerFormsAsync(
       $.session.UserId,
       selectedConsumer.id,
