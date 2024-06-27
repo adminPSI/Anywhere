@@ -1,15 +1,16 @@
-var consumerInfo = (function () {
-  var locationId;
-  var consumerId;
-  var selectedDate;
-  var consumerInfoCard;
-  var currentlyVisibleSection;
-  var hasUnreadNote;
-  var modalOverlay;
+const consumerInfo = (function () {
+  let locationId;
+  let consumerId;
+  let consumerName
+  let selectedDate;
+  let consumerInfoCard;
+  let currentlyVisibleSection;
+  let hasUnreadNote;
+  let modalOverlay;
   let menuNewList = [];
-  var currentScreen;
-  var previousScreen = '';
-  var nextScreen = '';
+  let currentScreen;
+  let previousScreen = '';
+  let nextScreen = '';
 
   function getImageOrientation(file, callback) {
     var reader = new FileReader();
@@ -329,6 +330,8 @@ var consumerInfo = (function () {
   // Populating Card Sections
   function setConsumerToCard(consumer) {
     var cardClone = consumer.cloneNode(true);
+    // get consumer name
+    consumerName = consumer.children[1].innerText.replaceAll('\n', '').split(',');
     // set consumer id attribute and cache it
     var id = consumer.dataset.consumerId;
     consumerInfoCard.setAttribute('data-consumerId', id);
@@ -639,7 +642,7 @@ var consumerInfo = (function () {
     var sectionInner = section.querySelector('.sectionInner');
     sectionInner.innerHTML = '';
 
-    rosterWorkflow.init(consumerId, ({ workflowViewer, addWorkflowBtn }) => {
+    rosterWorkflow.init(consumerId, consumerName, ({ workflowViewer, addWorkflowBtn }) => {
       sectionInner.innerHTML = '';
       sectionInner.appendChild(workflowViewer);
       sectionInner.appendChild(addWorkflowBtn);
