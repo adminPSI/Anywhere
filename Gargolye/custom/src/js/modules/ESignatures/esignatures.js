@@ -276,12 +276,6 @@ const esignatures = (function () {
           defaultVal: '',
         },
         {
-          id: 'csSupportsHealthNeeds',
-          text: 'I agree this plan contains supports to meet my health and welfare needs.',
-          options: ['Yes', 'No'],
-          defaultVal: '',
-        },
-        {
           id: 'csRightsReviewed',
           text: 'Individual rights have been reviewed with me.',
           options: ['Yes', 'No'],
