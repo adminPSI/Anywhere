@@ -4074,9 +4074,9 @@ namespace Anywhere
                             throw new Exception("No report data found for the given tempUserId.");
                         }
 
-                        string[] planAttachmentIds = loginMessageDataList[0].planAttachmentIds.Split(',');
-                        string[] wfAttachmentIds = loginMessageDataList[0].wfAttachmentIds.Split(',');
-                        string[] sigAttachmentIds = loginMessageDataList[0].sigAttachmentIds.Split(',');
+                        string[] planAttachmentIds = loginMessageDataList[0].planAttachmentIds;
+                        string[] wfAttachmentIds = loginMessageDataList[0].wfAttachmentIds;
+                        string[] sigAttachmentIds = loginMessageDataList[0].sigAttachmentIds;
 
                         dpra.addSelectedAttachmentsToReport(
                             loginMessageDataList[0].token,

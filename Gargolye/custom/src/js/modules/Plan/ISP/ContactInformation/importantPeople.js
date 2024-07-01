@@ -636,7 +636,7 @@ const isp_ci_importantPeople = (() => {
         // Set the data type for each header, for sorting purposes
         let number = 0;
         const headers = peopleTable.querySelectorAll('.header div');
-        if (headers.count > 5)
+        if (headers.length > 5)
             number = 1;
         headers[0 + number].setAttribute('data-type', 'string'); // Type
         headers[1 + number].setAttribute('data-type', 'string'); // Name

@@ -21,8 +21,13 @@ namespace Anywhere.service.Data.ESign
             {
                 foreach (var teamMemberData in eSignatureTeamMemberData)
                 {
-                    // Saves relavant report parameters so report can be ran when signer logs in
-                    string esigRdId = esdg.saveESignReportData(token, reportData.assessmentID, reportData.versionID, reportData.planAttachmentIds, reportData.wfAttachmentIds, reportData.sigAttachmentIds,
+
+                        string planAttachmentIds = JoinStringArray(reportData.planAttachmentIds);
+                        string wfAttachmentIds = JoinStringArray(reportData.wfAttachmentIds);
+                        string sigAttachmentIds = JoinStringArray(reportData.sigAttachmentIds);
+
+                        // Saves relavant report parameters so report can be ran when signer logs in
+                        string esigRdId = esdg.saveESignReportData(token, reportData.assessmentID, reportData.versionID, planAttachmentIds, wfAttachmentIds, sigAttachmentIds,
                         reportData.include.ToString(), teamMemberData.peopleId, teamMemberData.vendorId, transaction);
 
                         var jsonArray = JArray.Parse(esigRdId);
@@ -90,9 +95,9 @@ namespace Anywhere.service.Data.ESign
             {
                 string result = esdg.getReportParameters(tempUserId, transaction);
                 List<ESignReportData> loginMessageDataList = JsonConvert.DeserializeObject<List<ESignReportData>>(result);
-                string[] planAttachmentIds = loginMessageDataList[0].planAttachmentIds.Split(',');
-                string[] wfAttachmentIds = loginMessageDataList[0].wfAttachmentIds.Split(',');
-                string[] sigAttachmentIds = loginMessageDataList[0].sigAttachmentIds.Split(',');
+                string[] planAttachmentIds = loginMessageDataList[0].planAttachmentIds;
+                string[] wfAttachmentIds = loginMessageDataList[0].wfAttachmentIds;
+                string[] sigAttachmentIds = loginMessageDataList[0].sigAttachmentIds;
 
                 DisplayPlanReportAndAttachments dpra = new DisplayPlanReportAndAttachments();
 
@@ -209,14 +214,54 @@ namespace Anywhere.service.Data.ESign
             }
         }
 
+        public static string JoinStringArray(string[] stringArray)
+        {
+            if (stringArray == null || stringArray.Length == 0)
+            {
+                return string.Empty;
+            }
+            return string.Join("|", stringArray);
+        }
+
+        public static string[] SplitString(string joinedString)
+        {
+            if (string.IsNullOrEmpty(joinedString))
+            {
+                return new string[0];
+            }
+            return joinedString.Split('|');
+        }
+
+        public class AttachmentIdsConverter : JsonConverter<string[]>
+        {
+            public override string[] ReadJson(JsonReader reader, Type objectType, string[] existingValue, bool hasExistingValue, JsonSerializer serializer)
+            {
+                var value = (string)reader.Value;
+                return string.IsNullOrEmpty(value) ? new string[0] : value.Split('|');
+            }
+
+            public override void WriteJson(JsonWriter writer, string[] value, JsonSerializer serializer)
+            {
+                var joined = value == null || value.Length == 0 ? string.Empty : string.Join("|", value);
+                writer.WriteValue(joined);
+            }
+        }
+
         public class ESignReportData
         {
             public string assessmentID { get; set; }
             public string versionID { get; set; }
             public bool extraSpace { get; set; }
-            public string planAttachmentIds { get; set; }
-            public string wfAttachmentIds { get; set; }
-            public string sigAttachmentIds { get; set; }
+
+            [JsonConverter(typeof(AttachmentIdsConverter))]
+            public string[] planAttachmentIds { get; set; }
+
+            [JsonConverter(typeof(AttachmentIdsConverter))] 
+            public string[] wfAttachmentIds { get; set; }
+
+            [JsonConverter(typeof(AttachmentIdsConverter))] 
+            public string[] sigAttachmentIds { get; set; }
+
             public bool DODDFlag { get; set; }
             public bool signatureOnly { get; set; }
             public string include { get; set; }
