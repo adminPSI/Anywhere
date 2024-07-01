@@ -809,6 +809,22 @@
 #workflow_addWorkflowPopup {
   z-index: 1000;
 }
+#selectTemplatePopup {
+  z-index: 99999;
+}
+.workflowSection  {
+  .sectionInner {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+
+    #workflow-viewer {
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+}
 
 // TOP NAV
 //------------------------

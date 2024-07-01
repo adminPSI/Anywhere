@@ -341,3 +341,29 @@
 .consumerSearch {
   margin-bottom: 25px;
 }
+
+#sendESignaturesEmailPopup {
+  background: $bg-warning;
+  display: flex;
+  flex-flow: row wrap;
+  align-content: center;
+  justify-content: center;
+
+  .closeWarningBtn {
+    position: fixed;
+    top: 10px;
+    right: 4px;
+    width: 40px;
+  }
+
+  p {
+    font-size: 20px;
+    margin: 0 0 20px;
+    width: 100%;
+    text-align: center;
+  }
+
+  button {
+    width: 49%;
+  }
+}

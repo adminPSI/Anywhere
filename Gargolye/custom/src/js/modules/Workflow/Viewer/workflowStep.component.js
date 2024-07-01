@@ -311,12 +311,10 @@ class WorkflowStepComponent {
             classNames: ['step-edit-button'],
             icon: 'add',
             callback: () => {
-                // forms.displayPopup();
                 const docOrder = this.documents.length + 1;
-                new FormsWorkflowStepComponent(new WorkflowStepComponent(this, people, responsiblePeople), docOrder); // new FormsWorkflowStepComponent
-                // alert('Test2');
-            } // callback
-        }; // addFormBtnOpts
+                new FormsWorkflowStepComponent(new WorkflowStepComponent(this, people, responsiblePeople), docOrder);
+            }
+        };
 
         let attachmentInput = document.createElement("input");
         attachmentInput.type = "file";

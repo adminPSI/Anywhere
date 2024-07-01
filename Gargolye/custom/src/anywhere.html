@@ -437,6 +437,8 @@
         $.roster.moveable = true;
         $.googleMapAPI = 'AIzaSyAtSzvxIiSo6N1-WCNmpAtXQ4C2gyKqtdw';
         $.orientation = null;
+        $.workflowConsumerId = '';
+        $.workflowConsumerName = [];
 
         var isIE;
         var isMobile;
@@ -699,6 +701,7 @@
                 }
                 case 'roster': {
                     $.workflowConsumerId = '';
+                    $.workflowConsumerName = [];
                     progressNotes.clearAllGlobalVariables();
                     break;
                 }

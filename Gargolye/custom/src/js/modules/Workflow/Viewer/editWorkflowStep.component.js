@@ -276,7 +276,7 @@ class EditWorkflowStepComponent {
             const attachmentInputs = document.querySelector('.generalInfo');
             peopleId = attachmentInputs.dataset.peopleId;  
         } else {
-            peopleId = $.workflow.consumerId;
+            peopleId = $.workflowConsumerId;
         }
         
         const { 
