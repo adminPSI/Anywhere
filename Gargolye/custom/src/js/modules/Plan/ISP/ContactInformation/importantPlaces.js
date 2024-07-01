@@ -392,7 +392,7 @@ const isp_ci_importantPlaces = (() => {
         // Set the data type for each header, for sorting purposes
         let number = 0;
         const headers = placesTable.querySelectorAll('.header div');
-        if (headers.count > 6)
+        if (headers.length > 6)
             number = 1;
         headers[0 + number].setAttribute('data-type', 'string'); // Type
         headers[1 + number].setAttribute('data-type', 'string'); // Name

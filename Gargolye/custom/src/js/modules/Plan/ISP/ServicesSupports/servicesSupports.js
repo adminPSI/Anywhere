@@ -1995,11 +1995,11 @@ const servicesSupports = (() => {
                 });
             },
         });
- 
+
         let number = 0;
         // Set the data type for each header, for sorting purposes
         const headers = paidSupportsTable.querySelectorAll('.header div');
-        if (headers.count > 8) 
+        if (headers.length > 9) 
             number = 1;
 
         headers[0 + number].setAttribute('data-type', 'string'); // Assessment Area
@@ -2592,7 +2592,7 @@ const servicesSupports = (() => {
         let number = 0;
         // Set the data type for each header, for sorting purposes
         const headers = additionalSupportsTable.querySelectorAll('.header div');
-        if (headers.length > 4) 
+        if (headers.length > 5) 
             number = 1;
 
         headers[0 + number].setAttribute('data-type', 'string'); // Assessment Area
@@ -2991,7 +2991,7 @@ const servicesSupports = (() => {
         // Set the data type for each header, for sorting purposes
         let number = 0;
         const headers = professionalReferralsTable.querySelectorAll('.header div');
-        if (headers.count > 4)
+        if (headers.length > 4)
             number = 1;
         headers[0 + number].setAttribute('data-type', 'string'); // Assessment Area
         headers[1 + number].setAttribute('data-type', 'string'); // New or Existing
