@@ -513,7 +513,7 @@
                  instance.UI.disableElements(['ribbons']);
                //  instance.disableFeatures([instance.Feature.Download]);
              
-                    const docViewer = instance.Core.documnetViewer;
+                    const docViewer = instance.Core.documentViewer;
                     const annotManager = instance.Core.annotationManager;
                                   
                     instance.UI.setHeaderItems(header => {
