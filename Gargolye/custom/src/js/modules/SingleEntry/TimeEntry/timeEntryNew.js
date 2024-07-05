@@ -38,8 +38,7 @@ var newTimeEntry = (function () {
                         editTimeEntry.init({
                             isOrginUser: true,
                             entry: results,
-                            consumers: consumers,
-                            isAdminEdit: true,
+                            consumers: consumers, 
                             payPeriod,
                             recordActivityElement: null,
                             isOnlyEndTimeChangePermission: isDisabled,
