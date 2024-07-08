@@ -134,13 +134,16 @@ const plan = (function () {
 
     // Helpers
     //---------------------------------------------
-    function handleActionNavEvent(target) {
+    async function handleActionNavEvent(target) {
         const targetAction = target.dataset.actionNav;
-
+        
         switch (targetAction) {
-            case 'miniRosterDone': {
+            case 'miniRosterDone': {                                
                 DOM.scrollToTopOfPage();
                 DOM.clearActionCenter();
+                PROGRESS.init();
+                PROGRESS.SPINNER.show('Gathering Plans...');
+                await planAjax.checkForSalesForce();  
                 selectedConsumer = roster2.getActiveConsumers()[0];
                 if ($.session.applicationName === 'Advisor') {
                     planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
@@ -3428,10 +3431,11 @@ const plan = (function () {
     }
 
     function init() {
-        planAjax.checkForSalesForce();
         setActiveModuleAttribute('plan');
         DOM.clearActionCenter();
         roster2.showMiniRoster();
+        PROGRESS.init();
+        PROGRESS.SPINNER.show('Gathering Plans...');        
     }
 
     return {
