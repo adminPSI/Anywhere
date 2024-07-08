@@ -1228,7 +1228,14 @@ namespace Anywhere.service.Data
                 // replace placeholders with their corresponding values
                 var ActionParametersSB = new System.Text.StringBuilder(thisAction.WF_Action_Parameters);
                 foreach (var kvp in dictPlaceHolderValues)
-                    ActionParametersSB.Replace(kvp.Key, kvp.Value);
+                    if (!string.IsNullOrEmpty(kvp.Value))
+                    {
+                        ActionParametersSB.Replace(kvp.Key, kvp.Value);
+                    }
+                    else
+                    {
+                        ActionParametersSB.Replace(kvp.Key, string.Empty);
+                    }
                 // update action_parameter with the modified string (ie, placeholders replaced with values)
                 emailActionParameterwithValues = ActionParametersSB.ToString().Replace("\x0d\x0a", "<br>");
             }
