@@ -582,7 +582,7 @@ var timeEntryCard = (function () {
 
         return allowedConsumers;
     }
-    async function setAllowedConsumers(callback) {  
+    async function setAllowedConsumers(callback) {     
         switch (isBillable) {
             case 'Y':
                 switch (isAdminEdit) {
@@ -602,15 +602,23 @@ var timeEntryCard = (function () {
                         }
                         break;
                     default:
-                        results = (await singleEntryAjax.getSingleEntryUsersByLocation(locationId, entryDate))
-                            .getSingleEntryUsersByLocationJSONResult;
-                        roster2.setAllowedConsumers(results);
+                        if (isEndTimeChangePermission) // this is for if pay period is closed than disabled to delete counsumers
+                            roster2.setAllowedConsumers([]);
+                        else {
+                            results = (await singleEntryAjax.getSingleEntryUsersByLocation(locationId, entryDate))
+                                .getSingleEntryUsersByLocationJSONResult;
+                            roster2.setAllowedConsumers(results);
+                        }
                         if (callback) callback();
-                        break;
+                        break; 
                 }
                 break;
             default:
-                roster2.setAllowedConsumers(['%']);
+                if (isEndTimeChangePermission) // this is for if pay period is closed than disabled to delete counsumers
+                    roster2.setAllowedConsumers([]);
+                else {
+                    roster2.setAllowedConsumers(['%']);
+                }
                 if (callback) callback();
                 break;
         }
