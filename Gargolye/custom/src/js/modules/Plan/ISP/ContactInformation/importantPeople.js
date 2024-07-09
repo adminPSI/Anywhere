@@ -297,7 +297,7 @@ const isp_ci_importantPeople = (() => {
         }
         typeDropdown = dropdown.build({
             dropdownId: 'isp-ciip-typeDropdown',
-            label: 'Type',
+            label: '*Type',
             readonly: readOnly,
         });
         if (popupData.type === '') typeDropdown.classList.add('error');
@@ -360,7 +360,7 @@ const isp_ci_importantPeople = (() => {
         importFromSignaturesBtn.style.width = '100%';
 
         nameInput = input.build({
-            label: 'Name',
+            label: '*Name',
             value: popupData.name,
             id: `isp-ciip-nameInput`,
             readonly: readOnly,
@@ -368,7 +368,7 @@ const isp_ci_importantPeople = (() => {
         if (popupData.name === '') nameInput.classList.add('error');
 
         addressInput = input.build({
-            label: 'Address',
+            label: '*Address',
             value: popupData.address,
             type: 'textarea',
             id: `isp-ciip-addressInput`,
@@ -378,7 +378,7 @@ const isp_ci_importantPeople = (() => {
         if (popupData.address === '') addressInput.classList.add('error');
 
         phoneInput = input.build({
-            label: 'Phone',
+            label: '*Phone',
             value: UTIL.formatPhoneNumber(popupData.phone),
             id: `isp-ciip-phoneInput`,
             readonly: readOnly,

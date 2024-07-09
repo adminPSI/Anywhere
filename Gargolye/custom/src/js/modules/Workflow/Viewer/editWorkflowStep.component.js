@@ -65,7 +65,7 @@ class EditWorkflowStepComponent {
 
     let descriptionTextInput = input.build({
       id: 'step-description',
-      label: 'Description',
+      label: '*Description',
       type: 'textarea',
       style: 'secondary',
       value: description,

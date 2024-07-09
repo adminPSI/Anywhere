@@ -479,7 +479,7 @@ const planOutcomes = (() => {
         });
         // Outcome
         const outcomeTextInput = input.build({
-            label: 'Outcome',
+            label: '*Outcome',
             type: 'textarea',
             style: 'secondary',
             classNames: 'autosize',
@@ -500,7 +500,7 @@ const planOutcomes = (() => {
         });
         // Details
         const detailsTextInput = input.build({
-            label: 'Details To Know',
+            label: '*Details To Know',
             type: 'textarea',
             style: 'secondary',
             classNames: 'autosize',
@@ -1023,7 +1023,7 @@ const planOutcomes = (() => {
         mainWrap.classList.add('experiencesPopup__main');
         // What Needs To Happen
         const whatHappenedInput = input.build({
-            label: 'What needs to happen',
+            label: '*What needs to happen',
             type: 'textarea',
             style: 'secondary',
             classNames: 'autosize',
@@ -1044,7 +1044,7 @@ const planOutcomes = (() => {
         });
         // How Should It Happen
         const howHappenedInput = input.build({
-            label: 'How should it happen?',
+            label: '*How should it happen?',
             type: 'textarea',
             style: 'secondary',
             classNames: 'autosize',
@@ -1085,7 +1085,7 @@ const planOutcomes = (() => {
 
             const responsiblePersonDropdown = dropdown.build({
                 dropdownId: 'responsiblePersonDropdown',
-                label: 'Responsible Person',
+                label: '*Responsible Person',
                 style: 'secondary',
                 callback: (e, selectedOption) => {
                     saveUpdateDataRef.responsibleContact = selectedOption.value;
@@ -1112,7 +1112,7 @@ const planOutcomes = (() => {
             });
             const responsibleProviderDropdown = dropdown.build({
                 dropdownId: 'responsibleProviderDropdown',
-                label: 'Responsible Provider',
+                label: '*Responsible Provider',
                 style: 'secondary',
                 callback: (e, selectedOption) => {
                     saveUpdateDataRef.responsibleProvider = selectedOption.value;
@@ -1143,7 +1143,7 @@ const planOutcomes = (() => {
             // When/How OFten
             const whenHowOftenValueInput = input.build({
                 type: 'textarea',
-                label: 'When/How Often',
+                label: '*When/How Often',
                 style: 'secondary',
                 classNames: 'autosize',
                 value: saveUpdateDataRef.whenHowOftenValue,
@@ -1165,7 +1165,7 @@ const planOutcomes = (() => {
             // When/How Often Freq
             const whenHowOftenFrequencyDropdown = dropdown.build({
                 dropdownId: 'whenHowOFtenFrequencyExperiences',
-                label: 'When/How Often Frequency',
+                label: '*When/How Often Frequency',
                 style: 'secondary',
                 callback: (e, selectedOption) => {
                     saveUpdateDataRef.whenHowOftenFrequency = selectedOption.value;
@@ -1205,7 +1205,7 @@ const planOutcomes = (() => {
             });
             // When/How Often Other
             const whenHowOftenTextInput = input.build({
-                label: 'When/How Often Other',
+                label: '*When/How Often Other',
                 type: 'textarea',
                 style: 'secondary',
                 classNames: 'autosize',
@@ -1835,7 +1835,7 @@ const planOutcomes = (() => {
 
         // What Will Happen
         const whatWillHappenInput = input.build({
-            label: `What will progress look like?`,
+            label: `*What will progress look like?`,
             type: 'textarea',
             style: 'secondary',
             classNames: 'autosize',
@@ -1859,7 +1859,7 @@ const planOutcomes = (() => {
         const whoReviewDropdown = dropdown.build({
             dropdownId: 'whoReviewDropdown',
             id: 'whoReviewDropdown',
-            label: 'Who?',
+            label: '*Who?',
             style: 'secondary',
             callback: (e, selectedOption) => {
                 saveUpdateData.contactId = selectedOption.value;
@@ -1886,7 +1886,7 @@ const planOutcomes = (() => {
         });
         // When To Check In
         const whenToCheckinDropdown = dropdown.build({
-            label: 'When To Check In?',
+            label: '*When To Check In?',
             type: 'text',
             style: 'secondary',
             callback: (e, selectedOption) => {
@@ -2319,7 +2319,7 @@ const planOutcomes = (() => {
         });
         // Outcome
         const outcomeInput = buildQuestion({
-            text: 'Outcome',
+            text: '*Outcome',
             prompt: 'What does the person want to accomplish and why?',
             awnser: outcomesUpdateData.outcome,
             maxChars: charLimits.description,
@@ -2352,7 +2352,7 @@ const planOutcomes = (() => {
         });
         // Details
         const detailsInput = buildQuestion({
-            text: 'Details to Know',
+            text: '*Details to Know',
             awnser: outcomesUpdateData.details,
             maxChars: charLimits.details,
             callback: e => {
@@ -2475,7 +2475,7 @@ const planOutcomes = (() => {
 
         // outcome summary
         outcomesProgressSummary = buildQuestion({
-            text: 'Summary of Progress Outcomes:',
+            text: '*Summary of Progress Outcomes:',
             prompt: 'Share accomplishments, progress, how success is to be celebrated.',
             awnser: progressSummary,
             maxChars: 2500,

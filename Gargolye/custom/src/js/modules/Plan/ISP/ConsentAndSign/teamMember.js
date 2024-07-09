@@ -968,7 +968,7 @@ const csTeamMember = (() => {
     // Team Member
     teamMemberDropdown = dropdown.build({
       dropdownId: 'sigPopup_teamMember',
-      label: 'Team Member',
+      label: '*Team Member',
       readonly: isSigned || readOnly,
       callback: async event => {
         selectedMemberData.teamMember = event.target.value;
@@ -1184,7 +1184,7 @@ const csTeamMember = (() => {
 
     // Name ()
     nameInput = input.build({
-      label: 'First Name',
+      label: '*First Name',
       value: selectedMemberData.name,
       readonly: isSigned || readOnly,
       callbackType: 'input',
@@ -1201,7 +1201,7 @@ const csTeamMember = (() => {
       },
     });
     lNameInput = input.build({
-      label: 'Last Name',
+      label: '*Last Name',
       value: selectedMemberData.lastName,
       readonly: isSigned || readOnly,
       callbackType: 'input',
@@ -1295,7 +1295,7 @@ const csTeamMember = (() => {
     // Signature Type
     signatureTypeDropdown = dropdown.build({
       dropdownId: 'sigPopup_signType',
-      label: 'Signature Type',
+      label: '*Signature Type',
       readonly: isSigned || readOnly,
       callback: event => {
         selectedMemberData.signatureType = event.target.value;

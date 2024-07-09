@@ -375,7 +375,7 @@ const planSummary = (function () {
     // Assessment Area
     const assessmentAreaDropdown = dropdown.build({
       dropdownId: 'assessmentAreaDropdownITF',
-      label: 'Assessment Area',
+      label: '*Assessment Area',
       style: 'secondary',
       callback: (e, selectedOption) => {
         sectionTitle = selectedOption.value;
@@ -394,7 +394,7 @@ const planSummary = (function () {
     }
     // Important To
     const importantToTextarea = input.build({
-      label: 'Important To',
+      label: '*Important To',
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
@@ -418,7 +418,7 @@ const planSummary = (function () {
     importantToTextarea.classList.add('importantTo');
     // Important For
     const importantForTextarea = input.build({
-      label: 'Important For',
+      label: '*Important For',
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
@@ -867,7 +867,7 @@ const planSummary = (function () {
     // Assessment Area Dropdown
     const assessmentAreaDropdown = dropdown.build({
       dropdownId: 'assessmentAreaDropdownSA',
-      label: 'Assessment Area',
+      label: '*Assessment Area',
       style: 'secondary',
       callback: (e, selectedOption) => {
         sectionTitle = selectedOption.value;
@@ -886,7 +886,7 @@ const planSummary = (function () {
     }
     // Text Input
     const defaultTextInput = input.build({
-      label: 'What is this person good at?',
+      label: '*What is this person good at?',
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
@@ -1557,7 +1557,7 @@ const planSummary = (function () {
     // Assessment Area
     const assessmentAreaDropdown = dropdown.build({
       dropdownId: 'assessmentAreaDropdownSA',
-      label: 'Assessment Area',
+      label: '*Assessment Area',
       style: 'secondary',
       callback: (e, selectedOption) => {
         sectionTitle = selectedOption.value;
@@ -1576,7 +1576,7 @@ const planSummary = (function () {
     }
     // What is Risk
     const whatIsRiskTextarea = input.build({
-      label: 'What is the risk, what it looks like, where it occurs',
+      label: '*What is the risk, what it looks like, where it occurs',
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
@@ -1605,7 +1605,7 @@ const planSummary = (function () {
     });
     // What Support Looks Like
     const whatSupportLooksLikeTextarea = input.build({
-      label: 'What support must look like',
+      label: '*What support must look like',
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
@@ -1635,7 +1635,7 @@ const planSummary = (function () {
     // Levels of Supervision
     const levelsOfSupervisionDropdown = dropdown.build({
       dropdownId: 'levelsOfSupervisionDropdownSA',
-      label: 'Levels Of Supervision',
+      label: '*Levels Of Supervision',
       style: 'secondary',
       callback: (e, selectedOption) => {
         riskSupervision = selectedOption.value;
@@ -1648,7 +1648,7 @@ const planSummary = (function () {
       },
     });
     const whoResponsibleDropdown = dropdown.build({
-      label: 'Who is Responsible',
+      label: '*Who is Responsible',
       dropdownId: 'whoResponsibleDropdown',
       readonly: isReadOnly,
       callback: (e, selectedOption) => {

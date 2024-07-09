@@ -421,7 +421,7 @@ const csVendor = (() => {
     // Vendor
     vendorDropdown = dropdown.build({
       dropdownId: 'sigPopup_vendor',
-      label: 'Vendor',
+      label: '*Vendor',
       readonly: isSigned || readOnly,
       callback: async event => {
         selectedMemberData.name = event.target.value;
@@ -467,7 +467,7 @@ const csVendor = (() => {
     // Team Member
     teamMemberDropdown = dropdown.build({
       dropdownId: 'sigPopup_teamMember',
-      label: 'Team Member',
+      label: '*Team Member',
       readonly: isSigned || readOnly,
       callback: async event => {
         selectedMemberData.teamMember = event.target.value;
@@ -532,7 +532,7 @@ const csVendor = (() => {
     // Signature Type
     signatureTypeDropdown = dropdown.build({
       dropdownId: 'sigPopup_signType',
-      label: 'Signature Type',
+      label: '*Signature Type',
       readonly: isSigned || readOnly,
       callback: event => {
         selectedMemberData.signatureType = event.target.value;

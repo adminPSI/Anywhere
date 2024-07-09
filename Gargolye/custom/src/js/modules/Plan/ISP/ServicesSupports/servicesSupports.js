@@ -973,7 +973,7 @@ const servicesSupports = (() => {
 
         const providerNameDropdown = dropdown.build({
             dropdownId: 'providerNameDropdownPS',
-            label: 'Provider Name',
+            label: '*Provider Name',
             style: 'secondary',
             callback: (e, selectedOption) => {
                 multiSaveUpdateData.providerId = selectedOption.value;
@@ -1213,7 +1213,7 @@ const servicesSupports = (() => {
         // Asessment Area
         const assessmentAreaDropdown = dropdown.build({
             dropdownId: 'assessmentAreaDropdownPS',
-            label: 'Assessment Area',
+            label: '*Assessment Area',
             style: 'secondary',
             callback: (e, selectedOption) => {
                 saveUpdateData.assessmentAreaId = selectedOption.value;
@@ -1232,7 +1232,7 @@ const servicesSupports = (() => {
         // Funding Source Drop Down
         const fundingSourceDropdown = dropdown.build({
             dropdownId: 'fundingSourceDropdownPS',
-            label: 'Funding Source',
+            label: '*Funding Source',
             style: 'secondary',
             callback: async (e, selectedOption) => {
                 saveUpdateData.fundingSource = selectedOption.value;
@@ -1468,7 +1468,7 @@ const servicesSupports = (() => {
         // Service Name
         const serviceNameDropdown = dropdown.build({
             dropdownId: 'serviceNameDropdownPS',
-            label: 'Service Name',
+            label: '*Service Name',
             style: 'secondary',
             callback: async (e, selectedOption) => {
                 saveUpdateData.serviceNameId = selectedOption.value;
@@ -1537,7 +1537,7 @@ const servicesSupports = (() => {
         });
         // Scope Of Service
         const scopeOfserviceInput = input.build({
-            label: 'Scope of Service / What support looks like',
+            label: '*Scope of Service / What support looks like',
             type: 'textarea',
             style: 'secondary',
             classNames: 'autosize',
@@ -1570,7 +1570,7 @@ const servicesSupports = (() => {
         // How Often/How Much Value
         const howOftenHowMuchValueInput = input.build({
             type: 'textarea',
-            label: 'How Often/How Much',
+            label: '*How Often/How Much',
             style: 'secondary',
             value: saveUpdateData.howOftenValue,
             classNames: 'autosize',
@@ -1603,7 +1603,7 @@ const servicesSupports = (() => {
         // How Often/How Much Freq
         const howOftenHowMuchFrequencyDropdown = dropdown.build({
             dropdownId: 'howOftenHowMuchDropdownPS',
-            label: 'How Often/How Much Frequency',
+            label: '*How Often/How Much Frequency',
             style: 'secondary',
             callback: (e, selectedOption) => {
                 saveUpdateData.howOftenFrequency = selectedOption.value;
@@ -2252,7 +2252,7 @@ const servicesSupports = (() => {
         // Assessment Area
         const assessmentAreaDropdown = dropdown.build({
             dropdownId: 'assessmentAreaDropdownAS',
-            label: 'Assessment Area',
+            label: '*Assessment Area',
             style: 'secondary',
             callback: (e, selectedOption) => {
                 saveUpdateData.assessmentAreaId = selectedOption.value;
@@ -2270,7 +2270,7 @@ const servicesSupports = (() => {
         }
         // Who Supports
         const whoSupportsDropdown = dropdown.build({
-            label: 'Who Supports',
+            label: '*Who Supports',
             dropdownId: 'whoSupportsDropdown',
             readonly: isReadOnly,
             callback: (e, selectedOption) => {
@@ -2288,7 +2288,7 @@ const servicesSupports = (() => {
 
         // What Support Looks LIke
         const whatSupportLooksLikeInput = input.build({
-            label: 'What Support Looks Like',
+            label: '*What Support Looks Like',
             type: 'textarea',
             style: 'secondary',
             classNames: 'autosize',
@@ -2320,7 +2320,7 @@ const servicesSupports = (() => {
         // When/How Often Value
         const whenHowOftenValueInput = input.build({
             type: 'textarea',
-            label: 'When/How Often',
+            label: '*When/How Often',
             style: 'secondary',
             classNames: 'autosize',
             value: saveUpdateData.howOftenValue,
@@ -2353,7 +2353,7 @@ const servicesSupports = (() => {
         // When/How Often Freq
         const whenHowOftenFrequencyDropdown = dropdown.build({
             dropdownId: 'whenHowOftenDropdownPS',
-            label: 'When/How Often Frequency',
+            label: '*When/How Often Frequency',
             style: 'secondary',
             callback: (e, selectedOption) => {
                 saveUpdateData.howOftenFrequency = selectedOption.value;
@@ -2391,7 +2391,7 @@ const servicesSupports = (() => {
         // When/How Often Other
         const whenHowOftenTextInput = input.build({
             type: 'textarea',
-            label: 'When/How Often Other',
+            label: '*When/How Often Other',
             style: 'secondary',
             classNames: 'autosize',
             value: saveUpdateData.howOftenText,
@@ -2774,7 +2774,7 @@ const servicesSupports = (() => {
         // Asessment Area
         const assessmentAreaDropdown = dropdown.build({
             dropdownId: 'assessmentAreaDropdownAS',
-            label: 'Assessment Area',
+            label: '*Assessment Area',
             style: 'secondary',
             callback: (e, selectedOption) => {
                 saveUpdateData.assessmentAreaId = selectedOption.value;
@@ -2793,7 +2793,7 @@ const servicesSupports = (() => {
         // New Or Existing
         const newOrExistingDropdown = dropdown.build({
             dropdownId: 'newOrExistingDropdown',
-            label: 'New or Existing',
+            label: '*New or Existing',
             style: 'secondary',
             callback: (e, selectedOption) => {
                 saveUpdateData.newOrExisting = selectedOption.value;
@@ -2807,7 +2807,7 @@ const servicesSupports = (() => {
         });
         // Who Supports
         const whoSupportsDropdown = dropdown.build({
-            label: 'Who Supports',
+            label: '*Who Supports',
             dropdownId: 'whoSupportsDropdown',
             readonly: isReadOnly,
             callback: (e, selectedOption) => {
@@ -2825,7 +2825,7 @@ const servicesSupports = (() => {
 
         // Reason For Referral
         const reasonForReferralInput = input.build({
-            label: 'Reason For Referral',
+            label: '*Reason For Referral',
             type: 'textarea',
             style: 'secondary',
             classNames: 'autosize',
