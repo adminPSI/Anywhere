@@ -845,6 +845,13 @@ const planConsentAndSign = (() => {
                     ];
                 }
 
+                if (signatureType === 'E-Digital') {
+                  tableOBJ.attributes = [
+                    { key: 'data-signed', value: isSigned },
+                    { key: 'data-hideicon', value: true },
+                ];
+                }
+
                 // hide/show delete icon
                 if (isSigned || readOnly || !$.session.planUpdate) {
                     tableOBJ.attributes.push({
