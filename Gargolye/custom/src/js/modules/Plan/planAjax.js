@@ -589,7 +589,7 @@ const planAjax = (function () {
       console.log(error.responseText);
     }
   }
-  function checkForSalesForce() {
+  async function checkForSalesForce() {
     $.ajax({
       type: 'POST',
       url:

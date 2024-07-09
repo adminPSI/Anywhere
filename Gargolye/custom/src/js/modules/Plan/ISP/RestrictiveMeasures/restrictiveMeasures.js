@@ -83,7 +83,7 @@ async function toggleRestrictiveMeasureQuestionsVisiblity(show) {
     //* HRC APPROVAL DATE
     //*------------------------------------
     const rmHrcApprovalDate = input.build({
-      label: 'Date of HRC Approval',
+      label: '*Date of HRC Approval',
       type: 'date',
       value: UTIL.formatDateToIso(sectionData.rmHRCDate.split(' ')[0]),
       readonly: readOnly,
@@ -95,7 +95,7 @@ async function toggleRestrictiveMeasureQuestionsVisiblity(show) {
     const rmKeepSelfSafeQuestionText = document.createElement('p');
     rmKeepSelfSafeQuestionText.style.marginBottom = '7px';
     rmKeepSelfSafeQuestionText.innerText =
-      'What help do I need to keep myself safe? (describe restrictive strategies and why they are needed)';
+      '*What help do I need to keep myself safe? (describe restrictive strategies and why they are needed)';
     const rmKeepSelfSafeQuestionResp = input.build({
       type: 'textarea',
       value: sectionData.rmKeepSelfSafe,
@@ -112,7 +112,7 @@ async function toggleRestrictiveMeasureQuestionsVisiblity(show) {
     const rmFadeRestrictionQuestionText = document.createElement('p');
     rmFadeRestrictionQuestionText.style.marginBottom = '7px';
     rmFadeRestrictionQuestionText.innerText =
-      'What is the plan to ensure the restriction is temporary in nature?';
+      '*What is the plan to ensure the restriction is temporary in nature?';
     const rmFadeRestrictionQuestionResp = input.build({
       type: 'textarea',
       value: sectionData.rmFadeRestriction,
@@ -133,7 +133,7 @@ async function toggleRestrictiveMeasureQuestionsVisiblity(show) {
     rmWhatCouldHappenQuestionContainer.classList.add('isp_ic_rmQuestionGroup');
     const rmWhatCouldHappenQuestionGoodResp = input.build({
       type: 'textarea',
-      label: 'Good',
+      label: '*Good',
       value: sectionData.rmWhatCouldHappenGood,
       readonly: readOnly,
       charLimit: charLimits.rmWhatCouldHappenGood,
@@ -142,7 +142,7 @@ async function toggleRestrictiveMeasureQuestionsVisiblity(show) {
     });
     const rmWhatCouldHappenQuestionBadResp = input.build({
       type: 'textarea',
-      label: 'Bad',
+      label: '*Bad',
       value: sectionData.rmWhatCouldHappenBad,
       readonly: readOnly,
       charLimit: charLimits.rmWhatCouldHappenBad,
@@ -163,7 +163,7 @@ async function toggleRestrictiveMeasureQuestionsVisiblity(show) {
     rmOtherWayHelpQuestionContainer.classList.add('isp_ic_rmQuestionGroup');
     const rmOtherWayHelpQuestionGoodResp = input.build({
       type: 'textarea',
-      label: 'Good things about these other options',
+      label: '*Good things about these other options',
       value: sectionData.rmOtherWayHelpGood,
       readonly: readOnly,
       charLimit: charLimits.rmOtherWayHelpGood,
@@ -172,7 +172,7 @@ async function toggleRestrictiveMeasureQuestionsVisiblity(show) {
     });
     const rmOtherWayHelpQuestionBadResp = input.build({
       type: 'textarea',
-      label: 'Bad things about these other options',
+      label: '*Bad things about these other options',
       value: sectionData.rmOtherWayHelpBad,
       readonly: readOnly,
       charLimit: charLimits.rmOtherWayHelpBad,

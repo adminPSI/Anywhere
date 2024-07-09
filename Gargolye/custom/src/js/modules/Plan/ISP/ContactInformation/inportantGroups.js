@@ -99,7 +99,7 @@ const isp_ci_importantGroups = (() => {
         }
         statusDropdown = dropdown.build({
             dropdownId: 'isp-ciig-statusDropdown',
-            label: 'Status',
+            label: '*Status',
             readonly: readOnly,
         });
         if (popupData.status === '') statusDropdown.classList.add('error');
@@ -113,7 +113,7 @@ const isp_ci_importantGroups = (() => {
         dropdown.populate(statusDropdown, statusDropdownValues, popupData.status);
 
         nameInput = input.build({
-            label: 'Name',
+            label: '*Name',
             value: popupData.name,
             id: `isp-ciig-nameInput`,
             readonly: readOnly,
@@ -121,7 +121,7 @@ const isp_ci_importantGroups = (() => {
         if (popupData.name === '') nameInput.classList.add('error');
 
         addressInput = input.build({
-            label: 'Address',
+            label: '*Address',
             value: popupData.address,
             id: `isp-ciig-addressInput`,
             type: 'textarea',
@@ -131,7 +131,7 @@ const isp_ci_importantGroups = (() => {
         if (popupData.address === '') addressInput.classList.add('error');
 
         phoneInput = input.build({
-            label: 'Phone',
+            label: '*Phone',
             value: UTIL.formatPhoneNumber(popupData.phone),
             id: `isp-ciig-phoneInput`,
             readonly: readOnly,
