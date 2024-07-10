@@ -150,405 +150,411 @@
   }
 }
 .moreMenuPopup {
-    &.error {
-        background: $bg-warning;
-    }
-
-    .closePopupBtn {
-        top: 12px;
-        right: 12px;
-    }
-
-    &__innerWrap {
-        display: flex;
-        flex-flow: row nowrap;
-        overflow: hidden;
-    }
-
-    &__menu {
-        flex-shrink: 0;
-        transform: translateX(-100%) !important;
-        width: 100%;
-        padding: 10px 0 0;
-
-        &.visible {
-            transform: translateX(0%) !important;
-        }
-    }
-
-    .screen {
-        flex-shrink: 0;
-        max-height: 600px;
-        overflow: auto;
-        padding: 10px 0 0 0;
-        width: 100%;
-
-        .successfulSavePopup {
-            &.error {
-                svg {
-                    color: $font-error;
-                }
-            }
-        }
-    }
-
-    #editDatesScreen {
-        transform: translateX(10%);
-        overflow-x: hidden;
-
-        &.visible {
-            transform: translateX(-100%);
-        }
-    }
-
-    #updateStatusScreen {
-        .currentStatus {
-            display: flex;
-            margin: 0 0 20px;
-
-            p:first-child {
-                font-weight: $bold;
-                margin: 0 8px 0 0;
-            }
-        }
-
-        .btnWrap {
-            justify-content: space-between;
-
-            .btn {
-                flex-grow: 1;
-                width: auto;
-                max-width: 49%;
-                margin: 0;
-            }
-        }
-
-        &.visible {
-            transform: translateX(-200%);
-        }
-    }
-
-    #deleteScreen {
-        &.visible {
-            transform: translateX(-300%);
-        }
-
-        .successDiv {
-            text-align: center;
-
-            p {
-                font-weight: $normal;
-            }
-
-            svg {
-                color: $secondary;
-                margin: 0 0 20px;
-                width: 100px;
-            }
-        }
-
-        .warningMessage {
-            color: $font-error;
-            font-weight: $bold;
-            margin: 0 0 20px;
-        }
-    }
-
-    #reactivateScreen {
-        &.visible {
-            transform: translateX(-400%);
-        }
-
-        .warningMessage {
-            color: $font-error;
-            font-weight: $bold;
-            margin: 0 0 20px;
-        }
-    }
-
-    #addWorkflowScreen {
-        &.visible {
-            transform: translateX(-500%);
-        }
-
-        h2 {
-            margin: 0 0 10px;
-        }
-
-        .workflowList {
-            margin: 0 0 10px;
-            max-height: 210px;
-            overflow: auto;
-        }
-
-        .workflowListItem {
-            border-bottom: 1px solid $black;
-            cursor: pointer;
-            padding: 8px 4px;
-            overflow: hidden;
-
-            &.selected {
-                background: $green;
-            }
-
-            h4,
-            p {
-                pointer-events: none;
-            }
-
-            p {
-                white-space: nowrap;
-            }
-        }
-    }
-
-    #reportsScreen {
-        overflow: hidden;
-
-        &.visible {
-            transform: translateX(-600%);
-        }
-
-        .attachmentsWrap {
-            min-height: 400px;
-            margin: 0 0 15px;
-            max-height: 400px;
-            overflow-y: auto;
-
-            .attachmentsHeading {
-                margin: 0 0 10px;
-            }
-
-            .planAttWrap,
-            .workflowAttWrap,
-            .signatureAttWrap {
-                h2 {
-                    margin: 0 0 10px;
-                }
-
-                .attachment {
-                    cursor: pointer;
-                    padding: 5px;
-                    margin: 0 0 5px;
-
-                    &.selected {
-                        background: $secondary;
-                    }
-                }
-            }
-        }
-        // success/error message
-        .warningMessage {
-            margin-bottom: 10px;
-            text-align: center;
-            font-weight: $normal;
-
-            p:first-child {
-                color: $font-error;
-                margin-bottom: 10px;
-            }
-
-            p:last-child {
-                color: $font-dark;
-            }
-        }
-
-        .okBtn {
-            width: 100%;
-        }
-        .checkboxWrap {
-          display: flex;
-          flex-flow: row nowrap;
-          flex-grow: 1;
-          width: 100%;
-
-          .checkbox.checkbox-mtd {
-            transform: none !important;
-            -webkit-transform: none !important;
-
-            #reportCheckbox {
-              transform: none !important;
-              -webkit-transform: none !important;
-             }
-             span {
-              transform: none !important;
-              -webkit-transform: none !important;
-             }
-            .checkbox-mtd>span:after { top: 7px; }
-          }
-        }
-    }
-
-    #DODDScreen {
-        overflow: hidden;
-
-        &.visible {
-            transform: translateX(-800%);
-        }
-
-        .attachmentsWrap {
-            margin: 0 0 15px;
-            max-height: 400px;
-            overflow-y: scroll;
-
-            .attachmentsHeading {
-                margin: 0 0 10px;
-            }
-
-            .planAttWrap, .workflowAttWrap, .signatureAttWrap {
-                h2 {
-                    margin: 0 0 10px;
-                }
-
-                .attachment {
-                    cursor: pointer;
-                    padding: 5px;
-                    margin: 0 0 5px;
-
-                    &.selected {
-                        background: $secondary;
-                    }
-                }
-            }
-        }
-        // success/error message
-        .warningMessage {
-            margin-bottom: 10px;
-            text-align: center;
-            font-weight: $normal;
-
-            p:first-child {
-                color: $font-error;
-                margin-bottom: 10px;
-            }
-
-            p:last-child {
-                color: $font-dark;
-            }
-        }
-
-        .okBtn {
-            width: 100%;
-        }
-    }
-
-    #sendToDODDScreen {
-        p {
-            font-size: 22px;
-            font-weight: bold;
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        &.visible {
-            transform: translateX(-800%);
-        }
-    }
-
-    #portalScreen {
-      overflow: hidden;
-
-      &.visible {
-          transform: translateX(-1000%);
-      }
-
-      .attachmentsWrap {
-          min-height: 400px;
-          margin: 0 0 15px;
-          max-height: 400px;
-          overflow-y: auto;
-
-          .attachmentsHeading {
-              margin: 0 0 10px;
-          }
-
-          .planAttWrap,
-          .workflowAttWrap,
-          .signatureAttWrap {
-              h2 {
-                  margin: 0 0 10px;
-              }
-
-              .attachment {
-                  cursor: pointer;
-                  padding: 5px;
-                  margin: 0 0 5px;
-
-                  &.selected {
-                      background: $secondary;
-                  }
-              }
-          }
-      }
-      // success/error message
-      .warningMessage {
-          margin-bottom: 10px;
-          text-align: center;
-          font-weight: $normal;
-
-          p:first-child {
-              color: $font-error;
-              margin-bottom: 10px;
-          }
-
-          p:last-child {
-              color: $font-dark;
-          }
-      }
-
-      .okBtn {
-          width: 100%;
-      }
-      .checkboxWrap {
-        display: flex;
-        flex-flow: row nowrap;
-        flex-grow: 1;
-        width: 100%;
-
-        .checkbox.checkbox-mtd {
-          transform: none !important;
-          -webkit-transform: none !important;
-
-          #portalCheckbox {
-            transform: none !important;
-            -webkit-transform: none !important;
-           }
-           span {
-            transform: none !important;
-            -webkit-transform: none !important;
-           }
-          .checkbox-mtd>span:after { top: 7px; }
-        }
-      }
+  &.error {
+    background: $bg-warning;
   }
 
-    #changePlanTypeScreen {
-        .currentType {
-            display: flex;
-            margin: 0 0 16px;
+  .closePopupBtn {
+    top: 12px;
+    right: 12px;
+  }
 
-            p:first-child {
-                font-weight: $bold;
-                margin: 0 8px 0 0;
-            }
-        }
+  &__innerWrap {
+    display: flex;
+    flex-flow: row nowrap;
+    overflow: hidden;
+  }
 
-        > .dropdown {
-          margin-bottom: 0px;
-        }
+  &__menu {
+    flex-shrink: 0;
+    transform: translateX(-100%) !important;
+    width: 100%;
+    padding: 10px 0 0;
 
-        &.visible {
-            transform: translateX(-900%);
+    &.visible {
+      transform: translateX(0%) !important;
+    }
+  }
+
+  .screen {
+    flex-shrink: 0;
+    max-height: 600px;
+    overflow: auto;
+    padding: 10px 0 0 0;
+    width: 100%;
+
+    .successfulSavePopup {
+      &.error {
+        svg {
+          color: $font-error;
         }
+      }
+    }
+  }
+
+  #editDatesScreen {
+    transform: translateX(10%);
+    overflow-x: hidden;
+
+    &.visible {
+      transform: translateX(-100%);
+    }
+  }
+
+  #updateStatusScreen {
+    .currentStatus {
+      display: flex;
+      margin: 0 0 20px;
+
+      p:first-child {
+        font-weight: $bold;
+        margin: 0 8px 0 0;
+      }
     }
 
-    .btn {
-        width: 100%;
+    .btnWrap {
+      justify-content: space-between;
+
+      .btn {
+        flex-grow: 1;
+        width: auto;
+        max-width: 49%;
+        margin: 0;
+      }
+    }
+
+    &.visible {
+      transform: translateX(-200%);
+    }
+  }
+
+  #deleteScreen {
+    &.visible {
+      transform: translateX(-300%);
+    }
+
+    .successDiv {
+      text-align: center;
+
+      p {
+        font-weight: $normal;
+      }
+
+      svg {
+        color: $secondary;
+        margin: 0 0 20px;
+        width: 100px;
+      }
+    }
+
+    .warningMessage {
+      color: $font-error;
+      font-weight: $bold;
+      margin: 0 0 20px;
+    }
+  }
+
+  #reactivateScreen {
+    &.visible {
+      transform: translateX(-400%);
+    }
+
+    .warningMessage {
+      color: $font-error;
+      font-weight: $bold;
+      margin: 0 0 20px;
+    }
+  }
+
+  #addWorkflowScreen {
+    &.visible {
+      transform: translateX(-500%);
+    }
+
+    h2 {
+      margin: 0 0 10px;
+    }
+
+    .workflowList {
+      margin: 0 0 10px;
+      max-height: 210px;
+      overflow: auto;
+    }
+
+    .workflowListItem {
+      border-bottom: 1px solid $black;
+      cursor: pointer;
+      padding: 8px 4px;
+      overflow: hidden;
+
+      &.selected {
+        background: $green;
+      }
+
+      h4,
+      p {
+        pointer-events: none;
+      }
+
+      p {
+        white-space: nowrap;
+      }
+    }
+  }
+
+  #reportsScreen {
+    overflow: hidden;
+
+    &.visible {
+      transform: translateX(-600%);
+    }
+
+    .attachmentsWrap {
+      min-height: 400px;
+      margin: 0 0 15px;
+      max-height: 400px;
+      overflow-y: auto;
+
+      .attachmentsHeading {
         margin: 0 0 10px;
+      }
+
+      .planAttWrap,
+      .workflowAttWrap,
+      .signatureAttWrap {
+        h2 {
+          margin: 0 0 10px;
+        }
+
+        .attachment {
+          cursor: pointer;
+          padding: 5px;
+          margin: 0 0 5px;
+
+          &.selected {
+            background: $secondary;
+          }
+        }
+      }
     }
+    // success/error message
+    .warningMessage {
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: $normal;
+
+      p:first-child {
+        color: $font-error;
+        margin-bottom: 10px;
+      }
+
+      p:last-child {
+        color: $font-dark;
+      }
+    }
+
+    .okBtn {
+      width: 100%;
+    }
+    .checkboxWrap {
+      display: flex;
+      flex-flow: row nowrap;
+      flex-grow: 1;
+      width: 100%;
+
+      .checkbox.checkbox-mtd {
+        transform: none !important;
+        -webkit-transform: none !important;
+
+        #reportCheckbox {
+          transform: none !important;
+          -webkit-transform: none !important;
+        }
+        span {
+          transform: none !important;
+          -webkit-transform: none !important;
+        }
+        .checkbox-mtd > span:after {
+          top: 7px;
+        }
+      }
+    }
+  }
+
+  #DODDScreen {
+    overflow: hidden;
+
+    &.visible {
+      transform: translateX(-800%);
+    }
+
+    .attachmentsWrap {
+      margin: 0 0 15px;
+      max-height: 400px;
+      overflow-y: scroll;
+
+      .attachmentsHeading {
+        margin: 0 0 10px;
+      }
+
+      .planAttWrap,
+      .workflowAttWrap,
+      .signatureAttWrap {
+        h2 {
+          margin: 0 0 10px;
+        }
+
+        .attachment {
+          cursor: pointer;
+          padding: 5px;
+          margin: 0 0 5px;
+
+          &.selected {
+            background: $secondary;
+          }
+        }
+      }
+    }
+    // success/error message
+    .warningMessage {
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: $normal;
+
+      p:first-child {
+        color: $font-error;
+        margin-bottom: 10px;
+      }
+
+      p:last-child {
+        color: $font-dark;
+      }
+    }
+
+    .okBtn {
+      width: 100%;
+    }
+  }
+
+  #sendToDODDScreen {
+    p {
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    &.visible {
+      transform: translateX(-800%);
+    }
+  }
+
+  #portalScreen {
+    overflow: hidden;
+
+    &.visible {
+      transform: translateX(-1000%);
+    }
+
+    .attachmentsWrap {
+      min-height: 400px;
+      margin: 0 0 15px;
+      max-height: 400px;
+      overflow-y: auto;
+
+      .attachmentsHeading {
+        margin: 0 0 10px;
+      }
+
+      .planAttWrap,
+      .workflowAttWrap,
+      .signatureAttWrap {
+        h2 {
+          margin: 0 0 10px;
+        }
+
+        .attachment {
+          cursor: pointer;
+          padding: 5px;
+          margin: 0 0 5px;
+
+          &.selected {
+            background: $secondary;
+          }
+        }
+      }
+    }
+    // success/error message
+    .warningMessage {
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: $normal;
+
+      p:first-child {
+        color: $font-error;
+        margin-bottom: 10px;
+      }
+
+      p:last-child {
+        color: $font-dark;
+      }
+    }
+
+    .okBtn {
+      width: 100%;
+    }
+    .checkboxWrap {
+      display: flex;
+      flex-flow: row nowrap;
+      flex-grow: 1;
+      width: 100%;
+
+      .checkbox.checkbox-mtd {
+        transform: none !important;
+        -webkit-transform: none !important;
+
+        #portalCheckbox {
+          transform: none !important;
+          -webkit-transform: none !important;
+        }
+        span {
+          transform: none !important;
+          -webkit-transform: none !important;
+        }
+        .checkbox-mtd > span:after {
+          top: 7px;
+        }
+      }
+    }
+  }
+
+  #changePlanTypeScreen {
+    .currentType {
+      display: flex;
+      margin: 0 0 16px;
+
+      p:first-child {
+        font-weight: $bold;
+        margin: 0 8px 0 0;
+      }
+    }
+
+    > .dropdown {
+      margin-bottom: 0px;
+    }
+
+    &.visible {
+      transform: translateX(-900%);
+    }
+  }
+
+  .btn {
+    width: 100%;
+    margin: 0 0 10px;
+  }
 }
 .finalizePopup {
-overflow-y: hidden;
+  overflow-y: hidden;
 
   .finalizeScreen {
     display: none;
@@ -566,7 +572,7 @@ overflow-y: hidden;
     display: flex;
     flex-flow: column;
   }
-  .checkbox-mtd>input:checked+span:after {
+  .checkbox-mtd > input:checked + span:after {
     left: -24px;
   }
 
@@ -630,7 +636,7 @@ overflow-y: hidden;
       }
     }
 
-    .checkbox-mtd>input:checked+span:after {
+    .checkbox-mtd > input:checked + span:after {
       top: 16px;
     }
   }
@@ -935,11 +941,11 @@ overflow-y: hidden;
     }
     .radio {
       margin: 0 10px 0 0;
-  
+
       &:last-child {
         margin: 0;
       }
-  
+
       input {
         margin: 0 6px 0 0;
       }
@@ -1064,10 +1070,10 @@ overflow-y: hidden;
           top: -4px;
         }
         .workingAlertDivCase1 {
-          top: -4px
+          top: -4px;
         }
         .workingAlertDivCase2 {
-          top: -4px
+          top: -4px;
         }
       }
       .tableOfContents__subSectionHeading {
@@ -1150,7 +1156,9 @@ overflow-y: hidden;
   }
 }
 
-.tocAlertDiv, .workingAlertDivCase1, .workingAlertDivCase2 {
+.tocAlertDiv,
+.workingAlertDivCase1,
+.workingAlertDivCase2 {
   svg {
     height: 24px;
     color: red;
@@ -1159,7 +1167,8 @@ overflow-y: hidden;
   }
 }
 
-.workingAlertDivCase1, .workingAlertDivCase2 {
+.workingAlertDivCase1,
+.workingAlertDivCase2 {
   position: relative;
   display: inline-block;
   top: 10px;
@@ -1173,8 +1182,8 @@ overflow-y: hidden;
 .sentToOnetDateDiv {
   bottom: 10px;
   position: relative;
-  
+
   p {
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
 }

@@ -47,7 +47,8 @@ const WaitingListAssessment = (() => {
         {
           id: 'interviewDate',
           type: 'date',
-          label: 'Interviewed Date',
+          label: 'Interview Date',
+          required: true,
         },
         {
           id: 'personCompleting',
