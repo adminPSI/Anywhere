@@ -398,8 +398,10 @@ var timeEntryCard = (function () {
         locationTypeCode = ed.locationTypeCode;
         //get the rejection reason
         await singleEntryAjax.getSingleEntryById(singleEntryId, results => {
-            entryData = results;
-            rejectionReason = entryData.rejectionReason;
+            entryData = results;  
+            rejectionReason = entryData[0].rejectionReason;   
+            if (document.getElementById('rejectionReason') != null)
+                document.getElementById('rejectionReason').value = rejectionReason;
         });
 
         saveUserId = ed.User_ID; // userID used for cross midnight entries
