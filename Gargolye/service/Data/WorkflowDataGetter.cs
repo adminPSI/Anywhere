@@ -1264,6 +1264,27 @@ namespace Anywhere.service.Data
 
         }
 
+        public string getWorkflowDataForRoster(string workflowId, DistributedTransaction transaction, string token)
+        {
+            try
+            {
+                logger.debug("ANYW_ISP_getWorkflowDataForRoster ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@WFId", DbType.String, workflowId);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@token", DbType.String, token);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_getWorkflowDataForRoster(?, ?)", args, ref transaction);
+                return convertToJSON(returnMsg);
+
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_ISP_getWorkflowDataForRoster");
+                throw ex;
+            }
+
+        }
+
         public string getManualWorkflowList(string token, string processId, string planId, string notPlan)
         {
             logger.debug("getLocationsJSON ");
