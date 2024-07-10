@@ -350,7 +350,7 @@ const csSignature = (() => {
         : null;
       const date = input.build({
         type: 'date',
-        label: 'Signature Date',
+        label: '*Signature Date',
         style: 'secondary',
         value: signDate ? signDate : '',
         callback: e => {
@@ -481,43 +481,43 @@ const csSignature = (() => {
     const standardQuestions = [
       {
         id: 'csSupportsHealthNeeds',
-        text: 'I agree this plan contains supports to meet my health and welfare needs.',
+        text: '*I agree this plan contains supports to meet my health and welfare needs.',
         options: ['Yes', 'No'],
         defaultVal: selectedMemberData.csSupportsHealthNeeds,
       },
       {
         id: 'csRightsReviewed',
-        text: 'Individual rights have been reviewed with me.',
+        text: '*Individual rights have been reviewed with me.',
         options: ['Yes', 'No'],
         defaultVal: selectedMemberData.csRightsReviewed,
       },
       {
         id: 'csAgreeToPlan',
-        text: 'I understand the purpose, benefits, and potential risks. I agree and consent to this entire plan.',
+        text: '*I understand the purpose, benefits, and potential risks. I agree and consent to this entire plan.',
         options: ['Yes', 'No'],
         defaultVal: selectedMemberData.csAgreeToPlan,
       },
       {
         id: 'csTechnology',
-        text: 'Technology solutions have been explored with my team and me.',
+        text: '*Technology solutions have been explored with my team and me.',
         options: ['Yes', 'No'],
         defaultVal: selectedMemberData.csTechnology,
       },
       {
         id: 'csFCOPExplained',
-        text: 'Free Choice Of Provider has been explained to me.',
+        text: '*Free Choice Of Provider has been explained to me.',
         options: ['Yes', 'No', 'N/A'],
         defaultVal: selectedMemberData.csFCOPExplained,
       },
       {
         id: 'csDueProcess',
-        text: 'I have been given my due process rights.',
+        text: '*I have been given my due process rights.',
         options: ['Yes', 'No', 'N/A'],
         defaultVal: selectedMemberData.csDueProcess,
       },
       {
         id: 'csResidentialOptions',
-        text: 'I have been given information on residential options.',
+        text: '*I have been given information on residential options.',
         options: ['Yes', 'No', 'N/A'],
         defaultVal: selectedMemberData.csResidentialOptions,
       },

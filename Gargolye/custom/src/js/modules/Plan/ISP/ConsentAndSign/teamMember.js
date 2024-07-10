@@ -623,7 +623,7 @@ const csTeamMember = (() => {
     radioContainer.classList.add('sig_radioContainer');
 
     const radioContainerTitle = document.createElement('p');
-    radioContainerTitle.innerText = 'Participated in Planning?';
+    radioContainerTitle.innerText = '*Participated in Planning?';
 
     participatedYesRadio = input.buildRadio({
       text: 'Yes',
