@@ -1687,7 +1687,7 @@ const planOutcomes = (() => {
             [
                 {
                     id: rowId,
-                    values: [whatWillHappen, whoReview],
+                    values: [whatWillHappen, whoReview, whenToCheckIn],
                     onClick: () => {
                         showReviewsPopup(
                             {
@@ -1746,7 +1746,7 @@ const planOutcomes = (() => {
             [
                 {
                     id: rowId,
-                    values: [whatWillHappen, whoReview],
+                    values: [whatWillHappen, whoReview, whenToCheckIn],
                     onClick: () => {
                         showReviewsPopup(
                             {
@@ -2033,7 +2033,7 @@ const planOutcomes = (() => {
             columnHeadings: [
                 `What will progress look like? How will we know it's happening?`,
                 'Who?',
-                //'When to check in?',
+                'When to check In?',
             ],
             sortable: isSortable,
             onSortCallback: async sortData => {
@@ -2054,11 +2054,12 @@ const planOutcomes = (() => {
         // Set the data type for each header, for sorting purposes
         let number = 0;
         const headers = reviewsTable.querySelectorAll('.header div');
-        if (headers.length > 2) {
+        if (headers.length > 3) {
             number = 1;
         } 
         headers[0 + number].setAttribute('data-type', 'string'); // What will progress look like
         headers[1 + number].setAttribute('data-type', 'string'); // Who ? 
+        headers[2 + number].setAttribute('data-type', 'string'); // When to check in? 
 
         // Call function to allow table sorting by clicking on a header.
         table.sortTableByHeader(reviewsTable);
@@ -2086,7 +2087,7 @@ const planOutcomes = (() => {
 
                     return {
                         id: rowId,
-                        values: [whatWillHappen, whoReview],
+                        values: [whatWillHappen, whoReview, whenToCheckIn],
                         onClick: () =>
                             showReviewsPopup(
                                 {

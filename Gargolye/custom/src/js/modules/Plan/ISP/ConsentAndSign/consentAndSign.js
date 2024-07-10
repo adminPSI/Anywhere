@@ -532,7 +532,7 @@ const planConsentAndSign = (() => {
         populateDropdownSSA(csChangeMindQuestionDropdown, data.csChangeMindSSAPeopleId);
 
         // Build Out Question with dropdown
-        csChangeMindQuestionText.innerHTML = `<span>I understand that I can change my mind at any time. I just need to let</span> `;
+        csChangeMindQuestionText.innerHTML = `<span>*I understand that I can change my mind at any time. I just need to let</span> `;
         csChangeMindQuestionText.appendChild(csChangeMindQuestionDropdown);
         csChangeMindQuestionText.innerHTML += ` <span>know.</span>`;
         changeMindQuestion.appendChild(csChangeMindQuestionText);
@@ -616,7 +616,7 @@ const planConsentAndSign = (() => {
         populateDropdownVendor(csContactQuestionDropdown, data.csContactProviderVendorId);
 
         // Build Out Question with dropdown
-        contactQuestionText.innerHTML = `I understand I can contact someone at `;
+        contactQuestionText.innerHTML = `*I understand I can contact someone at `;
         contactQuestionText.appendChild(csContactQuestionDropdown);
         contactQuestionText.innerHTML += ' if I want to file a complaint.';
         wrap.appendChild(contactQuestionText);
@@ -843,6 +843,13 @@ const planConsentAndSign = (() => {
                         { key: 'data-signed', value: true },
                         { key: 'data-hideicon', value: true },
                     ];
+                }
+
+                if (signatureType === 'E-Digital') {
+                  tableOBJ.attributes = [
+                    { key: 'data-signed', value: isSigned },
+                    { key: 'data-hideicon', value: true },
+                ];
                 }
 
                 // hide/show delete icon
