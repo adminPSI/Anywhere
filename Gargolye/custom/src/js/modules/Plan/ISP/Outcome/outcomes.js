@@ -1081,11 +1081,11 @@ const planOutcomes = (() => {
             const wrapHeading = document.createElement('div');
             whoReponsibleWrap.classList.add('whoResponsibleWrap');
             wrapHeading.innerHTML =
-                '<h2>Who Is Responsible?</h2><p>Choose either a Responsible Person or Provider.</p>';
+                '<h2>*Who Is Responsible?</h2><p>Choose either a Responsible Person or Provider.</p>';
 
             const responsiblePersonDropdown = dropdown.build({
                 dropdownId: 'responsiblePersonDropdown',
-                label: '*Responsible Person',
+                label: 'Responsible Person',
                 style: 'secondary',
                 callback: (e, selectedOption) => {
                     saveUpdateDataRef.responsibleContact = selectedOption.value;
@@ -1112,7 +1112,7 @@ const planOutcomes = (() => {
             });
             const responsibleProviderDropdown = dropdown.build({
                 dropdownId: 'responsibleProviderDropdown',
-                label: '*Responsible Provider',
+                label: 'Responsible Provider',
                 style: 'secondary',
                 callback: (e, selectedOption) => {
                     saveUpdateDataRef.responsibleProvider = selectedOption.value;

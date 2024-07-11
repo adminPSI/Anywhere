@@ -1449,7 +1449,7 @@ const servicesSupports = (() => {
         // Provider Name
         const providerNameDropdown = dropdown.build({
             dropdownId: 'providerNameDropdownPS',
-            label: 'Provider Name',
+            label: '*Provider Name',
             style: 'secondary',
             callback: (e, selectedOption) => {
                 saveUpdateData.providerId = selectedOption.value;
