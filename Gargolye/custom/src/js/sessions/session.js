@@ -277,6 +277,11 @@ $.session.downloadPlans = false;
 $.session.planSignatureUpdateDOB = false;
 $.session.planSignatureUpdateBuildingNumber = false;
 $.session.planClearSignature = false;
+// Waiting List
+$.session.waitingListInsert = false;
+$.session.waitingListView = false;
+$.session.waitingListUpdate = false;
+$.session.waitingListDelete = false;
 // Transportation
 $.session.transportationUpdate = false;
 $.session.transportationView = false;
@@ -417,10 +422,13 @@ function eraseCookie(name) {
 function setSessionVariables() {
     var cookieInnards = $.session.permissionString;
 
+    var tmpWindows = {};
+
     cookieInnards.forEach(cookie => {
         tmpWindow = cookie.window_name;
         tmpPerm = cookie.permission;
         tmpSpec = cookie.special_data;
+        tmpWindows[tmpWindow] = tmpWindow;
 
         if (tmpWindow == 'IsAnAdmin') {
             if (tmpPerm == 'Y') $.session.isAdmin = true;
@@ -689,6 +697,21 @@ function setSessionVariables() {
                 $.session.authorizationsVendorInfoView = true;
             }
         }
+        //Waiting List
+        if (tmpWindow == 'Anywhere Waiting List Assessment' || $.session.isPSI == true) {
+            if (tmpPerm == 'Insert' || $.session.isPSI == true) {
+                $.session.waitingListInsert = true;
+            }
+            if (tmpPerm == 'View' || $.session.isPSI == true) {
+                $.session.waitingListView = true;
+            }
+            if (tmpPerm == 'Update' || $.session.isPSI == true) {
+                $.session.waitingListUpdate = true;
+            }
+            if (tmpPerm == 'Delete' || $.session.isPSI == true) {
+                $.session.waitingListDelete = true;
+            }
+        }
         //AeMAR
         if (tmpWindow == 'Anywhere eMAR' || $.session.isPSI == true) {
             if (tmpPerm == 'View' || $.session.isPSI == true) {
@@ -934,6 +957,7 @@ function setSessionVariables() {
         $.session.UpdateMyInformation = true;
         $.session.authorizationsView = true;
         $.session.planView = true;
+        //console.table(tmpWindows);
     }
     // TODO-ASH: move this somewhere else eventually
     if (!$.session.ViewMyInformation) {

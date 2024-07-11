@@ -294,10 +294,6 @@
     }
   };
 
-  Form.prototype.toggleFormDisabled = function (disable) {
-    this.form.classList.toggle('readonly', disable);
-  };
-
   /**
    * Populates form fields with given data
    *

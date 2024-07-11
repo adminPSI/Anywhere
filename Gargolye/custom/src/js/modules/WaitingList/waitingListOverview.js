@@ -60,14 +60,16 @@ const WaitingListOverview = (() => {
   //--------------------------------------------------
   async function populateReviewTable() {
     wlReviewTable.clear();
-    newAssessmentBtn.toggleDisabled(!selectedConsumer);
 
-    if (!selectedConsumer) return;
+    if (!selectedConsumer) {
+      newAssessmentBtn.toggleDisabled(true);
+      return;
+    };
 
     const { tableData, alreadyHasAssessmentForToday } = await getReviewDataByConsumer(selectedConsumer.id);
     wlReviewTable.populate(tableData);
-    newAssessmentBtn.toggleDisabled(false);
-    newAssessmentBtn.toggleDisabled(alreadyHasAssessmentForToday);
+    const isNewAssessmentBtnDisabled = alreadyHasAssessmentForToday || !$.session.waitingListInsert;
+    newAssessmentBtn.toggleDisabled(isNewAssessmentBtnDisabled);
   }
   function attachEvents() {
     newAssessmentBtn.onClick(() => {
@@ -83,6 +85,7 @@ const WaitingListOverview = (() => {
     );
 
     wlReviewTable.onRowClick(async rowId => {
+      if (!$.session.waitingListView) return;
       const resp = await _UTIL.fetchData('getWaitingListAssessment', { waitingListAssessmentId: parseInt(rowId) });
       WaitingListAssessment.init({
         wlData: resp.getWaitingListAssessmentResult[0],
@@ -127,7 +130,7 @@ const WaitingListOverview = (() => {
     // Review Table
     wlReviewTable = new Table({
       columnSortable: true,
-      allowDelete: true,
+      allowDelete: $.session.waitingListDelete,
       headings: [
         {
           text: 'Interview Date',

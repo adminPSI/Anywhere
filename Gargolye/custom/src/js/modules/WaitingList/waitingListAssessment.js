@@ -2,6 +2,7 @@ const WaitingListAssessment = (() => {
   //--------------------------
   // SESSION DATA
   //--------------------------
+  let isNewAssessment = true;
   let selectedConsumer;
   let wlData;
   let wlLinkID;
@@ -12,10 +13,6 @@ const WaitingListAssessment = (() => {
   let maxQueueSize = 5;
   let isFormComplete;
   let isAssessmentComplete;
-  //--------------------------
-  // PERMISSIONS
-  //--------------------------
-  let isReadOnly;
   //--------------------------
   // DOM
   //--------------------------
@@ -3237,6 +3234,8 @@ const WaitingListAssessment = (() => {
       tocLinks['participants'].classList.toggle('formComplete', Object.values(wlParticipants).length);
     });
     participantsTable.onRowClick(rowId => {
+      if (!$.session.waitingListUpdate) return;
+
       const rowData = wlParticipants[rowId];
       participantsForm.populate(
         {
@@ -3247,6 +3246,8 @@ const WaitingListAssessment = (() => {
       );
     });
     participantsTable.onRowDelete(async rowId => {
+      if (!$.session.waitingListUpdate) return;
+      
       await _UTIL.fetchData('deleteWaitingListParticipant', {
         participantId: parseInt(rowId),
       });
@@ -3508,12 +3509,20 @@ const WaitingListAssessment = (() => {
       return;
     }
 
+    isNewAssessment = false;
     enableSectionsForReview();
     enableInputsForReview();
 
     for (section in wlData) {
       wlForms[section].populate(wlData[section]);
       updateFormCompletionStatus(section);
+      if (!$.session.waitingListUpdate) {
+        wlForms[section].disableFormInputs(true);
+      }
+    }
+
+    if (!$.session.waitingListUpdate) {
+      participantsForm.disableFormInputs(true);
     }
 
     participantsTable.populate(Object.values(wlParticipants));
