@@ -2165,6 +2165,7 @@ var timeEntryCard = (function () {
             if (isEVVSingleEntry && sendEvvData === 'Y' && eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
                 populateLocationTypeDropdown();
                 document.querySelector('.timeCard__LocationEvv').style.display = 'flex';
+                locationTypeCode = '1';  
             }
         });
 
