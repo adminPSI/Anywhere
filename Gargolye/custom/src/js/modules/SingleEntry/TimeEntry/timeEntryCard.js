@@ -1996,11 +1996,38 @@ var timeEntryCard = (function () {
     return Date.parse(`01/01/2020 ${enteredTime}`) > Date.parse(`01/01/2020 ${nowHour}:${nowMinuet}`);
   }
 
+<<<<<<< HEAD
   async function evvCheck() {
     if (!isEdit) {
       if (startTime) {
         // const timeChanged = startTime !== `${nowHour}:${nowMinutes}`
         await evvCheckConsumerEligibilityExistingConsumers();
+=======
+    async function evvCheckConsumerEligibilityExistingConsumers() {
+        reasonRequired = false;
+        consumerIds.forEach(async id => {
+            const res = await singleEntryAjax.getEvvEligibilityAsync(id, entryDate);
+            if (res.length > 0) {
+                reasonRequired = true;
+                eligibleConsumersObj[id] = true;
+                isEVVSingleEntry = true;
+            } else {
+                eligibleConsumersObj[id] = false;
+            }
+            disableCardFields();
+
+            if (isEVVSingleEntry && sendEvvData === 'Y' && eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
+                populateLocationTypeDropdown();
+                document.querySelector('.timeCard__LocationEvv').style.display = 'flex';
+                locationTypeCode = '1';  
+            }
+        });
+
+        // checkRequiredFields();
+    }
+    // under following conditions, the form imputs disabled (except time inputs): 1) entry is rejected, 2) workcode = Billable, 3) user is creator/supervisor, 4) this entry requires EVV
+    function disableCardFields() {
+>>>>>>> 59743ef1885fb44f10c3347584a956e691d52fae
         if (
           isBillable === 'Y' &&
           defaultTimesChanged &&

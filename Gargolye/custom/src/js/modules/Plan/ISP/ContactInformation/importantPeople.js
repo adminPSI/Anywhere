@@ -325,7 +325,7 @@ const isp_ci_importantPeople = (() => {
         dropdown.populate(typeDropdown, typeDropdownValues, popupData.type);
 
         typeOtherInput = input.build({
-            label: 'Type Other',
+            label: '*Type Other',
             value: popupData.typeOther,
             id: `isp-ciip-typeOther`,
             readonly: readOnly,

@@ -820,11 +820,6 @@ var outcomes = (function () {
       tmpOutcome = selectedOption.innerHTML;
     });
     applyButton.addEventListener('click', () => {
-      //if (tmpDate) {
-      //	currDate = tmpDate;
-      //} else {
-      //	currDate = currDate;
-      //}
       applyOutComeFilter();
       POPUP.hide(filterPopup);
     });
@@ -1912,7 +1907,7 @@ var outcomes = (function () {
     //Filter and date wrap
     var topFilterDateWrap = document.createElement('div');
     topFilterDateWrap.classList.add('topOutcomeWrap');
-    //Fucking Date Input
+    //Date Input
     var date_Input = document.querySelector('.dateInput');
     if (!date_Input) {
       dateInput = buildFuckingDateInput();

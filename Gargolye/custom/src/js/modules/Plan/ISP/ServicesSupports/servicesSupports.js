@@ -1403,7 +1403,7 @@ const servicesSupports = (() => {
         // Funding Source Other
         const fundingSourceInput = input.build({
             type: 'textarea',
-            label: 'Funding Source Other',
+            label: '*Funding Source Other',
             style: 'secondary',
             classNames: 'autosize',
             value: saveUpdateData.fundingSourceText,
@@ -1641,7 +1641,7 @@ const servicesSupports = (() => {
         // How Often/How Much Other
         const howOftenHowMuchTextInput = input.build({
             type: 'textarea',
-            label: 'How Often/How Much Other',
+            label: '*How Often/How Much Other',
             style: 'secondary',
             value: saveUpdateData.howOftenText,
             classNames: 'autosize',
