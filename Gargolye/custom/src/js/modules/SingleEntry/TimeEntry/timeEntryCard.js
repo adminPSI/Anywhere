@@ -2206,7 +2206,7 @@ var timeEntryCard = (function () {
       document.querySelector('.timeCard__evvattestChk').style.display = 'flex';
       if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
           document.querySelector('.timeCard__LocationEvv').style.display = 'flex';
-          if (locationTypeCode == null) {
+          if (!locationTypeCode) {
               locationTypeCode = '1';
           }
       }
