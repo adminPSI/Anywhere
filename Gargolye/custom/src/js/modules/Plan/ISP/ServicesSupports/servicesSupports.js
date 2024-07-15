@@ -1523,7 +1523,7 @@ const servicesSupports = (() => {
         // Service Name Other
         const serviceNameOtherDropdown = dropdown.build({
             dropdownId: 'serviceNameOtherDropdownPS',
-            label: 'Service Name Other',
+            label: '*Service Name Other',
             style: 'secondary',
             callback: (e, selectedOption) => {
                 saveUpdateData.serviceNameOther = selectedOption.value === '%' ? '' : selectedOption.value;
