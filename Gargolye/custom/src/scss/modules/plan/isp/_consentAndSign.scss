@@ -83,6 +83,8 @@
   .table__row[data-hideDeleteicon] {
     .endIcon {
       order: 9;
+      pointer-events: none;
+      cursor: none;
     }
     .secondendIcon {
       pointer-events: none;
