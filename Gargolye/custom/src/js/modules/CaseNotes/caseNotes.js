@@ -859,6 +859,15 @@ const CaseNotes = (() => {
 
         onTimeChange();
 
+        rosterPicker = new RosterPicker({
+            allowMultiSelect: false,
+            consumerRequired: true,
+            selectionDate: selectedDate,
+        });
+
+        //await populatePage(); 
+        await rosterPicker.fetchConsumers();
+        rosterPicker.populate();  
         //re populate overview section when date change
     // OVERVIEW // await cnOverview.fetchData(selectedDate);
     // OVERVIEW // cnOverview.populate();
@@ -999,6 +1008,7 @@ const CaseNotes = (() => {
         rosterPicker = new RosterPicker({
             allowMultiSelect: false,
             consumerRequired: true,
+            selectionDate: undefined, 
         });
 
         // Form

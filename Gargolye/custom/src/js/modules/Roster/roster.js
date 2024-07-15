@@ -651,7 +651,7 @@ const roster2 = (function () {
     function populateActiveDropdown() {
         const activeDropdownData = ([
             { id: 1, value: 'Yes', text: 'Yes' },
-            { id: 2, value: 'No', text: 'No' }, 
+            { id: 2, value: 'No', text: 'No' },
         ]);
         dropdown.populate("rosterActiveDropdown", activeDropdownData, selectedActive);
     }
@@ -948,7 +948,7 @@ const roster2 = (function () {
         SEARCH_INPUT.setAttribute('placeholder', 'search consumers');
         SEARCH_WRAP.appendChild(SEARCH_BTN);
         SEARCH_WRAP.appendChild(SEARCH_INPUT);
-
+ 
         if (rosterListSelectable) {
             var wrap1 = document.createElement('div');
             var wrap2 = document.createElement('div');
@@ -1016,8 +1016,19 @@ const roster2 = (function () {
         const isSelected = selectedConsumers && selectedConsumers.filter(sc => sc.id === consumerData.id);
         const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
         const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
-        const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';  
-        const isInactive = $.session.applicationName === 'Advisor' ? consumerData.IDa == undefined || consumerData.IDa == '' ? false : true : consumerData.statusCode == 'A' ? false : true; 
+        const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
+
+        var isInactive = false;  
+        if ($.session.applicationName === 'Advisor') { 
+            if (consumerData.IDa != undefined && consumerData.IDa != '' && UTIL.formatDateToIso(consumerData.IDa.split(' ')[0]) <= selectedDate) {
+                isInactive = true;  
+            }
+
+        } else if ($.session.applicationName === 'Gatekeeper') {
+            if (consumerData.statusCode == 'I' && consumerData.IDa != undefined && consumerData.IDa != '' && UTIL.formatDateToIso(consumerData.IDa.split(' ')[0]) <= selectedDate) {
+                isInactive = true;
+            }
+        }
         let isAllowed;
         if (!allowedConsumerIds) {
             isAllowed = true;
@@ -1049,7 +1060,7 @@ const roster2 = (function () {
             consumerCard.classList.add('highlighted', 'consumer-selected');
         }
 
-        
+
         if ((isActive && isActive.length >= 1) || !isAllowed) {
             if ($.loadedApp === 'outcomes') {
                 consumerCard.classList.remove('disabled');
@@ -1066,7 +1077,7 @@ const roster2 = (function () {
         const alertIcons = document.createElement('div');
         const d = new Date();
         const time = d.getTime();
-        portrait.classList.add('portrait'); 
+        portrait.classList.add('portrait');
         if (isInactive)
             details.classList.add('inactiveDetails');
         else
