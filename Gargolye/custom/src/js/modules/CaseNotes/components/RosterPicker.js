@@ -13,7 +13,9 @@
         consumerRequired: false,
         isReadOnly: false,
     };
-
+    let selectionDate;
+    let selectedActive = 'No';
+    let filterDate;
     /**
      * Constructor function for creating a Roster Picker component.
      *
@@ -30,7 +32,6 @@
         this.selectedConsumers = {};
         this.failedImageCache = new Set();
         this.groupCode = 'ALL';
-        this.selectedActive = 'No';
 
         // DOM Ref
         this.rootElement = null;
@@ -52,7 +53,7 @@
     RosterPicker.prototype._build = function () {
         this.rootElement = _DOM.createElement('div', { class: 'rosterPicker' });
         this.rosterWrapEle = _DOM.createElement('div', { class: 'rosterPicker__cardsWrap' });
-
+        selectionDate = this.options.selectionDate;
         this.messageEleIcon = this.options.consumerRequired ? Icon.getIcon('error') : '';
         this.messageEle = _DOM.createElement('p', {
             class: 'rosterPicker__message',
@@ -170,7 +171,7 @@
         });
 
         this.rosterInActiveInput.onChange(async e => {
-            this.selectedActive = e.target.checked ? 'Yes' : 'No';
+            selectedActive = e.target.checked ? 'Yes' : 'No';
             await this.fetchConsumers();
             this.populate();
         });
@@ -239,17 +240,17 @@
      */
     RosterPicker.prototype.fetchConsumers = async function () {
         try {
-            const todaysDate = dates.getTodaysDateObj();
+            const todaysDate = selectionDate == undefined ? dates.getTodaysDateObj() : selectionDate;
             todaysDate.setHours(0, 0, 0, 0);
-
+            filterDate = dates.formatISO(todaysDate, { representation: 'date' });
             let daysBackDate = dates.subDays(todaysDate, $.session.defaultProgressNoteReviewDays);
 
             const data = await _UTIL.fetchData('getConsumersByGroupJSON', {
                 groupCode: this.groupCode,
                 retrieveId: '0',
-                serviceDate: dates.formatISO(todaysDate, { representation: 'date' }),
-                daysBackDate: daysBackDate,
-                isActive: this.selectedActive,
+                serviceDate: filterDate,
+                daysBackDate: dates.formatISO(daysBackDate, { representation: 'date' }),
+                isActive: selectedActive,
             });
             this.consumers = data.getConsumersByGroupJSONResult.reduce((acc, cv) => {
                 acc[cv.id] = cv;
@@ -269,7 +270,7 @@
      */
     RosterPicker.prototype.populate = function () {
         this.rosterWrapEle.innerHTML = '';
-
+ 
         Object.values(this.consumers)
             .sort((a, b) => {
                 if (a.LN < b.LN) return -1;
@@ -283,7 +284,13 @@
             .forEach(consumer => {
                 // ROSTER CARD
                 const gridAnimationWrapper = _DOM.createElement('div', { class: 'rosterCardWrap' });
-                const inActive = $.session.applicationName === 'Advisor' ? consumer.IDa == '' || consumer.IDa == undefined ? false : true : consumer.statusCode == 'A' ? false : true;
+                var inActive = false; 
+
+                if ($.session.applicationName === 'Gatekeeper') { 
+                    if (consumer.statusCode == 'I' && consumer.IDa != undefined && consumer.IDa != '' && UTIL.formatDateToIso(consumer.IDa.split(' ')[0]) <= filterDate) {
+                        inActive = true; 
+                    }   
+                }
                 const rosterCard = new RosterCard({
                     consumerId: consumer.id,
                     firstName: consumer.FN,
