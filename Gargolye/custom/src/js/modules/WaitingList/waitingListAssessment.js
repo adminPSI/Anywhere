@@ -1326,7 +1326,12 @@ const WaitingListAssessment = (() => {
       return !link.classList.contains('hiddenPage') && !link.classList.contains('formComplete') && !link.classList.contains('parent');
     });
 
-    sendEmailButton.toggleDisabled(incompleteSections.length > 0 || !$.session.sendWaitingListEmail);
+    if (!$.session.waitingListUpdate) {
+      sendEmailButton.toggleDisabled(true);
+      return;
+    }
+    
+    sendEmailButton.toggleDisabled(incompleteSections.length > 0 && !$.session.sendWaitingListEmail);
   }
 
   // DATA
@@ -3446,6 +3451,7 @@ const WaitingListAssessment = (() => {
       text: 'Add New Documentation',
       style: 'primary',
       styleType: 'contained',
+      disabled: !$.session.waitingListUpdate
     });
     documentsForm = new Form({
       fields: [
@@ -3530,6 +3536,9 @@ const WaitingListAssessment = (() => {
     tocLinks['participants'].classList.toggle('formComplete', Object.values(wlParticipants).length);
 
     wlForms['conclusion'].inputs['fundingSourceId'].populate(fundingSources, wlData['conclusion'].fundingSourceId);
+    if (!$.session.waitingListUpdate) {
+      wlForms['conclusion'].inputs['fundingSourceId'].toggleDisabled(true);
+    }
 
     toggleSendEmailDisabledStatus();
 
