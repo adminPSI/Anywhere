@@ -850,6 +850,13 @@ const planConsentAndSign = (() => {
                     { key: 'data-signed', value: isSigned },
                     { key: 'data-hideicon', value: true },
                 ];
+
+                    if (isSigned) {
+                        tableOBJ.attributes.push({
+                            key: 'data-eDigitalSigned',
+                            value: true,
+                        });
+                    }
                 }
 
                 // hide/show delete icon
