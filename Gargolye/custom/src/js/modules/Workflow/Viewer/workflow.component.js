@@ -225,7 +225,7 @@ class WorkflowComponent {
                 let result = await WorkflowViewerAjax.deleteWorkflowAsync(workflowId);  
                 if (result.deleteWorkflowResult === "1"){
                     workflowContainer.remove();   
-                    let workflowsRemaining = document.querySelectorAll('.card,.workflow');
+                    let workflowsRemaining = document.querySelectorAll('.card.workflow');
                     let workflowsContainer = document.getElementById('workflow-viewer');
                     if (workflowsRemaining.length == 0) workflowsContainer.innerHTML = `There are no workflows attached to this record`;                
                 }

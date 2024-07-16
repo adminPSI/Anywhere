@@ -809,7 +809,8 @@
 #workflow_addWorkflowPopup {
   z-index: 1000;
 }
-#wfStepPopup {
+#wfStepPopup,
+#deleteWarningPopup {
   z-index: 1000;
 }
 #selectTemplatePopup {
