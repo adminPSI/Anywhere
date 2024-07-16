@@ -331,7 +331,7 @@ const roster2 = (function () {
                 document.getElementById('selectedGroupNameBtn').innerHTML = 'Group: ' + selectedGroupName;
         }
 
-        if ($.loadedApp === 'roster' || ($.session.applicationName == 'Gatekeeper' && $.loadedApp === 'casenotes')) {
+        if ($.session.applicationName == 'Gatekeeper' && ($.loadedApp === 'roster' || $.loadedApp === 'casenotes')) {
             btnWrap.appendChild(selectedActiveBtnWrap);
             if (document.getElementById('selectedActiveBtn') != null)
                 document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactives: ' + selectedActive;
@@ -435,7 +435,7 @@ const roster2 = (function () {
         selectedGroupNameBtnWrap.appendChild(selectedGroupNameCloseBtn);
         btnWrap.appendChild(selectedGroupNameBtnWrap);
 
-        if ($.loadedApp === 'roster' || ($.session.applicationName == 'Gatekeeper' && $.loadedApp === 'casenotes')) {
+        if ($.session.applicationName == 'Gatekeeper' && ($.loadedApp === 'roster' || $.loadedApp === 'casenotes')) { 
             selectedActiveBtnWrap = document.createElement('div');
             selectedActiveBtnWrap.classList.add('filterSelectionBtnWrap');
             selectedActiveBtnWrap.appendChild(selectedActiveBtn);
@@ -542,7 +542,7 @@ const roster2 = (function () {
         }
         if (IsShow == 'ALL' || IsShow == 'selectedLocationNameBtn') FILTER_POPUP.appendChild(LOCATION_DROPDOWN);
         if (IsShow == 'ALL' || IsShow == 'selectedGroupNameBtn') FILTER_POPUP.appendChild(GROUP_DROPDOWN);
-        if ($.loadedApp === 'roster' || ($.session.applicationName == 'Gatekeeper' && $.loadedApp === 'casenotes')) {
+        if ($.session.applicationName == 'Gatekeeper' && ($.loadedApp === 'roster' || $.loadedApp === 'casenotes')) {
             if (IsShow == 'ALL' || IsShow == 'selectedActiveBtn') FILTER_POPUP.appendChild(ACTIVE_DROPDOWN);
         }
         FILTER_POPUP.appendChild(btnWrap);
@@ -763,7 +763,7 @@ const roster2 = (function () {
         if (document.getElementById('totalConsumerCountBtn') != null)
             document.getElementById('totalConsumerCountBtn').innerHTML = 'Total Consumer Count: ' + totalConsumerCount;
 
-        if ($.loadedApp === 'roster' || ($.session.applicationName == 'Gatekeeper' && $.loadedApp === 'casenotes')) {
+        if ($.session.applicationName == 'Gatekeeper' && ($.loadedApp === 'roster' || $.loadedApp === 'casenotes')) {
             btnWrap.appendChild(selectedActiveBtnWrap);
             if (document.getElementById('selectedActiveBtn') != null)
                 document.getElementById('selectedActiveBtn').innerHTML = 'Show Inactives: ' + selectedActive;
