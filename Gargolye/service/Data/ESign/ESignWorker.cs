@@ -184,7 +184,7 @@ namespace Anywhere.service.Data.ESign
 
         public byte[] createImage(string date, string applicationName)
         {
-            string topLine = "Electronicaly signed via";
+            string topLine = "Electronically signed via";
             string bottomLine = applicationName + " Anywhere";
             //string bottomLine = "on " + date + " GMT";
             int width = 2000;
