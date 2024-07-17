@@ -54,7 +54,7 @@
      */
     WarningPopup.prototype._setupEvents = function (cbFunc) {
         this.dialog.dialog.addEventListener('click', e => {
-            // e.target is confirm or cancel? 
+            console.log(e.target);
             cbFunc();
         });
     };

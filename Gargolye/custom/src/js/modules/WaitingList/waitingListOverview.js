@@ -1,7 +1,10 @@
 const WaitingListOverview = (() => {
+  let selectedRow, selectedRowId;
+  // UI Instances
   let selectedConsumer;
   let overviewWrap;
   let wlReviewTable;
+  let deleteWarningPopup;
 
   // DATA
   //--------------------------------------------------
@@ -95,21 +98,60 @@ const WaitingListOverview = (() => {
       });
     });
     wlReviewTable.onRowDelete(async (row, rowId) => {
-      // call delete procedure
-      // remove row from table
-      const resp = await _UTIL.fetchData('deleteWaitingListAssessment', {
-        waitingListId: parseInt(rowId),
-      });
+      selectedRow = row;
+      selectedRowId = rowId;
 
-      wlReviewTable.removeRow(row);
+      deleteWarningPopup.show();
     });
   }
 
   // MAIN
   //--------------------------------------------------
+  function populateDeleteWarningPopup() {
+    const messageEle = _DOM.createElement('p', {
+        class: 'confirmation__message',
+    });
+
+    const btnWrap = _DOM.createElement('div', { class: 'button-wrap' });
+    const confirmButton = new Button({
+        text: 'Yes',
+        name: 'confirm',
+        icon: 'checkmark', 
+    });
+    const cancelButton = new Button({
+        text: 'No',
+        name: 'cancel',
+        icon: 'close',
+    });
+
+    confirmButton.onClick(async () => {
+      const resp = await _UTIL.fetchData('deleteWaitingListAssessment', {
+        waitingListId: parseInt(selectedRowId),
+      });
+
+      wlReviewTable.removeRow(selectedRow);
+
+      deleteWarningPopup.close();
+
+      selectedRow = null;
+      selectedRowId = null;
+    });
+    cancelButton.onClick(() => {
+      deleteWarningPopup.close();
+    });
+
+    confirmButton.renderTo(btnWrap);
+    cancelButton.renderTo(btnWrap);
+
+    deleteWarningPopup.dialog.appendChild(messageEle);
+    deleteWarningPopup.dialog.appendChild(btnWrap);
+  }
   async function loadPage() {
     await rosterPicker.fetchConsumers();
     rosterPicker.populate();
+
+    deleteWarningPopup.renderTo(_DOM.ACTIONCENTER);
+    populateDeleteWarningPopup();
   }
   function loadPageSkeleton() {
     moduleBody.innerHTML = '';
@@ -127,7 +169,6 @@ const WaitingListOverview = (() => {
   // INIT (data & defaults)
   //--------------------------------------------------
   function initComponents() {
-    // Review Table
     wlReviewTable = new Table({
       columnSortable: true,
       allowDelete: $.session.waitingListDelete,
@@ -162,6 +203,8 @@ const WaitingListOverview = (() => {
       styleType: 'contained',
       disabled: true,
     });
+
+    deleteWarningPopup = new Dialog({ className: 'wlDeleteWarningPopup' });
   }
   async function reload() {
     loadPageSkeleton();
