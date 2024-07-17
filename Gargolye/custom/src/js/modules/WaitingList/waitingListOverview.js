@@ -110,18 +110,19 @@ const WaitingListOverview = (() => {
   function populateDeleteWarningPopup() {
     const messageEle = _DOM.createElement('p', {
         class: 'confirmation__message',
+        text: 'Are you sure you want to delete this assessment?'
     });
 
     const btnWrap = _DOM.createElement('div', { class: 'button-wrap' });
     const confirmButton = new Button({
         text: 'Yes',
         name: 'confirm',
-        icon: 'checkmark', 
+        //icon: 'checkmark', 
     });
     const cancelButton = new Button({
         text: 'No',
         name: 'cancel',
-        icon: 'close',
+        //icon: 'close',
     });
 
     confirmButton.onClick(async () => {
