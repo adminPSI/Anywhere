@@ -1,5 +1,10 @@
 using Anywhere.Data;
+using System.ServiceModel.Web;
+using System;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.WorkflowWorker;
+using OneSpanSign.Sdk;
+using System.Runtime.Serialization;
 
 namespace Anywhere.service.Data
 {
@@ -70,6 +75,13 @@ namespace Anywhere.service.Data
             string consumerPlanYearInfoString = dg.getConsumerPlanYearInfo(token, consumerId);
             ConsumerPlanYearInfo[] consumerPlanYearInfoObj = js.Deserialize<ConsumerPlanYearInfo[]>(consumerPlanYearInfoString);
             return consumerPlanYearInfoObj[0];
+        }
+
+        public RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId)
+        {
+            string rosterToDoListDataString = dg.getRosterToDoListWidgetData(responsiblePartyId, token);
+            RosterToDoListWidgetData[] rosterToDoListObj = js.Deserialize<RosterToDoListWidgetData[]>(rosterToDoListDataString);
+            return rosterToDoListObj;           
         }
 
         public class MobileCarrierDropdown
@@ -176,6 +188,29 @@ namespace Anywhere.service.Data
             public string state { get; set; }
             public string zipcode { get; set; }
             public string email { get; set; }
+        }
+
+        [DataContract]
+        public class RosterToDoListWidgetData
+        {
+            [DataMember(Order = 0)]
+            public string workflowName { get; set; }
+            [DataMember(Order = 1)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 2)]
+            public string consumerFirstName { get; set; }
+            [DataMember(Order = 3)]
+            public string consumerLastName { get; set; }
+            [DataMember(Order = 4)]
+            public string consumerMiddleName { get; set; }
+            [DataMember(Order = 5)]
+            public string workflowStepId { get; set; }
+            [DataMember(Order = 6)]
+            public string workflowStepDescription { get; set; }
+            [DataMember(Order = 7)]
+            public string workflowStepDueDate { get; set; }
+            [DataMember(Order = 8)]
+            public string responsiblePartyId { get; set; }
         }
 
     }

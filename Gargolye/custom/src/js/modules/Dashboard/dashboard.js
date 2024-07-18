@@ -24,6 +24,7 @@
         moneyManagement: 18,
         infal: null,
         systemMessages: 19,
+        rosterToDoList: 20,
     };
 
     // Widget Markup
@@ -183,6 +184,14 @@
       <h3>Money Management</h3>
     </div>
     <div class="widget__body"></div>
+    `,
+        rosterToDoList: `
+    <div class="widget__header">
+      <h3>Roster To-Do List</h3>
+    </div>
+    <div class="widget__body">
+      <div id="roster-workflow-tasks"></div>
+    </div>
     `,
     };
 
@@ -569,6 +578,28 @@
             })();
         }
     }
+
+    function initRosterToDoListWidget() {
+        const showHide = getWidgetSettings(widgetIds.rosterToDoList).showHide;
+        if (
+            ($.session.isPSI == true && $.session.applicationName === 'Gatekeeper') ||
+            ($.session.anywherePlanPermission == 'Anywhere_Plan' &&
+                $.session.applicationName === 'Gatekeeper')
+        ) {
+            (function loadRosterToDoListWidget() {
+                var div = document.createElement('div');
+                div.setAttribute('data-show', showHide);
+                div.setAttribute('data-widgetId', widgetIds.rosterToDoList);
+                div.id = 'rosterToDoList';
+                div.classList.add('widget');
+                div.classList.add('rosterToDoListWidget');
+                div.innerHTML = html.rosterToDoList;
+                widgets.push(div);
+                setupFuncs.push(rosterToDoListWidget.init);
+            })();
+        }
+    }
+
     function initInfalWidget() {
         const showHide = getWidgetSettings(widgetIds.infal).showHide;
         if (
@@ -693,6 +724,9 @@
             }
             else if (widgetSetting.widgetName == 'Money Management') {
                 /*18*/ initMoneyManagementWidget(); // Money Management Widget 
+            }           
+            else if (widgetSetting.widgetName == 'Roster To-Do List') {
+                /*20*/ initRosterToDoListWidget(); // Plan Workflow To Do List Widget
             }
 
             /*17*/ initInfalWidget(); // InfalTimeClock Widget

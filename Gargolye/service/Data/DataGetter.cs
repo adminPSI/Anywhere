@@ -6741,6 +6741,24 @@ namespace Anywhere.Data
 
         }
 
+        public string getRosterToDoListWidgetData(string responsiblePartyId,string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getRosterToDoListWidgetData");
+            List<string> list = new List<string>();
+            list.Add(responsiblePartyId);
+            string text = "CALL DBA.ANYW_Dashboard_RosterToDoListWidget(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("739", ex.Message + "ANYW_Dashboard_RosterToDoListWidget(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "739: error ANYW_Dashboard_RosterToDoListWidget";
+            }
+        }
+
     }
 
 }

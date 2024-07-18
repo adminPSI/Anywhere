@@ -4126,5 +4126,10 @@ namespace Anywhere
             return esw.getESignerData(tempUserId);
         }
 
+        public RosterWorker.RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId)
+        {
+            return rosterWorker.getRosterToDoListWidgetData(token, responsiblePartyId);
+        }
+
     }
 }

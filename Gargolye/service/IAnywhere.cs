@@ -5383,6 +5383,15 @@ namespace Anywhere
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/getESignerData/")]
         ESignerData getESignerData(string tempUserId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getRosterToDoListWidgetData/")]
+        RosterWorker.RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId);
+
     }
 
 
