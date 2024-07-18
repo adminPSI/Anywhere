@@ -192,8 +192,8 @@
         dataArr.unshift(defaultGroup);
 
         if (!$.session.outcomesWidgetGroupId) $.session.outcomesWidgetGroupId = dataArr[0].value;
-        if (!$.session.outcomesWidgetGroupName) $.session.outcomesWidgetGroupName = dataArr[0].text;
-
+        if (!$.session.outcomesWidgetGroupName) $.session.outcomesWidgetGroupName = dataArr[0].text;      
+        if (dataArr.find(x => x.value == $.session.outcomesWidgetGroupId) == undefined) $.session.outcomesWidgetGroupId = '%';
         dropdown.populate('goalsWidgetGroups', dataArr, $.session.outcomesWidgetGroupId);
     }
     function eventSetup() {
