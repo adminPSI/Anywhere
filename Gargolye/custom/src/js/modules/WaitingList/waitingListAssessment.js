@@ -3250,7 +3250,7 @@ const WaitingListAssessment = (() => {
         rowId,
       );
     });
-    participantsTable.onRowDelete(async rowId => {
+    participantsTable.onRowDelete(async ([row, rowId]) => {
       if (!$.session.waitingListUpdate) return;
       
       await _UTIL.fetchData('deleteWaitingListParticipant', {
@@ -3436,11 +3436,13 @@ const WaitingListAssessment = (() => {
           type: 'text',
           label: 'Email Header',
           id: 'emailHeader',
+          value: 'Waiting List Assessment'
         },
         {
           type: 'text',
           label: 'Email Body',
           id: 'emailBody',
+          value: `Waiting list assessment for ${selectedConsumer.firstName} ${selectedConsumer.middleName} ${selectedConsumer.lastName} attached`
         },
       ],
     });

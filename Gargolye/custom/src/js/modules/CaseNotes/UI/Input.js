@@ -11,6 +11,7 @@
   const DEFAULT_OPTIONS = {
     showcount: false,
     note: null,
+    value: null,
   };
 
   /**
@@ -50,6 +51,10 @@
     this.inputNote = null;
 
     this._build();
+
+    if (this.options.value) {
+      this.setValue(this.options.value);
+    }
   }
 
   /**
