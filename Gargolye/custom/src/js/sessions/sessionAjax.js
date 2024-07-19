@@ -908,24 +908,6 @@ function getUserPermissions(callback) {
       $('#lastName').text($.session.LName);
     },
   });
-
-  // $.ajax({
-  //   type: 'POST',
-  //   url:
-  //     $.webServer.protocol +
-  //     '://' +
-  //     $.webServer.address +
-  //     ':' +
-  //     $.webServer.port +
-  //     '/' +
-  //     $.webServer.serviceName +
-  //     '/testPDFExtractor/',
-  //   data: '{"token":"' + $.session.Token + '"}',
-  //   contentType: 'application/json; charset=utf-8',
-  //   dataType: 'json',
-  //     success: function (response, status, xhr) {
-  //   },
-  // });
 }
 
 function featureLogging(appName) {
