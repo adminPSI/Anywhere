@@ -3250,7 +3250,7 @@ const WaitingListAssessment = (() => {
         rowId,
       );
     });
-    participantsTable.onRowDelete(async ([row, rowId]) => {
+    participantsTable.onRowDelete(async (row, rowId) => {
       if (!$.session.waitingListUpdate) return;
       
       await _UTIL.fetchData('deleteWaitingListParticipant', {
