@@ -1701,7 +1701,7 @@ const WaitingListAssessment = (() => {
     const isLawEnforcementInvestigationChecked = wlData.riskMitigation.rMIsLawEnforcementInvestigation;
     const isOtherInvestigationChecked = wlData.riskMitigation.rMIsOtherInvestigation;
 
-    if (pgActionRequiredIn30Days.includes('no') && pgUnavailable.includes('yes')) {
+    if (pgActionRequiredIn30Days.includes('no') || (pgActionRequiredIn30Days.includes('yes') && pgUnavailable.includes('no'))) {
       needsWrap.classList.remove('hiddenPage');
       wlForms['behavioral'].form.parentElement.classList.remove('hiddenPage');
       wlForms['physical'].form.parentElement.classList.remove('hiddenPage');
