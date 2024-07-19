@@ -6,6 +6,8 @@ const esignatures = (function () {
   let ssaDropdownData;
   let providerDropdownData;
   let paidSupportProviders;
+  let progressDiv;
+  let viewerContainer;
 
   function generateReportDownload(tempUserId) {
     esignaturesAjax.downloadReportAfterSigning({ tempUserId }, () => {
@@ -25,15 +27,15 @@ const esignatures = (function () {
   }
 
   async function displayFormPopup(tempUserId) {
-    const testDiv = document.createElement('div');
-    testDiv.classList.add('test');
-    testDiv.style.height = 'auto';
+    progressDiv = document.createElement('div');
+    progressDiv.classList.add('test');
+    progressDiv.style.height = 'auto';
 
     const popup = document.createElement('div');
     popup.id = 'formPopup';
     popup.classList.add('popup');
 
-    const viewerContainer = document.createElement('div');
+    viewerContainer = document.createElement('div');
     viewerContainer.id = 'viewer';
     viewerContainer.style.width = '800px';
     viewerContainer.style.height = '500px';
@@ -486,13 +488,13 @@ const esignatures = (function () {
     popup.appendChild(formContainer);
     formContainer.appendChild(submitBtn);
 
-    testDiv.appendChild(popup);
-    document.body.appendChild(testDiv);
+    progressDiv.appendChild(popup);
+    document.body.appendChild(progressDiv);
     //document.body.appendChild(popup);
 
     popup.style.display = 'block';
 
-    esignaturesAjax.openESignaturesPDFEditor(tempUserId);
+    esignaturesAjax.openESignaturesPDFEditor(tempUserId, viewerContainer);
   }
 
   async function init(tempUserId) {
