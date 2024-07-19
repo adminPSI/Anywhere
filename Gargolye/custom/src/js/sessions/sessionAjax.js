@@ -342,7 +342,7 @@ function strongPasswordValue() {
 
 async function setESignaturesMessage() {
    // Function to handle sending the code
-   async function sendCode() {
+   async function sendCode(newCode) {
     sendBtn.textContent = 'Sending code...';
     sendBtn.style.backgroundColor = '#cccccc'; 
     
@@ -360,6 +360,11 @@ async function setESignaturesMessage() {
         // Update the html on the login page
         if (generatedCodeSuccessfully.generateAuthenticationCodeResult === 'success') {
             updateHTMLAfterCodeSent();
+
+            if (newCode) {
+              const newCodeMessageDiv = document.getElementById('eSignErrorMessage');
+              newCodeMessageDiv.innerText = 'A new code has been sent to your email';
+            }
         } else {
             popupMessageText.textContent = 'Incorrect Code: Please try again.';
         }
@@ -424,16 +429,21 @@ async function setESignaturesMessage() {
     const verifyCodeBtnWrap = document.querySelector('.verifyCodeBtnWrap');
 
     // Create and append the buttons
-    const sendCodeAgainBtn = document.createElement('button');
-    sendCodeAgainBtn.textContent = 'Send Code Again';
-    sendCodeAgainBtn.className = 'sendCodeAgainBtn';
-    sendCodeAgainBtn.addEventListener('click', function() {
-      sendCode();
+
+    const sendCodeAgainBtn = button.build({
+      id: 'sendCodeBtn',
+      text: 'Send Code Again',
+      style: 'secondary',
+      type: 'contained',
+      classNames: [],
+      callback: () => {
+        sendCode(true);
+      },
     });
     verifyCodeBtnWrap.appendChild(sendCodeAgainBtn);
 
     const verifyBtn = button.build({
-      id: 'sendCodeBtn',
+      id: 'verifyCodeBtn',
       text: 'Verify',
       style: 'secondary',
       type: 'contained',
@@ -898,6 +908,24 @@ function getUserPermissions(callback) {
       $('#lastName').text($.session.LName);
     },
   });
+
+  // $.ajax({
+  //   type: 'POST',
+  //   url:
+  //     $.webServer.protocol +
+  //     '://' +
+  //     $.webServer.address +
+  //     ':' +
+  //     $.webServer.port +
+  //     '/' +
+  //     $.webServer.serviceName +
+  //     '/testPDFExtractor/',
+  //   data: '{"token":"' + $.session.Token + '"}',
+  //   contentType: 'application/json; charset=utf-8',
+  //   dataType: 'json',
+  //     success: function (response, status, xhr) {
+  //   },
+  // });
 }
 
 function featureLogging(appName) {

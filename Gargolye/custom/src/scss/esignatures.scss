@@ -38,14 +38,17 @@
 
 #sendCodeBtn {
   margin-top: 8px;
+  margin-right: 4px;
+  flex: 0 0 25%;
 }
 
-.verify-btn {
-    margin-left: auto; /* Pushes the button to the right */
+#verifyCodeBtn {
+  margin-top: 8px;
+  margin-left: auto;
 }
 
 .send-code-again-btn {
-    margin-right: auto; /* Pushes the button to the left */
+    margin-right: auto;
     font-weight: 400;
 }
 
@@ -126,11 +129,8 @@
 }
 
 #signatureInput {
-  margin-top: 8px;
   min-height: 50px !important;
   position: relative;
-  margin: 0 auto;
-  margin-top: 10px;
   width: 100%;
 }
 
