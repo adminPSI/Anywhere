@@ -3838,6 +3838,10 @@ namespace Anywhere
         {
             return cdw.verifyDefaultEmailClient();
         }
+        public AuthorizationWorker.LandingPageData[] authorizationGetLandingPageData(string token)
+        {
+            return authWorker.authorizationGetLandingPageData(token);
+        }
         public AuthorizationWorker.VendorInfo[] getVendorInfo(string token, string vendor, string DDNumber, string localNumber, string goodStanding, string homeServices, string takingNewReferrals, string fundingSource, string serviceCode)
         {
             return authWorker.getVendorInfo(token, vendor, DDNumber, localNumber, goodStanding, homeServices, takingNewReferrals, fundingSource, serviceCode);
