@@ -755,7 +755,7 @@ const vendorInfo = (function () {
     //         await groupVendorData();
     //     },
     // );
-    await getVendorLandingPageInfoAsync(async function (results) {
+    await authorizationsAjax.getVendorLandingPageInfoAsync(async function (results) {
       tempUserTableData = results;
       vendorsData = results;
       await groupVendorData();

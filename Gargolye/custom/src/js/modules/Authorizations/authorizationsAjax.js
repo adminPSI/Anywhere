@@ -36,14 +36,14 @@ const authorizationsAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/getAuthorizationLandingPageData/',
+          '/authorizationGetLandingPageData/',
         data: JSON.stringify({
             token: $.session.Token
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      const res = data.getAuthorizationLandingPageDataResult;
+      const res = data.authorizationGetLandingPageDataResult;
       callback(res)
       
     } catch (error) {
