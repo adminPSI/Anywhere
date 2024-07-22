@@ -23,7 +23,7 @@ const authorizationsAjax = (function () {
     }
   }
 
-  async function getLandingPageData() {
+  async function getVendorLandingPageInfoAsync(callback) {
     // token
     try {
       const data = await $.ajax({
@@ -43,7 +43,9 @@ const authorizationsAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      return data.getAuthorizationLandingPageDataResult;
+      const res = data.getAuthorizationLandingPageDataResult;
+      callback(res)
+      
     } catch (error) {
       console.log(error.responseText);
     }
@@ -422,7 +424,7 @@ const authorizationsAjax = (function () {
 
   return {
     getPageData,
-    getLandingPageData,
+    getVendorLandingPageInfoAsync,
     getFilterDropdownData,
     getAssessmentEntriesAsync,
     getScoreAsync,

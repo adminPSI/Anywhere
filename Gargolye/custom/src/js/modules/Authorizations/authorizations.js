@@ -815,21 +815,20 @@ const authorizations = (function () {
         const spinner = PROGRESS.SPINNER.get('Gathering Data...');
         pageWrap.appendChild(spinner);
 
-        // authData = await authorizationsAjax.getPageData({
-        //     token: $.session.Token,
-        //     selectedConsumerId: selectedConsumer.id,
-        //     code: '%',
-        //     matchSource: filterValues.matchSource,
-        //     vendorId: filterValues.vendor,
-        //     planType: filterValues.planType,
-        //     planYearStartStart: filterValues.yearStartStart,
-        //     planYearStartEnd: filterValues.yearStartEnd,
-        //     planYearEndStart: filterValues.yearEndStart,
-        //     planYearEndEnd: filterValues.yearEndEnd,
-        //     completedDateStart: filterValues.completedDateStart,
-        //     completedDateEnd: filterValues.completedDateEnd,
-        // });
-        authData = await authorizationsAjax.getLandingPageData();
+        authData = await authorizationsAjax.getPageData({
+            token: $.session.Token,
+            selectedConsumerId: selectedConsumer.id,
+            code: '%',
+            matchSource: filterValues.matchSource,
+            vendorId: filterValues.vendor,
+            planType: filterValues.planType,
+            planYearStartStart: filterValues.yearStartStart,
+            planYearStartEnd: filterValues.yearStartEnd,
+            planYearEndStart: filterValues.yearEndStart,
+            planYearEndEnd: filterValues.yearEndEnd,
+            completedDateStart: filterValues.completedDateStart,
+            completedDateEnd: filterValues.completedDateEnd,
+        });
         filterDropdownData = await authorizationsAjax.getFilterDropdownData({
             token: $.session.Token,
         });
