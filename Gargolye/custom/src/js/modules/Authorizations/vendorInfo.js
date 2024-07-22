@@ -740,25 +740,26 @@ const vendorInfo = (function () {
     var DDNum = filterValues.DDNumber == '' ? '%' : filterValues.DDNumber;
     var localNum = filterValues.localNumber == '' ? '%' : filterValues.localNumber;
     if (fromFilter) {
-await authorizationsAjax.getVendorInfoAsync({
-        vendor: filterValues.vendor,
-        DDNumber: DDNum,
-        localNumber: localNum,
-        goodStanding: filterValues.goodStanding,
-        homeServices: filterValues.homeServices,
-        takingNewReferrals: filterValues.takingNewReferrals,
-        fundingSource: filterValues.fundingSource,
-        serviceCode: filterValues.serviceCode,
-    },
-        async function (results) {
-            tempUserTableData = results;
-            vendorsData = results;
-            await groupVendorData();
+      await authorizationsAjax.getVendorInfoAsync(
+        {
+          vendor: filterValues.vendor,
+          DDNumber: DDNum,
+          localNumber: localNum,
+          goodStanding: filterValues.goodStanding,
+          homeServices: filterValues.homeServices,
+          takingNewReferrals: filterValues.takingNewReferrals,
+          fundingSource: filterValues.fundingSource,
+          serviceCode: filterValues.serviceCode,
         },
-    );
-    return;
+        async function (results) {
+          tempUserTableData = results;
+          vendorsData = results;
+          await groupVendorData();
+        },
+      );
+      return;
     }
-    
+
     await authorizationsAjax.getVendorLandingPageInfoAsync(async function (results) {
       tempUserTableData = results;
       vendorsData = results;
