@@ -30,7 +30,7 @@ const vendorInfo = (function () {
     vendorInfoLoad();
   }
 
-  async function vendorInfoLoad() {
+  async function vendorInfoLoad(fromFilter = false) {
     DOM.clearActionCenter();
     const topNav = buildRosterTopNav();
     userTable = buildTable();
@@ -57,7 +57,7 @@ const vendorInfo = (function () {
     SEARCH_INPUT.addEventListener('keyup', event => {
       tableUserSearch(event.target.value);
     });
-    await loadReviewPage();
+    await loadReviewPage(fromFilter);
     document.getElementById('searchBtn').click();
   }
 
@@ -519,7 +519,7 @@ const vendorInfo = (function () {
       filterValues.takingNewReferrals = '%';
     }
 
-    vendorInfoLoad();
+    vendorInfoLoad(true);
   }
 
   // build Filter pop-up that displays when an "Filter" button is clicked
@@ -666,7 +666,7 @@ const vendorInfo = (function () {
       });
 
       POPUP.hide(filterPopup);
-      vendorInfoLoad();
+      vendorInfoLoad(true);
     });
   }
 
@@ -736,25 +736,29 @@ const vendorInfo = (function () {
   }
 
   // load
-  async function loadReviewPage() {
+  async function loadReviewPage(fromFilter) {
     var DDNum = filterValues.DDNumber == '' ? '%' : filterValues.DDNumber;
     var localNum = filterValues.localNumber == '' ? '%' : filterValues.localNumber;
-    // await authorizationsAjax.getVendorInfoAsync({
-    //     vendor: filterValues.vendor,
-    //     DDNumber: DDNum,
-    //     localNumber: localNum,
-    //     goodStanding: filterValues.goodStanding,
-    //     homeServices: filterValues.homeServices,
-    //     takingNewReferrals: filterValues.takingNewReferrals,
-    //     fundingSource: filterValues.fundingSource,
-    //     serviceCode: filterValues.serviceCode,
-    // },
-    //     async function (results) {
-    //         tempUserTableData = results;
-    //         vendorsData = results;
-    //         await groupVendorData();
-    //     },
-    // );
+    if (fromFilter) {
+await authorizationsAjax.getVendorInfoAsync({
+        vendor: filterValues.vendor,
+        DDNumber: DDNum,
+        localNumber: localNum,
+        goodStanding: filterValues.goodStanding,
+        homeServices: filterValues.homeServices,
+        takingNewReferrals: filterValues.takingNewReferrals,
+        fundingSource: filterValues.fundingSource,
+        serviceCode: filterValues.serviceCode,
+    },
+        async function (results) {
+            tempUserTableData = results;
+            vendorsData = results;
+            await groupVendorData();
+        },
+    );
+    return;
+    }
+    
     await authorizationsAjax.getVendorLandingPageInfoAsync(async function (results) {
       tempUserTableData = results;
       vendorsData = results;
