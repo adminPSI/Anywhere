@@ -188,6 +188,7 @@ const esignatures = (function () {
         // if event.target.value = 'on' then it wont set the formdata value. 'on' means the radio was changed
         if (event.target.value !== 'on') {
           formData.csChangeMindSSAPeopleId = event.target.value;
+          validateForm();
         }
       });
 
@@ -231,6 +232,7 @@ const esignatures = (function () {
         // if event.target.value = 'on' then it wont set the formdata value. 'on' means the radio was changed
         if (event.target.value !== 'on') {
           formData.csContactProviderVendorId = event.target.value;
+          validateForm();
         }
       });
 
@@ -390,6 +392,8 @@ const esignatures = (function () {
     function validateForm() {
       const radios = document.querySelectorAll('.ic_questionRadioContainer input[type="radio"]');
       const signatureInput = document.getElementById('signatureInput');
+      const ssaDropdown = document.getElementById('isp_ic_ssaDropdown');
+      const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
 
       let allFilled = true;
 
@@ -399,6 +403,10 @@ const esignatures = (function () {
           allFilled = false;
         }
       });
+
+      if (ssaDropdown.value === '' || vendorDropdown.value === '') {
+        allFilled = false;
+    }
 
       if (signatureInput.value === '' || !allFilled) {
         if (!submitBtn.classList.contains('disabled')) {
