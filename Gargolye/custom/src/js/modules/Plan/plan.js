@@ -2060,7 +2060,7 @@ const plan = (function () {
                         include: includeInAssessment,
                         versionID: '1',
                     });
-                    console.table(finalizationResults);
+                    
                     spinner.remove();
                     actionBtn.style.display = 'block';
 
@@ -2127,6 +2127,7 @@ const plan = (function () {
                 if (currScreen === 3) {
                     actionBtn.remove();
                     POPUP.hide(finalizePopup);
+                    finalizeBtn.classList.remove('disabled');
                 }
             },
         });
@@ -2518,6 +2519,7 @@ const plan = (function () {
             style: 'secondary',
             type: 'contained',
             callback: () => {
+                finalizeBtn.classList.add('disabled');
                 showFinalizePopup();
             },
         });

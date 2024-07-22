@@ -1857,7 +1857,7 @@ const WaitingListAssessment = (() => {
     if (wlData.behavioral.risksHasOtherDocument) {
       wlForms['behavioral'].inputs['risksOtherDocumentDescription'].toggleDisabled(false);
     }
-    if (wlData.other.needsIsActionRequiredRequiredIn30Days.includes('yes')) {
+    if (wlData.other.needsIsActionRequiredRequiredIn30Days.includes('no')) {
       wlForms['other'].inputs['needsIsContinuousSupportRequired'].toggleDisabled(false);
     }
 
@@ -1954,11 +1954,6 @@ const WaitingListAssessment = (() => {
   
     wlForms['riskMitigation'].form.parentElement.classList.toggle('hiddenPage', !showRM);
     tocLinks['riskMitigation'].classList.toggle('hiddenPage', !showRM);
-
-    console.log(`
-      Risk Mitigation Visibility Status: ${showRM ? 'Visible' : 'Hidden'},
-      Reason: needsIsActionRequiredIn30Days was ${isNeedsActionRequired ? isNeedsActionRequired.replaceAll('needsIsActionRequiredRequiredIn30Days', '') : 'n/a'}
-    `);
     
     if (!showRM) {
       sectionResets['riskMitigation']();
