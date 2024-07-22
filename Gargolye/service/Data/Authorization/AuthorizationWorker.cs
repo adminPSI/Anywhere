@@ -94,6 +94,16 @@ namespace Anywhere.service.Data.Authorization
             public string scoreDescription { get; set; }
         }
 
+        public class LandingPageData
+        {
+            public string vendorID { get; set; }
+            public string name { get; set; }
+            public string DDNumber { get; set; }
+            public string localNumber { get; set; }
+            public string contact { get; set; }
+            public string phone { get; set; }
+        }
+
         public class VendorInfo
         {
             public string vendorID { get; set; }
@@ -475,12 +485,22 @@ namespace Anywhere.service.Data.Authorization
             }
         }
 
+        
+       public LandingPageData[] authorizationGetLandingPageData(string token)
+       {
+            string landingPageString = adg.authorizationGetLandingPageData(token);
+            js.MaxJsonLength = Int32.MaxValue;
+            LandingPageData[] landingPageObj = js.Deserialize<LandingPageData[]>(landingPageString);
+            return landingPageObj;
+       }
+
         public VendorInfo[] getVendorInfo(string token, string vendor, string DDNumber, string localNumber, string goodStanding, string homeServices, string takingNewReferrals, string fundingSource, string serviceCode)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
+                    js.MaxJsonLength = Int32.MaxValue;
                     VendorInfo[] vendorInfo = js.Deserialize<VendorInfo[]>(adg.getVendorInfo(token, vendor, DDNumber, localNumber, goodStanding, homeServices, takingNewReferrals, fundingSource, serviceCode, transaction));
                     return vendorInfo;
                 }
