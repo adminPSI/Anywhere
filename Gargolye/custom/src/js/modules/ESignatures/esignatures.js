@@ -404,8 +404,10 @@ const esignatures = (function () {
         }
       });
 
-      if (ssaDropdown.value === '' || vendorDropdown.value === '') {
-        allFilled = false;
+      if (ssaDropdown && vendorDropdown) {
+        if (ssaDropdown.value === '' || vendorDropdown.value === '') {
+          allFilled = false;
+      }
     }
 
       if (signatureInput.value === '' || !allFilled) {
