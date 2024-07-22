@@ -829,7 +829,7 @@ const authorizations = (function () {
         //     completedDateStart: filterValues.completedDateStart,
         //     completedDateEnd: filterValues.completedDateEnd,
         // });
-        authData = await authorizationsAjax.getPageData();
+        authData = await authorizationsAjax.getLandingPageData();
         filterDropdownData = await authorizationsAjax.getFilterDropdownData({
             token: $.session.Token,
         });
