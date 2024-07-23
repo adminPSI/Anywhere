@@ -2311,6 +2311,9 @@ const WaitingListAssessment = (() => {
 
     updateFormCompletionStatus('currentNeeds');
   }
+  async function immediateNeedsDetermination() {
+    // immNeedsRequired
+  }
   //--------------------------------------------------
   function setConclusion() {
     if (!isAssessmentComplete) return;
@@ -2821,11 +2824,28 @@ const WaitingListAssessment = (() => {
           type: 'radio',
           formName: 'riskMitigation',
         });
+
+        wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue('rMIsSupportNeededno');
+        await insertUpdateAssessmentData({
+          value: 'no',
+          name: 'rMIsSupportNeeded',
+          type: 'radio',
+          formName: 'riskMitigation',
+        });
+
       } else {
         wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
         await insertUpdateAssessmentData({
           value: '',
           name: 'rMIsActionRequiredIn3oDays',
+          type: 'radio',
+          formName: 'riskMitigation',
+        });
+
+        wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue('');
+        await insertUpdateAssessmentData({
+          value: '',
+          name: 'rMIsSupportNeeded',
           type: 'radio',
           formName: 'riskMitigation',
         });
