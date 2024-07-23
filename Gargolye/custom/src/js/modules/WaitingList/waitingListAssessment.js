@@ -1314,7 +1314,6 @@ const WaitingListAssessment = (() => {
   }
   function checkIsAssessmentComplete() {
     const incompleteSections = Object.values(tocLinks).filter(link => {
-      console.log('link', link);
       return !link.classList.contains('hiddenPage') && !link.classList.contains('formComplete') && !link.classList.contains('parent') && !link.classList.contains('conclusion');
     });
 
@@ -1925,12 +1924,6 @@ const WaitingListAssessment = (() => {
       wlForms[page].form.parentElement.classList.toggle('hiddenPage', !showPages);
       tocLinks[page].classList.toggle('hiddenPage', !showPages);
 
-      console.log(`
-        ${_UTIL.convertCamelCaseToTitle(page)} Visibility Status: ${showPages ? 'Visible' : 'Hidden'},
-        Reason: isPrimaryCaregiverUnavailable was ${isPrimaryCaregiverUnavailable ? isPrimaryCaregiverUnavailable.replaceAll('isPrimaryCaregiverUnavailable', '') : 'n/a'} 
-        AND isActionRequiredIn30Days was ${isActionRequiredIn30Days ? isActionRequiredIn30Days.replaceAll('isActionRequiredIn30Days', '') : 'n/a'}
-      `);
-
       if (!showPages) {
         sectionResets[page]();
       } else {
@@ -1975,13 +1968,6 @@ const WaitingListAssessment = (() => {
       wlForms[page].form.parentElement.classList.toggle('hiddenPage', !icfAnyNo);
       tocLinks[page].classList.toggle('hiddenPage', !icfAnyNo);
 
-      console.log(`
-        ${_UTIL.convertCamelCaseToTitle(page)} Visibility Status: ${icfAnyNo ? 'Visible' : 'Hidden'},
-        Reason: icfIsNoticeIssued was ${icfIsNoticeIssued ? icfIsNoticeIssued.replaceAll('icfIsNoticeIssued', '') : 'n/a'} AND
-        icfIsICFResident was ${icfIsICFResident ? icfIsICFResident.replaceAll('icfIsICFResident', '') : 'n/a'} AND
-        icfIsActionRequiredIn30Days was ${icfIsActionRequiredIn30Days ? icfIsActionRequiredIn30Days.replaceAll('icfIsActionRequiredIn30Days', '') : 'n/a'} AND
-      `);
-
       if (!icfAnyNo) {
         sectionResets[page]();
       } else {
@@ -2007,11 +1993,6 @@ const WaitingListAssessment = (() => {
     wlForms['icfDischarge'].form.parentElement.classList.toggle('hiddenPage', !showICF);
     tocLinks['icfDischarge'].classList.toggle('hiddenPage', !showICF);
 
-    console.log(`
-      ICF Discharge Visibility Status: ${showICF ? 'Visible' : 'Hidden'},
-      Reason: rMIsActionRequiredIn3oDays was ${isRisksActionRequired ? isRisksActionRequired.replaceAll('rMIsActionRequiredIn3oDays', '') : 'n/a'}
-    `);
-
     if (!showICF) {
       sectionResets['icfDischarge']();
       _UTIL.fetchData('deleteFromWaitingList', {
@@ -2028,10 +2009,10 @@ const WaitingListAssessment = (() => {
     const isActionRequiredICF = wlForms['icfDischarge'].inputs['icfIsActionRequiredIn30Days'].getValue();
     const isResidentICF = wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue();
 
-    const isAllYesICF = noticeIssuedICF.includes('yes') || isActionRequiredICF.includes('yes') || isResidentICF.includes('yes');
+    const isAnyYesICF = noticeIssuedICF.includes('yes') || isActionRequiredICF.includes('yes') || isResidentICF.includes('yes');
 
     const showImmediateNeeds =
-      isActionRequiredOther.includes('yes') || (isActionRequiredRM.includes('yes') && isRMChecked) || isPGActionRequiredIn30Days.includes('yes') || isAllYesICF;
+      isActionRequiredOther.includes('yes') || (isActionRequiredRM.includes('yes') && isRMChecked) || isPGActionRequiredIn30Days.includes('yes') || isAnyYesICF;
 
     wlForms['immediateNeeds'].form.parentElement.classList.toggle('hiddenPage', !showImmediateNeeds);
     tocLinks['immediateNeeds'].classList.toggle('hiddenPage', !showImmediateNeeds);
@@ -2055,8 +2036,8 @@ const WaitingListAssessment = (() => {
   async function showHideCurrentNeeds() {
     const isNeedsActionRequired = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
     const isRisksActionRequired = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
-    const noticeIssuedICF = wlForms['icfDischarge'].inputs[''].getValue();
-    const isActionRequiredICF = wlForms['icfDischarge'].inputs[''].getValue();
+    const noticeIssuedICF = wlForms['icfDischarge'].inputs['icfIsNoticeIssued'].getValue();
+    const isActionRequiredICF = wlForms['icfDischarge'].inputs['icfIsActionRequiredIn30Days'].getValue();
     const isResidentICF = wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue();
 
     const isAnyNoICF = noticeIssuedICF.includes('no') || isActionRequiredICF.includes('no') || isResidentICF.includes('no');
@@ -2922,14 +2903,20 @@ const WaitingListAssessment = (() => {
     },
     //* icfDischarge
     icfIsICFResident: async ({ value }) => {
+      await showHideImmediateNeeds();
+      await showHideCurrentNeeds();
       await showHidePagesRelatedToICF();
       await icfDischargeDetermination();
     },
     icfIsNoticeIssued: async ({ value }) => {
+      await showHideImmediateNeeds();
+      await showHideCurrentNeeds();
       await showHidePagesRelatedToICF();
       await icfDischargeDetermination();
     },
     icfIsActionRequiredIn30Days: async ({ value }) => {
+      await showHideImmediateNeeds();
+      await showHideCurrentNeeds();
       await showHidePagesRelatedToICF();
       await icfDischargeDetermination();
     },
@@ -3477,10 +3464,7 @@ const WaitingListAssessment = (() => {
     });
 
     // Save/Update Queue
-    updateQueue = new _UTIL.AsyncQueue('insertUpdateWaitingListValue', maxQueueSize, responses => {
-      // console.log('Updates:');
-      // console.table(responses);
-    });
+    updateQueue = new _UTIL.AsyncQueue('insertUpdateWaitingListValue', maxQueueSize, responses => {});
   }
 
   async function init(opts) {
@@ -3500,8 +3484,6 @@ const WaitingListAssessment = (() => {
     initComponents();
     loadPage();
     attachEvents();
-
-    console.clear();
 
     const fundingSources = await getFundingSources();
 
