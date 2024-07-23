@@ -2876,8 +2876,7 @@ const WaitingListAssessment = (() => {
           type: 'text',
           formName: 'riskMitigation',
         });
-      } else if (!hasCheck) {
-        // if isNotAppCheck and hasCheck are both false then we know we just unchecked not applicable
+      } else if (name === 'rMIsNone' && value === 'off') {
         wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
         wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue('');
 
