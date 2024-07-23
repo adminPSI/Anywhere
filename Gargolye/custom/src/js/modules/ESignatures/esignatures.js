@@ -8,6 +8,7 @@ const esignatures = (function () {
   let paidSupportProviders;
   let progressDiv;
   let viewerContainer;
+  let formContainer;
 
   function generateReportDownload(tempUserId) {
     esignaturesAjax.downloadReportAfterSigning({ tempUserId }, () => {
@@ -26,6 +27,45 @@ const esignatures = (function () {
     });
   }
 
+  function setSSADropdownInitialWidth(ssaDropdown, csChangeMindSSAPeopleId) {
+    //const ssaDropdown = popup.querySelector('#isp_ic_ssaDropdown');
+    ssaDropdown.value = csChangeMindSSAPeopleId;
+    let ssaWidth = 150;
+    if (ssaDropdown.selectedIndex !== -1) {
+        ssaWidth = ssaDropdown.options[ssaDropdown.selectedIndex].text.length * 10;
+    }
+    ssaDropdown.style.width = `${ssaWidth}px`;
+}
+function setVendorDropdownInitialWidth(vendorContactDropdown, csContactProviderVendorId) {
+    //const vendorContactDropdown = popup.querySelector('#isp_ic_vendorContactDropdown');
+    vendorContactDropdown.value = csContactProviderVendorId;
+    const vendorWidth =
+        (vendorContactDropdown.options[vendorContactDropdown.selectedIndex].text.length + 3) * 10;
+
+    vendorContactDropdown.style.width = `${vendorWidth}px`;
+}
+
+function updateSSADropdownWidth(popup) {
+  const ssaDropdown = popup.querySelector('#isp_ic_ssaDropdown');
+  const hidden_opt = popup.querySelector('#isp_ic_ssaDropdown__width_tmp_option');
+  hidden_opt.innerHTML = ssaDropdown.options[ssaDropdown.selectedIndex].textContent;
+  const hidden_sel = popup.querySelector('#isp_ic_ssaDropdown__width_tmp_select');
+  hidden_sel.style.display = 'initial';
+  ssaDropdown.style.width = hidden_sel.clientWidth + 22 + 'px';
+  hidden_sel.style.display = 'none';
+}
+function updateVendorDropdownWidth(popup) {
+  const vendorContactDropdown = popup.querySelector('#isp_ic_vendorContactDropdown');
+  const hidden_opt = popup.querySelector('#isp_ic_vendorContactDropdown__width_tmp_option');
+  hidden_opt.innerHTML =
+      vendorContactDropdown.options[vendorContactDropdown.selectedIndex].textContent;
+  const hidden_sel = popup.querySelector('#isp_ic_vendorContactDropdown__width_tmp_select');
+  hidden_sel.style.display = 'initial';
+  vendorContactDropdown.style.width = hidden_sel.clientWidth + 22 + 'px';
+  hidden_sel.style.display = 'none';
+}
+
+
   async function displayFormPopup(tempUserId) {
     progressDiv = document.createElement('div');
     progressDiv.classList.add('test');
@@ -43,7 +83,7 @@ const esignatures = (function () {
 
     popup.appendChild(viewerContainer);
 
-    const formContainer = document.createElement('div');
+    formContainer = document.createElement('div');
     formContainer.classList.add('formContainer');
 
     function buildDissentSection() {
@@ -184,10 +224,11 @@ const esignatures = (function () {
       csChangeMindQuestionText.innerHTML += ` <span>know.</span>`;
       changeMindQuestion.appendChild(csChangeMindQuestionText);
 
-      changeMindQuestion.addEventListener('change', (event) => {
+      changeMindQuestion.addEventListener('change', event => {
         // if event.target.value = 'on' then it wont set the formdata value. 'on' means the radio was changed
         if (event.target.value !== 'on') {
           formData.csChangeMindSSAPeopleId = event.target.value;
+          updateSSADropdownWidth(formContainer);
           validateForm();
         }
       });
@@ -228,10 +269,11 @@ const esignatures = (function () {
       // populate
       populateDropdownVendor(csContactQuestionDropdown, esignerData.vendorId);
 
-      contactQuestion.addEventListener('change', (event) => {
+      contactQuestion.addEventListener('change', event => {
         // if event.target.value = 'on' then it wont set the formdata value. 'on' means the radio was changed
         if (event.target.value !== 'on') {
           formData.csContactProviderVendorId = event.target.value;
+          updateVendorDropdownWidth(formContainer);
           validateForm();
         }
       });
@@ -407,8 +449,8 @@ const esignatures = (function () {
       if (ssaDropdown && vendorDropdown) {
         if (ssaDropdown.value === '' || vendorDropdown.value === '') {
           allFilled = false;
+        }
       }
-    }
 
       if (signatureInput.value === '' || !allFilled) {
         if (!submitBtn.classList.contains('disabled')) {
@@ -547,6 +589,20 @@ const esignatures = (function () {
     paidSupportProviders = servicesSupports.getSelectedVendorIds();
 
     displayFormPopup(tempUserId);
+
+    const ssaDropdown = document.getElementById('isp_ic_ssaDropdown');
+    const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
+
+    // set the initial value and width of the dropdown value if they 
+    if (ssaDropdown) {
+      const ssaDropdown = document.getElementById('isp_ic_ssaDropdown');
+      setSSADropdownInitialWidth(ssaDropdown, esignerData.ssaPeopleId);
+    }
+    
+    if (vendorDropdown) {
+      const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
+     setVendorDropdownInitialWidth(vendorDropdown, esignerData.vendorId);
+    }
   }
 
   return {
