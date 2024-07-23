@@ -2032,7 +2032,7 @@ const WaitingListAssessment = (() => {
     const isResidentICF = wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue();
 
     const isAnyYesICF =
-      noticeIssuedICF.includes('yes') || isActionRequiredICF.includes('yes') || isResidentICF.includes('yes');
+      noticeIssuedICF.includes('yes') && isActionRequiredICF.includes('yes') && isResidentICF.includes('yes');
 
     const showImmediateNeeds =
       isActionRequiredOther.includes('yes') ||
