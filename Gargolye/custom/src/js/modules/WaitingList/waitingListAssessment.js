@@ -2021,22 +2021,21 @@ const WaitingListAssessment = (() => {
   }
   async function showHideImmediateNeeds() {
     const isRMChecked = isAnyCheckboxCheckedRiskMitigation();
-    const isRMActionRequiredIn3oDays = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
-    const isNeedsActionRequiredIn30Days = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
+    const isActionRequiredRM = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
+    const isActionRequiredOther = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
     const isPGActionRequiredIn30Days = wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].getValue();
+    const noticeIssuedICF = wlForms['icfDischarge'].inputs['icfIsNoticeIssued'].getValue();
+    const isActionRequiredICF = wlForms['icfDischarge'].inputs['icfIsActionRequiredIn30Days'].getValue();
+    const isResidentICF = wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue();
+
+    const isAllYesICF = noticeIssuedICF.includes('yes') || isActionRequiredICF.includes('yes') || isResidentICF.includes('yes');
+
     const showImmediateNeeds =
-      isNeedsActionRequiredIn30Days.includes('yes') || (isRMActionRequiredIn3oDays.includes('yes') && isRMChecked) || isPGActionRequiredIn30Days.includes('yes');
+      isActionRequiredOther.includes('yes') || (isActionRequiredRM.includes('yes') && isRMChecked) || isPGActionRequiredIn30Days.includes('yes') || isAllYesICF;
 
     wlForms['immediateNeeds'].form.parentElement.classList.toggle('hiddenPage', !showImmediateNeeds);
     tocLinks['immediateNeeds'].classList.toggle('hiddenPage', !showImmediateNeeds);
     wlForms['immediateNeeds'].inputs['immNeedsDescription'].toggleDisabled(!showImmediateNeeds);
-
-    console.log(
-      `Immediate Needs Visibility Status: ${showImmediateNeeds ? 'Visible' : 'Hidden'},
-      Reason: rMIsActionRequiredIn3oDays was ${isRMActionRequiredIn3oDays ? isRMActionRequiredIn3oDays.replaceAll('rMIsActionRequiredIn3oDays', '') : 'n/a'} AND
-      needsIsActionRequiredIn30Days was ${isNeedsActionRequiredIn30Days ? isNeedsActionRequiredIn30Days.replaceAll('needsIsActionRequiredRequiredIn30Days', '') : 'n/a'} AND
-      riskMitigationCheckboxes had one checked was ${isRMChecked}
-    `);
 
     if (showImmediateNeeds) {
       wlForms['immediateNeeds'].inputs['immNeedsRequired'].setValue('immNeedsRequiredyes');
@@ -2056,16 +2055,20 @@ const WaitingListAssessment = (() => {
   async function showHideCurrentNeeds() {
     const isNeedsActionRequired = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
     const isRisksActionRequired = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue();
-    const showCurrentNeeds = isNeedsActionRequired.includes('no') && isRisksActionRequired.includes('no');
+    const noticeIssuedICF = wlForms['icfDischarge'].inputs[''].getValue();
+    const isActionRequiredICF = wlForms['icfDischarge'].inputs[''].getValue();
+    const isResidentICF = wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue();
+
+    const isAnyNoICF = noticeIssuedICF.includes('no') || isActionRequiredICF.includes('no') || isResidentICF.includes('no');
+    let showCurrentNeeds;
+    if (isAnyNoICF) {
+      showCurrentNeeds = true;
+    } else {
+      showCurrentNeeds = isNeedsActionRequired.includes('no') && isRisksActionRequired.includes('no');
+    }
   
     wlForms['currentNeeds'].form.parentElement.classList.toggle('hiddenPage', !showCurrentNeeds);
     tocLinks['currentNeeds'].classList.toggle('hiddenPage', !showCurrentNeeds);
-
-    console.log(`
-      Current Needs Visibility Status: ${showCurrentNeeds ? 'Visible' : 'Hidden'},
-      Reason: needsIsActionRequiredIn30Days was ${isNeedsActionRequired ? isNeedsActionRequired.replaceAll('needsIsActionRequiredRequiredIn30Days', '') : 'n/a'} AND
-      rMIsActionRequiredIn3oDays was ${isRisksActionRequired ? isRisksActionRequired.replaceAll('rMIsActionRequiredIn3oDays', '') : 'n/a'}
-    `);
   
     if (!showCurrentNeeds) {
       sectionResets['currentNeeds']();
