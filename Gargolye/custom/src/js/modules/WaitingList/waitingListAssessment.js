@@ -2845,15 +2845,49 @@ const WaitingListAssessment = (() => {
     },
     //* riskMitigation
     rMIs: async ({ name, value }) => {
-      const isNotAppChecked = name === 'rMIsNone' && value === 'on';
-      const hasCheck = isNotAppChecked ? false : isAnyCheckboxCheckedRiskMitigation();
-      const disableInputs = hasCheck ? false : true;
+      let cleardNotApp = false;
+      let hasOtherCheck = isAnyCheckboxCheckedRiskMitigation();
 
-      wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(disableInputs);
-      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(disableInputs);
+      [
+        'rMIsNone',
+        'rMIsAdultProtectiveServiceInvestigation',
+        'rMIsCountyBoardInvestigation',
+        'rMIsLawEnforcementInvestigation',
+        'rMIsOtherInvestigation',
+      ].forEach(async inputId => {
+        const isRequired = hasOtherCheck || (name === 'rMIsNone' && value === 'on') ? false : true
+        wlForms['riskMitigation'].inputs[inputId].toggleRequired(isRequired);
+
+        if (wlForms['riskMitigation'].inputs[inputId].getValue()) {
+          if (name === 'rMIsNone' && inputId !== 'rMIsNone') {
+            wlForms['riskMitigation'].inputs[inputId].setValue(false);
+            await insertUpdateAssessmentData({
+              value: 'off',
+              name: inputId,
+              type: 'checkbox',
+              formName: 'riskMitigation',
+            });
+          } else if (hasOtherCheck && inputId === 'rMIsNone') {
+            cleardNotApp = true;
+            wlForms['riskMitigation'].inputs[inputId].setValue(false);
+            await insertUpdateAssessmentData({
+              value: 'off',
+              name: inputId,
+              type: 'checkbox',
+              formName: 'riskMitigation',
+            });
+          }
+        }
+      });
+
+      hasOtherCheck = isAnyCheckboxCheckedRiskMitigation();
+
+      wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(!hasOtherCheck);
+      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!hasOtherCheck);
+
+      const isNotAppChecked = wlForms['riskMitigation'].inputs['rMIsNone'].getValue();
 
       if (isNotAppChecked) {
-        // if this is true then we know hasCheck is false
         wlForms['riskMitigation'].inputs['rMdescription'].setValue('');
         wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('rMIsActionRequiredIn3oDaysno');
         wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue('rMIsSupportNeededno');
@@ -2876,7 +2910,7 @@ const WaitingListAssessment = (() => {
           type: 'text',
           formName: 'riskMitigation',
         });
-      } else if (name === 'rMIsNone' && value === 'off') {
+      } else if (cleardNotApp) {
         wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].setValue('');
         wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue('');
 
@@ -2893,36 +2927,6 @@ const WaitingListAssessment = (() => {
           formName: 'riskMitigation',
         });
       }
-
-      [
-        'rMIsNone',
-        'rMIsAdultProtectiveServiceInvestigation',
-        'rMIsCountyBoardInvestigation',
-        'rMIsLawEnforcementInvestigation',
-        'rMIsOtherInvestigation',
-      ].forEach(async inputId => {
-        wlForms['riskMitigation'].inputs[inputId].toggleRequired(hasCheck || isNotAppChecked ? false : true);
-
-        if (wlForms['riskMitigation'].inputs[inputId].getValue()) {
-          if (hasCheck && inputId === 'rMIsNone') {
-            wlForms['riskMitigation'].inputs[inputId].setValue(false);
-            await insertUpdateAssessmentData({
-              value: 'off',
-              name: inputId,
-              type: 'checkbox',
-              formName: 'riskMitigation',
-            });
-          } else if (isNotAppChecked && inputId !== 'rMIsNone') {
-            wlForms['riskMitigation'].inputs[inputId].setValue(false);
-            await insertUpdateAssessmentData({
-              value: 'off',
-              name: inputId,
-              type: 'checkbox',
-              formName: 'riskMitigation',
-            });
-          }
-        }
-      });
 
       await showHideICFDischarge();
       await showHideImmediateNeeds();
