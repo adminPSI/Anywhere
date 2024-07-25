@@ -2031,14 +2031,14 @@ const WaitingListAssessment = (() => {
     const isActionRequiredICF = wlForms['icfDischarge'].inputs['icfIsActionRequiredIn30Days'].getValue();
     const isResidentICF = wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue();
 
-    const isAnyYesICF =
+    const isAllYesICF =
       noticeIssuedICF.includes('yes') && isActionRequiredICF.includes('yes') && isResidentICF.includes('yes');
 
     const showImmediateNeeds =
       isActionRequiredOther.includes('yes') ||
       (isActionRequiredRM.includes('yes') && isRMChecked) ||
       isPGActionRequiredIn30Days.includes('yes') ||
-      isAnyYesICF;
+      isAllYesICF;
 
     wlForms['immediateNeeds'].form.parentElement.classList.toggle('hiddenPage', !showImmediateNeeds);
     tocLinks['immediateNeeds'].classList.toggle('hiddenPage', !showImmediateNeeds);
@@ -2068,9 +2068,13 @@ const WaitingListAssessment = (() => {
 
     const isAnyNoICF =
       noticeIssuedICF.includes('no') || isActionRequiredICF.includes('no') || isResidentICF.includes('no');
+    const isAllYesICF = noticeIssuedICF.includes('yes') && isActionRequiredICF.includes('yes') && isResidentICF.includes('yes');
     let showCurrentNeeds;
+
     if (isAnyNoICF) {
       showCurrentNeeds = true;
+    } else if (isAllYesICF) {
+      showCurrentNeeds = false;
     } else {
       showCurrentNeeds = isNeedsActionRequired.includes('no') && isRisksActionRequired.includes('no');
     }
