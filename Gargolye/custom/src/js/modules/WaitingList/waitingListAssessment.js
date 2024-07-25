@@ -2071,10 +2071,10 @@ const WaitingListAssessment = (() => {
     const isAllYesICF = noticeIssuedICF.includes('yes') && isActionRequiredICF.includes('yes') && isResidentICF.includes('yes');
     let showCurrentNeeds;
 
-    if (isAnyNoICF) {
-      showCurrentNeeds = true;
-    } else if (isAllYesICF) {
+    if (isAllYesICF) {
       showCurrentNeeds = false;
+    } else if (isAnyNoICF) {
+      showCurrentNeeds = true;
     } else {
       showCurrentNeeds = isNeedsActionRequired.includes('no') && isRisksActionRequired.includes('no');
     }
