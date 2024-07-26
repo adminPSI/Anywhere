@@ -26,6 +26,8 @@ const WaitingListAssessment = (() => {
   // UI INSTANCES
   //--------------------------
   let updateQueue;
+  let backButton;
+  let consumerCard;
   let wlForms;
   let participantsTable;
   let sendEmailButton;
@@ -3301,8 +3303,8 @@ const WaitingListAssessment = (() => {
       tocLinks['participants'].classList.toggle('formComplete', Object.values(wlParticipants).length);
     });
 
-    backButton.onClick(() => {
-      updateQueue.forceSendUpdates();
+    backButton.onClick(async () => {
+      await updateQueue.forceSendUpdates();
       WaitingListOverview.init({ moduleHeader, moduleBody, selectedConsumer });
     });
   }
