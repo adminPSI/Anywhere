@@ -2521,6 +2521,7 @@ const plan = (function () {
             callback: () => {
                 finalizeBtn.classList.add('disabled');
                 showFinalizePopup();
+                finalizeBtn.classList.remove('disabled');
             },
         });
         if (planStatus !== 'C') {
