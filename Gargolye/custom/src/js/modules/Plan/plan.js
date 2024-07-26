@@ -2518,9 +2518,9 @@ const plan = (function () {
             text: 'Finalize Plan',
             style: 'secondary',
             type: 'contained',
-            callback: () => {
+            callback: async () => {
                 finalizeBtn.classList.add('disabled');
-                showFinalizePopup();
+                await showFinalizePopup();
                 finalizeBtn.classList.remove('disabled');
             },
         });
