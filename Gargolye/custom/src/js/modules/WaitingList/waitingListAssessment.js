@@ -602,7 +602,7 @@ const WaitingListAssessment = (() => {
           type: 'radiogroup',
           id: 'needsIsActionRequiredRequiredIn30Days',
           groupLabel:
-            'Is action required within the next 30 days to reduce the risk(s) presented by the behaviorl, physical, and / or medical needs?',
+            'Is action required within the next 30 days to reduce the risk(s) presented by the behavioral, physical, and / or medical needs?',
           fields: [
             { type: 'radio', label: 'Yes', value: 'yes', id: 'needsIsActionRequiredRequiredIn30Daysyes' },
             { type: 'radio', label: 'No', value: 'no', id: 'needsIsActionRequiredRequiredIn30Daysno' },
