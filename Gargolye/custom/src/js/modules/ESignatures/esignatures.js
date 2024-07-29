@@ -529,10 +529,21 @@ function updateVendorDropdownWidth(popup) {
       style: 'secondary',
     });
 
+    signatureInput.classList.add('errorPopup')
+
     signatureInput.addEventListener('input', function (event) {
+      const value = event.target.value;
+      signatureDisplay.textContent = value;
+  
+      if (value === '') {
+        signatureInput.classList.add('errorPopup');
+      } else {
+        signatureInput.classList.remove('errorPopup');
+      }
+  
       validateForm();
-      signatureDisplay.textContent = event.target.value;
-    });
+  });
+  
 
     formContainer.appendChild(signatureDisplay);
     formContainer.appendChild(signatureInput);
