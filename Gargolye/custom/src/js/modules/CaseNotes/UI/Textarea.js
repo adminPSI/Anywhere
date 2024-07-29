@@ -205,7 +205,7 @@
       }, 100),
     );
     this.fullScreenDialog.onClose(() => {
-      this.textareaClone.toggleDisabled(false);
+      this.textareaInstance.toggleDisabled(false);
     });
   };
 
@@ -395,6 +395,9 @@
    */
   Textarea.prototype.setValue = function (value) {
     this.input.value = value;
+    if (this.options.fullscreen) {
+      this.fullscreen.updateCloneValue(value);
+    }
   };
 
   /**
