@@ -639,7 +639,7 @@ namespace Anywhere.service.Data
         }
 
         //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
-        public OODDDLItem[] getContactMethods(string token)
+        public OODWorker.OODDDLItem[] getContactMethods(string token, string formtype)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -647,7 +647,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    OODDDLItem[] contactMethods = js.Deserialize<OODDDLItem[]>(Odg.getContactMethods(transaction));
+                    OODDDLItem[] contactMethods = js.Deserialize<OODDDLItem[]>(Odg.getContactMethods(transaction, formtype));
                     return contactMethods;
                 }
                 catch (Exception ex)

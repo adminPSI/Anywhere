@@ -3127,9 +3127,9 @@ namespace Anywhere
             return Ow.getOutcomes(token);
         }
 
-        public OODWorker.OODDDLItem[] getContactMethods(string token)
+        public OODWorker.OODDDLItem[] getContactMethods(string token, string formtype)
         {
-            return Ow.getContactMethods(token);
+            return Ow.getContactMethods(token, formtype);
         }
 
         public OODWorker.OODDDLItem[] getIndicators(string token)

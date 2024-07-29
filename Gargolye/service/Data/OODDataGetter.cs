@@ -278,14 +278,15 @@ namespace Anywhere.service.Data
             }
         }
         //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
-        public string getContactMethods(DistributedTransaction transaction)
+        public string getContactMethods(DistributedTransaction transaction, string formtype)
         {
 
             try
             {
                 logger.debug("getContactMethods ");
-
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getContactMethods()", ref transaction);
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@formtype", DbType.String, formtype);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getContactMethods(?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
