@@ -383,7 +383,7 @@ var OODAjax = (function () {
     }
   }
   //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
-   async function getContactMethodsAsync() {
+   async function getContactMethodsAsync(FormType) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -398,6 +398,7 @@ var OODAjax = (function () {
           '/getContactMethods/',
         data: JSON.stringify({
           token: $.session.Token,
+          formtype: FormType,
           
         }),
         contentType: 'application/json; charset=utf-8',

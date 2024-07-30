@@ -251,7 +251,7 @@ const Tier1andJDPlanForm = (() => {
   // Contact Method -  Contact Method dropdown should be a list of values (code_table.caption)
   // where code_table.table_id = employment_code and code_table.field_id = contactmethod
   async function populateContactMethodDropdown() {
-    const { getContactMethodsResult: contactMethods } = await OODAjax.getContactMethodsAsync();
+    const { getContactMethodsResult: contactMethods } = await OODAjax.getContactMethodsAsync('Form6');
     // const templates = WorkflowViewerComponent.getTemplates();
     let data = contactMethods.map(contactMethod => ({
       id: contactMethod.code,

@@ -4345,7 +4345,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getContactMethods/")]
-        OODWorker.OODDDLItem[] getContactMethods(string token);
+        OODWorker.OODDDLItem[] getContactMethods(string token, string formtype);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
