@@ -19,6 +19,13 @@ using System.Globalization;
 using System.Web;
 using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
+using System.Web.UI.WebControls;
+using OneSpanSign.Sdk;
+using System.Runtime.InteropServices.ComTypes;
+using static log4net.Appender.RollingFileAppender;
+using System.Windows.Forms;
+using System.Management.Automation;
+using static Anywhere.service.Data.FormWorker;
 
 namespace OODForms
 {
@@ -335,6 +342,208 @@ namespace OODForms
 
             return "Success";
         }
+
+        public string generateForm6(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId)
+        {
+            try
+            {
+                OODFormDataGetter oodfdg = new OODFormDataGetter();
+                string pdfTronKeyResult = oodfdg.getPDFTronKey(token);
+                LicenseResponse[] pdfTronKey = JsonConvert.DeserializeObject<LicenseResponse[]>(pdfTronKeyResult);
+                pdftron.PDFNet.Initialize(pdfTronKey[0].PDFTronKey);
+
+                string crpath = oodfdg.getFormTemplatePath(token);
+                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+                string path = pathdatalist[0].path;
+                string crname = "Tier1andJDPlan_Form6.pdf";
+                string reportpath = string.Format(path, crname);
+
+                PDFDoc form6Template = new PDFDoc(reportpath);
+
+                // Gather Data for the Person Completing the Report
+                string personCompletingReportData = oodfdg.getPersonCompletingReportName(token);
+                personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+
+                DataTable dt;
+                DataRow row;
+
+                referenceNumber = referenceNumber.Replace("+", " ");
+                dt = oodfdg.OODDevelopment(referenceNumber).Tables[0];
+                row = dt.Rows[0];
+
+                string ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
+                string ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
+
+                string Staff = string.Empty;
+                string StaffWithInitals = string.Empty;
+                string OODStaff = string.Empty;
+                string MiddleName = string.Empty;
+
+                DataSet ds = oodfdg.OODForm8GetDirectStaff(referenceNumber, startDate, endDate);
+
+                if (ds.Tables.Count > 0)
+                {
+                    DataTable dt2 = ds.Tables[0];
+                    foreach (DataRow row2 in dt2.Rows)
+                    {
+                        if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
+                        {
+                            Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
+                            MiddleName = row2["Middle_Name"].ToString();
+                            OODStaff += String.Format("{0}, ", Staff.Trim());
+                        }
+
+                        if (Staff.ToString().Trim().Length > 0)
+                        {
+                            StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
+                        }
+                    }
+                }
+
+                string VRCounselor = "";
+                DataSet dsVR = oodfdg.OODForm6GetVRCounselor(referenceNumber, consumerIdString, startDate, endDate);
+                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+
+                if (dsVR.Tables[0].Rows.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString()))
+                    {
+                        VRCounselor = dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString();
+                    }
+                    else
+                    {
+                        VRCounselor = "";
+                    }
+                }
+
+                string IPEGoal = "";
+                DataSet dsIPE = oodfdg.OODForm6GetIPEGoal(referenceNumber, consumerIdString, startDate, endDate);
+                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+
+                if (dsIPE.Tables[0].Rows.Count > 0)
+                { 
+                    if (!string.IsNullOrEmpty(dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString()))        
+                    {
+                        IPEGoal = dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString();
+                    } else
+                    {
+                        IPEGoal = "";
+                    }
+                }
+
+                string service = "";
+                DataSet dsService = oodfdg.OODForm6GetService(referenceNumber, consumerIdString, startDate, endDate);
+                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+
+                if (dsService.Tables[0].Rows.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(dsService.Tables[0].Rows[0]["service"].ToString()))
+                    {
+                        service = dsService.Tables[0].Rows[0]["service"].ToString();
+                    }
+                    else
+                    {
+                        service = "PBJD Tier I";
+                    }
+                }
+
+                string bilingual = "";  // SAMLevel
+                string SAMLevel = "";  // bilingualSupplement
+                DataSet dsSAMandBilingual = oodfdg.OODForm6GetSAMandBilingual(referenceNumber, consumerIdString, startDate, endDate, userId);
+
+                if (dsSAMandBilingual.Tables[0].Rows.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString()))
+                    {
+                        SAMLevel = dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString();
+                    }
+                    else
+                    {
+                        SAMLevel = "";
+                    }
+                }
+
+
+                DateTime currentDate = DateTime.Now;
+                string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");  
+                string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
+                string invoiceDate = currentDate.ToString("MM/dd/yyyy");
+                DateTime startdate = DateTime.ParseExact(startDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                string strStartDate = startdate.ToString("MM/dd/yyyy");
+                DateTime enddate = DateTime.ParseExact(endDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                string strEndDate = enddate.ToString("MM/dd/yyyy");
+
+                var fieldData = new List<(string fieldName, string value)>
+                {
+                    ("Provider Name", ProviderName),  
+                    ("Individuals Name", ConsumerName),  
+                    ("IPE_Goal", IPEGoal),         // em_employee_general.ipe for given individual
+                    ("Direct Service Staff Nam(s) and Initials", ""), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
+                    ("Person Completing Report", personCompletingReport),  
+                    ("VR CounselorCoordinator", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
+
+                    ("Authorization", referenceNumber), 
+                    ("Provider_Invoice_Number", invoiceNumber),  
+                    ("Service", service),      // Select Service = services.procedure_code for selected service (match on emp_ood.reference_number and consumer_services_master.service_id)
+                    ("Invoice Date", invoiceDate),  
+                    ("Service_Start_Date_af_date", strStartDate), 
+                    ("Service_End_Date_af_date", strEndDate),
+                };
+
+                // Iterate through the field data and set values
+                foreach (var (fieldName, value) in fieldData)
+                {
+                    Field field = form6Template.GetField(fieldName);
+                    field.SetValue(value);
+
+                    // resets a value on the pdf so all fields show (otherwise the fields may not show correctly on finished pdf)
+                    field.RefreshAppearance();
+                }
+
+                // Iterate through the table data and set values for each row
+                //foreach (var (fieldName, value) in tableData)
+                //{
+                //    Field field = form6Template.GetField(fieldName);
+                //    field.SetValue(value);
+                //    field.RefreshAppearance();
+                //}
+
+
+
+                List<string> fieldNames = new List<string>();
+                List<string> test = new List<string>();
+                FieldIterator itr;
+
+                for (itr = form6Template.GetFieldIterator(); itr.HasNext(); itr.Next())
+                {
+                    Field field = itr.Current();
+                    string fieldName = field.GetName();
+                    fieldNames.Add(fieldName);
+
+                    string testing = field.GetType().ToString();
+                    test.Add(testing);
+                }
+
+                MemoryStream pdfStream = new MemoryStream();
+                form6Template.Save(pdfStream, SDFDoc.SaveOptions.e_linearized);
+
+                Attachment attachment = new Attachment
+                {
+                    filename = "Form6",
+                    data = pdfStream
+                };
+
+                DisplayAttachmentPDF(attachment);
+
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+        }
+
 
         public string generateForm8(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
         {
@@ -728,6 +937,679 @@ namespace OODForms
             }
         }
 
+        public string generateForm16(string token, string AuthorizationNumber, string consumerIDString, string StartDate, string EndDate, string serviceCode, string userID)
+        {
+            try
+            {
+
+                OODFormDataGetter obj = new OODFormDataGetter();
+
+                string SSinfo = obj.getSpreadsheetNameAndKey(token);
+                SSInfo[] SSInfoObj = JsonConvert.DeserializeObject<SSInfo[]>(SSinfo);
+                string registrationName = SSInfoObj[0].registrationName;
+                string registrationKey = SSInfoObj[0].registrationKey;
+
+                string crpath = obj.getFormTemplatePath(token);
+                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+                string path = pathdatalist[0].path;
+                string templateFileName = "Form16SummerYouthWorkExperience.xlsx";
+                string reportPath = string.Format(path, templateFileName);
+
+                long PeopleID = long.Parse(consumerIDString);
+
+                // Fill out TOP Portion of the XLS SPREADSHEET********************************************************************************************************	
+
+                DateTime currentDate = DateTime.Now;
+                string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");  //********TOP8. Invoice Date = mm/dd/yyyy for today's date
+                string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", ""); //********TOP3.  Provider Invoice # = mmddyyyyhhmmss where mmddyyyy is the current month
+
+                // Gather Data for the Person Completing the Report
+                string personCompletingReportData = obj.getPersonCompletingReportName(token);
+                personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;   //*********TOP6. Name of Person Completing Report
+
+                Spreadsheet SS = new Spreadsheet();
+                SS.RegistrationName = registrationName;
+                SS.RegistrationKey = registrationKey;
+
+                SS.LoadFromFile(reportPath);
+
+                Bytescout.Spreadsheet.Worksheet WS = SS.Worksheet(0);
+
+                DataTable dt;
+                DataRow row;
+
+                AuthorizationNumber = AuthorizationNumber.Replace("+", " ");
+                dt = obj.OODDevelopment(AuthorizationNumber).Tables[0];
+                row = dt.Rows[0];
+
+                StartDate = DateTime.Parse(StartDate).ToString("yyyy-MM-dd");     //*******TOP9. Service Start Date = min(case_notes.service_date) for the selected consumer and reference number
+                EndDate = DateTime.Parse(EndDate).ToString("yyyy-MM-dd");         //*******TOP10. Service End Date = max(case_notes.service_date) for the selected consumer and reference number
+                WS.Cell("G9").Value = StartDate.ToString();
+                WS.Cell("G10").Value = EndDate.ToString();
+
+                string ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());  //*****TOP1. Provider Name =vendors.name for the vendor the selected consumer is tied to
+                WS.Cell("G1").Value = ProviderName.ToString();
+
+                WS.Cell("G2").Value = AuthorizationNumber.ToString(); //********TOP2.  Authorization # = Reference number selected by user on Anywhere OOD filter
+
+                WS.Cell("G3").Value = invoiceNumber.ToString();
+
+                string ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim()); //*********TOP4. Individual's Name = First and Last name of the selected consumer 
+                WS.Cell("G4").Value = ConsumerName;
+
+
+                // string servicename = string.Format("{0}", row["ServiceName"].ToString().Trim()); //********NOT USED ??
+                // WS.Cell("a12").Value = servicename;
+
+
+                string Staff = string.Empty;
+                string StaffWithInitals = string.Empty;
+                string OODStaff = string.Empty;
+                string MiddleName = string.Empty;
+                DataSet ds = obj.OODForm8GetDirectStaff(AuthorizationNumber, StartDate, EndDate);
+
+                WS.Cell("G6").Value = personCompletingReport;
+
+                if (ds.Tables.Count > 0)
+                {
+                    DataTable dt2 = ds.Tables[0];
+                    foreach (DataRow row2 in dt2.Rows)
+                    {
+                        if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
+                        {
+                            Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
+                            MiddleName = row2["Middle_Name"].ToString();
+                            OODStaff += String.Format("{0}, ", Staff.Trim());
+                        }
+
+                        if (Staff.ToString().Trim().Length > 0)
+                        {
+                            StaffWithInitals += String.Format("{0} ({1}), ", Staff, row2["Initials"].ToString());
+                        }
+                    }
+                }
+
+                if (StaffWithInitals.Length > 0)
+                {
+                    WS.Cell("G5").Value = StaffWithInitals.ToString().Trim().Substring(0, StaffWithInitals.Length - 2);
+                }
+                else
+                {
+                    WS.Cell("G5").Value = String.Empty;
+                }
+
+
+                DataSet dsOODStaff = obj.OODForm16GetOODStaff(AuthorizationNumber, consumerIDString, StartDate, EndDate);
+                if (dsOODStaff.Tables.Count > 0)
+                {
+                    DataTable dtOODStaff = dsOODStaff.Tables[0];
+                    foreach (DataRow rowOODStaff in dtOODStaff.Rows)
+                    {
+                        if (rowOODStaff["First_Name"].ToString().Trim().Length > 0 && rowOODStaff["Last_Name"].ToString().Trim().Length > 0)
+                        {
+                            OODStaff = String.Format("{0} {1} ({2}) ", rowOODStaff["First_Name"].ToString().Trim(), rowOODStaff["Last_Name"].ToString().Trim(), rowOODStaff["Initials"].ToString().Trim());
+                        }
+                    }
+
+                }
+
+                WS.Cell("G7").Value = OODStaff;
+
+                WS.Cell("G8").ValueAsDateTime = DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy"));
+
+                StartDate = DateTime.Parse(StartDate).ToString("yyyy-MM-dd");
+                WS.Cell("G9").ValueAsDateTime = DateTime.Parse(StartDate);
+
+                EndDate = DateTime.Parse(EndDate).ToString("yyyy-MM-dd");
+                WS.Cell("G10").ValueAsDateTime = DateTime.Parse(EndDate);
+
+                WS.Cell("G11").Value = "Final";      //**************TOP11. Invoice Status = "Final"
+
+
+                int cpt = row["CPT_Code"].ToString().ToUpper().Trim().LastIndexOf(":") + 2;
+               string code = row["ServiceName"].ToString().ToUpper().Trim();  //***********TOP12.  Service Description 1 
+                 WS.Cell("A12").Value = code; // Equation in this cell 
+
+                WS.Cell("F15").Value = "0.00";   //************TOP13.  Vocational Training Stipend Rate = $0.00
+               WS.Cell("F16").Value = "No";     //************TOP14.  Bilingual Supplement = No
+
+                // Fill out DETAIL DATA Portion of the XLS SPREADSHEET********************************************************************************************************
+
+                // Start --- FILL IN DAILY ENTRIES
+                List<form16Data> firstweekdata = new List<form16Data>();
+                List<form16Data> secondweekdata = new List<form16Data>();
+                List<form16Data> thirdweekdata = new List<form16Data>();
+                List<form16Data> fourthweekdata = new List<form16Data>();
+                List<form16Data> fifthweekdata = new List<form16Data>();
+
+                //get the week breakdowns
+                DateTime parsedStartDate = DateTime.ParseExact(StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime parsedEndDate = DateTime.ParseExact(EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+                List<WeekRangeDates> weekDates = new List<WeekRangeDates>();
+
+                // Call the GetRange method to get the weekly intervals
+                int weekcount = 0;
+                foreach (var week in GetRange(parsedStartDate, parsedEndDate))
+                {
+                    // Console.WriteLine($"Start: {week.Start.ToShortDateString()} End: {week.End.ToShortDateString()}");
+                    weekcount = weekcount + 1;
+                    weekDates.Add(new WeekRangeDates { WeekNumber = weekcount.ToString(), StartDate = week.Start, EndDate = week.End });
+                }
+
+                // get data from DB for the weekly entries
+                DataSet dstest = obj.OODForm16GetNotes(AuthorizationNumber, StartDate, EndDate, userID);
+                
+                if (dstest.Tables[0].Rows.Count > 0)
+                {
+                    // fill in the weekly entries on the EXCEL Spreadsheet
+                    foreach (WeekRangeDates week in weekDates)
+                    {
+                        string strStartDate = week.StartDate.ToString("yyyy-MM-dd");
+                        string strEndDate = week.EndDate.ToString("yyyy-MM-dd");
+
+                        foreach (DataRow row2 in dstest.Tables[0].Rows)
+                        {
+
+                            DateTime thisServiceDate = Convert.ToDateTime(row2["Service_date"]);
+
+                            if (thisServiceDate != null)
+                            {
+                                if (thisServiceDate.IsInRange(week.StartDate, week.EndDate)) {
+
+                                    switch (week.WeekNumber)
+                                    {
+                                       
+                                        case ("1"):
+
+                                            firstweekdata.Add(new form16Data
+                                            {
+                                                BusinessName = dstest.Tables[0].Rows[0]["BusinessName"].ToString(),
+                                                Service_date = row2["Service_date"].ToString(),
+                                                Start_Time = row2["Start_Time"].ToString(),
+                                                End_Time = row2["End_Time"].ToString(),
+                                                Initials = row2["Initials"].ToString(),
+                                                Interventions = row2["Interventions"].ToString()
+                                            });
+                                        break;
+                                        case ("2"):
+                                            secondweekdata.Add(new form16Data
+                                            {
+                                                BusinessName = dstest.Tables[0].Rows[0]["BusinessName"].ToString(),
+                                                Service_date = row2["Service_date"].ToString(),
+                                                Start_Time = row2["Start_Time"].ToString(),
+                                                End_Time = row2["End_Time"].ToString(),
+                                                Initials = row2["Initials"].ToString(),
+                                                Interventions = row2["Interventions"].ToString()
+                                            });
+                                            break;
+                                        case ("3"):
+                                            thirdweekdata.Add(new form16Data
+                                            {
+                                                BusinessName = dstest.Tables[0].Rows[0]["BusinessName"].ToString(),
+                                                Service_date = row2["Service_date"].ToString(),
+                                                Start_Time = row2["Start_Time"].ToString(),
+                                                End_Time = row2["End_Time"].ToString(),
+                                                Initials = row2["Initials"].ToString(),
+                                                Interventions = row2["Interventions"].ToString()
+                                            });
+
+                                            break;
+                                        case ("4"):
+                                            fourthweekdata.Add(new form16Data
+                                            {
+                                                BusinessName = dstest.Tables[0].Rows[0]["BusinessName"].ToString(),
+                                                Service_date = row2["Service_date"].ToString(),
+                                                Start_Time = row2["Start_Time"].ToString(),
+                                                End_Time = row2["End_Time"].ToString(),
+                                                Initials = row2["Initials"].ToString(),
+                                                Interventions = row2["Interventions"].ToString()
+                                            });
+
+                                            break;
+                                        case ("5"):
+                                            fifthweekdata.Add(new form16Data
+                                            {
+                                                BusinessName = dstest.Tables[0].Rows[0]["BusinessName"].ToString(),
+                                                Service_date = row2["Service_date"].ToString(),
+                                                Start_Time = row2["Start_Time"].ToString(),
+                                                End_Time = row2["End_Time"].ToString(),
+                                                Initials = row2["Initials"].ToString(),
+                                                Interventions = row2["Interventions"].ToString()
+                                            });
+
+                                            break;
+                                        case ("6"):
+                                            
+                                        break;
+                                        default:
+                                            break;
+                                  }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (firstweekdata.Count > 0)
+                {
+                    Int32 firstCell;
+
+                    firstCell = 25;
+                    WS.Cell("G19").Value = firstweekdata[0].BusinessName;
+
+                    foreach (form16Data item in firstweekdata)
+                    {
+                        WS.Cell(String.Format("a{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(item.Service_date);// Convert.ToDateTime(Convert.ToDateTime(row2["Service_date"]).ToString("MM/dd/yyyy")); //.ToString("MM/dd/yyyy"); //DateTime.ParseExact((DateTime)row2["Service_date"],"MM/dd/yyyy",CultureInfo.InvariantCulture); 
+                        WS.Cell(String.Format("a{0}", firstCell)).NumberFormatString = "MM/dd/yyy"; //  Bytescout.Spreadsheet.ExtendedFormat.;
+                        WS.Cell(String.Format("b{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", item.Start_Time)); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
+                        WS.Cell(String.Format("c{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", item.End_Time));
+                        WS.Cell(String.Format("d{0}", firstCell)).Value = "0";
+                        WS.Cell(String.Format("f{0}", firstCell)).Value = item.Initials.ToString().Trim();
+                        WS.Cell(String.Format("g{0}", firstCell)).Value = item.Interventions.ToString().Trim();
+                        WS.Cell(String.Format("n{0}", firstCell)).FontColor = System.Drawing.Color.Black;
+                        firstCell += 1;
+                    }
+                }
+
+                if (secondweekdata.Count > 0)
+                {
+                    Int32 firstCell;
+
+                    firstCell = 38;
+                    WS.Cell("G32").Value = secondweekdata[0].BusinessName;
+
+                    foreach (form16Data item in secondweekdata)
+                    {
+                        WS.Cell(String.Format("a{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(item.Service_date);// Convert.ToDateTime(Convert.ToDateTime(row2["Service_date"]).ToString("MM/dd/yyyy")); //.ToString("MM/dd/yyyy"); //DateTime.ParseExact((DateTime)row2["Service_date"],"MM/dd/yyyy",CultureInfo.InvariantCulture); 
+                        WS.Cell(String.Format("a{0}", firstCell)).NumberFormatString = "MM/dd/yyy"; //  Bytescout.Spreadsheet.ExtendedFormat.;
+                        WS.Cell(String.Format("b{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", item.Start_Time)); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
+                        WS.Cell(String.Format("c{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", item.End_Time));
+                        WS.Cell(String.Format("d{0}", firstCell)).Value = "0";
+                        WS.Cell(String.Format("f{0}", firstCell)).Value = item.Initials.ToString().Trim();
+                        WS.Cell(String.Format("g{0}", firstCell)).Value = item.Interventions.ToString().Trim();
+                        WS.Cell(String.Format("n{0}", firstCell)).FontColor = System.Drawing.Color.Black;
+                        firstCell += 1;
+                    }
+                }
+
+                if (thirdweekdata.Count > 0)
+                {
+                    Int32 firstCell;
+
+                    firstCell = 51;
+                    WS.Cell("G45").Value = thirdweekdata[0].BusinessName;
+
+                    foreach (form16Data item in thirdweekdata)
+                    {
+                               WS.Cell(String.Format("a{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(item.Service_date);// Convert.ToDateTime(Convert.ToDateTime(row2["Service_date"]).ToString("MM/dd/yyyy")); //.ToString("MM/dd/yyyy"); //DateTime.ParseExact((DateTime)row2["Service_date"],"MM/dd/yyyy",CultureInfo.InvariantCulture); 
+                               WS.Cell(String.Format("a{0}", firstCell)).NumberFormatString = "MM/dd/yyy"; //  Bytescout.Spreadsheet.ExtendedFormat.;
+                               WS.Cell(String.Format("b{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", item.Start_Time)); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
+                               WS.Cell(String.Format("c{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", item.End_Time));
+                               WS.Cell(String.Format("d{0}", firstCell)).Value = "0";
+                               WS.Cell(String.Format("f{0}", firstCell)).Value = item.Initials.ToString().Trim();
+                               WS.Cell(String.Format("g{0}", firstCell)).Value = item.Interventions.ToString().Trim();
+                              WS.Cell(String.Format("n{0}", firstCell)).FontColor = System.Drawing.Color.Black;
+                                firstCell += 1;
+                    }
+                }
+
+                if (fourthweekdata.Count > 0)
+                {
+                    Int32 firstCell;
+
+                    firstCell = 64;
+                    WS.Cell("G58").Value = fourthweekdata[0].BusinessName;
+
+                    foreach (form16Data item in fourthweekdata)
+                    {
+                        WS.Cell(String.Format("a{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(item.Service_date);// Convert.ToDateTime(Convert.ToDateTime(row2["Service_date"]).ToString("MM/dd/yyyy")); //.ToString("MM/dd/yyyy"); //DateTime.ParseExact((DateTime)row2["Service_date"],"MM/dd/yyyy",CultureInfo.InvariantCulture); 
+                        WS.Cell(String.Format("a{0}", firstCell)).NumberFormatString = "MM/dd/yyy"; //  Bytescout.Spreadsheet.ExtendedFormat.;
+                        WS.Cell(String.Format("b{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", item.Start_Time)); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
+                        WS.Cell(String.Format("c{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", item.End_Time));
+                        WS.Cell(String.Format("d{0}", firstCell)).Value = "0";
+                        WS.Cell(String.Format("f{0}", firstCell)).Value = item.Initials.ToString().Trim();
+                        WS.Cell(String.Format("g{0}", firstCell)).Value = item.Interventions.ToString().Trim();
+                        WS.Cell(String.Format("n{0}", firstCell)).FontColor = System.Drawing.Color.Black;
+                        firstCell += 1;
+                    }
+                }
+
+                if (fifthweekdata.Count > 0)
+                {
+                    Int32 firstCell;
+
+                    firstCell = 77;
+                    WS.Cell("G71").Value = fifthweekdata[0].BusinessName;
+
+                    foreach (form16Data item in fifthweekdata)
+                    {
+                        WS.Cell(String.Format("a{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(item.Service_date);// Convert.ToDateTime(Convert.ToDateTime(row2["Service_date"]).ToString("MM/dd/yyyy")); //.ToString("MM/dd/yyyy"); //DateTime.ParseExact((DateTime)row2["Service_date"],"MM/dd/yyyy",CultureInfo.InvariantCulture); 
+                        WS.Cell(String.Format("a{0}", firstCell)).NumberFormatString = "MM/dd/yyy"; //  Bytescout.Spreadsheet.ExtendedFormat.;
+                        WS.Cell(String.Format("b{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", item.Start_Time)); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
+                        WS.Cell(String.Format("c{0}", firstCell)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", item.End_Time));
+                        WS.Cell(String.Format("d{0}", firstCell)).Value = "0";
+                        WS.Cell(String.Format("f{0}", firstCell)).Value = item.Initials.ToString().Trim();
+                        WS.Cell(String.Format("g{0}", firstCell)).Value = item.Interventions.ToString().Trim();
+                        WS.Cell(String.Format("n{0}", firstCell)).FontColor = System.Drawing.Color.Black;
+                        firstCell += 1;
+                    }
+                }
+                // END --- FILL IN DAILY ENTRIES
+
+                // Start --- FILL IN Scheduled Work Times 
+
+                DataSet dsScheduleWorkTimes = obj.OODForm16GetScheduledWorkTimes(AuthorizationNumber, StartDate, EndDate, userID);
+
+                if (dsScheduleWorkTimes.Tables[0].Rows.Count > 0)
+                {
+                    // fill in the weekly entries on the EXCEL Spreadsheet
+                    foreach (WeekRangeDates week in weekDates)
+                    {
+                        string strStartDate = week.StartDate.ToString("yyyy-MM-dd");
+                        string strEndDate = week.EndDate.ToString("yyyy-MM-dd");
+
+                        //construct another list
+                        List<form16ScheduledWorkTimes> scheduledTimes = new List<form16ScheduledWorkTimes>();
+                        List<form16ScheduledWorkTimes> finalScheduledTimes = new List<form16ScheduledWorkTimes>();
+
+                        foreach (DataRow row2 in dsScheduleWorkTimes.Tables[0].Rows)
+                        {
+                            //string scheduledWorkTime;
+                            DateTime thisStartTime = DateTime.ParseExact(row2["start_time"].ToString(), "HH:mm:ss", CultureInfo.InvariantCulture);
+                            DateTime thisEndTime = DateTime.ParseExact(row2["end_time"].ToString(), "HH:mm:ss", CultureInfo.InvariantCulture);
+
+                            string thisStartTimeAMPM = thisStartTime.ToString("hh\\:mm");
+                            string thisEndTimeAMPM =  thisEndTime.ToString("hh\\:mm");
+
+                            string scheduledWorkTime = thisStartTimeAMPM + " - " + thisEndTimeAMPM + "\r\n";
+                            string scheduledWorkTimeServiceDate = row2["Service_Date"].ToString();
+                            scheduledTimes.Add(new form16ScheduledWorkTimes {Service_Date = scheduledWorkTimeServiceDate, Time_Range = scheduledWorkTime });
+                        }
+
+                        for (var i = 0; i <= scheduledTimes.Count-1; i++)
+                        {
+                            if (i == scheduledTimes.Count - 1)
+                            {
+                                finalScheduledTimes.Add(new form16ScheduledWorkTimes { Service_Date = scheduledTimes[i].Service_Date, Time_Range = scheduledTimes[i].Time_Range });
+                                break;
+                            }
+                            if (scheduledTimes[i].Service_Date == scheduledTimes[i + 1].Service_Date)
+                            {
+                                finalScheduledTimes.Add(new form16ScheduledWorkTimes { Service_Date = scheduledTimes[i].Service_Date, Time_Range = scheduledTimes[i].Time_Range + scheduledTimes[i+1].Time_Range });
+                            } else
+                            {
+                                if (!finalScheduledTimes.Exists(ts => ts.Service_Date == scheduledTimes[i].Service_Date))
+                                {
+                                    finalScheduledTimes.Add(new form16ScheduledWorkTimes { Service_Date = scheduledTimes[i].Service_Date, Time_Range = scheduledTimes[i].Time_Range });
+                                }   
+                            }
+                           
+                        }
+
+                        foreach (form16ScheduledWorkTimes thisthing in finalScheduledTimes)
+                        {
+
+                            DateTime thisServiceDate = Convert.ToDateTime(thisthing.Service_Date);
+
+                            if (thisServiceDate != null)
+                            {
+                                if (thisServiceDate.IsInRange(week.StartDate, week.EndDate))
+                                {
+                                    switch (week.WeekNumber)
+                                    {
+
+                                        case ("1"):
+                                            WS.Cell("B20").Value = thisthing.Time_Range;
+                                            break;
+                                        case ("2"):
+                                            WS.Cell("B33").Value = thisthing.Time_Range;
+
+                                            break;
+                                        case ("3"):
+                                            WS.Cell("B46").Value = thisthing.Time_Range;
+
+                                            break;
+                                        case ("4"):
+                                            WS.Cell("B59").Value = thisthing.Time_Range;
+
+                                            break;
+                                        case ("5"):
+                                            WS.Cell("B72").Value = thisthing.Time_Range;
+
+                                            break;
+                                        case ("6"):
+
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                // END --- FILL IN Scheduled Work Times 
+
+
+                // Start--- FILL IN Group Numbers 
+
+                foreach (WeekRangeDates week in weekDates)
+                {
+                    string strStartDate = week.StartDate.ToString("yyyy-MM-dd");
+                    string strEndDate = week.EndDate.ToString("yyyy-MM-dd");
+              
+                    DataSet dsGroupNumber = obj.OODForm16GetGroupNumber(AuthorizationNumber, strStartDate, strEndDate);
+
+                    if (dsGroupNumber.Tables[0].Rows.Count > 0)
+                    {
+                       
+                        foreach (DataRow row3 in dsGroupNumber.Tables[0].Rows)
+                        {
+                            string thisgroupNumber = "";
+                            if (row3["ratio_consumers"] is null || row3["ratio_consumers"].ToString() == "")
+                            {
+                                thisgroupNumber = "";
+                            } else
+                            {
+                                thisgroupNumber = row3["ratio_consumers"].ToString();
+                            }
+
+                            switch (week.WeekNumber)
+                            {
+                                
+                                case ("1"):
+                                    WS.Cell("E20").Value = thisgroupNumber;
+                                    break;
+                                case ("2"):
+                                    WS.Cell("E33").Value = thisgroupNumber;
+
+                                    break;
+                                case ("3"):
+                                    WS.Cell("E46").Value = thisgroupNumber;
+
+                                    break;
+                                case ("4"):
+                                    WS.Cell("E59").Value = thisgroupNumber;
+
+                                    break;
+                                case ("5"):
+                                    WS.Cell("E72").Value = thisgroupNumber;
+
+                                    break;
+                                case ("6"):
+
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        WS.Cell("E20").Value = "";
+                    }
+                }
+
+                // Calculate 
+
+                // END--- FILL IN Group Numbers 
+
+
+                // Start--- FILL IN Service Hours Offered 
+
+                foreach (WeekRangeDates week in weekDates)
+                {
+                    string strStartDate = week.StartDate.ToString("yyyy-MM-dd");
+                    string strEndDate = week.EndDate.ToString("yyyy-MM-dd");
+
+                    DataSet dsTotalHoursSum = obj.OODForm16ServiceHoursOffered(AuthorizationNumber, strStartDate, strEndDate);
+
+                    if (dsTotalHoursSum.Tables[0].Rows.Count > 0)
+                    {
+
+                        foreach (DataRow row3 in dsTotalHoursSum.Tables[0].Rows)
+                        {
+                            string TotalHoursSum = "";
+                            if (row3["TotalHoursSum"] is null || row3["TotalHoursSum"].ToString() == "")
+                            {
+                                TotalHoursSum = "";
+                            }
+                            else
+                            {
+                                TotalHoursSum = row3["TotalHoursSum"].ToString();
+                            }
+
+                            switch (week.WeekNumber)
+                            {
+
+                                case ("1"):
+                                    WS.Cell("B21").Value = TotalHoursSum;
+                                    break;
+                                case ("2"):
+                                    WS.Cell("B34").Value = TotalHoursSum;
+
+                                    break;
+                                case ("3"):
+                                    WS.Cell("B47").Value = TotalHoursSum;
+
+                                    break;
+                                case ("4"):
+                                    WS.Cell("B60").Value = TotalHoursSum;
+
+                                    break;
+                                case ("5"):
+                                    WS.Cell("B73").Value = TotalHoursSum;
+
+                                    break;
+                                case ("6"):
+
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                       // WS.Cell("E20").Value = "";
+                    }
+                }
+                // END--- FILL IN Service Hours Offered
+
+                // Fill out Bottom Summary Portion of the XLS SPREADSHEET********************************************************************************************************	
+
+                ds = obj.OODForm8BackgroundChecks(AuthorizationNumber, EndDate);
+                if (ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        row = ds.Tables[0].Rows[0];
+                        WS.Cell("G85").Value = row["EM_Sum_Ind_Self_Assess"].ToString().Trim();        //*****************BOTTOM1.  Individual's Self-Assessment 
+                        WS.Cell("G86").Value = row["EM_Sum_Provider_Assess"].ToString().Trim();		   //****************BOTTOM2.  Provider's Summary & Recommendations =
+
+                        if (row["VTS_Review"].ToString().ToUpper() == "Y")
+                        {
+                            WS.Cell("G87").Value = "Yes";						//*************BOTTOM3.  Have you reviewed the Vocational Training Stipend (VTS) with the individual?
+                        }
+                        else
+                        {
+                            WS.Cell("G87").Value = "No";						//*************BOTTOM3.  Have you reviewed the Vocational Training Stipend (VTS) with the individual?
+                        }
+                    }
+
+                }
+
+                // Create Attachment from  the XLS SPREADSHEET********************************************************************************************************	
+
+                MemoryStream ms = new MemoryStream();
+                SS.SaveToStreamXLSX(ms);
+                ms.Position = 0;
+
+                Attachment attachment = new Attachment
+                {
+                    filename = "Form16.xlsx",
+                    data = ms
+                };
+
+                DisplayAttachment(attachment);
+
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                string message = ex.ToString();
+                return message;
+            }
+        }
+
+        // BEGIN -- Form 16 -- Dealing with a passed in month date range , however the Form 16 Excel breaks down the data by the week 
+        
+        public static IEnumerable<Range> GetRange(DateTime start, DateTime end)
+        {
+            DateTime currentStart = start;
+            DateTime currentEnd = start;
+            do
+            {
+                if (currentEnd.DayOfWeek == DayOfWeek.Saturday)
+                {
+                    yield return new Range(currentStart, currentEnd);
+                    currentStart = currentEnd.AddDays(1);
+                }
+                currentEnd = currentEnd.AddDays(1);
+            } while (currentEnd <= end);
+
+            if (currentStart <= end)
+            {
+                yield return new Range(currentStart, end);
+            }
+        }
+
+        public struct Range
+        {
+            public DateTime Start { get; private set; }
+            public DateTime End { get; private set; }
+
+            public Range(DateTime start, DateTime end)
+            {
+                Start = start;
+                End = end;
+            }
+        }
+
+        public class WeekRangeDates
+        {
+            public string WeekNumber { get; set; }
+            public DateTime StartDate { get; set; }
+            public DateTime EndDate { get; set; }
+
+        }
+
+       
+
+        // END -- Form 16 -- Dealing with a passed in month date range , however the Form 16 Excel breaks down the data by the week 
+
         public string minDate(List<form10Data> dataList)
         {
             if (dataList.Count == 0)
@@ -842,6 +1724,26 @@ namespace OODForms
         }
     }
 
+    public class form6Data
+    {
+        public string providerName { get; set; }
+        public string individualsName { get; set; }
+        public string IPEGoal { get; set; }
+        public string nameAndInitials { get; set; }
+        public string personCompletingReport { get; set; }
+        public string VR_CounselorContractor { get; set; }
+        public string authorizationNumber { get; set; }
+        public string providerInvoiceNumber { get; set; }
+        public string service { get; set; }
+        public string bilingual{ get; set; }
+        public string SAMLevel{ get; set; }
+        public string invoiceDate { get; set; }
+        public string serviceStartDate { get; set; }
+        public string serviceEndDate { get; set; }
+        
+
+    }
+
     public class form10Data
     {
         public string date { get; set; }
@@ -858,6 +1760,28 @@ namespace OODForms
         public string vendorName { get; set; }
         public string VR_CounselorContractor { get; set; }
     }
+
+    public class form16Data
+    {
+        public string BusinessName { get; set; }
+        public string Service_date { get; set; }
+        public string Start_Time { get; set; }
+        public string End_Time { get; set; }
+        public string Initials { get; set; }
+        public string Interventions { get; set; }
+        public string ScheduledWorkTimes { get; set; }
+
+    }
+
+    public class form16ScheduledWorkTimes
+    {
+        public string Service_Date { get; set; }
+        public string Start_Time { get; set; }
+        public string End_Time { get; set; }
+        public string Time_Range { get; set; }
+
+    }
+
 
     public class personCompletingReport
     {
@@ -890,5 +1814,13 @@ namespace OODForms
     public static class Common
     {
         public static string gConnString;
+    }
+
+    public static class DateTimeExtensions
+    {
+        public static bool IsInRange(this DateTime dateToCheck, DateTime startDate, DateTime endDate)
+        {
+            return dateToCheck >= startDate && dateToCheck <= endDate;
+        }
     }
 }

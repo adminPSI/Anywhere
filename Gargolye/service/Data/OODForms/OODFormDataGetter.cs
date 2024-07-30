@@ -13,6 +13,9 @@ using Anywhere.Log;
 using System.Configuration;
 using System.Linq;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
+using iTextSharp.text.pdf;
+using System.Linq.Expressions;
+using Microsoft.Extensions.Primitives;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -187,61 +190,66 @@ namespace OODForms
             sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
             sb.Append("AND dba.EM_Job_Task.Task_Number > 7 ");
             sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
-            long PosNumber = 0;
             DataSet ds = di.SelectRowsDS(sb.ToString());
-            if (ds.Tables.Count > 0)
+            List<long> posNumbers = new List<long>();
+
+            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
-                if (ds.Tables[0].Rows.Count > 0)
+                foreach (DataRow row in ds.Tables[0].Rows)
                 {
-                    PosNumber = (long)ds.Tables[0].Rows[0]["Position_ID"];
+                    posNumbers.Add((long)row["Position_ID"]);
                 }
             }
 
-            sb.Clear();
-            sb.AppendFormat("SELECT   dba.Case_Notes.Service_Date, DATEFORMAT(Cast(dba.Case_Notes.Start_Time AS CHAR), 'hh:mm AA') as Start_Time, DATEFORMAT(CAST(dba.Case_Notes.End_Time AS CHAR), 'hh:mm AA') AS End_Time, ");
-            sb.Append("dba.Code_Table.Caption AS Contact_Method, dba.EMP_OOD.Behavioral_Indicators, dba.EMP_OOD.Quality_Indicators, dba.Case_Notes.Service_Area_Modifier as SAM, ");
-            sb.Append("dba.EMP_OOD.Quantity_Indicators, dba.EMP_OOD.Narrative, dba.EMP_OOD.Interventions, ");
-            sb.Append("dba.People.Last_Name, dba.People.First_Name, dba.People.Middle_Name, ");
-            sb.Append("'' AS Initials, dba.Case_Notes.Notes, '' AS StartTime, '' AS EndTime  ");
-            sb.Append("FROM dba.EMP_OOD ");
-            sb.AppendFormat("LEFT OUTER JOIN dba.Code_Table ON dba.EMP_OOD.Contact_Method = dba.Code_Table.Code ");
-            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
-            sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-            sb.Append(" LEFT OUTER JOIN  dba.People ON dba.People.Person_ID = dba.Case_Notes.Case_Manager_ID ");
-            sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID = {0} ", PosNumber);
-            sb.AppendFormat("AND dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
-            sb.Append("AND dba.Code_Table.Table_ID = 'Employment_Code' ");
-            sb.Append("AND Field_ID = 'ContactMethod' ");
-            sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
-            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
-            sb.Append("AND Last_Name > '' ");
-            ds = di.SelectRowsDS(sb.ToString());
-
-            if (ds.Tables.Count > 0)
+            if (posNumbers.Count > 0)
             {
-                DataTable dt = ds.Tables[0];
-                foreach (DataRow row in dt.Rows)
-                {
-                    string MN = string.Empty;
+                string posNumbersString = string.Join(",", posNumbers);
+                sb.Clear();
+                sb.AppendFormat("SELECT   dba.Case_Notes.Service_Date, DATEFORMAT(Cast(dba.Case_Notes.Start_Time AS CHAR), 'hh:mm AA') as Start_Time, DATEFORMAT(CAST(dba.Case_Notes.End_Time AS CHAR), 'hh:mm AA') AS End_Time, ");
+                sb.Append("dba.Code_Table.Caption AS Contact_Method, dba.EMP_OOD.Behavioral_Indicators, dba.EMP_OOD.Quality_Indicators, dba.Case_Notes.Service_Area_Modifier as SAM, ");
+                sb.Append("dba.EMP_OOD.Quantity_Indicators, dba.EMP_OOD.Narrative, dba.EMP_OOD.Interventions, ");
+                sb.Append("dba.People.Last_Name, dba.People.First_Name, dba.People.Middle_Name, ");
+                sb.Append("'' AS Initials, dba.Case_Notes.Notes, '' AS StartTime, '' AS EndTime  ");
+                sb.Append("FROM dba.EMP_OOD ");
+                sb.AppendFormat("LEFT OUTER JOIN dba.Code_Table ON dba.EMP_OOD.Contact_Method = dba.Code_Table.Code ");
+                sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+                sb.Append(" LEFT OUTER JOIN  dba.People ON dba.People.Person_ID = dba.Case_Notes.Case_Manager_ID ");
+                sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID IN ({0}) ", posNumbersString);
+                sb.AppendFormat("AND dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+                sb.Append("AND dba.Code_Table.Table_ID = 'Employment_Code' ");
+                sb.Append("AND Field_ID = 'ContactMethod' ");
+                sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+                sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+                sb.Append("AND Last_Name > '' ");
+                ds = di.SelectRowsDS(sb.ToString());
 
-                    if (row["Middle_Name"].ToString().Length > 0)
+                if (ds.Tables.Count > 0)
+                {
+                    DataTable dt = ds.Tables[0];
+                    foreach (DataRow row in dt.Rows)
                     {
-                        MN = row["Middle_Name"].ToString().Substring(0, 1).ToUpper();
+                        string MN = string.Empty;
+
+                        if (row["Middle_Name"].ToString().Length > 0)
+                        {
+                            MN = row["Middle_Name"].ToString().Substring(0, 1).ToUpper();
+                        }
+
+                        row["Initials"] = String.Format("{0}{1}{2}", row["First_Name"].ToString().Substring(0, 1).ToUpper(), MN, row["Last_Name"].ToString().Substring(0, 1).ToUpper());
+
+                        row["Behavioral_Indicators"] = WorkDaysPercent((string)row["Behavioral_Indicators"]);
+                        row["Quality_Indicators"] = WorkDaysPercent((string)row["Quality_Indicators"]);
+                        row["Quantity_Indicators"] = WorkDaysPercent((string)row["Quantity_Indicators"]);
+                        row["StartTime"] = WorkDaysPercent((string)row["Quantity_Indicators"]);
+                        row["StartTime"] = WorkDaysPercent((string)row["Quantity_Indicators"]);
+
                     }
 
-                    row["Initials"] = String.Format("{0}{1}{2}", row["First_Name"].ToString().Substring(0, 1).ToUpper(), MN, row["Last_Name"].ToString().Substring(0, 1).ToUpper());
-
-                    row["Behavioral_Indicators"] = WorkDaysPercent((string)row["Behavioral_Indicators"]);
-                    row["Quality_Indicators"] = WorkDaysPercent((string)row["Quality_Indicators"]);
-                    row["Quantity_Indicators"] = WorkDaysPercent((string)row["Quantity_Indicators"]);
-                    row["StartTime"] = WorkDaysPercent((string)row["Quantity_Indicators"]);
-                    row["StartTime"] = WorkDaysPercent((string)row["Quantity_Indicators"]);
-
                 }
-
             }
 
-            return ds;
+                return ds;
 
         }
         public DataSet OODForm8BackgroundChecks(string AuthorizationNumber, string StartDate)
@@ -259,6 +267,254 @@ namespace OODForms
         }
 
         #endregion
+
+        public DataSet OODForm16GetNotes(string AuthorizationNumber, string StartDate, string EndDate, string userId)
+        {
+            sb.Clear();
+            sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
+            sb.Append("FROM dba.EM_Job_Task ");
+            sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+            sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
+            string listPosNumber = string.Empty;
+            DataSet ds = di.SelectRowsDS(sb.ToString());
+            string lstPositionstr = string.Empty;
+            if (ds.Tables.Count > 0)
+            {
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    List<string> lstPositions = new List<string>();
+
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        string Posnumber;
+                        Posnumber = row["Position_ID"].ToString();
+                        lstPositions.Add(Posnumber);
+                    }
+                    lstPositionstr = string.Join(",", lstPositions.ToArray());              
+                }
+            }
+
+            sb.Clear();
+            sb.AppendFormat("SELECT   dba.Case_Notes.Service_Date, DATEFORMAT(Cast(dba.Case_Notes.Start_Time AS CHAR), 'hh:mm AA') as Start_Time, DATEFORMAT(CAST(dba.Case_Notes.End_Time AS CHAR), 'hh:mm AA') AS End_Time, ");
+            sb.Append("dba.EMP_OOD.Interventions, ");
+            sb.Append("dba.People.Last_Name, dba.People.First_Name, dba.People.Middle_Name, ");
+            sb.Append("'' AS Initials, dba.Case_Notes.Notes, '' AS StartTime, '' AS EndTime,  ");
+            sb.Append("EMP_OOD.Position_ID, ");
+            sb.Append("(Select e.Name + ', ' + e.Address1 + ', ' + e.city + ', ' + e.state + ', ' + e.Zip_Code from EM_Employee_Position as ep  ");
+            sb.Append("left outer join People as p on ep.People_ID = p.ID ");
+            sb.Append("left outer join Employer as e on e.Employer_ID = ep.Employer_ID ");
+            sb.Append("where ep.Position_ID = EMP_OOD.Position_ID) as BusinessName ");
+            sb.Append("FROM dba.EMP_OOD ");
+            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
+            sb.Append(" LEFT OUTER JOIN  dba.People ON dba.People.Person_ID = dba.Case_Notes.Case_Manager_ID ");
+            sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID in ({0}) ", lstPositionstr);
+            sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+            sb.Append(" ORDER BY Service_Date ASC");
+            //sb.Append("AND Last_Name > '' ");
+            ds = di.SelectRowsDS(sb.ToString());
+
+            if (ds.Tables.Count > 0)
+            {
+                DataTable dt = ds.Tables[0];
+                foreach (DataRow row in dt.Rows)
+                {
+                    string MN = string.Empty;
+
+                    if (row["Middle_Name"].ToString().Length > 0)
+                    {
+                        MN = row["Middle_Name"].ToString().Substring(0, 1).ToUpper();
+                    }
+
+                    row["Initials"] = String.Format("{0}{1}{2}", row["First_Name"].ToString().Substring(0, 1).ToUpper(), MN, row["Last_Name"].ToString().Substring(0, 1).ToUpper());
+                }
+            }
+
+            return ds;
+        }
+
+        public DataSet OODForm16GetScheduledWorkTimes(string AuthorizationNumber, string StartDate, string EndDate, string userId)
+        {
+            try
+            {
+                sb.Clear();
+                sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
+                sb.Append("FROM dba.EM_Job_Task ");
+                sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+                sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+                sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
+                string listPosNumber = string.Empty;
+                DataSet ds = di.SelectRowsDS(sb.ToString());
+                string lstPositionstr = string.Empty;
+                if (ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        List<string> lstPositions = new List<string>();
+
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            string Posnumber;
+                            Posnumber = row["Position_ID"].ToString();
+                            lstPositions.Add(Posnumber);
+                        }
+                        lstPositionstr = string.Join(",", lstPositions.ToArray());
+                    }
+                }
+
+
+                sb.Clear();
+                sb.AppendFormat("SELECT  Distinct Em_work_schedule.start_time, Em_work_schedule.end_time, Service_Date ");
+                sb.Append("FROM dba.Em_work_schedule  ");
+                sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.Em_work_schedule.Position_ID = dba.EMP_OOD.Position_ID ");
+                sb.Append(" LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+                sb.Append(" LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+                sb.AppendFormat("WHERE Em_work_schedule.Position_ID in ({0}) ", lstPositionstr); //lstPositionstr
+                sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
+                sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+                sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+                ds = di.SelectRowsDS(sb.ToString());
+
+                return ds;
+
+            }
+            catch (Exception)
+            {
+
+               return null;
+            }
+          
+          
+        }
+
+        public DataSet OODForm16GetGroupNumber(string AuthorizationNumber, string StartDate, string EndDate)
+        {
+            try
+            {
+
+
+                sb.Clear();
+                sb.AppendFormat("Select max(Case when ratio_consumers > 4 then 4 Else ratio_consumers END) as ratio_consumers from Case_Notes ");
+                sb.AppendFormat("where reference_Number = '{0}' ", AuthorizationNumber);
+                sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+                DataSet ds = di.SelectRowsDS(sb.ToString());
+                ds = di.SelectRowsDS(sb.ToString());
+
+                return ds;
+
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
+
+        }
+
+        public DataSet OODForm16GetOODStaff(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate)
+        {
+            try
+            {
+
+
+                sb.Clear();
+                sb.Append("Select p.First_Name as First_Name, p.Middle_Name as Middle_Name, p.Last_Name as Last_Name, ");
+                sb.Append("(SELECT SUBSTRING(p.First_Name, 1, 1) + CASE WHEN p.Middle_Name IS NOT NULL THEN SUBSTRING(p.Middle_Name, 1, 1) ELSE '' END + SUBSTRING(p.Last_Name, 1, 1)) AS Initials ");
+                sb.Append("from Persons as p ");
+               // sb.Append("left outer join people pe on p.Person_ID = pe.Person_ID ");
+                sb.Append("left outer join consumer_services_master as csm on p.Person_ID = csm.Person_ID ");
+                sb.AppendFormat("where csm.consumer_id = {0} and Reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
+                DataSet ds = di.SelectRowsDS(sb.ToString());
+                ds = di.SelectRowsDS(sb.ToString());
+
+                if (ds.Tables.Count > 0)
+                {
+                    DataTable dt = ds.Tables[0];
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        string mi = string.Empty;
+                        if (row["Middle_Name"].ToString().Length > 0)
+                        {
+                            mi = row["Middle_Name"].ToString().Substring(0, 1).ToUpper();
+                        }
+
+                        row["Initials"] = String.Format("{0}{1}{2}", row["First_Name"].ToString().Substring(0, 1).ToUpper(), mi, row["Last_Name"].ToString().Substring(0, 1).ToUpper());
+                    }
+                }
+
+                return ds;
+
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
+
+        }
+
+        public DataSet OODForm16ServiceHoursOffered(string AuthorizationNumber, string StartDate, string EndDate)
+        {
+            try
+            {
+                sb.Clear();
+                sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
+                sb.Append("FROM dba.EM_Job_Task ");
+                sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+                sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+                sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
+                string listPosNumber = string.Empty;
+                DataSet ds = di.SelectRowsDS(sb.ToString());
+                string lstPositionstr = string.Empty;
+                if (ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        List<string> lstPositions = new List<string>();
+
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            string Posnumber;
+                            Posnumber = row["Position_ID"].ToString();
+                            lstPositions.Add(Posnumber);
+                        }
+                        lstPositionstr = string.Join(",", lstPositions.ToArray());
+                    }
+                }
+
+
+                sb.Clear();
+                sb.AppendFormat("SELECT SUM(total_time_in_hours) AS TotalHoursSum ");
+                sb.Append("FROM ( SELECT Start_Time, End_Time,  ");
+                sb.Append("DATEDIFF(hour, CONVERT(datetime, Start_Time, 101), CONVERT(datetime, End_Time, 101)) AS total_time_in_hours ");
+                sb.Append(" FROM Em_Work_Schedule ");
+                sb.AppendFormat("WHERE Position_ID in ({0})  ", 123); //lstPositionstr
+                sb.AppendFormat(") AS SubQuery");
+                
+                ds = di.SelectRowsDS(sb.ToString());
+
+                return ds;
+
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
+
+        }
+
 
         #region "OOD 4"
         public DataSet OODDevelopment(string AuthorizationNumber)
@@ -455,6 +711,104 @@ namespace OODForms
 
             return di.SelectRowsDS(sb.ToString());
         }
+        #endregion
+
+        #region "OOD Form 6"
+        public DataSet OODForm6GetVRCounselor(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate)
+        {
+            try
+            {
+        
+        sb.Clear();
+                sb.Append("Select p.first_name + ' ' + p.last_name as VR_CounselorContractor from consumer_services_master cs ");
+                sb.Append("left outer join persons p on cs.Person_ID = p.Person_ID ");
+                sb.AppendFormat("where cs.Consumer_ID = {0} and cs.reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
+               
+               // DataSet ds = di.SelectRowsDS(sb.ToString());
+                return di.SelectRowsDS(sb.ToString());
+
+               // return ds;
+
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
+
+        }
+
+        public DataSet OODForm6GetIPEGoal(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate)
+        {
+            try
+            {
+
+                sb.Clear();
+                sb.Append("Select eg.IPE as IPEGoal from em_employee_general eg ");
+                sb.Append("left outer join people p on p.ID = eg.People_ID ");
+                sb.AppendFormat("where p.Consumer_Id = '{0}' ", strConsumerId);
+
+                // DataSet ds = di.SelectRowsDS(sb.ToString());
+                return di.SelectRowsDS(sb.ToString());
+
+                // return ds;
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public DataSet OODForm6GetService(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate)
+        {
+            try
+            {
+
+                sb.Clear();
+                sb.Append("Select s.name as service from consumer_services_master cs ");
+                sb.Append("left outer join emp_ood eo on eo.reference_number = cs.service_Id ");
+                sb.Append("left outer join services s on s.Service_ID = cs.service_ID ");
+                sb.AppendFormat("where cs.Consumer_ID = {0} and cs.reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
+
+                // DataSet ds = di.SelectRowsDS(sb.ToString());
+                return di.SelectRowsDS(sb.ToString());
+
+                // return ds;
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public DataSet OODForm6GetSAMandBilingual(string AuthorizationNumber, string strConsumerId, string StartDate, string EndDate, string userID)
+        {
+            try
+            {
+
+                sb.Clear();
+                sb.Append("select cn.Case_note_ID as casenoteId, emp.Position_ID as positionID, cn.Service_Area_Modifier as SAMLevel, em.Bilingual_Supplement as bilingualSupplement from Case_Notes as cn ");
+                sb.Append("left outer join EM_Contacts as em on cn.case_Note_ID = em.case_Note_ID ");
+                sb.Append("left outer join consumer_services_master as csm on cn.Reference_Number = csm.Reference_Number ");
+                sb.Append("LEFT OUTER JOIN dba.EMP_OOD as emp ON cn.Case_Note_ID = emp.Case_Note_ID ");
+                sb.AppendFormat("where csm.Consumer_ID = {0} and csm.reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
+                sb.AppendFormat("AND cn.Service_Date BETWEEN '{0}' AND '{1}' and  cn.Original_User_ID LIKE '{2}' ", StartDate, EndDate, userID);
+
+                // DataSet ds = di.SelectRowsDS(sb.ToString());
+                return di.SelectRowsDS(sb.ToString());
+
+                // return ds;
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         #endregion
 
         public string getPersonCompletingReportName(string token)

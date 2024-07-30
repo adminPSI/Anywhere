@@ -251,6 +251,7 @@ const CN_CaseLoadWidget = (function () {
                 DOM.clearActionCenter();
                 setActiveModuleSectionAttribute('caseNotes-new');
                 UTIL.toggleMenuItemHighlight('casenotes');
+                $.loadedApp = 'casenotes';
                 actioncenter.dataset.activeModule = 'casenotes';
                 $.loadedApp = 'casenotes';
                 CaseNotes.init(true);

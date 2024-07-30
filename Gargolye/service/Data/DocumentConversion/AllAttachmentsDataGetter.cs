@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation.Language;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -170,6 +171,44 @@ namespace Anywhere.service.Data.DocumentConversion
             {
                 logger.error("551", ex.Message + " ANYW_ISP_GetReportSectionOrder()");
                 return "551: Error getting case load restriction";
+            }
+        }
+
+        public string SendReportViaEmail(string email, string report, string reportTitle)
+        {
+            logger.debug("GetAttachmentData " + email);
+            List<string> list = new List<string>();
+            list.Add(email);
+            list.Add(report);
+            list.Add(reportTitle);
+            string text = "CALL DBA.ANYW_ISP_SendReportViaEmail(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                executeDataBaseCallJSON(text);
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                logger.error("640", ex.Message + "ANYW_ISP_SendReportViaEmail(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return null;
+            }
+        }
+
+        public string getDefaultEmailsForFinalization(string token)
+        {
+            logger.debug("getDefaultEmailsForFinalization");
+            List<string> list = new List<string>();
+            list.Add(token);
+
+            string text = "CALL DBA.ANYW_ISP_getDefaultFinalizationEmailAddresses(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("640", ex.Message + "ANYW_ISP_getDefaultFinalizationEmailAddresses(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return null;
             }
         }
 

@@ -1,5 +1,4 @@
 const planWorkflow = (() => {
-
   let selectedWorkflowForms = [];
   function getProcessId(planType) {
     return planType === 'Revision' || planType === 'r'
@@ -10,7 +9,8 @@ const planWorkflow = (() => {
     const wfvData = await WorkflowViewerAjax.getManualWorkflowList({
       token: $.session.Token,
       processId,
-      planId: planId ? planId : 0,
+      referenceId: planId ? planId : 0,
+      notPlan: 'f'
     });
 
     workflowListData = wfvData;
@@ -40,25 +40,24 @@ const planWorkflow = (() => {
 
   // Workflow Form List
   function buildWorkflowFormList(formListData) {
-    
     selectedWorkflowForms = [];
 
     const workflowFormList = document.createElement('div');
     workflowFormList.classList.add('workflowFormList');
 
     for (let i = 0; i < formListData.length; i++) {
-        //formListData.forEach(obj => {
-        if (i === 0) {
-          const formHeader = document.createElement('div');
-          formHeader.classList.add('workflowFormHeader');
-          formHeader.innerHTML = `<h4>${formListData[i].wfName}</h4>`;
-          workflowFormList.appendChild(formHeader);
-        } else if  (formListData[i].wfName !== formListData[i-1].wfName ) {
-          const formHeader = document.createElement('div');
-          formHeader.classList.add('workflowFormHeader');
-          formHeader.innerHTML = `<h4>${formListData[i].wfName}</h4>`;
-          workflowFormList.appendChild(formHeader);
-        }
+      //formListData.forEach(obj => {
+      if (i === 0) {
+        const formHeader = document.createElement('div');
+        formHeader.classList.add('workflowFormHeader');
+        formHeader.innerHTML = `<h4>${formListData[i].wfName}</h4>`;
+        workflowFormList.appendChild(formHeader);
+      } else if (formListData[i].wfName !== formListData[i - 1].wfName) {
+        const formHeader = document.createElement('div');
+        formHeader.classList.add('workflowFormHeader');
+        formHeader.innerHTML = `<h4>${formListData[i].wfName}</h4>`;
+        workflowFormList.appendChild(formHeader);
+      }
       const formItem = document.createElement('div');
       formItem.classList.add('workflowFormListItem');
       formItem.setAttribute('data-attachment-id', formListData[i].attachmentId);
@@ -69,22 +68,26 @@ const planWorkflow = (() => {
       workflowFormList.appendChild(formItem);
 
       formItem.addEventListener('click', e => {
-       // if (e.target.classList.contains('workflowFormListItem')) {
-          const attachmentID = e.target.dataset.attachmentId;
-          const workflowID = e.target.dataset.workflowId;
-          const WFTemplateID = e.target.dataset.wftemplateId;
-          const description = e.target.dataset.description;
-  
-          if (!e.target.classList.contains('selected')) {
-            e.target.classList.add('selected');
-            selectedWorkflowForms.push({attachmentId: attachmentID, workflowId: workflowID, WFtemplateId: WFTemplateID, description: description });
-          } else {
-            e.target.classList.remove('selected');
-            selectedWorkflowForms = selectedWorkflowForms.filter(wf => wf.attachmentId !== attachmentID);
-          }
+        // if (e.target.classList.contains('workflowFormListItem')) {
+        const attachmentID = e.target.dataset.attachmentId;
+        const workflowID = e.target.dataset.workflowId;
+        const WFTemplateID = e.target.dataset.wftemplateId;
+        const description = e.target.dataset.description;
+
+        if (!e.target.classList.contains('selected')) {
+          e.target.classList.add('selected');
+          selectedWorkflowForms.push({
+            attachmentId: attachmentID,
+            workflowId: workflowID,
+            WFtemplateId: WFTemplateID,
+            description: description,
+          });
+        } else {
+          e.target.classList.remove('selected');
+          selectedWorkflowForms = selectedWorkflowForms.filter(wf => wf.attachmentId !== attachmentID);
         }
-      );
-      };
+      });
+    }
     //});
 
     let test = selectedWorkflowForms;
@@ -148,8 +151,8 @@ const planWorkflow = (() => {
 
     const popup = POPUP.build({
       header: 'Select workflow(s) to attach.',
-      id: 'workflow_addWorkflowPopup'
-    })
+      id: 'workflow_addWorkflowPopup',
+    });
 
     const wfvData = await getWorkflowList(processId, planId);
     if (wfvData && wfvData.length > 0) {
@@ -167,12 +170,10 @@ const planWorkflow = (() => {
             e.target.classList.remove('selected');
             selectedWorkflows = selectedWorkflows.filter(wf => wf !== templateID);
           }
-  
-          selectedWorkflows.length > 0
-            ? doneBtn.classList.remove('disabled')
-            : doneBtn.classList.add('disabled');
+
+          selectedWorkflows.length > 0 ? doneBtn.classList.remove('disabled') : doneBtn.classList.add('disabled');
         }
-      })
+      });
     }
 
     const doneBtn = button.build({
@@ -188,28 +189,24 @@ const planWorkflow = (() => {
         const workflowIds = [];
         const planId = plan.getCurrentPlanId();
         if (selectedWorkflows && selectedWorkflows.length > 0) {
-          
           try {
             for (i = 0; i < selectedWorkflows.length; i++) {
               let wftemplateId = selectedWorkflows[i];
               workflowId = await WorkflowViewerAjax.copyWorkflowtemplateToRecord({
-                          token: $.session.Token,
-                          templateId: wftemplateId,
-                          referenceId: planId,
-                          peopleId: plan.getSelectedConsumer().id,
-                        });
-               workflowIds.push(workflowId)
-
-             }
-
-             
+                token: $.session.Token,
+                templateId: wftemplateId,
+                referenceId: planId,
+                peopleId: plan.getSelectedConsumer().id,
+              });
+              workflowIds.push(workflowId);
+            }
 
             const workflowMarkup = await plan.getWorkflowMarkup();
             const workflowDiv = document.getElementById('planWorkflow');
             workflowDiv.innerHTML = '';
             workflowDiv.appendChild(workflowMarkup);
           } catch (error) {
-            console.error('error inserting workflows')
+            console.error('error inserting workflows');
           }
           PROGRESS__BTN.SPINNER.hide(doneBtn);
           POPUP.hide(popup);
@@ -221,9 +218,9 @@ const planWorkflow = (() => {
         // delay 2 seconds
         await new Promise(r => setTimeout(r, 2000));
 
-        await displayWFwithMissingResponsibleParties (workflowIds);
+        await displayWFwithMissingResponsibleParties(workflowIds);
         //overlay.show();//
-      }
+      },
     });
 
     const cancelBtn = button.build({
@@ -231,7 +228,7 @@ const planWorkflow = (() => {
       text: 'CANCEL',
       style: 'secondary',
       type: 'outlined',
-      callback: () => POPUP.hide(popup)
+      callback: () => POPUP.hide(popup),
     });
 
     const btnWrap = document.createElement('div');
@@ -244,42 +241,36 @@ const planWorkflow = (() => {
     PROGRESS__BTN.SPINNER.hide('workflow_addWorkflowBtn');
     document.getElementById('workflow_addWorkflowBtn').innerText = 'Add Workflow(s)';
     POPUP.show(popup);
-    
   }
 
-  async function displayWFwithMissingResponsibleParties (workflowIds) {
+  async function displayWFwithMissingResponsibleParties(workflowIds) {
+    if (workflowIds.length == 0) return false;
 
-    if (workflowIds.length == 0 ) return false;
+    let strWorkflowIds = workflowIds.toString();
+    const convertedstrWorkFlowIds = strWorkflowIds.replaceAll(',', '|');
+    // convertedstrWorkFlowIds += '|';
 
-    let strWorkflowIds = workflowIds.toString(); 
-     const convertedstrWorkFlowIds = strWorkflowIds.replaceAll(",","|");
-     // convertedstrWorkFlowIds += '|';
+    async function getWFwithMissingResponsibleParties(constrWorkFlowIds) {
+      let responsibleData = await WorkflowViewerAjax.getWFwithMissingResponsibleParties({
+        workflowIds: constrWorkFlowIds.toString(),
+      });
 
-     async function getWFwithMissingResponsibleParties(constrWorkFlowIds) {
-        let responsibleData = await WorkflowViewerAjax.getWFwithMissingResponsibleParties({
-          workflowIds: constrWorkFlowIds.toString(),
-        });
+      return responsibleData;
+    }
 
-        return responsibleData; 
+    let responsibleData = await getWFwithMissingResponsibleParties(convertedstrWorkFlowIds);
+
+    const workflowNames = [];
+    if (responsibleData.length > 0) {
+      for (let i = 0; i < responsibleData.length; i++) {
+        workflowNames.push(responsibleData[i].name);
       }
-     
-      
-      let responsibleData = await getWFwithMissingResponsibleParties(convertedstrWorkFlowIds);
-
-      const workflowNames = [];
-      if (responsibleData.length > 0) {
-      
-        for(let i = 0; i < responsibleData.length; i++) {
-          workflowNames.push(responsibleData[i].name);
-        }
-        var strWorkflowNames = workflowNames.join(', ');
-       missingResponsiblePartyAlert(strWorkflowNames);
-      }
-    
+      var strWorkflowNames = workflowNames.join(', ');
+      missingResponsiblePartyAlert(strWorkflowNames);
+    }
   }
 
   function missingResponsiblePartyAlert(workflowNames) {
-
     var alertPopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
@@ -291,15 +282,15 @@ const planWorkflow = (() => {
       style: 'secondary',
       type: 'contained',
       icon: 'checkmark',
-      callback: async function() {
+      callback: async function () {
         POPUP.hide(alertPopup);
-        
       },
     });
-    
+
     alertbtnWrap.appendChild(alertokBtn);
     var alertMessage = document.createElement('p');
-    alertMessage.innerHTML = 'There are missing responsible party relationship assignments for the following new workflows: ' + workflowNames;
+    alertMessage.innerHTML =
+      'There are missing responsible party relationship assignments for the following new workflows: ' + workflowNames;
     alertPopup.appendChild(alertMessage);
     alertPopup.appendChild(alertbtnWrap);
     POPUP.show(alertPopup);

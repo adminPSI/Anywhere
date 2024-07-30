@@ -74,6 +74,23 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string getReportTitle(string planId)
+        {
+            logger.debug("getConsumerAssessment ");
+            List<string> list = new List<string>();
+            list.Add(planId);
+            string text = "CALL DBA.ANYW_ISP_GetReportTitle(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2ADG", ex.Message + "ANYW_ISP_GetReportTitle(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ADG: error ANYW_ISP_GetReportTitle";
+            }
+        }
+
         public string insertConsumerPlan(string token, string consumerId, string planType, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string active, string reviewDate, string salesForceCaseManagerId)
         {
             if (tokenValidator(token) == false) return null;
@@ -667,6 +684,27 @@ namespace Anywhere.service.Data
                 throw ex;
             }
 
+        }
+
+        public string authorizationGetLandingPageData(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getUserPermissions " + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_Authorization_getLandingPage(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+
+                logger.error("653", ex.Message + "ANYW_Authorization_getLandingPage(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "653: error ANYW_User_Permissions";
+
+            }
         }
 
         public string getVendorInfo(string token, string vendor, string DDNumber, string localNumber, string goodStanding, string homeServices, string takingNewReferrals, string fundingSource, string serviceCode, DistributedTransaction transaction)

@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel.Web;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAttachmentWorker;
+using static Anywhere.service.Data.WorkflowWorker;
 
 namespace Anywhere.service.Data
 {
@@ -153,6 +154,20 @@ namespace Anywhere.service.Data
             public string TemplateName { get; set; }
             public string GroupName { get; set; }
             public string StepName { get; set; }
+
+        }
+
+        public class RosterInfo
+        {
+            public string IndivNameLastFirst { get; set; }
+            public string IndivNameFirstMLast { get; set; }
+            public string IndivNameFirstL { get; set; }
+            public string IndivNameFLast5 { get; set; }
+            public string ResidentNumber { get; set; }
+            public string serviceProviders { get; set; }
+            public string CaseManagerNameLastFirst { get; set; }
+            public string CaseManagerNameFirstLast { get; set; }
+            public string Sender { get; set; }
 
         }
 
@@ -702,10 +717,10 @@ namespace Anywhere.service.Data
                 {
                     using (DistributedTransaction transaction_insertWF = new DistributedTransaction(DbHelper.ConnectionString))
                     {
-
+                        string workflowId = "";
                         try
                         {
-                            string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", "", priorConsumerPlanId, transaction_insertWF);
+                            workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", "", priorConsumerPlanId, transaction_insertWF);
                             //string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", transaction_insertWF);
 
                             workflowIds.Add(workflowId);
@@ -1073,7 +1088,7 @@ namespace Anywhere.service.Data
                             wfActiontoProcess.Add(thiswfAction);
                             // For the current Step Event - if Action = 2 (email), replace placeholders in Action_Paramters
                             // For any other Step Action, this simply returns the passed in Action
-                            stepActions = getStepUpdateActions(wfActiontoProcess);
+                            stepActions = getStepUpdateActions(wfActiontoProcess, token);
 
                             // For the current Step Event - execute one event/action pairing 
                             string thisActionJSON = processWorkflowAction(token, thisEvent, stepActions, transaction2);
@@ -1086,7 +1101,7 @@ namespace Anywhere.service.Data
                     {
                         // could have multiple theseActions for this one WorkFlow event -- example Actions: change Due date, start date, 
                         List<ActionInfo> wfActions = new List<ActionInfo>();
-                        wfActions = getWorkFlowStatusUpdateActions(theseActions);
+                        wfActions = getWorkFlowStatusUpdateActions(theseActions, token);
                         List<string> listActionDates = new List<string>();
 
                         foreach (ActionInfo thiswfAction in wfActions)
@@ -1115,7 +1130,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        private List<ActionInfo> getStepUpdateActions(List<ActionInfo> theseActions)
+        private List<ActionInfo> getStepUpdateActions(List<ActionInfo> theseActions, string token)
         {
             List<ActionInfo> wfActions = new List<ActionInfo>();
             List<ActionInfo> wfActionsSorted = new List<ActionInfo>();
@@ -1127,7 +1142,7 @@ namespace Anywhere.service.Data
                     if (thisAction.WF_Action_ID == "2")
                     {
                         // wfActions.Clear();
-                        string emailActionParameterwithValues = processEmailActionParameter(thisAction);
+                        string emailActionParameterwithValues = processEmailActionParameter(thisAction, token);
 
                         // update action_parameter with the modified string (ie, placeholders replaced with values)
                         thisAction.WF_Action_Parameters = emailActionParameterwithValues;
@@ -1151,7 +1166,7 @@ namespace Anywhere.service.Data
         }
 
 
-        private List<ActionInfo> getWorkFlowStatusUpdateActions(List<ActionInfo> theseActions)
+        private List<ActionInfo> getWorkFlowStatusUpdateActions(List<ActionInfo> theseActions, string token)
         {
             List<ActionInfo> wfActions = new List<ActionInfo>();
             List<ActionInfo> wfActionsSorted = new List<ActionInfo>();
@@ -1179,7 +1194,7 @@ namespace Anywhere.service.Data
 
                         if (dict.Count == 0 || dict["Statuses"] == "A")
                         {
-                            if (thisAction.WF_Action_ID == "2") thisAction.WF_Action_Parameters = processEmailActionParameter(thisAction);
+                            if (thisAction.WF_Action_ID == "2") thisAction.WF_Action_Parameters = processEmailActionParameter(thisAction, token);
 
                             wfActions.Add(thisAction);
                         }
@@ -1188,7 +1203,7 @@ namespace Anywhere.service.Data
                             // need to look at thisAction.Current_Status_ID to see if there is a match
                             if (dict["Workflow Status"] == thisAction.Current_Status_ID)
                             {
-                                if (thisAction.WF_Action_ID == "2") thisAction.WF_Action_Parameters = processEmailActionParameter(thisAction);
+                                if (thisAction.WF_Action_ID == "2") thisAction.WF_Action_Parameters = processEmailActionParameter(thisAction, token);
 
                                 wfActions.Add(thisAction);
                             }
@@ -1207,7 +1222,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        private string processEmailActionParameter(ActionInfo thisAction)
+        private string processEmailActionParameter(ActionInfo thisAction, string token)
         {
             string emailActionParameterwithValues = "";
 
@@ -1223,7 +1238,7 @@ namespace Anywhere.service.Data
                 }
                 // dictionary of placeholders (key) and their retrieved values (value)
                 Dictionary<string, string> dictPlaceHolderValues = new Dictionary<string, string>();
-                dictPlaceHolderValues = getActionParameterValues(ActionParameterPlaceHolders, thisAction);
+                dictPlaceHolderValues = getActionParameterValues(ActionParameterPlaceHolders, thisAction, token);
                 // replace placeholders with their corresponding values
                 var ActionParametersSB = new System.Text.StringBuilder(thisAction.WF_Action_Parameters);
                 foreach (var kvp in dictPlaceHolderValues)
@@ -1240,11 +1255,12 @@ namespace Anywhere.service.Data
         }
 
 
-        private Dictionary<string, string> getActionParameterValues(List<string> actionParameterPlaceHolders, ActionInfo thisAction)
+        private Dictionary<string, string> getActionParameterValues(List<string> actionParameterPlaceHolders, ActionInfo thisAction, string token)
         {
 
             string PlanData = "";
             string StepData = "";
+            string RosterData = "";
             Dictionary<string, string> dictPlaceHolderValues = new Dictionary<string, string>();
 
             try
@@ -1254,10 +1270,13 @@ namespace Anywhere.service.Data
                 {
                     PlanData = wfdg.getPlanfromWorkFlowId(thisAction.WF_ID, transaction);
                     StepData = wfdg.getWorkFlowStepInfo(thisAction.WF_Step_ID, transaction);
+                    RosterData = wfdg.getWorkflowDataForRoster(thisAction.WF_ID, transaction, token);
                 }
 
                 PlanInfo[] thesePlans = js.Deserialize<PlanInfo[]>(PlanData);
                 StepInfo[] theseSteps = js.Deserialize<StepInfo[]>(StepData);
+                RosterInfo[] theseRosters = js.Deserialize<RosterInfo[]>(RosterData);
+
 
                 // create dictionary (for this Action) of all placeholders (key) and their retrieved values (value)
                 foreach (string param in actionParameterPlaceHolders)
@@ -1299,6 +1318,28 @@ namespace Anywhere.service.Data
                                 }
                             }
                         }
+                    }
+
+                    foreach (RosterInfo thisRoster in theseRosters)
+                    {
+                        Dictionary<string, string> dictPlaceHolderValuesforPlan = new Dictionary<string, string>();
+                        dictPlaceHolderValuesforPlan = getPlaceHolderValueforRoster(thisRoster, param);
+                        if (dictPlaceHolderValuesforPlan.Count > 0)
+                        {
+                            foreach (var paramvalue in dictPlaceHolderValuesforPlan)
+                            {
+                                if (!dictPlaceHolderValues.ContainsKey(paramvalue.Key))
+                                {
+                                    dictPlaceHolderValues.Add(paramvalue.Key, paramvalue.Value);
+                                }
+                                parameterFound = true;
+                            }
+                        }
+                    }
+
+                    if (!parameterFound)
+                    {
+                        dictPlaceHolderValues[param] = String.Empty;
                     }
                 }
             }
@@ -1435,6 +1476,43 @@ namespace Anywhere.service.Data
                     break;
                 case "[Sender]":
                     dictPlaceHolderValuesforPlan.Add(param, thisPlan.Sender);
+                    break;
+            }
+            return dictPlaceHolderValuesforPlan;
+        }
+
+        private Dictionary<string, string> getPlaceHolderValueforRoster(RosterInfo thisRoster, string param)
+        {
+            Dictionary<string, string> dictPlaceHolderValuesforPlan = new Dictionary<string, string>();
+
+            switch (param)
+            {
+                case "[Indiv. Name(Last, First)]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisRoster.IndivNameLastFirst);
+                    break;
+                case "[Indiv. Name(First M Last)]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisRoster.IndivNameFirstMLast);
+                    break;
+                case "[Indiv. Name(First L)]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisRoster.IndivNameFirstL);
+                    break;
+                case "[Indiv. Name(F Last5)]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisRoster.IndivNameFLast5);
+                    break;
+                case "[Indiv. Resident Number]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisRoster.ResidentNumber);
+                    break;
+                case "[Service Providers]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisRoster.serviceProviders);
+                    break;
+                case "[Case Manager(Last First)]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisRoster.CaseManagerNameLastFirst);
+                    break;
+                case "[Case Manager(First Last)]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisRoster.CaseManagerNameFirstLast);
+                    break;
+                case "[Sender]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisRoster.Sender);
                     break;
             }
             return dictPlaceHolderValuesforPlan;
@@ -1948,14 +2026,14 @@ namespace Anywhere.service.Data
         }
 
 
-        public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorConsumerPlanId)
+        public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorReferenceId)
         //public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
-                    return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", wantedFormAttachmentIds, priorConsumerPlanId, transaction);
+                    return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", wantedFormAttachmentIds, priorReferenceId, transaction);
                     //return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", transaction);
                 }
                 catch (Exception ex)
@@ -2216,9 +2294,9 @@ namespace Anywhere.service.Data
 
 
 
-        public ManualWorkflowList[] getManualWorkflowList(string token, string processId, string planId)
+        public ManualWorkflowList[] getManualWorkflowList(string token, string processId, string referenceId, string notPlan)
         {
-            string wfList = wfdg.getManualWorkflowList(token, processId, planId);
+            string wfList = wfdg.getManualWorkflowList(token, processId, referenceId, notPlan);
             ManualWorkflowList[] wfListObj = js.Deserialize<ManualWorkflowList[]>(wfList);
             return wfListObj;
         }

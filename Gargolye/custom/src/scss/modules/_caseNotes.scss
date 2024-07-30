@@ -1,464 +1,481 @@
 .grid-container {
-  background: $white;
+    background: $white;
 }
 
 [data-active-module='casenotes2.0'] {
-  container: actioncenter / inline-size;
-  background: $white;
-  padding: 0 0 20px;
-  width: 100%;
+    container: actioncenter / inline-size;
+    background: $white;
+    padding: 0 0 20px;
+    width: 100%;
 
-  .caseNotesModule {
-    display: grid;
-    grid-template-columns: auto 340px;
-    grid-template-rows: auto auto minmax(900px, 1220px) auto;
-    grid-template-areas:
+    .caseNotesModule {
+        display: grid;
+        grid-template-columns: auto 340px;
+        grid-template-rows: auto auto minmax(900px, 1220px) auto;
+        grid-template-areas:
       'header header'
       'nav nav'
       'form roster'
       'cards cards';
-    justify-items: stretch;
-  }
-  @container actioncenter (max-width: 768px) {
-    .caseNotesModule {
-      grid-template-rows: auto auto minmax(auto, 1500px) auto;
+        justify-items: stretch;
     }
-  }
-  @container actioncenter (min-width: 1000px) {
-    .caseNotesModule {
-      grid-template-rows: auto auto minmax(auto, 1050px) auto;
+    @container actioncenter (max-width: 768px) {
+        .caseNotesModule {
+            grid-template-rows: auto auto minmax(auto, 1500px) auto;
+        }
     }
-  }
-
-  // HEADER
-  .caseNotesHeader {
-    display: flex;
-    flex-flow: row wrap;
-    grid-area: header;
-    padding: 0px 10px;
-    position: relative;
-    top: 14px;
-    z-index: 100;
-
-    h1 {
-      color: $primary;
-      font-size: $px32;
-      font-weight: $_bold;
+    @container actioncenter (min-width: 1000px) {
+        .caseNotesModule {
+            grid-template-rows: auto auto minmax(auto, 1050px) auto;
+        }
     }
-  }
 
-  // DATE NAV
-  .caseNotesDateNav {
-    background: $white;
-    grid-area: nav;
-    margin-bottom: 10px;
-    position: sticky;
-    top: 0px;
-    z-index: 99;
-  }
+    // HEADER
+    .caseNotesHeader {
+        display: flex;
+        flex-flow: row wrap;
+        grid-area: header;
+        padding: 0px 10px;
+        position: relative;
+        top: 14px;
+        z-index: 100;
 
-  // ROSTER
-  .caseNotesRosterPicker {
-    box-shadow: $shadow-m2;
-    border-radius: 6px;
-    display: flex;
-    grid-area: roster;
-    margin: 0 20px 0 10px;
-    min-width: calc(100% - 30px);
-
-    .rosterPicker {
-      .inputGroup.search {
-        min-width: 310px;
-      }
+        h1 {
+            color: $primary;
+            font-size: $px32;
+            font-weight: $_bold;
+        }
     }
-  }
 
-  // FORM
-  .caseNotesForm {
-    container-type: inline-size;
-    container-name: casenoteform;
-    border-radius: 6px;
-    box-shadow: $shadow-m2;
-    display: flex;
-    flex-flow: column nowrap;
-    grid-area: form;
-    margin: 0 10px 0 20px;
-    position: relative;
+    // DATE NAV
+    .caseNotesDateNav {
+        background: $white;
+        grid-area: nav;
+        margin-bottom: 10px;
+        position: sticky;
+        top: 0px;
+        z-index: 99;
+    }
 
-    @container casenoteform (max-width: 400px) {
-      form {
+    // ROSTER
+    .caseNotesRosterPicker {
+        box-shadow: $shadow-m2;
+        border-radius: 6px;
+        display: flex;
+        grid-area: roster;
+        margin: 0 20px 0 10px;
+        min-width: calc(100% - 30px);
+
+        .rosterPicker {
+            .inputGroup.search {
+                min-width: 310px;
+            }
+        }
+    }
+
+    // FORM
+    .caseNotesForm {
+        container-type: inline-size;
+        container-name: casenoteform;
+        border-radius: 6px;
+        box-shadow: $shadow-m2;
+        display: flex;
+        flex-flow: column nowrap;
+        grid-area: form;
+        margin: 0 10px 0 20px;
+        position: relative;
+
+        @container casenoteform (max-width: 400px) {
+            form {
+                .inputGroup.time,
+                .inputGroup.number {
+                    width: 100%;
+                }
+            }
+        }
+
+        form {
+            padding: 6px 10px 10px 10px;
+        }
+
         .inputGroup.time,
         .inputGroup.number {
-          width: 100%;
+            width: calc(50% - 5px);
         }
-      }
+        .inputGroup.checkbox {
+            width: 100%;
+        }
+        .inputGroup.textarea {
+            height: 200px;
+            position: relative;
+        }
+        .inputGroup.location,
+        .inputGroup.service,
+        .inputGroup.need,
+        .inputGroup.contact {
+            min-width: 300px;
+            width: calc(50% - 5px);
+        }
     }
-
-    form {
-      padding: 6px 10px 10px 10px;
-    }
-
-    .inputGroup.time,
-    .inputGroup.number {
-      width: calc(50% - 5px);
-    }
-    .inputGroup.checkbox {
-      width: 100%;
-    }
-    .inputGroup.textarea {
-      height: 200px;
-      position: relative;
-    }
-    .inputGroup.location,
-    .inputGroup.service,
-    .inputGroup.need,
-    .inputGroup.contact {
-      min-width: 300px;
-      width: calc(50% - 5px);
-    }
-  }
-  dialog.dialog.toast[open] {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    background: $gray;
-    max-width: 600px;
-    padding: 4px 10px;
-    width: 80%;
-
-    p {
-      text-align: center;
-    }
-  }
-  dialog.modal.overlapWarning {
-    padding: 14px 10px;
-
-    p {
-      margin-bottom: 20px;
-    }
-  }
-
-  // DOC TIMER
-  .caseNotesTimer {
-    align-items: center;
-    align-self: flex-end;
-    display: flex;
-    padding: 10px 10px 6px 10px;
-
-    p {
-      font-size: $px18;
-      line-height: normal;
-      margin-left: 6px;
-      order: 1;
-      text-align: center;
-      width: 90px;
-    }
-
-    button:first-of-type {
-      margin-right: 4px;
-    }
-  }
-  dialog.modal.timerAutoStart {
-    padding: 14px 10px;
-
-    p {
-      margin-bottom: 20px;
-    }
-  }
-
-  // OVERVIEW
-  .caseNotesOverview {
-    border-radius: 6px;
-    box-shadow: $shadow-m2;
-    grid-area: cards;
-    margin: 20px 20px 0px;
-    padding: 20px;
-
-    &__overviewCard {
-      display: grid;
-      box-shadow: $shadow-m2;
-      border-radius: 6px;
-      position: relative;
-      padding: 10px;
-      margin: 0 0 8px;
-
-      .overviewCardInner {
+    dialog.dialog.toast[open] {
+        display: flex;
         align-items: center;
-        display: grid;
-        grid-template-columns: minmax(90px, 100px) minmax(90px, 100px) 1fr 2fr 2fr;
-        grid-template-rows: auto;
-        grid-template-areas:
+        justify-content: space-between;
+
+        background: $gray;
+        max-width: 600px;
+        padding: 4px 10px;
+        width: 80%;
+
+        p {
+            text-align: center;
+        }
+    }
+    dialog.modal.overlapWarning {
+        padding: 14px 10px;
+
+        p {
+            margin-bottom: 20px;
+        }
+    }
+
+    // DOC TIMER
+    .caseNotesTimer {
+        align-items: center;
+        align-self: flex-end;
+        display: flex;
+        padding: 10px 10px 6px 10px;
+
+        p {
+            font-size: $px18;
+            line-height: normal;
+            margin-left: 6px;
+            order: 1;
+            text-align: center;
+            width: 90px;
+        }
+
+        button:first-of-type {
+            margin-right: 4px;
+        }
+    }
+    dialog.modal.timerAutoStart {
+        padding: 14px 10px;
+
+        p {
+            margin-bottom: 20px;
+        }
+    }
+
+    // OVERVIEW
+    .caseNotesOverview {
+        border-radius: 6px;
+        box-shadow: $shadow-m2;
+        grid-area: cards;
+        margin: 20px 20px 0px;
+        padding: 20px;
+
+        &__overviewCard {
+            display: grid;
+            box-shadow: $shadow-m2;
+            border-radius: 6px;
+            position: relative;
+            padding: 10px;
+            margin: 0 0 8px;
+
+            .overviewCardInner {
+                align-items: center;
+                display: grid;
+                grid-template-columns: minmax(90px, 100px) minmax(90px, 100px) 1fr 2fr 2fr;
+                grid-template-rows: auto;
+                grid-template-areas:
           'starttime endtime duration nothing buttons'
           'consumer consumer consumer consumer consumer'
           'serviceInfo serviceInfo serviceInfo serviceInfo serviceInfo'
           'note note note note note';
-        row-gap: 10px;
-      }
+                row-gap: 10px;
+            }
 
-      &.closed {
-        grid-template-rows: 0fr;
-        padding: 0px;
-        margin: 0px;
+            &.closed {
+                grid-template-rows: 0fr;
+                padding: 0px;
+                margin: 0px;
 
-        .overviewCardInner {
-          overflow: hidden;
+                .overviewCardInner {
+                    overflow: hidden;
+                }
+            }
+
+            .startTime {
+                grid-area: starttime;
+            }
+            .endTime {
+                grid-area: endtime;
+            }
+            .startTime,
+            .endTime {
+                span:last-child {
+                    font-size: $px17;
+                }
+            }
+            .duration {
+                grid-area: duration;
+            }
+            .consumer {
+                align-items: center;
+                display: flex;
+                grid-area: consumer;
+                //grid-area: 2/1/2/4;
+                width: 100%;
+
+                .portrait {
+                    height: 50px;
+                    width: 50px;
+                }
+
+                .name {
+                    font-size: $px26;
+                    font-weight: $_bold;
+                    order: 1;
+                }
+            }
+            .serviceInfo {
+                grid-area: serviceInfo;
+                font-size: $px18;
+                width: 100%;
+            }
+            .noteText {
+                grid-area: note;
+                width: 100%;
+            }
+            .button-wrap {
+                grid-area: buttons;
+                column-gap: 6px;
+                justify-self: end;
+
+                .button {
+                    width: auto;
+                }
+            }
+
+            // labeling
+            .withLabel {
+                font-size: $px20;
+                font-weight: $_bold;
+                position: relative;
+                margin: 20px 8px 0 0;
+            }
+            .withLabel::before {
+                font-size: $px12;
+                font-weight: $_normal;
+                position: absolute;
+                top: -14px;
+                left: 0px;
+            }
+            .startTime::before {
+                content: 'Start Time';
+            }
+            .endTime::before {
+                content: 'End Time';
+            }
+            .duration::before {
+                content: 'Total';
+            }
+            .location::before {
+                content: 'Location';
+            }
+            .enteredBy::before {
+                content: 'Entered By';
+            }
         }
-      }
+    }
 
-      .startTime {
-        grid-area: starttime;
-      }
-      .endTime {
-        grid-area: endtime;
-      }
-      .startTime,
-      .endTime {
-        span:last-child {
-          font-size: $px17;
-        }
-      }
-      .duration {
-        grid-area: duration;
-      }
-      .consumer {
-        align-items: center;
-        display: flex;
-        grid-area: consumer;
-        //grid-area: 2/1/2/4;
-        width: 100%;
+    // INACTIVITY WARNING
+    dialog.modal.inactivityWarning {
+        padding: 14px 10px;
 
-        .portrait {
-          height: 50px;
-          width: 50px;
+        p {
+            margin-bottom: 20px;
         }
+    }
 
-        .name {
-          font-size: $px26;
-          font-weight: $_bold;
-          order: 1;
+
+    dialog.modal.deleteCaseWarning {
+        padding: 35px 20px;
+        background: $bg-warning;
+
+        p {
+            color: $font-dark;
+            font-weight: $normal;
+            margin-bottom: 20px;
         }
-      }
-      .serviceInfo {
-        grid-area: serviceInfo;
-        font-size: $px18;
-        width: 100%;
-      }
-      .noteText {
-        grid-area: note;
-        width: 100%;
-      }
-      .button-wrap {
-        grid-area: buttons;
-        column-gap: 6px;
-        justify-self: end;
 
         .button {
-          width: auto;
+            &--icon {
+                padding: 0 13px 0 15% !important; 
+            }
         }
-      }
-
-      // labeling
-      .withLabel {
-        font-size: $px20;
-        font-weight: $_bold;
-        position: relative;
-        margin: 20px 8px 0 0;
-      }
-      .withLabel::before {
-        font-size: $px12;
-        font-weight: $_normal;
-        position: absolute;
-        top: -14px;
-        left: 0px;
-      }
-      .startTime::before {
-        content: 'Start Time';
-      }
-      .endTime::before {
-        content: 'End Time';
-      }
-      .duration::before {
-        content: 'Total';
-      }
-      .location::before {
-        content: 'Location';
-      }
-      .enteredBy::before {
-        content: 'Entered By';
-      }
     }
-  }
+    // PHRASES POPUPS
+    dialog.modal.insertPhrases[open] {
+        height: 60%;
+        min-height: 300px;
+        max-height: 450px;
+        width: 80%;
+        min-width: 400px;
+        max-width: 600px;
 
-  // INACTIVITY WARNING
-  dialog.modal.inactivityWarning {
-    padding: 14px 10px;
+        .phraseWrap {
+            overflow-y: scroll;
+            overflow-x: hidden;
+            padding: 0px 4px 0 12px;
+            flex-grow: 1;
+        }
+        .phraseView {
+            margin: 0 0 10px 0;
+            padding: 20px 10px 15px;
+            flex-grow: 0;
+        }
+        .phrase {
+            //border: 2px solid $black;
+            box-shadow: $shadow-m2;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            flex-flow: column nowrap;
+            margin: 0 8px 10px 0;
+            padding: 4px;
 
-    p {
-      margin-bottom: 20px;
+            * {
+                pointer-events: none;
+            }
+
+            .shortcut {
+                font-weight: $_bold;
+            }
+            // .phraseText {
+            // }
+        }
+        button.button {
+            margin: 20px 12px 15px 12px;
+        }
     }
-  }
+    dialog.modal.addPhrases[open] {
+        height: 60%;
+        min-height: 300px;
+        max-height: 400px;
+        width: 80%;
+        min-width: 400px;
+        max-width: 535px;
 
-  // PHRASES POPUPS
-  dialog.modal.insertPhrases[open] {
-    height: 60%;
-    min-height: 300px;
-    max-height: 450px;
-    width: 80%;
-    min-width: 400px;
-    max-width: 600px;
+        padding: 14px 10px;
 
-    .phraseWrap {
-      overflow-y: scroll;
-      overflow-x: hidden;
-      padding: 0px 4px 0 12px;
-      flex-grow: 1;
+        form {
+            flex-grow: 1;
+
+            .inputGroup.checkbox {
+                margin: 0 0 10px;
+            }
+            .inputGroup.textarea {
+                height: 150px;
+            }
+        }
     }
-    .phraseView {
-      margin: 0 0 10px 0;
-      padding: 20px 10px 15px;
-      flex-grow: 0;
-    }
-    .phrase {
-      //border: 2px solid $black;
-      box-shadow: $shadow-m2;
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      flex-flow: column nowrap;
-      margin: 0 8px 10px 0;
-      padding: 4px;
-
-      * {
-        pointer-events: none;
-      }
-
-      .shortcut {
-        font-weight: $_bold;
-      }
-      // .phraseText {
-      // }
-    }
-    button.button {
-      margin: 20px 12px 15px 12px;
-    }
-  }
-  dialog.modal.addPhrases[open] {
-    height: 60%;
-    min-height: 300px;
-    max-height: 400px;
-    width: 80%;
-    min-width: 400px;
-    max-width: 535px;
-
-    padding: 14px 10px;
-
-    form {
-      flex-grow: 1;
-
-      .inputGroup.checkbox {
-        margin: 0 0 10px;
-      }
-      .inputGroup.textarea {
-        height: 150px;
-      }
-    }
-  }
 }
 
 //============================================================
 // NEW UI STUFF NEEDS MOVED TO ITS OWN FOLDER
 //------------------------------------------------------------
 [data-ui] {
-  //===========================================
-  // VALIDATIONS
-  //-------------------------------------------
-  .notifications {
-    border-radius: 6px;
-    box-shadow: $shadow-m2;
-    padding: 12px 10px;
+    //===========================================
+    // VALIDATIONS
+    //-------------------------------------------
+    .notifications {
+        border-radius: 6px;
+        box-shadow: $shadow-m2;
+        padding: 12px 10px;
 
-    .validationErros {
-      .validationMessage {
-        background-color: rgba(219, 22, 47, 0.4);
+        .validationErros {
+            .validationMessage {
+                background-color: rgba(219, 22, 47, 0.4);
 
-        .iconWrap {
-          background-color: transparent;
-          height: 24px;
-          width: 24px;
-          perspective: 1000px;
+                .iconWrap {
+                    background-color: transparent;
+                    height: 24px;
+                    width: 24px;
+                    perspective: 1000px;
+                }
+
+                .iconInner {
+                    height: 100%;
+                    position: relative;
+                    transform-style: preserve-3d;
+                    transition: transform 1s;
+                    width: 100%;
+                }
+
+                .svgIcon {
+                    color: $error;
+                    position: absolute;
+                    backface-visibility: hidden;
+                    transition: opacity 0.2s;
+
+                    &:first-child {
+                        // error icon
+                        opacity: 1;
+                    }
+                    &:last-child {
+                        // checkmark icon
+                        color: $secondary;
+                        opacity: 0;
+                        transform: rotateY(180deg);
+                    }
+                }
+
+                &.valid {
+                    background-color: rgba(129, 185, 65, 0.4);
+
+                    .iconInner {
+                        transform: rotateY(180deg);
+                    }
+
+                    .svgIcon:first-child {
+                        // error icon
+                        opacity: 0;
+                    }
+                    .svgIcon:last-child {
+                        // checkmark icon
+                        opacity: 1;
+                    }
+                }
+            }
         }
 
-        .iconInner {
-          height: 100%;
-          position: relative;
-          transform-style: preserve-3d;
-          transition: transform 1s;
-          width: 100%;
+        .validationWarnings {
+            .validationMessage {
+                background-color: rgba(255, 200, 87, 0.4);
+
+                .svgIcon {
+                    color: $warning;
+                }
+            }
         }
 
-        .svgIcon {
-          color: $error;
-          position: absolute;
-          backface-visibility: hidden;
-          transition: opacity 0.2s;
+        .validationMessage {
+            align-items: center;
+            border-radius: 20px;
+            column-gap: 4px;
+            display: flex;
+            flex-flow: row nowrap;
+            padding: 4px 14px 4px 10px;
 
-          &:first-child {
-            // error icon
-            opacity: 1;
-          }
-          &:last-child {
-            // checkmark icon
-            color: $secondary;
-            opacity: 0;
-            transform: rotateY(180deg);
-          }
+            &.hidden {
+                display: none;
+            }
+
+            p {
+                font-weight: $_bold;
+            }
         }
-
-        &.valid {
-          background-color: rgba(129, 185, 65, 0.4);
-
-          .iconInner {
-            transform: rotateY(180deg);
-          }
-
-          .svgIcon:first-child {
-            // error icon
-            opacity: 0;
-          }
-          .svgIcon:last-child {
-            // checkmark icon
-            opacity: 1;
-          }
-        }
-      }
     }
-
-    .validationWarnings {
-      .validationMessage {
-        background-color: rgba(255, 200, 87, 0.4);
-
-        .svgIcon {
-          color: $warning;
-        }
-      }
-    }
-
-    .validationMessage {
-      align-items: center;
-      border-radius: 20px;
-      column-gap: 4px;
-      display: flex;
-      flex-flow: row nowrap;
-      padding: 4px 14px 4px 10px;
-
-      &.hidden {
-        display: none;
-      }
-
-      p {
-        font-weight: $_bold;
-      }
-    }
-  }
 }

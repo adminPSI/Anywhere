@@ -317,7 +317,7 @@ const planValidation = (function () {
         obj => obj.applicable === 'Y',
       );
 
-      // In the case the ANYW_ISP_Sections_Applicable table is missing the 
+      // In the case the ANYW_ISP_Sections_Applicable table is missing the planId
       if (assessmentValidationCheck.sectionsApplicable.length === 0) {
         hasASectionApplicable = true;
       }

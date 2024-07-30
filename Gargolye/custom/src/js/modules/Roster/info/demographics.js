@@ -463,7 +463,8 @@ const demographics = (function () {
                         phoneNumber = stringAdd(phoneNumber, 7, '-');
                         e.target.value = phoneNumber;
                     }
-                    if (value.length > 10) {
+
+                    if (value.length > 0) {
                         phoneNumber = stringAdd(value, 3, '-');
                         phoneNumber = stringAdd(phoneNumber, 7, '-');
                         phoneNumber = stringAdd(phoneNumber, 12, ' (');

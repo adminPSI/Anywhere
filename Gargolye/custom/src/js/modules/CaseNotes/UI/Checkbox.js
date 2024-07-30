@@ -124,6 +124,7 @@
    */
   Checkbox.prototype.toggleDisabled = function (isDisbled) {
     this.input.disabled = isDisbled;
+    this.input.readOnly = isDisbled;
   };
 
   /**

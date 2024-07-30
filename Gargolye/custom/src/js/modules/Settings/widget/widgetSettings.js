@@ -546,6 +546,86 @@ const widgetSettings = (function () {
             application: 'gk,adv',
             order: 0,
         },
+        20: {
+            id: 20,
+            name: 'Roster To-Do List',
+            settings: { dueDate: 'today' },
+            showHide: '',
+            application: 'gk',
+            order: 0,
+            build: function () {
+                const saveID = 20;
+                const that = this;
+                const widgetBody = document.createElement('div');
+                widgetBody.classList.add('widgetBody__Inner');
+
+                const dueDateDropdown = dropdown.build({
+                    label: 'Due Date',
+                    style: 'secondary',
+                    dropdownId: 'dueDateDropdown',
+                });
+                dueDateDropdown.addEventListener('change', e => {
+                    that.settings.dueDate = e.target.value;
+                });
+                dropdown.populate(
+                    dueDateDropdown,
+                    [
+                        { id: 1, value: 'today', text: 'Today' },
+                        { id: 2, value: 'next 7 days', text: 'Next 7 Days' },
+                        { id: 3, value: 'next 30 days', text: 'Next 30 Days' },
+                        { id: 4, value: 'prior 7 days', text: 'Prior 7 Days' },
+                        { id: 5, value: 'prior 30 days', text: 'Prior 30 Days' },
+                    ],
+                    that.settings.dueDate,
+                );
+
+                const saveBtn = button.build({
+                    id: 'wfRosterSave',
+                    text: 'Save',
+                    type: 'contained',
+                    style: 'secondary',
+                    classNames: ['widgetSettingsSaveBtn'],
+                    callback: async () => {
+                        // config string to json
+                        const configString = JSON.stringify(that.settings);
+
+                        // style saved button
+                        saveBtn.innerText = 'saved';
+                        saveBtn.classList.add('saved');
+                        setTimeout(() => {
+                            saveBtn.classList.remove('saved');
+                            saveBtn.innerText = 'save';
+                        }, 1600);
+
+                        // update settings
+                        await widgetSettingsAjax.setWidgetSettingConfig(saveID, configString, that.showHide);
+                        dashboard.load();
+                    },
+                });
+
+                const backBtn = button.build({
+                    id: 'wfRosterBack',
+                    text: 'Back',
+                    type: 'contained',
+                    style: 'secondary',
+                    callback: async () => {
+                        const toggle = document.querySelector('#build-20');
+                        toggle.classList.remove('active');
+                        newTable.classList.add('active');
+                    },
+                });
+
+                const btnWrap = document.createElement("div");
+                btnWrap.classList.add("btnWrap");
+                btnWrap.appendChild(saveBtn);
+                btnWrap.appendChild(backBtn);
+
+                widgetBody.appendChild(dueDateDropdown);
+                widgetBody.appendChild(btnWrap);
+
+                return widgetBody;
+            },
+        },
     };
 
     function setWidgetSettings(widgetId) {

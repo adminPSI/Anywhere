@@ -124,7 +124,8 @@ namespace Anywhere.service.Data
             public string code { get; set; }
             [DataMember(Order = 1)]
             public string caption { get; set; }
-
+            [DataMember(Order = 2)]
+            public string defaultGroupSize { get; set; }
         }
 
         [DataContract]
@@ -199,6 +200,26 @@ namespace Anywhere.service.Data
             public string userId { get; set; }
             [DataMember(Order = 15)]
             public string serviceId { get; set; }
+        }
+
+        [DataContract]
+        public class Form6Tier1andJDPLan
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string caseNoteId { get; set; }
+            [DataMember(Order = 2)]
+            public string serviceDate { get; set; }
+            
+            [DataMember(Order = 3)]
+            public string SAMLevel { get; set; }
+            [DataMember(Order = 4)]
+            public string contactMethod { get; set; }
+            [DataMember(Order = 5)]
+            public string narrative { get; set; }
+            [DataMember(Order = 6)]
+            public string serviceName { get; set; }
         }
 
         [DataContract]
@@ -293,6 +314,57 @@ namespace Anywhere.service.Data
             public string serviceId { get; set; }
         }
 
+        [DataContract]
+        public class Form16SummerYouthWorkExperience
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string caseNoteId { get; set; }
+            [DataMember(Order = 2)]
+            public string serviceDate { get; set; }
+            [DataMember(Order = 3)]
+            public string startTime { get; set; }
+            [DataMember(Order = 4)]
+            public string endTime { get; set; }
+            [DataMember(Order = 5)]
+            public string interventions { get; set; }
+            [DataMember(Order = 6)]
+            public string position { get; set; }
+            [DataMember(Order = 7)]
+            public string groupSize { get; set; }
+            [DataMember(Order = 8)]
+            public string serviceName { get; set; }
+        }
+
+        [DataContract]
+        public class Form16MonthlySummary
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string emReviewId { get; set; }
+            [DataMember(Order = 2)]
+            public string emReviewDate { get; set; }
+            [DataMember(Order = 3)]
+            public string emReferenceNumber { get; set; }
+            [DataMember(Order = 4)]
+            public string emNextScheduledReview { get; set; }
+
+            [DataMember(Order = 5)]
+            public string emSummaryIndivSelfAssessment { get; set; }
+           
+            [DataMember(Order = 6)]
+            public string emSummaryIndivProviderAssessment { get; set; }
+            
+                [DataMember(Order = 7)]
+            public string emReviewVTS { get; set; }
+
+            [DataMember(Order = 8)]
+            public string emOfferedHoursNotWorkNumber { get; set; }
+
+
+        }
 
         public OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
         {
@@ -567,7 +639,7 @@ namespace Anywhere.service.Data
         }
 
         //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
-        public OODDDLItem[] getContactMethods(string token)
+        public OODWorker.OODDDLItem[] getContactMethods(string token, string formtype)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -575,7 +647,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    OODDDLItem[] contactMethods = js.Deserialize<OODDDLItem[]>(Odg.getContactMethods(transaction));
+                    OODDDLItem[] contactMethods = js.Deserialize<OODDDLItem[]>(Odg.getContactMethods(transaction, formtype));
                     return contactMethods;
                 }
                 catch (Exception ex)
@@ -665,6 +737,16 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
+
+        // Form 6 Tier1andJDPLan
+        public Form6Tier1andJDPLan[] getForm6Tier1andJDPLan(string token, string caseNoteId)
+        {
+            string editDataString = Odg.getForm6Tier1andJDPLan(token, caseNoteId);
+            Form6Tier1andJDPLan[] editDataObj = js.Deserialize<Form6Tier1andJDPLan[]>(editDataString);
+            return editDataObj;
+        }
+
+
         public string deleteFormMonthlySummary(string token, string emReviewId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
@@ -730,5 +812,21 @@ namespace Anywhere.service.Data
             
         }
 
+        // Form Form16SummerYouthWorkExperience
+        public Form16SummerYouthWorkExperience[] getForm16SummerYouthWorkExperience(string token, string caseNoteId)
+        {
+            string editDataString = Odg.getForm16SummerYouthWorkExperience(token, caseNoteId);
+            Form16SummerYouthWorkExperience[] editDataObj = js.Deserialize<Form16SummerYouthWorkExperience[]>(editDataString);
+            return editDataObj;
+        }
+
+
+        // Form 16 Monthly Summary
+        public Form16MonthlySummary[] getForm16MonthlySummary(string token, string emReviewId)
+        {
+            string editDataString = Odg.getForm16MonthlySummary(token, emReviewId);
+            Form16MonthlySummary[] editDataObj = js.Deserialize<Form16MonthlySummary[]>(editDataString);
+            return editDataObj;
+        }
     }
 }

@@ -181,6 +181,7 @@ const csVendor = (() => {
         { text: 'Digital', value: '1' },
         { text: 'In-Person', value: '2' },
         { text: 'No Signature Required', value: '3' },
+        { text: 'E-Digital', value: '4' },
       ],
       type,
     );
@@ -259,6 +260,9 @@ const csVendor = (() => {
       case '3': {
         return 'No Signature Required';
       }
+      case '4': {
+        return 'E-Digital';
+      }
       default: {
         return '';
       }
@@ -270,7 +274,7 @@ const csVendor = (() => {
     radioContainer.classList.add('sig_radioContainer');
 
     const radioContainerTitle = document.createElement('p');
-    radioContainerTitle.innerText = 'Participated in Planning?';
+    radioContainerTitle.innerText = '*Participated in Planning?';
 
     participatedYesRadio = input.buildRadio({
       text: 'Yes',
@@ -417,7 +421,7 @@ const csVendor = (() => {
     // Vendor
     vendorDropdown = dropdown.build({
       dropdownId: 'sigPopup_vendor',
-      label: 'Vendor',
+      label: '*Vendor',
       readonly: isSigned || readOnly,
       callback: async event => {
         selectedMemberData.name = event.target.value;
@@ -463,7 +467,7 @@ const csVendor = (() => {
     // Team Member
     teamMemberDropdown = dropdown.build({
       dropdownId: 'sigPopup_teamMember',
-      label: 'Team Member',
+      label: '*Team Member',
       readonly: isSigned || readOnly,
       callback: async event => {
         selectedMemberData.teamMember = event.target.value;
@@ -528,7 +532,7 @@ const csVendor = (() => {
     // Signature Type
     signatureTypeDropdown = dropdown.build({
       dropdownId: 'sigPopup_signType',
-      label: 'Signature Type',
+      label: '*Signature Type',
       readonly: isSigned || readOnly,
       callback: event => {
         selectedMemberData.signatureType = event.target.value;

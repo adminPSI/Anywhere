@@ -1,9 +1,5 @@
 $base-padding: 10px;
 
-// Tabs Wrap
-.planWorkflow {
-}
-
 // Josh's Stuff
 #workflow-viewer {
     position: relative;
@@ -330,7 +326,7 @@ $base-padding: 10px;
 
     .workflowList {
         margin: 0 0 10px;
-        max-height: 210px;
+        //max-height: 210px;
         overflow: auto;
     }
 

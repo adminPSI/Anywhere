@@ -278,14 +278,15 @@ namespace Anywhere.service.Data
             }
         }
         //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
-        public string getContactMethods(DistributedTransaction transaction)
+        public string getContactMethods(DistributedTransaction transaction, string formtype)
         {
 
             try
             {
                 logger.debug("getContactMethods ");
-
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getContactMethods()", ref transaction);
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@formtype", DbType.String, formtype);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getContactMethods(?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
@@ -555,6 +556,88 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
+
+        // Form6Tier1andJDPLan
+        public string getForm6Tier1andJDPLan(string token, string caseNoteId)
+        {
+            if (tokenValidator(token) == false) return null;
+
+            logger.debug("getForm6Tier1andJDPLan" + token);
+            try
+            {
+                return dg.executeDataBaseCallJSON("CALL DBA.ANYW_OOD_getForm6Tier1andJDPLan('" + token + "', '" + caseNoteId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("537", ex.Message + " ANYW_OOD_getForm6Tier1andJDPLan('" + token + "', '" + caseNoteId + "')");
+                return "537: Error getting getForm6Tier1andJDPLan";
+            }
+        }
+
+        public string updateForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel, string contactMethod, string narrative, string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("updateForm6Tier1andJDPLan" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(caseNoteId);
+            list.Add(serviceDate);
+            list.Add(SAMLevel);
+            list.Add(contactMethod);
+            list.Add(narrative);
+            list.Add(userId);
+
+            string text = "CALL DBA.ANYW_OOD_updateForm6Tier1andJDPLan(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                //return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_updateForm6Tier1andJDPLan('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + employer + "', '" + contactType + "', '" + jobSeekerPresent + "', '" + outcome + "', '" + TSCNotified + "', '" + bilingualSupplement + "', '" + notes + "', '" + userId +  "');", "results", "results");
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm6Tier1andJDPLan('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + SAMLevel + "', '" + contactMethod + "', '" + narrative + "')");
+                return "536: Error saving Form8CommunityBasedAssessment";
+            }
+        }
+
+        public string insertForm6Tier1andJDPLan(string token, string consumerId, string caseNoteId, string serviceDate, string SAMLevel, string contactMethod, string narrative, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("insertForm6Tier1andJDPLan" + token);
+
+            List<string> list = new List<string>();
+
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(caseNoteId);
+            list.Add(serviceDate);
+            list.Add(SAMLevel);
+            list.Add(contactMethod);
+            list.Add(narrative);
+            list.Add(userId);
+            list.Add(serviceId);
+            list.Add(referenceNumber);
+            list.Add(caseManagerId);
+
+            string text = "CALL DBA.ANYW_OOD_insertForm6Tier1andJDPLan(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                // return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_insertForm4MonthlyPlacementEditData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + employer + "', '" + contactType + "', '" + jobSeekerPresent + "', '" + outcome + "', '" + TSCNotified + "', '" + bilingualSupplement + "', '" + notes + "', '" + caseManagerId + "', '" + userId + "', '" + serviceId + "');", "results", "results");
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_insertForm6Tier1andJDPLan('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + SAMLevel + "', '" + contactMethod + "', '" + narrative + "')");
+                return "536: Error saving case note";
+            }
+        }
+
 
         // Form 8 Community Based Assessment
         public string getForm8CommunityBasedAssessment(string token, string caseNoteId)
@@ -831,6 +914,172 @@ namespace Anywhere.service.Data
                 logger.error("ODG", ex.Message + "deleteOODForm10TransportationEntry(" + OODTransportationId + ")");
                 throw ex;
             }
+        }
+
+        // Form16SummerYouthWorkExperience[]
+        public string getForm16SummerYouthWorkExperience(string token, string caseNoteId)
+        {
+            if (tokenValidator(token) == false) return null;
+
+            logger.debug("getForm8CommunityBasedAssessment" + token);
+            try
+            {
+                return dg.executeDataBaseCallJSON("CALL DBA.ANYW_OOD_getForm16SummerYouthWorkExperience('" + token + "', '" + caseNoteId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("537", ex.Message + " ANYW_OOD_getForm16SummerYouthWorkExperience('" + token + "', '" + caseNoteId + "')");
+                return "537: Error getting Form16SummerYouthWorkExperience";
+            }
+        }
+
+        public string updateForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string groupSize, string interventions, string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("updateForm16SummerYouthWorkExperience" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(caseNoteId);
+            list.Add(serviceDate);
+            list.Add(startTime);
+            list.Add(endTime);
+            list.Add(position);
+            list.Add(groupSize);
+            list.Add(interventions);
+            list.Add(userId);
+
+            string text = "CALL DBA.ANYW_OOD_updateForm16SummerYouthWorkExperience(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                //return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_updateForm16SummerYouthWorkExperience('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + employer + "',  '" + notes + "', '" + userId +  "');", "results", "results");
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm8CommunityBasedAssessment('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + interventions + "')");
+                return "536: Error saving Form16SummerYouthWorkExperience";
+            }
+        }
+
+        public string insertForm16SummerYouthWorkExperience(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string position, string groupSize, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("insertForm16SummerYouthWorkExperience" + token);
+
+            List<string> list = new List<string>();
+
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(caseNoteId);
+            list.Add(serviceDate);
+            list.Add(startTime);
+            list.Add(endTime);
+            list.Add(position);
+            list.Add(groupSize);
+            list.Add(interventions);
+            list.Add(userId);
+            list.Add(serviceId);
+            list.Add(referenceNumber);
+            list.Add(caseManagerId);
+
+            string text = "CALL DBA.ANYW_OOD_insertForm16SummerYouthWorkExperience(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                // return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_insertForm16SummerYouthWorkExperience('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + employer + "',  '" + notes + "', '" + caseManagerId + "', '" + userId + "', '" + serviceId + "');", "results", "results");
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm16SummerYouthWorkExperience('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "',  '" + interventions + "')");
+                return "536: Error saving case note";
+            }
+        }
+
+        // Form 16 Monthly Summary -- edit data
+        public string getForm16MonthlySummary(string token, string emReviewId)
+        {
+            if (tokenValidator(token) == false) return null;
+
+            logger.debug("getForm16MonthlySummary" + token);
+            try
+            {
+                return dg.executeDataBaseCallJSON("CALL DBA.ANYW_OOD_getForm16MonthlySummary('" + token + "', '" + emReviewId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("537", ex.Message + " ANYW_OOD_getForm16MonthlySummary('" + token + "', '" + emReviewId + "')");
+                return "537: Error getting emREview to edit";
+            }
+        }
+
+        public string updateForm16MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment,  string emSummaryIndivProviderAssessment,  string emReviewVTS, string emOfferedHoursNotWorkNumber, string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("updateForm16MonthlySummary" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(emReviewId);
+            list.Add(emReviewDate);
+            list.Add(emReferenceNumber);
+            list.Add(emNextScheduledReview);
+            list.Add(emSummaryIndivSelfAssessment);
+            list.Add(emSummaryIndivProviderAssessment);
+            list.Add(emReviewVTS);
+            list.Add(emOfferedHoursNotWorkNumber);
+            list.Add(userId);
+
+            string text = "CALL DBA.ANYW_OOD_updateForm16MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4PODG", ex.Message + "ANYW_OOD_updateForm16MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4APODG: error ANYW_OOD_updateForm16MonthlySummary";
+            }
+
+        }
+
+        public string insertForm16MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string emOfferedHoursNotWorkNumber, string userId, string serviceId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("insertForm16MonthlySummary" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(emReviewDate);
+            list.Add(emReferenceNumber);
+            list.Add(emNextScheduledReview);
+            list.Add(emSummaryIndivSelfAssessment);
+            list.Add(emSummaryIndivProviderAssessment);
+            list.Add(emReviewVTS);
+            list.Add(emOfferedHoursNotWorkNumber);
+            list.Add(userId);
+            list.Add(serviceId);
+
+            string text = "CALL DBA.ANYW_OOD_insertForm16MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4PODG", ex.Message + "ANYW_OOD_insertForm16MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4APODG: error ANYW_OOD_insertForm16MonthlySummary";
+            }
+
         }
 
 

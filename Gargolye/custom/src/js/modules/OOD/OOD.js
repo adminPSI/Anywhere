@@ -209,6 +209,27 @@ const OOD = (() => {
                         );
                     });
                 }
+
+                if (   //NEED NEW AJAX TO GET Form 6 
+                rowConsumer[0] &&
+                e.target.attributes.OODReportType.value === 'newEntry' &&
+                e.target.attributes.formNumber.value === '6'
+            ) {
+                OODAjax.getForm6Tier1andJDPLan(
+                    e.target.attributes.Id.value,
+                    function (results) {
+                        Tier1andJDPlanForm.init(
+                            results,
+                            rowConsumer[0],
+                            undefined,
+                            results[0].serviceName,
+                            undefined,
+                            e.target.attributes.userId.value,
+                            undefined,
+                        );
+                    },
+                );
+            }
                 if (
                     rowConsumer[0] &&
                     e.target.attributes.OODReportType.value === 'newEntry' &&
@@ -243,6 +264,7 @@ const OOD = (() => {
                         );
                     });
                 }
+                
                 if (
                     rowConsumer[0] &&
                     e.target.attributes.OODReportType.value === 'newEntry' &&
@@ -261,6 +283,41 @@ const OOD = (() => {
                             );
                         },
                     );
+                }
+
+                if (   //NEED NEW AJAX TO GET Form 16 
+                    rowConsumer[0] &&
+                    e.target.attributes.OODReportType.value === 'newEntry' &&
+                    e.target.attributes.formNumber.value === '16'
+                ) {
+                    OODAjax.getForm16SummerYouthWorkExperience(
+                        e.target.attributes.Id.value,
+                        function (results) {
+                            summerYouthWorkExperienceForm.init(
+                                results,
+                                rowConsumer[0],
+                                undefined,
+                                results[0].serviceName,
+                                undefined,
+                                e.target.attributes.userId.value,
+                                undefined,
+                            );
+                        },
+                    );
+                }
+                if (    //NEED NEW AJAX TO GET Form 16
+                    rowConsumer[0] &&
+                    e.target.attributes.OODReportType.value === 'monthlySummary' &&
+                    e.target.attributes.formNumber.value === '16'
+                ) {
+                    OODAjax.getForm16MonthlySummary(e.target.attributes.Id.value, function (results) {
+                        summerYouthWorkExperienceSummaryForm.init(
+                            results,
+                            rowConsumer[0],
+                            undefined,
+                            e.target.attributes.userId.value,
+                        );
+                    });
                 }
             },
         }));
@@ -667,6 +724,18 @@ const OOD = (() => {
                 $.session.UserId,
                 btnType,
             );
+        if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerFormNumber === '6')
+            Tier1andJDPlanForm.init(
+                    {},
+                    thisConsumer[0],
+                    thisselectedConsumerServiceId,
+                    thisselectedConsumerServiceName,
+                    thisselectedConsumerReferenceNumber,
+                    $.session.UserId,
+                    serviceDate,
+                    btnType,
+        );
+
         if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerFormNumber === '8')
             communityBasedAssessmentForm.init(
                 {},
@@ -696,6 +765,25 @@ const OOD = (() => {
                 serviceDate,
                 btnType,
             );
+            if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerFormNumber === '16')
+                summerYouthWorkExperienceForm.init(
+                    {},
+                    thisConsumer[0],
+                    thisselectedConsumerServiceId,
+                    thisselectedConsumerServiceName,
+                    thisselectedConsumerReferenceNumber,
+                    $.session.UserId,
+                    serviceDate,
+                    btnType,
+                );
+            if (thisConsumer && btnType === 'monthlySummary' && thisselectedConsumerFormNumber === '16')
+                summerYouthWorkExperienceSummaryForm.init(
+                    {},
+                    thisConsumer[0],
+                    thisselectedConsumerServiceId,
+                    $.session.UserId,
+                    btnType,
+                );
         // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
     }
 
@@ -731,6 +819,10 @@ const OOD = (() => {
                     sentStatus = await OODAjax.generateForm4(data);
                     break;
     
+                case 6:
+                    sentStatus = await OODAjax.generateForm6(data);
+                    break;
+
                 case 8:
                     sentStatus = await OODAjax.generateForm8(data);
                     break;
@@ -738,6 +830,11 @@ const OOD = (() => {
                 case 10:
                     sentStatus = await OODAjax.generateForm10(data);
                     success = true;
+                    break;
+
+                case 16:
+                    sentStatus = await OODAjax.generateForm16(data);
+                    //alert('Form 16 under construction.');
                     break;
             }
         } catch (error) {
@@ -828,12 +925,16 @@ const OOD = (() => {
         popup.setAttribute('data-popup', 'true');
 
         const form4Btn = buildIndividualFormBtn('Form 4 - Monthly Job & Site Development', 4);
+        const form6Btn = buildIndividualFormBtn('Form 6 - Tier1 and JD Plan', 6);
         const form8Btn = buildIndividualFormBtn('Form 8 - Work Activities and Assessment', 8);
         const form10Btn = buildIndividualFormBtn('Form 10 - Transportation', 10);
+        const form16Btn = buildIndividualFormBtn('Form 16 - Summer Youth Experience', 16);
 
         popup.appendChild(form4Btn);
+        popup.appendChild(form6Btn);
         popup.appendChild(form8Btn);
         popup.appendChild(form10Btn);
+        popup.appendChild(form16Btn);
 
         // Append to DOM
         bodyScrollLock.disableBodyScroll(popup);
@@ -1166,15 +1267,15 @@ const OOD = (() => {
     }
 
     function eventListeners() {
-        serviceDateStartInput.addEventListener('change', event => {
-            if (UTIL.validateDateFromInput(event.target.value)) {
+        serviceDateStartInput.addEventListener('change', event => { 
+            if (event.target.value !== '') {
                 filterValues.serviceDateStart = event.target.value;
             } else {
                 event.target.value = filterValues.serviceDateStart;
-            }
+            } 
         });
-        serviceDateEndInput.addEventListener('change', event => {
-            if (UTIL.validateDateFromInput(event.target.value)) {
+        serviceDateEndInput.addEventListener('change', event => {          
+            if (event.target.value !== '') { 
                 filterValues.serviceDateEnd = event.target.value;
             } else {
                 event.target.value = filterValues.serviceDateEnd;

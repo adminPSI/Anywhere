@@ -1,3 +1,5 @@
+/** DO NOT TOUCH ANY OF THIS CODE PLEASE */
+
 (function (global, factory) {
   global.Form = factory();
 })(this, function () {
@@ -220,10 +222,8 @@
    * @param {Function} cbFunc Callback function to call
    */
   Form.prototype.onDelete = function (cbFunc) {
-    this.form.addEventListener('onDelete', e => {
-      e.preventDefault();
-
-      this.clear();
+      this.form.addEventListener('onDelete', e => {
+      e.preventDefault(); 
 
       cbFunc(data, e.submitter);
     });
@@ -292,10 +292,6 @@
     for (inputName in this.inputs) {
       this.inputs[inputName].toggleDisabled(disable);
     }
-  };
-
-  Form.prototype.toggleFormDisabled = function (disable) {
-    this.form.classList.toggle('readonly', disable);
   };
 
   /**

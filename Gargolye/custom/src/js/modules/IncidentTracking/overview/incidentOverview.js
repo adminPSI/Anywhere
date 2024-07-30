@@ -14,6 +14,7 @@ const incidentOverview = (function () {
     let fromDateInput;
     let toDateInput;
     let categoryDropdown;
+    let showDropdown;
     let consumerDropdownData;
     let btnWrap;
     let supervisorBtnWrap;
@@ -37,6 +38,7 @@ const incidentOverview = (function () {
         categoryName: null,
         fromDate: null,
         toDate: null,
+        show:null,
     };
     // alpha beta stuff
     let changedSelectedAlphaBetas;
@@ -97,11 +99,20 @@ const incidentOverview = (function () {
         }
         if (filterData.categoryName === null || filterData.categoryName === 'All' || filterData.categoryName === 'All Categories') {
             btnWrap.appendChild(categoryBtnWrap);
-            btnWrap.removeChild(categoryBtnWrap);
+            btnWrap.removeChild(categoryBtnWrap); 
         }
         else {
             btnWrap.appendChild(categoryBtnWrap);
             document.getElementById('categoryBtn').innerHTML = 'Category / Subcategory: ' + filterData.categoryName;
+        }
+
+        if (filterData.show === null || filterData.show === 'All' ) {
+            btnWrap.appendChild(showBtnWrap);
+            btnWrap.removeChild(showBtnWrap);
+        }
+        else {
+            btnWrap.appendChild(showBtnWrap);
+            document.getElementById('showBtn').innerHTML = 'Show: ' + filterData.show; 
         }
         
         document.getElementById('supervisorBtn').innerHTML = 'Supervisor: ' + filterData.alphaName;
@@ -193,6 +204,22 @@ const incidentOverview = (function () {
             callback: () => { closeFilter('categoryBtn') },
         });
 
+        showBtn = button.build({
+            id: 'showBtn',
+            text: 'Show: ' + filterData.show,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('showBtn') },
+        });
+        showCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('showBtn') },
+        });
+
         fromDateBtn = button.build({
             id: 'fromDateBtn',
             text: 'From Date: ' + UTIL.formatDateFromIso(filterData.fromDate),
@@ -244,6 +271,12 @@ const incidentOverview = (function () {
         categoryBtnWrap.appendChild(categoryCloseBtn);
         btnWrap.appendChild(categoryBtnWrap);
 
+        showBtnWrap = document.createElement('div');
+        showBtnWrap.classList.add('filterSelectionBtnWrap');
+        showBtnWrap.appendChild(showBtn);
+        showBtnWrap.appendChild(showCloseBtn);
+        btnWrap.appendChild(showBtnWrap);   
+
         fromDateBtnWrap = document.createElement('div');
         fromDateBtnWrap.classList.add('filterSelectionBtnWrap');
         fromDateBtnWrap.appendChild(fromDateBtn);
@@ -259,7 +292,7 @@ const incidentOverview = (function () {
         if (closeFilter == 'locationBtn') {
             filterData.locationName = 'All';
             retrieveData.locationId = '%';
-            filterData.location = '%';
+            filterData.location = '%'; 
         }
         if (closeFilter == 'consumerBtn') {
             filterData.consumerName = 'All';
@@ -275,6 +308,10 @@ const incidentOverview = (function () {
             retrieveData.subcategoryId = '%';
             filterData.category = '%';
             filterData.categoryName = 'All';
+        }
+
+        if (closeFilter == 'showBtn') {
+            filterData.show = 'All';  
         }
 
         populateSelectedFilterValues();
@@ -294,6 +331,7 @@ const incidentOverview = (function () {
         filterData.categoryName = data.categoryName ? data.categoryName : filterData.categoryName;
         filterData.fromDate = data.fromDate ? data.fromDate : filterData.fromDate;
         filterData.toDate = data.toDate ? data.toDate : filterData.toDate;
+        filterData.show = data.show ? data.show : filterData.show;
     }
     function populateFilterDropdowns() {
         incidentTrackingAjax.getReviewPageLocations(populateLocationsDropdown);
@@ -303,7 +341,7 @@ const incidentOverview = (function () {
         incidentTrackingAjax.getITReviewPageEmployeeListAndSubList(
             $.session.PeopleId,
             populateUserAndEmployeeDropdowns,
-        );
+        );       
     }
     function getFromDateValue() {
         if (filterData.fromDate) return filterData.fromDate;
@@ -349,6 +387,11 @@ const incidentOverview = (function () {
             label: 'Category/Subcategory',
             style: 'secondary',
         });
+        showDropdown = dropdown.build({
+            dropdownId: 'showDropdown',
+            label: "Show",
+            style: "secondary"
+        });
         fromDateInput = input.build({
             label: 'From Date',
             type: 'date',
@@ -378,6 +421,8 @@ const incidentOverview = (function () {
             filterPopup.appendChild(betaDropdown);
         if (IsShow == 'ALL' || IsShow == 'categoryBtn')
             filterPopup.appendChild(categoryDropdown);
+        if (IsShow == 'ALL' || IsShow == 'showBtn') 
+            filterPopup.appendChild(showDropdown);
         if (IsShow == 'ALL' || IsShow == 'fromDateBtn')
             filterPopup.appendChild(fromDateInput);
         if (IsShow == 'ALL' || IsShow == 'toDateBtn')
@@ -446,6 +491,7 @@ const incidentOverview = (function () {
         var tmpCategoryName;
         var tmpToDate;
         var tmpFromDate;
+        var tmpShow;
 
         alphaDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
@@ -499,6 +545,11 @@ const incidentOverview = (function () {
             tmpCategoryId = selectedOption.value;
             tmpCategoryName = selectedOption.innerHTML;
         });
+        showDropdown.addEventListener('change', event => {
+            var selectedOption = event.target.options[event.target.selectedIndex];
+            // temp cache data
+            tmpShow = selectedOption.innerHTML;  
+        });
         toDateInput.addEventListener('change', event => {
             var selectedDate = event.target.value;
             if (selectedDate === '') {
@@ -543,6 +594,7 @@ const incidentOverview = (function () {
                 categoryName: tmpCategoryName,
                 toDate: tmpToDate,
                 fromDate: tmpFromDate,
+                show: tmpShow
             });
             populateSelectedFilterValues();
             incidentTrackingAjax.getITReviewTableData(retrieveData, populateOverviewTable);
@@ -688,6 +740,13 @@ const incidentOverview = (function () {
             dropdown.populate(locationDropdown, data);
             filterData.locationName = 'All Locations';
         }
+
+        const showDropdownData = ([
+            { id: 1, value: 'Unread', text: 'Unread' },
+            { id: 2, value: 'Read', text: 'Read' },
+        ]);
+        showDropdownData.unshift({ id: null, value: 'All', text: 'All' }); 
+        dropdown.populate(showDropdown, showDropdownData, filterData.show); 
     }
 
     function populateConsumersDropdown() {
@@ -921,7 +980,8 @@ const incidentOverview = (function () {
         });
 
         var keys = Object.keys(incidents);
-
+        const removeArray = [];
+        var count = 0;
         var data = keys
             .filter(k => {
                 var obj = incidents[k];
@@ -956,7 +1016,14 @@ const incidentOverview = (function () {
                 if (!orginUser && !userHasViewed) {
                     showBold = true;
                 }
-
+ 
+                if (filterData.show == 'Read' && showBold) {
+                    removeArray.push(count);
+                }
+                else if (filterData.show == 'Unread' && !showBold) {
+                    removeArray.push(count);
+                }
+                count = count + 1;
                 var incidentEmailBtn = document.createElement('button');
                 incidentEmailBtn.classList.add('btn', 'btn--secondary', 'btn--contained');
                 incidentEmailBtn.textContent = 'EMAIL';
@@ -1003,6 +1070,9 @@ const incidentOverview = (function () {
                 }
             });
 
+        for (let i = removeArray.length - 1; i >= 0; i--)
+            data.splice(removeArray[i], 1);
+
         data.sort(function (a, b) {
             var dateOne = UTIL.formatDateToIso(a.values[2]);
             var dateTwo = UTIL.formatDateToIso(b.values[2]);
@@ -1024,7 +1094,7 @@ const incidentOverview = (function () {
 
             return newDateOne > newDateTwo ? -1 : 1;
         });
-
+       
         table.populate(overviewTable, data);
     }
 

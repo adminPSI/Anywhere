@@ -238,10 +238,10 @@ var notesOverview = (function () {
             currentFilterDisplay.classList.add('filteredByData');
             currentFilterDisplay.id = 'notesFilterDiv';
             btnWrapFilter = cnFilters.filterButtonSet(billerName, displayConsumerName, 'All', 'All', 'All', dispalyServiceDateStart, dispalyServiceDateEnd, displayDateEnteredStart, dispalyDatesEnteredEnd,
-                'All', 'All', 'All', 'All', 'All', 'All', 'All', 'No', 'All', filterValues);
+                'All', 'All', 'All', 'All', 'All', 'All', 'All', 'No', 'All', filterValues,'All');
             currentFilterDisplay.appendChild(btnWrapFilter);
             btnWrapFilter = cnFilters.ShowHideFilter(billerName, displayConsumerName, 'All', 'All', 'All', dispalyServiceDateStart, dispalyServiceDateEnd, displayDateEnteredStart, dispalyDatesEnteredEnd,
-                'All', 'All', 'All', 'All', 'All', 'All', 'All', 'No', 'All');
+                'All', 'All', 'All', 'All', 'All', 'All', 'All', 'No', 'All','All');           
             currentFilterDisplay.appendChild(btnWrapFilter);
         }
 
@@ -301,7 +301,7 @@ var notesOverview = (function () {
         DOM.ACTIONCENTER.appendChild(btnWrap);
         DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);       
         const filteredBy = initFilterDisplay();
-        DOM.ACTIONCENTER.appendChild(filteredBy);
+        DOM.ACTIONCENTER.appendChild(filteredBy);      
     }
 
     // Table
@@ -515,8 +515,8 @@ var notesOverview = (function () {
         tableConsumers.forEach(consumer => {
             var firstName = consumer.FirstName.toLowerCase();
             var lastName = consumer.LastName.toLowerCase();
-            var fullName = `${firstName} ${lastName}`;
-            var fullNameReversed = `${lastName} ${firstName}`;
+            var fullName = `${lastName}, ${firstName}`;   
+            var fullNameReversed = `${lastName}, ${firstName}`;
             var matchesName = fullName.indexOf(searchValue);
             var matchesNameReverse = fullNameReversed.indexOf(searchValue);
             var caseNote = document.getElementById(consumer.id);
@@ -602,7 +602,7 @@ var notesOverview = (function () {
         if (btn) btn.classList.add('disabled');
     }
 
-    function loadPage() {
+    function loadPage() { 
         if (!filterValues.billerId) filterValues.billerId = $.session.PeopleId;
         DOM.clearActionCenter();
         buildTopBtns();
@@ -611,7 +611,8 @@ var notesOverview = (function () {
         buildMutationObserver();
         disableMiniRosterBtn();
         mainEventListeners();
-        document.getElementById('searchBtn').click();
+        document.getElementById('searchBtn').click(); 
+        cnFilters.updateCurrentFilterDisplay();
     }
 
     function initialData(callback) {
@@ -682,6 +683,7 @@ var notesOverview = (function () {
             attachments: '%',
             noteText: '%',
             noteTextValue: '',
+            outcomeServiceMonitoring: '%', 
         };
 
         initialData(loadPage);
@@ -717,7 +719,8 @@ var notesOverview = (function () {
                 noteTextValue: '',
                 viewEntered,
                 caseloadOnly,
-                userId: $.session.UserId
+                userId: $.session.UserId,
+                outcomeServiceMonitoring: '%',
             };
         }
     }

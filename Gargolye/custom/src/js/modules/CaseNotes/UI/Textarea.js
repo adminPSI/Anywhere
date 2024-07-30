@@ -205,7 +205,7 @@
       }, 100),
     );
     this.fullScreenDialog.onClose(() => {
-      this.textareaClone.toggleDisabled(false);
+      this.textareaInstance.toggleDisabled(false);
     });
   };
 
@@ -222,6 +222,15 @@
    */
   FullscreenTextarea.prototype.disableCloseButon = function (isDisbled) {
     this.fullScreenCloseBtn.style.pointerEvents = isDisbled ? 'none' : 'all';
+  };
+
+  FullscreenTextarea.prototype.toggleDisabled = function (isDisbled) {
+    const input = this.textareaClone.querySelector('textarea');
+    input.disabled = isDisbled;
+  };
+  FullscreenTextarea.prototype.toggleRequired = function (isRequired) {
+    const input = this.textareaClone.querySelector('textarea');
+    input.required = isRequired;
   };
 
   //=======================================
@@ -395,6 +404,9 @@
    */
   Textarea.prototype.setValue = function (value) {
     this.input.value = value;
+    if (this.options.fullscreen) {
+      this.fullscreen.updateCloneValue(value);
+    }
   };
 
   /**
@@ -414,6 +426,9 @@
    */
   Textarea.prototype.clear = function () {
     this.input.value = '';
+    if (this.options.fullscreen) {
+      this.fullscreen.updateCloneValue('');
+    }
   };
 
   /**
@@ -443,6 +458,10 @@
    */
   Textarea.prototype.toggleRequired = function (isRequired) {
     this.input.required = isRequired;
+
+    if (this.options.fullscreen) {
+      this.fullscreen.toggleRequired(isRequired);
+    }
   };
 
   /**
@@ -453,6 +472,11 @@
    */
   Textarea.prototype.toggleDisabled = function (isDisbled) {
     this.input.disabled = isDisbled;
+    this.input.readOnly = isDisbled;
+
+    if (this.options.fullscreen) {
+      this.fullscreen.toggleDisabled(isDisbled);
+    }
   };
 
   /**
@@ -480,6 +504,10 @@
   Textarea.prototype.onKeyup = function (cbFunc) {
     this.input.addEventListener('keyup', e => {
       if (cbFunc) cbFunc(e);
+
+      if (this.options.fullscreen) {
+        this.fullscreen.updateCloneValue(e.target.value);
+      }
     });
   };
 

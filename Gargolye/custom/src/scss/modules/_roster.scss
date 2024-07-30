@@ -110,80 +110,93 @@
 // Consumer Card
 //------------------------
 .consumerCard {
-  border-radius: $r-sm;
-  box-shadow: $shadow-m1;
-  display: flex;
-  flex-flow: column nowrap;
-  overflow: hidden;
-  position: relative;
-
-  * {
-    pointer-events: none;
-  }
-
-  .portrait {
-    margin: 0;
-    padding-top: 100%;
+    border-radius: $r-sm;
+    box-shadow: $shadow-m1;
+    display: flex;
+    flex-flow: column nowrap;
+    overflow: hidden;
     position: relative;
 
-    svg {
-      color: $font-error;
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      width: 24px;
+    * {
+        pointer-events: none;
     }
 
-    img {
-      height: 100%;
-      position: absolute;
-      top: 0px;
-      width: 100%;
-    }
-  }
-  .details {
-    background: $bg-dark;
-    flex-grow: 1;
-    padding: 8px 10px 10px;
-  }
-  .name {
-    color: $font-light;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-  .icons {
-    background: rgba(255, 255, 255, 1);
-    display: flex;
-    color: $font-error;
-    flex-flow: row nowrap;
-    position: absolute;
-    padding: 2px;
-    top: 0px;
-    right: 0px;
-    .absentIcon {
-      font-size: 22px;
-    }
-    svg {
-      width: 24px;
-    }
-  }
+    .portrait {
+        margin: 0;
+        padding-top: 100%;
+        position: relative;
 
-  // Selected
-  &.highlighted {
+        svg {
+            color: $font-error;
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 24px;
+        }
+
+        img {
+            height: 100%;
+            position: absolute;
+            top: 0px;
+            width: 100%;
+        }
+    }
     .details {
-      background: $secondary;
+        background: $bg-dark;
+        flex-grow: 1;
+        padding: 8px 10px 10px;
     }
-  }
-  // Disabled
-  &.disabled {
-    cursor: not-allowed;
-    pointer-events: none;
-    opacity: 0.5;
-  }
-  // error
-  &.error {
-    border: $w-sm solid $font-error;
-  }
+
+    .inactiveDetails {
+        background: #f10927;
+        flex-grow: 1;
+        padding: 8px 10px 10px;
+        font-style:italic;
+    }
+
+    .name {
+        color: $font-light;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .icons {
+        background: rgba(255, 255, 255, 1);
+        display: flex;
+        color: $font-error;
+        flex-flow: row nowrap;
+        position: absolute;
+        padding: 2px;
+        top: 0px;
+        right: 0px;
+
+        .absentIcon {
+            font-size: 22px;
+        }
+
+        svg {
+            width: 24px;
+        }
+    }
+    // Selected
+    &.highlighted {
+        .details {
+            background: $secondary;
+        }
+    }
+    // Disabled
+    &.disabled {
+        cursor: not-allowed;
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
+    &.disabledClickable {
+        opacity: 0.5;
+    }
+    // error
+    &.error {
+        border: $w-sm solid $font-error;
+    }
 }
 // Consumer Info Card
 //------------------------
@@ -405,6 +418,12 @@
       order: 10;
       &.visible {
         transform: translateX(-1000%);
+      }
+    }
+    &.sec11 {
+      order: 11;
+      &.visible {
+        transform: translateX(-1100%);
       }
     }
   }
@@ -786,6 +805,31 @@
   }
 }
 
+// Workflow
+#workflow_addWorkflowPopup {
+  z-index: 1000;
+}
+#wfStepPopup,
+#deleteWarningPopup {
+  z-index: 1000;
+}
+#selectTemplatePopup {
+  z-index: 99999;
+}
+.workflowSection  {
+  .sectionInner {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+
+    #workflow-viewer {
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+}
+
 // TOP NAV
 //------------------------
 .rosterNotesAbsentGroups {
@@ -1148,11 +1192,10 @@
         }
     }
 
-    &__mainDataRow,
-    &__subDataRow {
-        * {
-        }
-    }
+    // &__mainDataRow,
+    // &__subDataRow {
+        
+    // }
 
     &__mainDataRow {
         cursor: pointer;
@@ -1215,3 +1258,27 @@
         }
     }
 }
+
+.groupBtnWrap {
+    display: contents;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    margin: 0;
+    width: 21%;
+
+    @media screen and (min-width: 560px) {
+        display: flex;
+    }
+}
+
+.massSelectbtnWrap {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    float: right;
+}
+
+.marginRight10px{
+    margin-right: 10px; 
+}
+ 

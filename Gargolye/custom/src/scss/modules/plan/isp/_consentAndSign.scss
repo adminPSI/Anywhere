@@ -96,6 +96,13 @@
     }
   }
 
+  .table__row[data-eDigitalSigned] {
+    .endIcon {
+      pointer-events: none;
+      cursor: none;
+    }
+  }
+
   margin-bottom: 20px;
 }
 #sig_addMember {

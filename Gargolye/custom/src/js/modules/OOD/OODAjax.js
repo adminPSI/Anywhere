@@ -383,7 +383,7 @@ var OODAjax = (function () {
     }
   }
   //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
-   async function getContactMethodsAsync() {
+   async function getContactMethodsAsync(FormType) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -398,6 +398,7 @@ var OODAjax = (function () {
           '/getContactMethods/',
         data: JSON.stringify({
           token: $.session.Token,
+          formtype: FormType,
           
         }),
         contentType: 'application/json; charset=utf-8',
@@ -694,7 +695,77 @@ var OODAjax = (function () {
       throw new Error(error.responseText);
     }
   }
+
+      // Form 6 -- Form6Tier1andJDPLan
+      function getForm6Tier1andJDPLan(caseNoteId, callback) {
+        $.ajax({
+          type: 'POST',
+          url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getForm6Tier1andJDPLan/',
+          data: '{"token":"' + $.session.Token + '", "caseNoteId":"' + caseNoteId + '"}',
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json',
+          success: function(response, status, xhr) {
+            var res = response.getForm6Tier1andJDPLanResult;
+            callback(res);
+          },
+          error: function(xhr, status, error) {
+            //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+          },
+        });
+      }
+      
+      // Form 6 -- Form6Tier1andJDPLan
+      function updateForm6Tier1andJDPLan(data, callback) {
+          data = {
+            token: $.session.Token, 
+            consumerId: data.consumerId, 
+            caseNoteId: data.caseNoteId,
+            serviceDate: data.serviceDate,
+            SAMLevel: data.SAMLevel,
+            contactMethod: data.contactMethod,
+            narrative: data.narrative,
+             }
+        return $.ajax({
+        type: 'POST',
+        url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateForm6Tier1andJDPLan/',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function(response, status, xhr) {
+        callback(response.updateForm6Tier1andJDPLanResult);
+        },
+        });
+      }
+      
+      // Form 6 -- Form6Tier1andJDPLan
+      function insertForm6Tier1andJDPLan(data, callback) {
+        data = {
+          token: $.session.Token, 
+            consumerId: data.consumerId, 
+            caseNoteId: data.caseNoteId,
+            serviceDate: data.serviceDate,
+            SAMLevel: data.SAMLevel,
+            contactMethod: data.contactMethod,
+            narrative: data.narrative,
+            userId: data.userId,
+            serviceId: data.serviceId,
+            referenceNumber: data.referenceNumber,
+            caseManagerId: data.caseManagerId,
+      
+           }
+      return $.ajax({
+      type: 'POST',
+      url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertForm6Tier1andJDPLan/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response, status, xhr) {
+      callback(response.insertForm6Tier1andJDPLanResult);
+      },
+      });
+      }
   
+      
     // Form 8 -- Form8CommunityBasedAssessment
     function getForm8CommunityBasedAssessment(caseNoteId, callback) {
       $.ajax({
@@ -922,6 +993,153 @@ var OODAjax = (function () {
   },
   });
   }
+
+      // Form 16 -- Form16SummerYouthWorkExperience
+      function getForm16SummerYouthWorkExperience(caseNoteId, callback) {
+        $.ajax({
+          type: 'POST',
+          url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getForm16SummerYouthWorkExperience/',
+          data: '{"token":"' + $.session.Token + '", "caseNoteId":"' + caseNoteId + '"}',
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json',
+          success: function(response, status, xhr) {
+            var res = response.getForm16SummerYouthWorkExperienceResult;
+            callback(res);
+          },
+          error: function(xhr, status, error) {
+            //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+          },
+        });
+      }
+      
+      // Form 16 -- getForm16SummerYouthWorkExperience
+      function updateForm16SummerYouthWorkExperience(data, callback) {
+          data = {
+            token: $.session.Token, 
+            consumerId: data.consumerId, 
+            caseNoteId: data.caseNoteId,
+            serviceDate: data.serviceDate,
+            startTime: data.startTime,
+            endTime: data.endTime,
+            position: data.position,
+            groupSize: data.groupSize,
+            interventions: data.interventions,
+             }
+        return $.ajax({
+        type: 'POST',
+        url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateForm16SummerYouthWorkExperience/',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function(response, status, xhr) {
+        callback(response.updateForm16SummerYouthWorkExperienceResult);
+        },
+        });
+      }
+      
+      // Form 16 -- getForm16SummerYouthWorkExperience
+      function insertForm16SummerYouthWorkExperience(data, callback) {
+        data = {
+          token: $.session.Token, 
+            consumerId: data.consumerId, 
+            caseNoteId: data.caseNoteId,
+            serviceDate: data.serviceDate,
+            startTime: data.startTime,
+            endTime: data.endTime,
+            position: data.position,
+            groupSize: data.groupSize,
+            interventions: data.interventions,
+            userId: data.userId,
+            serviceId: data.serviceId,
+            referenceNumber: data.referenceNumber,
+            caseManagerId: data.caseManagerId,
+      
+           }
+      return $.ajax({
+      type: 'POST',
+      url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertForm16SummerYouthWorkExperience/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response, status, xhr) {
+      callback(response.insertForm16SummerYouthWorkExperienceResult);
+      },
+      });
+      }
+  
+         // Form 16 -- Monthly Summary
+  function getForm16MonthlySummary(emReviewId, callback) {
+    $.ajax({
+      type: 'POST',
+      url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getForm16MonthlySummary/',
+      data: '{"token":"' + $.session.Token + '", "emReviewId":"' + emReviewId + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response, status, xhr) {
+        var res = response.getForm16MonthlySummaryResult[0];
+        callback(res);
+      },
+      error: function(xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+  
+  // Form 16 -- Monthly Summary
+  function updateForm16MonthlySummary(data, callback) {
+      data = {
+        token: $.session.Token, 
+        consumerId: data.consumerId, 
+        emReviewId: data.emReviewId,
+        emReviewDate: data.emReviewDate,
+        emReferenceNumber: data.emReferenceNumber,
+        emNextScheduledReview: data.emNextScheduledReview,
+        emSummaryIndivSelfAssessment: data.emSummaryIndivSelfAssessment,
+        emSummaryIndivProviderAssessment: data.emSummaryIndivProviderAssessment, 
+        emReviewVTS: data.emReviewVTS,
+        emOfferedHoursNotWorkNumber: data.emOfferedHoursNotWorkNumber,
+        userId: data.userId, 
+         }
+    return $.ajax({
+    type: 'POST',
+    url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateForm16MonthlySummary/',
+    data: JSON.stringify(data),
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json',
+    success: function(response, status, xhr) {
+    callback(response.updateForm16MonthlySummaryResult);
+    },
+    });
+  }
+  
+  // Form 16 -- Monthly Summary
+  function insertForm16MonthlySummary(data, callback) {
+    data = {
+      token: $.session.Token, 
+      consumerId: data.consumerId, 
+      emReviewDate: data.emReviewDate,
+      emReferenceNumber: data.emReferenceNumber,
+      emNextScheduledReview: data.emNextScheduledReview,
+      emSummaryIndivSelfAssessment: data.emSummaryIndivSelfAssessment,
+      emSummaryIndivProviderAssessment: data.emSummaryIndivProviderAssessment,
+      emReviewVTS: data.emReviewVTS,
+      emOfferedHoursNotWorkNumber: data.emOfferedHoursNotWorkNumber,
+      userId: data.userId,
+      serviceId: data.serviceId     
+       }
+  return $.ajax({
+  type: 'POST',
+  url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertForm16MonthlySummary/',
+  data: JSON.stringify(data),
+  contentType: 'application/json; charset=utf-8',
+  dataType: 'json',
+  success: function(response, status, xhr) {
+  callback(response.insertForm16MonthlySummaryResult);
+  },
+  });
+  }
+
+
   async function deleteOODForm10TransportationEntry(OODTransportationId) {
     try {
       const result = await $.ajax({
@@ -1051,6 +1269,84 @@ var OODAjax = (function () {
 
     form.submit();
   }
+
+  function generateForm6(data) {
+    var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/generateForm6/`;
+    var successFunction = function (resp) {
+      var res = JSON.stringify(response);
+      return res;
+      //callback()
+    };
+    data = {
+      token: $.session.Token, 
+      referenceNumber: data.referenceNumber,
+      vendorId: '',
+      peopleId: data.peopleId,
+      serviceCodeId: data.serviceCodeId,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      userId: data.userId
+    }
+
+    var form = document.createElement('form');
+    form.setAttribute('action', action);
+    form.setAttribute('method', 'POST');
+    form.setAttribute('target', '_blank');
+    form.setAttribute('enctype', 'bare');
+    form.setAttribute('success', successFunction); 
+
+    form.onsubmit = successFunction;
+
+    var tokenInput = document.createElement('input');
+    tokenInput.setAttribute('name', 'token');
+    tokenInput.setAttribute('value', $.session.Token);
+    tokenInput.id = 'token';
+
+    var userIdInput = document.createElement('input');
+    userIdInput.setAttribute('name', 'userId');
+    userIdInput.setAttribute('value', data.userId);
+    userIdInput.id = 'userId';
+
+    var referenceNumberInput = document.createElement('input');
+    referenceNumberInput.setAttribute('name', 'referenceNumber');
+    referenceNumberInput.setAttribute('value', data.referenceNumber);
+    referenceNumberInput.id = 'referenceNumber';
+
+    var peopleIdInput = document.createElement('input');
+    peopleIdInput.setAttribute('name', 'peopleId');
+    peopleIdInput.setAttribute('value', data.peopleId);
+    peopleIdInput.id = 'peopleId';
+
+    var serviceCodeIdInput = document.createElement('input');
+    serviceCodeIdInput.setAttribute('name', 'serviceCodeId');
+    serviceCodeIdInput.setAttribute('value', data.serviceCodeId);
+    serviceCodeIdInput.id = 'serviceCodeId';
+
+    var startDateInput = document.createElement('input');
+    startDateInput.setAttribute('name', 'startDate');
+    startDateInput.setAttribute('value', data.startDate);
+    startDateInput.id = 'startDate';
+
+    var endDateInput = document.createElement('input');
+    endDateInput.setAttribute('name', 'endDate');
+    endDateInput.setAttribute('value', data.endDate);
+    endDateInput.id = 'endDate';
+
+    form.appendChild(tokenInput);
+    form.appendChild(userIdInput);
+    form.appendChild(referenceNumberInput);
+    form.appendChild(peopleIdInput);
+    form.appendChild(serviceCodeIdInput);
+    form.appendChild(startDateInput);
+    form.appendChild(endDateInput);
+
+    form.style.position = 'absolute';
+    form.style.opacity = '0';
+    document.body.appendChild(form);
+
+    form.submit();
+  }
+
 
   function generateForm8(data) {
     var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/generateForm8/`;
@@ -1215,6 +1511,92 @@ var OODAjax = (function () {
     form.submit();
   }
 
+  function generateForm16(data) {
+    var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/generateForm16/`;
+    var successFunction = function (resp) {
+      var res = JSON.stringify(response);
+      return res;
+      //callback()
+    };
+    data = {
+      token: $.session.Token, 
+      referenceNumber: data.referenceNumber,
+      vendorId: '',
+      peopleId: data.peopleId,
+      serviceCodeId: data.serviceCodeId,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      userId: data.userId
+    }
+
+  // Create an HTML form element
+  var form = document.createElement('form');
+  form.setAttribute('action', action);
+  form.setAttribute('method', 'POST');
+  form.setAttribute('target', '_blank');  // Open the response in a new tab
+
+  // Create input elements for form data
+  var tokenInput = document.createElement('input');
+  tokenInput.setAttribute('type', 'hidden');  // Hidden input
+  tokenInput.setAttribute('name', 'token');
+  tokenInput.setAttribute('value', $.session.Token);
+  form.setAttribute('success', successFunction);
+  form.setAttribute('enctype', 'bare');
+  //form.setAttribute('enctype', 'multipart/form-data');
+
+
+    form.onsubmit = successFunction;
+
+    var tokenInput = document.createElement('input');
+    tokenInput.setAttribute('name', 'token');
+    tokenInput.setAttribute('value', $.session.Token);
+    tokenInput.id = 'token';
+
+    var userIdInput = document.createElement('input');
+    userIdInput.setAttribute('name', 'userId');
+    userIdInput.setAttribute('value', data.userId);
+    userIdInput.id = 'userId';
+
+    var referenceNumberInput = document.createElement('input');
+    referenceNumberInput.setAttribute('name', 'referenceNumber');
+    referenceNumberInput.setAttribute('value', data.referenceNumber);
+    referenceNumberInput.id = 'referenceNumber';
+
+    var peopleIdInput = document.createElement('input');
+    peopleIdInput.setAttribute('name', 'peopleId');
+    peopleIdInput.setAttribute('value', data.peopleId);
+    peopleIdInput.id = 'peopleId';
+
+    var serviceCodeIdInput = document.createElement('input');
+    serviceCodeIdInput.setAttribute('name', 'serviceCodeId');
+    serviceCodeIdInput.setAttribute('value', data.serviceCodeId);
+    serviceCodeIdInput.id = 'serviceCodeId';
+
+    var startDateInput = document.createElement('input');
+    startDateInput.setAttribute('name', 'startDate');
+    startDateInput.setAttribute('value', data.startDate);
+    startDateInput.id = 'startDate';
+
+    var endDateInput = document.createElement('input');
+    endDateInput.setAttribute('name', 'endDate');
+    endDateInput.setAttribute('value', data.endDate);
+    endDateInput.id = 'endDate';
+
+    form.appendChild(tokenInput);
+    form.appendChild(userIdInput);
+    form.appendChild(referenceNumberInput);
+    form.appendChild(peopleIdInput);
+    form.appendChild(serviceCodeIdInput);
+    form.appendChild(startDateInput);
+    form.appendChild(endDateInput);
+
+    form.style.position = 'absolute';
+    form.style.opacity = '0';
+    document.body.appendChild(form);
+
+    form.submit();
+  }
+
   return {       
    
       getOODEntriesAsync,
@@ -1241,6 +1623,9 @@ var OODAjax = (function () {
       updateForm4MonthlySummary,
       insertForm4MonthlySummary,
       deleteFormMonthlySummaryAsync,
+      getForm6Tier1andJDPLan,
+      updateForm6Tier1andJDPLan,
+      insertForm6Tier1andJDPLan,
       getForm8CommunityBasedAssessment,
       updateForm8CommunityBasedAssessment,
       insertForm8CommunityBasedAssessment,
@@ -1251,9 +1636,17 @@ var OODAjax = (function () {
       insertForm10TransportationData,
       updateForm10TransportationData,
       deleteOODForm10TransportationEntry,
+      getForm16SummerYouthWorkExperience,
+      insertForm16SummerYouthWorkExperience,
+      updateForm16SummerYouthWorkExperience,
+      getForm16MonthlySummary,
+      updateForm16MonthlySummary,
+      insertForm16MonthlySummary,
       generateForm4,
+      generateForm6,
       generateForm8,
-      generateForm10
+      generateForm10,
+      generateForm16
   };
   }) ();
   

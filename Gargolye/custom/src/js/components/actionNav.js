@@ -102,6 +102,11 @@ var ACTION_NAV = (function () {
                     rosterAbsent.handleActionNavEvent(target);
                     clear();
                     hide();
+                }
+                else if (activeSection === 'roster-GroupIndividuals') {
+                    rosterGroupIndividuals.handleActionNavEvent(target);
+                    clear();
+                    hide();
                 } else {
                     roster.handleActionNavEvent(target);
                     clear();

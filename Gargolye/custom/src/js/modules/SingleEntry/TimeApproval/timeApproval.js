@@ -1843,8 +1843,12 @@ var timeApproval = (function () {
         locationData = timeEntry.getLocations();
         setActiveModuleSectionAttribute('timeEntry-approval');
         workCodeData = await timeEntry.getWorkCodes();
+        startDate = payperiod.start;
+        endDate = payperiod.end;
 
-        loadReviewPage();
+        getDropdownData(function () {
+            loadReviewPage();
+        }); 
     }
 
     function showSubmitError(messageText) {

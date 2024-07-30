@@ -255,8 +255,8 @@ const dayServices = (function () {
         dsConsumers.forEach(consumer => {
             var firstName = consumer.FirstName.toLowerCase();
             var lastName = consumer.LastName.toLowerCase();
-            var fullName = `${firstName} ${lastName}`;
-            var fullNameReversed = `${lastName} ${firstName}`;
+            var fullName = `${lastName}, ${firstName}`;
+            var fullNameReversed = `${lastName}, ${firstName}`;
             var matchesName = fullName.indexOf(searchValue);
             var matchesNameReverse = fullNameReversed.indexOf(searchValue);
             var consumerCard = document.querySelector(`[data-consumerid="${consumer.id}"]`);

@@ -437,6 +437,8 @@
         $.roster.moveable = true;
         $.googleMapAPI = 'AIzaSyAtSzvxIiSo6N1-WCNmpAtXQ4C2gyKqtdw';
         $.orientation = null;
+        $.workflowConsumerId = '';
+        $.workflowConsumerName = [];
 
         var isIE;
         var isMobile;
@@ -446,6 +448,7 @@
             ALL: 1,
             CONSUMER_PLAN_ANNUAL: 2,
             CONSUMER_PLAN_REVISION: 3,
+            ROSTER: 4
         };
         Object.freeze(WorkflowProcess);
 
@@ -697,6 +700,8 @@
                     break;
                 }
                 case 'roster': {
+                    $.workflowConsumerId = '';
+                    $.workflowConsumerName = [];
                     progressNotes.clearAllGlobalVariables();
                     break;
                 }

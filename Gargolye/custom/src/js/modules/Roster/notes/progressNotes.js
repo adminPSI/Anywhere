@@ -155,7 +155,23 @@ var progressNotes = (function() {
         if (messageText) {
             var messageInput = messageText.querySelector('textarea');
             messageInput.value = '';
-        }
+        }	
+
+		// grabs all subsections of progress notes
+		const viewAllNotesSection = document.querySelector('.viewAllNotesSection');
+		const addNoteSection = document.querySelector('.addNoteSection');
+		const viewSingleNoteSection = document.querySelector('.viewSingleNoteSection');
+		const addMessageSection = document.querySelector('.addMessageSection');
+
+		const sections = [viewAllNotesSection, addNoteSection, viewSingleNoteSection, addMessageSection];
+    
+		// Iterate over all sections and make them hidden so the next and back button works correctly
+		sections.forEach(section => {
+			if (section && section.classList.contains('visible')) {
+				section.classList.remove('visible');
+				section.classList.add('hidden');
+			}
+		});
     }
 
 	// populate
@@ -317,7 +333,7 @@ var progressNotes = (function() {
 			type: 'textarea',
 			label: 'Message',
 			style: 'secondary',
-			classNames: 'newMessageInput',
+			classNames: ['newMessageInput', 'autosize'],
 		});
 		var sendButton = button.build({
 			text: 'Send',
@@ -371,7 +387,7 @@ var progressNotes = (function() {
 			type: 'textarea',
 			label: 'Message',
 			style: 'secondary',
-			classNames: 'newMessageInput',
+			classNames: ['newMessageInput', 'autosize'],
 		});
 		var sendButton = button.build({
 			text: 'Send',

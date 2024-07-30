@@ -1,10 +1,3 @@
-// 4.  Only enable "Is there evidence of declining..." [isIndividualSkillsDeclined]
-// IF "Is there evidence that the primary caregiver.." [isPrimaryCaregiverUnavailable] answer is "No" 
-// OR ("Is there evidence that the primary caregiver." [isPrimaryCaregiverUnavailable] ansser is "Yes" 
-// AND "Is action required...' [isActionRequiredIn30Days] is "No")
-
-// In GateKeeper Desktop "Is there evidence of declining skill......." is disabled when the first two questions are yes.
-
-// I didn't answer the question, but if you leave the page and come back, it has set itself to no.
-
-// hey there
+// Enable the "Describe incident under..." textbox  IF any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
+// Enable the "Is action required..." radio buttons IF any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
+// WHEN "Not applicable…" is checked SET "Is action required within the next 30 days…" to NO

@@ -458,9 +458,9 @@ namespace Anywhere.service.Data
         //    public string description { get; set; }
         //}
 
-        public ConsumersByGroup[] getConsumersByGroupJSON(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate)
+        public ConsumersByGroup[] getConsumersByGroupJSON(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate, string isActive)
         {
-            string consumersByGroupString = dg.getConsumersByGroupJSON(groupCode, retrieveId, token, serviceDate, daysBackDate);
+            string consumersByGroupString = dg.getConsumersByGroupJSON(groupCode, retrieveId, token, serviceDate, daysBackDate, isActive);
             js.MaxJsonLength = Int32.MaxValue;
             ConsumersByGroup[] consumersByGroupObj = js.Deserialize<ConsumersByGroup[]>(consumersByGroupString);
             return consumersByGroupObj;
@@ -478,6 +478,7 @@ namespace Anywhere.service.Data
             public string conL { get; set; }
             public string MN { get; set; }
             public string residentNumber { get; set; }
+            public string statusCode { get; set; } 
         }
 
         public RosterLocations[] getLocationsJSON(string token)
@@ -579,6 +580,9 @@ namespace Anywhere.service.Data
             public string sendWaitingListEmail { get; set; }
             public string defaultMoneyManagementLocation { get; set; }
             public string defaultMoneyManagementLocationName { get; set; }
+            public string billableTransportation { get; set; }
+            public string ohioEVVChangeDate { get; set; }
+            public string anyRequireEndTime { get; set; }
 
         }
 

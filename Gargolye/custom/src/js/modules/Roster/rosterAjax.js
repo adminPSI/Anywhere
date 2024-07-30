@@ -27,7 +27,8 @@ const rosterAjax = (function () {
         var daysBackDate = convertDaysBack($.session.defaultProgressNoteReviewDays);
 
         date = date ? date : UTIL.getTodaysDate();
-
+        var selectedActive = data.selectedActive == undefined ? 'No' : data.selectedActive;  
+ 
         return $.ajax({
             type: 'POST',
             url:
@@ -50,6 +51,8 @@ const rosterAjax = (function () {
                 date +
                 '", "daysBackDate":"' +
                 daysBackDate +
+                '", "isActive":"' +
+                selectedActive +
                 '"}',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',

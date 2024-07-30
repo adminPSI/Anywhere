@@ -198,6 +198,7 @@
    */
   Select.prototype.toggleDisabled = function (isDisbled) {
     this.select.disabled = isDisbled;
+    this.select.readOnly = isDisbled;
   };
 
   /**

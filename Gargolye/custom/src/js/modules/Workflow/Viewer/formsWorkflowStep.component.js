@@ -16,19 +16,20 @@ class FormsWorkflowStepComponent {
     POPUP.hide(selectTemplatePopup);
     let isTemplate = this.templateId === 0 ? '0' : '1';
     this.templateId = this.templateId !== 0 ? this.templateId : this.formId;
-    let documentEdited = '0'; //   document not previously edited
-    // return callback(step, cache);
-    let activeConsumers = roster2.getActiveConsumers();
-    let activeConsumerId = activeConsumers[0].id;
+    let documentEdited = '0';
+    let activeConsumerId;
+
+    if ($.loadedApp === 'plan') {
+      let activeConsumers = roster2.getActiveConsumers();
+      activeConsumerId = activeConsumers[0].id;
+    } else {
+      activeConsumerId = $.workflowConsumerId;
+    }
 
     let newDate = new Date();
     let theMonth = newDate.getMonth() + 1;
     let formCompleteDate =
-      UTIL.leadingZero(theMonth) +
-      '/' +
-      UTIL.leadingZero(newDate.getDate()) +
-      '/' +
-      newDate.getFullYear();
+      UTIL.leadingZero(theMonth) + '/' + UTIL.leadingZero(newDate.getDate()) + '/' + newDate.getFullYear();
 
     if (isTemplate === '1') {
       forms.displayWFStepFormPopup(
@@ -41,8 +42,6 @@ class FormsWorkflowStepComponent {
         activeConsumerId,
       );
     } else {
-      // displayStepFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate, formCompleteDate, stepId, docOrder, formName )
-      //  forms.displayStepFormPopup(this.formId, "1", activeConsumerId, false, "0", '05/22/2022', this.step.stepId, this.docOrder, this.formName );
       forms.displayStepFormPopup(
         this.formId,
         documentEdited,
@@ -127,16 +126,21 @@ class FormsWorkflowStepComponent {
       }
     });
 
-    let activeConsumer = roster2.getActiveConsumers();
-    let consumerName = activeConsumer[0].card.textContent
-      .replaceAll('\n', '')
-      .replaceAll('\t', '')
-      .trim()
-      .split(',')[1]
-      .trim()
-      .split(' ')[0];
-    let fullNameArray = consumerName.split(',');
-    let firstName = fullNameArray[fullNameArray.length - 1];
+    let firstName;
+    if ($.loadedApp === 'plan') {
+      let activeConsumer = roster2.getActiveConsumers();
+      let consumerName = activeConsumer[0].card.textContent
+        .replaceAll('\n', '')
+        .replaceAll('\t', '')
+        .trim()
+        .split(',')[1]
+        .trim()
+        .split(' ')[0];
+      let fullNameArray = consumerName.split(',');
+      firstName = fullNameArray[fullNameArray.length - 1];
+    } else {
+      firstName = $.workflowConsumerName[$.workflowConsumerName.length - 1];
+    }
 
     let userFormDropdown = dropdown.build({
       label: `${firstName}'s Forms`,
@@ -213,7 +217,16 @@ class FormsWorkflowStepComponent {
     }));
 
     let hasAssignedFormTypes = $.session.formsFormtype ? '1' : '0';
-    let selectedConsumer = roster2.getActiveConsumers()[0];
+    let selectedConsumer;
+
+    if ($.loadedApp === 'plan') {
+      selectedConsumer = roster2.getActiveConsumers()[0];
+    } else {
+      selectedConsumer = {
+        id: $.workflowConsumerId,
+      };
+    }
+
     const { getconsumerFormsResult: consumerForms } = await formsAjax.getconsumerFormsAsync(
       $.session.UserId,
       selectedConsumer.id,

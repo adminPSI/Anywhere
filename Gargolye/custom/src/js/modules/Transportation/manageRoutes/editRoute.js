@@ -394,6 +394,7 @@ const TRANS_manageEditRoute = (function () {
         function cleanData(getTripInformationResult, getTripConsumersResult) {
             tripInfo = getTripInformationResult[0];
             getTripConsumersResult.forEach(consumer => {
+                consumer.batchId = tripInfo.batchId;  
                 consumersOnRecord.set(consumer.consumerId, consumer);
                 // Roster Required Info:
                 const consumerobj = roster2.buildConsumerCard({

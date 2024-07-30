@@ -90,11 +90,13 @@ $.session.consumerGroupCount = 0;
 $.session.groupSaveCounter = 0;
 $.session.editOnLoad = false;
 $.session.groupOverlapCheckCounter = 1;
-$.session.overlapScreenLock = false;
+$.session.overlapScreenLock = false;//
 $.session.UpdateCaseNotesDocTime = false;
 $.session.batchedNoteEdit = false;
 $.session.groupNoteAttemptWithDocTime = false;
 $.session.sendToDODD = false;
+$.session.sendToPortal = false;
+
 $.session.dobString = '';
 //remove section when ready for testing.  Forcing all features on.
 //$.session.CaseNotesView = true;
@@ -275,6 +277,11 @@ $.session.downloadPlans = false;
 $.session.planSignatureUpdateDOB = false;
 $.session.planSignatureUpdateBuildingNumber = false;
 $.session.planClearSignature = false;
+// Waiting List
+$.session.waitingListInsert = false;
+$.session.waitingListView = false;
+$.session.waitingListUpdate = false;
+$.session.waitingListDelete = false;
 // Transportation
 $.session.transportationUpdate = false;
 $.session.transportationView = false;
@@ -340,7 +347,7 @@ $.session.sendWaitingListEmail = false;
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
 
 //Needs updated for every release.
-$.session.version = '2024.1';
+$.session.version = '2024.2';
 //State Abbreviation
 $.session.stateAbbreviation = '';
 // temp holder for the device GUID when logging in
@@ -350,6 +357,9 @@ $.session.azureSTTApi = '';
 $.session.isActiveUsers = true; // to get active and inactive user both
 
 $.session.activeModule = '';
+$.session.billableTransportation = 'N';
+$.session.ohioEVVChangeDate = '';
+$.session.anyRequireEndTime = '';
 $(window).resize(function () {
     //resizeActionCenter();
 });
@@ -412,10 +422,13 @@ function eraseCookie(name) {
 function setSessionVariables() {
     var cookieInnards = $.session.permissionString;
 
+    var tmpWindows = {};
+
     cookieInnards.forEach(cookie => {
         tmpWindow = cookie.window_name;
         tmpPerm = cookie.permission;
         tmpSpec = cookie.special_data;
+        tmpWindows[tmpWindow] = tmpWindow;
 
         if (tmpWindow == 'IsAnAdmin') {
             if (tmpPerm == 'Y') $.session.isAdmin = true;
@@ -651,6 +664,9 @@ function setSessionVariables() {
             if (tmpPerm == 'Send to DODD' || $.session.isPSI == true) {
                 $.session.sendToDODD = true;
             }
+            if (tmpPerm == 'Send to Portal' || $.session.isPSI == true) {
+                $.session.sendToPortal = true;
+            }
             if (tmpPerm == 'Insert New Team Member' || $.session.isPSI == true) {
                 $.session.planInsertNewTeamMember = true;
             }
@@ -679,6 +695,21 @@ function setSessionVariables() {
             }
             if (tmpPerm == 'View Vendor Info' || $.session.isPSI == true) {
                 $.session.authorizationsVendorInfoView = true;
+            }
+        }
+        //Waiting List
+        if (tmpWindow == 'Anywhere Waiting List Assessment' || $.session.isPSI == true) {
+            if (tmpPerm == 'Insert' || $.session.isPSI == true) {
+                $.session.waitingListInsert = true;
+            }
+            if (tmpPerm == 'View' || $.session.isPSI == true) {
+                $.session.waitingListView = true;
+            }
+            if (tmpPerm == 'Update' || $.session.isPSI == true) {
+                $.session.waitingListUpdate = true;
+            }
+            if (tmpPerm == 'Delete' || $.session.isPSI == true) {
+                $.session.waitingListDelete = true;
             }
         }
         //AeMAR
@@ -926,6 +957,7 @@ function setSessionVariables() {
         $.session.UpdateMyInformation = true;
         $.session.authorizationsView = true;
         $.session.planView = true;
+        //console.table(tmpWindows);
     }
     // TODO-ASH: move this somewhere else eventually
     if (!$.session.ViewMyInformation) {

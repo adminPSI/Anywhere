@@ -31,7 +31,7 @@ const oneSpan = (() => {
         document.dispatchEvent(dataUpdateEvent)
       }
 
-      async function shouldBeDisabled(btn, planId) {
+      async function shouldBeDisabled(btn, planId, signatureTypeToCheck) {
         // gathers the new list of team members and their signature types
         const updatedMemberData = await consentAndSignAjax.getConsentAndSignData({
             token: $.session.Token,
@@ -45,7 +45,7 @@ const oneSpan = (() => {
           
           // if there is a digital signature type for any team member the button is no logner disabled
           for (let i = 0; i < updatedMemberData.length; i++) {
-            if (updatedMemberData[i].signatureType.includes('1')) {
+            if (updatedMemberData[i].signatureType.includes(signatureTypeToCheck) && updatedMemberData[i].signature === '') {
               btn.classList.remove('disabled');
               break;
             } else {

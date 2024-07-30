@@ -18,7 +18,7 @@ namespace Anywhere.service.Data
 
         public string caseNotesFilterBuilder(string token, string billerId, string consumerId, string serviceStartDate, string serviceEndDate,
             string dateEnteredStart, string dateEnteredEnd, string billingCode, string reviewStatus, string location, string service, string need, string contact, string confidential, string corrected, string billed,
-            string attachments, string noteText, string applicationName)
+            string attachments, string noteText, string applicationName, string outcomeServiceMonitoring)
         {
             string jsonResult = "";
             string query = "";
@@ -30,7 +30,7 @@ namespace Anywhere.service.Data
             else
             {
                 query = filterCaseNoteListQueryGK(billerId, consumerId, serviceStartDate, serviceEndDate, dateEnteredStart, dateEnteredEnd, billingCode, reviewStatus,
-                                                         location, service, need, contact, confidential, corrected, billed, attachments, noteText);
+                                                         location, service, need, contact, confidential, corrected, billed, attachments, noteText, outcomeServiceMonitoring);
             }
 
             DataTable dt = di.SelectRowsDS(query).Tables[0];
@@ -159,11 +159,11 @@ namespace Anywhere.service.Data
 
         public string filterCaseNoteListQueryGK(string billerId, string consumerId, string serviceStartDate, string serviceEndDate, string dateEnteredStart, string dateEnteredEnd,
                string billingCode, string reviewStatus, string location, string service, string need, string contact, string confidential, string corrected, string billed,
-               string attachments, string noteText)
+               string attachments, string noteText, string outcomeServiceMonitoring)
         {
             sb.Clear();
             sb.Append("select distinct cn.case_note_id as casenoteid,cn.Service_Date as servicedate,cn.Start_Time as starttime,cn.End_Time as endtime,cn.Case_Manager_ID as casemanagerid,cn.ID,cn.Original_Update as originalupdate, ");
-            sb.Append("cn.last_update as mostrecentupdate,cn.Case_Note_Group_ID as groupnoteid,cn.User_ID as lastupdatedby,CN.service_id as mainbillingorservicecodeid,p.first_name as firstname, ");
+            sb.Append("cn.last_update as mostrecentupdate,cn.Case_Note_Group_ID as groupnoteid,cn.User_ID as lastupdatedby,CN.service_id as mainbillingorservicecodeid,p.first_name as firstname,cn.Outcome_Service_Monitoring as outcomeServiceMonitoring, ");
             sb.Append("p.last_name as lastname,p.id as consumerid,cn.confidential as confidential, cn.corrected as corrected, cn.Ratio_Consumers as numberInGroup,cn.Original_User_ID as enteredby, ncr.Any_SSA_Note as isSSANote, Count(cna.Case_Note_ID) as attachcount,cn.service as serviceCode, cn.notes as caseNote, ");
             sb.Append("dba.ANYW_CaseNotes_GetService(cn.service) as serviceName,dba.ANYW_CaseNotes_GetLocation(cn.Location) as locationName,ug.First_Name+' '+ug.Last_Name as originalUserFullName ");
             sb.Append("from dba.case_notes as cn join dba.people as p on cn.id = p.id ");
@@ -253,6 +253,14 @@ namespace Anywhere.service.Data
             {
                 sb.AppendFormat("and (corrected = '{0}') ", corrected);
             }
+            if (outcomeServiceMonitoring.Equals("%"))
+            {
+                sb.AppendFormat("and (outcomeServiceMonitoring like '{0}' or  outcomeServiceMonitoring is null) ", outcomeServiceMonitoring);
+            }
+            else
+            {
+                sb.AppendFormat("and (outcomeServiceMonitoring = '{0}') ", outcomeServiceMonitoring);
+            }
             if (billed.Equals("%"))
             {
                 sb.AppendFormat("and (billing_id like '{0}' or  billing_id is null) ", billed);
@@ -292,7 +300,7 @@ namespace Anywhere.service.Data
 
             sb.Append("Group By cn.case_note_id,cn.Service_Date,cn.Start_Time,cn.End_Time,cn.Case_Manager_ID,cn.ID,cn.Original_Update,cn.last_update, ");
             sb.Append("cn.Case_Note_Group_ID,cn.User_ID,p.first_name,p.last_name, p.id,cn.confidential,cn.corrected,cn.Ratio_Consumers,cn.service_id, ");
-            sb.Append("cn.Original_User_ID, ncr.Any_SSA_Note, cna.Case_Note_ID,cn.service,cn.notes,cn.Location,ug.First_Name,ug.Last_Name ");
+            sb.Append("cn.Original_User_ID, ncr.Any_SSA_Note, cna.Case_Note_ID,cn.service,cn.notes,cn.Location,ug.First_Name,ug.Last_Name,cn.Outcome_Service_Monitoring ");
 
 
             sb.Append("order by cn.service_date desc,cn.Start_Time desc,p.Last_Name asc ");
