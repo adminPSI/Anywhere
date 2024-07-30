@@ -417,6 +417,9 @@
    */
   Textarea.prototype.clear = function () {
     this.input.value = '';
+    if (this.options.fullscreen) {
+      this.fullscreen.updateCloneValue('');
+    }
   };
 
   /**
@@ -484,6 +487,10 @@
   Textarea.prototype.onKeyup = function (cbFunc) {
     this.input.addEventListener('keyup', e => {
       if (cbFunc) cbFunc(e);
+
+      if (this.options.fullscreen) {
+        this.fullscreen.updateCloneValue(e.target.value);
+      }
     });
   };
 
