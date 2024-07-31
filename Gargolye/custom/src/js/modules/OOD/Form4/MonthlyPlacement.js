@@ -48,6 +48,7 @@ let referenceNumber;
 
 // employer data
     // insert/update employer data
+    let insertedEmployerID;
     let employerId;
     let employerName = '';
     let employeraddress1 = '';
@@ -171,6 +172,7 @@ let currentEntryUserId;
       });
     
     employerDropdown = dropdown.build({
+        id: "employerDropdown",
         label: "Employer",
         dropdownId: "employerDropdown",
         value: employer,
@@ -418,15 +420,20 @@ let currentEntryUserId;
 		  text: (employr.address1 == '') ? employr.employerName : employr.employerName + ' -- ' + employr.address1,
 	  })); 
 
-    		const index = data.findIndex((x) => x.id == employer);
+    		const index = data.findIndex((x) => x.id == insertedEmployerID);
 						if (index === -1) {
 							// case note employer not in the employers DDL
-						}
+              employer = '';
+						} else {
+              employer = insertedEmployerID;
+            }
+
+            checkRequiredFields();
 
    var filtereddata = data.filter((x) => x.id != 0);
 
 	  filtereddata.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
-	  dropdown.populate("employerDropdown", filtereddata, employer);        
+	  dropdown.populate("employerDropdown", filtereddata, insertedEmployerID);        
   }
 
 	  async function populateContactTypeDropdown() { 
@@ -1143,15 +1150,32 @@ function checkPopupRequiredFields() {
 
           const result = await OODAjax.insertEmployerAsync(employerName, employeraddress1, employeraddress2, employercity, employerstate, employerzipcode);
           const { insertEmployerResult } = result;
-          let employerID = insertEmployerResult.employerId;
+          insertedEmployerID = insertEmployerResult.employerId;
+          employer = insertEmployerResult.employerId;
 
-          if (employerID == '0') {
+          if (insertedEmployerID == '0') {
               warningPopup();
           } else {
-              POPUP.hide(editEmployerPopup)
-              successfulSave.show();
+              
+              populateConsumerEmployersDropdown(consumerId);
+             // const dropdown = document.querySelector('#employerDropdown');
+              //    const selectedValue = dropdown.value;
+             //     var selectedOption = dropdown.options[dropdown.selectedIndex];
+
+               //   if (selectedOption.value == "SELECT") {
+              //      employer = '';
+                //  } else {
+                //    employer = selectedOption.value;
+                //  }
+              //    checkRequiredFields();
+
+                  POPUP.hide(editEmployerPopup)
+                successfulSave.show();
+
               setTimeout(function () {
                   successfulSave.hide();
+                  
+                  
                  // if (openedPage == 'employmentInfo')
                  //     NewEmployment.refreshEmployment(redirectInformation.positionId, redirectInformation.empName, redirectInformation.posName, redirectInformation.consumersName, redirectInformation.consumersId, tabPositionIndex = 0);
                  // else
@@ -1169,6 +1193,31 @@ function checkPopupRequiredFields() {
             //  addEditEmployers.init();
           }, 2000);
       }
+    }
+
+    function warningPopup() {
+      var popup = POPUP.build({
+          id: 'warningPopup',
+          classNames: 'warning',
+      });
+      var OKBtn = button.build({
+          text: 'OK',
+          style: 'secondary',
+          type: 'contained',
+          callback: function () {
+              POPUP.hide(popup);
+              overlay.show();
+          },
+      });
+      var btnWrap = document.createElement('div');
+      btnWrap.classList.add('btnWrap');
+      btnWrap.appendChild(OKBtn);
+
+      var warningMessage = document.createElement('p');
+      warningMessage.innerHTML = "This employer already exists.";
+      popup.appendChild(warningMessage);
+      popup.appendChild(btnWrap);
+      POPUP.show(popup);
   }
 
      return {
