@@ -46,6 +46,27 @@ let userId;
 let serviceId;
 let referenceNumber;
 
+// employer data
+    // insert/update employer data
+    let employerId;
+    let employerName = '';
+    let employeraddress1 = '';
+    let employeraddress2 = '';
+    let employercity = '';
+    let employerstate = '';
+    let employerzipcode = '';
+
+    //employer inputs 
+    let employerInput;
+    let address1Input;
+    let address2Input;
+    let cityInput;
+    let stateInput;
+    let zipcodeInput;
+
+    let popupSaveBtn;
+    let popupCancelBtn;
+
 let formReadOnly = false;
 
 let currentEntryUserId;
@@ -1040,7 +1061,7 @@ function validateStartEndTimes(validateTime) {
           classNames: 'disabled',
           callback: () => {
               if (!popupSaveBtn.classList.contains('disabled')) {
-                  editEmployerPopupDoneBtn(postType)
+                editEmployerPopupDoneBtn(postType)
               }
           }
       });
@@ -1114,6 +1135,41 @@ function checkPopupRequiredFields() {
     //  popupSaveBtn.classList.add('disabled');
    // }
 }
+
+    // Event for Done BTN on the Edit Employer Popup Window
+    async function editEmployerPopupDoneBtn(postType) {
+
+      if (postType == 'insert') {
+
+          const result = await OODAjax.insertEmployerAsync(employerName, employeraddress1, employeraddress2, employercity, employerstate, employerzipcode);
+          const { insertEmployerResult } = result;
+          let employerID = insertEmployerResult.employerId;
+
+          if (employerID == '0') {
+              warningPopup();
+          } else {
+              POPUP.hide(editEmployerPopup)
+              successfulSave.show();
+              setTimeout(function () {
+                  successfulSave.hide();
+                 // if (openedPage == 'employmentInfo')
+                 //     NewEmployment.refreshEmployment(redirectInformation.positionId, redirectInformation.empName, redirectInformation.posName, redirectInformation.consumersName, redirectInformation.consumersId, tabPositionIndex = 0);
+                 // else
+                 //     addEditEmployers.init();
+              }, 2000);
+          }
+
+      } else {  //'update'
+          POPUP.hide(editEmployerPopup)
+          const result = await OODAjax.updateEmployerAsync(employerId, employerName, employeraddress1, employeraddress2, employercity, employerstate, employerzipcode);
+          const { updateEmployerResult: { employerID } } = result;
+          successfulSave.show();
+          setTimeout(function () {
+              successfulSave.hide();
+            //  addEditEmployers.init();
+          }, 2000);
+      }
+  }
 
      return {
     init,
