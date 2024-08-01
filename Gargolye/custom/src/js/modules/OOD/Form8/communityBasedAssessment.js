@@ -147,6 +147,7 @@ const communityBasedAssessmentForm = (() => {
     });
 
     positionDropdown = dropdown.build({
+      id: 'positionDropdown',
       label: 'Position',
       dropdownId: 'positionDropdown',
       value: position,
@@ -269,6 +270,7 @@ const communityBasedAssessmentForm = (() => {
     });
 
     addEmployersBtn = button.build({
+      id: 'addEmployersBtn',
       text: 'Add Employers',
       style : 'secondary',
       type: 'contained',
@@ -430,7 +432,11 @@ const communityBasedAssessmentForm = (() => {
 						if (index === -1) {
 							// case note employer not in the employers DDL
               employer = '';
-						} 
+              positiondropdown.disabled = false;
+						} else {
+              var positiondropdown = document.getElementById("positionDropdown");
+              positiondropdown.disabled = true;
+            }
 
             checkRequiredFields();
 
@@ -716,22 +722,30 @@ const communityBasedAssessmentForm = (() => {
 
     positionDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
+      var otherEmployerdropdown = document.getElementById("otherEmployerDropdown");
 
       if (selectedOption.value == 'SELECT') {
         position = '';
+        otherEmployerdropdown.disabled = false; 
+        addEmployersBtn.disabled = false;
       } else {
         position = selectedOption.value;
+        otherEmployerdropdown.disabled = true; 
+        addEmployersBtn.disabled = true;
       }
       checkRequiredFields();
     });
 
     otherEmployerDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
-       
+      var positiondropdown = document.getElementById("positionDropdown");
+
       if (selectedOption.value == "SELECT") {
         employer = '';
+        positiondropdown.disabled = false; 
       } else {
         employer = selectedOption.value;
+        positiondropdown.disabled = true; 
       }
       checkRequiredFields();
     });
@@ -952,6 +966,234 @@ const communityBasedAssessmentForm = (() => {
     deletepopup.appendChild(btnWrap);
     POPUP.show(deletepopup);
   }
+
+// build Employer pop-up used for adding/editing Employer information
+async function buildEmployerPopUp(employerdata, postType, openpageName, redirectInfo) {
+  if (openpageName == 'employmentInfo') {
+      openedPage = 'employmentInfo';
+      redirectInformation = redirectInfo
+  }
+  else
+      openedPage = 'employer';
+
+  var headingEmployer;
+  if (employerdata && Object.keys(employerdata).length !== 0) {
+      employerId = employerdata[0].employerId;
+      employerName = employerdata[0].employerName;
+      employeraddress1 = employerdata[0].address1;
+      employeraddress2 = employerdata[0].address2;
+      employercity = employerdata[0].city;
+      employerstate = employerdata[0].state;
+      employerzipcode = employerdata[0].zipcode;
+      headingEmployer = 'Edit this Employer';
+      BtnEventType = 'Update';
+  } else {
+      employerId = '';
+      employerName = '';
+      employeraddress1 = '';
+      employeraddress2 = '';
+      employercity = '';
+      employerstate = '';
+      employerzipcode = '';
+      headingEmployer = 'Add Employer';
+      BtnEventType = 'Add';
+  }
+
+  let editEmployerPopup = POPUP.build({
+      header: headingEmployer,
+      hideX: true,
+      id: "editEmployerPopup"
+  });
+
+  employerInput = input.build({
+      id: 'employerInput',
+      label: 'Employer',
+      value: (employerName) ? employerName : '',
+  });
+
+  address1Input = input.build({
+      label: 'Address',
+      value: (employeraddress1) ? employeraddress1 : '',
+  });
+
+  address2Input = input.build({
+      label: 'Address 2',
+      value: (employeraddress2) ? employeraddress2 : '',
+  });
+
+  cityInput = input.build({
+      label: 'City',
+      value: (employercity) ? employercity : '',
+  });
+
+  stateInput = input.build({
+      label: 'State',
+      value: (employerstate) ? employerstate : '',
+  });
+
+  zipcodeInput = input.build({
+      label: 'Zip Code',
+      value: (employerzipcode) ? employerzipcode : '',
+  });
+
+  popupSaveBtn = button.build({
+      id: "addEmployerSaveBtn",
+      text: "save",
+      type: "contained",
+      style: "secondary",
+      classNames: 'disabled',
+      callback: () => {
+          if (!popupSaveBtn.classList.contains('disabled')) {
+            editEmployerPopupDoneBtn(postType)
+          }
+      }
+  });
+
+  popupCancelBtn = button.build({
+      id: "addEmployerCancelBtn",
+      text: "cancel",
+      type: "outlined",
+      style: "secondary",
+      callback: () => POPUP.hide(editEmployerPopup)
+  });
+
+  let btnWrap = document.createElement("div");
+  btnWrap.classList.add("btnWrap");
+  btnWrap.appendChild(popupSaveBtn);
+  btnWrap.appendChild(popupCancelBtn);
+  editEmployerPopup.appendChild(employerInput);
+  editEmployerPopup.appendChild(address1Input);
+  editEmployerPopup.appendChild(address2Input);
+  editEmployerPopup.appendChild(cityInput);
+  editEmployerPopup.appendChild(stateInput);
+  editEmployerPopup.appendChild(zipcodeInput);
+  editEmployerPopup.appendChild(btnWrap);
+
+  popUpEventHandlers();
+  POPUP.show(editEmployerPopup);
+  checkPopupRequiredFields();
+}
+
+function popUpEventHandlers() {
+employerInput.addEventListener('input', event => {
+    employerName = event.target.value.trim();
+    checkPopupRequiredFields();
+});
+
+address1Input.addEventListener('input', event => {
+    employeraddress1 = event.target.value;
+});
+
+address2Input.addEventListener('input', event => {
+    employeraddress2 = event.target.value;
+});
+
+cityInput.addEventListener('input', event => {
+    employercity = event.target.value;
+});
+
+stateInput.addEventListener('input', event => {
+    employerstate = event.target.value;
+});
+
+zipcodeInput.addEventListener('input', event => {
+    employerzipcode = event.target.value;
+});
+}
+
+function checkPopupRequiredFields() {
+var employrInput = employerInput.querySelector('#employerInput');
+if (employrInput.value.trim() === '') { 
+    employerInput.classList.add('error');
+    popupSaveBtn.classList.add('disabled'); 
+    return;
+} else {
+    employerInput.classList.remove('error');
+    popupSaveBtn.classList.remove('disabled');
+}
+
+// if (($.session.UpdateEmployers && BtnEventType == 'Update') || ($.session.InsertEmployers && BtnEventType == 'Add')) {
+//     popupSaveBtn.classList.remove('disabled');
+// } else {
+//  popupSaveBtn.classList.add('disabled');
+// }
+}
+
+// Event for Done BTN on the Edit Employer Popup Window
+async function editEmployerPopupDoneBtn(postType) {
+
+  if (postType == 'insert') {
+
+      const result = await OODAjax.insertEmployerAsync(employerName, employeraddress1, employeraddress2, employercity, employerstate, employerzipcode);
+      const { insertEmployerResult } = result;
+      employer = insertEmployerResult.employerId;
+
+      if (employer == '0') {
+          warningPopup();
+      } else {
+          
+        populateOtherEmployerDropdown(consumerId);
+         // const dropdown = document.querySelector('#employerDropdown');
+          //    const selectedValue = dropdown.value;
+         //     var selectedOption = dropdown.options[dropdown.selectedIndex];
+
+           //   if (selectedOption.value == "SELECT") {
+          //      employer = '';
+            //  } else {
+            //    employer = selectedOption.value;
+            //  }
+          //    checkRequiredFields();
+
+              POPUP.hide(editEmployerPopup)
+            successfulSave.show();
+
+          setTimeout(function () {
+              successfulSave.hide();
+              
+              
+             // if (openedPage == 'employmentInfo')
+             //     NewEmployment.refreshEmployment(redirectInformation.positionId, redirectInformation.empName, redirectInformation.posName, redirectInformation.consumersName, redirectInformation.consumersId, tabPositionIndex = 0);
+             // else
+             //     addEditEmployers.init();
+          }, 2000);
+      }
+
+  } else {  //'update'
+      POPUP.hide(editEmployerPopup)
+      const result = await OODAjax.updateEmployerAsync(employerId, employerName, employeraddress1, employeraddress2, employercity, employerstate, employerzipcode);
+      const { updateEmployerResult: { employerID } } = result;
+      successfulSave.show();
+      setTimeout(function () {
+          successfulSave.hide();
+        //  addEditEmployers.init();
+      }, 2000);
+  }
+}
+
+function warningPopup() {
+  var popup = POPUP.build({
+      id: 'warningPopup',
+      classNames: 'warning',
+  });
+  var OKBtn = button.build({
+      text: 'OK',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+          POPUP.hide(popup);
+          overlay.show();
+      },
+  });
+  var btnWrap = document.createElement('div');
+  btnWrap.classList.add('btnWrap');
+  btnWrap.appendChild(OKBtn);
+
+  var warningMessage = document.createElement('p');
+  warningMessage.innerHTML = "This employer already exists.";
+  popup.appendChild(warningMessage);
+  popup.appendChild(btnWrap);
+  POPUP.show(popup);
+}
 
   return {
     init,
