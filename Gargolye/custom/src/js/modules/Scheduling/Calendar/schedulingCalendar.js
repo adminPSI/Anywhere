@@ -2,20 +2,7 @@
 // *** EDIT THIS CODE AT YOUR OWN RISK ***
 //=============================================
 var schedulingCalendar = (function () {
-  var months = [
-    'jan',
-    'feb',
-    'mar',
-    'apr',
-    'may',
-    'jun',
-    'jul',
-    'aug',
-    'sep',
-    'oct',
-    'nov',
-    'dec',
-  ];
+  var months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
   var days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
   var _scheduleArray = [];
   var _schedules = []; // cache of all schedules
@@ -64,20 +51,13 @@ var schedulingCalendar = (function () {
   function cloneDate(argument) {
     const argStr = Object.prototype.toString.call(argument);
 
-    if (
-      argument instanceof Date ||
-      (typeof argument === 'object' && argStr === ['object Date'])
-    ) {
+    if (argument instanceof Date || (typeof argument === 'object' && argStr === ['object Date'])) {
       return new Date(argument.getTime());
     } else if (typeof argument === 'number' || argStr === ['object Number']) {
       return new Date(argument);
     } else {
       argument = argument.split(',');
-      return new Date(
-        parseInt(argument[0]),
-        parseInt(argument[1] - 1),
-        parseInt(argument[2]),
-      );
+      return new Date(parseInt(argument[0]), parseInt(argument[1] - 1), parseInt(argument[2]));
     }
   }
 
@@ -113,8 +93,7 @@ var schedulingCalendar = (function () {
     var serviceMonth = UTIL.leadingZero(serviceDateObj[0]);
     var serviceMonthName = months[serviceDateObj[0] - 1];
     var serviceDate = UTIL.leadingZero(serviceDateObj[1]);
-    var serviceDay =
-      days[getDay(`${serviceDateObj[2]}-${serviceDateObj[0]}-${serviceDateObj[1]}`)];
+    var serviceDay = days[getDay(`${serviceDateObj[2]}-${serviceDateObj[0]}-${serviceDateObj[1]}`)];
 
     serviceDateObj = `${serviceYear}-${serviceMonth}-${serviceDate}`;
     return serviceDateObj;
@@ -269,11 +248,7 @@ var schedulingCalendar = (function () {
     locationDropdown.addEventListener('change', event => {
       var option = event.target.options[event.target.selectedIndex];
       var locationId = option.id;
-      schedulingAjax.getSchedulesForSchedulingModuleAjax(
-        locationId,
-        '%',
-        populateSchedules,
-      );
+      schedulingAjax.getSchedulesForSchedulingModuleAjax(locationId, '%', populateSchedules);
     });
   }
 
@@ -546,14 +521,7 @@ var schedulingCalendar = (function () {
     var shiftType = details.shiftType;
     var workCode = `${details.workCode} - ${details.workCodeDescription}`;
     shiftDateForCall = shiftDate;
-    shiftType =
-      shiftType === 'A'
-        ? 'Awake'
-        : shiftType === 'N'
-        ? 'Night'
-        : shiftType === 'D'
-        ? 'Day'
-        : '';
+    shiftType = shiftType === 'A' ? 'Awake' : shiftType === 'N' ? 'Night' : shiftType === 'D' ? 'Day' : '';
     startTime = convertFromMilitary(startTime);
     endTime = convertFromMilitary(endTime);
 
@@ -613,10 +581,10 @@ var schedulingCalendar = (function () {
         var notifiedEmployeeId = null;
         POPUP.hide(popup);
 
-          const { getOverlapStatusforSelectedShiftResult: overlapWithExistingShift } =
-					await schedulingAjax.getOverlapStatusforSelectedShiftAjax(shiftId, personId);
+        const { getOverlapStatusforSelectedShiftResult: overlapWithExistingShift } =
+          await schedulingAjax.getOverlapStatusforSelectedShiftAjax(shiftId, personId);
 
-         if (overlapWithExistingShift == "NoOverLap" ) {
+        if (overlapWithExistingShift == 'NoOverLap') {
           renderSendShiftRequestPopup({
             token,
             shiftId,
@@ -624,12 +592,10 @@ var schedulingCalendar = (function () {
             status,
             notifiedEmployeeId,
           });
-              
-         } else {
+        } else {
           displayOverlapPopup(overlapWithExistingShift);
           return;
-         } 
-
+        }
       },
     });
 
@@ -650,7 +616,6 @@ var schedulingCalendar = (function () {
   }
 
   function displayOverlapPopup(existingShiftLocationName) {
-
     var overlapPopup = POPUP.build({
       classNames: 'sendRequestShiftPopup',
     });
@@ -661,7 +626,7 @@ var schedulingCalendar = (function () {
             <p>This open shift overlaps with an existing shift you are scheduled to work at ${existingShiftLocationName}. You cannot request this open shift.</p>
           </div>
       `;
-      overlapPopup.appendChild(overlapWrap);
+    overlapPopup.appendChild(overlapWrap);
 
     let overlapCancelBtn = button.build({
       text: 'Cancel',
@@ -677,7 +642,6 @@ var schedulingCalendar = (function () {
     overlapPopup.appendChild(overlapCancelBtn);
 
     POPUP.show(overlapPopup);
-
   }
   // UPDATED FOR RESPONSIVE POPUP
   function renderSendShiftRequestPopup(data) {
@@ -730,11 +694,7 @@ var schedulingCalendar = (function () {
       },
     });
 
-    schedulingAjax.getCallOffDropdownEmployeesAjax(
-      shiftDateForCall,
-      detailsLocationId,
-      populateEmployeesDropdown,
-    );
+    schedulingAjax.getCallOffDropdownEmployeesAjax(shiftDateForCall, detailsLocationId, populateEmployeesDropdown);
 
     POPUP.show(popup);
     popup.appendChild(employeeDropdown);
@@ -773,14 +733,7 @@ var schedulingCalendar = (function () {
     var shiftType = details.shiftType;
     var workCode = `${details.workCode} - ${details.workCodeDescription}`;
     shiftDateForCall = shiftDate; //need this to pass back in order to get correct dropdown employees
-    shiftType =
-      shiftType === 'A'
-        ? 'Awake'
-        : shiftType === 'N'
-        ? 'Night'
-        : shiftType === 'D'
-        ? 'Day'
-        : '';
+    shiftType = shiftType === 'A' ? 'Awake' : shiftType === 'N' ? 'Night' : shiftType === 'D' ? 'Day' : '';
     startTime = convertFromMilitary(startTime);
     endTime = convertFromMilitary(endTime);
 
@@ -871,14 +824,7 @@ var schedulingCalendar = (function () {
     var shiftType = details.shiftType;
     var workCode = `${details.workCode} - ${details.workCodeDescription}`;
     shiftDateForCall = shiftDate;
-    shiftType =
-      shiftType === 'A'
-        ? 'Awake'
-        : shiftType === 'N'
-        ? 'Night'
-        : shiftType === 'D'
-        ? 'Day'
-        : '';
+    shiftType = shiftType === 'A' ? 'Awake' : shiftType === 'N' ? 'Night' : shiftType === 'D' ? 'Day' : '';
     startTime = convertFromMilitary(startTime);
     endTime = convertFromMilitary(endTime);
 
@@ -1095,11 +1041,7 @@ var schedulingCalendar = (function () {
     popup.appendChild(employeeDropdown);
     popup.appendChild(btnWrap);
 
-    schedulingAjax.getCallOffDropdownEmployeesAjax(
-      shiftDateForCall,
-      detailsLocationId,
-      populateEmployeesDropdown,
-    );
+    schedulingAjax.getCallOffDropdownEmployeesAjax(shiftDateForCall, detailsLocationId, populateEmployeesDropdown);
     schedulingAjax.getCallOffDropdownReasonsAjax(populateReasonsDropdown);
   }
 
@@ -1132,11 +1074,7 @@ var schedulingCalendar = (function () {
       _scheduleView = 'mine';
       _currentView = 'week';
       btn.setAttribute('data-view', 'mine');
-      schedulingAjax.getSchedulesForSchedulingModuleAjax(
-        '%',
-        $.session.PeopleId,
-        populateSchedules,
-      );
+      schedulingAjax.getSchedulesForSchedulingModuleAjax('%', $.session.PeopleId, populateSchedules);
       // remove location dropdown
       let scheduleViewWrap = document.querySelector('.scheduleViewWrap');
       var locationDropdown = document.getElementById('locationDropdown');
@@ -1153,17 +1091,9 @@ var schedulingCalendar = (function () {
       if (defaultLocation === null) {
         let option = locationDropdown.options[locationDropdown.selectedIndex];
         var locationId = option.id;
-        schedulingAjax.getSchedulesForSchedulingModuleAjax(
-          locationId,
-          '%',
-          populateSchedules,
-        );
+        schedulingAjax.getSchedulesForSchedulingModuleAjax(locationId, '%', populateSchedules);
       } else {
-        schedulingAjax.getSchedulesForSchedulingModuleAjax(
-          defaultLocation,
-          '%',
-          populateSchedules,
-        );
+        schedulingAjax.getSchedulesForSchedulingModuleAjax(defaultLocation, '%', populateSchedules);
         defaultLocation = null;
       }
     }
@@ -1242,9 +1172,7 @@ var schedulingCalendar = (function () {
       // Total Shifts at Bottom of Page
       //=========================================
       var wrap = document.querySelector('.total-hours-wrap');
-      var wrapMarkup = `<p class="total-hours">Current Week Total Hours: ${parseFloat(
-        totalHours,
-      ).toFixed(2)}</p>`;
+      var wrapMarkup = `<p class="total-hours">Current Week Total Hours: ${parseFloat(totalHours).toFixed(2)}</p>`;
 
       if (wrap) {
         wrap.innerHTML = wrapMarkup;
@@ -1258,9 +1186,7 @@ var schedulingCalendar = (function () {
 
       // Individual Shift Total Hours
       //=========================================
-      var shifts = Array.prototype.slice.call(
-        document.querySelectorAll('.eventBody .hdr'),
-      );
+      var shifts = Array.prototype.slice.call(document.querySelectorAll('.eventBody .hdr'));
       shifts.forEach(shift => {
         var time = shift.innerHTML;
         time = time.split('-');
@@ -1290,9 +1216,7 @@ var schedulingCalendar = (function () {
       var date = new Date(yyyy, mm, dd, hour, min, sec);
       // end Microshit IE code
       var endTime = addMinutes(date, 60);
-      endTime = `${serviceDate} ${UTIL.leadingZero(
-        endTime.getHours(),
-      )}:${UTIL.leadingZero(endTime.getMinutes())}:00`;
+      endTime = `${serviceDate} ${UTIL.leadingZero(endTime.getHours())}:${UTIL.leadingZero(endTime.getMinutes())}:00`;
 
       _scheduleArray[5].events.push({
         startTime: startTime,
@@ -1410,10 +1334,7 @@ var schedulingCalendar = (function () {
       var endTime = `${serviceDate} ${res.endTime}`;
       var description = `${res.lastName}, ${res.firstName}`;
       description = description.trim() === ',' ? '' : description;
-      var eventName =
-        _scheduleView === 'mine'
-          ? res.locationName
-          : `${res.lastName}, ${res.firstName} `;
+      var eventName = _scheduleView === 'mine' ? res.locationName : `${res.lastName}, ${res.firstName} `;
       eventName = eventName.trim() === ',' ? '' : eventName;
       eventName = eventName === '' ? res.locationName : eventName;
       var name = _scheduleView === 'mine' ? res.locationName : res.lastName;
@@ -1499,9 +1420,7 @@ var schedulingCalendar = (function () {
   }
 
   function setupDateHeadingEvent() {
-    var dateHeadings = Array.prototype.slice.call(
-      document.querySelectorAll('.calHeader'),
-    );
+    var dateHeadings = Array.prototype.slice.call(document.querySelectorAll('.calHeader'));
 
     dateHeadings.forEach(heading => {
       heading.addEventListener('click', event => {
@@ -1544,11 +1463,7 @@ var schedulingCalendar = (function () {
         case nextBtn:
           if (_currentView === 'week' || _currentView === 'day') {
             populateShiftTotalHours();
-            if (
-              _scheduleView === 'mine' &&
-              $.session.schedAllowCallOffRequests === 'Y' &&
-              $.session.schedulingUpdate
-            ) {
+            if (_scheduleView === 'mine' && $.session.schedAllowCallOffRequests === 'Y' && $.session.schedulingUpdate) {
             }
           }
           break;
@@ -1556,10 +1471,7 @@ var schedulingCalendar = (function () {
         default:
           if (event.target.classList.contains('dayEvent')) {
             // My Shifts & All Shifts
-            if (
-              event.target.classList.contains('red') ||
-              event.target.classList.contains('blueTemplate')
-            ) {
+            if (event.target.classList.contains('red') || event.target.classList.contains('blueTemplate')) {
               var eventId = parseInt(event.target.getAttribute('eventid'));
               var eventDetails = _schedules.filter(schedule => {
                 return schedule.shiftId === eventId;
@@ -1600,10 +1512,6 @@ var schedulingCalendar = (function () {
 
             // Appointments
             if (event.target.classList.contains('brownTemplate')) {
-              // alert('Congratulations you have just won an all enclusive trip to a destination of your choice!');
-              // alert('We just need you to call 740-525-7145 and leave a voice mail with your SSN, DOB, address and mothers maiden name');
-              // alert('Did you call us yet?');
-              // alert('Promise this isnt a scam.');
               var appointmentId = event.target.getAttribute('eventid');
               var appointmenttDetails = _appointments.filter(appointment => {
                 return appointment.medTrackingId === appointmentId;
@@ -1659,9 +1567,7 @@ var schedulingCalendar = (function () {
     schedulingAjax.getDayOfWeekScheduleAjax(setStartDay);
 
     // default view is my schedules
-    schedulingAjax.getSchedulesForSchedulingModuleAjax('%', $.session.PeopleId, function (
-      results,
-    ) {
+    schedulingAjax.getSchedulesForSchedulingModuleAjax('%', $.session.PeopleId, function (results) {
       // PROGRESS.SPINNER.hide();
       DOM.clearActionCenter();
       actioncenter = document.getElementById('actioncenter');
