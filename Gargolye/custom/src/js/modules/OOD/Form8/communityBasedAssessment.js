@@ -5,6 +5,7 @@ const communityBasedAssessmentForm = (() => {
   let endTimeInput;
   let SAMLevelDropdown;
   let positionDropdown;
+  let otherEmployerDropdown;
   let contactMethodDropdown;
   let behavioralIndicatorsDropdown;
   let jobTaskQualityIndicatorsDropdown;
@@ -13,6 +14,7 @@ const communityBasedAssessmentForm = (() => {
   let interventionsInput;
 
   // buttons
+  let addEmployersBtn;
   let saveNoteBtn;
   let saveAndNewNoteBtn;
   let cancelNoteBtn;
@@ -27,6 +29,7 @@ const communityBasedAssessmentForm = (() => {
   let endTime;
   let SAMLevel;
   let position;
+  let employer;
   let contactMethod;
   let behavioralIndicators;
   let jobTaskQualityIndicators;
@@ -152,6 +155,14 @@ const communityBasedAssessmentForm = (() => {
       // type: 'email',
     });
 
+    otherEmployerDropdown = dropdown.build({
+      id: "otherEmployerDropdown",
+      label: "Other Employer",
+      dropdownId: "otherEmployerDropdown",
+      value: employer,
+      readonly: formReadOnly,
+  }); 
+
     contactMethodDropdown = dropdown.build({
       label: 'Contact Method',
       dropdownId: 'contactMethodDropdown',
@@ -257,6 +268,20 @@ const communityBasedAssessmentForm = (() => {
       },
     });
 
+    addEmployersBtn = button.build({
+      text: 'Add Employers',
+      style : 'secondary',
+      type: 'contained',
+      icon: 'add',
+      classNames: ['caseNoteSave'],
+      callback: async () => { 
+        //if (!addNewEmployerBtn.classList.contains('disabled')) {
+          buildEmployerPopUp({}, 'insert', 'employer', null)
+     // }
+      },
+    });
+
+
     setupEvents();
 
     let myconsumer = buildConsumerCard(currentConsumer);
@@ -284,18 +309,26 @@ const communityBasedAssessmentForm = (() => {
     const inputContainer1 = document.createElement('div');
     inputContainer1.classList.add('ood_form4monthlyplacement_inputContainer1'); // new _OOD.scss setting  -- ood_form8monthlyplacement_inputContainer1
     inputContainer1.appendChild(positionDropdown);
-    inputContainer1.appendChild(SAMLevelDropdown);
-    inputContainer1.appendChild(contactMethodDropdown);
+    inputContainer1.appendChild(otherEmployerDropdown);
+    inputContainer1.appendChild(addEmployersBtn);
 
     const inputContainer2 = document.createElement('div');
     inputContainer2.classList.add('ood_form4monthlyplacement_inputContainer2');
+
+    inputContainer2.appendChild(SAMLevelDropdown);
+    inputContainer2.appendChild(contactMethodDropdown);
     inputContainer2.appendChild(behavioralIndicatorsDropdown);
-    inputContainer2.appendChild(jobTaskQualityIndicatorsDropdown);
-    inputContainer2.appendChild(jobTaskQuantityIndicatorsDropdown);
+
+    const inputContainer3 = document.createElement('div');
+    inputContainer3.classList.add('ood_form4monthlyplacement_inputContainer2');
+
+    inputContainer3.appendChild(jobTaskQualityIndicatorsDropdown);
+    inputContainer3.appendChild(jobTaskQuantityIndicatorsDropdown);
 
     container.appendChild(inputContainer0);
     container.appendChild(inputContainer1);
     container.appendChild(inputContainer2);
+    container.appendChild(inputContainer3);
 
     container.appendChild(narrativeInput);
     container.appendChild(interventionsInput);
@@ -331,7 +364,7 @@ const communityBasedAssessmentForm = (() => {
     populateContactMethodDropdown();
     populatePositionDropdown();
     populateIndicatorsDropdown();
-    // populateOutcomeDropdown();
+    populateOtherEmployerDropdown(consumerId);
 
     DOM.ACTIONCENTER.appendChild(container);
 
@@ -377,6 +410,34 @@ const communityBasedAssessmentForm = (() => {
 
     data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value
     dropdown.populate('positionDropdown', data, position);
+  }
+
+
+  async function populateOtherEmployerDropdown(currentConsumerId) { 
+		
+		const {
+			getActiveEmployersResult: employers,
+		} = await OODAjax.getActiveEmployersAsync();
+	  // const templates = WorkflowViewerComponent.getTemplates();
+
+	  let data = employers.map((employr) => ({
+		  id: employr.employerId, 
+		  value: employr.employerId, 
+		  text: (employr.address1 == '') ? employr.employerName : employr.employerName + ' -- ' + employr.address1,
+	  })); 
+
+    		const index = data.findIndex((x) => x.id == employer);
+						if (index === -1) {
+							// case note employer not in the employers DDL
+              employer = '';
+						} 
+
+            checkRequiredFields();
+
+   var filtereddata = data.filter((x) => x.id != 0);
+
+	  filtereddata.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
+	  dropdown.populate("otherEmployerDropdown", filtereddata, employer);        
   }
 
   async function populateIndicatorsDropdown() {
@@ -466,6 +527,12 @@ const communityBasedAssessmentForm = (() => {
     } else {
       positionDropdown.classList.remove('error');
       // return 'success';
+    }
+
+    if (!employer || employer === '') {
+      otherEmployerDropdown.classList.add('error');
+    } else {
+      otherEmployerDropdown.classList.remove('error');
     }
 
     if (!contactMethod || contactMethod === '') {
@@ -654,6 +721,17 @@ const communityBasedAssessmentForm = (() => {
         position = '';
       } else {
         position = selectedOption.value;
+      }
+      checkRequiredFields();
+    });
+
+    otherEmployerDropdown.addEventListener('change', event => {
+      var selectedOption = event.target.options[event.target.selectedIndex];
+       
+      if (selectedOption.value == "SELECT") {
+        employer = '';
+      } else {
+        employer = selectedOption.value;
       }
       checkRequiredFields();
     });
