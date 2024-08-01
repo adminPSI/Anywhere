@@ -428,13 +428,14 @@ const communityBasedAssessmentForm = (() => {
 		  text: (employr.address1 == '') ? employr.employerName : employr.employerName + ' -- ' + employr.address1,
 	  })); 
 
+        var positiondropdown = document.getElementById("positionDropdown");
     		const index = data.findIndex((x) => x.id == employer);
 						if (index === -1) {
 							// case note employer not in the employers DDL
               employer = '';
               positiondropdown.disabled = false;
 						} else {
-              var positiondropdown = document.getElementById("positionDropdown");
+              
               positiondropdown.disabled = true;
             }
 
