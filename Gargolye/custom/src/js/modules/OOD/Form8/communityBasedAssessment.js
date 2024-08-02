@@ -36,6 +36,7 @@ const communityBasedAssessmentForm = (() => {
   let jobTaskQuantityIndicators;
   let narrative;
   let interventions;
+  let positionDropDownData;
 
   //Case Note Data
   let caseManagerId;
@@ -399,8 +400,11 @@ const communityBasedAssessmentForm = (() => {
   async function populatePositionDropdown() {
     const { getOODPositionsResult: positions } = await OODAjax.getPositionsAsync(consumerId);
     // const templates = WorkflowViewerComponent.getTemplates();
+    
+    positionDropDownData = positions;
+
     let data = positions.map(position => ({
-      id: position.code,
+      id: position.employerId,
       value: position.code,
       text: position.caption,
     }));
@@ -422,11 +426,13 @@ const communityBasedAssessmentForm = (() => {
 		} = await OODAjax.getActiveEmployersAsync();
 	  // const templates = WorkflowViewerComponent.getTemplates();
 
-	  let data = employers.map((employr) => ({
+    var filteredemployers = employers.filter(item => !positionDropDownData.some(otherItem => otherItem.employerId === item.employerId));
+
+	  let data = filteredemployers.map((employr) => ({
 		  id: employr.employerId, 
 		  value: employr.employerId, 
 		  text: (employr.address1 == '') ? employr.employerName : employr.employerName + ' -- ' + employr.address1,
-	  })); 
+	  }));   
 
         var positiondropdown = document.getElementById("positionDropdown");
     		const index = data.findIndex((x) => x.id == employer);
