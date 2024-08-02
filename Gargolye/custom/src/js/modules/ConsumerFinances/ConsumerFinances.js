@@ -49,6 +49,8 @@ const ConsumerFinances = (() => {
     }
 
     async function backFromConsumerFinanceEditAccount(Consumers) {  
+        setActiveModuleAttribute('ConsumerFinances');   
+        DOM.clearActionCenter();
         selectedConsumers = Consumers;
         filterValues = undefined;
         await loadConsumerFinanceLanding();
