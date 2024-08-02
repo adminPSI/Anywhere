@@ -38,9 +38,9 @@ var schedulingApproveRequest = (function () {
   function cloneDate(argument) {
     const argStr = Object.prototype.toString.call(argument);
 
-    if (argument instanceof Date || (typeof argument === 'object' && argStr === ['object Date'])) {
+    if (argument instanceof Date || (typeof argument === 'object')) {
       return new Date(argument.getTime());
-    } else if (typeof argument === 'number' || argStr === ['object Number']) {
+    } else if (typeof argument === 'number') {
       return new Date(argument);
     } else {
       argument = argument.split(',');
@@ -160,11 +160,7 @@ var schedulingApproveRequest = (function () {
     }
 
     //MESSAGE TO DISPLAY WHEN THERE ARE NO REQUESTS TO APPROVE
-    if (
-      requestData.daysOff.length === 0 &&
-      requestData.callOff.length === 0 &&
-      requestData.openShift.length === 0
-    ) {
+    if (requestData.daysOff.length === 0 && requestData.callOff.length === 0 && requestData.openShift.length === 0) {
       noRequestsMessage();
     }
 
@@ -212,12 +208,8 @@ var schedulingApproveRequest = (function () {
         lastSubArray = total[total.length - 1];
 
         if (lastSubArray) {
-          areDatesConsecutive = areConsecutiveDates(
-            lastSubArray[lastSubArray.length - 1].day,
-            cv.day,
-          );
-          consecutiveReason =
-            lastSubArray[lastSubArray.length - 1].reasonId === cv.reasonId ? true : false;
+          areDatesConsecutive = areConsecutiveDates(lastSubArray[lastSubArray.length - 1].day, cv.day);
+          consecutiveReason = lastSubArray[lastSubArray.length - 1].reasonId === cv.reasonId ? true : false;
         } else {
           areDatesConsecutive = false;
         }
@@ -233,9 +225,7 @@ var schedulingApproveRequest = (function () {
       //return;
 
       let tableData = groupedShifts.map(group => {
-        var startDate = `${group[0].day.split(' ')[0]} ${UTIL.convertFromMilitary(
-          group[0].fromTime,
-        )}`;
+        var startDate = `${group[0].day.split(' ')[0]} ${UTIL.convertFromMilitary(group[0].fromTime)}`;
         var endDate = `${group[group.length - 1].day.split(' ')[0]} ${UTIL.convertFromMilitary(
           group[group.length - 1].toTime,
         )}`;
@@ -280,8 +270,8 @@ var schedulingApproveRequest = (function () {
           if (overlapApprovalData !== 'NoOverLap') {
             displayApprovedOverlapPopup();
           } else if (daysOffOverlapConfirmed) {
-            overlapAlert(overlapIds)
-          }else {
+            overlapAlert(overlapIds);
+          } else {
             // overlaps exist between selected shifts and shifts already approved (ie, shifts saved in DB)
             if (overlapsExist) {
               displayOverlapPopup(overlapsExist, overlapWrap);
@@ -314,9 +304,9 @@ var schedulingApproveRequest = (function () {
 
     function dataForCallOffandOpenShifts(shifts) {
       let tableData = shifts.map((shift, index) => {
-        let day = `${shift.day.split(' ')[0]} ${UTIL.convertFromMilitary(
-          shift.fromTime,
-        )} - ${UTIL.convertFromMilitary(shift.toTime)}`;
+        let day = `${shift.day.split(' ')[0]} ${UTIL.convertFromMilitary(shift.fromTime)} - ${UTIL.convertFromMilitary(
+          shift.toTime,
+        )}`;
         return {
           values: [shift.name, day, shift.locationName, shift.reasonName, ''],
           id: shift.shiftId,
@@ -445,9 +435,7 @@ var schedulingApproveRequest = (function () {
   async function submitApproveDenyRequest() {
     if (openShiftTable) {
       var openShiftTableBody = openShiftTable.querySelector('.table__body');
-      var openShiftRequests = Array.prototype.slice.call(
-        openShiftTableBody.querySelectorAll('.table__row'),
-      );
+      var openShiftRequests = Array.prototype.slice.call(openShiftTableBody.querySelectorAll('.table__row'));
 
       // check approved shifts to ensure no overlap (before checking for overlaps with assigned shifts)
       overlapApprovalData = overlapApprovedShifts(openShiftRequests);
@@ -457,15 +445,11 @@ var schedulingApproveRequest = (function () {
     }
     if (callOffTable) {
       var callOffTableBody = callOffTable.querySelector('.table__body');
-      var callOffRequests = Array.prototype.slice.call(
-        callOffTableBody.querySelectorAll('.table__row'),
-      );
+      var callOffRequests = Array.prototype.slice.call(callOffTableBody.querySelectorAll('.table__row'));
     }
     if (daysOffTable) {
       var daysOffTableBody = daysOffTable.querySelector('.table__body');
-      var daysOffRequests = Array.prototype.slice.call(
-        daysOffTableBody.querySelectorAll('.table__row'),
-      );
+      var daysOffRequests = Array.prototype.slice.call(daysOffTableBody.querySelectorAll('.table__row'));
     }
 
     if (!overlapApprovalData) {
@@ -540,7 +524,7 @@ var schedulingApproveRequest = (function () {
             daysOffIdString: shiftIds,
             decision: decision,
           });
-    
+
           if (approveDenyResponse !== 'Success') {
             // alert("Overlap found. Please review the days off requests NOT processed. These requests are in conflict with already approved requests.")
             overlapIds.push(approveDenyResponse);
@@ -550,7 +534,7 @@ var schedulingApproveRequest = (function () {
           }
         }
       }
-    }      
+    }
   }
 
   function overlapAlert(idArray) {
@@ -596,7 +580,7 @@ var schedulingApproveRequest = (function () {
         nestedDivsObject[`nestedDiv${i + 1}`] = textContent;
       }
 
-      const requestData = `Employee: ${nestedDivsObject.nestedDiv1}, ${nestedDivsObject.nestedDiv2} - ${nestedDivsObject.nestedDiv3}`
+      const requestData = `Employee: ${nestedDivsObject.nestedDiv1}, ${nestedDivsObject.nestedDiv2} - ${nestedDivsObject.nestedDiv3}`;
       requestDataText.push(requestData);
     });
 
@@ -608,8 +592,7 @@ var schedulingApproveRequest = (function () {
 
     // Create the alert message
     const alertMessage = document.createElement('p');
-    alertMessage.innerHTML =
-      'The following requests overlap an existing time off request and could not be approved:';
+    alertMessage.innerHTML = 'The following requests overlap an existing time off request and could not be approved:';
 
     // Append each paragraph to the alert message
     paragraphs.forEach(paragraph => {

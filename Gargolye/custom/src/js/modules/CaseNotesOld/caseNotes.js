@@ -15,7 +15,7 @@ var caseNotes = (function () {
       type: 'contained',
       callback: function () {
         noteSSA.init('new');
-      },
+      },//test
     });
 
     let overviewBtn = button.build({
