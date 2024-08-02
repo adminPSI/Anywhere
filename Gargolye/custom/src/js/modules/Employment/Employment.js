@@ -99,6 +99,19 @@ const Employment = (() => {
             },
         }));
         const oTable = table.build(tableOptions);
+
+        // Set the data type for each header, for sorting purposes
+        const headers = oTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Employer
+        headers[1].setAttribute('data-type', 'string'); // Position
+        headers[2].setAttribute('data-type', 'date'); // Position start 
+        headers[3].setAttribute('data-type', 'date'); // Position End 
+        headers[4].setAttribute('data-type', 'string'); // Job Standing 
+
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(oTable);
+
         table.populate(oTable, tableData);
 
         return oTable;

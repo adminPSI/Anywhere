@@ -254,6 +254,17 @@ const WagesBenefits = (() => {
             },
         }));
         const oTable = table.build(tableOptions);
+
+        // Set the data type for each header, for sorting purposes
+        const headers = oTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'number'); // Avg Hours Per Week
+        headers[1].setAttribute('data-type', 'string'); // Avg Wages Per Week
+        headers[2].setAttribute('data-type', 'date'); // Start Date
+        headers[3].setAttribute('data-type', 'date'); // End Date 
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(oTable);
+
         table.populate(oTable, tableData);
 
         return oTable;

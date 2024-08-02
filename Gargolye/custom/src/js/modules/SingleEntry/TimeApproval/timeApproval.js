@@ -1747,10 +1747,24 @@ var timeApproval = (function () {
         var fitleredBy = buildFilteredBy();
         reviewTable = buildTable();
 
+        // Set the data type for each header, for sorting purposes
+        const headers = reviewTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Status
+        headers[1].setAttribute('data-type', 'string'); // Employee
+        headers[2].setAttribute('data-type', 'date'); // Date
+        headers[3].setAttribute('data-type', 'date'); // Start Time
+        headers[4].setAttribute('data-type', 'date'); // End Time 
+        headers[5].setAttribute('data-type', 'number'); // Hours
+        headers[5].setAttribute('data-type', 'string'); // Location
+        headers[7].setAttribute('data-type', 'string'); // Work Code 
+
         DOM.ACTIONCENTER.appendChild(topNav);
         DOM.ACTIONCENTER.appendChild(fitleredBy);
         DOM.ACTIONCENTER.appendChild(reviewTable);
         DOM.ACTIONCENTER.appendChild(mapBtn);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(reviewTable);
 
         setupActionNav();
     }

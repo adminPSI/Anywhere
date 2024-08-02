@@ -551,7 +551,24 @@ var workshop = (function () {
         const filteredBy = updateCurrentFilterDisplay();
         DOM.ACTIONCENTER.appendChild(filteredBy);
         var workshopTable = table.build(workshopTableOpts);
+
+        // Set the data type for each header, for sorting purposes
+        const headers = workshopTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Consumer
+        headers[1].setAttribute('data-type', 'date'); // Start Time
+        headers[2].setAttribute('data-type', 'date'); // End Time
+        headers[3].setAttribute('data-type', 'string'); // Job Code
+        headers[4].setAttribute('data-type', 'string'); // Job Step 
+        headers[5].setAttribute('data-type', 'number'); // Hours
+        headers[6].setAttribute('data-type', 'number'); // Quantity
+        headers[7].setAttribute('data-type', 'string'); // Supervisor  
+
+
         DOM.ACTIONCENTER.appendChild(workshopTable);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(workshopTable); 
+
         table.populate("workshopTable", tableData);
 
         // //permission

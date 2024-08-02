@@ -961,9 +961,23 @@ const incidentOverview = (function () {
                 endIcon: true,
             };
         }
-
+     
         overviewTable = table.build(tableOptions);
+
+        // Set the data type for each header, for sorting purposes
+        const headers = overviewTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Location
+        headers[1].setAttribute('data-type', 'string'); // Entered By
+        headers[2].setAttribute('data-type', 'date'); //Date
+        headers[3].setAttribute('data-type', 'date'); // Time
+        headers[4].setAttribute('data-type', 'string'); // Type 
+        headers[5].setAttribute('data-type', 'string'); // Consumer(s) Involved 
+
+
         DOM.ACTIONCENTER.appendChild(overviewTable);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(overviewTable); 
     }
     function populateOverviewTable(res) {
         var incidents = {};

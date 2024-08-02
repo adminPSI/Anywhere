@@ -323,6 +323,19 @@ const OOD = (() => {
         }));
 
         const oTable = table.build(tableOptions);
+
+        // Set the data type for each header, for sorting purposes
+        const headers = oTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'date'); // Service date
+        headers[1].setAttribute('data-type', 'string'); // Consumer
+        headers[2].setAttribute('data-type', 'string'); // Service
+        headers[3].setAttribute('data-type', 'number'); // Ref No 
+        headers[4].setAttribute('data-type', 'string'); // User Updated 
+        headers[5].setAttribute('data-type', 'string'); // Employer
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(oTable);
+
         table.populate(oTable, tableData);
 
         return oTable;

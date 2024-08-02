@@ -82,8 +82,18 @@ var incidentTrackingWidget = (function () {
 
     function populateIncidentTrackingWidget(res) {
         var itTable = table.build(tableOptions);
+
+        // Set the data type for each header, for sorting purposes
+        const headers = itTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Consumer Involved
+        headers[1].setAttribute('data-type', 'date'); // Date of Incident
+        headers[2].setAttribute('data-type', 'string'); // Category / Subcategory
+
         widgetBody.innerHTML = '';
         widgetBody.appendChild(itTable);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(itTable);
 
         var incidents = []; 
         res.forEach(r => {
