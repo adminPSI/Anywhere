@@ -252,15 +252,21 @@ const ConsumerFinances = (() => {
             style: 'secondary',
             type: 'contained',
             classNames: 'newEntryBtn',
-            callback: async () => { NewEntryCF.init() },
+            callback: async () => {
+                if (!entryBtn.classList.contains('disabled')) { 
+                    NewEntryCF.init()
+                }
+            },
         });
 
         const editAccountBtn = button.build({
             text: 'Edit Account',
             style: 'secondary',
             type: 'contained',
-            callback: async () => {               
-                CFEditAccount.loadCFEditFromAccountRegister(selectedConsumers)
+            callback: async () => {        
+                if (!editAccountBtn.classList.contains('disabled')) { 
+                    CFEditAccount.loadCFEditFromAccountRegister(selectedConsumers)
+                }
             },
         });
 
