@@ -412,6 +412,9 @@ const communityBasedAssessmentForm = (() => {
     const index = data.findIndex(x => x.id == position);
     if (index === -1) {
       // case note contactType not in the contactTypes DDL
+      employer = '';
+    } else {
+      employer = 'SEE POSITION DROPDOWN';
     }
 
     data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value
@@ -440,9 +443,11 @@ const communityBasedAssessmentForm = (() => {
 							// case note employer not in the employers DDL
               employer = '';
               positiondropdown.disabled = false;
+              position = '';
 						} else {
               
               positiondropdown.disabled = true;
+              position = 'SEE OTHER EMPLOYER';
             }
 
             checkRequiredFields();
@@ -580,13 +585,13 @@ const communityBasedAssessmentForm = (() => {
       narrativeInput.classList.remove('error');
     }
 
-    var interventionInpt = interventionsInput.querySelector('textarea');
+    //var interventionInpt = interventionsInput.querySelector('textarea');
 
-    if (interventionInpt.value === '') {
-      interventionsInput.classList.add('error');
-    } else {
-      interventionsInput.classList.remove('error');
-    }
+    //if (interventionInpt.value === '') {
+    //  interventionsInput.classList.add('error');
+   // } else {
+  //    interventionsInput.classList.remove('error');
+   // }
 
     checkServiceDateInput();
     checkStartInputTime();
@@ -735,10 +740,12 @@ const communityBasedAssessmentForm = (() => {
         position = '';
         otherEmployerdropdown.disabled = false; 
         addEmployersBtn.disabled = false;
+        employer = '';
       } else {
         position = selectedOption.value;
         otherEmployerdropdown.disabled = true; 
         addEmployersBtn.disabled = true;
+        employer = 'SEE POSITION DROPDOWN';
       }
       checkRequiredFields();
     });
@@ -750,9 +757,11 @@ const communityBasedAssessmentForm = (() => {
       if (selectedOption.value == "SELECT") {
         employer = '';
         positiondropdown.disabled = false; 
+        position = '';
       } else {
         employer = selectedOption.value;
-        positiondropdown.disabled = true; 
+        positiondropdown.disabled = true;
+        position = 'SEE OTHER EMPLOYER DROPDOWN'; 
       }
       checkRequiredFields();
     });
