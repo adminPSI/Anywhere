@@ -430,7 +430,7 @@ namespace Anywhere.service.Data.ConsumerFinances
         }
 
 
-        public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId, SplitAmountData[] splitAmount,string categoryID)
+        public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId, SplitAmountData[] splitAmount, string categoryID)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -470,7 +470,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                             counter++;
                         }
                     }
-                     
+
                     if (splitAmount.Length > 0)
                     {
                         Odg.deleteSplitRegisterData(token, RegisterID, transaction);
@@ -595,7 +595,9 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (accountId != "0")
                     {
                         ConsumerFinancesEntry[] updateRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getEditAccountRunningBalance(openingBalance, accountId, transaction));
-                        updateAccountBalance(updateRunningBal[0].activityDate, accountId, transaction, updateRunningBal[0].balance);
+                        if (updateRunningBal.Length > 0) 
+                            updateAccountBalance(updateRunningBal[0].activityDate, accountId, transaction, updateRunningBal[0].balance);
+                        AccountID = accountId; 
                     }
 
                     acountRegister.accountId = AccountID;
