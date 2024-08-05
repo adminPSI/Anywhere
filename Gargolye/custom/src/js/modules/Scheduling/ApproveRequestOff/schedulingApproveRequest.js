@@ -38,9 +38,9 @@ var schedulingApproveRequest = (function () {
   function cloneDate(argument) {
     const argStr = Object.prototype.toString.call(argument);
 
-    if (argument instanceof Date || (typeof argument === 'object' && argStr === ['object Date'])) {
+    if (argument instanceof Date || (typeof argument === 'object')) {
       return new Date(argument.getTime());
-    } else if (typeof argument === 'number' || argStr === ['object Number']) {
+    } else if (typeof argument === 'number') {
       return new Date(argument);
     } else {
       argument = argument.split(',');

@@ -2,6 +2,17 @@
   return `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/${endPoint}/`;
 }
 
+async function md5Hash(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+
+  const hashBuffer = await crypto.subtle.digest('MD5', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+  return hashHex;
+}
+
 function logIn() {
     const loginBtn = document.getElementById('loginBtn');
     loginBtn.classList.add('disabled');
