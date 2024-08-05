@@ -15,6 +15,7 @@ const CFEditAccount = (() => {
     let IsDisabledAccount = false;
     let accountPermission;
     let tempAccountPer;
+    let backPage;
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
@@ -24,6 +25,7 @@ const CFEditAccount = (() => {
             case 'miniRosterDone': {
                 selectedConsumers = roster2.getActiveConsumers();
                 page = 'Update';
+                backPage = 1; 
                 load = 1;
                 account = '';
                 accountId = '0';
@@ -37,6 +39,17 @@ const CFEditAccount = (() => {
                 break;
             }
         }
+    }
+
+    async function loadCFEditFromAccountRegister(Consumers) {  
+        setActiveModuleAttribute('CFEditAccount');
+        backPage = 2;
+        DOM.clearActionCenter();
+        selectedConsumers = Consumers;
+        page = 'Update';
+        load = 1; 
+        await loadCFEditLanding();
+        DOM.toggleNavLayout();
     }
 
     // Build OOD Module Landing Page 
@@ -309,7 +322,13 @@ const CFEditAccount = (() => {
             text: 'Cancel',
             style: 'secondary',
             type: 'outlined',
-            callback: async () => { cancleAccount() },
+            callback: async () => {
+                if (backPage == 1) 
+                    cancleAccount();
+                else {
+                    ConsumerFinances.backFromConsumerFinanceEditAccount(selectedConsumers);    
+                }
+            },
         });
 
         const column1 = document.createElement('div')
@@ -660,5 +679,6 @@ const CFEditAccount = (() => {
         init,
         handleActionNavEvent,
         loadCFEditLanding,
+        loadCFEditFromAccountRegister,
     };
 })(); 

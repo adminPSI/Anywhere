@@ -81,8 +81,27 @@ const assessmentHistory = (() => {
         filterRow.appendChild(filteredBy);
         landingPage.appendChild(filterRow);
         assessmentEntriesTable = await buildAssessmentEntriesTable();
+
+        // Set the data type for each header, for sorting purposes
+        const headers = assessmentEntriesTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'date'); // Start Date
+        headers[1].setAttribute('data-type', 'date'); // End Date
+        headers[2].setAttribute('data-type', 'string'); // Methodology
+        headers[3].setAttribute('data-type', 'string'); // Score 
+        headers[4].setAttribute('data-type', 'string'); // Beh mod 
+        headers[5].setAttribute('data-type', 'string'); // medicile mod
+        headers[6].setAttribute('data-type', 'string'); // Dc Mod  
+        headers[7].setAttribute('data-type', 'string'); // CC Mod
+        headers[8].setAttribute('data-type', 'date'); // Prior Auth Applied  
+        headers[9].setAttribute('data-type', 'date'); // Prior Auth Recieved
+        headers[10].setAttribute('data-type', 'string'); // Prior Auth Amount  
+
         LOAD_MORE_BTN = buildLoadMoreBtn();
         landingPage.appendChild(assessmentEntriesTable);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(assessmentEntriesTable);
+
         landingPage.appendChild(LOAD_MORE_BTN);
         DOM.ACTIONCENTER.appendChild(landingPage);
         document.getElementById('loadMoreBtn').style.display = 'none';

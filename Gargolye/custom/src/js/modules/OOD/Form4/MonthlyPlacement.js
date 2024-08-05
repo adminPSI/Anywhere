@@ -48,7 +48,6 @@ let referenceNumber;
 
 // employer data
     // insert/update employer data
-    let insertedEmployerID;
     let employerId;
     let employerName = '';
     let employeraddress1 = '';
@@ -300,6 +299,7 @@ let currentEntryUserId;
       icon: 'close',
       classNames: ['caseNoteCancel'],
       callback: async () =>  {
+        employer = '';
         OOD.loadOODLanding();
       },
     });
@@ -420,20 +420,18 @@ let currentEntryUserId;
 		  text: (employr.address1 == '') ? employr.employerName : employr.employerName + ' -- ' + employr.address1,
 	  })); 
 
-    		const index = data.findIndex((x) => x.id == insertedEmployerID);
+    		const index = data.findIndex((x) => x.id == employer);
 						if (index === -1) {
 							// case note employer not in the employers DDL
               employer = '';
-						} else {
-              employer = insertedEmployerID;
-            }
+						} 
 
             checkRequiredFields();
 
    var filtereddata = data.filter((x) => x.id != 0);
 
 	  filtereddata.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
-	  dropdown.populate("employerDropdown", filtereddata, insertedEmployerID);        
+	  dropdown.populate("employerDropdown", filtereddata, employer);        
   }
 
 	  async function populateContactTypeDropdown() { 
@@ -1150,10 +1148,9 @@ function checkPopupRequiredFields() {
 
           const result = await OODAjax.insertEmployerAsync(employerName, employeraddress1, employeraddress2, employercity, employerstate, employerzipcode);
           const { insertEmployerResult } = result;
-          insertedEmployerID = insertEmployerResult.employerId;
           employer = insertEmployerResult.employerId;
 
-          if (insertedEmployerID == '0') {
+          if (employer == '0') {
               warningPopup();
           } else {
               

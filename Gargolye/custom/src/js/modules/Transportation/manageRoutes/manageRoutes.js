@@ -89,9 +89,24 @@ const TRANS_manageRoutes = (function () {
         // * FILTERED BY DISPLAY
         const filteredByDisplay = buildFilteredBy();
 
+        // Set the data type for each header, for sorting purposes
+        const headers = routesTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'date'); // Date
+        headers[1].setAttribute('data-type', 'string'); // Route
+        headers[2].setAttribute('data-type', 'string'); // Driver
+        headers[3].setAttribute('data-type', 'string'); // Vehicle
+        headers[4].setAttribute('data-type', 'string'); // Location 
+        headers[5].setAttribute('data-type', 'number'); // Start Odometer
+        headers[5].setAttribute('data-type', 'number'); // End Odometer
+        headers[7].setAttribute('data-type', 'date'); // Start Time 
+        headers[8].setAttribute('data-type', 'date'); // Stop Time 
+
         DOM.ACTIONCENTER.appendChild(backButton);
         DOM.ACTIONCENTER.appendChild(filteredByDisplay);
         DOM.ACTIONCENTER.appendChild(routesTable);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(routesTable);
 
         getData();
     }

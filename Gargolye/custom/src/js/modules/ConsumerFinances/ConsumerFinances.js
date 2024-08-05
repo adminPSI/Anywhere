@@ -48,6 +48,15 @@ const ConsumerFinances = (() => {
         }
     }
 
+    async function backFromConsumerFinanceEditAccount(Consumers) {  
+        setActiveModuleAttribute('ConsumerFinances');   
+        DOM.clearActionCenter();
+        selectedConsumers = Consumers;
+        filterValues = undefined;
+        await loadConsumerFinanceLanding();
+        DOM.toggleNavLayout();   
+    }
+
     // Build Consumer Finance Module Landing Page 
     async function loadConsumerFinanceLanding(value) {
         DOM.clearActionCenter();
@@ -180,6 +189,21 @@ const ConsumerFinances = (() => {
             endIcon: entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['attachmentSmall']}`,
         }));
         const oTable = table.build(tableOptions);
+
+        // Set the data type for each header, for sorting purposes
+        const headers = oTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'date'); // Date
+        headers[1].setAttribute('data-type', 'string'); // Account
+        headers[2].setAttribute('data-type', 'string'); // Payee
+        headers[3].setAttribute('data-type', 'string'); // Category 
+        headers[4].setAttribute('data-type', 'string'); // Amount 
+        headers[5].setAttribute('data-type', 'string'); // Check No
+        headers[6].setAttribute('data-type', 'string'); // Balance  
+        headers[7].setAttribute('data-type', 'string'); // Enter By 
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(oTable);
+
         table.populate(oTable, tableData);
 
         return oTable;
@@ -208,8 +232,10 @@ const ConsumerFinances = (() => {
 
         const dropdownButtonBar = document.createElement('div');
         const entryButtonBar = document.createElement('div');
-        dropdownButtonBar.style.width = '49%';
-        entryButtonBar.style.width = '49%';
+        const editButtonBar = document.createElement('div');
+        dropdownButtonBar.style.width = '32%';
+        entryButtonBar.style.width = '32%';
+        editButtonBar.style.width = '32%';
 
         accountDropdown = dropdown.build({
             label: "Accounts:",
@@ -226,23 +252,52 @@ const ConsumerFinances = (() => {
             style: 'secondary',
             type: 'contained',
             classNames: 'newEntryBtn',
-            callback: async () => { NewEntryCF.init() },
+            callback: async () => {
+                if (!entryBtn.classList.contains('disabled')) { 
+                    NewEntryCF.init()
+                }
+            },
         });
+
+        const editAccountBtn = button.build({
+            text: 'Edit Account',
+            style: 'secondary',
+            type: 'contained',
+            callback: async () => {        
+                if (!editAccountBtn.classList.contains('disabled')) { 
+                    CFEditAccount.loadCFEditFromAccountRegister(selectedConsumers)
+                }
+            },
+        });
+
         if ($.session.CFInsert) {
             entryBtn.classList.remove('disabled');
         }
         else {
             entryBtn.classList.add('disabled');
         }
+
+        if ($.session.CFViewEditAccounts) {
+            editAccountBtn.classList.remove('disabled');
+        }
+        else {
+            editAccountBtn.classList.add('disabled');
+        }
+
         entryBtn.style.height = '50px';
-        entryBtn.style.minWidth = '100%';
+        entryBtn.style.minWidth = '100%';  
+        editAccountBtn.style.height = '50px';
+        editAccountBtn.style.minWidth = '100%';    
 
         buildNewFilterBtn();
         accountDropdown.style.minWidth = '100%';
         dropdownButtonBar.appendChild(accountDropdown);
+        editButtonBar.appendChild(editAccountBtn);
+        editButtonBar.style.marginLeft = '2%';
         entryButtonBar.appendChild(entryBtn);
         entryButtonBar.style.marginLeft = '2%';
         buttonBar.appendChild(dropdownButtonBar);
+        buttonBar.appendChild(editButtonBar); 
         buttonBar.appendChild(entryButtonBar);
         return buttonBar;
     }
@@ -898,5 +953,6 @@ const ConsumerFinances = (() => {
         handleActionNavEvent,
         loadConsumerFinanceLanding,
         getaccountPermission,
+        backFromConsumerFinanceEditAccount,
     };
 })(); 

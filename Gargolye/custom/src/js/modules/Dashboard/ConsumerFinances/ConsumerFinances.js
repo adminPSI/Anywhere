@@ -182,7 +182,17 @@
 
 
         var cfTable = table.build(tableOptions);
+        // Set the data type for each header, for sorting purposes
+        const headers = cfTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Name
+        headers[1].setAttribute('data-type', 'string'); // Account
+        headers[2].setAttribute('data-type', 'string'); // Balance
+        headers[3].setAttribute('data-type', 'date'); // Last Transaction 
+
         widgetBody.appendChild(cfTable);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(cfTable);
 
         cfTableData = results.map(td => {
             var ID = td.Id;
