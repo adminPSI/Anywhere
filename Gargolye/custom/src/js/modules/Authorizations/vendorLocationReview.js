@@ -23,6 +23,15 @@ const vendorLocationReview = (() => {
 
         locationReviewEntriesTable = buildLocationReviewEntriesTable();
 
+        // Set the data type for each header, for sorting purposes
+        const headers = locationReviewEntriesTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Location
+        headers[1].setAttribute('data-type', 'string'); // Review Type
+        headers[2].setAttribute('data-type', 'date'); // Due Date 
+        headers[3].setAttribute('data-type', 'date'); // Completed Date 
+        headers[4].setAttribute('data-type', 'string'); //  Responsible Staff  
+
+
         const column1 = document.createElement('div')
         column1.classList.add('col-1')
         const addNewCard = document.createElement("div");
@@ -35,6 +44,10 @@ const vendorLocationReview = (() => {
 
         addNewCardBody.appendChild(locationReviewEntriesTable);
         locatationReviewDiv.appendChild(column1);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(locationReviewEntriesTable); 
+
         return locatationReviewDiv;
     }
 

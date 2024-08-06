@@ -26,6 +26,16 @@ const vendorUCR = (() => {
 
         UCREntriesTable = buildUCREntriesTable();
 
+        const headers = UCREntriesTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Service
+        headers[1].setAttribute('data-type', 'string'); // Group Size
+        headers[2].setAttribute('data-type', 'string'); // Service Location 
+        headers[3].setAttribute('data-type', 'string'); // CDB Category 
+        headers[4].setAttribute('data-type', 'string'); //  Assessment/ Acuity Score
+        headers[5].setAttribute('data-type', 'date'); // Start Date
+        headers[6].setAttribute('data-type', 'date'); // End Date 
+        headers[7].setAttribute('data-type', 'string'); //  UCR
+
 
         const column1 = document.createElement('div')
         column1.classList.add('col-1')
@@ -39,6 +49,10 @@ const vendorUCR = (() => {
 
         addNewCardBody.appendChild(UCREntriesTable);
         vendorUCRDiv.appendChild(column1);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(UCREntriesTable); 
+
         return vendorUCRDiv;
     }
 

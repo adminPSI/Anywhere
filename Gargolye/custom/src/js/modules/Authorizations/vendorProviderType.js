@@ -23,6 +23,12 @@ const vendorProviderType = (() => {
 
         providerTypeEntriesTable = buildProviderTypeEntriesTable();
 
+        const headers = providerTypeEntriesTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Provider Type
+        headers[1].setAttribute('data-type', 'date'); // Start Date
+        headers[2].setAttribute('data-type', 'date'); // End Date 
+        headers[3].setAttribute('data-type', 'string'); // Notes 
+
         const column1 = document.createElement('div')
         column1.classList.add('col-1')
         const addNewCard = document.createElement("div");
@@ -35,6 +41,10 @@ const vendorProviderType = (() => {
 
         addNewCardBody.appendChild(providerTypeEntriesTable);
         vendorProviderDiv.appendChild(column1);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(providerTypeEntriesTable); 
+
         return vendorProviderDiv;
     }
 
