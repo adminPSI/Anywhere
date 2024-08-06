@@ -49,11 +49,12 @@ var schedulingApproveRequest = (function () {
     }
   }
 
-  function toInteger(dirtyNumber) {
-    var number = Number(dirtyNumber);
+    function toInteger(dirtyNumber) {
+        var number = Number(dirtyNumber);
 
-    if (isNaN(number)) {
-      return number;
+        if (isNaN(number)) {
+            return number;
+        }
     }
 
     function addDays(dirtyDate, dirtyAmount) {
@@ -687,4 +688,4 @@ var schedulingApproveRequest = (function () {
     return {
         init,
     };
-})();
+})(); 
