@@ -449,12 +449,12 @@
         $.webServer.port +
         '/' +
         $.webServer.serviceName +
-        '/getRiskAndCauseDropdown/',
+        '/getRiskAndCauseDropdowns/',
       data: '{"token":"' + $.session.Token + '"}',
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {
-        var res = response.getRiskAndCauseDropdownResult;
+        var res = response.getRiskAndCauseDropdownsResult;
         callback(res);
       },
     });

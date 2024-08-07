@@ -55,7 +55,7 @@ var schedulingApproveRequest = (function () {
             return number;
         }
     }
-  }
+  
 
   function addDays(dirtyDate, dirtyAmount) {
     const date = cloneDate(dirtyDate);
@@ -685,14 +685,7 @@ var schedulingApproveRequest = (function () {
     buildApproveRequestPage();
   }
 
-<<<<<<< HEAD
   return {
     init,
   };
 })();
-=======
-    return {
-        init,
-    };
-})(); 
->>>>>>> c6d8e30a253d4877a69e42106dfa5c67989c63f0
