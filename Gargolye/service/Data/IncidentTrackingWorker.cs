@@ -624,6 +624,10 @@ namespace Anywhere.service.Data
             public string injuryTypeId { get; set; }
             public string lastUpdatedBy { get; set; }
             public string lastUpdatedOn { get; set; }
+            public string injuryRiskId { get; set; }
+            public string injuryRiskDescription { get; set; }
+            public string injuryCauseId { get; set; }
+            public string injuryCauseDescription { get; set; }
         }
 
         public class ConsumerInterventions
