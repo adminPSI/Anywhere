@@ -45,7 +45,12 @@
     &.inView {
       .tableOfContents__sectionHeading {
         background: $primary;
-        color: $white;
+        padding-bottom: 6px;
+
+        a.fullHeading,
+        a.abrvHeading {
+          color: $white;
+        }
       }
     }
 
