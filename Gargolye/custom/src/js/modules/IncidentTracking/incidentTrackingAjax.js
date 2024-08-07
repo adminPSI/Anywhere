@@ -258,7 +258,6 @@
       },
     });
   }
-
   function getITReviewPageEmployeeListAndSubList(supervisorId, callback) {
     $.ajax({
       type: 'POST',
@@ -283,7 +282,6 @@
       },
     });
   }
-
   function getIncidentEditReviewDataAllObjects(incidentId, callback) {
     $.ajax({
       type: 'POST',
@@ -308,7 +306,6 @@
       },
     });
   }
-
   function deleteITIncident(incidentId) {
     // notificationType either Insert or Update
     $.ajax({
@@ -333,7 +330,6 @@
       },
     });
   }
-
   function saveUpdateITIncident(incidentData, callback) {
     var notifyArr = incidentData.notifyEmployeeString.split('|');
     var employeeIdArr = incidentData.employeeIdString.split('|');
@@ -401,7 +397,6 @@
     });
   }
   function getInjuryLocationsDropdown(callback) {
-    // notificationType either Insert or Update
     $.ajax({
       type: 'POST',
       url:
@@ -423,7 +418,6 @@
     });
   }
   function getInjuryTypesDropdown(callback) {
-    // notificationType either Insert or Update
     $.ajax({
       type: 'POST',
       url:
@@ -440,6 +434,27 @@
       dataType: 'json',
       success: function (response, status, xhr) {
         var res = response.getInjuryTypesDropdownResult;
+        callback(res);
+      },
+    });
+  }
+  function getRiskAndCauseDropdown(callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getRiskAndCauseDropdowns/',
+      data: '{"token":"' + $.session.Token + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getRiskAndCauseDropdownsResult;
         callback(res);
       },
     });
@@ -1169,6 +1184,7 @@
     getReviewedByDropdown,
     getInjuryLocationsDropdown,
     getInjuryTypesDropdown,
+    getRiskAndCauseDropdown,
     getitConsumerInterventions,
     getitConsumerInjuries,
     getitConsumerReviews,

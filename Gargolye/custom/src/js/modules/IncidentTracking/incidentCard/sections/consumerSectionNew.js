@@ -1158,6 +1158,8 @@ var consumerInjuries = (function () {
   var injuryDeleteData;
   var injuryLocations;
   var injuryTypes;
+  var injuryRisks;
+  var injuryCauses;
   // Values
   //---------------------
   var selectedConsumerId;
@@ -1224,6 +1226,12 @@ var consumerInjuries = (function () {
 
       incidentTrackingAjax.getInjuryTypesDropdown(function (types) {
         injuryTypes = types;
+
+        incidentTrackingAjax.getRiskAndCauseDropdown(function (riskAndCause) {
+          console.log(riskAndCause);
+          // injuryRisks;
+          // injuryCauses;
+        });
       });
     });
   }
