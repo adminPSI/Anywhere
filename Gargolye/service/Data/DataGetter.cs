@@ -5854,7 +5854,8 @@ namespace Anywhere.Data
         }
 
         public string saveUpdateITConsumerInjuries(string token, string checkedByNurse, string checkedDate, string details, string itConsumerInjuryId,
-                                                            string consumerInvolvedId, string itInjuryLocationId, string itInjuryTypeId, string treatment)
+                                                            string consumerInvolvedId, string itInjuryLocationId, string itInjuryTypeId, string treatment,
+                                                            string causeOfInjuryId, string riskOfInjuryId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("saveUpdateITConsumerInterventions ");
@@ -5868,6 +5869,8 @@ namespace Anywhere.Data
             list.Add(itInjuryLocationId);
             list.Add(itInjuryTypeId);
             list.Add(treatment);
+            list.Add(causeOfInjuryId);
+            list.Add(riskOfInjuryId);
             string text = "CALL DBA.ANYW_IncidentTracking_SaveUpdateITConsumerInjuries(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
