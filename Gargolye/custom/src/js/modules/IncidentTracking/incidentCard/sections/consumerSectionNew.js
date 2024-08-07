@@ -1228,9 +1228,8 @@ var consumerInjuries = (function () {
         injuryTypes = types;
 
         incidentTrackingAjax.getRiskAndCauseDropdown(function (riskAndCause) {
-          console.log(riskAndCause);
-          // injuryRisks;
-          // injuryCauses;
+          injuryRisks = riskAndCause.injuryRiskDropdown;
+          injuryCauses = riskAndCause.injuryCauseDropdowns;
         });
       });
     });

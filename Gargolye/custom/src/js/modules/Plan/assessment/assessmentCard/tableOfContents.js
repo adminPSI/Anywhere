@@ -28,6 +28,15 @@
       sectionGroup.classList.remove('nonApplicable');
     }
   }
+  function highlightLink(sectionId) {
+    for (const key in sections) {
+      if (sections[key].id === sectionId) {
+        sections[key].markup.classList.add('inView');
+      } else {
+        sections[key].markup.classList.remove('inView');
+      }
+    }
+  }
 
   // Unanswered Questions
   //------------------------------------
@@ -247,7 +256,6 @@
     toc.addEventListener('click', e => {
       if (e.target.tagName === 'A') {
         toc.classList.remove('visible');
-        // document.body.style.overflow = 'auto';
       }
     });
 
@@ -330,5 +338,6 @@
     toggleVisibility,
     toggleApplicability,
     showUnansweredQuestionCount,
+    highlightLink
   };
 })();

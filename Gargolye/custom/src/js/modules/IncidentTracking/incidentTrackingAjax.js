@@ -454,7 +454,7 @@
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {
-        var res = response.getRiskAndCauseDropdownsResult;
+        var res = response.GetRiskAndCauseDropdownsResult;
         callback(res);
       },
     });

@@ -29,6 +29,22 @@
   let isSortable;
   let readonly;
 
+  const observerCallback = (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const sectionId = entry.target.id;
+        console.log(`${sectionId} is in view`);
+        tableOfContents.highlightLink(sectionId.replace('section', ''));
+      }
+    });
+  };
+
+  const observer = new IntersectionObserver(observerCallback, {
+    root: null,
+    rootMargin: '0px', 
+    threshold: 0.1
+  });
+
   function checkArrayConsistency(arr) {
     if (arr.length === 0) {
       return 'noMatch'; // or you can return null or undefined based on your use case
@@ -43,8 +59,6 @@
 
     return firstElement;
   }
-
-  //* TEMP FUNCTION FOR RE-ORDERING ROWS ON DELETE
   function updateRowOrderAfterDelete(grid, questionSetId) {
     // grab all rows inside grid after delete
     const gridBody = grid.querySelector('.grid__body');
@@ -73,7 +87,6 @@
       // if no gap do nothing
     });
   }
-  //* END TEMP FUNCTION
 
   // Utils
   //------------------------------------
@@ -596,9 +609,11 @@
         // });
       },
     });
+
     if (readonly || !$.session.planUpdate) {
       input.disableInputField(applicableCheckbox);
     }
+
     const sectionTitle = document.createElement('h2');
     sectionTitle.innerText = title;
 
@@ -608,15 +623,19 @@
         section.classList.add('nonApplicable');
       }
     }
+
     sectionHeadingInner.appendChild(sectionTitle);
     sectionHeading.appendChild(sectionHeadingInner);
     section.appendChild(sectionHeading);
+
     if (title === 'WORKING/ NOT WORKING') {
       const sectionPrompt = document.createElement('p');
       sectionPrompt.classList.add('sectionPrompt');
       sectionPrompt.innerText = 'Be sure to include Working/Not Working technology solutions.';
       section.appendChild(sectionPrompt);
     }
+
+    observer.observe(section);
 
     return section;
   }
@@ -1976,7 +1995,6 @@
     addQuestionSet,
     build,
     clearData,
-    //getAnswers,
     getSectionQuestionCount,
     markUnansweredQuestions,
     toggleUnansweredQuestionFilter,
