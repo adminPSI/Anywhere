@@ -48,11 +48,12 @@ var schedulingApproveRequest = (function () {
     }
   }
 
-  function toInteger(dirtyNumber) {
-    var number = Number(dirtyNumber);
+    function toInteger(dirtyNumber) {
+        var number = Number(dirtyNumber);
 
-    if (isNaN(number)) {
-      return number;
+        if (isNaN(number)) {
+            return number;
+        }
     }
   }
 
@@ -684,7 +685,14 @@ var schedulingApproveRequest = (function () {
     buildApproveRequestPage();
   }
 
+<<<<<<< HEAD
   return {
     init,
   };
 })();
+=======
+    return {
+        init,
+    };
+})(); 
+>>>>>>> c6d8e30a253d4877a69e42106dfa5c67989c63f0

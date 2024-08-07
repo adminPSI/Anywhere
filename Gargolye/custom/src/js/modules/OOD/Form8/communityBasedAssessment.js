@@ -72,6 +72,7 @@ const communityBasedAssessmentForm = (() => {
       endTime = caseNoteData[0].endTime; //TODO JOE: Case_Notes.End_Time
       SAMLevel = caseNoteData[0].SAMLevel; //TODO JOE: Case_Notes.Service_Area_Modifier (populates with N/A, 1, 2, or 3)
       position = caseNoteData[0].position;
+      employer = caseNoteData[0].employer;
       contactMethod = caseNoteData[0].contactMethod; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.contact_method
       jobTaskQuantityIndicators = caseNoteData[0].jobTaskQuantityIndicators; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.quantity_indicators
       narrative = caseNoteData[0].narrative; //TODO JOE: emp_ood.narrative
@@ -90,6 +91,7 @@ const communityBasedAssessmentForm = (() => {
       endTime = '';
       SAMLevel = '';
       position = '';
+      employer = '';
       contactMethod = '';
       jobTaskQuantityIndicators = '';
       narrative = '';
@@ -414,7 +416,7 @@ const communityBasedAssessmentForm = (() => {
       // case note contactType not in the contactTypes DDL
       employer = '';
     } else {
-      employer = 'SEE POSITION DROPDOWN';
+     // employer = '0' // 'SEE POSITION DROPDOWN';
     }
 
     data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value
@@ -443,11 +445,11 @@ const communityBasedAssessmentForm = (() => {
 							// case note employer not in the employers DDL
               employer = '';
               positiondropdown.disabled = false;
-              position = '';
+             // position = '';
 						} else {
               
               positiondropdown.disabled = true;
-              position = 'SEE OTHER EMPLOYER';
+              // position = '0' // 'SEE OTHER EMPLOYER DROPDOWN';
             }
 
             checkRequiredFields();
@@ -540,18 +542,36 @@ const communityBasedAssessmentForm = (() => {
     }
 
     if (!position || position === '') {
-      positionDropdown.classList.add('error');
-      //return 'error';
+          if (!employer || employer === '') {
+            positionDropdown.classList.add('error');
+            otherEmployerDropdown.classList.add('error'); 
+            let otheremployerdropdown = document.getElementById("otherEmployerDropdown");
+            otheremployerdropdown.disabled = false; 
+            let positiondropdown = document.getElementById("positionDropdown");
+            positiondropdown.disabled = false;
+          } else {
+            positionDropdown.classList.remove('error');
+            otherEmployerDropdown.classList.remove('error'); 
+            let otheremployerdropdown = document.getElementById("otherEmployerDropdown");
+            otheremployerdropdown.disabled = false; 
+            let positiondropdown = document.getElementById("positionDropdown");
+            positiondropdown.disabled = true;
+          }
+      
     } else {
-      positionDropdown.classList.remove('error');
-      // return 'success';
+      positionDropdown.classList.remove('error');  
+      otherEmployerDropdown.classList.remove('error');  
+      let otheremployerdropdown = document.getElementById("otherEmployerDropdown");
+      otheremployerdropdown.disabled = true;
+      let positiondropdown = document.getElementById("positionDropdown");
+      positiondropdown.disabled = false; 
     }
 
-    if (!employer || employer === '') {
-      otherEmployerDropdown.classList.add('error');
-    } else {
-      otherEmployerDropdown.classList.remove('error');
-    }
+   // if (!employer || employer === '') {
+  //    otherEmployerDropdown.classList.add('error');
+  //  } else {
+  //    otherEmployerDropdown.classList.remove('error');
+   // }
 
     if (!contactMethod || contactMethod === '') {
       contactMethodDropdown.classList.add('error');
@@ -745,7 +765,7 @@ const communityBasedAssessmentForm = (() => {
         position = selectedOption.value;
         otherEmployerdropdown.disabled = true; 
         addEmployersBtn.disabled = true;
-        employer = 'SEE POSITION DROPDOWN';
+        // employer = '0' // 'SEE POSITION DROPDOWN';
       }
       checkRequiredFields();
     });
@@ -761,7 +781,7 @@ const communityBasedAssessmentForm = (() => {
       } else {
         employer = selectedOption.value;
         positiondropdown.disabled = true;
-        position = 'SEE OTHER EMPLOYER DROPDOWN'; 
+        // position = '0' //'SEE OTHER EMPLOYER DROPDOWN'; 
       }
       checkRequiredFields();
     });
@@ -887,6 +907,7 @@ const communityBasedAssessmentForm = (() => {
       endTime,
       SAMLevel,
       position,
+      employer,
       contactMethod,
       behavioralIndicators,
       jobTaskQualityIndicators,
@@ -914,6 +935,7 @@ const communityBasedAssessmentForm = (() => {
       endTime,
       SAMLevel,
       position,
+      employer,
       contactMethod,
       behavioralIndicators,
       jobTaskQualityIndicators,

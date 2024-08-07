@@ -656,7 +656,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId)
+        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string employer, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId)
         {
             if (tokenValidator(token) == false) return null;
             //if (stringInjectionValidator(caseNote) == false) return null;
@@ -671,6 +671,7 @@ namespace Anywhere.service.Data
             list.Add(endTime);
             list.Add(SAMLevel);
             list.Add(position);
+            list.Add(employer);
             list.Add(contactMethod);
             list.Add(behavioralIndicators);
             list.Add(jobTaskQualityIndicators);
@@ -693,7 +694,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string employer, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
         {
             if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
@@ -709,6 +710,7 @@ namespace Anywhere.service.Data
             list.Add(endTime);
             list.Add(SAMLevel);
             list.Add(position);
+            list.Add(employer);
             list.Add(contactMethod);
             list.Add(behavioralIndicators);
             list.Add(jobTaskQualityIndicators);
