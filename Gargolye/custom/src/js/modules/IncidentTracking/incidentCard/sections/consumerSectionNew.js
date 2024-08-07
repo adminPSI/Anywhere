@@ -1279,8 +1279,6 @@ var consumerInjuries = (function () {
 
     var injuryLocationSelect = injuryLocationDropdown.querySelector('.dropdown__select');
     var injuryTypeSelect = injuryTypeDropdown.querySelector('.dropdown__select');
-    var injuryCauseSelect = injuryCauseDropdown.querySelector('.dropdown__select');
-    var injuryRiskSelect = riskOfInjuryDropdown.querySelector('.dropdown__select');
 
     if (!injuryLocationSelect.value || injuryLocationSelect.value === '%') {
       injuryLocationDropdown.classList.add('error');
@@ -1294,20 +1292,6 @@ var consumerInjuries = (function () {
       hasErrors = true;
     } else {
       injuryTypeDropdown.classList.remove('error');
-    }
-
-    if (!injuryCauseSelect.value || injuryCauseSelect.value === '%') {
-      injuryCauseDropdown.classList.add('error');
-      hasErrors = true;
-    } else {
-      injuryCauseDropdown.classList.remove('error');
-    }
-
-    if (!injuryRiskSelect.value || injuryRiskSelect.value === '%') {
-      riskOfInjuryDropdown.classList.add('error');
-      hasErrors = true;
-    } else {
-      riskOfInjuryDropdown.classList.remove('error');
     }
 
     if (hasErrors) {
@@ -1361,11 +1345,9 @@ var consumerInjuries = (function () {
     });
     injuryCauseDropdown.addEventListener('change', e => {
       tmpInjuryCause = e.target.value;
-      checkRequiredFields();
     });
     riskOfInjuryDropdown.addEventListener('change', e => {
       tmpInjuryRisk = e.target.value;
-      checkRequiredFields();
     });
     checkedByNurseCheckbox.addEventListener('change', e => {
       tmpCheckedBy = e.target.checked ? 'Y' : 'N';
