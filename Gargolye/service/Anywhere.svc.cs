@@ -1687,9 +1687,9 @@ namespace Anywhere
         }
 
         public string saveUpdateITConsumerInjuries(string token, List<String> checkedByNurseArray, List<String> checkedDateArray, List<String> detailsArray, List<String> itConsumerInjuryIdArray,
-                                                                    string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray)
+                                                                    string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray, List<String> causeOfInjuryIdArray, List<String> riskOfInjuryIdArray)
         {
-            return iTW.saveUpdateITConsumerInjuries(token, checkedByNurseArray, checkedDateArray, detailsArray, itConsumerInjuryIdArray, consumerInvolvedId, itInjuryLocationIdArray, itInjuryTypeIdArray, treatmentArray);
+            return iTW.saveUpdateITConsumerInjuries(token, checkedByNurseArray, checkedDateArray, detailsArray, itConsumerInjuryIdArray, consumerInvolvedId, itInjuryLocationIdArray, itInjuryTypeIdArray, treatmentArray, causeOfInjuryIdArray, riskOfInjuryIdArray);
         }
 
         public string saveUpdateITConsumerInterventions(string token, List<String> aversiveArray, List<String> itConsumerInterventionIdArray, string consumerInvolvedId, List<String> itConsumerInterventionTypeIdArray,

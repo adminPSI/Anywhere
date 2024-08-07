@@ -493,13 +493,13 @@ namespace Anywhere.service.Data
         }
 
         public string saveUpdateITConsumerInjuries(string token, List<String> checkedByNurseArray, List<String> checkedDateArray, List<String> detailsArray, List<String> itConsumerInjuryIdArray,
-                                                            string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray)
+                                                            string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray, List<String> causeOfInjuryIdArray, List<String> riskOfInjuryIdArray)
         {
             int i = 0;
             foreach (string itInjuryLocationId in itInjuryLocationIdArray)
             {
                 dg.saveUpdateITConsumerInjuries(token, checkedByNurseArray[i], checkedDateArray[i], detailsArray[i], itConsumerInjuryIdArray[i], consumerInvolvedId, itInjuryLocationId,
-                                            itInjuryTypeIdArray[i], treatmentArray[i]);
+                                            itInjuryTypeIdArray[i], treatmentArray[i], causeOfInjuryIdArray[i], riskOfInjuryIdArray[i]);
                 i++;
             }
             return "success";
