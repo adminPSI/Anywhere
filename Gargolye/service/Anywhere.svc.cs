@@ -51,6 +51,7 @@ using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttach
 using static Anywhere.service.Data.DocumentConversion.FinalizationButtonWorker;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
 using static Anywhere.service.Data.ESign.ESignWorker;
+using static Anywhere.service.Data.IncidentTrackingWorker;
 using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
@@ -1376,6 +1377,11 @@ namespace Anywhere
         public IncidentTrackingWorker.IncidentEditReviewDataAllObjects getIncidentEditReviewDataAllObjects(string token, string incidentId)
         {
             return iTW.GetIncidentEditReviewDataAllObjects(token, incidentId);
+        }
+
+        public IncidentTrackingWorker.RiskAndCauseDropdowns GetRiskAndCauseDropdowns(string token)
+        {
+            return iTW.GetRiskAndCauseDropdowns(token);
         }
 
         public List<string> saveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate, string incidentTypeDesc,
@@ -3295,7 +3301,7 @@ namespace Anywhere
             return cnReportWorker.generateCNTimeAnalysisReport(token, userId, billerId, consumerId, billingCode, serviceStartDate, serviceEndDate, applicationName);
         }
 
-        public ReportScheduleId[] generateReport(string token, string reportType, ReportData reportData)
+        public ReportBuilderWorker.ReportScheduleId[] generateReport(string token, string reportType, ReportData reportData)
         {
             return rbw.generateReport(token, reportType, reportData);
         }

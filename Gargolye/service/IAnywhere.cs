@@ -2007,6 +2007,14 @@ namespace Anywhere
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getRiskAndCauseDropdowns/")]
+        IncidentTrackingWorker.RiskAndCauseDropdowns GetRiskAndCauseDropdowns(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getITReviewPageEmployeeListAndSubList/")]
         string getITReviewPageEmployeeListAndSubList(string token, string supervisorId);
 
