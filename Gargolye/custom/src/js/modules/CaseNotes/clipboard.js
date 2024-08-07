@@ -1,3 +1,8 @@
-// Enable the "Describe incident under..." textbox  IF any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
-// Enable the "Is action required..." radio buttons IF any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
-// WHEN "Not applicable…" is checked SET "Is action required within the next 30 days…" to NO
+function checkMomentUpgrade() {
+  const a = moment('2024/01/27').format('MM/DD/YYYY')
+  const b = moment('2024/01/27').format('M/D/YYYY')
+  const c = moment('2024/01/27').format('YYYY-MM-DD')
+  const d = moment('2024/01/27').format('YYYY-M-D')
+
+  console.log(a, b, c, d)
+}
