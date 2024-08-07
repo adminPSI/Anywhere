@@ -42,6 +42,13 @@
   &__sectionGroup {
     margin: 0 0 10px;
 
+    &.inView {
+      .tableOfContents__sectionHeading {
+        background: $primary;
+        color: $white;
+      }
+    }
+
     &.nonApplicable {
       .numOfQuestionsUnawnseredWrap,
       .tableOfContents__subSectionGroup {
