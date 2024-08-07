@@ -1158,6 +1158,8 @@ var consumerInjuries = (function () {
   var injuryDeleteData;
   var injuryLocations;
   var injuryTypes;
+  var injuryRisks;
+  var injuryCauses;
   // Values
   //---------------------
   var selectedConsumerId;
@@ -1165,6 +1167,8 @@ var consumerInjuries = (function () {
   //*form values
   var injuryLocationId;
   var injuryTypeId;
+  var injuryCauseId;
+  var injuryRiskId;
   var checkedByNurse;
   var details;
   var treatment;
@@ -1224,6 +1228,11 @@ var consumerInjuries = (function () {
 
       incidentTrackingAjax.getInjuryTypesDropdown(function (types) {
         injuryTypes = types;
+
+        incidentTrackingAjax.getRiskAndCauseDropdown(function (riskAndCause) {
+          injuryRisks = riskAndCause.injuryRiskDropdown;
+          injuryCauses = riskAndCause.injuryCauseDropdowns;
+        });
       });
     });
   }
@@ -1270,8 +1279,6 @@ var consumerInjuries = (function () {
 
     var injuryLocationSelect = injuryLocationDropdown.querySelector('.dropdown__select');
     var injuryTypeSelect = injuryTypeDropdown.querySelector('.dropdown__select');
-    var injuryCauseSelect = injuryCauseDropdown.querySelector('.dropdown__select');
-    var injuryRiskSelect = riskOfInjuryDropdown.querySelector('.dropdown__select');
 
     if (!injuryLocationSelect.value || injuryLocationSelect.value === '%') {
       injuryLocationDropdown.classList.add('error');
@@ -1296,6 +1303,8 @@ var consumerInjuries = (function () {
   function clearFormDataDefaults() {
     injuryLocationId = undefined;
     injuryTypeId = undefined;
+    injuryCauseId = undefined;
+    injuryRiskId = undefined;
     checkedByNurse = undefined;
     details = undefined;
     treatment = undefined;
@@ -1307,6 +1316,8 @@ var consumerInjuries = (function () {
     if (formData) {
       injuryLocationId = formData.injuryLocationId;
       injuryTypeId = formData.injuryTypeId;
+      injuryCauseId = formData.injuryCauseId;
+      injuryRiskId = formData.injuryRiskId;
       checkedByNurse = formData.checkedByNurse;
       details = formData.injuryDetails;
       treatment = formData.injuryTreatment;
@@ -1334,11 +1345,9 @@ var consumerInjuries = (function () {
     });
     injuryCauseDropdown.addEventListener('change', e => {
       tmpInjuryCause = e.target.value;
-      checkRequiredFields();
     });
     riskOfInjuryDropdown.addEventListener('change', e => {
       tmpInjuryRisk = e.target.value;
-      checkRequiredFields();
     });
     checkedByNurseCheckbox.addEventListener('change', e => {
       tmpCheckedBy = e.target.checked ? 'Y' : 'N';
@@ -1495,9 +1504,17 @@ var consumerInjuries = (function () {
 
     var iCauseDrop = dropdown.build(opts);
 
-    var data = {};
+    var data = injuryCauses.map(type => {
+      return {
+        value: type.injuryCauseId,
+        text: type.injuryCauseDescription,
+      };
+    });
+
     data.unshift({ value: '%', text: '' });
-    dropdown.populate(iCauseDrop, data, '');
+    dropdown.populate(iCauseDrop, data, injuryCauseId);
+
+    return iCauseDrop;
   }
   function buildRiskOfInjuryDropdown() {
     var opts = {
@@ -1511,9 +1528,17 @@ var consumerInjuries = (function () {
 
     var iRiskDrop = dropdown.build(opts);
 
-    var data = {};
+    var data = injuryRisks.map(type => {
+      return {
+        value: type.injuryRiskId,
+        text: type.injuryRiskdescription,
+      };
+    });
+
     data.unshift({ value: '%', text: '' });
-    dropdown.populate(iRiskDrop, data, '');
+    dropdown.populate(iRiskDrop, data, injuryRiskId);
+
+    return iRiskDrop;
   }
   function buildCheckedByCheckbox() {
     var opts = {

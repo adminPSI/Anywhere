@@ -41,7 +41,6 @@
     "sass": "^1.54.7"
   },
   "dependencies": {
-    "jquery": "^3.7.1",
     "microsoft-cognitiveservices-speech-sdk": "^1.23.0"
   }
 }

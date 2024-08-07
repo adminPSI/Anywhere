@@ -4372,6 +4372,44 @@ namespace Anywhere.Data
             }
         }
 
+        public string getInjuryRiskDropdown(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getIncidentTrackingEditReviewOthersInvolved ");
+            List<string> list = new List<string>();
+            list.Add(token);
+
+            string text = "CALL DBA.ANYW_IncidentTracking_GetInjuryRiskDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("683", ex.Message + "ANYW_IncidentTracking_GetInjuryRiskDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "683: error ANYW_IncidentTracking_GetInjuryRiskDropdown";
+            }
+        }
+
+        public string getInjuryCauseDropdown(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getIncidentTrackingEditReviewOthersInvolved ");
+            List<string> list = new List<string>();
+            list.Add(token);
+
+            string text = "CALL DBA.ANYW_IncidentTracking_GetInjuryCauseDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("683", ex.Message + "ANYW_IncidentTracking_GetInjuryCauseDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "683: error ANYW_IncidentTracking_GetInjuryCauseDropdown";
+            }
+        }
+
         public string saveUpdateIncidentTrackingITDetails(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate,
                                                 string reportedTime, string subcategoryId, string locationDetailId, string summary, string note, string prevention, string contributingFactor, string updateIncidentId, string saveUpdate)
         {
@@ -5816,7 +5854,8 @@ namespace Anywhere.Data
         }
 
         public string saveUpdateITConsumerInjuries(string token, string checkedByNurse, string checkedDate, string details, string itConsumerInjuryId,
-                                                            string consumerInvolvedId, string itInjuryLocationId, string itInjuryTypeId, string treatment)
+                                                            string consumerInvolvedId, string itInjuryLocationId, string itInjuryTypeId, string treatment,
+                                                            string causeOfInjuryId, string riskOfInjuryId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("saveUpdateITConsumerInterventions ");
@@ -5830,6 +5869,8 @@ namespace Anywhere.Data
             list.Add(itInjuryLocationId);
             list.Add(itInjuryTypeId);
             list.Add(treatment);
+            list.Add(causeOfInjuryId);
+            list.Add(riskOfInjuryId);
             string text = "CALL DBA.ANYW_IncidentTracking_SaveUpdateITConsumerInjuries(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

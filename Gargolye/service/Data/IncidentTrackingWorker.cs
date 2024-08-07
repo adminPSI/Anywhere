@@ -131,6 +131,22 @@ namespace Anywhere.service.Data
             return test;
         }
 
+        public RiskAndCauseDropdowns GetRiskAndCauseDropdowns(string token)
+        {
+            //Get Risk Dropdown
+            string injuryRiskDropdownString = dg.getInjuryRiskDropdown(token);
+            InjuryRiskDropdown[] injuryRiskDropdownData = js.Deserialize<InjuryRiskDropdown[]>(injuryRiskDropdownString);
+            //Get Cause Dropdown
+            string injuryCauseDropdownString = dg.getInjuryCauseDropdown(token);
+            InjuryCauseDropdown[] injuryCauseDropdownData = js.Deserialize<InjuryCauseDropdown[]>(injuryCauseDropdownString);
+
+            RiskAndCauseDropdowns riskAndCauseDropdowns = new RiskAndCauseDropdowns();
+            riskAndCauseDropdowns.injuryRiskDropdown = injuryRiskDropdownData;
+            riskAndCauseDropdowns.injuryCauseDropdowns = injuryCauseDropdownData;
+
+            return riskAndCauseDropdowns;
+        }
+
         //Save incident
         public List<string> SaveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate, string incidentTypeDesc,
                                     string reportedTime, string subcategoryId, string locationDetailId, string serviceLocation, string summary, string note, string prevention, string contributingFactor,//end of main table data
@@ -306,7 +322,7 @@ namespace Anywhere.service.Data
             string reviewedByDropdownString = dg.getReviewedByDropdown(token);
             ReviewedByDropdown[] reviewedByDropdownData = js.Deserialize<ReviewedByDropdown[]>(reviewedByDropdownString);
             return reviewedByDropdownData;
-        }
+        }        
 
         public InjuryLocationsDropdown[] getInjuryLocationsDropdown(string token)
         {
@@ -477,13 +493,13 @@ namespace Anywhere.service.Data
         }
 
         public string saveUpdateITConsumerInjuries(string token, List<String> checkedByNurseArray, List<String> checkedDateArray, List<String> detailsArray, List<String> itConsumerInjuryIdArray,
-                                                            string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray)
+                                                            string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray, List<String> causeOfInjuryIdArray, List<String> riskOfInjuryIdArray)
         {
             int i = 0;
             foreach (string itInjuryLocationId in itInjuryLocationIdArray)
             {
                 dg.saveUpdateITConsumerInjuries(token, checkedByNurseArray[i], checkedDateArray[i], detailsArray[i], itConsumerInjuryIdArray[i], consumerInvolvedId, itInjuryLocationId,
-                                            itInjuryTypeIdArray[i], treatmentArray[i]);
+                                            itInjuryTypeIdArray[i], treatmentArray[i], causeOfInjuryIdArray[i], riskOfInjuryIdArray[i]);
                 i++;
             }
             return "success";
@@ -608,6 +624,10 @@ namespace Anywhere.service.Data
             public string injuryTypeId { get; set; }
             public string lastUpdatedBy { get; set; }
             public string lastUpdatedOn { get; set; }
+            public string injuryRiskId { get; set; }
+            public string injuryRiskDescription { get; set; }
+            public string injuryCauseId { get; set; }
+            public string injuryCauseDescription { get; set; }
         }
 
         public class ConsumerInterventions
@@ -733,6 +753,23 @@ namespace Anywhere.service.Data
             public IncidentEditReviewOthersInvolved[] itOthersInvolved { get; set; }
         }
 
+        public class RiskAndCauseDropdowns
+        {
+            public InjuryRiskDropdown[] injuryRiskDropdown { get; set; }
+            public InjuryCauseDropdown[] injuryCauseDropdowns { get; set; }
+        }
+
+        public class InjuryRiskDropdown
+        {
+            public string injuryRiskId { get; set; }    
+            public string injuryRiskdescription { get; set; }
+        }
+
+        public class InjuryCauseDropdown
+        {
+            public string injuryCauseId { get; set; }
+            public string injuryCauseDescription { get; set; }
+        }
 
         public class IncidentEditReviewData
         {
