@@ -415,6 +415,8 @@ var incident = (function () {
         itInjuryLocationIdArray: [],
         itInjuryTypeIdArray: [],
         treatmentArray: [],
+        causeOfInjuryIdArray: [],
+        riskOfInjuryIdArray: []
       };
 
       var involvementId;
@@ -438,6 +440,8 @@ var incident = (function () {
           : '';
         var injuryLocationId = iData.injuryLocationId ? iData.injuryLocationId : '';
         var injuryTypeId = iData.injuryTypeId ? iData.injuryTypeId : '';
+        var injuryCauseId = iData.injuryCauseId ? iData.injuryCauseId : '';
+        var injuryRiskId = iData.injuryRiskId ? iData.injuryRiskId : '';
         var injuryTreatment = iData.injuryTreatment
           ? UTIL.removeUnsavableNoteText(iData.injuryTreatment)
           : '';
@@ -448,6 +452,8 @@ var incident = (function () {
         saveData.detailsArray.push(injuryDetails);
         saveData.itInjuryLocationIdArray.push(injuryLocationId);
         saveData.itInjuryTypeIdArray.push(injuryTypeId);
+        saveData.causeOfInjuryIdArray.push(injuryCauseId);
+        saveData.riskOfInjuryIdArray.push(injuryRiskId);
         saveData.treatmentArray.push(injuryTreatment);
       });
 
