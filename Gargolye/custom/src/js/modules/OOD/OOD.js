@@ -14,6 +14,7 @@ const OOD = (() => {
     let consumerRow;
     let consumerElement;
     let filterPopup;
+    let createfilterPopup;
 
     // New Roster
     //let initRosterSelection;
@@ -905,6 +906,8 @@ const OOD = (() => {
             classNames: `OODForm${formNumber}Btn`,
             callback: async () => {
                 generateAndTrackFormProgress(formNumber);
+                // displayPopup
+                // buildCreateFormPopUp(formNumber);
             },
         });
     }
@@ -1325,6 +1328,85 @@ const OOD = (() => {
         POPUP.hide(filterPopup);
         // OODForm4MonthlyPlacement.init();
         // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
+    }
+
+     // build Create Form  pop-up that displays when an Form is selected
+     function buildCreateFormPopUp(formNumber) {
+        // popup
+        createfilterPopup = POPUP.build({
+            classNames: ['rosterFilterPopup'],
+            hideX: true,
+        });
+        // dropdowns & inputs
+        employeeDropdown = dropdown.build({
+            label: 'Employee',
+            dropdownId: 'employeeDropdown',
+        });
+
+        serviceDateStartInput = input.build({
+            type: 'date',
+            label: 'Service Date Start',
+            style: 'secondary',
+            value: filterValues.serviceDateStart,
+        });
+        serviceDateEndInput = input.build({
+            type: 'date',
+            label: 'Service Date End',
+            style: 'secondary',
+            value: filterValues.serviceDateEnd,
+        });
+
+        referenceNumbersDropdown = dropdown.build({
+            label: 'Reference Number',
+            dropdownId: 'referenceNumbersDropdown',
+        });
+
+        // apply filters button
+        APPLY_BTN = button.build({
+            text: `Create Form ${formNumber}`,
+            style: 'secondary',
+            type: 'contained',
+            callback: async () => createfilterPopupDoneBtn(formNumber),
+        });
+        CANCEL_BTN = button.build({
+            text: 'Cancel',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => POPUP.hide(createfilterPopup),
+        });
+        var btnWrap = document.createElement('div');
+        btnWrap.classList.add('btnWrap');
+        btnWrap.appendChild(APPLY_BTN);
+        btnWrap.appendChild(CANCEL_BTN);
+
+        // build popup
+  
+            createfilterPopup.appendChild(employeeDropdown);
+   
+            createfilterPopup.appendChild(serviceDateStartInput);
+     
+            createfilterPopup.appendChild(serviceDateEndInput);
+   
+            createfilterPopup.appendChild(referenceNumbersDropdown);
+            createfilterPopup.appendChild(btnWrap);
+
+        populateEmployeeDropdown();
+        populateReferenceNumberDropdown();
+       // eventListeners();
+        // setupFilterEvent();
+
+        //return filterPopup;
+        const formsPopup = document.getElementById('createOODFormsPopup');
+            formsPopup.remove();
+
+        POPUP.show(createfilterPopup);
+    }
+
+    async function createfilterPopupDoneBtn(formNumber) {
+        POPUP.hide(createfilterPopup);
+        // eventListeners();
+        loadOODLanding();
+
     }
 
     function init() {
