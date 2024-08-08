@@ -312,7 +312,6 @@
     questions.forEach(q => {
       if (!q.classList.contains('unawnsered')) {
         if (hideOrShow === 'hide') {
-          // only show unawnsered
           q.style.display = 'none';
         } else {
           q.removeAttribute('style');
