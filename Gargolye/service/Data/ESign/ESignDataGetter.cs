@@ -176,63 +176,61 @@ namespace Anywhere.service.Data.ESign
 			}
 		}
 
-        public string updateESignFormValues(
-           string peopleId,
-           string planId,
-           string csChangeMind,
-           string csChangeMindSSAPeopleId,
-           string csContact,
-           string csContactProviderVendorId,
-           string csContactInput,
-           string csRightsReviewed,
-           string csAgreeToPlan,
-           string csFCOPExplained,
-           string csDueProcess,
-           string csResidentialOptions,
-           string csSupportsHealthNeeds,
-           string csTechnology,
-           string dissentAreaDisagree,
-           string dissentHowToAddress,
-           string dateSigned,
-           string signatureImage,
-		   string userIPAddress,
-           DistributedTransaction transaction)
-        {
-            logger.debug("updateESignFormValues");
+		public string updateESignFormValues(
+		   string peopleId,
+		   string planId,
+		   string csChangeMind,
+		   string csChangeMindSSAPeopleId,
+		   string csContact,
+		   string csContactProviderVendorId,
+		   string csContactInput,
+		   string csRightsReviewed,
+		   string csAgreeToPlan,
+		   string csFCOPExplained,
+		   string csDueProcess,
+		   string csResidentialOptions,
+		   string csSupportsHealthNeeds,
+		   string csTechnology,
+		   string dissentAreaDisagree,
+		   string dissentHowToAddress,
+		   string dateSigned,
+		   string signatureImage,
+		   DistributedTransaction transaction)
+		{
+			logger.debug("updateESignFormValues");
 
-            var parameters = new Dictionary<string, string>
-            {
-                { "@peopleId", peopleId },
-                { "@planId", planId },
-                { "@csChangeMind", csChangeMind },
-                { "@csChangeMindSSAPeopleId", csChangeMindSSAPeopleId },
-                { "@csContact", csContact },
-                { "@csContactProviderVendorId", csContactProviderVendorId },
-                { "@csContactInput", csContactInput },
-                { "@csRightsReviewed", csRightsReviewed },
-                { "@csAgreeToPlan", csAgreeToPlan },
-                { "@csFCOPExplained", csFCOPExplained },
-                { "@csDueProcess", csDueProcess },
-                { "@csResidentialOptions", csResidentialOptions },
-                { "@csSupportsHealthNeeds", csSupportsHealthNeeds },
-                { "@csTechnology", csTechnology },
-                { "@dissentAreaDisagree", dissentAreaDisagree },
-                { "@dissentHowToAddress", dissentHowToAddress },
-                { "@dateSIgned", dateSigned },
-                { "@signatureImage", signatureImage },
-				{ "@userIPAddress", userIPAddress },
-            };
+			var parameters = new Dictionary<string, string>
+			{
+				{ "@peopleId", peopleId },
+				{ "@planId", planId },
+				{ "@csChangeMind", csChangeMind },
+				{ "@csChangeMindSSAPeopleId", csChangeMindSSAPeopleId },
+				{ "@csContact", csContact },
+				{ "@csContactProviderVendorId", csContactProviderVendorId },
+				{ "@csContactInput", csContactInput },
+				{ "@csRightsReviewed", csRightsReviewed },
+				{ "@csAgreeToPlan", csAgreeToPlan },
+				{ "@csFCOPExplained", csFCOPExplained },
+				{ "@csDueProcess", csDueProcess },
+				{ "@csResidentialOptions", csResidentialOptions },
+				{ "@csSupportsHealthNeeds", csSupportsHealthNeeds },
+				{ "@csTechnology", csTechnology },
+				{ "@dissentAreaDisagree", dissentAreaDisagree },
+				{ "@dissentHowToAddress", dissentHowToAddress },
+				{ "@dateSIgned", dateSigned },
+				{ "@signatureImage", signatureImage },
+			};
 
-            try
-            {
-                return CallStoredProcedure("DBA.ANYW_ESignatures_UpdateESignFormValues", parameters, transaction);
-            }
-            catch (Exception ex)
-            {
-                logger.error("501-cov", ex.Message + " ANYW_ESignatures_UpdateESignFormValues");
-                return "501-cov: error ANYW_ESignatures_UpdateESignFormValues";
-            }
-        }
+			try
+			{
+				return CallStoredProcedure("DBA.ANYW_ESignatures_UpdateESignFormValues", parameters, transaction);
+			}
+			catch (Exception ex)
+			{
+				logger.error("501-cov", ex.Message + " ANYW_ESignatures_UpdateESignFormValues");
+				return "501-cov: error ANYW_ESignatures_UpdateESignFormValues";
+			}
+		}
 
 
 		public string sendSignedConfirmationEmail(string planId, string peopleId, DistributedTransaction transaction)
