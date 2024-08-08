@@ -27,6 +27,7 @@ const OOD = (() => {
     let employeeDropdown;
     let servicesDropdown;
     let referenceNumbersDropdown;
+    let createreferenceNumbersDropdown;
     let filterValues;
 
     let btnWrap;
@@ -858,7 +859,7 @@ const OOD = (() => {
             overlay.hide();
         }
         const formsPopup = document.getElementById('createOODFormsPopup');
-        formsPopup.remove();
+        if (formsPopup) formsPopup.remove();
         overlay.hide();
     }
     
@@ -905,9 +906,9 @@ const OOD = (() => {
             id: `OODForm${formNumber}Btn`,
             classNames: `OODForm${formNumber}Btn`,
             callback: async () => {
-                generateAndTrackFormProgress(formNumber);
+                //generateAndTrackFormProgress(formNumber);
                 // displayPopup
-                // buildCreateFormPopUp(formNumber);
+                 buildCreateFormPopUp(formNumber);
             },
         });
     }
@@ -1240,6 +1241,24 @@ const OOD = (() => {
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
         dropdown.populate('referenceNumbersDropdown', data, filterValues.referenceNumber);
+       // dropdown.populate('createreferenceNumbersDropdown', data, filterValues.referenceNumber);
+    }
+
+     // Populate the Reference Number DDL on the Filter Popup Window
+     async function populatecreateReferenceNumberDropdown() {
+        var consumerIds = selectedConsumerIds.join(', ');
+
+        const { getConsumerReferenceNumbersResult: referencenumbers } =
+            await OODAjax.getConsumerReferenceNumbersAsync(consumerIds);
+        // const templates = WorkflowViewerComponent.getTemplates();
+        let data = referencenumbers.map(referencenumber => ({
+            id: referencenumber.referenceNumber,
+            value: referencenumber.referenceNumber,
+            text: referencenumber.referenceNumber,
+        }));
+        data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
+       // dropdown.populate('referenceNumbersDropdown', data, filterValues.referenceNumber);
+        dropdown.populate('createreferenceNumbersDropdown', data, filterValues.referenceNumber);
     }
 
     // Populate the Service Code DDL for the 'Entry' Service Popup Window
@@ -1356,9 +1375,9 @@ const OOD = (() => {
             value: filterValues.serviceDateEnd,
         });
 
-        referenceNumbersDropdown = dropdown.build({
+        createreferenceNumbersDropdown = dropdown.build({
             label: 'Reference Number',
-            dropdownId: 'referenceNumbersDropdown',
+            dropdownId: 'createreferenceNumbersDropdown',
         });
 
         // apply filters button
@@ -1387,12 +1406,12 @@ const OOD = (() => {
      
             createfilterPopup.appendChild(serviceDateEndInput);
    
-            createfilterPopup.appendChild(referenceNumbersDropdown);
+            createfilterPopup.appendChild(createreferenceNumbersDropdown);
             createfilterPopup.appendChild(btnWrap);
 
         populateEmployeeDropdown();
-        populateReferenceNumberDropdown();
-       // eventListeners();
+        populatecreateReferenceNumberDropdown();
+        createeventListeners();
         // setupFilterEvent();
 
         //return filterPopup;
@@ -1404,9 +1423,38 @@ const OOD = (() => {
 
     async function createfilterPopupDoneBtn(formNumber) {
         POPUP.hide(createfilterPopup);
-        // eventListeners();
+        createeventListeners();
+        generateAndTrackFormProgress(formNumber);
+         
         loadOODLanding();
 
+    }
+
+
+    function createeventListeners() {
+        serviceDateStartInput.addEventListener('change', event => { 
+            if (event.target.value !== '') {
+                filterValues.serviceDateStart = event.target.value;
+            } else {
+                event.target.value = filterValues.serviceDateStart;
+            } 
+        });
+        serviceDateEndInput.addEventListener('change', event => {          
+            if (event.target.value !== '') { 
+                filterValues.serviceDateEnd = event.target.value;
+            } else {
+                event.target.value = filterValues.serviceDateEnd;
+            }
+        });
+        employeeDropdown.addEventListener('change', event => {
+            filterValues.userId = event.target.value;
+            filterValues.userName = event.target.options[event.target.selectedIndex].text;
+        });
+     
+        createreferenceNumbersDropdown.addEventListener('change', event => {
+            filterValues.referenceNumber = event.target.value;
+        });
+        
     }
 
     function init() {
