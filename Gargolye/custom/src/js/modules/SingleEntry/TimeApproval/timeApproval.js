@@ -1461,7 +1461,8 @@ var timeApproval = (function () {
         var isSelected = event.target.classList.contains('selected');
         var entryStatus = event.target.dataset.status;
         var entryId = event.target.id;
-
+        if (event.target.childNodes.length == 1) return; //
+            
         //capture rowName, rowDate, rowStartTime, rowEndTime, rowWorkCode
         var rowName = event.target.childNodes[1].innerText;
         var rowDate = event.target.childNodes[2].innerText;

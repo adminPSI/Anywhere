@@ -34,7 +34,7 @@ const vendorUCR = (() => {
         headers[4].setAttribute('data-type', 'string'); //  Assessment/ Acuity Score
         headers[5].setAttribute('data-type', 'date'); // Start Date
         headers[6].setAttribute('data-type', 'date'); // End Date 
-        headers[7].setAttribute('data-type', 'string'); //  UCR
+        headers[7].setAttribute('data-type', 'amount'); //  UCR
 
 
         const column1 = document.createElement('div')
