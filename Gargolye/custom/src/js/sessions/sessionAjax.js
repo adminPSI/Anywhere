@@ -413,8 +413,28 @@ async function setESignaturesMessage() {
       },
     });
 
+    let locationNoticeText = document.createElement('div');
+    locationNoticeText.innerHTML = `
+        <div class="locationNotice">
+            <p><strong>IMPORTANT</strong> - The Anywhere site must be allowed to access your location in order to send the security code. If you need help allowing location access in your browser, please click on one of the below links and search 'location access':</p> <br>
+            <p>
+                Microsoft Edge - 
+                <a href="https://support.microsoft.com/en-us/microsoft-edge" target="_blank">https://support.microsoft.com/en-us/microsoft-edge</a>
+            </p> <br>
+            <p>
+                Google Chrome -
+                <a href="https://support.google.com/chrome" target="_blank">https://support.google.com/chrome</a>
+            </p> <br>
+            <p>
+                Apple Safari - <br>
+                <a href="http://support.apple.com/safari" target="_blank">http://support.apple.com/safari</a>
+            </p>
+        </div>
+    `;
+
     messageDiv.appendChild(popupMessageText);
     messageDiv.appendChild(sendBtn);
+    messageDiv.appendChild(locationNoticeText);
 
   // Function to update HTML after sending the code
   function updateHTMLAfterCodeSent() {
