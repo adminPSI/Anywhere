@@ -80,9 +80,10 @@
             label: 'Only show caseload',
             id: 'caseloadtoggle',
             name: 'caseload',
-            checked: false,
-        });
-
+            checked: $.session.CaseNotesCaseloadRestriction == true ? true : false,
+            disabled: $.session.CaseNotesCaseloadRestriction == true ? true : false,
+        }); 
+        
         this.rosterInActiveInput = new Checkbox({
             label: 'Show inactive individuals',
             id: 'inactivetoggle',
