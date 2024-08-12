@@ -867,10 +867,22 @@ const OOD = (() => {
     // build Filter button, which filters the data displayed on the OOD Entries Table
     function buildNewFilterBtn() {
         if (!filterValues)
+
+        var thisStartDate = new Date();
+        thisStartDate.setDate(1); // Set to the first day of the current month
+        thisStartDate.setMonth(thisStartDate.getMonth() - 1); // Go back one month
+        thisStartDate.setDate(1); // Ensure it's the first day of the previous month
+
+        let thisEndDate = new Date();
+        thisEndDate.setDate(0); // Sets the date to the last day of the previous month
+		
             filterValues = {
                 token: $.session.Token,
-                serviceDateStart: UTIL.formatDateFromDateObj(dates.subDays(new Date(), 30)),
-                serviceDateEnd: UTIL.getTodaysDate(),
+               // serviceDateStart: UTIL.formatDateFromDateObj(dates.subDays(new Date(), 30)),
+               // serviceDateEnd: UTIL.getTodaysDate(),
+                serviceDateStart: thisStartDate.toISOString().split('T')[0],
+                serviceDateEnd: thisEndDate.toISOString().split('T')[0],
+
                 userId: $.session.UserId,
                 userName: $.session.LName + ', ' + $.session.Name,
                 serviceId: '%',
@@ -940,6 +952,7 @@ const OOD = (() => {
         });
 
         popup.setAttribute('data-popup', 'true');
+        popup.setAttribute('overflow-y', 'unset: !importatnt;');
 
         const form4Btn = buildIndividualFormBtn('Form 4 - Monthly Job & Site Development', 4);
         const form6Btn = buildIndividualFormBtn('Form 6 - Tier1 and JD Plan', 6);
@@ -1245,11 +1258,11 @@ const OOD = (() => {
     }
 
      // Populate the Reference Number DDL on the Filter Popup Window
-     async function populatecreateReferenceNumberDropdown() {
+     async function populatecreateReferenceNumberDropdown(formNumber) {
         var consumerIds = selectedConsumerIds.join(', ');
 
         const { getConsumerReferenceNumbersResult: referencenumbers } =
-            await OODAjax.getConsumerReferenceNumbersAsync(consumerIds);
+            await OODAjax.getConsumerReferenceNumbersAsync(consumerIds, filterValues.serviceDateStart, filterValues.serviceDateEnd, formNumber);
         // const templates = WorkflowViewerComponent.getTemplates();
         let data = referencenumbers.map(referencenumber => ({
             id: referencenumber.referenceNumber,
@@ -1410,7 +1423,7 @@ const OOD = (() => {
             createfilterPopup.appendChild(btnWrap);
 
         populateEmployeeDropdown();
-        populatecreateReferenceNumberDropdown();
+        populatecreateReferenceNumberDropdown(formNumber);
         createeventListeners();
         // setupFilterEvent();
 

@@ -195,9 +195,24 @@ const roster2 = (function () {
         selectedGroupCode = rosterData[0].GroupCode;
         selectedGroupId = rosterData[0].RetrieveID;
         // selectedGroupName = rosterData[0].GroupName;
-        $.session.formsCaseload == true && $.loadedApp === 'forms'
-            ? (selectedGroupName = 'Caseload')
-            : (selectedGroupName = selectedGroupName = rosterData[0].GroupName);
+        if (($.session.formsCaseload == true && $.loadedApp === 'forms')
+            || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'authorizations')
+            || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
+            || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
+            || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
+            || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
+            || ($.session.WaitingListAssessmentCaseLoad === true && $.loadedApp === '')
+            || ($.session.WorkshopCaseLoad === true && $.loadedApp === 'workshop')
+            || ($.session.ConsumerFinanceCaseLoad === true && $.loadedApp === 'ConsumerFinances')
+            || ($.session.incidentTrackingCaseLoad === true && $.loadedApp === 'incidenttracking')
+            || ($.session.OODCaseLoad === true && $.loadedApp === 'OOD')
+            || ($.session.SingleEntryCaseLoad === true && $.loadedApp === 'timeEntry')
+            || ($.session.transportationCaseLoad === true && $.loadedApp === 'transportation')) {
+            selectedGroupName = 'Caseload';
+        } else {
+            selectedGroupName = selectedGroupName = rosterData[0].GroupName;
+        } 
     }
     function setSelectedGroupData() {
         var defaultRosterGroup = defaults.getLocation('rosterGroup').split('-');
@@ -209,9 +224,24 @@ const roster2 = (function () {
                 selectedGroupCode = g.GroupCode;
                 selectedGroupId = g.RetrieveID;
                 // selectedGroupName = g.GroupName;
-                $.session.formsCaseload == true && $.loadedApp === 'forms'
-                    ? (selectedGroupName = 'Caseload')
-                    : (selectedGroupName = g.GroupName);
+                if (($.session.formsCaseload == true && $.loadedApp === 'forms')
+                    || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'authorizations')
+                    || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
+                    || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+                    || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
+                    || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
+                    || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
+                    || ($.session.WaitingListAssessmentCaseLoad === true && $.loadedApp === '')
+                    || ($.session.WorkshopCaseLoad === true && $.loadedApp === 'workshop')
+                    || ($.session.ConsumerFinanceCaseLoad === true && $.loadedApp === 'ConsumerFinances')
+                    || ($.session.incidentTrackingCaseLoad === true && $.loadedApp === 'incidenttracking')
+                    || ($.session.OODCaseLoad === true && $.loadedApp === 'OOD')
+                    || ($.session.SingleEntryCaseLoad === true && $.loadedApp === 'timeEntry')
+                    || ($.session.transportationCaseLoad === true && $.loadedApp === 'transportation')) {
+                    selectedGroupName = 'Caseload';
+                } else {
+                    selectedGroupName = g.GroupName;
+                }
             }
         });
 
@@ -221,7 +251,22 @@ const roster2 = (function () {
             selectedGroupName = rosterGroups[0].GroupName;
         }
 
-        if ($.session.formsCaseload == true && $.loadedApp === 'forms') selectedGroupName = 'Caseload';
+            if (($.session.formsCaseload == true && $.loadedApp === 'forms')
+            || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'authorizations')
+            || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
+            || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
+            || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
+            || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
+            || ($.session.WaitingListAssessmentCaseLoad === true && $.loadedApp === '')
+            || ($.session.WorkshopCaseLoad === true && $.loadedApp === 'workshop')
+            || ($.session.ConsumerFinanceCaseLoad === true && $.loadedApp === 'ConsumerFinances')
+            || ($.session.incidentTrackingCaseLoad === true && $.loadedApp === 'incidenttracking')
+            || ($.session.OODCaseLoad === true && $.loadedApp === 'OOD')
+            || ($.session.SingleEntryCaseLoad === true && $.loadedApp === 'timeEntry')
+            || ($.session.transportationCaseLoad === true && $.loadedApp === 'transportation')) {
+            selectedGroupName = 'Caseload';
+        }
     }
     function setSelectedLocationData() {
         if (defaults.getLocation('roster') !== '') {
@@ -432,10 +477,27 @@ const roster2 = (function () {
         selectedGroupNameBtnWrap = document.createElement('div');
         selectedGroupNameBtnWrap.classList.add('filterSelectionBtnWrap');
         selectedGroupNameBtnWrap.appendChild(selectedGroupNameBtn);
-        selectedGroupNameBtnWrap.appendChild(selectedGroupNameCloseBtn);
+        if (($.session.formsCaseload == true && $.loadedApp === 'forms')
+            || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'authorizations')
+            || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
+            || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
+            || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
+            || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
+            || ($.session.WaitingListAssessmentCaseLoad === true && $.loadedApp === '')
+            || ($.session.WorkshopCaseLoad === true && $.loadedApp === 'workshop')
+            || ($.session.ConsumerFinanceCaseLoad === true && $.loadedApp === 'ConsumerFinances')
+            || ($.session.incidentTrackingCaseLoad === true && $.loadedApp === 'incidenttracking')
+            || ($.session.OODCaseLoad === true && $.loadedApp === 'OOD')
+            || ($.session.SingleEntryCaseLoad === true && $.loadedApp === 'timeEntry')
+            || ($.session.transportationCaseLoad === true && $.loadedApp === 'transportation')) { }
+        else {
+            selectedGroupNameBtnWrap.appendChild(selectedGroupNameCloseBtn);  
+        }
+
         btnWrap.appendChild(selectedGroupNameBtnWrap);
 
-        if ($.session.applicationName == 'Gatekeeper' && ($.loadedApp === 'roster' || $.loadedApp === 'casenotes')) { 
+        if ($.session.applicationName == 'Gatekeeper' && ($.loadedApp === 'roster' || $.loadedApp === 'casenotes')) {
             selectedActiveBtnWrap = document.createElement('div');
             selectedActiveBtnWrap.classList.add('filterSelectionBtnWrap');
             selectedActiveBtnWrap.appendChild(selectedActiveBtn);
@@ -491,11 +553,28 @@ const roster2 = (function () {
         return locationDropdown;
     }
     function buildGroupDropdown() {
+        var isDisabld = false;
+        if (($.session.formsCaseload == true && $.loadedApp === 'forms')
+            || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'authorizations')
+            || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
+            || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
+            || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
+            || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
+            || ($.session.WaitingListAssessmentCaseLoad === true && $.loadedApp === '')
+            || ($.session.WorkshopCaseLoad === true && $.loadedApp === 'workshop')
+            || ($.session.ConsumerFinanceCaseLoad === true && $.loadedApp === 'ConsumerFinances')
+            || ($.session.incidentTrackingCaseLoad === true && $.loadedApp === 'incidenttracking')
+            || ($.session.OODCaseLoad === true && $.loadedApp === 'OOD')
+            || ($.session.SingleEntryCaseLoad === true && $.loadedApp === 'timeEntry')
+            || ($.session.transportationCaseLoad === true && $.loadedApp === 'transportation')) {
+            isDisabld = true;
+        }
         var groupDropdown = dropdown.build({
             dropdownId: 'rosterGroupDropdown',
             label: 'Groups',
             style: 'secondary',
-            readonly: $.session.formsCaseload == true && $.loadedApp === 'forms' ? true : false,
+            readonly: isDisabld,
         });
 
         return groupDropdown;
@@ -609,7 +688,20 @@ const roster2 = (function () {
     function populateGroupDropdown() {
         var locId = selectedLocationId === '0' ? '0' : selectedLocationId;
         var defaultVal;
-        if ($.session.formsCaseload == true && $.loadedApp === 'forms') {
+        if (($.session.formsCaseload == true && $.loadedApp === 'forms')
+            || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'authorizations')
+            || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
+            || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
+            || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
+            || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
+            || ($.session.WaitingListAssessmentCaseLoad === true && $.loadedApp === '')
+            || ($.session.WorkshopCaseLoad === true && $.loadedApp === 'workshop')
+            || ($.session.ConsumerFinanceCaseLoad === true && $.loadedApp === 'ConsumerFinances')
+            || ($.session.incidentTrackingCaseLoad === true && $.loadedApp === 'incidenttracking')
+            || ($.session.OODCaseLoad === true && $.loadedApp === 'OOD')
+            || ($.session.SingleEntryCaseLoad === true && $.loadedApp === 'timeEntry')
+            || ($.session.transportationCaseLoad === true && $.loadedApp === 'transportation')) {
             defaultVal = `CAS-${locId}`;
             selectedGroupCode = 'CAS';
         } else {
@@ -698,9 +790,24 @@ const roster2 = (function () {
             selectedGroupId = groupResults[0].RetrieveID;
             selectedGroupCode = groupResults[0].GroupCode;
             // selectedGroupName = groupResults[0].GroupName;
-            $.session.formsCaseload == true && $.loadedApp === 'forms'
-                ? (selectedGroupName = 'Caseload')
-                : (selectedGroupName = groupResults[0].GroupName);
+            if (($.session.formsCaseload == true && $.loadedApp === 'forms')
+                || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'authorizations')
+                || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
+                || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+                || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
+                || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
+                || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
+                || ($.session.WaitingListAssessmentCaseLoad === true && $.loadedApp === '')
+                || ($.session.WorkshopCaseLoad === true && $.loadedApp === 'workshop')
+                || ($.session.ConsumerFinanceCaseLoad === true && $.loadedApp === 'ConsumerFinances')
+                || ($.session.incidentTrackingCaseLoad === true && $.loadedApp === 'incidenttracking')
+                || ($.session.OODCaseLoad === true && $.loadedApp === 'OOD')
+                || ($.session.SingleEntryCaseLoad === true && $.loadedApp === 'timeEntry')
+                || ($.session.transportationCaseLoad === true && $.loadedApp === 'transportation')) {
+                selectedGroupName = 'Caseload';
+            } else {
+                selectedGroupName = groupResults[0].GroupName;
+            }
             //selectedLocationId = tmpLocationId;
             populateGroupDropdown();
         }
@@ -948,7 +1055,7 @@ const roster2 = (function () {
         SEARCH_INPUT.setAttribute('placeholder', 'search consumers');
         SEARCH_WRAP.appendChild(SEARCH_BTN);
         SEARCH_WRAP.appendChild(SEARCH_INPUT);
- 
+
         if (rosterListSelectable) {
             var wrap1 = document.createElement('div');
             var wrap2 = document.createElement('div');
@@ -1018,10 +1125,10 @@ const roster2 = (function () {
         const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
         const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
 
-        var isInactive = false;  
-        if ($.session.applicationName === 'Advisor') { 
+        var isInactive = false;
+        if ($.session.applicationName === 'Advisor') {
             if (consumerData.IDa != undefined && consumerData.IDa != '' && UTIL.formatDateToIso(consumerData.IDa.split(' ')[0]) <= selectedDate) {
-                isInactive = true;  
+                isInactive = true;
             }
 
         } else if ($.session.applicationName === 'Gatekeeper') {
@@ -1375,7 +1482,22 @@ const roster2 = (function () {
         }
     }
     async function getRosterConsumersData(forceGroupFilter) {
-        if ($.session.formsCaseload == true && $.loadedApp === 'forms') selectedGroupCode = 'CAS';
+        if (($.session.formsCaseload == true && $.loadedApp === 'forms')
+            || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'authorizations')
+            || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
+            || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
+            || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
+            || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
+            || ($.session.WaitingListAssessmentCaseLoad === true && $.loadedApp === '')
+            || ($.session.WorkshopCaseLoad === true && $.loadedApp === 'workshop')
+            || ($.session.ConsumerFinanceCaseLoad === true && $.loadedApp === 'ConsumerFinances')
+            || ($.session.incidentTrackingCaseLoad === true && $.loadedApp === 'incidenttracking')
+            || ($.session.OODCaseLoad === true && $.loadedApp === 'OOD')
+            || ($.session.SingleEntryCaseLoad === true && $.loadedApp === 'timeEntry')
+            || ($.session.transportationCaseLoad === true && $.loadedApp === 'transportation')) {
+            selectedGroupCode = 'CAS';
+        }
         const getConsumerByGroupData = {
             selectedGroupCode,
             selectedGroupId,
@@ -1421,7 +1543,23 @@ const roster2 = (function () {
         }
 
         rosterGroups = await getConsumerGroupsData(selectedLocationId);
-        if (!selectedGroupName || ($.session.formsCaseload == true && $.loadedApp === 'forms')) setSelectedGroupData();
+        if (!selectedGroupName
+            || ($.session.formsCaseload == true && $.loadedApp === 'forms')
+            || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'authorizations')
+            || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
+            || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
+            || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
+            || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
+            || ($.session.WaitingListAssessmentCaseLoad === true && $.loadedApp === '')
+            || ($.session.WorkshopCaseLoad === true && $.loadedApp === 'workshop')
+            || ($.session.ConsumerFinanceCaseLoad === true && $.loadedApp === 'ConsumerFinances')
+            || ($.session.incidentTrackingCaseLoad === true && $.loadedApp === 'incidenttracking')
+            || ($.session.OODCaseLoad === true && $.loadedApp === 'OOD')
+            || ($.session.SingleEntryCaseLoad === true && $.loadedApp === 'timeEntry')
+            || ($.session.transportationCaseLoad === true && $.loadedApp === 'transportation')) {
+            setSelectedGroupData();
+        }
 
         locationsWithUnreadNotes = await getLocationsWithUnreadNotesData();
     }
