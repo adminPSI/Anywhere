@@ -143,8 +143,10 @@
 
     if (disable) {
       input.disableInputField(checkbox.parentElement);
+      input.classList.add('intentionallyDisabled');
     } else {
       input.enableInputField(checkbox.parentElement);
+      input.classList.remove('intentionallyDisabled');
     }
   }
   // Conditional Questions
