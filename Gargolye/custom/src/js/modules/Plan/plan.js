@@ -3245,8 +3245,10 @@ const plan = (function () {
             style: 'secondary',
             type: 'contained',
             classNames: !$.session.planUpdate ? ['disabled'] : ['newPlanBtn'],
-            callback: () => {
-                csAssignCaseload.showAssignCaseLoadPopup();
+            callback: async () => {
+                PROGRESS__BTN.SPINNER.show(assignCaseLoadBtn);
+                await csAssignCaseload.showAssignCaseLoadPopup();
+                PROGRESS__BTN.SPINNER.hide(assignCaseLoadBtn);  
             },
         });
     }
