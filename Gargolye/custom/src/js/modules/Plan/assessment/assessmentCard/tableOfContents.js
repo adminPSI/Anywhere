@@ -34,8 +34,8 @@
         sections[key].markup.classList.add('inView');
         sections[key].markup.scrollIntoView({
           behavior: 'smooth',
-          block: 'nearest',
-          inline: 'start'
+          block: 'center',
+          inline: 'nearest'
         })
       } else {
         sections[key].markup.classList.remove('inView');
