@@ -321,7 +321,7 @@
 
     const tables = [...document.querySelectorAll('.grid')];
     tables.forEach(t => {
-      if (q.classList.contains('unawnsered') && !q.classList.contains('intentionallyDisabled')) return;
+      if (t.classList.contains('unawnsered') && !t.classList.contains('intentionallyDisabled')) return;
 
       if (hideOrShow === 'hide') {
         t.style.display = 'none';
