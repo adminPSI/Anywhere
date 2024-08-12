@@ -60,9 +60,7 @@
     sectionKeys.forEach(sectionKey => {
       const questionSetKeys = Object.keys(questionCountObj[sectionKey]);
       const section = document.getElementById(`toc-section${sectionKey}`);
-      const numOfQuestionsUnawnseredWrapDiv = section.querySelector(
-        '.numOfQuestionsUnawnseredWrap',
-      );
+      const numOfQuestionsUnawnseredWrapDiv = section.querySelector('.numOfQuestionsUnawnseredWrap');
       const numOfQuestionsUnawnseredDiv = section.querySelector('.numOfQuestionsUnawnsered');
       let numOfQuestionsUnawnsered = 0;
       let tableQuestionSets;
@@ -77,8 +75,8 @@
           if (!rowOrder) {
             if (!answered && required) {
               if (leaveblank !== null && !leaveblank) {
-              numOfQuestionsUnawnsered++;
-              sectionUnawnseredQuestions[sectionKey]++;
+                numOfQuestionsUnawnsered++;
+                sectionUnawnseredQuestions[sectionKey]++;
               }
             }
           } else {
@@ -87,16 +85,12 @@
             if (!tableQuestionSets[questionSetKey][rowOrder]) {
               tableQuestionSets[questionSetKey][rowOrder] = {
                 atLeastOneColumnAnswered: false,
-              }
+              };
               if (leaveblank !== null && !leaveblank && !answered) {
-               // numOfQuestionsUnawnsered++;
                 sectionUnawnseredQuestions[sectionKey]++;
-            }
               }
-           // };
-            if (answered || leaveblank)
-              tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
-
+            }
+            if (answered || leaveblank) tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
           }
         });
       });
@@ -105,9 +99,7 @@
         const tableQuestionSetsKeys = Object.keys(tableQuestionSets);
         if (tableQuestionSetsKeys.length > 0) {
           tableQuestionSetsKeys.forEach(setKey => {
-            const tableHasAtLeastOneRowAnsered = validateTableHasAtLeastOneRowAnswered(
-              tableQuestionSets[setKey],
-            );
+            const tableHasAtLeastOneRowAnsered = validateTableHasAtLeastOneRowAnswered(tableQuestionSets[setKey]);
             if (!tableHasAtLeastOneRowAnsered) numOfQuestionsUnawnsered++;
           });
         }
@@ -154,10 +146,7 @@
     tocSectionAlertDiv.innerHTML = `${icons.error}`;
     sectionHeading.appendChild(tocSectionAlertDiv);
 
-    planValidation.createTooltip(
-      'This section is missing an Outcome, Support, or Referral',
-      tocSectionAlertDiv,
-    );
+    planValidation.createTooltip('This section is missing an Outcome, Support, or Referral', tocSectionAlertDiv);
 
     tocSectionAlertDiv.style.display = 'none';
 
@@ -192,8 +181,7 @@
         let workingSectionCaseValue = planValidation.returnWorkingSectionCaseValue();
         if (workingSectionCaseValue === 1) {
           workingAlertDivCase1.style.display = 'inline-block';
-        }
-        else if (workingSectionCaseValue === 2) {
+        } else if (workingSectionCaseValue === 2) {
           workingAlertDivCase2.style.display = 'inline-block';
         }
       }
@@ -236,9 +224,7 @@
       const { id: sectionId, markup: sectionMarkup } = sections[soKey];
       tocInner.appendChild(sectionMarkup);
 
-      const subSectionOrderKeys = subSections[sectionId]
-        ? Object.keys(subSections[sectionId])
-        : null;
+      const subSectionOrderKeys = subSections[sectionId] ? Object.keys(subSections[sectionId]) : null;
       if (!subSectionOrderKeys) return;
 
       subSectionOrderKeys.forEach(ssoKey => {
@@ -275,13 +261,10 @@
     tocAlertDiv.innerHTML = `${icons.error}`;
 
     // creates and shows a tip when hovering over the visible alert div
-    planValidation.createTooltip(
-      'At least one section of the Assessment must be selected',
-      tocAlertDiv,
-    );
+    planValidation.createTooltip('At least one section of the Assessment must be selected', tocAlertDiv);
 
     if (assessmentValidationCheck.hasASectionApplicable === true) {
-     tocAlertDiv.style.display = 'none';
+      tocAlertDiv.style.display = 'none';
     }
 
     const tocMain = document.createElement('div');
@@ -338,6 +321,6 @@
     toggleVisibility,
     toggleApplicability,
     showUnansweredQuestionCount,
-    highlightLink
+    highlightLink,
   };
 })();

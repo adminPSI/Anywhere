@@ -996,9 +996,9 @@
 .intentionallyBlankCheckbox {
   margin-top: 10px;
 }
-.intentionallyDisabled {
-  background-color: red !important;
-}
+// .intentionallyDisabled {
+//   background-color: red !important;
+// }
 
 @media screen and (min-width: '1000px') {
   [data-active-section='plan-questionsAndAnswers'] {

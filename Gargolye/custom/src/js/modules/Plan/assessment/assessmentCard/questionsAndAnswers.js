@@ -29,7 +29,7 @@
   let isSortable;
   let readonly;
 
-  const observerCallback = (entries) => {
+  const observerCallback = entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const sectionId = entry.target.id;
@@ -41,8 +41,8 @@
 
   const observer = new IntersectionObserver(observerCallback, {
     root: null,
-    rootMargin: '0px', 
-    threshold: 0.1
+    rootMargin: '0px',
+    threshold: 0.1,
   });
 
   function checkArrayConsistency(arr) {
@@ -143,10 +143,8 @@
 
     if (disable) {
       input.disableInputField(checkbox.parentElement);
-      input.classList.add('intentionallyDisabled');
     } else {
       input.enableInputField(checkbox.parentElement);
-      input.classList.remove('intentionallyDisabled');
     }
   }
   // Conditional Questions
@@ -312,24 +310,23 @@
   function toggleUnansweredQuestionFilter(hideOrShow) {
     const questions = [...document.querySelectorAll('.question')];
     questions.forEach(q => {
-      if (!q.classList.contains('unawnsered')) {
-        if (hideOrShow === 'hide') {
-          q.style.display = 'none';
-        } else {
-          q.removeAttribute('style');
-        }
+      if (q.classList.contains('unawnsered') && !q.classList.contains('intentionallyDisabled')) return;
+
+      if (hideOrShow === 'hide') {
+        q.style.display = 'none';
+      } else {
+        q.removeAttribute('style');
       }
     });
 
     const tables = [...document.querySelectorAll('.grid')];
     tables.forEach(t => {
-      if (!t.classList.contains('unawnsered')) {
-        if (hideOrShow === 'hide') {
-          // only show unawnsered
-          t.style.display = 'none';
-        } else {
-          t.removeAttribute('style');
-        }
+      if (q.classList.contains('unawnsered') && !q.classList.contains('intentionallyDisabled')) return;
+
+      if (hideOrShow === 'hide') {
+        t.style.display = 'none';
+      } else {
+        t.removeAttribute('style');
       }
     });
   }
@@ -361,38 +358,40 @@
         if (isChecked) {
           textAreaInput.value = '';
           input.disableInputField(textAreaInput);
+          textAreaInput.parentNode.closest('.question').classList.add('intentionallyDisabled');
           sectionQuestionCount[sectionID][setId][questionId].leaveblank = true;
         } else {
           input.enableInputField(textAreaInput);
+          textAreaInput.parentNode.closest('.question').classList.remove('intentionallyDisabled');
           sectionQuestionCount[sectionID][setId][questionId].leaveblank = false;
         }
       } else {
         const questionSet = document.getElementById(`set${setId}`);
-        let sectionID = questionSet.parentElement.parentElement.id
-        sectionID = sectionID.replace(/\D/g, "");
+        let sectionID = questionSet.parentElement.parentElement.id;
+        sectionID = sectionID.replace(/\D/g, '');
         const questionSetGridRows = [...questionSet.querySelectorAll('.grid__row:not(.grid__rowHeader)')];
         const questionSetActionButtons = [...questionSet.querySelectorAll('.gridActionRow button')];
         let questionSetId = e.target.dataset.setid;
-       // let sectionID = e.target.dataset.sectionid;
+        // let sectionID = e.target.dataset.sectionid;
         questionSetGridRows.forEach(row => {
           const rowCells = row.querySelectorAll('.grid__cell');
-          
+
           rowCells.forEach(cell => {
             const cellInput = cell.querySelector('.input-field__input');
             let questionRowId = cell.id;
-          questionRowId = questionRowId.replace(/\D/g, "");
+            questionRowId = questionRowId.replace(/\D/g, '');
 
             addAnswer(cellInput.id, '', '', skipped);
 
             if (isChecked) {
               cellInput.value = '';
               input.disableInputField(cellInput);
-              //sectionQuestionCount[sectionID][setId][questionId].leaveblank = true;
-             sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = true;
+              sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = true;
+              cellInput.parentNode.closest('.question').classList.add('intentionallyDisabled');
             } else {
               input.enableInputField(cellInput);
-              //sectionQuestionCount[sectionID][setId][questionId].leaveblank = false;
-             sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = false;
+              sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = false;
+              cellInput.parentNode.closest('.question').classList.remove('intentionallyDisabled');
             }
           });
         });
@@ -480,7 +479,7 @@
         answer = e.target.value;
 
         if (answer !== '') {
-           await addAnswer(answerId, answer);
+          await addAnswer(answerId, answer);
 
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
@@ -554,7 +553,7 @@
           }
         }
       }
-      
+
       tableOfContents.showUnansweredQuestionCount();
 
       return;
@@ -1736,6 +1735,7 @@
         }
         if (skipped === 'Y') {
           input.disableInputField(questionInputMarkup);
+          question.classList.add('intentionallyDisabled');
         }
         break;
       }
