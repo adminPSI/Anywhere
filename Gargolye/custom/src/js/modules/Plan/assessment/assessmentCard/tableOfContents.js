@@ -32,6 +32,11 @@
     for (const key in sections) {
       if (sections[key].id === sectionId) {
         sections[key].markup.classList.add('inView');
+        sections[key].markup.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'start'
+        })
       } else {
         sections[key].markup.classList.remove('inView');
       }
