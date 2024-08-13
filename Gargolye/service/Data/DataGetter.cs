@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereWorkshopWorkerTwo;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 
 namespace Anywhere.Data
 {
@@ -1222,6 +1223,7 @@ namespace Anywhere.Data
         public string GetValidateEmailInformation(string token, string email)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(email) == false) return null;
             logger.debug("getDemographicsInformation" + token);
             try
             {
@@ -1900,6 +1902,7 @@ namespace Anywhere.Data
         public string saveDefaultLocationValue(string token, string switchCase, string locationId)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(locationId) == false) return null;
             logger.debug("saveDefaultLocationValue");
 
             try
@@ -1916,6 +1919,7 @@ namespace Anywhere.Data
         public string saveDefaultLocationName(string token, string switchCase, string locationName)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(locationName) == false) return null;
             logger.debug("saveDefaultLocationName");
 
             try
@@ -2576,6 +2580,7 @@ namespace Anywhere.Data
         public string selectNotesByLocation(string token, string locationId, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("selectNotesByLocation" + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -2678,6 +2683,7 @@ namespace Anywhere.Data
         public string getLocationsWithUnreadNotes(string token, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("LocationsWithUnreadNotes" + token);
             try
             {
@@ -2708,6 +2714,7 @@ namespace Anywhere.Data
         public string getConsumersWithUnreadNotesByEmployeeAndLocationPermission(string token, string locationId, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("getConsumersWithUnreadNotesByEmployeeAndLocation " + token + " " + locationId);
             try
             {
@@ -2943,6 +2950,8 @@ namespace Anywhere.Data
         public string getConsumersByLocationAbsent(string token, string absenceDate, string locationId)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(locationId) == false) return null;
+            if (IsDateValidFormat(absenceDate) == false) return null;
             logger.debug("getCounsumerLocationsForAbsentSave" + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -3339,6 +3348,7 @@ namespace Anywhere.Data
         {
             if (tokenValidator(token) == false) return null;
             if (stringInjectionValidator(absentDate) == false) return null;
+            if (IsDateValidFormat(absentDate) == false) return null;
             logger.debug("getAbsentWidgetFilterData " + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -3399,6 +3409,7 @@ namespace Anywhere.Data
         public string WorkshopGetLocations(string token, string serviceDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(serviceDate) == false) return null;
             logger.debug("WorkshopGetLocations " + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -5274,6 +5285,7 @@ namespace Anywhere.Data
         public string getCustomPhrases(string token, string showAll)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(showAll) == false) return null;
             logger.debug("getCustomPhrases ");
             List<string> list = new List<string>();
             list.Add(token);
@@ -5330,6 +5342,7 @@ namespace Anywhere.Data
         public string getlocationsWithConsumersWithUnreadNotes(string token, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("getCustomPhrases" + token);
             try
             {
@@ -5405,6 +5418,7 @@ namespace Anywhere.Data
         public string selectNotesByLocationAndPermission(string token, string locationId, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("selectNotesByLocationAndPermission" + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -5426,6 +5440,7 @@ namespace Anywhere.Data
         public string getLocationsWithUnreadNotesAndPermission(string token, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("getLocationsWithUnreadNotesAndPermission" + token);
             try
             {
@@ -6091,6 +6106,25 @@ namespace Anywhere.Data
             }
         }
 
+        
+        public static bool IsDateValidFormat(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return false;
+            }
+
+            // Define a regex pattern that allows only numbers, slashes, and dashes
+            string pattern = @"^[0-9/-]+$";
+
+            // Create a Regex object with the pattern
+            Regex regex = new Regex(pattern);
+
+            // Check if the input matches the regex pattern
+            return regex.IsMatch(input);
+        }
+        
+
         public string removeUnsavableNoteText(string note)
         {
             if (note == "" || note is null)
@@ -6114,7 +6148,7 @@ namespace Anywhere.Data
 
         public bool tokenValidator(string token)
         {
-            if (token.Contains(" "))
+            if (token.Contains(" ") || token.Contains("|") || token.Contains("'") || token.Contains("*"))
             {
                 return false;
             }
