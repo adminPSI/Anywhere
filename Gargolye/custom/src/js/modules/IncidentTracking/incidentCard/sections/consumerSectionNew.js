@@ -134,9 +134,7 @@ var itConsumerSection = (function () {
     }
   }
   function removeConsumerFromConsumersInvolved(selectedConsumerId) {
-    var consumerCard = document.querySelector(
-      `[data-consumer-id="${selectedConsumerId}"]`,
-    ).parentElement;
+    var consumerCard = document.querySelector(`[data-consumer-id="${selectedConsumerId}"]`).parentElement;
     consumersWrap.removeChild(consumerCard);
 
     consumerSections.classList.remove('visible');
@@ -200,9 +198,7 @@ var itConsumerSection = (function () {
   //-----------------------------------------------
   function buildConsumer(consumerCard) {
     function checkInvolvedRequirements() {
-      const locationId = consumerInvolvement.involvementDataLookup(
-        consumerCard.dataset.consumerId,
-      ).locationId;
+      const locationId = consumerInvolvement.involvementDataLookup(consumerCard.dataset.consumerId).locationId;
 
       const involvementSec = document.querySelector("[data-sectionid='5']");
 
@@ -787,25 +783,16 @@ var consumerFollowUp = (function () {
           };
         }
 
-        if (
-          tmpCompletedDate ||
-          tmpDueDate ||
-          tmpFollowUpTypeId ||
-          tmpNote ||
-          tmpPersonResponsible
-        ) {
+        if (tmpCompletedDate || tmpDueDate || tmpFollowUpTypeId || tmpNote || tmpPersonResponsible) {
           followUpsData[selectedConsumerId][selectedFollowUpId].updated = true;
         }
 
-        if (tmpCompletedDate)
-          followUpsData[selectedConsumerId][selectedFollowUpId].dateCompleted = tmpCompletedDate;
+        if (tmpCompletedDate) followUpsData[selectedConsumerId][selectedFollowUpId].dateCompleted = tmpCompletedDate;
         if (tmpDueDate) followUpsData[selectedConsumerId][selectedFollowUpId].dueDate = tmpDueDate;
-        if (tmpFollowUpTypeId)
-          followUpsData[selectedConsumerId][selectedFollowUpId].followUpTypeId = tmpFollowUpTypeId;
+        if (tmpFollowUpTypeId) followUpsData[selectedConsumerId][selectedFollowUpId].followUpTypeId = tmpFollowUpTypeId;
         if (tmpNote) followUpsData[selectedConsumerId][selectedFollowUpId].notes = tmpNote;
         if (tmpPersonResponsible)
-          followUpsData[selectedConsumerId][selectedFollowUpId].personResponsible =
-            tmpPersonResponsible;
+          followUpsData[selectedConsumerId][selectedFollowUpId].personResponsible = tmpPersonResponsible;
 
         selectedFollowUpId = undefined;
 
@@ -938,8 +925,7 @@ var consumerFollowUp = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -1010,9 +996,7 @@ var consumerFollowUp = (function () {
     keys.forEach(key => {
       var followUpData = followUpsData[selectedConsumerId][key];
 
-      var filterFollowUpTypes = followUpTypes.filter(
-        type => type.itFollowUpTypeId === followUpData.followUpTypeId,
-      );
+      var filterFollowUpTypes = followUpTypes.filter(type => type.itFollowUpTypeId === followUpData.followUpTypeId);
       var followUpType = filterFollowUpTypes[0] ? filterFollowUpTypes[0].followUpTypeName : '';
       var personResponsible = followUpData.personResponsible;
       var dueDate = followUpData.dueDate ? followUpData.dueDate.split(' ')[0] : '';
@@ -1033,10 +1017,7 @@ var consumerFollowUp = (function () {
     });
 
     reviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
         selectedFollowUpId = event.target.id;
         setFormDataDefaults(followUpsData[selectedConsumerId][selectedFollowUpId]);
         showForm(true);
@@ -1100,8 +1081,7 @@ var consumerFollowUp = (function () {
           followUpsData[selectedConsumerId][d.itConsumerFollowUpId].updated = false;
 
           // format dates
-          var dateTimeCompleted =
-            followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dateCompleted;
+          var dateTimeCompleted = followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dateCompleted;
           var dueDateTime = followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dueDate;
           dateCompleted = dateTimeCompleted ? dateTimeCompleted.split(' ')[0] : null;
           dueDate = dueDateTime ? dueDateTime.split(' ')[0] : null;
@@ -1111,8 +1091,7 @@ var consumerFollowUp = (function () {
               UTIL.formatDateToIso(dateCompleted);
           }
           if (dueDate) {
-            followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dueDate =
-              UTIL.formatDateToIso(dueDate);
+            followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dueDate = UTIL.formatDateToIso(dueDate);
           }
         }
       });
@@ -1390,33 +1369,26 @@ var consumerInjuries = (function () {
         }
 
         if (
-          tmpInjuryLocation ||
-          tmpInjuryType ||
-          tmpInjuryCause ||
-          tmpInjuryRisk ||
-          tmpCheckedBy ||
-          tmpDetails ||
-          tmpTreatment ||
-          tmpDateChecked
+          tmpInjuryLocation !== undefined ||
+          tmpInjuryType !== undefined ||
+          tmpInjuryCause !== undefined ||
+          tmpInjuryRisk !== undefined ||
+          tmpCheckedBy !== undefined ||
+          tmpDetails !== undefined ||
+          tmpTreatment !== undefined ||
+          tmpDateChecked !== undefined
         ) {
           injuryData[selectedConsumerId][selectedInjuryId].updated = true;
         }
 
-        if (tmpInjuryLocation)
-          injuryData[selectedConsumerId][selectedInjuryId].injuryLocationId = tmpInjuryLocation;
-        if (tmpInjuryType)
-          injuryData[selectedConsumerId][selectedInjuryId].injuryTypeId = tmpInjuryType;
-        if (tmpInjuryCause)
-          injuryData[selectedConsumerId][selectedInjuryId].injuryCauseId = tmpInjuryCause;
-        if (tmpInjuryRisk)
-          injuryData[selectedConsumerId][selectedInjuryId].injuryRiskId = tmpInjuryRisk;
-        if (tmpCheckedBy)
-          injuryData[selectedConsumerId][selectedInjuryId].checkedByNurse = tmpCheckedBy;
-        if (tmpDetails) injuryData[selectedConsumerId][selectedInjuryId].injuryDetails = tmpDetails;
-        if (tmpTreatment)
-          injuryData[selectedConsumerId][selectedInjuryId].injuryTreatment = tmpTreatment;
-        if (tmpDateChecked)
-          injuryData[selectedConsumerId][selectedInjuryId].checkedDate = tmpDateChecked;
+        if (tmpInjuryLocation !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryLocationId = tmpInjuryLocation;
+        if (tmpInjuryType !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryTypeId = tmpInjuryType;
+        if (tmpInjuryCause !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryCauseId = tmpInjuryCause;
+        if (tmpInjuryRisk !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryRiskId = tmpInjuryRisk;
+        if (tmpCheckedBy !== undefined) injuryData[selectedConsumerId][selectedInjuryId].checkedByNurse = tmpCheckedBy;
+        if (tmpDetails !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryDetails = tmpDetails;
+        if (tmpTreatment !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryTreatment = tmpTreatment;
+        if (tmpDateChecked !== undefined) injuryData[selectedConsumerId][selectedInjuryId].checkedDate = tmpDateChecked;
 
         selectedInjuryId = undefined;
 
@@ -1511,7 +1483,13 @@ var consumerInjuries = (function () {
       };
     });
 
-    data.unshift({ value: '%', text: '' });
+    data.sort((a, b) => {
+      if (a.text < b.text) return -1;
+      if (a.text > b.text) return 1;
+      return 0;
+    });
+
+    data.unshift({ value: '', text: '' });
     dropdown.populate(iCauseDrop, data, injuryCauseId);
 
     return iCauseDrop;
@@ -1535,7 +1513,13 @@ var consumerInjuries = (function () {
       };
     });
 
-    data.unshift({ value: '%', text: '' });
+    data.sort((a, b) => {
+      if (a.text < b.text) return -1;
+      if (a.text > b.text) return 1;
+      return 0;
+    });
+
+    data.unshift({ value: '', text: '' });
     dropdown.populate(iRiskDrop, data, injuryRiskId);
 
     return iRiskDrop;
@@ -1617,8 +1601,7 @@ var consumerInjuries = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -1696,9 +1679,7 @@ var consumerInjuries = (function () {
     var keys = Object.keys(injuryData[selectedConsumerId]);
     keys.forEach(key => {
       var data = injuryData[selectedConsumerId][key];
-      var filteredLocations = injuryLocations.filter(
-        iLoc => iLoc.injuryLocationId === data.injuryLocationId,
-      );
+      var filteredLocations = injuryLocations.filter(iLoc => iLoc.injuryLocationId === data.injuryLocationId);
       var filteredTypes = injuryTypes.filter(iType => iType.injuryTypeId === data.injuryTypeId);
       var injuryLocation = filteredLocations[0].injuryLocation;
       var injuryType = filteredTypes[0].injuryType;
@@ -1719,10 +1700,7 @@ var consumerInjuries = (function () {
     });
 
     reviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
         selectedInjuryId = event.target.id;
         setFormDataDefaults(injuryData[selectedConsumerId][selectedInjuryId]);
         showForm(true);
@@ -1791,8 +1769,7 @@ var consumerInjuries = (function () {
           dateChecked = dateChecked ? dateChecked.split(' ')[0] : null;
 
           if (dateChecked) {
-            injuryData[selectedConsumerId][d.itConsumerInjuryId].checkedDate =
-              UTIL.formatDateToIso(dateChecked);
+            injuryData[selectedConsumerId][d.itConsumerInjuryId].checkedDate = UTIL.formatDateToIso(dateChecked);
           }
         }
       });
@@ -1939,8 +1916,7 @@ var consumerIntervention = (function () {
   function deleteConsumerInterventionData() {
     if (!selectedInterventionId.includes('new')) {
       var deletedIntervention = interventionData[selectedConsumerId][selectedInterventionId];
-      if (!interventionDeleteData[selectedConsumerId])
-        interventionDeleteData[selectedConsumerId] = {};
+      if (!interventionDeleteData[selectedConsumerId]) interventionDeleteData[selectedConsumerId] = {};
       interventionDeleteData[selectedConsumerId][selectedInterventionId] = deletedIntervention;
     }
 
@@ -2084,8 +2060,7 @@ var consumerIntervention = (function () {
 
         if (!interventionData[selectedConsumerId][selectedInterventionId]) {
           var keys = Object.keys(interventionData[selectedConsumerId]);
-          selectedInterventionId =
-            keys.length === 0 ? `new${keys.length}` : `new${keys.length + 1}`;
+          selectedInterventionId = keys.length === 0 ? `new${keys.length}` : `new${keys.length + 1}`;
 
           interventionData[selectedConsumerId][selectedInterventionId] = {
             interventionType: '',
@@ -2098,30 +2073,17 @@ var consumerIntervention = (function () {
           };
         }
 
-        if (
-          tmpInterventionType ||
-          tmpStartTime ||
-          tmpEndTime ||
-          tmpTimeLength ||
-          tmpAversive ||
-          tmpNote
-        ) {
+        if (tmpInterventionType || tmpStartTime || tmpEndTime || tmpTimeLength || tmpAversive || tmpNote) {
           interventionData[selectedConsumerId][selectedInterventionId].updated = true;
         }
 
         if (tmpInterventionType)
-          interventionData[selectedConsumerId][selectedInterventionId].interventionType =
-            tmpInterventionType;
-        if (tmpStartTime)
-          interventionData[selectedConsumerId][selectedInterventionId].startTime = tmpStartTime;
-        if (tmpEndTime)
-          interventionData[selectedConsumerId][selectedInterventionId].stopTime = tmpEndTime;
-        if (tmpTimeLength)
-          interventionData[selectedConsumerId][selectedInterventionId].timeLength = tmpTimeLength;
-        if (tmpAversive)
-          interventionData[selectedConsumerId][selectedInterventionId].aversive = tmpAversive;
-        if (tmpNote)
-          interventionData[selectedConsumerId][selectedInterventionId].interventionNotes = tmpNote;
+          interventionData[selectedConsumerId][selectedInterventionId].interventionType = tmpInterventionType;
+        if (tmpStartTime) interventionData[selectedConsumerId][selectedInterventionId].startTime = tmpStartTime;
+        if (tmpEndTime) interventionData[selectedConsumerId][selectedInterventionId].stopTime = tmpEndTime;
+        if (tmpTimeLength) interventionData[selectedConsumerId][selectedInterventionId].timeLength = tmpTimeLength;
+        if (tmpAversive) interventionData[selectedConsumerId][selectedInterventionId].aversive = tmpAversive;
+        if (tmpNote) interventionData[selectedConsumerId][selectedInterventionId].interventionNotes = tmpNote;
 
         selectedInterventionId = undefined;
 
@@ -2266,8 +2228,7 @@ var consumerIntervention = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -2341,9 +2302,7 @@ var consumerIntervention = (function () {
     var keys = Object.keys(interventionData[selectedConsumerId]);
     keys.forEach(key => {
       var data = interventionData[selectedConsumerId][key];
-      var filteredInterventionTypes = interventionTypes.filter(
-        it => it.interventionTypeId === data.interventionType,
-      );
+      var filteredInterventionTypes = interventionTypes.filter(it => it.interventionTypeId === data.interventionType);
       var interventionType = filteredInterventionTypes[0].description;
       var timeLength = data.timeLength.split(':');
       timeLength = `${timeLength[0]}:${timeLength[1]}`;
@@ -2364,10 +2323,7 @@ var consumerIntervention = (function () {
     });
 
     reviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
         selectedInterventionId = event.target.id;
         setFormDataDefaults(interventionData[selectedConsumerId][selectedInterventionId]);
         showForm(true);
@@ -2514,9 +2470,7 @@ var consumerInvolvement = (function () {
           var includeInCount = 'Y';
           var involvementId = involvementTypes[0].involvementId;
           var locationId =
-            consumerLocationData[consumerId].length === 1
-              ? consumerLocationData[consumerId][0].value
-              : '';
+            consumerLocationData[consumerId].length === 1 ? consumerLocationData[consumerId][0].value : '';
 
           involvementsData[consumerId] = {
             includeInCount,
@@ -2788,8 +2742,7 @@ var consumerInvolvement = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -3092,18 +3045,12 @@ var consumerReporting = (function () {
         }
 
         if (tmpReportingCategoryId)
-          reportingData[selectedConsumerId][selectedReportId].reportingCategoryID =
-            tmpReportingCategoryId;
-        if (tmpReportedBy)
-          reportingData[selectedConsumerId][selectedReportId].reportBy = tmpReportedBy;
-        if (tmpReportedTo)
-          reportingData[selectedConsumerId][selectedReportId].reportTo = tmpReportedTo;
-        if (tmpReportMethod)
-          reportingData[selectedConsumerId][selectedReportId].reportMethod = tmpReportMethod;
-        if (tmpReportDate)
-          reportingData[selectedConsumerId][selectedReportId].dateReported = tmpReportDate;
-        if (tmpReportTime)
-          reportingData[selectedConsumerId][selectedReportId].timeReported = tmpReportTime;
+          reportingData[selectedConsumerId][selectedReportId].reportingCategoryID = tmpReportingCategoryId;
+        if (tmpReportedBy) reportingData[selectedConsumerId][selectedReportId].reportBy = tmpReportedBy;
+        if (tmpReportedTo) reportingData[selectedConsumerId][selectedReportId].reportTo = tmpReportedTo;
+        if (tmpReportMethod) reportingData[selectedConsumerId][selectedReportId].reportMethod = tmpReportMethod;
+        if (tmpReportDate) reportingData[selectedConsumerId][selectedReportId].dateReported = tmpReportDate;
+        if (tmpReportTime) reportingData[selectedConsumerId][selectedReportId].timeReported = tmpReportTime;
         if (tmpNote) reportingData[selectedConsumerId][selectedReportId].notes = tmpNote;
 
         selectedReportId = undefined;
@@ -3266,8 +3213,7 @@ var consumerReporting = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -3366,10 +3312,7 @@ var consumerReporting = (function () {
     });
 
     reviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
         selectedReportId = event.target.id;
         setFormDataDefaults(reportingData[selectedConsumerId][selectedReportId]);
         showForm(true);
@@ -3435,10 +3378,8 @@ var consumerReporting = (function () {
 
           // format dates
           if (reportingData[selectedConsumerId][d.itConsumerReportId].dateReported) {
-            var dateReported =
-              reportingData[selectedConsumerId][d.itConsumerReportId].dateReported.split(' ')[0];
-            reportingData[selectedConsumerId][d.itConsumerReportId].dateReported =
-              UTIL.formatDateToIso(dateReported);
+            var dateReported = reportingData[selectedConsumerId][d.itConsumerReportId].dateReported.split(' ')[0];
+            reportingData[selectedConsumerId][d.itConsumerReportId].dateReported = UTIL.formatDateToIso(dateReported);
           }
         }
       });
@@ -3661,10 +3602,7 @@ var consumerReview = (function () {
           reviewData[selectedConsumerId][selectedReviewId].reviewedBy = tmpReviewedBy;
         }
         const currentReviewedBy = reviewData[selectedConsumerId][selectedReviewId].reviewedBy;
-        if (
-          $.session.incidentTrackingReviewedBy &&
-          (!currentReviewedBy || currentReviewedBy === '')
-        ) {
+        if ($.session.incidentTrackingReviewedBy && (!currentReviewedBy || currentReviewedBy === '')) {
           reviewData[selectedConsumerId][selectedReviewId].reviewedBy = $.session.PeopleId;
         }
 
@@ -3779,8 +3717,7 @@ var consumerReview = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -3868,10 +3805,7 @@ var consumerReview = (function () {
     });
 
     reviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
         selectedReviewId = event.target.id;
         setFormDataDefaults(reviewData[selectedConsumerId][selectedReviewId]);
         showForm(true);
@@ -3937,10 +3871,8 @@ var consumerReview = (function () {
 
           // format dates
           if (reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate) {
-            var reviewDate =
-              reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate.split(' ')[0];
-            reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate =
-              UTIL.formatDateToIso(reviewDate);
+            var reviewDate = reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate.split(' ')[0];
+            reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate = UTIL.formatDateToIso(reviewDate);
           }
         }
       });
@@ -4189,12 +4121,7 @@ const consumerBehavior = (function () {
           };
         }
 
-        if (
-          tmpBehaviorTypeId !== null ||
-          tmpStartTime !== null ||
-          tmpEndTime !== null ||
-          tmpOccurrences !== null
-        ) {
+        if (tmpBehaviorTypeId !== null || tmpStartTime !== null || tmpEndTime !== null || tmpOccurrences !== null) {
           behaviorData[selectedConsumerId][selectedBehaviorId].updated = true;
         }
 
@@ -4345,8 +4272,7 @@ const consumerBehavior = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -4415,9 +4341,7 @@ const consumerBehavior = (function () {
     keys.forEach(key => {
       let behaviorDATA = behaviorData[selectedConsumerId][key];
 
-      let filterBehaviorTypes = behaviorTypes.filter(
-        type => type.itBehaviorTypeId === behaviorDATA.behaviorTypeId,
-      );
+      let filterBehaviorTypes = behaviorTypes.filter(type => type.itBehaviorTypeId === behaviorDATA.behaviorTypeId);
       let behaviorType = filterBehaviorTypes[0] ? filterBehaviorTypes[0].behaviorTypeName : '';
       let timeLength = getTimeLength(behaviorDATA.startTime, behaviorDATA.endTime);
       let occurrencesNum = behaviorDATA.occurrences;
@@ -4437,10 +4361,7 @@ const consumerBehavior = (function () {
     });
 
     reviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
         selectedBehaviorId = event.target.id;
         setFormDataDefaults(behaviorData[selectedConsumerId][selectedBehaviorId]);
         showForm(true);
