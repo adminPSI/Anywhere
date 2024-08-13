@@ -56,7 +56,7 @@ namespace Anywhere.service.Data.ESign
                     HttpContext context = HttpContext.Current;
                     string userIPAddress = context.Request.ServerVariables["REMOTE_ADDR"];
 
-                    esdg.generateAuthenticationCode(tempUserId, latitude, longitude, transaction, userIPAddress);
+                    esdg.generateAuthenticationCode(tempUserId, latitude, longitude, userIPAddress, transaction);
                 return "success";
             }
             catch (Exception ex)
