@@ -24,11 +24,16 @@ const OOD = (() => {
     //filter
     let serviceDateStartInput;
     let serviceDateEndInput;
+    let createServiceDateStartInput;
+    let createServiceDateEndInput;
+    
     let employeeDropdown;
     let servicesDropdown;
     let referenceNumbersDropdown;
     let createreferenceNumbersDropdown;
     let filterValues;
+    let thisStartDate;
+    let thisEndDate;
 
     let btnWrap;
     let serviceDateStartBtnWrap;
@@ -866,16 +871,20 @@ const OOD = (() => {
 
     // build Filter button, which filters the data displayed on the OOD Entries Table
     function buildNewFilterBtn() {
-        if (!filterValues)
+        if (!filterValues) {
 
-        var thisStartDate = new Date();
-        thisStartDate.setDate(1); // Set to the first day of the current month
-        thisStartDate.setMonth(thisStartDate.getMonth() - 1); // Go back one month
-        thisStartDate.setDate(1); // Ensure it's the first day of the previous month
+             if (!thisStartDate) {
+                thisStartDate = new Date();
+                thisStartDate.setDate(1); // Set to the first day of the current month
+                thisStartDate.setMonth(thisStartDate.getMonth() - 1); // Go back one month
+                 thisStartDate.setDate(1); // Ensure it's the first day of the previous month
+             }
 
-        let thisEndDate = new Date();
-        thisEndDate.setDate(0); // Sets the date to the last day of the previous month
-		
+            if (!thisEndDate) {
+                thisEndDate = new Date();
+                thisEndDate.setDate(0); // Sets the date to the last day of the previous month
+            }
+
             filterValues = {
                 token: $.session.Token,
                // serviceDateStart: UTIL.formatDateFromDateObj(dates.subDays(new Date(), 30)),
@@ -889,6 +898,7 @@ const OOD = (() => {
                 serviceName: '',
                 referenceNumber: '%',
             };
+        }
     }
 
     // build Edit Employers  button,
@@ -1375,13 +1385,13 @@ const OOD = (() => {
             dropdownId: 'employeeDropdown',
         });
 
-        serviceDateStartInput = input.build({
+        createServiceDateStartInput = input.build({
             type: 'date',
             label: 'Service Date Start',
             style: 'secondary',
             value: filterValues.serviceDateStart,
         });
-        serviceDateEndInput = input.build({
+        createServiceDateEndInput = input.build({
             type: 'date',
             label: 'Service Date End',
             style: 'secondary',
@@ -1415,9 +1425,9 @@ const OOD = (() => {
   
             createfilterPopup.appendChild(employeeDropdown);
    
-            createfilterPopup.appendChild(serviceDateStartInput);
+            createfilterPopup.appendChild(createServiceDateStartInput);
      
-            createfilterPopup.appendChild(serviceDateEndInput);
+            createfilterPopup.appendChild(createServiceDateEndInput);
    
             createfilterPopup.appendChild(createreferenceNumbersDropdown);
             createfilterPopup.appendChild(btnWrap);
@@ -1432,6 +1442,7 @@ const OOD = (() => {
             formsPopup.remove();
 
         POPUP.show(createfilterPopup);
+
     }
 
     async function createfilterPopupDoneBtn(formNumber) {
@@ -1445,18 +1456,20 @@ const OOD = (() => {
 
 
     function createeventListeners() {
-        serviceDateStartInput.addEventListener('change', event => { 
+        createServiceDateStartInput.addEventListener('input', event => { 
             if (event.target.value !== '') {
                 filterValues.serviceDateStart = event.target.value;
             } else {
                 event.target.value = filterValues.serviceDateStart;
+                populatecreateReferenceNumberDropdown(formNumber);
             } 
         });
-        serviceDateEndInput.addEventListener('change', event => {          
+        createServiceDateEndInput.addEventListener('input', event => {          
             if (event.target.value !== '') { 
                 filterValues.serviceDateEnd = event.target.value;
             } else {
                 event.target.value = filterValues.serviceDateEnd;
+                populatecreateReferenceNumberDropdown(formNumber);
             }
         });
         employeeDropdown.addEventListener('change', event => {
