@@ -8,6 +8,7 @@ using Anywhere.service.Data.Defaults;
 using Anywhere.service.Data.DocumentConversion;
 using Anywhere.service.Data.Employment;
 using Anywhere.service.Data.eSignature___OneSpan;
+using Anywhere.service.Data.PDFExtractor;
 using Anywhere.service.Data.Plan;
 using Anywhere.service.Data.Plan.Assessment;
 using Anywhere.service.Data.PlanContactInformation;
@@ -24,6 +25,7 @@ using Anywhere.service.Data.Transportation;
 using PDFGenerator;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
@@ -5407,6 +5409,14 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getRosterToDoListWidgetData/")]
         RosterWorker.RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/importedOutcomesPDFData/")]
+        ExtractedTables importedOutcomesPDFData(string token, List<Stream> file);
 
     }
 

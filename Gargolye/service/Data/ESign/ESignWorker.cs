@@ -53,7 +53,10 @@ namespace Anywhere.service.Data.ESign
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
                 try
             {
-                esdg.generateAuthenticationCode(tempUserId, latitude, longitude, transaction);
+                    HttpContext context = HttpContext.Current;
+                    string userIPAddress = context.Request.ServerVariables["REMOTE_ADDR"];
+
+                    esdg.generateAuthenticationCode(tempUserId, latitude, longitude, transaction, userIPAddress);
                 return "success";
             }
             catch (Exception ex)
@@ -139,9 +142,6 @@ namespace Anywhere.service.Data.ESign
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
                 try
                 {
-                    HttpContext context = HttpContext.Current;
-                    string userIPAddress = context.Request.ServerVariables["REMOTE_ADDR"];
-
                     string signatureImageString = "";
 
                     DateTime currentDateTime = DateTime.UtcNow;
@@ -153,9 +153,7 @@ namespace Anywhere.service.Data.ESign
                     // Update the DB with the signature data
                     esdg.updateESignFormValues(formData.peopleId, formData.planId, formData.csChangeMind, formData.csChangeMindSSAPeopleId, formData.csContact, formData.csContactProviderVendorId,
                     formData.csContactInput, formData.csRightsReviewed, formData.csAgreeToPlan, formData.csFCOPExplained, formData.csDueProcess, formData.csResidentialOptions, formData.csSupportsHealthNeeds,
-                    formData.csTechnology, formData.dissentAreaDisagree, formData.dissentHowToAddress, dateString, signatureImageString, 
-                    //userIPAddress,
-                    transaction);
+                    formData.csTechnology, formData.dissentAreaDisagree, formData.dissentHowToAddress, dateString, signatureImageString, transaction);
 
                     // Send confirmation email to the case manager that the plan was signed
                     esdg.sendSignedConfirmationEmail(formData.planId, formData.peopleId, transaction);

@@ -15,7 +15,7 @@ using Anywhere.service.Data.Employment;
 using Anywhere.service.Data.ESign;
 using Anywhere.service.Data.eSignature___OneSpan;
 using Anywhere.service.Data.PDF_Forms;
-//using Anywhere.service.Data.PDFExtractor;
+using Anywhere.service.Data.PDFExtractor;
 using Anywhere.service.Data.Plan;
 using Anywhere.service.Data.Plan.Assessment;
 using Anywhere.service.Data.PlanContactInformation;
@@ -124,7 +124,7 @@ namespace Anywhere
         FinalizationButtonWorker fbw = new FinalizationButtonWorker();
         ESignWorker esw = new ESignWorker();
         ESignDataGetter esdg = new ESignDataGetter();
-        //PDFExtractor pdfe = new PDFExtractor();
+        PDFExtractor pdfe = new PDFExtractor();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -4143,10 +4143,10 @@ namespace Anywhere
             return rosterWorker.getRosterToDoListWidgetData(token, responsiblePartyId);
         }
 
-        //public string importedOutcomesPDFData(string token, List<Stream> files)
-        //{
-        //    return pdfe.importedOutcomesPDFData(token, files);
-        //}
+        public ExtractedTables importedOutcomesPDFData(string token, List<Stream> file)
+        {
+            return pdfe.importedOutcomesPDFData(token, file);
+        }
 
     }
 }
