@@ -1461,7 +1461,8 @@ var timeApproval = (function () {
         var isSelected = event.target.classList.contains('selected');
         var entryStatus = event.target.dataset.status;
         var entryId = event.target.id;
-
+        if (event.target.childNodes.length == 1) return; //
+            
         //capture rowName, rowDate, rowStartTime, rowEndTime, rowWorkCode
         var rowName = event.target.childNodes[1].innerText;
         var rowDate = event.target.childNodes[2].innerText;
@@ -1754,8 +1755,8 @@ var timeApproval = (function () {
         headers[2].setAttribute('data-type', 'date'); // Date
         headers[3].setAttribute('data-type', 'date'); // Start Time
         headers[4].setAttribute('data-type', 'date'); // End Time 
-        headers[5].setAttribute('data-type', 'number'); // Hours
-        headers[5].setAttribute('data-type', 'string'); // Location
+        headers[5].setAttribute('data-type', 'number'); // Hours   
+        headers[6].setAttribute('data-type', 'string'); // Location
         headers[7].setAttribute('data-type', 'string'); // Work Code 
 
         DOM.ACTIONCENTER.appendChild(topNav);

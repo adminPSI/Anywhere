@@ -186,7 +186,7 @@
         const headers = cfTable.querySelectorAll('.header div');
         headers[0].setAttribute('data-type', 'string'); // Name
         headers[1].setAttribute('data-type', 'string'); // Account
-        headers[2].setAttribute('data-type', 'string'); // Balance
+        headers[2].setAttribute('data-type', 'amount'); // Balance
         headers[3].setAttribute('data-type', 'date'); // Last Transaction 
 
         widgetBody.appendChild(cfTable);
@@ -202,8 +202,8 @@
             var lastTransaction = td.lastTransaction;
 
             return {
-                id: ID,
-                values: [name, account, balance == '' ? '' : '$' + balance, lastTransaction == '' ? '' : moment(lastTransaction).format('MM/DD/YY')],
+                id: ID,  
+                values: [name, account, balance == '' ? '$0.00' : '$' + balance, lastTransaction == '' ? '' : moment(lastTransaction).format('MM/DD/YY')],
                 attributes: [
                     { key: 'data-consumer-id', value: td.Id }, { key: 'consumerId', value: td.Id }, { key: 'registerId', value: td.registerId } 
                 ],

@@ -96,10 +96,10 @@ const TRANS_manageRoutes = (function () {
         headers[2].setAttribute('data-type', 'string'); // Driver
         headers[3].setAttribute('data-type', 'string'); // Vehicle
         headers[4].setAttribute('data-type', 'string'); // Location 
-        headers[5].setAttribute('data-type', 'number'); // Start Odometer
-        headers[5].setAttribute('data-type', 'number'); // End Odometer
+        headers[5].setAttribute('data-type', 'number'); // Start Odometer   
+        headers[6].setAttribute('data-type', 'number'); // End Odometer   
         headers[7].setAttribute('data-type', 'date'); // Start Time 
-        headers[8].setAttribute('data-type', 'date'); // Stop Time 
+        headers[8].setAttribute('data-type', 'date'); // Stop Time    
 
         DOM.ACTIONCENTER.appendChild(backButton);
         DOM.ACTIONCENTER.appendChild(filteredByDisplay);

@@ -312,7 +312,12 @@ const communityBasedAssessmentForm = (() => {
     inputContainer0.appendChild(endTimeInput);
 
     const inputContainer1 = document.createElement('div');
-    inputContainer1.classList.add('ood_form4monthlyplacement_inputContainer1'); // new _OOD.scss setting  -- ood_form8monthlyplacement_inputContainer1
+    inputContainer1.classList.add('ood_form8monthlyplacement_inputContainer1'); // new _OOD.scss setting  -- ood_form8monthlyplacement_inputContainer1
+   
+     const wrapHeading = document.createElement('div');
+     wrapHeading.innerHTML = '<p>Choose either a Position or Employer.</p>';
+
+    inputContainer1.appendChild(wrapHeading);
     inputContainer1.appendChild(positionDropdown);
     inputContainer1.appendChild(otherEmployerDropdown);
     inputContainer1.appendChild(addEmployersBtn);
@@ -541,10 +546,14 @@ const communityBasedAssessmentForm = (() => {
       // return 'success';
     }
 
+    const employerWrap = document.getElementsByClassName("ood_form8monthlyplacement_inputContainer1");
+
     if (!position || position === '') {
           if (!employer || employer === '') {
             positionDropdown.classList.add('error');
             otherEmployerDropdown.classList.add('error'); 
+            
+            employerWrap[0].classList.add('error');
             let otheremployerdropdown = document.getElementById("otherEmployerDropdown");
             otheremployerdropdown.disabled = false; 
             let positiondropdown = document.getElementById("positionDropdown");
@@ -552,6 +561,7 @@ const communityBasedAssessmentForm = (() => {
           } else {
             positionDropdown.classList.remove('error');
             otherEmployerDropdown.classList.remove('error'); 
+            employerWrap[0].classList.remove('error');
             let otheremployerdropdown = document.getElementById("otherEmployerDropdown");
             otheremployerdropdown.disabled = false; 
             let positiondropdown = document.getElementById("positionDropdown");
@@ -561,6 +571,7 @@ const communityBasedAssessmentForm = (() => {
     } else {
       positionDropdown.classList.remove('error');  
       otherEmployerDropdown.classList.remove('error');  
+      employerWrap[0].classList.remove('error');
       let otheremployerdropdown = document.getElementById("otherEmployerDropdown");
       otheremployerdropdown.disabled = true;
       let positiondropdown = document.getElementById("positionDropdown");

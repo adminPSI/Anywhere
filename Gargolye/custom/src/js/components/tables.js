@@ -404,12 +404,14 @@ var table = (function () {
             const type = headers[index].getAttribute('data-type');
             switch (type) {
                 case 'number':
-                    return parseFloat(content);
+                    return parseFloat(content.replace('', 0).replace(',', '')); 
+                case 'amount':
+                    return parseFloat(content.replace('$', ''));      
                 case 'date':
-                    return Date.parse(content);
+                    return Date.parse(content.replace(' ', ''));  
                 case 'string':
                 default:
-                    return content;
+                    return content.replace(' ', ''); 
             }
         };
 

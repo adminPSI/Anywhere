@@ -167,9 +167,18 @@ const CN_CaseLoadWidget = (function () {
         };
         const caseLoadTable = table.build(tableOptions);
 
+        // Set the data type for each header, for sorting purposes
+        const headers = caseLoadTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Consumer
+        headers[1].setAttribute('data-type', 'string'); // Resident Number
+        headers[2].setAttribute('data-type', 'date'); // Last Note     
+
         widgetBody.innerHTML = '';
         widgetBody.appendChild(consumerCountlbl);
         widgetBody.appendChild(caseLoadTable);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(caseLoadTable);
 
         let caseLoadTableBody = document.getElementsByClassName('table__body')[0];
         caseLoadTableBody.classList.add('caseLoadTableBody');

@@ -260,7 +260,7 @@ const ConsumerFinances = (() => {
         });
 
         const editAccountBtn = button.build({
-            text: 'Edit Account',
+            text: 'Edit Accounts',
             style: 'secondary',
             type: 'contained',
             callback: async () => {        
