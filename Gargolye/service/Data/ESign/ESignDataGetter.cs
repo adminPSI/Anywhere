@@ -92,7 +92,7 @@ namespace Anywhere.service.Data.ESign
 		}
 
 
-		public string generateAuthenticationCode(string tempUserId, string latitude, string longitude, DistributedTransaction transaction)
+		public string generateAuthenticationCode(string tempUserId, string latitude, string longitude, string userIPAddress, DistributedTransaction transaction)
 		{
 			logger.debug("generateAuthenticationCode");
 
@@ -100,8 +100,9 @@ namespace Anywhere.service.Data.ESign
 			{
 				{ "@tempUserId", tempUserId },
 				{ "@latitude", latitude },
-				{ "@longitude", longitude }
-			};
+				{ "@longitude", longitude },
+                { "@userIPAddress", userIPAddress },
+            };
 
 			try
 			{
@@ -195,7 +196,6 @@ namespace Anywhere.service.Data.ESign
            string dissentHowToAddress,
            string dateSigned,
            string signatureImage,
-		   //string userIPAddress,
            DistributedTransaction transaction)
         {
             logger.debug("updateESignFormValues");
@@ -220,7 +220,6 @@ namespace Anywhere.service.Data.ESign
                 { "@dissentHowToAddress", dissentHowToAddress },
                 { "@dateSIgned", dateSigned },
                 { "@signatureImage", signatureImage },
-				//{ "@userIPAddress", userIPAddress },
             };
 
             try
