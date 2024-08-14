@@ -514,8 +514,29 @@ const roster2 = (function () {
         if (closeFilter == 'selectedLocationNameBtn') {
             selectedLocationName = 'All';
             selectedLocationId = '0';
-            selectedGroupName = 'Everyone';
-            selectedGroupCode = 'ALL';
+            
+            if (($.session.formsCaseload == true && $.loadedApp === 'forms')
+                || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'authorizations')
+                || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
+                || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+                || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
+                || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
+                || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
+                || ($.session.WaitingListAssessmentCaseLoad === true && $.loadedApp === '')
+                || ($.session.WorkshopCaseLoad === true && $.loadedApp === 'workshop')
+                || ($.session.ConsumerFinanceCaseLoad === true && $.loadedApp === 'ConsumerFinances')
+                || ($.session.incidentTrackingCaseLoad === true && $.loadedApp === 'incidenttracking')
+                || ($.session.OODCaseLoad === true && $.loadedApp === 'OOD')
+                || ($.session.SingleEntryCaseLoad === true && $.loadedApp === 'timeEntry')
+                || ($.session.transportationCaseLoad === true && $.loadedApp === 'transportation'))
+            { 
+                selectedGroupName = 'Caseload'; 
+                selectedGroupCode = 'CAS'; 
+            } else {
+                selectedGroupName = 'Everyone';
+                selectedGroupCode = 'ALL';
+            }
+
             btnWrap.removeChild(selectedLocationNameBtnWrap);
             const groupResults = await getConsumerGroupsData(selectedLocationId);
             rosterGroups = groupResults;
