@@ -613,6 +613,12 @@ button.evv-highlight {
         color: $font-dark;
     }
 
+    .totalHour {
+        float: right;
+        font-weight: 500;
+        margin-right: 3px;
+    } 
+
     .dateWrap {
         justify-content: space-between;
         margin-bottom: -10px;
