@@ -1434,7 +1434,7 @@ const OOD = (() => {
 
         populateEmployeeDropdown();
         populatecreateReferenceNumberDropdown(formNumber);
-        createeventListeners();
+        createeventListeners(formNumber);
         // setupFilterEvent();
 
         //return filterPopup;
@@ -1447,7 +1447,7 @@ const OOD = (() => {
 
     async function createfilterPopupDoneBtn(formNumber) {
         POPUP.hide(createfilterPopup);
-        createeventListeners();
+        createeventListeners(formNumber);
         generateAndTrackFormProgress(formNumber);
          
         loadOODLanding();
@@ -1455,21 +1455,23 @@ const OOD = (() => {
     }
 
 
-    function createeventListeners() {
+    function createeventListeners(formNumber) {
         createServiceDateStartInput.addEventListener('input', event => { 
             if (event.target.value !== '') {
                 filterValues.serviceDateStart = event.target.value;
+                populatecreateReferenceNumberDropdown(formNumber);
             } else {
                 event.target.value = filterValues.serviceDateStart;
-                populatecreateReferenceNumberDropdown(formNumber);
+                
             } 
         });
         createServiceDateEndInput.addEventListener('input', event => {          
             if (event.target.value !== '') { 
                 filterValues.serviceDateEnd = event.target.value;
+                populatecreateReferenceNumberDropdown(formNumber);
             } else {
                 event.target.value = filterValues.serviceDateEnd;
-                populatecreateReferenceNumberDropdown(formNumber);
+                
             }
         });
         employeeDropdown.addEventListener('change', event => {
