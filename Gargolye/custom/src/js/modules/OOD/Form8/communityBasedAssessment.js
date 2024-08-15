@@ -72,7 +72,7 @@ const communityBasedAssessmentForm = (() => {
       endTime = caseNoteData[0].endTime; //TODO JOE: Case_Notes.End_Time
       SAMLevel = caseNoteData[0].SAMLevel; //TODO JOE: Case_Notes.Service_Area_Modifier (populates with N/A, 1, 2, or 3)
       position = caseNoteData[0].position;
-      employer = caseNoteData[0].employer;
+      employer = caseNoteData[0].employerId;
       contactMethod = caseNoteData[0].contactMethod; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.contact_method
       jobTaskQuantityIndicators = caseNoteData[0].jobTaskQuantityIndicators; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.quantity_indicators
       narrative = caseNoteData[0].narrative; //TODO JOE: emp_ood.narrative
@@ -320,7 +320,7 @@ const communityBasedAssessmentForm = (() => {
     inputContainer1.appendChild(wrapHeading);
     inputContainer1.appendChild(positionDropdown);
     inputContainer1.appendChild(otherEmployerDropdown);
-    inputContainer1.appendChild(addEmployersBtn);
+    if ($.session.OODInsertEmployers) inputContainer1.appendChild(addEmployersBtn);
 
     const inputContainer2 = document.createElement('div');
     inputContainer2.classList.add('ood_form4monthlyplacement_inputContainer2');
@@ -419,7 +419,7 @@ const communityBasedAssessmentForm = (() => {
     const index = data.findIndex(x => x.id == position);
     if (index === -1) {
       // case note contactType not in the contactTypes DDL
-      employer = '';
+      // employer = ''; 
     } else {
      // employer = '0' // 'SEE POSITION DROPDOWN';
     }
@@ -548,7 +548,7 @@ const communityBasedAssessmentForm = (() => {
 
     const employerWrap = document.getElementsByClassName("ood_form8monthlyplacement_inputContainer1");
 
-    if (!position || position === '') {
+    if (!position || position === '' || position === '0') {
           if (!employer || employer === '') {
             positionDropdown.classList.add('error');
             otherEmployerDropdown.classList.add('error'); 
