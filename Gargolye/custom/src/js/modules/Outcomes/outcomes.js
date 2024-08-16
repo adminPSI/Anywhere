@@ -273,9 +273,11 @@ var outcomes = (function () {
       resetOutcomeSaveData();
       getConsumersWithRemainingGoals();
       locationSecondaryId = 0;
-      setTimeout(function () {
+      setTimeout(async () => {
         successfulSave.hide();
-        loadCardView(selectedConsumerObj);
+        await loadCardView(selectedConsumerObj);
+        applyOutComeFilter();
+        //updateCurrentFilterDisplay(currService, currOutcome);
       }, 1000);
     });
   }
@@ -298,9 +300,9 @@ var outcomes = (function () {
     goalnote = goalnoteInput.value;
   }
   function deleteObjectiveActivity() {
-    outcomesAjax.deleteGoal(activityId, selectedConsumerId, currDate, function () {
+    outcomesAjax.deleteGoal(activityId, selectedConsumerId, currDate, async () => {
       POPUP.hide(detailsPopup);
-      loadCardView(selectedConsumerObj);
+      await loadCardView(selectedConsumerObj);
     });
   }
 
@@ -673,12 +675,12 @@ var outcomes = (function () {
       outcomesPrompts = results;
       outcomesAjax.getGoalsCommunityIntegrationLevelDropdown(function (ciResults) {
         ciData = ciResults;
-        outcomesAjax.getDaysBackForEditingGoalsAndUseConsumerLocation(selectedConsumerId, function (results) {
+        outcomesAjax.getDaysBackForEditingGoalsAndUseConsumerLocation(selectedConsumerId, async function (results) {
           daysBack = results[0].setting_value;
           daysBackDate = convertDaysBack(daysBack);
           useConsumerLocation = results[0].outcomes_use_consumer_location;
           defaultPrimaryLocation = results[0].consumer_location;
-          loadCardView(selectedConsumerObj);
+          await loadCardView(selectedConsumerObj);
         });
       });
     });
@@ -929,7 +931,7 @@ var outcomes = (function () {
 
   // DATE INPUT
   //------------------------------------
-  function buildFuckingDateInput() {
+  function buildDateInput() {
     var dateinput = input.build({
       id: 'outcomeDatePicker',
       label: 'Date',
@@ -1899,7 +1901,7 @@ var outcomes = (function () {
     loadCardView(myval);
   }
 
-  function loadCardView(selectedConsumer) {
+  async function loadCardView(selectedConsumer) {
     // DOM.scrollToTopOfPage();
     selectedConsume = selectedConsumer;
     DOM.clearActionCenter();
@@ -1910,7 +1912,7 @@ var outcomes = (function () {
     //Date Input
     var date_Input = document.querySelector('.dateInput');
     if (!date_Input) {
-      dateInput = buildFuckingDateInput();
+      dateInput = buildDateInput();
       topFilterDateWrap.appendChild(dateInput);
     }
 
@@ -1968,6 +1970,7 @@ var outcomes = (function () {
     ]);
     editOutcomeBtn = editOutcomesServicesButton();
     topFilterDateWrap.appendChild(editOutcomeBtn);
+
     if (
       $.session.InsertOutcomes == true ||
       $.session.UpdateOutcomes == true ||
@@ -2005,10 +2008,12 @@ var outcomes = (function () {
 
     //Main section & tabs
     var outcomesTabs = buildCardContainer(selectedConsumer);
-    //Build and populate card overview
-    outcomesAjax.getGoals(selectedConsumerId, currDate, res => loadOutcomesCards(res));
-
     DOM.ACTIONCENTER.appendChild(outcomesTabs);
+
+    //Build and populate card overview
+    // outcomesAjax.getGoalsAsync(selectedConsumerId, currDate, res => loadOutcomesCards(res));
+    const goalsResp = await outcomesAjax.getGoalsAsync(selectedConsumerId, currDate);
+    loadOutcomesCards(goalsResp);
   }
   function loadOutcomesCards(results) {
     sortOutcomes(results);

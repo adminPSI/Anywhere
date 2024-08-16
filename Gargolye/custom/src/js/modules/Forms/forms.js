@@ -138,7 +138,7 @@
         const headers = oTable.querySelectorAll('.header div');
         headers[1].setAttribute('data-type', 'string'); // Type
         headers[2].setAttribute('data-type', 'date'); //Completion 
-        headers[3].setAttribute('data-type', 'date'); // Last Update 
+        headers[3].setAttribute('data-type', 'string'); // Last Update    
         headers[4].setAttribute('data-type', 'string'); // User Updated
 
 
