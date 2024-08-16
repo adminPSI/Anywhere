@@ -277,7 +277,6 @@ var outcomes = (function () {
         successfulSave.hide();
         await loadCardView(selectedConsumerObj);
         applyOutComeFilter();
-        //updateCurrentFilterDisplay(currService, currOutcome);
       }, 1000);
     });
   }
@@ -421,16 +420,16 @@ var outcomes = (function () {
   // Required Fields
   //------------------------------------
   function checkRequiredFields() {
-    var showAttempts = successDetails.Show_Attempts;
-    var showPrompts = successDetails.Show_Prompts;
-    var showTime = successDetails.Show_Time;
-    var showCI = successDetails.Show_Community_Integration;
+    var showAttempts = successDetails?.Show_Attempts;
+    var showPrompts = successDetails?.Show_Prompts;
+    var showTime = successDetails?.Show_Time;
+    var showCI = successDetails?.Show_Community_Integration;
 
-    var attemptsRequired = successDetails.Attempts_Required;
-    var promptsRequired = successDetails.Prompt_Required;
-    var timeRequired = successDetails.Times_Required;
-    var ciRequired = successDetails.Community_Integration_Required;
-    var noteRequired = successDetails.Notes_Required;
+    var attemptsRequired = successDetails?.Attempts_Required;
+    var promptsRequired = successDetails?.Prompt_Required;
+    var timeRequired = successDetails?.Times_Required;
+    var ciRequired = successDetails?.Community_Integration_Required;
+    var noteRequired = successDetails?.Notes_Required;
 
     var errorFree = true;
 
