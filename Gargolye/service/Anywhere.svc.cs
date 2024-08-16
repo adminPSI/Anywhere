@@ -119,6 +119,7 @@ namespace Anywhere
         ReportBuilderWorker rbw = new ReportBuilderWorker();
         AuthorizationWorker authWorker = new AuthorizationWorker();
         OODFormWorker OODfw = new OODFormWorker();
+        OODFormDataGetter OODFDG = new OODFormDataGetter();
         PlanValidationWorker pv = new PlanValidationWorker();
         WaitingListWorker wlw = new WaitingListWorker();
         FinalizationButtonWorker fbw = new FinalizationButtonWorker();
@@ -3235,6 +3236,11 @@ namespace Anywhere
         public string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId, string serviceId)
         {
             return Odg.insertForm8MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId, serviceId);
+        }
+
+        public string OODForm8GetServiceGoals(string peopleId)
+        {
+            return OODFDG.OODForm8GetServiceGoals(peopleId);
         }
 
         public OODWorker.Form10TransportationData[] getForm10TransportationData(string token, string OODTransportationId)

@@ -4510,6 +4510,15 @@ namespace Anywhere
             UriTemplate = "/insertForm8MonthlySummary/")]
         string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId, string serviceId);
 
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/OODForm8GetServiceGoals/")]
+        string OODForm8GetServiceGoals(string peopleId);
+
         [OperationContract]
         [WebInvoke(Method = "POST",
           BodyStyle = WebMessageBodyStyle.Wrapped,
