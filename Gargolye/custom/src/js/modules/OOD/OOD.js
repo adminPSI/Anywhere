@@ -966,7 +966,7 @@ const OOD = (() => {
             classNames: ['EmployeeGoal', 'btnWrap'],
             
             callback: () => {
-                // showCreateFormsPopup();
+                 buildEmployeeGoalPopUp();
             },
         });
     }
@@ -1394,6 +1394,11 @@ const OOD = (() => {
         // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
     }
 
+    function employeeGoalPopupCancelBtn() {
+        POPUP.hide(employeeGoalPopup);
+        // OODForm4MonthlyPlacement.init();
+        // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
+    }
      // build Create Form  pop-up that displays when a Form is selected
      function buildCreateFormPopUp(formNumber) {
 
@@ -1535,6 +1540,55 @@ const OOD = (() => {
             filterValues.referenceNumber = event.target.value;
         });
         
+    }
+
+    function buildEmployeeGoalPopUp() {
+        // popup
+        employeeGoalPopup = POPUP.build({
+            classNames: ['rosterFilterPopup'],
+            hideX: true,
+        });
+        
+
+	const employeeGoalTextarea = input.build({
+      label: 'Employee Goal',
+      type: 'textarea',
+      style: 'secondary',
+      classNames: 'autosize',
+      // value: importantTo,
+     // charLimit: charLimits.importantTo,
+      forceCharLimit: true,
+      callback: e => {
+        //importantTo = e.target.value;  
+      },
+    });
+    employeeGoalTextarea.classList.add('importantTo');
+		
+        // apply filters button
+        APPLY_BTN = button.build({
+            text: 'Apply',
+            style: 'secondary',
+            type: 'contained',
+            // callback: async () => employeeGoalPopupDoneBtn(),
+        });
+        CANCEL_BTN = button.build({
+            text: 'Cancel',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => employeeGoalPopupCancelBtn(),
+        });
+		
+		
+        var btnWrap = document.createElement('div');
+        btnWrap.classList.add('btnWrap');
+        btnWrap.appendChild(APPLY_BTN);
+        btnWrap.appendChild(CANCEL_BTN);
+
+		employeeGoalPopup.appendChild(employeeGoalTextarea);
+	    employeeGoalPopup.appendChild(btnWrap);
+
+        //return filterPopup;
+        POPUP.show(employeeGoalPopup);
     }
 
     function init() {
