@@ -196,9 +196,9 @@ const ConsumerFinances = (() => {
         headers[1].setAttribute('data-type', 'string'); // Account
         headers[2].setAttribute('data-type', 'string'); // Payee
         headers[3].setAttribute('data-type', 'string'); // Category 
-        headers[4].setAttribute('data-type', 'string'); // Amount 
+        headers[4].setAttribute('data-type', 'amount'); // Amount 
         headers[5].setAttribute('data-type', 'string'); // Check No
-        headers[6].setAttribute('data-type', 'string'); // Balance  
+        headers[6].setAttribute('data-type', 'amount'); // Balance  
         headers[7].setAttribute('data-type', 'string'); // Enter By 
 
         // Call function to allow table sorting by clicking on a header.
