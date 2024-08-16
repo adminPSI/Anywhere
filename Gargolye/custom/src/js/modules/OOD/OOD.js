@@ -24,11 +24,17 @@ const OOD = (() => {
     //filter
     let serviceDateStartInput;
     let serviceDateEndInput;
+    let createServiceDateStartInput;
+    let createServiceDateEndInput;
+    
     let employeeDropdown;
     let servicesDropdown;
     let referenceNumbersDropdown;
     let createreferenceNumbersDropdown;
     let filterValues;
+    let createFilterValues;
+    let thisStartDate;
+    let thisEndDate;
 
     let btnWrap;
     let serviceDateStartBtnWrap;
@@ -866,29 +872,21 @@ const OOD = (() => {
 
     // build Filter button, which filters the data displayed on the OOD Entries Table
     function buildNewFilterBtn() {
-        if (!filterValues)
+        if (!filterValues) {
 
-        var thisStartDate = new Date();
-        thisStartDate.setDate(1); // Set to the first day of the current month
-        thisStartDate.setMonth(thisStartDate.getMonth() - 1); // Go back one month
-        thisStartDate.setDate(1); // Ensure it's the first day of the previous month
-
-        let thisEndDate = new Date();
-        thisEndDate.setDate(0); // Sets the date to the last day of the previous month
-		
+         
             filterValues = {
                 token: $.session.Token,
-               // serviceDateStart: UTIL.formatDateFromDateObj(dates.subDays(new Date(), 30)),
-               // serviceDateEnd: UTIL.getTodaysDate(),
-                serviceDateStart: thisStartDate.toISOString().split('T')[0],
-                serviceDateEnd: thisEndDate.toISOString().split('T')[0],
-
+                serviceDateStart: UTIL.formatDateFromDateObj(dates.subDays(new Date(), 30)),
+               serviceDateEnd: UTIL.getTodaysDate(),
+              
                 userId: $.session.UserId,
                 userName: $.session.LName + ', ' + $.session.Name,
                 serviceId: '%',
                 serviceName: '',
                 referenceNumber: '%',
             };
+        }
     }
 
     // build Edit Employers  button,
@@ -1262,7 +1260,7 @@ const OOD = (() => {
         var consumerIds = selectedConsumerIds.join(', ');
 
         const { getConsumerReferenceNumbersResult: referencenumbers } =
-            await OODAjax.getConsumerReferenceNumbersAsync(consumerIds, filterValues.serviceDateStart, filterValues.serviceDateEnd, formNumber);
+            await OODAjax.getConsumerReferenceNumbersAsync(consumerIds, createFilterValues.serviceDateStart, createFilterValues.serviceDateEnd, formNumber);
         // const templates = WorkflowViewerComponent.getTemplates();
         let data = referencenumbers.map(referencenumber => ({
             id: referencenumber.referenceNumber,
@@ -1362,8 +1360,36 @@ const OOD = (() => {
         // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
     }
 
-     // build Create Form  pop-up that displays when an Form is selected
+     // build Create Form  pop-up that displays when a Form is selected
      function buildCreateFormPopUp(formNumber) {
+
+        if (!thisStartDate) {
+            thisStartDate = new Date();
+            thisStartDate.setDate(1); // Set to the first day of the current month
+            thisStartDate.setMonth(thisStartDate.getMonth() - 1); // Go back one month
+             thisStartDate.setDate(1); // Ensure it's the first day of the previous month
+         }
+
+        if (!thisEndDate) {
+            thisEndDate = new Date();
+            thisEndDate.setDate(0); // Sets the date to the last day of the previous month
+        }
+
+        createFilterValues = {
+            token: $.session.Token,
+           // serviceDateStart: UTIL.formatDateFromDateObj(dates.subDays(new Date(), 30)),
+           // serviceDateEnd: UTIL.getTodaysDate(),
+            serviceDateStart: thisStartDate.toISOString().split('T')[0],
+            serviceDateEnd: thisEndDate.toISOString().split('T')[0],
+
+            // userId: $.session.UserId,
+            // userName: $.session.LName + ', ' + $.session.Name,
+            // serviceId: '%',
+            // serviceName: '',
+            // referenceNumber: '%',
+        };
+
+
         // popup
         createfilterPopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
@@ -1375,17 +1401,17 @@ const OOD = (() => {
             dropdownId: 'employeeDropdown',
         });
 
-        serviceDateStartInput = input.build({
+        createServiceDateStartInput = input.build({
             type: 'date',
             label: 'Service Date Start',
             style: 'secondary',
-            value: filterValues.serviceDateStart,
+            value: createFilterValues.serviceDateStart,
         });
-        serviceDateEndInput = input.build({
+        createServiceDateEndInput = input.build({
             type: 'date',
             label: 'Service Date End',
             style: 'secondary',
-            value: filterValues.serviceDateEnd,
+            value: createFilterValues.serviceDateEnd,
         });
 
         createreferenceNumbersDropdown = dropdown.build({
@@ -1415,28 +1441,31 @@ const OOD = (() => {
   
             createfilterPopup.appendChild(employeeDropdown);
    
-            createfilterPopup.appendChild(serviceDateStartInput);
+            createfilterPopup.appendChild(createServiceDateStartInput);
      
-            createfilterPopup.appendChild(serviceDateEndInput);
+            createfilterPopup.appendChild(createServiceDateEndInput);
    
             createfilterPopup.appendChild(createreferenceNumbersDropdown);
             createfilterPopup.appendChild(btnWrap);
 
         populateEmployeeDropdown();
         populatecreateReferenceNumberDropdown(formNumber);
-        createeventListeners();
+        createeventListeners(formNumber);
         // setupFilterEvent();
+
+      
 
         //return filterPopup;
         const formsPopup = document.getElementById('createOODFormsPopup');
             formsPopup.remove();
 
         POPUP.show(createfilterPopup);
+
     }
 
     async function createfilterPopupDoneBtn(formNumber) {
         POPUP.hide(createfilterPopup);
-        createeventListeners();
+        createeventListeners(formNumber);
         generateAndTrackFormProgress(formNumber);
          
         loadOODLanding();
@@ -1444,19 +1473,23 @@ const OOD = (() => {
     }
 
 
-    function createeventListeners() {
-        serviceDateStartInput.addEventListener('change', event => { 
+    function createeventListeners(formNumber) {
+        createServiceDateStartInput.addEventListener('input', event => { 
             if (event.target.value !== '') {
-                filterValues.serviceDateStart = event.target.value;
+                createFilterValues.serviceDateStart = event.target.value;
+                populatecreateReferenceNumberDropdown(formNumber);
             } else {
-                event.target.value = filterValues.serviceDateStart;
+                event.target.value = createFilterValues.serviceDateStart;
+                
             } 
         });
-        serviceDateEndInput.addEventListener('change', event => {          
+        createServiceDateEndInput.addEventListener('input', event => {          
             if (event.target.value !== '') { 
-                filterValues.serviceDateEnd = event.target.value;
+                createFilterValues.serviceDateEnd = event.target.value;
+                populatecreateReferenceNumberDropdown(formNumber);
             } else {
-                event.target.value = filterValues.serviceDateEnd;
+                event.target.value = createFilterValues.serviceDateEnd;
+                
             }
         });
         employeeDropdown.addEventListener('change', event => {

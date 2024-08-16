@@ -316,6 +316,7 @@ $.session.OODInsert = false;
 $.session.OODUpdate = false;
 $.session.OODView = false;
 $.session.OODCaseLoad = false;
+$.session.OODInsertEmployers = false;
 
 // Consumer Finance
 $.session.CFDelete = false;
@@ -834,6 +835,9 @@ function setSessionVariables() {
             }
             if (tmpPerm == 'Case Load' || tmpPerm == 'Caseload' || tmpPerm == 'Caseload only') {
                 $.session.OODCaseLoad = true;
+            }
+            if (tmpPerm == 'Insert Employers' || $.session.isPSI == true) {
+                $.session.OODInsertEmployers = true;
             }
         }
 
