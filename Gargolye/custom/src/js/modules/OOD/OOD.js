@@ -6,6 +6,7 @@ const OOD = (() => {
 
     let editEmployersBtn;
     let createFormsBtn;
+    let updateEmploymentGoalBtn;
     let filterRow;
     let newEntryBtn;
     let newSummaryBtn;
@@ -104,13 +105,25 @@ const OOD = (() => {
         filterRow.appendChild(filteredBy);
         // filterRow.appendChild(editEmployersBtn);
 
-        let employmentGoal = document.createElement('div');
+        const { OODForm8GetServiceGoalsResult: ServiceGoals } = await OODAjax.OODForm8GetServiceGoals(
+            selectedConsumers[0].id,
+        );
+
+        let employmentGoalDIV = document.createElement('div');
+        employmentGoalDIV.classList.add('btnWrap');
         let employmentGoalMessage = document.createElement('p');
         employmentGoalMessage.innerHTML =
-            'Employment Goal.';
+            `<b>Employment Goal:</b> ${ServiceGoals}`;
+
+            updateEmploymentGoalBtn = buildUpdateEmploymentGoalsBtn();
+            updateEmploymentGoalBtn.setAttribute('max-width', '100px: !importatnt;');
+
+
+            employmentGoalDIV.appendChild(employmentGoalMessage);
+            employmentGoalDIV.appendChild(updateEmploymentGoalBtn);
 
         landingPage.appendChild(filterRow);
-        landingPage.appendChild(employmentGoalMessage);
+        landingPage.appendChild(employmentGoalDIV);
         OODEntriesTable = await buildOODEntriesTable(filterValues);
         landingPage.appendChild(OODEntriesTable);
 
@@ -939,6 +952,22 @@ const OOD = (() => {
             classNames: 'createFormsBtn',
             callback: () => {
                 showCreateFormsPopup();
+            },
+        });
+    }
+
+    
+    // build Update Employment Goals button,
+    function buildUpdateEmploymentGoalsBtn() {
+        return button.build({
+            text: 'Update',
+            style: 'secondary',
+            type: 'contained',
+            id: createFormsBtn,
+            classNames: 'createFormsBtn',
+            
+            callback: () => {
+                // showCreateFormsPopup();
             },
         });
     }

@@ -464,8 +464,6 @@ var OODAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-
-
   // Form 4 -- Monthly Placement
   function getForm4MonthlyPlacementEditData(caseNoteId, callback) {
     $.ajax({
@@ -923,6 +921,32 @@ var OODAjax = (function () {
   callback(response.insertForm8MonthlySummaryResult);
   },
   });
+  }
+
+  async function OODForm8GetServiceGoals(peopleId) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/OODForm8GetServiceGoals/',
+        data: JSON.stringify({
+          peopleId: peopleId,
+          
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
   }
 
    // Form 10 -- Transportation
@@ -1616,7 +1640,7 @@ var OODAjax = (function () {
       getOutcomesAsync,
       getContactMethodsAsync,
       getIndicatorsAsync,
-      getPositionsAsync,
+      getPositionsAsync,      
       getForm4MonthlyPlacementEditData,
       updateForm4MonthlyPlacementEditData,
       insertForm4MonthlyPlacementEditData,
@@ -1634,6 +1658,7 @@ var OODAjax = (function () {
       getForm8MonthlySummary,
       updateForm8MonthlySummary,
       insertForm8MonthlySummary,
+      OODForm8GetServiceGoals,
       getForm10TransportationData,
       insertForm10TransportationData,
       updateForm10TransportationData,
