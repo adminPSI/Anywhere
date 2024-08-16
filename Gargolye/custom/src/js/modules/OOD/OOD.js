@@ -104,7 +104,13 @@ const OOD = (() => {
         filterRow.appendChild(filteredBy);
         // filterRow.appendChild(editEmployersBtn);
 
+        let employmentGoal = document.createElement('div');
+        let employmentGoalMessage = document.createElement('p');
+        employmentGoalMessage.innerHTML =
+            'Employment Goal.';
+
         landingPage.appendChild(filterRow);
+        landingPage.appendChild(employmentGoalMessage);
         OODEntriesTable = await buildOODEntriesTable(filterValues);
         landingPage.appendChild(OODEntriesTable);
 

@@ -1662,6 +1662,7 @@ const roster2 = (function () {
                 $.loadedApp === 'covid' ||
                 $.loadedApp === 'forms' ||
                 $.loadedApp === 'assessmentHistory' ||
+                $.loadedApp === 'OOD' ||
                 activeSection === 'caseNotesSSA-new' ||
                 activeSection === 'caseNotes-new'
             ) {

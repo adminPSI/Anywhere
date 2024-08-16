@@ -265,6 +265,28 @@ namespace OODForms
 
             return di.SelectRowsDS(sb.ToString());
         }
+        //on the Anywhere Form 8 
+        public string OODForm8GetServiceGoals(string peopleId)
+        {
+            string rv = "No Employment Goals on record.";
+
+            // select service_goals from em_employee_general where People_Id = 4139
+
+            sb.Clear();
+            sb.Append("select service_goals from em_employee_general ");
+            sb.AppendFormat("where People_Id = '{0}' ", peopleId);
+            DataSet ds = di.SelectRowsDS(sb.ToString());
+            if (ds.Tables.Count > 0)
+            {
+                DataTable dt = ds.Tables[0];
+                if (dt.Rows.Count > 0)
+                {
+                    rv = dt.Rows[0]["service_goals"].ToString();
+                }
+            }
+            return rv;
+
+        }
 
         #endregion
 
