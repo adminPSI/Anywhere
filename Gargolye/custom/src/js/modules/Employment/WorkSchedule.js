@@ -13,6 +13,7 @@ const WorkSchedule = (() => {
     let weekDaysSelection = [];
     let nameOfEvent;
     let toRemoveWeekName;
+    let totalHours;
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
@@ -23,17 +24,8 @@ const WorkSchedule = (() => {
         if (PositionId != undefined) {
             ScheduleEntries = await EmploymentAjax.getWorkScheduleEntriesAsync(PositionId);
             if (ScheduleEntries.getWorkScheduleEntriesResult.length > 0)
-                ScheduleEntries.getWorkScheduleEntriesResult.push({ dayOfWeek: '', startTime: '', endTime: '', positionId: null, WorkScheduleId: '', timeInHours: 'Total Hours - ' + ScheduleEntries.getWorkScheduleEntriesResult[0].totalHours, totalHours: '' });
+                totalHours = ScheduleEntries.getWorkScheduleEntriesResult[0].totalHours;
         }
-    }
-
-    function toHoursAndMinutes(totalMinutes) {
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        return `${padToTwoDigits(hours)}:${padToTwoDigits(minutes)}`;
-    }
-    function padToTwoDigits(num) {
-        return num.toString().padStart(2, "0");
     }
 
     function getMarkup() {
@@ -82,6 +74,11 @@ const WorkSchedule = (() => {
             addNewCardBody.appendChild(NEW_SHIFT_BTN);
         }
         addNewCardBody.appendChild(workScheduleEntriesTable);
+        const totalHourDiv = document.createElement("div");
+        totalHourDiv.classList.add("totalHour"); 
+        totalHourDiv.innerHTML = `<div>Total Hours: ${totalHours} </div>`;
+        addNewCardBody.appendChild(totalHourDiv); 
+
         workScheduleDiv.appendChild(column1);
         return workScheduleDiv;
     }
@@ -124,7 +121,7 @@ const WorkSchedule = (() => {
 
         // Call function to allow table sorting by clicking on a header.
         table.sortTableByHeader(oTable);
-
+         
         table.populate(oTable, tableData);
 
         return oTable;

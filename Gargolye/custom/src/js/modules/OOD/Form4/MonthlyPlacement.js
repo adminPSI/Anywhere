@@ -345,7 +345,7 @@ let currentEntryUserId;
     inputContainer1.classList.add('ood_form4monthlyplacement_inputContainer1');
     inputContainer1.appendChild(SAMLevelDropdown);
     inputContainer1.appendChild(employerDropdown);
-    inputContainer1.appendChild(addEmployersBtn);
+    if ($.session.OODInsertEmployers) inputContainer1.appendChild(addEmployersBtn);
     
     
 
