@@ -110,15 +110,14 @@ const OOD = (() => {
         );
 
         let employmentGoalDIV = document.createElement('div');
-        employmentGoalDIV.classList.add('btnWrap');
+        
         let employmentGoalMessage = document.createElement('p');
         employmentGoalMessage.innerHTML =
             `<b>Employment Goal:</b> ${ServiceGoals}`;
 
             updateEmploymentGoalBtn = buildUpdateEmploymentGoalsBtn();
             updateEmploymentGoalBtn.setAttribute('max-width', '100px: !importatnt;');
-
-
+         
             employmentGoalDIV.appendChild(employmentGoalMessage);
             employmentGoalDIV.appendChild(updateEmploymentGoalBtn);
 
@@ -964,7 +963,7 @@ const OOD = (() => {
             style: 'secondary',
             type: 'contained',
             id: createFormsBtn,
-            classNames: 'createFormsBtn',
+            classNames: ['EmployeeGoal', 'btnWrap'],
             
             callback: () => {
                 // showCreateFormsPopup();
