@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Web.Script.Serialization;
 using pdftron.Common;
 using pdftron.PDF;
 
-namespace Anywhere.service.Data.PDFExtractor
+namespace Anywhere.service.Data.ImportOutcomesAndServices
 {
     public class RiskAssessment
     {
@@ -58,8 +60,33 @@ namespace Anywhere.service.Data.PDFExtractor
         public List<ProfessionalReferrals> professionalReferrals { get; set; }
     }
 
-    public class PDFExtractor
+    public class ImportedTables
     {
+        public int? AssessmentAreaId { get; set; }
+        public string AssessmentArea { get; set; }
+        public string WhatIsRisk { get; set; }
+        public string WhatSupportMustLookLike { get; set; }
+        public string RiskRequiresSupervision { get; set; }
+        public string WhatNeedsToHappen { get; set; }
+        public string HowItShouldHappen { get; set; }
+        public string WhoIsResponsible { get; set; }
+        public string WhenHowOften { get; set; }
+        public string RowOrder { get; set; }
+        public string ProviderName { get; set; }
+        public string ScopeOfService { get; set; }
+        public string HowOftenValue { get; set; }
+        public string HowOftenText { get; set; }
+        public string HowOftenFrequency { get; set; }
+        public string WhoSupports { get; set; }
+        public string NewOrExisting { get; set; }
+        public string ReasonForReferral { get; set; }
+    }
+
+    public class ImportOutcomesAndServicesWorker
+    {
+        JavaScriptSerializer js = new JavaScriptSerializer();
+        ImportOutcomesAndServicesDataGetter ioasdg = new ImportOutcomesAndServicesDataGetter();
+
         // Headers for table recognition
         private readonly List<string> riskAssessmentHeaders = new List<string>
         {
@@ -600,5 +627,26 @@ namespace Anywhere.service.Data.PDFExtractor
             }
             return string.Empty;
         }
+
+        public string importSelectedServices(string token, ImportedTables[] importedTables)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+                try
+                {
+                    string data = string.Join(";", importedTables.Select(a => $"{a.AssessmentAreaId}|{a.AssessmentArea}|{a.WhatIsRisk}|" +
+                        $"{a.WhatSupportMustLookLike}|{a.RiskRequiresSupervision}|{a.WhatNeedsToHappen}|{a.HowItShouldHappen}|" +
+                        $"{a.WhoIsResponsible}|{a.WhenHowOften}|{a.RowOrder}|{a.ProviderName}|" +
+                        $"{a.ScopeOfService}|{a.HowOftenValue}|{a.HowOftenText}|{a.HowOftenFrequency}|{a.WhoSupports}|{a.NewOrExisting}|{a.ReasonForReferral}"));
+
+                    //ioasdg.importSelectedServices(token, importedTables, transaction);
+
+                    return "success";
+                }
+                catch (Exception ex)
+                {
+                    return "false";
+                }
+        }
+
     }
 }

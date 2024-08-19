@@ -1038,7 +1038,7 @@ const incidentOverview = (function () {
                     removeArray.push(count);
                 }
                 count = count + 1;
-                var incidentEmailBtn = document.createElement('button');
+                var incidentEmailBtn = document.createElement('button'); 
                 incidentEmailBtn.classList.add('btn', 'btn--secondary', 'btn--contained');
                 incidentEmailBtn.textContent = 'EMAIL';
                 incidentEmailBtn.style.zIndex = '9999';

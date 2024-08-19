@@ -75,6 +75,15 @@ var table = (function () {
             td.innerHTML = heading;
             headerRow.appendChild(td);
         });
+
+        // add empty cell for startIcon
+        if (options.startIcon) {
+            var td = document.createElement('div');
+            td.classList.add('startIcon');
+            td.innerHTML = options.startIconHeader;
+            td.addEventListener('click', options.startIconHeaderCallback);
+            headerRow.insertBefore(td, headerRow.firstChild);
+        }
        
         // add empty cell for endIcon
         if (options.endIcon) {
@@ -182,6 +191,14 @@ var table = (function () {
                 cell.innerHTML = v;
                 row.appendChild(cell);
             });
+
+            if (d.startIcon) {
+                const cell = document.createElement('div');
+                cell.classList.add('startIcon');
+                cell.innerHTML = d.startIcon;
+                cell.addEventListener('click', d.startIconCallback);
+                row.insertBefore(cell, row.firstChild);
+            }
     
             if (d.endIcon) {
                 const cell = document.createElement('div');
