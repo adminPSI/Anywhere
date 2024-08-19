@@ -586,3 +586,15 @@ div.textarea {
       }
     }
   }
+
+  .addToExistingOutcomesRowContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-top: 10px;
+
+    .dropdown {
+        min-width: 400px;
+    }
+  }

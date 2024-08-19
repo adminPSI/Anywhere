@@ -2,16 +2,37 @@ const importServices = (() => {
 
     //DATA
     let extractionData;
+    let existingOutcomesData;
+    let existingOutcomesVendorData;
+    let selectedOutcomes = [];
+
+    //ELEMENTS 
+    let importSelectedServicesPopup;
+
     // TABLES
     let knownAndLikelyRisksTable;
     let experiencesTable;
     let paidSupportsTable;
     let additionalSupportsTable;
     let professionalReferralsTable;
+    let assessmentAreas =         
+        {
+            'Communication' : 34,
+            'Advocacy & Engagement' : 35,
+            'Safety and Security' : 36,
+            'Social and Spirituality' : 37,
+            'Daily Life and Employment' : 38,
+            'Community Living' : 39,
+            'Healthy Living' : 40
+        }
 
-    async function init(pdfFiles) {
+    async function init(pdfFiles, outcomesServicesData) {
         const token = $.session.Token
         extractionData = await _UTIL.fetchData('importedOutcomesPDFData', {token, pdfFiles});
+        existingOutcomesVendorData = outcomesServicesData.pageDataParent.map(outcome => ({
+            value: outcome.outcomeStatement,
+            text: outcome.outcomeStatement,
+        }))
         buildImportSections();
     }
 
@@ -22,112 +43,553 @@ const importServices = (() => {
         landingPage = document.createElement('div');
         DOM.ACTIONCENTER.appendChild(landingPage);
 
-        // Initialize the table with headers
-         knownAndLikelyRisksTable = table.build({
-            tableId: 'knownAndLikelyRisksTable',
-            headline: 'Known and Likely Risks',
+        var headerCheckbox = document.createElement('input');
+        headerCheckbox.type = 'checkbox';
+        headerCheckbox.style.zIndex = '999999';
+        headerCheckbox.style.pointerEvents = 'all';
+        headerCheckbox.style.position = 'relative';
+
+        var rowCheckbox = document.createElement('input');
+        rowCheckbox.type = 'checkbox';
+        rowCheckbox.classList.add('row-checkbox');
+        rowCheckbox.style.zIndex = '999999';
+        rowCheckbox.style.pointerEvents = 'all';
+        rowCheckbox.style.position = 'relative';
+
+        function handleCheckboxSelection(event, rowData) {
+            let checkbox = event.target;
+        
+            // Check if the target is the checkbox itself
+            if (checkbox.type !== 'checkbox') {
+                // If not, assume we're in the div and select the checkbox within the startIcon div
+                checkbox = event.target.querySelector('input[type="checkbox"]');
+            }
+        
+            if (checkbox && checkbox.checked) {
+                selectedOutcomes.push(rowData);
+            } else {
+                selectedOutcomes = selectedOutcomes.filter(
+                    selectedRow => selectedRow !== rowData
+                );
+            }
+        }
+
+        function handleHeaderCheckboxSelection(headerCheckboxSelector, tableSelector) {
+            const headerCheckbox = document.querySelector(headerCheckboxSelector);
+            const rowCheckboxes = document.querySelectorAll(`${tableSelector} .row-checkbox`);
+        
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = headerCheckbox.checked;
+
+                // Find the cell that contains this checkbox
+                const cell = checkbox.closest('.startIcon');
+
+                // Dispatch the click event on the cell to trigger the callback
+                if (cell) {
+                    cell.dispatchEvent(new Event('click'));
+                }
+            });
+        }
+
+        function createAddToExistingOutcomesRow(tableDiv) {
+            const exitingOutcomDropdown = dropdown.build({
+                id: 'existingOutcomeDropdown',
+                label: 'Add to Existing Outcome',
+                dropdownId: 'existingOutcomeDropdown',
+            });
+    
+            dropdown.populate('existingOutcomeDropdown', existingOutcomesVendorData, existingOutcomesVendorData[0]?.value);
+
+            const serviceDateStartInput = input.build({
+                type: 'date',
+                label: 'Service Date Start',
+                style: 'secondary',
+                //value: filterValues.serviceDateStart,
+            });
+
+             const serviceDateEndInput = input.build({
+                type: 'date',
+                label: 'Service Date End',
+                style: 'secondary',
+                //value: filterValues.serviceDateEnd,
+            });
+
+            const createAddToExistingOutcomesRowContainerDiv = document.createElement('div');
+            createAddToExistingOutcomesRowContainerDiv.classList.add('addToExistingOutcomesRowContainer')
+            createAddToExistingOutcomesRowContainerDiv.appendChild(exitingOutcomDropdown);
+            createAddToExistingOutcomesRowContainerDiv.appendChild(serviceDateStartInput);
+            createAddToExistingOutcomesRowContainerDiv.appendChild(serviceDateEndInput);
+            tableDiv.appendChild(createAddToExistingOutcomesRowContainerDiv);
+        };
+
+        knownAndLikelyRisksTable = table.build({
+            tableId: `planRisksTable`,
+            headline: `Know & Likely Risks`,
             columnHeadings: [
-                'Assessment Area',
-                'What is the risk, what it looks like, where it occurs',
-                'What support must look like, why the person needs this support',
-                'Does this risk require supervision?',
-                'Who is responsible',
+              'Assessment Area',
+              'What is the risk, what it looks like, where it occurs',
+              'What support must look like, why the person needs this support',
+              'Does this risk require supervision?',
+              'Who is responsible',
             ],
-            endIcon: false,
-            secondendIcon: false,
-        });
+            sortable: false,
+            startIcon: true,
+            startIconHeader: headerCheckbox.outerHTML,
+            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#planRisksTable .startIcon input[type="checkbox"]', '#planRisksTable'),
+          });
+
+        if (extractionData.importedOutcomesPDFDataResult.riskAssessments) {
+            const tableData = extractionData.importedOutcomesPDFDataResult.riskAssessments
+                .map((ra, i) => {
+                    const { tableValues, raData } = mapRiskAssessmentsDataForTable(ra);
+                    const rowId = i + 1;
+
+                    return {
+                        id: rowId,
+                        values: tableValues,
+                        attributes: [{ key: 'sectionId', value: raData.assessmentAreaId }],
+                        startIcon: rowCheckbox.outerHTML,
+                        startIconCallback: (event) => handleCheckboxSelection(event, raData),
+                        onClick: event => {},
+                    };
+                });
+
+            table.populate(knownAndLikelyRisksTable, tableData, false);
+        };
+
+        createAddToExistingOutcomesRow(knownAndLikelyRisksTable);
   
-        // Populate the table with data
-        // table.populate(knownAndLikelyRisksTable, 
-        //     extractionData.importedOutcomesPDFDataResult.riskAssessments
-        // );
-        
-        // Similarly create and populate other tables
-        
         // Experiences Table
          experiencesTable = table.build({
-            tableId: 'experiencesTable',
-            headline: 'Experiences',
+            tableId: `experiencesTable`,
+            headline: `Experiences: <span>In order to accomplish the outcome, what experiences does the person need to have?</span>`,
             columnHeadings: [
-            'Assessment Area',
-            'What Needs to Happen',
-            'How It Should Happen',
-            'When/How Often'
+                'What needs to happen',
+                'How should it happen?',
+                'Who is responsible?',
+                'When / How Often?',
             ],
-            sortable: true,
-            endIcon: false,
-            secondendIcon: false,
-            allowCopy: false
+            sortable: false,
+            startIcon: true,
+            startIconHeader: headerCheckbox.outerHTML,
+            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#experiencesTable .startIcon input[type="checkbox"]', '#experiencesTable'),
         });
-        table.populate(experiencesTable, [
-            { id: 'row1', values: ['Area 1', 'Need 1', 'How 1', 'Often 1'], attributes: [{ key: 'data-example', value: 'value1' }] },
-            { id: 'row2', values: ['Area 2', 'Need 2', 'How 2', 'Often 2'], attributes: [{ key: 'data-example', value: 'value2' }] }
-        ]);
+
+        if (extractionData.importedOutcomesPDFDataResult.experiences) {
+            const tableData = extractionData.importedOutcomesPDFDataResult.experiences
+                .map((ex, i) => {  
+                    const { tableValues, exData } = mapExperiencesDataForTable(ex);
+                    const rowId = i + 1; 
+        
+                    return {
+                        id: rowId,
+                        values: tableValues,
+                        attributes: [{ key: 'sectionId', value: exData.assessmentAreaId }],
+                        startIcon: rowCheckbox.outerHTML,
+                        startIconCallback: (event) => handleCheckboxSelection(event, exData),
+                        onClick: () => {},
+                    };
+                });
+        
+            table.populate(experiencesTable, tableData, false);
+        }
+
+        createAddToExistingOutcomesRow(experiencesTable);
   
         // Paid Supports Table
-         paidSupportsTable = table.build({
+        paidSupportsTable = table.build({
             tableId: 'paidSupportsTable',
             headline: 'Paid Supports',
             columnHeadings: [
-            'Assessment Area',
-            'Scope of Service',
-            'How Often/Much',
-            'Effective Dates'
+                'Assessment Area',
+                'Funding Source',
+                'Service Name',
+                'Provider Name',
+                'Scope of Service/ What support looks like',
+                'How Often / How Much',
+                'Begin Date',
+                'End Date',
             ],
-            sortable: true,
-            endIcon: false,
-            secondendIcon: false,
-            allowCopy: false
+            sortable: false,
+            startIcon: true,
+            startIconHeader: headerCheckbox.outerHTML,
+            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#paidSupportsTable .startIcon input[type="checkbox"]', '#paidSupportsTable'),
         });
-        table.populate(paidSupportsTable, [
-            { id: 'row1', values: ['Area 1', 'Service 1', 'Often 1', '2021-01-01'], attributes: [{ key: 'data-example', value: 'value1' }] },
-            { id: 'row2', values: ['Area 2', 'Service 2', 'Often 2', '2022-02-02'], attributes: [{ key: 'data-example', value: 'value2' }] }
-        ]);
+
+        if (extractionData.importedOutcomesPDFDataResult.paidSupports) {
+            const tableData = extractionData.importedOutcomesPDFDataResult.paidSupports
+                .map((ps, i) => {
+                    const { tableValues, psData } = mapPaidSupportDataForTable(ps);
+                    const rowId = i + 1;
+
+                    return {
+                        id: rowId,
+                        values: tableValues,
+                        attributes: [{ key: 'sectionId', value: psData.assessmentAreaId }],
+                        startIcon: rowCheckbox.outerHTML,
+                        startIconCallback: (event) => handleCheckboxSelection(event, psData),
+                        onClick: event => {},
+                    };
+                });
+
+            table.populate(paidSupportsTable, tableData, false, true);
+        };
+
+        createAddToExistingOutcomesRow(paidSupportsTable);
         
         // Additional Supports Table
-         additionalSupportsTable = table.build({
+        additionalSupportsTable = table.build({
             tableId: 'additionalSupportsTable',
-            headline: 'Additional Supports',
+            headline: `Additional Supports: <span>Family, friends, community resources, technology, etc.</span>`,
             columnHeadings: [
                 'Assessment Area',
                 'Who Supports',
                 'What Support Looks Like',
                 'When/How Often',
             ],
-            sortable: true,
             endIcon: false,
-            secondendIcon: false,
-            allowCopy: false
+            sortable: false,
+            startIcon: true,
+            startIconHeader: headerCheckbox.outerHTML,
+            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#additionalSupportsTable .startIcon input[type="checkbox"]', '#additionalSupportsTable'),
         });
-        table.populate(additionalSupportsTable, [
-            { id: 'row1', values: ['Area 1', 'Support 1', 'Often 1'], attributes: [{ key: 'data-example', value: 'value1' }] },
-            { id: 'row2', values: ['Area 2', 'Support 2', 'Often 2'], attributes: [{ key: 'data-example', value: 'value2' }] }
-        ]);
+
+        if (extractionData.importedOutcomesPDFDataResult.additionalSupports) {
+            const tableData = extractionData.importedOutcomesPDFDataResult.additionalSupports
+                .map((as, i) => {  
+                    const { tableValues, asData } = mapAdditionalSupportDataForTable(as);
+                    const rowId = i + 1; 
+        
+                    return {
+                        id: rowId,
+                        values: tableValues,
+                        attributes: [{ key: 'sectionId', value: asData.assessmentAreaId }],
+                        startIcon: rowCheckbox.outerHTML,
+                        startIconCallback: (event) => handleCheckboxSelection(event, asData),
+                        onClick: () => {},
+                    };
+                });
+        
+            table.populate(additionalSupportsTable, tableData, false);
+        }
+        
+        createAddToExistingOutcomesRow(additionalSupportsTable);
   
         // Professional Referrals Table
-         professionalReferralsTable = table.build({
+        professionalReferralsTable = table.build({
             tableId: 'professionalReferralsTable',
-            headline: 'Professional Referrals',
+            headline: `Professional Referrals: <span>Medical professionals, therapists, etc.</span>`,
             columnHeadings: [
-            'Assessment Area',
-            'New or Existing?',
-            'Reason for Referral'
+                'Assessment Area',
+                'New or Existing',
+                'Who Supports',
+                'Reason for Referral',
             ],
-            sortable: true,
-            endIcon: false,
-            secondendIcon: false,
-            allowCopy: false
+            sortable: false,
+            startIcon: true,
+            startIconHeader: headerCheckbox.outerHTML,
+            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#professionalReferralsTable .startIcon input[type="checkbox"]', '#professionalReferralsTable'),
         });
-        table.populate(professionalReferralsTable, [
-            { id: 'row1', values: ['Area 1', 'New', 'Reason 1'], attributes: [{ key: 'data-example', value: 'value1' }] },
-            { id: 'row2', values: ['Area 2', 'Existing', 'Reason 2'], attributes: [{ key: 'data-example', value: 'value2' }] }
-        ]);
+
+        if (extractionData.importedOutcomesPDFDataResult.professionalReferrals) {
+            const tableData = extractionData.importedOutcomesPDFDataResult.professionalReferrals
+                .map((pr, i) => {  
+                    const { tableValues, prData } = mapProfessionalReferralsDataForTable(pr);
+                    const rowId = i + 1; 
+        
+                    return {
+                        id: rowId,
+                        values: tableValues,
+                        attributes: [{ key: 'sectionId', value: prData.assessmentAreaId }],
+                        startIcon: rowCheckbox.outerHTML,
+                        startIconCallback: (event) => handleCheckboxSelection(event, prData),
+                        onClick: () => {}
+                    }
+                });
+        
+            table.populate(professionalReferralsTable, tableData, false);
+        }
+
+        createAddToExistingOutcomesRow(professionalReferralsTable);
+
+        const importSelectedSerivcesAndCancelBtnWrap = document.createElement('div');
+        const importSelectedServicesBtn = button.build({
+            id: 'importSelectedServicesBtn',
+            text: 'Import Selected Services',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'importSelectedServicesBtn',
+            callback: async () => {showImportSelectedServicesPopup()},
+        });
+
+        const cancelBtn = button.build({
+            id: 'cancelBtn',
+            text: 'Cancel',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'cancelBtn',
+            callback: () => {},
+        });
+
+        importSelectedSerivcesAndCancelBtnWrap.appendChild(importSelectedServicesBtn);
+        importSelectedSerivcesAndCancelBtnWrap.appendChild(cancelBtn);
+
+        async function showImportSelectedServicesPopup() {
+            importSelectedServicesPopup = POPUP.build({
+                classNames: 'importSelectedServicesPopup',
+            })
+
+            let importSelectedServicesPopupMessage = document.createElement('p');
+
+            const okBtn = button.build({
+                id: 'okBtn',
+                text: 'Ok',
+                style: 'secondary',
+                type: 'contained',
+                classNames: 'okBtn',
+                callback: () => {POPUP.hide(importSelectedServicesPopup)},
+            });
+
+            //const importSelectedServicesResult = await _UTIL.fetchData('importSelectedServices', {token});
+            const check = selectedOutcomes;
+            const importSelectedServicesResult = 'success';
+
+            if (importSelectedServicesResult === 'success') {
+                importSelectedServicesPopupMessage.innerText = 'Your outcomes have been successfully imported.'
+            } else {
+                importSelectedServicesPopupMessage.innerText = 'Something went wrong when trying to import your services. Please Try again.'
+            }
+
+            importSelectedServicesPopup.appendChild(importSelectedServicesPopupMessage);
+            importSelectedServicesPopup.appendChild(okBtn);
+
+            POPUP.show(importSelectedServicesPopup);
+        }
   
         landingPage.appendChild(knownAndLikelyRisksTable);
         landingPage.appendChild(experiencesTable);
         landingPage.appendChild(paidSupportsTable);
         landingPage.appendChild(additionalSupportsTable);
         landingPage.appendChild(professionalReferralsTable);
+        landingPage.appendChild(importSelectedSerivcesAndCancelBtnWrap);
+    }
+
+    // Match string of imported table assessment area to get the associated assessment area id
+    function getAssessmentAreaId(targetKey) {
+        return assessmentAreas.hasOwnProperty(targetKey) ? assessmentAreas[targetKey] : '';
+    }
+    
+
+    // map the know and likely risks data into the format needed for populating the table
+    function mapRiskAssessmentsDataForTable(ra) {
+        let provderId = '';
+
+        const whatIsRisk = ra.WhatIsRisk;
+        const whatSupportMustLookLike = ra.WhatSupportMustLookLike;
+        const riskRequiresSupervision = ra.RiskRequiresSupervision;
+        const WhoIsResponsible = ra.WhoIsResponsible;
+
+        const assessmentAreaId = getAssessmentAreaId(ra.AssessmentArea);
+        const assessmentArea = ra.AssessmentArea;
+
+        const rowOrder = '';
+
+        return {
+            tableValues: [
+                assessmentArea,
+                whatIsRisk,
+                whatSupportMustLookLike,
+                riskRequiresSupervision,
+                WhoIsResponsible,
+            ],
+            raData: {
+                assessmentAreaId,
+                assessmentArea,
+                whatIsRisk,
+                whatSupportMustLookLike,
+                riskRequiresSupervision,
+                WhoIsResponsible,
+                rowOrder,
+            },
+        };
+    }
+
+    // map the experiences data into the format needed for populating the table
+    function mapExperiencesDataForTable(ex) {
+        const whatNeedsToHappen = ex.WhatNeedsToHappen;
+        const howItShouldHappen = ex.HowItShouldHappen;
+        const whoIsResponsible = ex.whoIsResponsible;
+        const WhenHowOften = ex.HowOftenHowMuch;
+
+        const rowOrder = '';
+
+        return {
+            tableValues: [
+                whatNeedsToHappen,
+                howItShouldHappen,
+                whoIsResponsible,
+                WhenHowOften,
+            ],
+            exData: {
+                whatNeedsToHappen,
+                howItShouldHappen,
+                whoIsResponsible,
+                WhenHowOften,
+                rowOrder,
+            },
+        };
+    }
+
+    // map the paid support data into the format needed for populating the table
+    function mapPaidSupportDataForTable(ps) {
+        // Split the string into two parts
+        const [bDate, eDate] = (ps.BeginDateEndDate).split(/(?<=\d{4})\s+/);
+
+        let provderId = '';
+
+        const serviceName = ps.ServiceName;
+        const scopeOfService = ps.ScopeOfService;
+        const howOftenValue = ps.HowOftenHowMuch;
+        const howOftenFrequencyText = ps.HowOftenHowMuch;
+        const howOftenText = ps.HowOftenHowMuch;
+        const fundingSourceDesc = ps.FundingSource;
+        const fundingSourceText = ps.FundingSource;
+        const paidSupportsId = '';
+
+        const assessmentAreaId = getAssessmentAreaId(ps.AssessmentArea);
+        const assessmentArea = ps.AssessmentArea;
+
+        const rowOrder = '';
+
+        const providerName = '';
+
+        let howOften = '';
+        if (howOftenValue) howOften += howOftenValue;
+        // if (howOftenFrequency && howOftenFrequency !== '4') {
+        //   howOften += ` x `;
+        // }
+
+        if (howOftenText) howOften += ` ${howOftenText}`;
+
+        return {
+            tableValues: [
+                assessmentArea,
+                fundingSourceText,
+                serviceName,
+                providerName,
+                scopeOfService,
+                howOftenText,
+                bDate,
+                eDate,
+            ],
+            psData: {
+                assessmentAreaId,
+                //providerId,
+                providerName,
+                //serviceNameId,
+                //serviceNameOther,
+                scopeOfService,
+                howOftenValue,
+                //howOftenFrequency,
+                howOftenText,
+                bDate,
+                eDate,
+                //fundingSource,
+                fundingSourceText,
+                paidSupportsId,
+                rowOrder,
+            },
+        };
+    }
+
+    // map the additional supports data into the format needed for populating the table
+    function mapAdditionalSupportDataForTable(as) {
+        let assessmentAreaId;
+        let assessmentArea;
+
+        const whoSupports = as.WhoSupports;
+        const whoSupportsText = as.WhoSupports;
+        const whatSupportLooksLike = as.WhatSupportLooksLike
+        const howOftenValue = as.WhenHowOften;
+        const howOftenFrequency = as.WhenHowOften;
+        const howOftenText = as.WhenHowOften;
+        const additionalSupportsId = '';
+        const rowOrder = '';
+
+        assessmentAreaId = getAssessmentAreaId(as.AssessmentArea);
+        assessmentArea =  as.AssessmentArea;
+
+        const whenHowOftenDesc = '';
+        let howOften = '';
+        if (howOftenValue) howOften += howOftenValue;
+        if (howOftenFrequency && howOftenFrequency !== '4') {
+            howOften += ` ${whenHowOftenDesc}`;
+        } else {
+            if (howOftenText) howOften += ` ${howOftenText}`;
+        }
+
+        return {
+            tableValues: [
+                assessmentArea, 
+                whoSupportsText, 
+                whatSupportLooksLike, 
+                howOften
+            ],
+            asData: {
+                assessmentAreaId,
+                whoSupports,
+                whatSupportLooksLike,
+                howOftenValue,
+                howOftenFrequency,
+                howOftenText,
+                additionalSupportsId,
+                rowOrder,
+            },
+        };
+    }
+
+    // map the professional referrals data into the format needed for populating the table
+    function mapProfessionalReferralsDataForTable(pr) {
+        let assessmentAreaId;
+        let assessmentArea;
+
+        const newOrExisting = pr.NewOrExisting;
+        const whoSupports = pr.WhoSupports;
+        const reasonForReferral = pr.ReasonForReferral
+        const howOftenValue = pr.WhenHowOften;
+        const howOftenFrequency = pr.WhenHowOften;
+        const howOftenText = pr.WhenHowOften;
+        const additionalSupportsId = '';
+        const rowOrder = '';
+
+        assessmentAreaId = getAssessmentAreaId(pr.AssessmentArea);
+        assessmentArea =  pr.AssessmentArea;
+
+        const whenHowOftenDesc = '';
+        let howOften = '';
+        if (howOftenValue) howOften += howOftenValue;
+        if (howOftenFrequency && howOftenFrequency !== '4') {
+            howOften += ` ${whenHowOftenDesc}`;
+        } else {
+            if (howOftenText) howOften += ` ${howOftenText}`;
+        }
+
+        return {
+            tableValues: [
+                assessmentArea, 
+                newOrExisting, 
+                whoSupports, 
+                reasonForReferral
+            ],
+            prData: {
+                assessmentAreaId,
+                assessmentArea, 
+                newOrExisting, 
+                whoSupports, 
+                reasonForReferral,
+                rowOrder,
+            },
+        };
     }
 
     return {

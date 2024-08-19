@@ -35,29 +35,29 @@ const addEditOutcomeServices = (() => {
     const consumerCard = buildConsumerCard();
     const backbtnWrap = document.createElement('div');
     backbtnWrap.classList.add('addOutcomeBtnWrap');
-    // const addInsertServicesBtnWrap = document.createElement('div');
-    // addInsertServicesBtnWrap.classList.add('addInsertServicesBtnWrap');
-    // backbtnWrap.appendChild(addInsertServicesBtnWrap);
+    const addInsertServicesBtnWrap = document.createElement('div');
+    addInsertServicesBtnWrap.classList.add('addInsertServicesBtnWrap');
+    backbtnWrap.appendChild(addInsertServicesBtnWrap);
 
     filteredByData = buildFilteredByData();
     addOutCome = addOutcomesButton();
     backBtn = backButton();
-    // addInsertServicesBtnWrap.appendChild(addOutCome);
+    addInsertServicesBtnWrap.appendChild(addOutCome);
 
-    // if ($.session.InsertServices === true) {
-    //   importServicesBtn = button.build({
-    //       text: 'IMPORT SERVICES',
-    //       style: 'secondary',
-    //       type: 'contained',
-    //       classNames: 'importServices',
-    //       callback: async () => {
-    //         createUploadPopup();
-    //         //importServices.init();
-    //       },
-    //     });
+    if ($.session.InsertServices === true) {
+      importServicesBtn = button.build({
+          text: 'IMPORT SERVICES',
+          style: 'secondary',
+          type: 'contained',
+          classNames: 'importServices',
+          callback: async () => {
+            createUploadPopup();
+            //importServices.init();
+          },
+        });
 
-    //   addInsertServicesBtnWrap.appendChild(importServicesBtn);
-    // }
+      addInsertServicesBtnWrap.appendChild(importServicesBtn);
+    }
 
     backbtnWrap.appendChild(backBtn);
 
@@ -88,187 +88,187 @@ const addEditOutcomeServices = (() => {
     buildOverviewTable();
   }
 
-  // // Create and append the popup to the body
-  // function createUploadPopup() {
-  //   // Create the main popup container
-  //   const popup = document.createElement('div');
-  //   popup.id = 'upload-popup';
-  //   popup.className = 'upload-popup hiddenPopup';
+  // Create and append the popup to the body
+  function createUploadPopup() {
+    // Create the main popup container
+    const popup = document.createElement('div');
+    popup.id = 'upload-popup';
+    popup.className = 'upload-popup hiddenPopup';
   
-  //   // Create the content container
-  //   const popupContent = document.createElement('div');
-  //   popupContent.className = 'upload-popup-content';
+    // Create the content container
+    const popupContent = document.createElement('div');
+    popupContent.className = 'upload-popup-content';
   
-  //   // Create the heading
-  //   const heading = document.createElement('h2');
-  //   heading.innerText = 'Upload File';
+    // Create the heading
+    const heading = document.createElement('h2');
+    heading.innerText = 'Upload File';
   
-  //   // Create the drop area
-  //   const dropArea = document.createElement('div');
-  //   dropArea.id = 'drop-area';
-  //   dropArea.className = 'drop-area';
+    // Create the drop area
+    const dropArea = document.createElement('div');
+    dropArea.id = 'drop-area';
+    dropArea.className = 'drop-area';
   
-  //   // Add text to the drop area
-  //   const dropText1 = document.createElement('p');
-  //   dropText1.innerText = 'Drag & drop files here';
-  //   const dropText2 = document.createElement('p');
-  //   dropText2.innerText = 'or';
+    // Add text to the drop area
+    const dropText1 = document.createElement('p');
+    dropText1.innerText = 'Drag & drop files here';
+    const dropText2 = document.createElement('p');
+    dropText2.innerText = 'or';
 
-  //    // Handle drag and drop
-  //    dropArea.addEventListener('dragover', (event) => {
-  //     event.preventDefault();
-  //     dropArea.classList.add('active');
-  //   });
+     // Handle drag and drop
+     dropArea.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      dropArea.classList.add('active');
+    });
   
-  //   dropArea.addEventListener('dragleave', () => {
-  //     dropArea.classList.remove('active');
-  //   });
+    dropArea.addEventListener('dragleave', () => {
+      dropArea.classList.remove('active');
+    });
   
-  //   dropArea.addEventListener('drop', (event) => {
-  //     event.preventDefault();
-  //     dropArea.classList.remove('active');
-  //     const files = event.dataTransfer.files;
-  //     handleFiles(files);
-  //   });
+    dropArea.addEventListener('drop', (event) => {
+      event.preventDefault();
+      dropArea.classList.remove('active');
+      const files = event.dataTransfer.files;
+      handleFiles(files);
+    });
 
-  //   const fileInput = document.createElement('input');
-  //   fileInput.type = 'file';
-  //   fileInput.id = 'file-input';
-  //   fileInput.className = 'file-input';
-  //   fileInput.multiple = true;
-  //   fileInput.style.display = 'none'; // Hide the input element
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = 'file-input';
+    fileInput.className = 'file-input';
+    fileInput.multiple = true;
+    fileInput.style.display = 'none'; // Hide the input element
   
-  //   // Create the button for selecting files
-  //   const selectFilesButton = button.build({
-  //     text: 'Select Files',
-  //     id: 'select-files',
-  //     style: 'Primary',
-  //     type: 'contained',
-  //     classNames: 'btn',
-  //     callback: async () => {
-  //       fileInput.click();
-  //     },
-  //   });
+    // Create the button for selecting files
+    const selectFilesButton = button.build({
+      text: 'Select Files',
+      id: 'select-files',
+      style: 'Primary',
+      type: 'contained',
+      classNames: 'btn',
+      callback: async () => {
+        fileInput.click();
+      },
+    });
 
-  //   // Event listener to handle file selection
-  //   fileInput.addEventListener('change', (event) => {
-  //     const files = event.target.files;
-  //     handleFiles(files);
-  //   });
+    // Event listener to handle file selection
+    fileInput.addEventListener('change', (event) => {
+      const files = event.target.files;
+      handleFiles(files);
+    });
   
-  //   // Append text and button to drop area
-  //   dropArea.appendChild(dropText1);
-  //   dropArea.appendChild(dropText2);
-  //   dropArea.appendChild(selectFilesButton);
+    // Append text and button to drop area
+    dropArea.appendChild(dropText1);
+    dropArea.appendChild(dropText2);
+    dropArea.appendChild(selectFilesButton);
   
-  //   // Create the file list display area
-  //   const fileListDisplay = document.createElement('div');
-  //   fileListDisplay.id = 'file-list';
-  //   fileListDisplay.className = 'file-list';
+    // Create the file list display area
+    const fileListDisplay = document.createElement('div');
+    fileListDisplay.id = 'file-list';
+    fileListDisplay.className = 'file-list';
   
-  //   // Create the close button
-  //   const closeButton = button.build({
-  //     text: 'Close',
-  //     id: 'upload-close',
-  //     style: 'secondary',
-  //     type: 'contained',
-  //     classNames: 'btn',
-  //     callback: async () => {
-  //       hidePopup();
-  //       filesList = [];
-  //     },
-  //   });
+    // Create the close button
+    const closeButton = button.build({
+      text: 'Close',
+      id: 'upload-close',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'btn',
+      callback: async () => {
+        hidePopup();
+        filesList = [];
+      },
+    });
   
-  //   // Create the Import button
-  //   const importButton = button.build({
-  //     text: 'Start Import',
-  //     id: 'upload-import',
-  //     style: 'secondary',
-  //     type: 'contained',
-  //     classNames: 'btn',
-  //     callback: async () => {
-  //       const formData = new FormData();
+    // Create the Import button
+    const importButton = button.build({
+      text: 'Start Import',
+      id: 'upload-import',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'btn',
+      callback: async () => {
+        const formData = new FormData();
 
-  //       // Assuming filesList is an array of File objects
-  //       filesList.forEach((file, index) => {
-  //         formData.append(`file${index}`, file, file.name);
-  //       });
+        // Assuming filesList is an array of File objects
+        filesList.forEach((file, index) => {
+          formData.append(`file${index}`, file, file.name);
+        });
 
-  //       hidePopup();
-  //       importServices.init(formData);
-  //     },
-  //   });
+        hidePopup();
+        importServices.init(formData, outcomeServicesData);
+      },
+    });
 
-  //   const uploadBtnsWrap = document.createElement('div');
-  //   uploadBtnsWrap.className ='uploadBtnsWrap';
+    const uploadBtnsWrap = document.createElement('div');
+    uploadBtnsWrap.className ='uploadBtnsWrap';
   
-  //   // Append all elements to the content container
-  //   popupContent.appendChild(heading);
-  //   popupContent.appendChild(dropArea);
-  //   popupContent.appendChild(fileListDisplay);
-  //   popupContent.appendChild(uploadBtnsWrap);
-  //   uploadBtnsWrap.appendChild(closeButton);
-  //   uploadBtnsWrap.appendChild(importButton);
+    // Append all elements to the content container
+    popupContent.appendChild(heading);
+    popupContent.appendChild(dropArea);
+    popupContent.appendChild(fileListDisplay);
+    popupContent.appendChild(uploadBtnsWrap);
+    uploadBtnsWrap.appendChild(closeButton);
+    uploadBtnsWrap.appendChild(importButton);
   
-  //   // Append the content container to the popup
-  //   popup.appendChild(popupContent);
+    // Append the content container to the popup
+    popup.appendChild(popupContent);
   
-  //   // Append the popup to the body
-  //   document.body.appendChild(popup);
-  // }
+    // Append the popup to the body
+    document.body.appendChild(popup);
+  }
   
-  //   // Hide popup function
-  //   function hidePopup() {
-  //     const popup = document.getElementById('upload-popup');
-  //     if (popup) {
-  //       popup.remove();
-  //     }
-  //   }
+    // Hide popup function
+    function hidePopup() {
+      const popup = document.getElementById('upload-popup');
+      if (popup) {
+        popup.remove();
+      }
+    }
   
-  //   // Function to display file names
-  //   function displayFileNames(filesList) {
-  //     const fileListDisplay = document.getElementById('file-list');
-  //     fileListDisplay.innerHTML = ''; // Clear previous file list
-  //     const list = document.createElement('ul');
-  //     filesList.forEach((file, index) => {
-  //       const listItem = document.createElement('li');
-  //       listItem.innerText = file.name;
+    // Function to display file names
+    function displayFileNames(filesList) {
+      const fileListDisplay = document.getElementById('file-list');
+      fileListDisplay.innerHTML = ''; // Clear previous file list
+      const list = document.createElement('ul');
+      filesList.forEach((file, index) => {
+        const listItem = document.createElement('li');
+        listItem.innerText = file.name;
 
-  //       // Create the remove button (X)
-  //       const removeButton = document.createElement('button');
-  //       removeButton.innerText = 'X';
-  //       removeButton.style.marginLeft = '10px';
-  //       removeButton.style.color = 'red';
-  //       removeButton.style.border = 'none';
-  //       removeButton.style.background = 'transparent';
-  //       removeButton.style.cursor = 'pointer';
+        // Create the remove button (X)
+        const removeButton = document.createElement('button');
+        removeButton.innerText = 'X';
+        removeButton.style.marginLeft = '10px';
+        removeButton.style.color = 'red';
+        removeButton.style.border = 'none';
+        removeButton.style.background = 'transparent';
+        removeButton.style.cursor = 'pointer';
 
-  //       // Event listener to remove the file from the list
-  //       removeButton.addEventListener('click', () => {
-  //         removeFile(index);
-  //       });
+        // Event listener to remove the file from the list
+        removeButton.addEventListener('click', () => {
+          removeFile(index);
+        });
 
-  //       listItem.appendChild(removeButton);
-  //       list.appendChild(listItem);
-  //     });
-  //     fileListDisplay.appendChild(list);
-  //   }
+        listItem.appendChild(removeButton);
+        list.appendChild(listItem);
+      });
+      fileListDisplay.appendChild(list);
+    }
 
-  //   // Function to handle files
-  //   function handleFiles(files) {
-  //     // Convert FileList to array and append to filesList
-  //     filesList = filesList.concat(Array.from(files));
-  //     displayFileNames(filesList);
-  //     for (const file of files) {
-  //       console.log('File uploaded:', file.name);
-  //     }
-  //   }
+    // Function to handle files
+    function handleFiles(files) {
+      // Convert FileList to array and append to filesList
+      filesList = filesList.concat(Array.from(files));
+      displayFileNames(filesList);
+      for (const file of files) {
+        console.log('File uploaded:', file.name);
+      }
+    }
 
-  //   // Function to remove a file from the list
-  //   function removeFile(index) {
-  //     filesList.splice(index, 1);
-  //     displayFileNames(filesList);
-  //   }
+    // Function to remove a file from the list
+    function removeFile(index) {
+      filesList.splice(index, 1);
+      displayFileNames(filesList);
+    }
 
   function addOutcomesButton() {
     return button.build({
