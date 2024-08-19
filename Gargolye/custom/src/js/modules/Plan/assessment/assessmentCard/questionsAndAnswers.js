@@ -597,16 +597,6 @@
         }
 
         assessment.toggleIsSectionApplicable(id, e.target.checked);
-
-        // assessment.showApplicableWarningMessage(yesOrNo => {
-        //   if (yesOrNo === 'no') {
-        //     e.target.checked = true;
-        //     return;
-        //   }
-
-        //   section.classList.add('nonApplicable');
-        //   assessment.toggleIsSectionApplicable(id, e.target.checked);
-        // });
       },
     });
 
