@@ -14,7 +14,6 @@
     if (toc.classList.contains('visible')) {
       toc.classList.remove('visible');
       // document.body.style.overflow = 'auto';
-      body;
     } else {
       toc.classList.add('visible');
       // document.body.style.overflow = 'hidden';
@@ -31,6 +30,7 @@
   function highlightLink(sectionId) {
     for (const key in sections) {
       if (sections[key].id === sectionId) {
+        console.log(`Link for section ${key} is highlighted`);
         sections[key].markup.classList.add('inView');
         sections[key].markup.scrollIntoView({
           behavior: 'smooth',
