@@ -5433,7 +5433,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/importSelectedServices/")]
-        string importSelectedServices(string token, ImportedTables[] importedTables);
+        List<ImportedTables> importSelectedServices(string token, ImportedTables[] importedTables);
 
     }
 

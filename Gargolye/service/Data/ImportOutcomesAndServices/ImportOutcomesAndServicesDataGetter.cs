@@ -16,30 +16,62 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
         WorkflowDataGetter wfdg = new WorkflowDataGetter();
 
-        
-        public string getExistingOutomes(string token, string selectedConsumerId, string startDate, string endDate, DistributedTransaction transaction)
+
+        public string importSelectedServices(
+            string token,
+            int? assessmentAreaId,
+            string assessmentArea,
+            string whatIsRisk,
+            string whatSupportMustLookLike,
+            string riskRequiresSupervision,
+            string whatNeedsToHappen,
+            string howItShouldHappen,
+            string whoIsResponsible,
+            string whenHowOften,
+            string providerName,
+            string scopeOfService,
+            string howOftenValue,
+            string howOftenText,
+            string howOftenFrequency,
+            string whoSupports,
+            string newOrExisting,
+            string reasonForReferral,
+            DistributedTransaction transaction)
         {
-            logger.debug("getExistingOutcomes");
+            logger.debug("importSelectedServices");
 
             var parameters = new Dictionary<string, string>
             {
                 { "@token", token },
-                { "@selectedConsumerId", selectedConsumerId },
-                { "@startDate", startDate },
-                { "@endDate", endDate }
+                { "@assessmentAreaId", assessmentAreaId?.ToString() }, 
+                { "@assessmentArea", assessmentArea },
+                { "@whatIsRisk", whatIsRisk },
+                { "@whatSupportMustLookLike", whatSupportMustLookLike },
+                { "@riskRequiresSupervision", riskRequiresSupervision },
+                { "@whatNeedsToHappen", whatNeedsToHappen },
+                { "@howItShouldHappen", howItShouldHappen },
+                { "@whoIsResponsible", whoIsResponsible },
+                { "@whenHowOften", whenHowOften },
+                { "@providerName", providerName },
+                { "@scopeOfService", scopeOfService },
+                { "@howOftenValue", howOftenValue },
+                { "@howOftenText", howOftenText },
+                { "@howOftenFrequency", howOftenFrequency },
+                { "@whoSupports", whoSupports },
+                { "@newOrExisting", newOrExisting },
+                { "@reasonForReferral", reasonForReferral }
             };
 
             try
             {
-                return CallStoredProcedure("DBA.ANYW_ImportOutcomesAndServices_GetExistingOutcomes", parameters, transaction);
+                return CallStoredProcedure("DBA.ANYW_ImportOutcomesAndServices_ImportSelectedServices", parameters, transaction);
             }
             catch (Exception ex)
             {
-                logger.error("501-IOAS", ex.Message + " ANYW_ImportOutcomesAndServices_GetExistingOutcomes");
-                return "501-IOAS: error ANYW_ImportOutcomesAndServices_GetExistingOutcomes";
+                logger.error("501-IOAS", ex.Message + " ANYW_ImportOutcomesAndServices_ImportSelectedServices");
+                return "501-IOAS: error ANYW_ImportOutcomesAndServices_ImportSelectedServices";
             }
         }
-
 
 
 
