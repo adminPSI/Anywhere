@@ -5427,6 +5427,14 @@ namespace Anywhere
           UriTemplate = "/importedOutcomesPDFData/")]
         ExtractedTables importedOutcomesPDFData(string token, List<Stream> file);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/importSelectedServices/")]
+        string importSelectedServices(string token, ImportedTables[] importedTables);
+
     }
 
 
