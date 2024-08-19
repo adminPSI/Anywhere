@@ -6,6 +6,7 @@ const OOD = (() => {
 
     let editEmployersBtn;
     let createFormsBtn;
+    let updateEmploymentGoalBtn;
     let filterRow;
     let newEntryBtn;
     let newSummaryBtn;
@@ -104,13 +105,24 @@ const OOD = (() => {
         filterRow.appendChild(filteredBy);
         // filterRow.appendChild(editEmployersBtn);
 
-        let employmentGoal = document.createElement('div');
+        const { OODForm8GetServiceGoalsResult: ServiceGoals } = await OODAjax.OODForm8GetServiceGoals(
+            selectedConsumers[0].id,
+        );
+
+        let employmentGoalDIV = document.createElement('div');
+        
         let employmentGoalMessage = document.createElement('p');
         employmentGoalMessage.innerHTML =
-            'Employment Goal.';
+            `<b>Employment Goal:</b> ${ServiceGoals}`;
+
+            updateEmploymentGoalBtn = buildUpdateEmploymentGoalsBtn();
+            updateEmploymentGoalBtn.setAttribute('max-width', '100px: !importatnt;');
+         
+            employmentGoalDIV.appendChild(employmentGoalMessage);
+            employmentGoalDIV.appendChild(updateEmploymentGoalBtn);
 
         landingPage.appendChild(filterRow);
-        landingPage.appendChild(employmentGoalMessage);
+        landingPage.appendChild(employmentGoalDIV);
         OODEntriesTable = await buildOODEntriesTable(filterValues);
         landingPage.appendChild(OODEntriesTable);
 
@@ -943,6 +955,22 @@ const OOD = (() => {
         });
     }
 
+    
+    // build Update Employment Goals button,
+    function buildUpdateEmploymentGoalsBtn() {
+        return button.build({
+            text: 'Update',
+            style: 'secondary',
+            type: 'contained',
+            id: createFormsBtn,
+            classNames: ['EmployeeGoal', 'btnWrap'],
+            
+            callback: () => {
+                 buildEmployeeGoalPopUp();
+            },
+        });
+    }
+
     function showCreateFormsPopup() {
         // Popup
         const popup = POPUP.build({
@@ -1366,6 +1394,11 @@ const OOD = (() => {
         // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
     }
 
+    function employeeGoalPopupCancelBtn() {
+        POPUP.hide(employeeGoalPopup);
+        // OODForm4MonthlyPlacement.init();
+        // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
+    }
      // build Create Form  pop-up that displays when a Form is selected
      function buildCreateFormPopUp(formNumber) {
 
@@ -1507,6 +1540,55 @@ const OOD = (() => {
             filterValues.referenceNumber = event.target.value;
         });
         
+    }
+
+    function buildEmployeeGoalPopUp() {
+        // popup
+        employeeGoalPopup = POPUP.build({
+            classNames: ['rosterFilterPopup'],
+            hideX: true,
+        });
+        
+
+	const employeeGoalTextarea = input.build({
+      label: 'Employee Goal',
+      type: 'textarea',
+      style: 'secondary',
+      classNames: 'autosize',
+      // value: importantTo,
+     // charLimit: charLimits.importantTo,
+      forceCharLimit: true,
+      callback: e => {
+        //importantTo = e.target.value;  
+      },
+    });
+    employeeGoalTextarea.classList.add('importantTo');
+		
+        // apply filters button
+        APPLY_BTN = button.build({
+            text: 'Apply',
+            style: 'secondary',
+            type: 'contained',
+            // callback: async () => employeeGoalPopupDoneBtn(),
+        });
+        CANCEL_BTN = button.build({
+            text: 'Cancel',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => employeeGoalPopupCancelBtn(),
+        });
+		
+		
+        var btnWrap = document.createElement('div');
+        btnWrap.classList.add('btnWrap');
+        btnWrap.appendChild(APPLY_BTN);
+        btnWrap.appendChild(CANCEL_BTN);
+
+		employeeGoalPopup.appendChild(employeeGoalTextarea);
+	    employeeGoalPopup.appendChild(btnWrap);
+
+        //return filterPopup;
+        POPUP.show(employeeGoalPopup);
     }
 
     function init() {
