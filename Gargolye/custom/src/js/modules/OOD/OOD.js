@@ -7,6 +7,7 @@ const OOD = (() => {
     let editEmployersBtn;
     let createFormsBtn;
     let updateEmploymentGoalBtn;
+    let employmentGoalText;
     let filterRow;
     let newEntryBtn;
     let newSummaryBtn;
@@ -21,6 +22,7 @@ const OOD = (() => {
     //let initRosterSelection;
     var enabledConsumers;
     var selectedConsumers;
+    let selectedConsumerPeopleId;
 
     //filter
     let serviceDateStartInput;
@@ -62,6 +64,8 @@ const OOD = (() => {
 
     let selectedConsumerIds;
     //let consumerServices;
+
+    let employeeGoalTextarea;
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
@@ -105,14 +109,14 @@ const OOD = (() => {
         filterRow.appendChild(filteredBy);
         // filterRow.appendChild(editEmployersBtn);
 
-        let peopleId;
+        
         await planAjax.getConsumerPeopleId(selectedConsumers[0].id, function (results) {
-            peopleId = results[0].id;
+            selectedConsumerPeopleId = results[0].id;
             
         });
 
         const { OODForm8GetServiceGoalsResult: ServiceGoals } = await OODAjax.OODForm8GetServiceGoals(
-            peopleId,
+            selectedConsumerPeopleId,
         );
 
         let employmentGoalDIV = document.createElement('div');
@@ -1556,16 +1560,16 @@ const OOD = (() => {
         });
         
 
-	const employeeGoalTextarea = input.build({
+	employeeGoalTextarea = input.build({
       label: 'Employment Goal',
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
-      // value: importantTo,
+       value: employmentGoalText,
      // charLimit: charLimits.importantTo,
       forceCharLimit: true,
       callback: e => {
-        //importantTo = e.target.value;  
+        employmentGoalText = e.target.value;  
       },
     });
     employeeGoalTextarea.classList.add('importantTo');
@@ -1577,17 +1581,23 @@ const OOD = (() => {
             type: 'contained',
              callback: async () => {
                const success = await OODAjax.updateEmploymentGoal(
-               { peopleId: 9627, 
-                userId: 'jmeyer', 
-                ServiceGoal: 'This is ALSO NEW',
+               { peopleId: selectedConsumerPeopleId, 
+                userId: $.session.UserId, 
+                ServiceGoal: employmentGoalText,
              });
+             POPUP.hide(employeeGoalPopup);
+              loadOODLanding();
              },
         });
         CANCEL_BTN = button.build({
             text: 'Cancel',
             style: 'secondary',
             type: 'outlined',
-            callback: () => employeeGoalPopupCancelBtn(),
+            callback:  () => {
+
+                 employeeGoalPopupCancelBtn()
+                 loadOODLanding();
+            },
         });
 		
 		
@@ -1608,7 +1618,39 @@ const OOD = (() => {
 
         //return filterPopup;
         POPUP.show(employeeGoalPopup);
+        checkEmploymentGoalRequiredFields();
+        checkEmploymentGoalEventListners();
     }
+
+    function checkEmploymentGoalRequiredFields() {
+        var employeeGoalInput = employeeGoalPopup.querySelector('textarea');
+
+        if (employeeGoalInput.value === '') {
+            employeeGoalTextarea.classList.add('error');
+        } else {
+            employeeGoalTextarea.classList.remove('error');
+        }
+
+        setBtnStatus();
+    }
+    
+    function setBtnStatus() {
+        var hasErrors = [].slice.call(employeeGoalPopup.querySelectorAll('.error'));
+        if ((hasErrors.length !== 0)) {
+            APPLY_BTN.classList.add('disabled');
+          } else {
+            APPLY_BTN.classList.remove('disabled');
+          }
+    
+      }
+      function checkEmploymentGoalEventListners() {
+       // var employeeGoalInput = employeeGoalPopup.querySelector('textarea');
+       employeeGoalTextarea.addEventListener('input', event => {
+            employmentGoalText = event.target.value;
+            checkEmploymentGoalRequiredFields();
+          });
+      }
+      
 
     function init() {
         //DOM.clearActionCenter();
