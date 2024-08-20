@@ -4154,7 +4154,7 @@ namespace Anywhere
             return ioas.importedOutcomesPDFData(token, file);
         }
 
-        public string importSelectedServices(string token, ImportedTables[] importedTables)
+        public List<ImportedTables> importSelectedServices(string token, ImportedTables[] importedTables)
         {
             return ioas.importSelectedServices(token, importedTables);
         }

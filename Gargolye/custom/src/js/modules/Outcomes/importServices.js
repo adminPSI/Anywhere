@@ -350,9 +350,11 @@ const importServices = (() => {
                 callback: () => {POPUP.hide(importSelectedServicesPopup)},
             });
 
-            //const importSelectedServicesResult = await _UTIL.fetchData('importSelectedServices', {token});
-            const check = selectedOutcomes;
-            const importSelectedServicesResult = 'success';
+            const token = $.session.Token;
+            const importedTables = selectedOutcomes;
+
+            const importSelectedServicesResult = await _UTIL.fetchData('importSelectedServices', {token, importedTables});
+            //const importSelectedServicesResult = 'success';
 
             if (importSelectedServicesResult === 'success') {
                 importSelectedServicesPopupMessage.innerText = 'Your outcomes have been successfully imported.'
@@ -387,12 +389,10 @@ const importServices = (() => {
         const whatIsRisk = ra.WhatIsRisk;
         const whatSupportMustLookLike = ra.WhatSupportMustLookLike;
         const riskRequiresSupervision = ra.RiskRequiresSupervision;
-        const WhoIsResponsible = ra.WhoIsResponsible;
+        const whoIsResponsible = ra.WhoIsResponsible;
 
         const assessmentAreaId = getAssessmentAreaId(ra.AssessmentArea);
         const assessmentArea = ra.AssessmentArea;
-
-        const rowOrder = '';
 
         return {
             tableValues: [
@@ -400,7 +400,7 @@ const importServices = (() => {
                 whatIsRisk,
                 whatSupportMustLookLike,
                 riskRequiresSupervision,
-                WhoIsResponsible,
+                whoIsResponsible,
             ],
             raData: {
                 assessmentAreaId,
@@ -408,8 +408,7 @@ const importServices = (() => {
                 whatIsRisk,
                 whatSupportMustLookLike,
                 riskRequiresSupervision,
-                WhoIsResponsible,
-                rowOrder,
+                whoIsResponsible,
             },
         };
     }
@@ -420,8 +419,6 @@ const importServices = (() => {
         const howItShouldHappen = ex.HowItShouldHappen;
         const whoIsResponsible = ex.whoIsResponsible;
         const WhenHowOften = ex.HowOftenHowMuch;
-
-        const rowOrder = '';
 
         return {
             tableValues: [
@@ -435,7 +432,6 @@ const importServices = (() => {
                 howItShouldHappen,
                 whoIsResponsible,
                 WhenHowOften,
-                rowOrder,
             },
         };
     }
@@ -458,8 +454,6 @@ const importServices = (() => {
 
         const assessmentAreaId = getAssessmentAreaId(ps.AssessmentArea);
         const assessmentArea = ps.AssessmentArea;
-
-        const rowOrder = '';
 
         const providerName = '';
 
@@ -497,7 +491,6 @@ const importServices = (() => {
                 //fundingSource,
                 fundingSourceText,
                 paidSupportsId,
-                rowOrder,
             },
         };
     }
@@ -514,7 +507,6 @@ const importServices = (() => {
         const howOftenFrequency = as.WhenHowOften;
         const howOftenText = as.WhenHowOften;
         const additionalSupportsId = '';
-        const rowOrder = '';
 
         assessmentAreaId = getAssessmentAreaId(as.AssessmentArea);
         assessmentArea =  as.AssessmentArea;
@@ -543,7 +535,6 @@ const importServices = (() => {
                 howOftenFrequency,
                 howOftenText,
                 additionalSupportsId,
-                rowOrder,
             },
         };
     }
@@ -560,7 +551,6 @@ const importServices = (() => {
         const howOftenFrequency = pr.WhenHowOften;
         const howOftenText = pr.WhenHowOften;
         const additionalSupportsId = '';
-        const rowOrder = '';
 
         assessmentAreaId = getAssessmentAreaId(pr.AssessmentArea);
         assessmentArea =  pr.AssessmentArea;
@@ -587,7 +577,6 @@ const importServices = (() => {
                 newOrExisting, 
                 whoSupports, 
                 reasonForReferral,
-                rowOrder,
             },
         };
     }
