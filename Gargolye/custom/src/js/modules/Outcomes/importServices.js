@@ -26,9 +26,10 @@ const importServices = (() => {
             'Healthy Living' : 40
         }
 
-    async function init(pdfFiles, outcomesServicesData) {
+    async function init(pdfFile, outcomesServicesData) {
         const token = $.session.Token
-        extractionData = await _UTIL.fetchData('importedOutcomesPDFData', {token, pdfFiles});
+
+        extractionData = await _UTIL.uploadFile('importedOutcomesPDFData', {token, pdfFile});
         existingOutcomesVendorData = outcomesServicesData.pageDataParent.map(outcome => ({
             value: outcome.outcomeStatement,
             text: outcome.outcomeStatement,
@@ -123,7 +124,7 @@ const importServices = (() => {
         };
 
         knownAndLikelyRisksTable = table.build({
-            tableId: `planRisksTable`,
+            tableId: `importedPlanRisksTable`,
             headline: `Know & Likely Risks`,
             columnHeadings: [
               'Assessment Area',
@@ -161,7 +162,7 @@ const importServices = (() => {
   
         // Experiences Table
          experiencesTable = table.build({
-            tableId: `experiencesTable`,
+            tableId: `importedExperiencesTable`,
             headline: `Experiences: <span>In order to accomplish the outcome, what experiences does the person need to have?</span>`,
             columnHeadings: [
                 'What needs to happen',
@@ -198,7 +199,7 @@ const importServices = (() => {
   
         // Paid Supports Table
         paidSupportsTable = table.build({
-            tableId: 'paidSupportsTable',
+            tableId: 'importedPaidSupportsTable',
             headline: 'Paid Supports',
             columnHeadings: [
                 'Assessment Area',
@@ -239,7 +240,7 @@ const importServices = (() => {
         
         // Additional Supports Table
         additionalSupportsTable = table.build({
-            tableId: 'additionalSupportsTable',
+            tableId: 'importedAdditionalSupportsTable',
             headline: `Additional Supports: <span>Family, friends, community resources, technology, etc.</span>`,
             columnHeadings: [
                 'Assessment Area',
@@ -277,7 +278,7 @@ const importServices = (() => {
   
         // Professional Referrals Table
         professionalReferralsTable = table.build({
-            tableId: 'professionalReferralsTable',
+            tableId: 'importedProfessionalReferralsTable',
             headline: `Professional Referrals: <span>Medical professionals, therapists, etc.</span>`,
             columnHeadings: [
                 'Assessment Area',
@@ -394,6 +395,8 @@ const importServices = (() => {
         const assessmentAreaId = getAssessmentAreaId(ra.AssessmentArea);
         const assessmentArea = ra.AssessmentArea;
 
+        const section = 'Known & Likely Risks';
+
         return {
             tableValues: [
                 assessmentArea,
@@ -409,6 +412,7 @@ const importServices = (() => {
                 whatSupportMustLookLike,
                 riskRequiresSupervision,
                 whoIsResponsible,
+                section
             },
         };
     }
@@ -419,6 +423,8 @@ const importServices = (() => {
         const howItShouldHappen = ex.HowItShouldHappen;
         const whoIsResponsible = ex.whoIsResponsible;
         const WhenHowOften = ex.HowOftenHowMuch;
+
+        const section = 'Experiences';
 
         return {
             tableValues: [
@@ -432,6 +438,7 @@ const importServices = (() => {
                 howItShouldHappen,
                 whoIsResponsible,
                 WhenHowOften,
+                section
             },
         };
     }
@@ -456,6 +463,8 @@ const importServices = (() => {
         const assessmentArea = ps.AssessmentArea;
 
         const providerName = '';
+
+        const section = 'Paid Supports';
 
         let howOften = '';
         if (howOftenValue) howOften += howOftenValue;
@@ -491,6 +500,7 @@ const importServices = (() => {
                 //fundingSource,
                 fundingSourceText,
                 paidSupportsId,
+                section
             },
         };
     }
@@ -511,6 +521,8 @@ const importServices = (() => {
         assessmentAreaId = getAssessmentAreaId(as.AssessmentArea);
         assessmentArea =  as.AssessmentArea;
 
+        const section = 'Additional Supports';
+
         const whenHowOftenDesc = '';
         let howOften = '';
         if (howOftenValue) howOften += howOftenValue;
@@ -525,7 +537,7 @@ const importServices = (() => {
                 assessmentArea, 
                 whoSupportsText, 
                 whatSupportLooksLike, 
-                howOften
+                howOften,
             ],
             asData: {
                 assessmentAreaId,
@@ -535,6 +547,7 @@ const importServices = (() => {
                 howOftenFrequency,
                 howOftenText,
                 additionalSupportsId,
+                section
             },
         };
     }
@@ -555,6 +568,8 @@ const importServices = (() => {
         assessmentAreaId = getAssessmentAreaId(pr.AssessmentArea);
         assessmentArea =  pr.AssessmentArea;
 
+        const section = 'Professional Referrals';
+
         const whenHowOftenDesc = '';
         let howOften = '';
         if (howOftenValue) howOften += howOftenValue;
@@ -569,7 +584,7 @@ const importServices = (() => {
                 assessmentArea, 
                 newOrExisting, 
                 whoSupports, 
-                reasonForReferral
+                reasonForReferral,
             ],
             prData: {
                 assessmentAreaId,
@@ -577,6 +592,7 @@ const importServices = (() => {
                 newOrExisting, 
                 whoSupports, 
                 reasonForReferral,
+                section
             },
         };
     }

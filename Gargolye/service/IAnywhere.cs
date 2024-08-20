@@ -5430,11 +5430,11 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-          BodyStyle = WebMessageBodyStyle.Wrapped,
+          BodyStyle = WebMessageBodyStyle.Bare,
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/importedOutcomesPDFData/")]
-        ExtractedTables importedOutcomesPDFData(string token, List<Stream> file);
+        ExtractedTables importedOutcomesPDFData(string token, string file);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

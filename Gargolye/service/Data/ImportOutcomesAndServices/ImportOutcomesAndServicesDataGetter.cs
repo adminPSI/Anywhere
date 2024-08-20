@@ -36,6 +36,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             string whoSupports,
             string newOrExisting,
             string reasonForReferral,
+            string section,
             DistributedTransaction transaction)
         {
             logger.debug("importSelectedServices");
@@ -59,7 +60,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                 { "@howOftenFrequency", howOftenFrequency },
                 { "@whoSupports", whoSupports },
                 { "@newOrExisting", newOrExisting },
-                { "@reasonForReferral", reasonForReferral }
+                { "@reasonForReferral", reasonForReferral },
+                { "@section", section },
             };
 
             try

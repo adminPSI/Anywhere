@@ -81,6 +81,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         public string whoSupports { get; set; }
         public string newOrExisting { get; set; }
         public string reasonForReferral { get; set; }
+        public string section { get; set; }
     }
 
     public class ImportOutcomesAndServicesWorker
@@ -143,7 +144,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             "Healthy Living"
         };
 
-        public ExtractedTables importedOutcomesPDFData(string token, List<Stream> file)
+        public ExtractedTables importedOutcomesPDFData(string token, string file)
         {
             string localFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test3.pdf");
 
@@ -154,7 +155,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
             try
             {
-                using (PDFDoc doc = new PDFDoc(localFilePath))
+                using (PDFDoc doc = new PDFDoc(file))
                 {
                     doc.InitSecurityHandler();
 
@@ -660,6 +661,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 importedTable.whoSupports,
                                 importedTable.newOrExisting,
                                 importedTable.reasonForReferral,
+                                importedTable.section,
                                 transaction
                             );
                         }

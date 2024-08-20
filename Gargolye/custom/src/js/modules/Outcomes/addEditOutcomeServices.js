@@ -46,15 +46,14 @@ const addEditOutcomeServices = (() => {
 
     if ($.session.InsertServices === true) {
       importServicesBtn = button.build({
-          text: 'IMPORT SERVICES',
-          style: 'secondary',
-          type: 'contained',
-          classNames: 'importServices',
-          callback: async () => {
-            createUploadPopup();
-            //importServices.init();
-          },
-        });
+        text: 'IMPORT SERVICES',
+        style: 'secondary',
+        type: 'contained',
+        classNames: 'importServices',
+        callback: async () => {
+          createUploadPopup();
+        },
+      });
 
       addInsertServicesBtnWrap.appendChild(importServicesBtn);
     }
@@ -90,59 +89,66 @@ const addEditOutcomeServices = (() => {
 
   // Create and append the popup to the body
   function createUploadPopup() {
+    let filesList = [];
+
     // Create the main popup container
     const popup = document.createElement('div');
     popup.id = 'upload-popup';
     popup.className = 'upload-popup hiddenPopup';
-  
+
     // Create the content container
     const popupContent = document.createElement('div');
     popupContent.className = 'upload-popup-content';
-  
+
     // Create the heading
     const heading = document.createElement('h2');
     heading.innerText = 'Upload File';
-  
+
     // Create the drop area
     const dropArea = document.createElement('div');
     dropArea.id = 'drop-area';
     dropArea.className = 'drop-area';
-  
+    dropArea.style.display = 'flex'; // Make the dropArea a flex container
+    dropArea.style.flexDirection = 'column';
+    dropArea.style.alignItems = 'center';
+    dropArea.style.justifyContent = 'center';
+
     // Add text to the drop area
     const dropText1 = document.createElement('p');
-    dropText1.innerText = 'Drag & drop files here';
+    dropText1.innerText = 'Drag & drop a file here';
     const dropText2 = document.createElement('p');
     dropText2.innerText = 'or';
 
-     // Handle drag and drop
-     dropArea.addEventListener('dragover', (event) => {
+    // Handle drag and drop
+    dropArea.addEventListener('dragover', event => {
       event.preventDefault();
       dropArea.classList.add('active');
     });
-  
+
     dropArea.addEventListener('dragleave', () => {
       dropArea.classList.remove('active');
     });
-  
-    dropArea.addEventListener('drop', (event) => {
+
+    dropArea.addEventListener('drop', event => {
       event.preventDefault();
       dropArea.classList.remove('active');
       const files = event.dataTransfer.files;
       handleFiles(files);
     });
 
+    // Create the file input element
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.id = 'file-input';
     fileInput.className = 'file-input';
-    fileInput.multiple = true;
+    fileInput.multiple = false; // Allow only one file to be selected
     fileInput.style.display = 'none'; // Hide the input element
-  
+
     // Create the button for selecting files
     const selectFilesButton = button.build({
-      text: 'Select Files',
+      text: 'Select File',
       id: 'select-files',
-      style: 'Primary',
+      style: 'primary',
       type: 'contained',
       classNames: 'btn',
       callback: async () => {
@@ -150,22 +156,25 @@ const addEditOutcomeServices = (() => {
       },
     });
 
+    // Center the button in its container
+    selectFilesButton.style.margin = '10px auto';
+
     // Event listener to handle file selection
-    fileInput.addEventListener('change', (event) => {
+    fileInput.addEventListener('change', event => {
       const files = event.target.files;
       handleFiles(files);
     });
-  
+
     // Append text and button to drop area
     dropArea.appendChild(dropText1);
     dropArea.appendChild(dropText2);
     dropArea.appendChild(selectFilesButton);
-  
+
     // Create the file list display area
     const fileListDisplay = document.createElement('div');
     fileListDisplay.id = 'file-list';
     fileListDisplay.className = 'file-list';
-  
+
     // Create the close button
     const closeButton = button.build({
       text: 'Close',
@@ -178,7 +187,7 @@ const addEditOutcomeServices = (() => {
         filesList = [];
       },
     });
-  
+
     // Create the Import button
     const importButton = button.build({
       text: 'Start Import',
@@ -187,47 +196,32 @@ const addEditOutcomeServices = (() => {
       type: 'contained',
       classNames: 'btn',
       callback: async () => {
-        const formData = new FormData();
-
-        // Assuming filesList is an array of File objects
-        filesList.forEach((file, index) => {
-          formData.append(`file${index}`, file, file.name);
-        });
+        const attachmentsForSave = await processFilesForUpload(filesList);
 
         hidePopup();
-        importServices.init(formData, outcomeServicesData);
+        importServices.init(attachmentsForSave, outcomeServicesData);
       },
     });
 
     const uploadBtnsWrap = document.createElement('div');
-    uploadBtnsWrap.className ='uploadBtnsWrap';
-  
+    uploadBtnsWrap.className = 'uploadBtnsWrap';
+
     // Append all elements to the content container
     popupContent.appendChild(heading);
     popupContent.appendChild(dropArea);
     popupContent.appendChild(fileListDisplay);
-    popupContent.appendChild(uploadBtnsWrap);
     uploadBtnsWrap.appendChild(closeButton);
     uploadBtnsWrap.appendChild(importButton);
-  
+    popupContent.appendChild(uploadBtnsWrap);
+
     // Append the content container to the popup
     popup.appendChild(popupContent);
-  
+
     // Append the popup to the body
     document.body.appendChild(popup);
-  }
-  
-    // Hide popup function
-    function hidePopup() {
-      const popup = document.getElementById('upload-popup');
-      if (popup) {
-        popup.remove();
-      }
-    }
-  
+
     // Function to display file names
     function displayFileNames(filesList) {
-      const fileListDisplay = document.getElementById('file-list');
       fileListDisplay.innerHTML = ''; // Clear previous file list
       const list = document.createElement('ul');
       filesList.forEach((file, index) => {
@@ -256,7 +250,6 @@ const addEditOutcomeServices = (() => {
 
     // Function to handle files
     function handleFiles(files) {
-      // Convert FileList to array and append to filesList
       filesList = filesList.concat(Array.from(files));
       displayFileNames(filesList);
       for (const file of files) {
@@ -269,6 +262,27 @@ const addEditOutcomeServices = (() => {
       filesList.splice(index, 1);
       displayFileNames(filesList);
     }
+
+    // Function to process files for upload
+    async function processFilesForUpload(files) {
+      const attachmentsForSave = {};
+
+      for (const file of files) {
+        const attachmentDetails = await _DOM.getAttachmentDetails(file);
+        attachmentsForSave[attachmentDetails.description] = attachmentDetails;
+      }
+
+      return attachmentsForSave[0];
+    }
+  }
+
+  // Hide popup function
+  function hidePopup() {
+    const popup = document.getElementById('upload-popup');
+    if (popup) {
+      popup.remove();
+    }
+  }
 
   function addOutcomesButton() {
     return button.build({
@@ -343,8 +357,7 @@ const addEditOutcomeServices = (() => {
     } else {
       btnWrap.appendChild(effectiveDateBtnWrap);
       if (document.getElementById('effectiveDateBtn') != null)
-        document.getElementById('effectiveDateBtn').innerHTML =
-          'Effective As Of: ' + effectiveDateEnd;
+        document.getElementById('effectiveDateBtn').innerHTML = 'Effective As Of: ' + effectiveDateEnd;
     }
 
     return currentFilterDisplay;
@@ -439,7 +452,7 @@ const addEditOutcomeServices = (() => {
       value: filterValues.effectiveDateEnd,
     });
 
-    if (IsShow == 'ALL' || IsShow == 'effectiveDateBtn') {    
+    if (IsShow == 'ALL' || IsShow == 'effectiveDateBtn') {
       dateWrap.appendChild(effectiveDateEndInput);
     }
 
