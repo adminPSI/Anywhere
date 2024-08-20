@@ -169,7 +169,9 @@ namespace Anywhere.service.Data
             StringBuilder sb = new StringBuilder();
             sb.Clear();
 
-            sb.AppendFormat("Update EM_Employee_General set User_Id = {0}, Service_Goals = {1}, Last_Update = Now() where People_ID = {2}; commit; ", "'" + userId + "'", "'" + ServiceGoal + "'", peopleId);
+            string formattedServiceGoal = removeUnsavableNoteText(ServiceGoal);
+
+            sb.AppendFormat("Update EM_Employee_General set User_Id = {0}, Service_Goals = {1}, Last_Update = Now() where People_ID = {2}; commit; ", "'" + userId + "'", "'" + formattedServiceGoal + "'", peopleId);
 
             long ret = connectSybase.UpdateRecord(sb.ToString());
             if (ret.ToString() == "-999")
