@@ -105,8 +105,14 @@ const OOD = (() => {
         filterRow.appendChild(filteredBy);
         // filterRow.appendChild(editEmployersBtn);
 
+        let peopleId;
+        await planAjax.getConsumerPeopleId(selectedConsumers[0].id, function (results) {
+            peopleId = results[0].id;
+            
+        });
+
         const { OODForm8GetServiceGoalsResult: ServiceGoals } = await OODAjax.OODForm8GetServiceGoals(
-            selectedConsumers[0].id,
+            peopleId,
         );
 
         let employmentGoalDIV = document.createElement('div');
@@ -1551,7 +1557,7 @@ const OOD = (() => {
         
 
 	const employeeGoalTextarea = input.build({
-      label: 'Employee Goal',
+      label: 'Employment Goal',
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
@@ -1566,10 +1572,16 @@ const OOD = (() => {
 		
         // apply filters button
         APPLY_BTN = button.build({
-            text: 'Apply',
+            text: 'Save',
             style: 'secondary',
             type: 'contained',
-            // callback: async () => employeeGoalPopupDoneBtn(),
+             callback: async () => {
+               const success = await OODAjax.updateEmploymentGoal(
+               { peopleId: 9627, 
+                userId: 'jmeyer', 
+                ServiceGoal: 'This is ALSO NEW',
+             });
+             },
         });
         CANCEL_BTN = button.build({
             text: 'Cancel',
@@ -1584,6 +1596,13 @@ const OOD = (() => {
         btnWrap.appendChild(APPLY_BTN);
         btnWrap.appendChild(CANCEL_BTN);
 
+        let employmentGoalTitle = document.createElement('h2');
+        employmentGoalTitle.innerHTML =
+            `Update Employment Goal`;
+
+        employmentGoalTitle.style.padding = '10px';
+
+        employeeGoalPopup.appendChild(employmentGoalTitle);
 		employeeGoalPopup.appendChild(employeeGoalTextarea);
 	    employeeGoalPopup.appendChild(btnWrap);
 

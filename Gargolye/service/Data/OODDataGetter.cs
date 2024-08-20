@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Web.Security;
 
 namespace Anywhere.service.Data
@@ -12,6 +13,8 @@ namespace Anywhere.service.Data
         private static Loger logger = new Loger();
         Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
         Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
+
+        Sybase connectSybase = new Data.Sybase();
 
         //data for OOD Entries Listing on OOD Module Landing Page
         public string getOODEntries(string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber, DistributedTransaction transaction)
@@ -159,6 +162,27 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
+
+        public string updateEmploymentGoal(string peopleId, string userId, string ServiceGoal)
+        {
+            string query = "";
+            StringBuilder sb = new StringBuilder();
+            sb.Clear();
+
+            sb.AppendFormat("Update EM_Employee_General set User_Id = {0}, Service_Goals = {1}, Last_Update = Now() where People_ID = {2}; commit; ", "'" + userId + "'", "'" + ServiceGoal + "'", peopleId);
+
+            long ret = connectSybase.UpdateRecord(sb.ToString());
+            if (ret.ToString() == "-999")
+            {
+                return "fail";
+            }
+            else
+            {
+                return "success";
+            }
+
+        }
+
 
         public string getEmployerJSON(string token, string employerId)
         {

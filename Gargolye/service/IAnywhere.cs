@@ -4521,6 +4521,15 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/updateEmploymentGoal/")]
+        string updateEmploymentGoal(string peopleId, string userId, string ServiceGoal);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
           BodyStyle = WebMessageBodyStyle.Wrapped,
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,

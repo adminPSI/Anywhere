@@ -242,6 +242,35 @@ var OODAjax = (function () {
       },
     });
   }
+
+  async function updateEmploymentGoal(retrieveData) {
+    //type, value, consumerId
+    try {
+        const data = await $.ajax({
+            type: 'POST',
+            url:
+                $.webServer.protocol +
+                '://' +
+                $.webServer.address +
+                ':' +
+                $.webServer.port +
+                '/' +
+                $.webServer.serviceName +
+                '/updateEmploymentGoal/',
+            data: JSON.stringify(retrieveData),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+        });
+
+        return {
+            ...data.updateEmploymentGoalResult,
+        };
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
   // OOD Main/Landing Page
   async function getActiveServiceCodesAsync(serviceCodeType) {
     try {
@@ -1633,6 +1662,7 @@ var OODAjax = (function () {
       updateEmployerAsync,
       insertEmployerAsync,
       getEmployer,
+      updateEmploymentGoal,
       getActiveServiceCodesAsync,
       getConsumerReferenceNumbersAsync,
       getConsumerServiceCodesAsync,

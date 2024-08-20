@@ -3243,6 +3243,12 @@ namespace Anywhere
             return OODFDG.OODForm8GetServiceGoals(peopleId);
         }
 
+        public string updateEmploymentGoal(string peopleId, string userId, string ServiceGoal)
+        {
+            return Odg.updateEmploymentGoal(peopleId, userId, ServiceGoal);
+        }
+
+
         public OODWorker.Form10TransportationData[] getForm10TransportationData(string token, string OODTransportationId)
         {
             return Ow.getForm10TransportationData(token, OODTransportationId);
