@@ -372,7 +372,14 @@
         const questionSetGridRows = [...questionSet.querySelectorAll('.grid__row:not(.grid__rowHeader)')];
         const questionSetActionButtons = [...questionSet.querySelectorAll('.gridActionRow button')];
         let questionSetId = e.target.dataset.setid;
-        // let sectionID = e.target.dataset.sectionid;
+
+        const grid = questionSet.querySelector('.grid');
+        if (isChecked) {
+          grid.classList.add('intentionallyDisabled');
+        } else {
+          grid.classList.remove('intentionallyDisabled');
+        }
+
         questionSetGridRows.forEach(row => {
           const rowCells = row.querySelectorAll('.grid__cell');
 
@@ -387,11 +394,9 @@
               cellInput.value = '';
               input.disableInputField(cellInput);
               sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = true;
-              cellInput.parentNode.closest('.question').classList.add('intentionallyDisabled');
             } else {
               input.enableInputField(cellInput);
               sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = false;
-              cellInput.parentNode.closest('.question').classList.remove('intentionallyDisabled');
             }
           });
         });
