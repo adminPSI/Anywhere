@@ -16,6 +16,7 @@
     let selectionDate;
     let selectedActive = 'No';
     let filterDate;
+    let isCaseLoadDisabled;
     /**
      * Constructor function for creating a Roster Picker component.
      *
@@ -76,14 +77,23 @@
             placeholder: 'Search...',
         });
 
+        if (($.session.CaseNotesCaseloadRestriction === true && $.loadedApp === 'casenotes')
+            || ($.session.WaitingListAssessmentCaseLoad === true && $.loadedApp === 'waitingList')) {
+            isCaseLoadDisabled = true;
+            this.groupCode = 'CAS';
+        } else {
+            isCaseLoadDisabled = false;
+            this.groupCode = 'ALL';  
+        }
+
         this.rosterCaseLoadInput = new Checkbox({
             label: 'Only show caseload',
             id: 'caseloadtoggle',
             name: 'caseload',
-            checked: $.session.CaseNotesCaseloadRestriction == true ? true : false,
-            disabled: $.session.CaseNotesCaseloadRestriction == true ? true : false,
-        }); 
-        
+            checked: isCaseLoadDisabled,
+            disabled: isCaseLoadDisabled,
+        });
+
         this.rosterInActiveInput = new Checkbox({
             label: 'Show inactive individuals',
             id: 'inactivetoggle',
@@ -271,7 +281,7 @@
      */
     RosterPicker.prototype.populate = function () {
         this.rosterWrapEle.innerHTML = '';
- 
+
         Object.values(this.consumers)
             .sort((a, b) => {
                 if (a.LN < b.LN) return -1;
@@ -285,12 +295,12 @@
             .forEach(consumer => {
                 // ROSTER CARD
                 const gridAnimationWrapper = _DOM.createElement('div', { class: 'rosterCardWrap' });
-                var inActive = false; 
+                var inActive = false;
 
-                if ($.session.applicationName === 'Gatekeeper') { 
+                if ($.session.applicationName === 'Gatekeeper') {
                     if (consumer.statusCode == 'I' && consumer.IDa != undefined && consumer.IDa != '' && UTIL.formatDateToIso(consumer.IDa.split(' ')[0]) <= filterDate) {
-                        inActive = true; 
-                    }   
+                        inActive = true;
+                    }
                 }
                 const rosterCard = new RosterCard({
                     consumerId: consumer.id,
