@@ -5430,7 +5430,7 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-          BodyStyle = WebMessageBodyStyle.Bare,
+          BodyStyle = WebMessageBodyStyle.Wrapped,
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/importedOutcomesPDFData/")]

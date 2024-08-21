@@ -265,14 +265,15 @@ const addEditOutcomeServices = (() => {
 
     // Function to process files for upload
     async function processFilesForUpload(files) {
-      const attachmentsForSave = {};
-
+      let attachment;
+  
       for (const file of files) {
-        const attachmentDetails = await _DOM.getAttachmentDetails(file);
-        attachmentsForSave[attachmentDetails.description] = attachmentDetails;
+          const attachmentDetails = await _DOM.getAttachmentDetails(file);
+          attachment = attachmentDetails.attachment;
+          break; // only want the first file's attachment; remove if handling multiple files
       }
-
-      return attachmentsForSave[0];
+  
+      return attachment; // Return just the attachment data
     }
   }
 
