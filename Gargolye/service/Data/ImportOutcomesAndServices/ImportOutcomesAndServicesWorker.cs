@@ -146,8 +146,6 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
         public ExtractedTables importedOutcomesPDFData(string token, string file)
         {
-            string localFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test3.pdf");
-
             byte[] pdfBytes = System.Convert.FromBase64String(file);
 
             // Initialize the PDFNet library
