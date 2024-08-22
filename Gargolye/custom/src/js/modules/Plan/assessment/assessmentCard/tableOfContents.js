@@ -30,7 +30,7 @@
   function highlightLink(sectionId) {
     for (const key in sections) {
       if (sections[key].id === sectionId) {
-        console.log(`Link for section ${key} is highlighted`);
+        console.log(`Link for section ${sections[key].id} is highlighted`);
         sections[key].markup.classList.add('inView');
         sections[key].markup.scrollIntoView({
           behavior: 'smooth',

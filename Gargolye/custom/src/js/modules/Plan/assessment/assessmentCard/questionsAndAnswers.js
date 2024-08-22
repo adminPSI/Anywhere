@@ -28,9 +28,12 @@
   let selectedRow;
   let isSortable;
   let readonly;
+  let hideOrShowStatus;
 
   const observerCallback = entries => {
+    console.log(`Observer callback fired.`);
     entries.forEach(entry => {
+      console.log(`Observing entry ${entry.target.id}`);
       if (entry.isIntersecting) {
         const sectionId = entry.target.id;
         console.log(`${sectionId} is in view`);
@@ -39,9 +42,13 @@
     });
   };
 
+  if (!('IntersectionObserver' in window)) {
+    alert('Intersection Observer API is not available')
+  }
+
   const observer = new IntersectionObserver(observerCallback, {
     root: null,
-    rootMargin: '0px',
+    rootMargin: '50px 0px 50px 0px',
     threshold: 0.1,
   });
 
@@ -308,9 +315,13 @@
     tableOfContents.showUnansweredQuestionCount();
   }
   function toggleUnansweredQuestionFilter(hideOrShow) {
-    const questions = [...document.querySelectorAll('.question')];
-    questions.forEach(q => {
-      if (q.classList.contains('unawnsered') && !q.classList.contains('intentionallyDisabled')) return;
+    hideOrShowStatus = hideOrShow;
+
+    const awnseredQuestions = [...document.querySelectorAll('.question:not(.unawnsered)')];
+    const awnseredTables = [...document.querySelectorAll('.grid:not(.unawnsered)')];
+
+    awnseredQuestions.forEach(q => {
+      if (!q.classList.contains('intentionallyDisabled')) return;
 
       if (hideOrShow === 'hide') {
         q.style.display = 'none';
@@ -319,8 +330,7 @@
       }
     });
 
-    const tables = [...document.querySelectorAll('.grid')];
-    tables.forEach(t => {
+    awnseredTables.forEach(t => {
       if (t.classList.contains('unawnsered') && !t.classList.contains('intentionallyDisabled')) return;
 
       if (hideOrShow === 'hide') {
@@ -345,7 +355,7 @@
       const isChecked = e.target.checked;
       const skipped = isChecked ? 'Y' : 'N';
       const isForRow = e.target.dataset.isforrow;
-      // ids for associated textarea question/anwser
+      
       let answerId = e.target.dataset.answerid;
       let questionId = e.target.dataset.questionid;
       let setId = e.target.dataset.setid;
@@ -409,6 +419,10 @@
         });
       }
 
+      if (hideOrShowStatus === 'hide') {
+        toggleUnansweredQuestionFilter(hideOrShowStatus);
+      }
+      
       tableOfContents.showUnansweredQuestionCount();
 
       return;
