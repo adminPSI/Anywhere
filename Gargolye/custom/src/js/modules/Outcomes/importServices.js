@@ -2,19 +2,9 @@ const importServices = (() => {
 
     //DATA
     let extractionData;
-    let existingOutcomesData;
+    let currentlySelectedConsumer;
     let existingOutcomesVendorData;
     let selectedOutcomes = [];
-
-    //ELEMENTS 
-    let importSelectedServicesPopup;
-
-    // TABLES
-    let knownAndLikelyRisksTable;
-    let experiencesTable;
-    let paidSupportsTable;
-    let additionalSupportsTable;
-    let professionalReferralsTable;
     let assessmentAreas =         
         {
             'Communication' : 34,
@@ -25,12 +15,31 @@ const importServices = (() => {
             'Community Living' : 39,
             'Healthy Living' : 40
         }
+    const sectionToTableMap = {
+    'Known & Likely Risks': 'importedPlanRisksTable',
+    'Experiences': 'importedExperiencesTable',
+    'Paid Supports': 'importedPaidSupportsTable',
+    'Additional Supports': 'importedAdditionalSupportsTable',
+    'Professional Referrals': 'importedProfessionalReferralsTable',
+        };  
 
-    async function init(pdfFiles, outcomesServicesData) {
+    //ELEMENTS 
+    let importSelectedServicesPopup;
+
+    // TABLES
+    let knownAndLikelyRisksTable;
+    let experiencesTable;
+    let paidSupportsTable;
+    let additionalSupportsTable;
+    let professionalReferralsTable;
+
+    async function init(file, outcomesServicesData, selectedConsumer) {
         const token = $.session.Token
-        extractionData = await _UTIL.fetchData('importedOutcomesPDFData', {token, pdfFiles});
+        currentlySelectedConsumer = selectedConsumer;
+
+        extractionData = await _UTIL.fetchData('importedOutcomesPDFData', {token, file});
         existingOutcomesVendorData = outcomesServicesData.pageDataParent.map(outcome => ({
-            value: outcome.outcomeStatement,
+            value: outcome.goal_id,
             text: outcome.outcomeStatement,
         }))
         buildImportSections();
@@ -97,8 +106,6 @@ const importServices = (() => {
                 label: 'Add to Existing Outcome',
                 dropdownId: 'existingOutcomeDropdown',
             });
-    
-            dropdown.populate('existingOutcomeDropdown', existingOutcomesVendorData, existingOutcomesVendorData[0]?.value);
 
             const serviceDateStartInput = input.build({
                 type: 'date',
@@ -120,10 +127,12 @@ const importServices = (() => {
             createAddToExistingOutcomesRowContainerDiv.appendChild(serviceDateStartInput);
             createAddToExistingOutcomesRowContainerDiv.appendChild(serviceDateEndInput);
             tableDiv.appendChild(createAddToExistingOutcomesRowContainerDiv);
+
+            dropdown.populate(exitingOutcomDropdown, existingOutcomesVendorData, existingOutcomesVendorData[0]?.value);
         };
 
         knownAndLikelyRisksTable = table.build({
-            tableId: `planRisksTable`,
+            tableId: `importedPlanRisksTable`,
             headline: `Know & Likely Risks`,
             columnHeadings: [
               'Assessment Area',
@@ -161,7 +170,7 @@ const importServices = (() => {
   
         // Experiences Table
          experiencesTable = table.build({
-            tableId: `experiencesTable`,
+            tableId: `importedExperiencesTable`,
             headline: `Experiences: <span>In order to accomplish the outcome, what experiences does the person need to have?</span>`,
             columnHeadings: [
                 'What needs to happen',
@@ -198,7 +207,7 @@ const importServices = (() => {
   
         // Paid Supports Table
         paidSupportsTable = table.build({
-            tableId: 'paidSupportsTable',
+            tableId: 'importedPaidSupportsTable',
             headline: 'Paid Supports',
             columnHeadings: [
                 'Assessment Area',
@@ -239,7 +248,7 @@ const importServices = (() => {
         
         // Additional Supports Table
         additionalSupportsTable = table.build({
-            tableId: 'additionalSupportsTable',
+            tableId: 'importedAdditionalSupportsTable',
             headline: `Additional Supports: <span>Family, friends, community resources, technology, etc.</span>`,
             columnHeadings: [
                 'Assessment Area',
@@ -277,7 +286,7 @@ const importServices = (() => {
   
         // Professional Referrals Table
         professionalReferralsTable = table.build({
-            tableId: 'professionalReferralsTable',
+            tableId: 'importedProfessionalReferralsTable',
             headline: `Professional Referrals: <span>Medical professionals, therapists, etc.</span>`,
             columnHeadings: [
                 'Assessment Area',
@@ -347,16 +356,35 @@ const importServices = (() => {
                 style: 'secondary',
                 type: 'contained',
                 classNames: 'okBtn',
-                callback: () => {POPUP.hide(importSelectedServicesPopup)},
+                callback: () => {
+                    POPUP.hide(importSelectedServicesPopup)
+                    addEditOutcomeServices.init(currentlySelectedConsumer);
+                },
             });
 
             const token = $.session.Token;
-            const importedTables = selectedOutcomes;
+
+             // Gather all selected rows with additional data
+            const importedTables = selectedOutcomes.map((rowData) => {
+                // Use the sectionToTableMap to get the tableId
+                const tableId = sectionToTableMap[rowData.section];
+                const tableDiv = document.getElementById(tableId);
+
+                const dropdown = tableDiv.querySelector('.addToExistingOutcomesRowContainer .dropdown select');
+                const serviceDateStart = tableDiv.querySelector('.addToExistingOutcomesRowContainer input[type="date"]:first-of-type');
+                const serviceDateEnd = tableDiv.querySelector('.addToExistingOutcomesRowContainer input[type="date"]:last-of-type');
+
+                return {
+                    ...rowData, // Include the existing row data
+                    existingOutcomeGoalId: dropdown ? dropdown.value : null,
+                    serviceDateStart: serviceDateStart ? serviceDateStart.value : null,
+                    serviceDateEnd: serviceDateEnd ? serviceDateEnd.value : null,
+                };
+            });
 
             const importSelectedServicesResult = await _UTIL.fetchData('importSelectedServices', {token, importedTables});
-            //const importSelectedServicesResult = 'success';
 
-            if (importSelectedServicesResult === 'success') {
+            if (importSelectedServicesResult.importSelectedServicesResult.length === 0) {
                 importSelectedServicesPopupMessage.innerText = 'Your outcomes have been successfully imported.'
             } else {
                 importSelectedServicesPopupMessage.innerText = 'Something went wrong when trying to import your services. Please Try again.'
@@ -394,6 +422,8 @@ const importServices = (() => {
         const assessmentAreaId = getAssessmentAreaId(ra.AssessmentArea);
         const assessmentArea = ra.AssessmentArea;
 
+        const section = 'Known & Likely Risks';
+
         return {
             tableValues: [
                 assessmentArea,
@@ -409,6 +439,7 @@ const importServices = (() => {
                 whatSupportMustLookLike,
                 riskRequiresSupervision,
                 whoIsResponsible,
+                section
             },
         };
     }
@@ -419,6 +450,8 @@ const importServices = (() => {
         const howItShouldHappen = ex.HowItShouldHappen;
         const whoIsResponsible = ex.whoIsResponsible;
         const WhenHowOften = ex.HowOftenHowMuch;
+
+        const section = 'Experiences';
 
         return {
             tableValues: [
@@ -432,6 +465,7 @@ const importServices = (() => {
                 howItShouldHappen,
                 whoIsResponsible,
                 WhenHowOften,
+                section
             },
         };
     }
@@ -456,6 +490,8 @@ const importServices = (() => {
         const assessmentArea = ps.AssessmentArea;
 
         const providerName = '';
+
+        const section = 'Paid Supports';
 
         let howOften = '';
         if (howOftenValue) howOften += howOftenValue;
@@ -491,6 +527,7 @@ const importServices = (() => {
                 //fundingSource,
                 fundingSourceText,
                 paidSupportsId,
+                section
             },
         };
     }
@@ -511,6 +548,8 @@ const importServices = (() => {
         assessmentAreaId = getAssessmentAreaId(as.AssessmentArea);
         assessmentArea =  as.AssessmentArea;
 
+        const section = 'Additional Supports';
+
         const whenHowOftenDesc = '';
         let howOften = '';
         if (howOftenValue) howOften += howOftenValue;
@@ -525,7 +564,7 @@ const importServices = (() => {
                 assessmentArea, 
                 whoSupportsText, 
                 whatSupportLooksLike, 
-                howOften
+                howOften,
             ],
             asData: {
                 assessmentAreaId,
@@ -535,6 +574,7 @@ const importServices = (() => {
                 howOftenFrequency,
                 howOftenText,
                 additionalSupportsId,
+                section
             },
         };
     }
@@ -555,6 +595,8 @@ const importServices = (() => {
         assessmentAreaId = getAssessmentAreaId(pr.AssessmentArea);
         assessmentArea =  pr.AssessmentArea;
 
+        const section = 'Professional Referrals';
+
         const whenHowOftenDesc = '';
         let howOften = '';
         if (howOftenValue) howOften += howOftenValue;
@@ -569,7 +611,7 @@ const importServices = (() => {
                 assessmentArea, 
                 newOrExisting, 
                 whoSupports, 
-                reasonForReferral
+                reasonForReferral,
             ],
             prData: {
                 assessmentAreaId,
@@ -577,6 +619,7 @@ const importServices = (() => {
                 newOrExisting, 
                 whoSupports, 
                 reasonForReferral,
+                section
             },
         };
     }

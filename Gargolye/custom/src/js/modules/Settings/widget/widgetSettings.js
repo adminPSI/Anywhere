@@ -41,7 +41,7 @@ const widgetSettings = (function () {
                     value: that.settings.daysBack,
                     attributes: [
                         { key: 'min', value: '1' },
-                        { key: 'max', value: '14' },
+                        { key: 'max', value: '60' },
                         {
                             key: 'onkeypress',
                             value: 'return event.charCode >= 48 && event.charCode <= 57',
@@ -86,7 +86,7 @@ const widgetSettings = (function () {
                             productivityThresholdPercentage.firstElementChild.value,
                         );
                         const newWorkHours = parseFloat(workHoursPerDay.firstElementChild.value);
-                        if (newDaysBack >= 1 && newDaysBack <= 14) {
+                        if (newDaysBack >= 1 && newDaysBack <= 60) {
                             that.settings.daysBack = newDaysBack;
                         }
                         if (newProductivity >= 0 && newProductivity <= 100) {
@@ -136,6 +136,39 @@ const widgetSettings = (function () {
                 widgetBody.appendChild(group1);
                 widgetBody.appendChild(group2);
                 widgetBody.appendChild(btnWrap);
+
+                daysBackInput.addEventListener('input', event => {
+                    if (event.target.value < 1 || event.target.value > 60) {
+                        daysBackInput.classList.add('error');
+                        saveBtn.classList.add('disabled');
+                    }
+                    else {
+                        daysBackInput.classList.remove('error');
+                        saveBtn.classList.remove('disabled');
+                    }
+                });
+
+                workHoursPerDay.addEventListener('input', event => {
+                    if (event.target.value < 1 || event.target.value > 24) {
+                        workHoursPerDay.classList.add('error');
+                        saveBtn.classList.add('disabled');
+                    }
+                    else {
+                        workHoursPerDay.classList.remove('error');
+                        saveBtn.classList.remove('disabled');
+                    }
+                });
+
+                productivityThresholdPercentage.addEventListener('input', event => {
+                    if (event.target.value < 0 || event.target.value > 100) { 
+                        productivityThresholdPercentage.classList.add('error');
+                        saveBtn.classList.add('disabled');
+                    }
+                    else {
+                        productivityThresholdPercentage.classList.remove('error');
+                        saveBtn.classList.remove('disabled');
+                    }
+                });
 
                 return widgetBody;
             },
@@ -692,7 +725,7 @@ const widgetSettings = (function () {
                 updatedListOrder.length = allElmnts.length;
                 for (var i = 0; i < allElmnts.length; i++) {
                     updatedListOrder[i] = allElmnts[i].innerText.replace('show', '').replace('\n', '').trim();
-                } 
+                }
                 await widgetSettingsAjax.setWidgetSettingOrder(updatedListOrder);
                 if ($.session.activeModule == 'home')
                     dashboard.load();
@@ -719,7 +752,7 @@ const widgetSettings = (function () {
             const tableData = sortedProducts.map(m => {
                 let name;
                 let IsBuild = 'false';
-                if (sections[m.id].build) {                 
+                if (sections[m.id].build) {
                     name = m.name + '  ' + `${icons['Gear']}`;
                     IsBuild = 'true';
                 }

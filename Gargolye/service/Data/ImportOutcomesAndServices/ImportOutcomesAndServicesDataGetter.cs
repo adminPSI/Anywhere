@@ -19,47 +19,27 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
         public string importSelectedServices(
             string token,
-            int? assessmentAreaId,
-            string assessmentArea,
-            string whatIsRisk,
-            string whatSupportMustLookLike,
-            string riskRequiresSupervision,
-            string whatNeedsToHappen,
-            string howItShouldHappen,
-            string whoIsResponsible,
-            string whenHowOften,
-            string providerName,
-            string scopeOfService,
-            string howOftenValue,
-            string howOftenText,
-            string howOftenFrequency,
-            string whoSupports,
-            string newOrExisting,
-            string reasonForReferral,
+            string existingOutcomeGoalId,
+            string objectiveStatement,
+            string objectiveMethod,
+            string objectiveRecurrance,
+            string serviceDateStart,
+            string serviceDateEnd,
             DistributedTransaction transaction)
         {
             logger.debug("importSelectedServices");
 
+            //existingOutcomeGoalId = null;
+
             var parameters = new Dictionary<string, string>
             {
                 { "@token", token },
-                { "@assessmentAreaId", assessmentAreaId?.ToString() }, 
-                { "@assessmentArea", assessmentArea },
-                { "@whatIsRisk", whatIsRisk },
-                { "@whatSupportMustLookLike", whatSupportMustLookLike },
-                { "@riskRequiresSupervision", riskRequiresSupervision },
-                { "@whatNeedsToHappen", whatNeedsToHappen },
-                { "@howItShouldHappen", howItShouldHappen },
-                { "@whoIsResponsible", whoIsResponsible },
-                { "@whenHowOften", whenHowOften },
-                { "@providerName", providerName },
-                { "@scopeOfService", scopeOfService },
-                { "@howOftenValue", howOftenValue },
-                { "@howOftenText", howOftenText },
-                { "@howOftenFrequency", howOftenFrequency },
-                { "@whoSupports", whoSupports },
-                { "@newOrExisting", newOrExisting },
-                { "@reasonForReferral", reasonForReferral }
+                { "@existingOutcomeGoalId", existingOutcomeGoalId },
+                { "@objectiveStatement", objectiveStatement },
+                { "@objectiveMethod", objectiveMethod },
+                { "@objectiveRecurrance", objectiveRecurrance },
+                { "@serviceDateStart", serviceDateStart },
+                { "@serviceDateEnd", serviceDateEnd }
             };
 
             try

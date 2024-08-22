@@ -242,9 +242,11 @@ const consumerInfo = (function () {
         // wait till consumer card is hidden
         setTimeout(function () {
             // reshow roster list
-            var rosterList = document.querySelector('.roster');
-            rosterList.classList.remove('hidden');
-            rosterList.classList.remove('fadeOut');
+            var rosterList = document.querySelector('.roster');     
+            if (rosterList != null) { 
+                rosterList.classList.remove('hidden');
+                rosterList.classList.remove('fadeOut');
+            }         
             DOM.removeHeaderOpacity();
             if (!isMobile) {
                 bodyScrollLock.enableBodyScroll(consumerInfoCard);

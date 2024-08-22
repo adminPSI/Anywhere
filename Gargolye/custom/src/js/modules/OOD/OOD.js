@@ -7,6 +7,7 @@ const OOD = (() => {
     let editEmployersBtn;
     let createFormsBtn;
     let updateEmploymentGoalBtn;
+    let employmentGoalText;
     let filterRow;
     let newEntryBtn;
     let newSummaryBtn;
@@ -21,6 +22,7 @@ const OOD = (() => {
     //let initRosterSelection;
     var enabledConsumers;
     var selectedConsumers;
+    let selectedConsumerPeopleId;
 
     //filter
     let serviceDateStartInput;
@@ -62,6 +64,8 @@ const OOD = (() => {
 
     let selectedConsumerIds;
     //let consumerServices;
+
+    let employeeGoalTextarea;
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
@@ -105,8 +109,14 @@ const OOD = (() => {
         filterRow.appendChild(filteredBy);
         // filterRow.appendChild(editEmployersBtn);
 
+        
+        await planAjax.getConsumerPeopleId(selectedConsumers[0].id, function (results) {
+            selectedConsumerPeopleId = results[0].id;
+            
+        });
+
         const { OODForm8GetServiceGoalsResult: ServiceGoals } = await OODAjax.OODForm8GetServiceGoals(
-            selectedConsumers[0].id,
+            selectedConsumerPeopleId,
         );
 
         let employmentGoalDIV = document.createElement('div');
@@ -1550,32 +1560,44 @@ const OOD = (() => {
         });
         
 
-	const employeeGoalTextarea = input.build({
-      label: 'Employee Goal',
+	employeeGoalTextarea = input.build({
+      label: 'Employment Goal',
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
-      // value: importantTo,
+       value: employmentGoalText,
      // charLimit: charLimits.importantTo,
       forceCharLimit: true,
       callback: e => {
-        //importantTo = e.target.value;  
+        employmentGoalText = e.target.value;  
       },
     });
     employeeGoalTextarea.classList.add('importantTo');
 		
         // apply filters button
         APPLY_BTN = button.build({
-            text: 'Apply',
+            text: 'Save',
             style: 'secondary',
             type: 'contained',
-            // callback: async () => employeeGoalPopupDoneBtn(),
+             callback: async () => {
+               const success = await OODAjax.updateEmploymentGoal(
+               { peopleId: selectedConsumerPeopleId, 
+                userId: $.session.UserId, 
+                ServiceGoal: employmentGoalText,
+             });
+             POPUP.hide(employeeGoalPopup);
+              loadOODLanding();
+             },
         });
         CANCEL_BTN = button.build({
             text: 'Cancel',
             style: 'secondary',
             type: 'outlined',
-            callback: () => employeeGoalPopupCancelBtn(),
+            callback:  () => {
+
+                 employeeGoalPopupCancelBtn()
+                 loadOODLanding();
+            },
         });
 		
 		
@@ -1584,12 +1606,51 @@ const OOD = (() => {
         btnWrap.appendChild(APPLY_BTN);
         btnWrap.appendChild(CANCEL_BTN);
 
+        let employmentGoalTitle = document.createElement('h2');
+        employmentGoalTitle.innerHTML =
+            `Update Employment Goal`;
+
+        employmentGoalTitle.style.padding = '10px';
+
+        employeeGoalPopup.appendChild(employmentGoalTitle);
 		employeeGoalPopup.appendChild(employeeGoalTextarea);
 	    employeeGoalPopup.appendChild(btnWrap);
 
         //return filterPopup;
         POPUP.show(employeeGoalPopup);
+        checkEmploymentGoalRequiredFields();
+        checkEmploymentGoalEventListners();
     }
+
+    function checkEmploymentGoalRequiredFields() {
+        var employeeGoalInput = employeeGoalPopup.querySelector('textarea');
+
+        if (employeeGoalInput.value === '') {
+            employeeGoalTextarea.classList.add('error');
+        } else {
+            employeeGoalTextarea.classList.remove('error');
+        }
+
+        setBtnStatus();
+    }
+    
+    function setBtnStatus() {
+        var hasErrors = [].slice.call(employeeGoalPopup.querySelectorAll('.error'));
+        if ((hasErrors.length !== 0)) {
+            APPLY_BTN.classList.add('disabled');
+          } else {
+            APPLY_BTN.classList.remove('disabled');
+          }
+    
+      }
+      function checkEmploymentGoalEventListners() {
+       // var employeeGoalInput = employeeGoalPopup.querySelector('textarea');
+       employeeGoalTextarea.addEventListener('input', event => {
+            employmentGoalText = event.target.value;
+            checkEmploymentGoalRequiredFields();
+          });
+      }
+      
 
     function init() {
         //DOM.clearActionCenter();

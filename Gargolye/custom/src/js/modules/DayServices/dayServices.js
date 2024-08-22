@@ -407,7 +407,9 @@ const dayServices = (function () {
         selectedGroupNameBtnWrap = document.createElement('div');
         selectedGroupNameBtnWrap.classList.add('filterSelectionBtnWrap');
         selectedGroupNameBtnWrap.appendChild(selectedGroupNameBtn);
-        selectedGroupNameBtnWrap.appendChild(selectedGroupNameCloseBtn);
+        if ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices') { } else {
+            selectedGroupNameBtnWrap.appendChild(selectedGroupNameCloseBtn);
+        }       
         selectedGroupNameBtnWrap.setAttribute("id", "GroupNameCloseBtn");
         btnWrap.appendChild(selectedGroupNameBtnWrap);
     }
@@ -549,9 +551,12 @@ const dayServices = (function () {
                 attributes: [{ key: 'data-retrieveId', value: r.RetrieveID }],
             };
         });
-
-        defaultVal = !filterGroupID || filterGroupID === '%' ? 'ALL' : filterGroupID;
-        dropdown.populate(filterGroupDropdown, data, defaultVal);
+        if ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices') {
+            defaultVal = 'CAS'; 
+        } else {
+            defaultVal = !filterGroupID || filterGroupID === '%' ? 'ALL' : filterGroupID;
+        }        
+        dropdown.populate(filterGroupDropdown, data, defaultVal); 
     }
     function dayServicesFilterPopup(IsShow) {
         filterPopup = POPUP.build({
@@ -932,7 +937,7 @@ const dayServices = (function () {
         groupDropdown = dropdown.build({
             id: 'groupDropdown',
             dropdownId: 'groupDropdown',
-            label: 'Group',
+            label: 'Group',  
             style: 'secondary',
         });
 
@@ -1707,10 +1712,16 @@ const dayServices = (function () {
             style: 'secondary',
         });
 
+        var isDisabld = false;
+        if ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices') {
+            isDisabld = true;
+        }
+
         filterGroupDropdown = dropdown.build({
             dropdownId: 'dsGroupDropdown',
             label: 'Group',
             style: 'secondary',
+            readonly: isDisabld,  
         });
 
         filterDateInput = input.build({
@@ -2021,7 +2032,14 @@ const dayServices = (function () {
         locationID = defaults.getLocation('dayServices');
         noLocationSet = locationID === '' ? true : false;
         serviceDate = UTIL.getTodaysDate();
-        selectedGroupName = 'Everyone';
+             
+        if ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices') {
+            selectedGroupName = 'Caseload';  
+            temp__groupID = 'CAS';
+        } else {
+            selectedGroupName = 'Everyone';
+        }
+        
 
         //get locations and cache them
         dayServiceAjax.getDayServiceLocations(serviceDate, loc => {
