@@ -645,7 +645,6 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                 {
                     foreach (var importedTable in importedTables)
                     {
-                        // Perform the logic in C# for each item
                         string objectiveStatement = null;
                         string objectiveMethod = null;
                         string objectiveRecurrance = null;
@@ -681,7 +680,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                         try
                         {
-                            ioasdg.importSelectedServices(
+                            string result = ioasdg.importSelectedServices(
                                 token,
                                 importedTable.existingOutcomeGoalId,
                                 objectiveStatement,
@@ -691,11 +690,15 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 importedTable.serviceDateEnd,
                                 transaction
                             );
+
+                            // If an error occurs, add the failed object to the list
+                            if (result != "[]")
+                            {
+                                failedImports.Add(importedTable);
+                            }
                         }
                         catch (Exception)
                         {
-                            // If an error occurs, add the failed object to the list
-                            failedImports.Add(importedTable);
                         }
                     }
 
@@ -703,7 +706,6 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                 }
                 catch (Exception ex)
                 {
-                    
                 }
             }
 

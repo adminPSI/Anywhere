@@ -2,7 +2,7 @@ const importServices = (() => {
 
     //DATA
     let extractionData;
-    let existingOutcomesData;
+    let currentlySelectedConsumer;
     let existingOutcomesVendorData;
     let selectedOutcomes = [];
     let assessmentAreas =         
@@ -33,8 +33,9 @@ const importServices = (() => {
     let additionalSupportsTable;
     let professionalReferralsTable;
 
-    async function init(file, outcomesServicesData) {
+    async function init(file, outcomesServicesData, selectedConsumer) {
         const token = $.session.Token
+        currentlySelectedConsumer = selectedConsumer;
 
         extractionData = await _UTIL.fetchData('importedOutcomesPDFData', {token, file});
         existingOutcomesVendorData = outcomesServicesData.pageDataParent.map(outcome => ({
@@ -355,7 +356,10 @@ const importServices = (() => {
                 style: 'secondary',
                 type: 'contained',
                 classNames: 'okBtn',
-                callback: () => {POPUP.hide(importSelectedServicesPopup)},
+                callback: () => {
+                    POPUP.hide(importSelectedServicesPopup)
+                    addEditOutcomeServices.init(currentlySelectedConsumer);
+                },
             });
 
             const token = $.session.Token;
@@ -380,7 +384,7 @@ const importServices = (() => {
 
             const importSelectedServicesResult = await _UTIL.fetchData('importSelectedServices', {token, importedTables});
 
-            if (importSelectedServicesResult === 'success') {
+            if (importSelectedServicesResult.importSelectedServicesResult.length === 0) {
                 importSelectedServicesPopupMessage.innerText = 'Your outcomes have been successfully imported.'
             } else {
                 importSelectedServicesPopupMessage.innerText = 'Something went wrong when trying to import your services. Please Try again.'

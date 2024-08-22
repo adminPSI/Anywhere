@@ -29,6 +29,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         {
             logger.debug("importSelectedServices");
 
+            //existingOutcomeGoalId = null;
+
             var parameters = new Dictionary<string, string>
             {
                 { "@token", token },
