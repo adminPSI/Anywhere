@@ -35,7 +35,7 @@ const cnProductivitySettings = (function() {
     const newDaysBack = parseInt(daysBackInput.firstElementChild.value);
     const newProductivity = parseInt(productivityThresholdPercentage.firstElementChild.value);
     const newWorkHours = parseFloat(workHoursPerDay.firstElementChild.value);
-    if (newDaysBack >= 1 && newDaysBack <= 14) {
+    if (newDaysBack >= 1 && newDaysBack <= 60) {
       CN_PRODUCTIVITY_SETTINGS.daysBack = newDaysBack
     }
     if (newProductivity >= 0 && newProductivity <= 100) {
@@ -85,7 +85,7 @@ const cnProductivitySettings = (function() {
       value: CN_PRODUCTIVITY_SETTINGS.daysBack,
       attributes: [
         { key: "min", value: "1" },
-        { key: "max", value: "14" },
+        { key: "max", value: "60" }, 
         {
           key: "onkeypress",
           value: "return event.charCode >= 48 && event.charCode <= 57"
