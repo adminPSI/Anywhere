@@ -67,6 +67,8 @@ const importServices = (() => {
 
         function handleCheckboxSelection(event, rowData) {
             let checkbox = event.target;
+            const tableWrapper = checkbox.closest('.table');
+            const outcomeRowContainer = tableWrapper.querySelector('.addToExistingOutcomesRowContainer');
         
             // Check if the target is the checkbox itself
             if (checkbox.type !== 'checkbox') {
@@ -75,11 +77,26 @@ const importServices = (() => {
             }
         
             if (checkbox && checkbox.checked) {
+                // add the newly checked row data to the selected outcomes array
                 selectedOutcomes.push(rowData);
+
+                // show the existing outcomes div at the bottom of the table
+                outcomeRowContainer.style.display = 'flex';
+
             } else {
+                // remove the now unselected row data from the selected outcomes array
                 selectedOutcomes = selectedOutcomes.filter(
                     selectedRow => selectedRow !== rowData
                 );
+
+                //check if any row in the table is checked 
+                const anyRowsChecked = Array.from(tableWrapper.querySelectorAll('.row-checkbox'))
+                                            .some(cb => cb.checked);
+
+                // hide the exising outcomes div if no rows are checked
+                if (!anyRowsChecked) {
+                    outcomeRowContainer.style.display = 'none';
+                }
             }
         }
 
@@ -129,6 +146,8 @@ const importServices = (() => {
             tableDiv.appendChild(createAddToExistingOutcomesRowContainerDiv);
 
             dropdown.populate(exitingOutcomDropdown, existingOutcomesVendorData, existingOutcomesVendorData[0]?.value);
+
+            createAddToExistingOutcomesRowContainerDiv.style.display = 'none';
         };
 
         knownAndLikelyRisksTable = table.build({
@@ -144,7 +163,7 @@ const importServices = (() => {
             sortable: false,
             startIcon: true,
             startIconHeader: headerCheckbox.outerHTML,
-            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#planRisksTable .startIcon input[type="checkbox"]', '#planRisksTable'),
+            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#importedPlanRisksTable .startIcon input[type="checkbox"]', '#importedPlanRisksTable'),
           });
 
         if (extractionData.importedOutcomesPDFDataResult.riskAssessments) {
@@ -181,7 +200,7 @@ const importServices = (() => {
             sortable: false,
             startIcon: true,
             startIconHeader: headerCheckbox.outerHTML,
-            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#experiencesTable .startIcon input[type="checkbox"]', '#experiencesTable'),
+            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#importedExperiencesTable .startIcon input[type="checkbox"]', '#importedExperiencesTable'),
         });
 
         if (extractionData.importedOutcomesPDFDataResult.experiences) {
@@ -222,7 +241,7 @@ const importServices = (() => {
             sortable: false,
             startIcon: true,
             startIconHeader: headerCheckbox.outerHTML,
-            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#paidSupportsTable .startIcon input[type="checkbox"]', '#paidSupportsTable'),
+            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#importedPaidSupportsTable .startIcon input[type="checkbox"]', '#importedPaidSupportsTable'),
         });
 
         if (extractionData.importedOutcomesPDFDataResult.paidSupports) {
@@ -260,7 +279,7 @@ const importServices = (() => {
             sortable: false,
             startIcon: true,
             startIconHeader: headerCheckbox.outerHTML,
-            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#additionalSupportsTable .startIcon input[type="checkbox"]', '#additionalSupportsTable'),
+            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#importedAdditionalSupportsTable .startIcon input[type="checkbox"]', '#importedAdditionalSupportsTable'),
         });
 
         if (extractionData.importedOutcomesPDFDataResult.additionalSupports) {
@@ -297,7 +316,7 @@ const importServices = (() => {
             sortable: false,
             startIcon: true,
             startIconHeader: headerCheckbox.outerHTML,
-            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#professionalReferralsTable .startIcon input[type="checkbox"]', '#professionalReferralsTable'),
+            startIconHeaderCallback: () => handleHeaderCheckboxSelection('#importedProfessionalReferralsTable .startIcon input[type="checkbox"]', '#importedProfessionalReferralsTable'),
         });
 
         if (extractionData.importedOutcomesPDFDataResult.professionalReferrals) {
@@ -337,7 +356,10 @@ const importServices = (() => {
             style: 'secondary',
             type: 'contained',
             classNames: 'cancelBtn',
-            callback: () => {},
+            callback: () => {
+                selectedOutcomes = [];
+                addEditOutcomeServices.init(currentlySelectedConsumer);
+            },
         });
 
         importSelectedSerivcesAndCancelBtnWrap.appendChild(importSelectedServicesBtn);
@@ -357,6 +379,7 @@ const importServices = (() => {
                 type: 'contained',
                 classNames: 'okBtn',
                 callback: () => {
+                    selectedOutcomes = [];
                     POPUP.hide(importSelectedServicesPopup)
                     addEditOutcomeServices.init(currentlySelectedConsumer);
                 },
@@ -364,7 +387,34 @@ const importServices = (() => {
 
             const token = $.session.Token;
 
-             // Gather all selected rows with additional data
+            // Define the properties of ImportedTables with default values
+            function createDefaultImportedTable(rowData) {
+                return {
+                    assessmentAreaId: rowData.assessmentAreaId || null,
+                    assessmentArea: rowData.assessmentArea || "",
+                    whatIsRisk: rowData.whatIsRisk || "",
+                    whatSupportLooksLike: rowData.whatSupportLooksLike || "",
+                    riskRequiresSupervision: rowData.riskRequiresSupervision || "",
+                    whatNeedsToHappen: rowData.whatNeedsToHappen || "",
+                    howItShouldHappen: rowData.howItShouldHappen || "",
+                    whoIsResponsible: rowData.whoIsResponsible || "",
+                    whenHowOften: rowData.whenHowOften || "",
+                    providerName: rowData.providerName || "",
+                    scopeOfService: rowData.scopeOfService || "",
+                    howOftenValue: rowData.howOftenValue || "",
+                    howOftenText: rowData.howOftenText || "",
+                    howOftenFrequency: rowData.howOftenFrequency || "",
+                    whoSupports: rowData.whoSupports || "",
+                    newOrExisting: rowData.newOrExisting || "",
+                    reasonForReferral: rowData.reasonForReferral || "",
+                    section: rowData.section || "",
+                    existingOutcomeGoalId: rowData.existingOutcomeGoalId || "",
+                    serviceDateStart: rowData.serviceDateStart || "",
+                    serviceDateEnd: rowData.serviceDateEnd || ""
+                };
+            }
+
+            // Gather all selected rows with additional data
             const importedTables = selectedOutcomes.map((rowData) => {
                 // Use the sectionToTableMap to get the tableId
                 const tableId = sectionToTableMap[rowData.section];
@@ -374,12 +424,14 @@ const importServices = (() => {
                 const serviceDateStart = tableDiv.querySelector('.addToExistingOutcomesRowContainer input[type="date"]:first-of-type');
                 const serviceDateEnd = tableDiv.querySelector('.addToExistingOutcomesRowContainer input[type="date"]:last-of-type');
 
-                return {
-                    ...rowData, // Include the existing row data
+                const additionalData = {
                     existingOutcomeGoalId: dropdown ? dropdown.value : null,
                     serviceDateStart: serviceDateStart ? serviceDateStart.value : null,
-                    serviceDateEnd: serviceDateEnd ? serviceDateEnd.value : null,
+                    serviceDateEnd: serviceDateEnd ? serviceDateEnd.value : null
                 };
+
+                // Create a default ImportedTable object and merge with additional data
+                return createDefaultImportedTable({ ...rowData, ...additionalData });
             });
 
             const importSelectedServicesResult = await _UTIL.fetchData('importSelectedServices', {token, importedTables});
@@ -414,10 +466,10 @@ const importServices = (() => {
     function mapRiskAssessmentsDataForTable(ra) {
         let provderId = '';
 
-        const whatIsRisk = ra.WhatIsRisk;
-        const whatSupportMustLookLike = ra.WhatSupportMustLookLike;
-        const riskRequiresSupervision = ra.RiskRequiresSupervision;
-        const whoIsResponsible = ra.WhoIsResponsible;
+        const whatIsRisk = ra.WhatIsRisk || "";
+        const whatSupportMustLookLike = ra.WhatSupportMustLookLike || "";
+        const riskRequiresSupervision = ra.RiskRequiresSupervision || "";
+        const whoIsResponsible = ra.WhoIsResponsible || "";
 
         const assessmentAreaId = getAssessmentAreaId(ra.AssessmentArea);
         const assessmentArea = ra.AssessmentArea;
@@ -446,12 +498,14 @@ const importServices = (() => {
 
     // map the experiences data into the format needed for populating the table
     function mapExperiencesDataForTable(ex) {
-        const whatNeedsToHappen = ex.WhatNeedsToHappen;
-        const howItShouldHappen = ex.HowItShouldHappen;
-        const whoIsResponsible = ex.whoIsResponsible;
-        const WhenHowOften = ex.HowOftenHowMuch;
+        const whatNeedsToHappen = ex.WhatNeedsToHappen || "";
+        const howItShouldHappen = ex.HowItShouldHappen || "";
+        const whoIsResponsible = ex.whoIsResponsible || "";
+        const WhenHowOften = ex.HowOftenHowMuch || "";
 
         const section = 'Experiences';
+        const assessmentAreaId = getAssessmentAreaId(ex.AssessmentArea);
+        const assessmentArea = ex.AssessmentArea;
 
         return {
             tableValues: [
@@ -461,6 +515,8 @@ const importServices = (() => {
                 WhenHowOften,
             ],
             exData: {
+                assessmentAreaId,
+                assessmentArea,
                 whatNeedsToHappen,
                 howItShouldHappen,
                 whoIsResponsible,
@@ -477,13 +533,13 @@ const importServices = (() => {
 
         let provderId = '';
 
-        const serviceName = ps.ServiceName;
-        const scopeOfService = ps.ScopeOfService;
-        const howOftenValue = ps.HowOftenHowMuch;
-        const howOftenFrequencyText = ps.HowOftenHowMuch;
-        const howOftenText = ps.HowOftenHowMuch;
-        const fundingSourceDesc = ps.FundingSource;
-        const fundingSourceText = ps.FundingSource;
+        const serviceName = ps.ServiceName || "";
+        const scopeOfService = ps.ScopeOfService || "";
+        const howOftenValue = ps.HowOftenHowMuch || "";
+        const howOftenFrequencyText = ps.HowOftenHowMuch || "";
+        const howOftenText = ps.HowOftenHowMuch || "";
+        const fundingSourceDesc = ps.FundingSource || "";
+        const fundingSourceText = ps.FundingSource || "";
         const paidSupportsId = '';
 
         const assessmentAreaId = getAssessmentAreaId(ps.AssessmentArea);
@@ -537,12 +593,12 @@ const importServices = (() => {
         let assessmentAreaId;
         let assessmentArea;
 
-        const whoSupports = as.WhoSupports;
-        const whoSupportsText = as.WhoSupports;
-        const whatSupportLooksLike = as.WhatSupportLooksLike
-        const howOftenValue = as.WhenHowOften;
-        const howOftenFrequency = as.WhenHowOften;
-        const howOftenText = as.WhenHowOften;
+        const whoSupports = as.WhoSupports || "";
+        const whoSupportsText = as.WhoSupports || "";
+        const whatSupportLooksLike = as.WhatSupportLooksLike || "";
+        const howOftenValue = as.WhenHowOften || "";
+        const howOftenFrequency = as.WhenHowOften || "";
+        const howOftenText = as.WhenHowOften || "";
         const additionalSupportsId = '';
 
         assessmentAreaId = getAssessmentAreaId(as.AssessmentArea);
@@ -584,12 +640,12 @@ const importServices = (() => {
         let assessmentAreaId;
         let assessmentArea;
 
-        const newOrExisting = pr.NewOrExisting;
-        const whoSupports = pr.WhoSupports;
-        const reasonForReferral = pr.ReasonForReferral
-        const howOftenValue = pr.WhenHowOften;
-        const howOftenFrequency = pr.WhenHowOften;
-        const howOftenText = pr.WhenHowOften;
+        const newOrExisting = pr.NewOrExisting || "";
+        const whoSupports = pr.WhoSupports || "";
+        const reasonForReferral = pr.ReasonForReferral || "";
+        const howOftenValue = pr.WhenHowOften || "";
+        const howOftenFrequency = pr.WhenHowOften || "";
+        const howOftenText = pr.WhenHowOften || "";
         const additionalSupportsId = '';
 
         assessmentAreaId = getAssessmentAreaId(pr.AssessmentArea);
