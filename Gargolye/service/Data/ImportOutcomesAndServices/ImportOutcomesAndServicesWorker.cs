@@ -64,7 +64,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         public int? assessmentAreaId { get; set; }
         public string assessmentArea { get; set; }
         public string whatIsRisk { get; set; }
-        public string whatSupportMustLookLike { get; set; }
+        public string whatSupportLooksLike { get; set; }
         public string riskRequiresSupervision { get; set; }
         public string whatNeedsToHappen { get; set; }
         public string howItShouldHappen { get; set; }
@@ -650,29 +650,29 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                         switch (importedTable.section)
                         {
                             case "Known & Likely Risks":
-                                objectiveStatement = importedTable.whatSupportMustLookLike;
-                                objectiveMethod = importedTable.whatIsRisk;
+                                objectiveStatement = importedTable.whatSupportLooksLike ?? "";
+                                objectiveMethod = importedTable.whatIsRisk ?? "";
                                 break;
                             case "Experiences":
-                                objectiveStatement = importedTable.whatNeedsToHappen;
-                                objectiveMethod = importedTable.howItShouldHappen;
-                                objectiveRecurrance = importedTable.whenHowOften.Contains("Weekly") ? "W" :
-                                                      importedTable.whenHowOften.Contains("Monthly") ? "M" : null;
+                                objectiveStatement = importedTable.whatNeedsToHappen ?? "";
+                                objectiveMethod = importedTable.howItShouldHappen ?? "";
+                                objectiveRecurrance = (importedTable.whenHowOften ?? "").Contains("Weekly") ? "W" :
+                                                      (importedTable.whenHowOften ?? "").Contains("Monthly") ? "M" : null;
                                 break;
                             case "Paid Supports":
-                                objectiveStatement = importedTable.scopeOfService;
-                                objectiveRecurrance = importedTable.howOftenText.Contains("Daily") ? "D" :
-                                                      importedTable.howOftenText.Contains("Weekly") ? "W" :
-                                                      importedTable.howOftenText.Contains("Monthly") ? "M" : null;
+                                objectiveStatement = importedTable.scopeOfService ?? "";
+                                objectiveRecurrance = (importedTable.howOftenText ?? "").Contains("Daily") ? "D" :
+                                                      (importedTable.howOftenText ?? "").Contains("Weekly") ? "W" :
+                                                      (importedTable.howOftenText ?? "").Contains("Monthly") ? "M" : null;
                                 break;
                             case "Additional Supports":
-                                objectiveStatement = importedTable.whatSupportMustLookLike;
-                                objectiveRecurrance = importedTable.whenHowOften.Contains("Daily") ? "D" :
-                                                      importedTable.whenHowOften.Contains("Weekly") ? "W" :
-                                                      importedTable.whenHowOften.Contains("Monthly") ? "M" : null;
+                                objectiveStatement = importedTable.whatSupportLooksLike ?? "";
+                                objectiveRecurrance = (importedTable.whenHowOften ?? "").Contains("Daily") ? "D" :
+                                                      (importedTable.whenHowOften ?? "").Contains("Weekly") ? "W" :
+                                                      (importedTable.whenHowOften ?? "").Contains("Monthly") ? "M" : null;
                                 break;
                             case "Professional Referrals":
-                                objectiveStatement = importedTable.reasonForReferral;
+                                objectiveStatement = importedTable.reasonForReferral ?? "";
                                 break;
                         }
 
