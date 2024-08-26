@@ -306,6 +306,8 @@ namespace Anywhere.service.Data
             public WorkflowStatus[] statuses { get; set; }
             [DataMember(Order = 7)]
             public WorkflowGroup[] groups { get; set; }
+            [DataMember(Order = 8)]
+            public string addedToPlan { get; set; }
 
         }
         [DataContract]
