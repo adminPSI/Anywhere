@@ -1,95 +1,95 @@
-var outcomes = (function () {
-  var OUTCOMES_SECTION;
+const outcomes = (function () {
+  let OUTCOMES_SECTION;
 
   // Filter DOM
-  var filterPopup;
-  var filterButton;
-  var dateInput;
-  var serviceDropdown;
-  var outcomeDropdown;
-  var applyButton;
+  let filterPopup;
+  let filterButton;
+  let dateInput;
+  let serviceDropdown;
+  let outcomeDropdown;
+  let applyButton;
   //const currentFilterDisplay = document.createElement("div");
   // Filter Values
-  var currDate;
-  var currService;
-  var currOutcome;
-  var currOutcomeId;
+  let currDate;
+  let currService;
+  let currOutcome;
+  let currOutcomeId;
   // Data
   //----------------------------
-  var selectedConsumerObj;
-  var selectedConsumerId;
+  let selectedConsumerObj;
+  let selectedConsumerId;
   let selectedConsume;
   // front card data
-  var outcomesDataObj;
-  var outcomesPrompts;
-  var outcomesLocations;
+  let outcomesDataObj;
+  let outcomesPrompts;
+  let outcomesLocations;
   // back card dom (popup)
-  var detailsPopup;
-  var primaryLocationDropdown;
-  var secondaryLocationDropdown;
-  var resultsDropdown;
-  var promptsDropdown;
-  var attemptsDropdown;
-  var cIDropdown;
-  var timeInputs;
-  var saveBtn;
-  var deleteBtn;
-  var noteInput;
-  var enteredByUser;
-  var edit__lastEditedByDetails;
+  let detailsPopup;
+  let primaryLocationDropdown;
+  let secondaryLocationDropdown;
+  let resultsDropdown;
+  let promptsDropdown;
+  let attemptsDropdown;
+  let cIDropdown;
+  let timeInputs;
+  let saveBtn;
+  let deleteBtn;
+  let noteInput;
+  let enteredByUser;
+  let edit__lastEditedByDetails;
   // back card data
-  var ciData;
-  var successObj;
-  var successType;
-  var successDetails;
-  var currResult = '';
-  var currReason = '';
-  var currAttempts = '';
-  var currPrompt = '';
-  var currCI = '';
-  var currNote = '';
-  var currStartTime = '';
-  var currEndTime = '';
-  var defaultObjLocationId;
-  var defaultGoalLocationId;
+  let ciData;
+  let successObj;
+  let successType;
+  let successDetails;
+  let currResult = '';
+  let currReason = '';
+  let currAttempts = '';
+  let currPrompt = '';
+  let currCI = '';
+  let currNote = '';
+  let currStartTime = '';
+  let currEndTime = '';
+  let defaultObjLocationId;
+  let defaultGoalLocationId;
   // save/update data
-  var personId;
-  var objectiveId;
-  var activityId;
-  var objdate;
-  var success;
-  var goalnote;
-  var promptType;
-  var promptNumber;
-  var locationId;
-  var locationSecondaryId;
-  var goalStartTime;
-  var goalEndTime;
-  var goalCILevel;
+  let personId;
+  let objectiveId;
+  let activityId;
+  let objdate;
+  let success;
+  let goalnote;
+  let promptType;
+  let promptNumber;
+  let locationId;
+  let locationSecondaryId;
+  let goalStartTime;
+  let goalEndTime;
+  let goalCILevel;
   // other
-  var dateSpanMessage;
-  var daysBack;
-  var daysBackDate;
-  var useConsumerLocation;
-  var defaultPrimaryLocation;
-  var currentSection;
-  var todaysDateToDisplay;
-  var firstDayOfWeek;
-  var lastDayOfWeek;
-  var firstDayOfMonth;
-  var lastDayOfMonth;
-  var yearOfCurrentDay;
-  var dailyAbsent = false;
-  var consumerName;
+  let dateSpanMessage;
+  let daysBack;
+  let daysBackDate;
+  let useConsumerLocation;
+  let defaultPrimaryLocation;
+  let currentSection;
+  let todaysDateToDisplay;
+  let firstDayOfWeek;
+  let lastDayOfWeek;
+  let firstDayOfMonth;
+  let lastDayOfMonth;
+  let yearOfCurrentDay;
+  let dailyAbsent = false;
+  let consumerName;
   const todaysDate = UTIL.getTodaysDate();
   let initLoad;
 
   let btnWrap;
   let serviceBtnWrap;
   let outcomeTypeBtnWrap;
-  var tmpService;
-  var tmpOutcome;
-  var tmpOutcomeId;
+  let tmpService;
+  let tmpOutcome;
+  let tmpOutcomeId;
   let editOutcomeBtn;
 
   // Workers
@@ -2093,34 +2093,14 @@ var outcomes = (function () {
     OUTCOMES_SECTION = document.createElement('div');
     OUTCOMES_SECTION.classList.add('outcomes');
 
-    // var message = document.createElement("h2");
-    // message.classList.add("landingMessage");
-    // message.innerHTML = `Please select a consumer to get started.`;
-
-    // OUTCOMES_SECTION.appendChild(message);
     DOM.ACTIONCENTER.appendChild(OUTCOMES_SECTION);
 
     currDate = UTIL.getTodaysDate();
     outcomesAjax.getViewableGoalIdsByPermission(getConsumersWithRemainingGoals);
   }
 
-  // function appendMiniRoster(miniRoster) {
-  //   DOM.clearActionCenter();
-  //   DOM.ACTIONCENTER.appendChild(miniRoster);
-  // }
-
   function init() {
     initLoad = true;
-    // var enabledConsumers = roster.getEnabledConsumers();
-
-    // if (enabledConsumers.length === 0) {
-    //   // display mini roster for consumer selection
-    //   PROGRESS.SPINNER.show("Please wait while we gather everyone up...");
-    //   roster.buildRoster(true, false, appendMiniRoster, true);
-    // } else {
-    //   PROGRESS.SPINNER.show("Loading Outcomes...");
-    //   loadLandingPage();
-    // }
     loadLandingPage();
   }
 

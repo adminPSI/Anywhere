@@ -702,14 +702,14 @@
         }
       }
 
-      &::before {
-        display: block;
-        content: ' ';
-        margin-top: -92px;
-        height: 92px;
-        visibility: hidden;
-        pointer-events: none;
-      }
+      // &::before {
+      //   display: block;
+      //   content: ' ';
+      //   margin-top: -92px;
+      //   height: 92px;
+      //   visibility: hidden;
+      //   pointer-events: none;
+      // }
     }
 
     .sectionPrompt {

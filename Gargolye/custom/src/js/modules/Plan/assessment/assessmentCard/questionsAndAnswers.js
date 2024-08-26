@@ -35,9 +35,11 @@
     entries.forEach(entry => {
       console.log(`Observing entry ${entry.target.id}`);
       if (entry.isIntersecting) {
-        const sectionId = entry.target.id;
-        console.log(`${sectionId} is in view`);
-        tableOfContents.highlightLink(sectionId.replace('section', ''));
+        if (!entry.target.classList.contains('nonApplicable')) {
+          const sectionId = entry.target.id;
+          console.log(`${sectionId} is in view`);
+          tableOfContents.highlightLink(sectionId.replace('section', ''));
+        }
       }
     });
   };
@@ -49,7 +51,7 @@
   const observer = new IntersectionObserver(observerCallback, {
     root: null,
     rootMargin: '50px 0px 50px 0px',
-    threshold: 0.1,
+    threshold: 0.12,
   });
 
   function checkArrayConsistency(arr) {
