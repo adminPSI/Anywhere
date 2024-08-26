@@ -1695,6 +1695,19 @@ var timeApproval = (function () {
 
         return btnWrap;
     }
+
+    function buildReportButton() {
+        var btn = button.build({
+            text: 'Reports',
+            style: 'secondary',
+            type: 'contained',
+            callback: function () {
+                reports.init(payPeriod);
+            },
+        });
+
+        return btn;
+    }
     function buildTable() {
         var tableOptions = {
             tableId: 'singleEntryAdminReviewTable',
@@ -1744,6 +1757,7 @@ var timeApproval = (function () {
 
         DOM.clearActionCenter();
         var topNav = buildTopNav();
+        var reportBtn = buildReportButton();
         var fitleredBy = buildFilteredBy();
         reviewTable = buildTable();
 
@@ -1759,6 +1773,7 @@ var timeApproval = (function () {
         headers[7].setAttribute('data-type', 'string'); // Work Code 
 
         DOM.ACTIONCENTER.appendChild(topNav);
+        DOM.ACTIONCENTER.appendChild(reportBtn);
         DOM.ACTIONCENTER.appendChild(fitleredBy);
         DOM.ACTIONCENTER.appendChild(reviewTable);
 

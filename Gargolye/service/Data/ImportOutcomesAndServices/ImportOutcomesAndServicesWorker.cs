@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Web.Script.Serialization;
-// using ExcelLibrary.BinaryFileFormat;
-using Newtonsoft.Json;
 using pdftron.Common;
 using pdftron.PDF;
 
@@ -67,7 +64,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         public int? assessmentAreaId { get; set; }
         public string assessmentArea { get; set; }
         public string whatIsRisk { get; set; }
-        public string whatSupportMustLookLike { get; set; }
+        public string whatSupportLooksLike { get; set; }
         public string riskRequiresSupervision { get; set; }
         public string whatNeedsToHappen { get; set; }
         public string howItShouldHappen { get; set; }
@@ -82,6 +79,9 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         public string newOrExisting { get; set; }
         public string reasonForReferral { get; set; }
         public string section { get; set; }
+        public string existingOutcomeGoalId { get; set; }
+        public string serviceDateStart { get; set; }
+        public string serviceDateEnd { get; set; }
     }
 
     public class ImportOutcomesAndServicesWorker
@@ -146,7 +146,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
         public ExtractedTables importedOutcomesPDFData(string token, string file)
         {
-            string localFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test3.pdf");
+            byte[] pdfBytes = System.Convert.FromBase64String(file);
 
             // Initialize the PDFNet library
             pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20240512):89A5A05D0437C60A0320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
@@ -155,49 +155,52 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
             try
             {
-                using (PDFDoc doc = new PDFDoc(file))
+                using (MemoryStream pdfStream = new MemoryStream(pdfBytes))
                 {
-                    doc.InitSecurityHandler();
-
-                    string combinedText = "";
-                    for (int i = 1; i <= doc.GetPageCount(); i++)
+                    using (PDFDoc doc = new PDFDoc(pdfStream))
                     {
-                        TextExtractor textExtractor = new TextExtractor();
-                        Page page = doc.GetPage(i);
+                        doc.InitSecurityHandler();
 
-                        if (page != null)
+                        string combinedText = "";
+                        for (int i = 1; i <= doc.GetPageCount(); i++)
                         {
-                            textExtractor.Begin(page, null, TextExtractor.ProcessingFlags.e_extract_using_zorder);
-                            combinedText += ProcessTextExtractor(textExtractor, page) + "\n\n";
+                            TextExtractor textExtractor = new TextExtractor();
+                            Page page = doc.GetPage(i);
+
+                            if (page != null)
+                            {
+                                textExtractor.Begin(page, null, TextExtractor.ProcessingFlags.e_extract_using_zorder);
+                                combinedText += ProcessTextExtractor(textExtractor, page) + "\n\n";
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Page {i} not found in the document.");
+                            }
                         }
-                        else
-                        {
-                            Console.WriteLine($"Page {i} not found in the document.");
-                        }
+
+                        // Store the results in variables for further inspection
+                        var debugPageText = combinedText;
+
+                        // Save the first two lines for later checks
+                        string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                        string firstTwoLines = lines.Length > 1 ? lines[0] + "\n" + lines[1] : "";
+
+                        // Print combined text for debugging
+                        Console.WriteLine(combinedText);
+
+                        // Process the combined text for risk assessments
+                        var riskAssessments = ProcessCombinedTextForRiskAssessment(combinedText);
+                        var paidSupports = ProcessCombinedTextForPaidSupports(combinedText, firstTwoLines);
+                        var additionalSupports = ProcessCombinedTextForAdditionalSupports(combinedText);
+                        var professionalReferrals = ProcessCombinedTextForProfessionalReferrals(combinedText);
+                        var experiences = ProcessCombinedTextForExperiences(combinedText);
+
+                        extractedTables.riskAssessments = riskAssessments;
+                        extractedTables.paidSupports = paidSupports;
+                        extractedTables.additionalSupports = additionalSupports;
+                        extractedTables.professionalReferrals = professionalReferrals;
+                        extractedTables.experiences = experiences;
                     }
-
-                    // Store the results in variables for further inspection
-                    var debugPageText = combinedText;
-
-                    // Save the first two lines for later checks
-                    string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                    string firstTwoLines = lines.Length > 1 ? lines[0] + "\n" + lines[1] : "";
-
-                    // Print combined text for debugging
-                    Console.WriteLine(combinedText);
-
-                    // Process the combined text for risk assessments
-                    var riskAssessments = ProcessCombinedTextForRiskAssessment(combinedText);
-                    var paidSupports = ProcessCombinedTextForPaidSupports(combinedText, firstTwoLines);
-                    var additionalSupports = ProcessCombinedTextForAdditionalSupports(combinedText);
-                    var professionalReferrals = ProcessCombinedTextForProfessionalReferrals(combinedText);
-                    var experiences = ProcessCombinedTextForExperiences(combinedText);
-
-                    extractedTables.riskAssessments = riskAssessments;
-                    extractedTables.paidSupports = paidSupports;
-                    extractedTables.additionalSupports = additionalSupports;
-                    extractedTables.professionalReferrals = professionalReferrals;
-                    extractedTables.experiences = experiences;
                 }
             }
             catch (PDFNetException e)
@@ -640,35 +643,60 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                 {
                     foreach (var importedTable in importedTables)
                     {
+                        string objectiveStatement = null;
+                        string objectiveMethod = null;
+                        string objectiveRecurrance = null;
+
+                        switch (importedTable.section)
+                        {
+                            case "Known & Likely Risks":
+                                objectiveStatement = importedTable.whatSupportLooksLike ?? "";
+                                objectiveMethod = importedTable.whatIsRisk ?? "";
+                                break;
+                            case "Experiences":
+                                objectiveStatement = importedTable.whatNeedsToHappen ?? "";
+                                objectiveMethod = importedTable.howItShouldHappen ?? "";
+                                objectiveRecurrance = (importedTable.whenHowOften ?? "").Contains("Weekly") ? "W" :
+                                                      (importedTable.whenHowOften ?? "").Contains("Monthly") ? "M" : null;
+                                break;
+                            case "Paid Supports":
+                                objectiveStatement = importedTable.scopeOfService ?? "";
+                                objectiveRecurrance = (importedTable.howOftenText ?? "").Contains("Daily") ? "D" :
+                                                      (importedTable.howOftenText ?? "").Contains("Weekly") ? "W" :
+                                                      (importedTable.howOftenText ?? "").Contains("Monthly") ? "M" : null;
+                                break;
+                            case "Additional Supports":
+                                objectiveStatement = importedTable.whatSupportLooksLike ?? "";
+                                objectiveRecurrance = (importedTable.whenHowOften ?? "").Contains("Daily") ? "D" :
+                                                      (importedTable.whenHowOften ?? "").Contains("Weekly") ? "W" :
+                                                      (importedTable.whenHowOften ?? "").Contains("Monthly") ? "M" : null;
+                                break;
+                            case "Professional Referrals":
+                                objectiveStatement = importedTable.reasonForReferral ?? "";
+                                break;
+                        }
+
                         try
                         {
-                            ioasdg.importSelectedServices(
+                            string result = ioasdg.importSelectedServices(
                                 token,
-                                importedTable.assessmentAreaId,
-                                importedTable.assessmentArea,
-                                importedTable.whatIsRisk,
-                                importedTable.whatSupportMustLookLike,
-                                importedTable.riskRequiresSupervision,
-                                importedTable.whatNeedsToHappen,
-                                importedTable.howItShouldHappen,
-                                importedTable.whoIsResponsible,
-                                importedTable.whenHowOften,
-                                importedTable.providerName,
-                                importedTable.scopeOfService,
-                                importedTable.howOftenValue,
-                                importedTable.howOftenText,
-                                importedTable.howOftenFrequency,
-                                importedTable.whoSupports,
-                                importedTable.newOrExisting,
-                                importedTable.reasonForReferral,
-                                importedTable.section,
+                                importedTable.existingOutcomeGoalId,
+                                objectiveStatement,
+                                objectiveMethod,
+                                objectiveRecurrance,
+                                importedTable.serviceDateStart,
+                                importedTable.serviceDateEnd,
                                 transaction
                             );
+
+                            // If an error occurs, add the failed object to the list
+                            if (result != "[]")
+                            {
+                                failedImports.Add(importedTable);
+                            }
                         }
                         catch (Exception)
                         {
-                            // If an error occurs, add the failed object to the list
-                            failedImports.Add(importedTable);
                         }
                     }
 
@@ -676,7 +704,6 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                 }
                 catch (Exception ex)
                 {
-                    
                 }
             }
 

@@ -16,10 +16,12 @@ const addEditOutcomeServices = (() => {
   let outcomeTypeDropdown;
   let effectiveDateStart;
   let effectiveDateEnd;
+  let importDate;
   let applyFilterBtn;
   let btnWrap;
   let outcomeTypeBtnWrap;
   let effectiveDateBtnWrap;
+  let importDateBtnWrap;
 
   async function init(selectedConsume) {
     selectedConsumer = selectedConsume;
@@ -194,12 +196,12 @@ const addEditOutcomeServices = (() => {
       id: 'upload-import',
       style: 'secondary',
       type: 'contained',
-      classNames: 'btn',
+      classNames: ['btn', 'disabled'],
       callback: async () => {
         const attachmentsForSave = await processFilesForUpload(filesList);
 
         hidePopup();
-        importServices.init(attachmentsForSave, outcomeServicesData);
+        importServices.init(attachmentsForSave, outcomeServicesData, selectedConsumer);
       },
     });
 
@@ -255,24 +257,50 @@ const addEditOutcomeServices = (() => {
       for (const file of files) {
         console.log('File uploaded:', file.name);
       }
+
+      toggleButtonsDisabled('import', filesList);
     }
+
+    function toggleButtonsDisabled(filesList) {
+      const importButton = document.getElementById('upload-import');
+      const selectButton = document.getElementById('select-files');
+
+      if (filesList.length > 0) {
+        //if a file is selected, disable the select file button and enable the import files button
+        importButton.disabled = false;
+        importButton.classList.remove('disabled');
+
+        selectButton.disabled = true;
+        selectButton.classList.add('disabled');
+      } else {
+        //if no file is selected, disable the import button and enable the select files button
+        importButton.disabled = true;
+        importButton.classList.add('disabled');
+
+        selectButton.disabled = false;
+        selectButton.classList.remove('disabled');
+      }
+  }
 
     // Function to remove a file from the list
     function removeFile(index) {
       filesList.splice(index, 1);
       displayFileNames(filesList);
+      
+      toggleButtonsDisabled(filesList);
     }
 
     // Function to process files for upload
     async function processFilesForUpload(files) {
-      const attachmentsForSave = {};
-
+      let attachment;
+  
       for (const file of files) {
-        const attachmentDetails = await _DOM.getAttachmentDetails(file);
-        attachmentsForSave[attachmentDetails.description] = attachmentDetails;
+          const attachmentDetails = await _DOM.getAttachmentDetails(file);
+          attachment = attachmentDetails.attachment;
+          break; // only want the first file's attachment; remove if handling multiple files
       }
-
-      return attachmentsForSave[0];
+  
+      return attachment; // Return just the attachment data
     }
   }
 
@@ -315,6 +343,7 @@ const addEditOutcomeServices = (() => {
       outcomeType: '%',
       effectiveDateStart: dates.formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 10)).slice(0, 10),
       effectiveDateEnd: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
+      importDate: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
       outcomeTypeName: '%',
     };
   }
@@ -334,6 +363,7 @@ const addEditOutcomeServices = (() => {
     var currentFilterDisplay = document.querySelector('.filteredByData');
 
     effectiveDateEnd = `${formatDate(filterValues.effectiveDateEnd)}`;
+    importDate = `${formatDate(filterValues.effectiveDateEnd)}`;
 
     if (!currentFilterDisplay) {
       currentFilterDisplay = document.createElement('div');
@@ -358,6 +388,15 @@ const addEditOutcomeServices = (() => {
       btnWrap.appendChild(effectiveDateBtnWrap);
       if (document.getElementById('effectiveDateBtn') != null)
         document.getElementById('effectiveDateBtn').innerHTML = 'Effective As Of: ' + effectiveDateEnd;
+    }
+
+    if (importDate == '') {
+      btnWrap.appendChild(importDateBtnWrap);
+      btnWrap.removeChild(importDateBtnWrap);
+    } else {
+      btnWrap.appendChild(importDateBtnWrap);
+      if (document.getElementById('importDateBtn') != null)
+        document.getElementById('importDateBtn').innerHTML = 'ImportDate: ' + importDate;
     }
 
     return currentFilterDisplay;
@@ -406,6 +445,17 @@ const addEditOutcomeServices = (() => {
       },
     });
 
+    importDateBtn = button.build({
+      id: 'importDateBtn',
+      text: 'Import Date: ' + importDate,
+      style: 'secondary',
+      type: 'text',
+      classNames: 'filterSelectionBtn',
+      callback: () => {
+        showFilterPopup('importDateBtn');
+      },
+    });
+
     btnWrap = document.createElement('div');
     btnWrap.classList.add('filterBtnWrap');
     btnWrap.appendChild(filterBtn);
@@ -420,6 +470,11 @@ const addEditOutcomeServices = (() => {
     effectiveDateBtnWrap.classList.add('filterSelectionBtnWrap');
     effectiveDateBtnWrap.appendChild(effectiveDateBtn);
     btnWrap.appendChild(effectiveDateBtnWrap);
+
+    importDateBtnWrap = document.createElement('div');
+    importDateBtnWrap.classList.add('filterSelectionBtnWrap');
+    importDateBtnWrap.appendChild(importDateBtn);
+    btnWrap.appendChild(importDateBtnWrap);
   }
 
   function closeFilter(closeFilter) {
@@ -444,7 +499,7 @@ const addEditOutcomeServices = (() => {
     });
 
     // Date Inputs
-    const dateWrap = document.createElement('div');
+    const effectiveDateWrap = document.createElement('div');
     effectiveDateEndInput = input.build({
       type: 'date',
       label: 'Effective As Of',
@@ -452,8 +507,20 @@ const addEditOutcomeServices = (() => {
       value: filterValues.effectiveDateEnd,
     });
 
+    const importDateWrap = document.createElement('div');
+    importDateInput = input.build({
+      type: 'date',
+      label: 'Import Date',
+      style: 'secondary',
+      value: filterValues.importDate,
+    });
+
     if (IsShow == 'ALL' || IsShow == 'effectiveDateBtn') {
-      dateWrap.appendChild(effectiveDateEndInput);
+      effectiveDateWrap.appendChild(effectiveDateEndInput);
+    }
+
+    if (IsShow == 'ALL' || IsShow == 'importDateBtn') {
+      importDateWrap.appendChild(importDateInput);
     }
 
     const btnFilterWrap = document.createElement('div');
@@ -476,7 +543,8 @@ const addEditOutcomeServices = (() => {
 
     if (IsShow == 'ALL' || IsShow == 'outcomeTypeBtn') filterPopup.appendChild(outcomeTypeDropdown);
 
-    filterPopup.appendChild(dateWrap);
+    filterPopup.appendChild(effectiveDateWrap);
+    filterPopup.appendChild(importDateWrap);
     filterPopup.appendChild(btnFilterWrap);
 
     POPUP.show(filterPopup);
