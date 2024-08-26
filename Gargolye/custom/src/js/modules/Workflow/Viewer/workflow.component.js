@@ -1,6 +1,6 @@
 class WorkflowComponent {
   constructor(
-    { workflowId, name, processName, description, currentStatusId, statuses, groups },
+    { workflowId, name, processName, description, currentStatusId, statuses, groups, addedToPlan },
     people,
     responsiblePeople,
   ) {
@@ -13,6 +13,7 @@ class WorkflowComponent {
     this.groups = groups;
     this.people = people;
     this.responsiblePeople = responsiblePeople;
+    this.addedToPlan = addedToPlan;
   }
 
   async setStatusAsync(workflowId, statusId) {
@@ -58,6 +59,7 @@ class WorkflowComponent {
       setStatusAsync,
       getFirstAndLastName,
       responsiblePeople,
+      addedToPlan
     } = this;
 
     let workflowContainer = document.createElement('div');
@@ -71,7 +73,8 @@ class WorkflowComponent {
     workflowNameContainer.classList.add('wf-column', 'workflow-name-container');
     workflowNameContainer.innerHTML = `
         <h3>Workflow</h3>
-        <p>${name}</p> 
+        <p>${name}</p>
+        <p>Added to plan on ${addedToPlan}</p>
     `;
 
     workflowNameContainer.addEventListener('click', e => {
