@@ -1976,13 +1976,23 @@ const outcomes = (function () {
       style: 'secondary',
       type: 'contained',
       classNames: 'reportBtn',
-      callback: async () => {
+      callback: () => {
         if (!editOutcomeBtn.classList.contains('disabled')) {
           addEditOutcomeServices.init(selectedConsume);
         }
       },
     });
+    reviewOutcomesBtn = button.build({
+      text: 'REVIEW OUTCOMES/SERVICES',
+      icon: 'add',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        outcomesReview.init(selectedConsume)
+      }
+    })
     topFilterDateWrap.appendChild(editOutcomeBtn);
+    topFilterDateWrap.appendChild(reviewOutcomesBtn);
 
     if (
       $.session.InsertOutcomes == true ||
