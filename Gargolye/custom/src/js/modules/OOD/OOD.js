@@ -982,7 +982,7 @@ const OOD = (() => {
             classNames: ['EmployeeGoal', 'btnWrap'],
             
             callback: () => {
-                 buildEmployeeGoalPopUp();
+                 buildEmploymentGoalPopUp();
             },
         });
     }
@@ -1410,8 +1410,8 @@ const OOD = (() => {
         // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
     }
 
-    function employeeGoalPopupCancelBtn() {
-        POPUP.hide(employeeGoalPopup);
+    function employmentGoalPopupCancelBtn() {
+        POPUP.hide(employmentGoalPopup);
         // OODForm4MonthlyPlacement.init();
         // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
     }
@@ -1558,15 +1558,15 @@ const OOD = (() => {
         
     }
 
-    function buildEmployeeGoalPopUp() {
+    function buildEmploymentGoalPopUp() {
         // popup
-        employeeGoalPopup = POPUP.build({
+        employmentGoalPopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
             hideX: true,
         });
         
 
-	employeeGoalTextarea = input.build({
+	employmentGoalTextarea = input.build({
       label: 'Employment Goal',
       type: 'textarea',
       style: 'secondary',
@@ -1578,7 +1578,7 @@ const OOD = (() => {
         employmentGoalText = e.target.value;  
       },
     });
-    employeeGoalTextarea.classList.add('importantTo');
+    employmentGoalTextarea.classList.add('importantTo');
 		
         // apply filters button
         APPLY_BTN = button.build({
@@ -1591,7 +1591,7 @@ const OOD = (() => {
                 userId: $.session.UserId, 
                 ServiceGoal: employmentGoalText,
              });
-             POPUP.hide(employeeGoalPopup);
+             POPUP.hide(employmentGoalPopup);
               loadOODLanding();
              },
         });
@@ -1601,7 +1601,7 @@ const OOD = (() => {
             type: 'outlined',
             callback:  () => {
 
-                 employeeGoalPopupCancelBtn()
+                 employmentGoalPopupCancelBtn()
                  loadOODLanding();
             },
         });
@@ -1618,30 +1618,30 @@ const OOD = (() => {
 
         employmentGoalTitle.style.padding = '10px';
 
-        employeeGoalPopup.appendChild(employmentGoalTitle);
-		employeeGoalPopup.appendChild(employeeGoalTextarea);
-	    employeeGoalPopup.appendChild(btnWrap);
+        employmentGoalPopup.appendChild(employmentGoalTitle);
+		employmentGoalPopup.appendChild(employmentGoalTextarea);
+	    employmentGoalPopup.appendChild(btnWrap);
 
         //return filterPopup;
-        POPUP.show(employeeGoalPopup);
+        POPUP.show(employmentGoalPopup);
         checkEmploymentGoalRequiredFields();
         checkEmploymentGoalEventListners();
     }
 
     function checkEmploymentGoalRequiredFields() {
-        var employeeGoalInput = employeeGoalPopup.querySelector('textarea');
+        var employmentGoalInput = employmentGoalPopup.querySelector('textarea');
 
-        if (employeeGoalInput.value === '') {
-            employeeGoalTextarea.classList.add('error');
+        if (employmentGoalInput.value === '') {
+            employmentGoalTextarea.classList.add('error');
         } else {
-            employeeGoalTextarea.classList.remove('error');
+            employmentGoalTextarea.classList.remove('error');
         }
 
         setBtnStatus();
     }
     
     function setBtnStatus() {
-        var hasErrors = [].slice.call(employeeGoalPopup.querySelectorAll('.error'));
+        var hasErrors = [].slice.call(employmentGoalPopup.querySelectorAll('.error'));
         if ((hasErrors.length !== 0)) {
             APPLY_BTN.classList.add('disabled');
           } else {
@@ -1651,7 +1651,7 @@ const OOD = (() => {
       }
       function checkEmploymentGoalEventListners() {
        // var employeeGoalInput = employeeGoalPopup.querySelector('textarea');
-       employeeGoalTextarea.addEventListener('input', event => {
+       employmentGoalTextarea.addEventListener('input', event => {
             employmentGoalText = event.target.value;
             checkEmploymentGoalRequiredFields();
           });
