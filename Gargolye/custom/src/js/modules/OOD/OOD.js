@@ -65,7 +65,7 @@ const OOD = (() => {
     let selectedConsumerIds;
     //let consumerServices;
 
-    let employeeGoalTextarea;
+    let employmentGoalTextarea;
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
