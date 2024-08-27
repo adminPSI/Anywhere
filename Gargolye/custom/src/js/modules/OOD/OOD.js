@@ -129,7 +129,7 @@ const OOD = (() => {
             updateEmploymentGoalBtn = buildUpdateEmploymentGoalsBtn();
             updateEmploymentGoalBtn.setAttribute('max-width', '100px: !importatnt;');
          
-            employmentGoalDIV.classList.add("EmployeeGoal");
+            employmentGoalDIV.classList.add("EmploymentGoal");
             employmentGoalDIV.classList.add("btnWrap");
             employmentGoalDIV.appendChild(employmentGoalMessage) 
             employmentGoalDIV.appendChild(updateEmploymentGoalBtn)  
@@ -979,7 +979,7 @@ const OOD = (() => {
             style: 'secondary',
             type: 'contained',
             id: createFormsBtn,
-            classNames: ['EmployeeGoal', 'btnWrap'],
+            classNames: ['EmploymentGoal', 'btnWrap'],
             
             callback: () => {
                  buildEmploymentGoalPopUp();
