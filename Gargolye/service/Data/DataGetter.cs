@@ -6704,12 +6704,13 @@ namespace Anywhere.Data
             }
         }
 
-        public string getOutcomeServiceDropDown(string token)
+        public string getOutcomeServiceDropDown(string token, string consumerId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getOutcomeServiceDropDown" + token);
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(consumerId);
             string text = "CALL DBA.ANYW_GoalsAndServices_getOutcomeServiceDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
