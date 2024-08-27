@@ -500,8 +500,8 @@ const importServices = (() => {
     function mapExperiencesDataForTable(ex) {
         const whatNeedsToHappen = ex.WhatNeedsToHappen || "";
         const howItShouldHappen = ex.HowItShouldHappen || "";
-        const whoIsResponsible = ex.whoIsResponsible || "";
-        const WhenHowOften = ex.HowOftenHowMuch || "";
+        const whoIsResponsible = ex.WhoIsResponsible || "";
+        const WhenHowOften = ex.WhenHowOften || "";
 
         const section = 'Experiences';
         const assessmentAreaId = getAssessmentAreaId(ex.AssessmentArea);

@@ -120,6 +120,7 @@ const OOD = (() => {
         );
 
         let employmentGoalDIV = document.createElement('div');
+
         
         let employmentGoalMessage = document.createElement('p');
         employmentGoalMessage.innerHTML =
@@ -128,8 +129,13 @@ const OOD = (() => {
             updateEmploymentGoalBtn = buildUpdateEmploymentGoalsBtn();
             updateEmploymentGoalBtn.setAttribute('max-width', '100px: !importatnt;');
          
-            employmentGoalDIV.appendChild(employmentGoalMessage);
-            employmentGoalDIV.appendChild(updateEmploymentGoalBtn);
+            employmentGoalDIV.classList.add("EmployeeGoal");
+            employmentGoalDIV.classList.add("btnWrap");
+            employmentGoalDIV.appendChild(employmentGoalMessage) 
+            employmentGoalDIV.appendChild(updateEmploymentGoalBtn)  
+
+           // employmentGoalDIV.appendChild(employmentGoalMessage);
+           // employmentGoalDIV.appendChild(updateEmploymentGoalBtn);
 
         landingPage.appendChild(filterRow);
         landingPage.appendChild(employmentGoalDIV);

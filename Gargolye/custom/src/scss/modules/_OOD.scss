@@ -535,11 +535,13 @@
 .EmployeeGoal {
   .btnWrap {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: row;
+    flex-direction: row;
+    justify-content: unset;
     max-height: 50pc;
     max-width: 100px;
     min-width: 80px;
-     float: left;
+    // float: left;
     //flex-basis: 100%;
 
     // button {
