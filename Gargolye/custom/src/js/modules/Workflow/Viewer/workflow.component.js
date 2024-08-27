@@ -74,7 +74,7 @@ class WorkflowComponent {
     workflowNameContainer.innerHTML = `
         <h3>Workflow</h3>
         <p>${name}</p>
-        <p>Added to plan on ${addedToPlan}</p>
+        <p>Added to plan on ${addedToPlan.split(' ')[0]}</p>
     `;
 
     workflowNameContainer.addEventListener('click', e => {

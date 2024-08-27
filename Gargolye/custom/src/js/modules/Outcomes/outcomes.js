@@ -305,118 +305,6 @@ const outcomes = (function () {
     });
   }
 
-  function updateCurrentFilterDisplay(service = 'All', outcomeType = 'All') {
-    var currentFilterDisplay = document.querySelector('.filteredByData');
-
-    if (!currentFilterDisplay) {
-      currentFilterDisplay = document.createElement('div');
-      currentFilterDisplay.classList.add('filteredByData');
-      filterButtonSet(service, outcomeType);
-      currentFilterDisplay.appendChild(btnWrap);
-    }
-
-    currentFilterDisplay.style.maxWidth = '100%';
-
-    if (service === '%' || service === 'All') {
-      btnWrap.appendChild(serviceBtnWrap);
-      btnWrap.removeChild(serviceBtnWrap);
-    } else {
-      btnWrap.appendChild(serviceBtnWrap);
-      if (document.getElementById('serviceBtn') != null)
-        document.getElementById('serviceBtn').innerHTML = 'Service: ' + service;
-    }
-
-    if (outcomeType === '%' || outcomeType === 'All') {
-      btnWrap.appendChild(outcomeTypeBtnWrap);
-      btnWrap.removeChild(outcomeTypeBtnWrap);
-    } else {
-      btnWrap.appendChild(outcomeTypeBtnWrap);
-      if (document.getElementById('outcomeTypeBtn') != null)
-        document.getElementById('outcomeTypeBtn').innerHTML = 'Outcome Type: ' + outcomeType;
-    }
-    return currentFilterDisplay;
-  }
-
-  function filterButtonSet(service = 'All', outcomeType = 'All') {
-    filterBtn = button.build({
-      text: 'Filter',
-      icon: 'filter',
-      style: 'secondary',
-      type: 'contained',
-      classNames: 'filterBtnNew',
-      callback: () => {
-        showFilterPopup('ALL');
-      },
-    });
-
-    serviceBtn = button.build({
-      id: 'serviceBtn',
-      text: 'Service: ' + service,
-      style: 'secondary',
-      type: 'text',
-      classNames: 'filterSelectionBtn',
-      callback: () => {
-        showFilterPopup('serviceBtn');
-      },
-    });
-    serviceCloseBtn = button.build({
-      icon: 'Delete',
-      style: 'secondary',
-      type: 'text',
-      classNames: 'filterCloseBtn',
-      callback: () => {
-        closeFilter('serviceBtn');
-      },
-    });
-
-    outcomeTypeBtn = button.build({
-      id: 'outcomeTypeBtn',
-      text: 'Outcome Type: ' + outcomeType,
-      style: 'secondary',
-      type: 'text',
-      classNames: 'filterSelectionBtn',
-      callback: () => {
-        showFilterPopup('outcomeTypeBtn');
-      },
-    });
-    outcomeTypeCloseBtn = button.build({
-      icon: 'Delete',
-      style: 'secondary',
-      type: 'text',
-      classNames: 'filterCloseBtn',
-      callback: () => {
-        closeFilter('outcomeTypeBtn');
-      },
-    });
-
-    btnWrap = document.createElement('div');
-    btnWrap.classList.add('filterBtnWrap');
-    btnWrap.appendChild(filterBtn);
-
-    serviceBtnWrap = document.createElement('div');
-    serviceBtnWrap.classList.add('filterSelectionBtnWrap');
-    serviceBtnWrap.appendChild(serviceBtn);
-    serviceBtnWrap.appendChild(serviceCloseBtn);
-    btnWrap.appendChild(serviceBtnWrap);
-
-    outcomeTypeBtnWrap = document.createElement('div');
-    outcomeTypeBtnWrap.classList.add('filterSelectionBtnWrap');
-    outcomeTypeBtnWrap.appendChild(outcomeTypeBtn);
-    outcomeTypeBtnWrap.appendChild(outcomeTypeCloseBtn);
-    btnWrap.appendChild(outcomeTypeBtnWrap);
-  }
-
-  function closeFilter(closeFilter) {
-    if (closeFilter == 'serviceBtn') {
-      tmpService = 'All';
-    }
-    if (closeFilter == 'outcomeTypeBtn') {
-      tmpOutcome = 'All';
-      tmpOutcomeId = '%';
-    }
-    applyOutComeFilter();
-  }
-
   // Required Fields
   //------------------------------------
   function checkRequiredFields() {
@@ -617,6 +505,7 @@ const outcomes = (function () {
 
     switch (targetAction) {
       case 'rosterDone': {
+        //! I do not think this is used anymore
         roster.selectedConsumersToEnabledList();
         PROGRESS.SPINNER.show('Loading Outcomes...');
         loadLandingPage();
@@ -624,6 +513,7 @@ const outcomes = (function () {
         break;
       }
       case 'rosterCancel': {
+        //! I do not think this is used anymore
         var outcomeModuleBtn = document.getElementById('goalssettingsbutton');
         var dashButton = document.getElementById('singlebutton');
         outcomeModuleBtn.classList.remove('active');
@@ -718,6 +608,115 @@ const outcomes = (function () {
 
   // Filtering
   //------------------------------------
+  function updateCurrentFilterDisplay(service = 'All', outcomeType = 'All') {
+    var currentFilterDisplay = document.querySelector('.filteredByData');
+
+    if (!currentFilterDisplay) {
+      currentFilterDisplay = document.createElement('div');
+      currentFilterDisplay.classList.add('filteredByData');
+      filterButtonSet(service, outcomeType);
+      currentFilterDisplay.appendChild(btnWrap);
+    }
+
+    currentFilterDisplay.style.maxWidth = '100%';
+
+    if (service === '%' || service === 'All') {
+      btnWrap.appendChild(serviceBtnWrap);
+      btnWrap.removeChild(serviceBtnWrap);
+    } else {
+      btnWrap.appendChild(serviceBtnWrap);
+      if (document.getElementById('serviceBtn') != null)
+        document.getElementById('serviceBtn').innerHTML = 'Service: ' + service;
+    }
+
+    if (outcomeType === '%' || outcomeType === 'All') {
+      btnWrap.appendChild(outcomeTypeBtnWrap);
+      btnWrap.removeChild(outcomeTypeBtnWrap);
+    } else {
+      btnWrap.appendChild(outcomeTypeBtnWrap);
+      if (document.getElementById('outcomeTypeBtn') != null)
+        document.getElementById('outcomeTypeBtn').innerHTML = 'Outcome Type: ' + outcomeType;
+    }
+    return currentFilterDisplay;
+  }
+  function filterButtonSet(service = 'All', outcomeType = 'All') {
+    filterBtn = button.build({
+      text: 'Filter',
+      icon: 'filter',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'filterBtnNew',
+      callback: () => {
+        showFilterPopup('ALL');
+      },
+    });
+
+    serviceBtn = button.build({
+      id: 'serviceBtn',
+      text: 'Service: ' + service,
+      style: 'secondary',
+      type: 'text',
+      classNames: 'filterSelectionBtn',
+      callback: () => {
+        showFilterPopup('serviceBtn');
+      },
+    });
+    serviceCloseBtn = button.build({
+      icon: 'Delete',
+      style: 'secondary',
+      type: 'text',
+      classNames: 'filterCloseBtn',
+      callback: () => {
+        closeFilter('serviceBtn');
+      },
+    });
+
+    outcomeTypeBtn = button.build({
+      id: 'outcomeTypeBtn',
+      text: 'Outcome Type: ' + outcomeType,
+      style: 'secondary',
+      type: 'text',
+      classNames: 'filterSelectionBtn',
+      callback: () => {
+        showFilterPopup('outcomeTypeBtn');
+      },
+    });
+    outcomeTypeCloseBtn = button.build({
+      icon: 'Delete',
+      style: 'secondary',
+      type: 'text',
+      classNames: 'filterCloseBtn',
+      callback: () => {
+        closeFilter('outcomeTypeBtn');
+      },
+    });
+
+    btnWrap = document.createElement('div');
+    btnWrap.classList.add('filterBtnWrap');
+    btnWrap.appendChild(filterBtn);
+
+    serviceBtnWrap = document.createElement('div');
+    serviceBtnWrap.classList.add('filterSelectionBtnWrap');
+    serviceBtnWrap.appendChild(serviceBtn);
+    serviceBtnWrap.appendChild(serviceCloseBtn);
+    btnWrap.appendChild(serviceBtnWrap);
+
+    outcomeTypeBtnWrap = document.createElement('div');
+    outcomeTypeBtnWrap.classList.add('filterSelectionBtnWrap');
+    outcomeTypeBtnWrap.appendChild(outcomeTypeBtn);
+    outcomeTypeBtnWrap.appendChild(outcomeTypeCloseBtn);
+    btnWrap.appendChild(outcomeTypeBtnWrap);
+  }
+  function closeFilter(closeFilter) {
+    if (closeFilter == 'serviceBtn') {
+      tmpService = 'All';
+    }
+    if (closeFilter == 'outcomeTypeBtn') {
+      tmpOutcome = 'All';
+      tmpOutcomeId = '%';
+    }
+    applyOutComeFilter();
+  }
   function getOutcomeCompletion(outcome) {
     var recurrance = outcome.Objective_Recurrance;
     var occurance = outcome.Frequency_Occurance;
@@ -1915,59 +1914,74 @@ const outcomes = (function () {
       topFilterDateWrap.appendChild(dateInput);
     }
 
-    function getFilterValues() {
-      return (filterValues = {
-        outcomesService: currService ? currService : 'All',
-        outcomesType: currOutcomeId ? currOutcomeId : '0',
-        outcomesConsumer: selectedConsumerId,
-        outcomesDate: currDate,
-      });
-    }
+    // function getFilterValues() {
+    //   return (filterValues = {
+    //     outcomesService: currService ? currService : 'All',
+    //     outcomesType: currOutcomeId ? currOutcomeId : '0',
+    //     outcomesConsumer: selectedConsumerId,
+    //     outcomesDate: currDate,
+    //   });
+    // }
     // Helper function to create the main reports button on the module page
-    function createMainReportButton(buttonsData) {
-      return button.build({
-        text: 'Reports',
-        icon: 'add',
-        style: 'secondary',
-        type: 'contained',
-        classNames: 'reportBtn',
-        callback: function () {
-          // Iterate through each item in the buttonsData array
-          buttonsData.forEach(function (buttonData) {
-            buttonData.filterValues = getFilterValues();
-          });
+    // function createMainReportButton(buttonsData) {
+    //   return button.build({
+    //     text: 'Reports',
+    //     icon: 'add',
+    //     style: 'secondary',
+    //     type: 'contained',
+    //     classNames: 'reportBtn',
+    //     callback: function () {
+    //       // Iterate through each item in the buttonsData array
+    //       buttonsData.forEach(function (buttonData) {
+    //         buttonData.filterValues = getFilterValues();
+    //       });
 
-          generateReports.showReportsPopup(buttonsData);
-        },
-      });
-    }
+    //       generateReports.showReportsPopup(buttonsData);
+    //     },
+    //   });
+    // }
+    // let filterValues = {
+    //   // outcomesService: outcome.Objective_id,
+    //   outcomesConsumer: selectedConsumerId,
+    //   outcomesDate: currDate,
+    // };
+    // reportsBtn = createMainReportButton([
+    //   { text: 'Documentation - Completed With Percentages', filterValues },
+    //   { text: 'Outcome Activity - With Community Integration by Employee, Consumer, Date', filterValues },
+    // ]);
 
-    function editOutcomesServicesButton() {
-      return button.build({
-        text: 'EDIT OUTCOMES/SERVICES',
-        icon: 'add',
-        style: 'secondary',
-        type: 'contained',
-        classNames: 'reportBtn',
-        callback: async () => {
-          if (!editOutcomeBtn.classList.contains('disabled')) {
-            addEditOutcomeServices.init(selectedConsume);
-          }
-        },
-      });
-    }
+    reportsBtn = button.build({
+      text: 'Reports',
+      icon: 'add',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'reportBtn',
+      callback: function () {
+        const filterValues = {
+          outcomesService: currService ? currService : 'All',
+          outcomesType: currOutcomeId ? currOutcomeId : '0',
+          outcomesConsumer: selectedConsumerId,
+          outcomesDate: currDate,
+        };
 
-    let filterValues = {
-      // outcomesService: outcome.Objective_id,
-      outcomesConsumer: selectedConsumerId,
-      outcomesDate: currDate,
-    };
-
-    reportsBtn = createMainReportButton([
-      { text: 'Documentation - Completed With Percentages', filterValues },
-      { text: 'Outcome Activity - With Community Integration by Employee, Consumer, Date', filterValues },
-    ]);
-    editOutcomeBtn = editOutcomesServicesButton();
+        generateReports.showReportsPopup([
+          { text: 'Documentation - Completed With Percentages', filterValues },
+          { text: 'Outcome Activity - With Community Integration by Employee, Consumer, Date', filterValues },
+        ]);
+      },
+    });
+    editOutcomeBtn = button.build({
+      text: 'EDIT OUTCOMES/SERVICES',
+      icon: 'add',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'reportBtn',
+      callback: async () => {
+        if (!editOutcomeBtn.classList.contains('disabled')) {
+          addEditOutcomeServices.init(selectedConsume);
+        }
+      },
+    });
     topFilterDateWrap.appendChild(editOutcomeBtn);
 
     if (
@@ -2010,7 +2024,6 @@ const outcomes = (function () {
     DOM.ACTIONCENTER.appendChild(outcomesTabs);
 
     //Build and populate card overview
-    // outcomesAjax.getGoalsAsync(selectedConsumerId, currDate, res => loadOutcomesCards(res));
     const goalsResp = await outcomesAjax.getGoalsAsync(selectedConsumerId, currDate);
     loadOutcomesCards(goalsResp);
   }
