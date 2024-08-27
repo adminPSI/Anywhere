@@ -502,7 +502,7 @@ var outcomesAjax = (function () {
     }
   }
 
-  async function getOutcomeServiceDropDownAsync() {
+  async function getOutcomeServiceDropDownAsync(selectedConsumerId) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -517,6 +517,7 @@ var outcomesAjax = (function () {
           '/getOutcomeServiceDropDown/',
         data: JSON.stringify({
           token: $.session.Token,
+          consumerId: selectedConsumerId
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
