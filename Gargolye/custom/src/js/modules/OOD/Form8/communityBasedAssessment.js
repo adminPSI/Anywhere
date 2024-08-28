@@ -315,6 +315,7 @@ const communityBasedAssessmentForm = (() => {
     inputContainer1.classList.add('ood_form8monthlyplacement_inputContainer1'); // new _OOD.scss setting  -- ood_form8monthlyplacement_inputContainer1
    
      const wrapHeading = document.createElement('div');
+     wrapHeading.classList.add('ChoosePositionEmployer')
      wrapHeading.innerHTML = '<p>Choose either a Position or Employer.</p>';
 
     inputContainer1.appendChild(wrapHeading);

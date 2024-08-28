@@ -536,4 +536,9 @@
 .EmployeeGoal {
     display: flex;
     column-gap: 10px;
+    align-items: baseline;
+}
+.ChoosePositionEmployer {
+    width:100%;
+    margin-bottom: 10px;
 }
