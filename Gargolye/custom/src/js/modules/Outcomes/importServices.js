@@ -71,10 +71,10 @@ const importServices = (() => {
             const tableRow = checkbox.closest('.table__row');
             const tableRowId = tableRow.id;
             const outcomeRowId = `${tableRowId}999`;
-
+        
             // Use CSS.escape to ensure the ID is properly escaped for querySelector
             const escapedOutcomeRowId = `#${CSS.escape(outcomeRowId)}`;
-
+        
             // Find the outcomeRowContainer within the current table
             const outcomeRowContainer = currentTable.querySelector(escapedOutcomeRowId);
         
@@ -87,20 +87,24 @@ const importServices = (() => {
             if (checkbox && checkbox.checked) {
                 // add the newly checked row data to the selected outcomes array
                 selectedOutcomes.push(rowData);
-
+        
                 // show the existing outcomes div below the checkbox row
                 outcomeRowContainer.style.display = 'flex';
-
+        
             } else {
                 // remove the now unselected row data from the selected outcomes array
                 selectedOutcomes = selectedOutcomes.filter(
                     selectedRow => selectedRow !== rowData
                 );
-
-                // remove the existing outcomes div below the checkbox row
+        
+                // hide the existing outcomes div below the checkbox row
                 outcomeRowContainer.style.display = 'none';
             }
+        
+            // Toggle the import button based on the current state of checkboxes
+            toggleImportButton();
         }
+        
 
         function handleHeaderCheckboxSelection(headerCheckboxSelector, tableSelector) {
             const headerCheckbox = document.querySelector(headerCheckboxSelector);
@@ -359,12 +363,13 @@ const importServices = (() => {
         }
 
         const importSelectedSerivcesAndCancelBtnWrap = document.createElement('div');
+        importSelectedSerivcesAndCancelBtnWrap.classList.add('importSelectedSerivcesAndCancelBtnWrap');
         const importSelectedServicesBtn = button.build({
             id: 'importSelectedServicesBtn',
             text: 'Import Selected Services',
             style: 'secondary',
             type: 'contained',
-            classNames: 'importSelectedServicesBtn',
+            classNames: ['importSelectedServicesBtn', 'disabled'],
             callback: async () => {showImportSelectedServicesPopup()},
         });
 
@@ -379,6 +384,23 @@ const importServices = (() => {
                 addEditOutcomeServices.init(currentlySelectedConsumer);
             },
         });
+
+        function toggleImportButton() {
+            const importButton = document.getElementById('importSelectedServicesBtn');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            
+            // Check if any checkbox is checked
+            const anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+            
+            // Enable or disable the button based on the checkbox state
+            if (anyChecked) {
+                importButton.disabled = false;
+                importButton.classList.remove('disabled');
+            } else {
+                importButton.disabled = true;
+                importButton.classList.add('disabled');
+            }
+        }
 
         importSelectedSerivcesAndCancelBtnWrap.appendChild(importSelectedServicesBtn);
         importSelectedSerivcesAndCancelBtnWrap.appendChild(cancelBtn);
