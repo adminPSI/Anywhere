@@ -130,7 +130,6 @@ const OOD = (() => {
             updateEmploymentGoalBtn.setAttribute('max-width', '100px: !importatnt;');
          
             employmentGoalDIV.classList.add("EmployeeGoal");
-            employmentGoalDIV.classList.add("btnWrap");
             employmentGoalDIV.appendChild(employmentGoalMessage) 
             employmentGoalDIV.appendChild(updateEmploymentGoalBtn)  
 
@@ -929,7 +928,7 @@ const OOD = (() => {
             text: 'Edit Employers',
             style: 'secondary',
             type: 'contained',
-            id: editEmployersBtn,
+            id: 'editEmployersBtn',
             //classNames: !$.session.formsInsert ? ['disabled'] : ['newPlanBtn'],
             classNames:
                 $.session.OODUpdate || $.session.OODInsert || $.session.OODView
@@ -963,7 +962,7 @@ const OOD = (() => {
             text: 'Create OOD Forms',
             style: 'secondary',
             type: 'contained',
-            id: createFormsBtn,
+            id: 'createFormsBtn',
             classNames: 'createFormsBtn',
             callback: () => {
                 showCreateFormsPopup();
@@ -978,9 +977,7 @@ const OOD = (() => {
             text: 'Update',
             style: 'secondary',
             type: 'contained',
-            id: createFormsBtn,
-            classNames: ['EmployeeGoal', 'btnWrap'],
-            
+            id: 'createFormsBtn2',
             callback: () => {
                  buildEmployeeGoalPopUp();
             },
