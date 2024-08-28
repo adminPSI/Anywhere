@@ -952,7 +952,7 @@ var OODAjax = (function () {
   });
   }
 
-  async function OODForm8GetServiceGoals(peopleId) {
+  async function getEmploymentGoal(peopleId) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -964,7 +964,7 @@ var OODAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/OODForm8GetServiceGoals/',
+          '/getEmploymentGoal/',
         data: JSON.stringify({
           peopleId: peopleId,
           
@@ -1663,6 +1663,7 @@ var OODAjax = (function () {
       insertEmployerAsync,
       getEmployer,
       updateEmploymentGoal,
+      getEmploymentGoal,
       getActiveServiceCodesAsync,
       getConsumerReferenceNumbersAsync,
       getConsumerServiceCodesAsync,
@@ -1688,7 +1689,6 @@ var OODAjax = (function () {
       getForm8MonthlySummary,
       updateForm8MonthlySummary,
       insertForm8MonthlySummary,
-      OODForm8GetServiceGoals,
       getForm10TransportationData,
       insertForm10TransportationData,
       updateForm10TransportationData,

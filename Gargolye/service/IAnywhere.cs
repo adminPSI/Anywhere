@@ -4516,8 +4516,8 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/OODForm8GetServiceGoals/")]
-        string OODForm8GetServiceGoals(string peopleId);
+            UriTemplate = "/getEmploymentGoal/")]
+        string getEmploymentGoal(string peopleId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5312,7 +5312,7 @@ namespace Anywhere
         ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/getOutcomeServiceDropDown/")]
-        OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token);
+        OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

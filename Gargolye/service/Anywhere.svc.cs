@@ -3238,9 +3238,9 @@ namespace Anywhere
             return Odg.insertForm8MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId, serviceId);
         }
 
-        public string OODForm8GetServiceGoals(string peopleId)
+        public string getEmploymentGoal(string peopleId)
         {
-            return OODFDG.OODForm8GetServiceGoals(peopleId);
+            return OODFDG.getEmploymentGoal(peopleId);
         }
 
         public string updateEmploymentGoal(string peopleId, string userId, string ServiceGoal)
@@ -3998,9 +3998,9 @@ namespace Anywhere
             return outcomesWorker.getObjectiveEntriesById(token, objectiveId);
         }
 
-        public OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token)
+        public OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId)
         {
-            return outcomesWorker.getOutcomeServiceDropDown(token);
+            return outcomesWorker.getOutcomeServiceDropDown(token, consumerId);
         }
 
         public OutcomesWorker.ServiceFrequencyType[] getServiceFrequencyTypeDropDown(string token, string type)
