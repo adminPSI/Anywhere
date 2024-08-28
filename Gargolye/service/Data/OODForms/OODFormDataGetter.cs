@@ -265,8 +265,8 @@ namespace OODForms
 
             return di.SelectRowsDS(sb.ToString());
         }
-        //on the Anywhere Form 8 
-        public string OODForm8GetServiceGoals(string peopleId)
+        //on the OOD Landing Page 
+        public string getEmploymentGoal(string peopleId)
         {
             string rv = "No Employment Goals on record.";
 

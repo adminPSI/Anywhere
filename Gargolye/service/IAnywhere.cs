@@ -4516,8 +4516,8 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/OODForm8GetServiceGoals/")]
-        string OODForm8GetServiceGoals(string peopleId);
+            UriTemplate = "/getEmploymentGoal/")]
+        string getEmploymentGoal(string peopleId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

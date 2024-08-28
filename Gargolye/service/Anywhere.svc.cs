@@ -3238,9 +3238,9 @@ namespace Anywhere
             return Odg.insertForm8MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId, serviceId);
         }
 
-        public string OODForm8GetServiceGoals(string peopleId)
+        public string getEmploymentGoal(string peopleId)
         {
-            return OODFDG.OODForm8GetServiceGoals(peopleId);
+            return OODFDG.getEmploymentGoal(peopleId);
         }
 
         public string updateEmploymentGoal(string peopleId, string userId, string ServiceGoal)

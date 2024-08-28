@@ -115,7 +115,7 @@ const OOD = (() => {
             
         });
 
-        const { OODForm8GetServiceGoalsResult: ServiceGoals } = await OODAjax.OODForm8GetServiceGoals(
+        const { getEmploymentGoalResult: EmploymentGoal } = await OODAjax.getEmploymentGoal(
             selectedConsumerPeopleId,
         );
 
@@ -124,7 +124,7 @@ const OOD = (() => {
         
         let employmentGoalMessage = document.createElement('p');
         employmentGoalMessage.innerHTML =
-            `<b>Employment Goal:</b> ${ServiceGoals}`;
+            `<b>Employment Goal:</b> ${EmploymentGoal}`;
 
             updateEmploymentGoalBtn = buildUpdateEmploymentGoalsBtn();
             updateEmploymentGoalBtn.setAttribute('max-width', '100px: !importatnt;');
