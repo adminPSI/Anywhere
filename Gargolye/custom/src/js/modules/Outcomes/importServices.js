@@ -33,11 +33,11 @@ const importServices = (() => {
     let additionalSupportsTable;
     let professionalReferralsTable;
 
-    async function init(file, outcomesServicesData, selectedConsumer) {
+    async function init(files, outcomesServicesData, selectedConsumer) {
         const token = $.session.Token
         currentlySelectedConsumer = selectedConsumer;
 
-        extractionData = await _UTIL.fetchData('importedOutcomesPDFData', {token, file});
+        extractionData = await _UTIL.fetchData('importedOutcomesPDFData', {token, files});
         existingOutcomesVendorData = outcomesServicesData.pageDataParent.map(outcome => ({
             value: outcome.goal_id,
             text: outcome.outcomeStatement,

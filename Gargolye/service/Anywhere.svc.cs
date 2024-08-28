@@ -4155,9 +4155,9 @@ namespace Anywhere
             return rosterWorker.getRosterToDoListWidgetData(token, responsiblePartyId);
         }
 
-        public ExtractedTables importedOutcomesPDFData(string token, string file)
+        public ExtractedTables importedOutcomesPDFData(string token, string[] files)
         {
-            return ioas.importedOutcomesPDFData(token, file);
+            return ioas.importedOutcomesPDFData(token, files);
         }
 
         public List<ImportedTables> importSelectedServices(string token, ImportedTables[] importedTables)
