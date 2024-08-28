@@ -213,10 +213,34 @@
                     var widgetFilters = document.querySelector(filtersSelector);
                     overlay.show();
                     bodyScrollLock.disableBodyScroll(widgetFilters);
-                    widgetFilters.classList.add('visible');
+                    widgetFilters.classList.add('visible'); 
                 },
             });
             widgetHeader.appendChild(filterBtn);
+        }
+    }
+
+    function appendAddMessageButton(widgetId, btnId) {
+        var addMessageBtn = document.getElementById(btnId);
+        if (!addMessageBtn) {
+            var headerSelector = `#${widgetId} .widget__header`;
+            var widgetHeader = document.querySelector(headerSelector);
+            addMessageBtn = button.build({
+                id: btnId,
+                text: 'New',
+                style: 'primary',
+                type: 'text',
+                icon: 'add',
+                iconPos: 'right',
+                callback: function () {
+                    var filtersSelector = `#${widgetId} .widget__filters`;  
+                    var widgetFilters = document.querySelector(filtersSelector);
+                    overlay.show();
+                    bodyScrollLock.disableBodyScroll(widgetFilters);
+                    widgetFilters.classList.add('visible');                                   
+                },
+            });
+            widgetHeader.appendChild(addMessageBtn);
         }
     }
 
@@ -808,6 +832,7 @@
     return {
         appendFilterButton,
         appendPDFButton,
+        appendAddMessageButton,
         buildFilterPopup,
         getWidgetSettings,
         refreshWidgetSettings,
