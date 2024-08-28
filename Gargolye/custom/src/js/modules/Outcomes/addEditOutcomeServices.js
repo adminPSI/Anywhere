@@ -143,7 +143,7 @@ const addEditOutcomeServices = (() => {
     fileInput.type = 'file';
     fileInput.id = 'file-input';
     fileInput.className = 'file-input';
-    fileInput.multiple = false; // Allow only one file to be selected
+    fileInput.multiple = true;
     fileInput.style.display = 'none'; // Hide the input element
 
     // Create the button for selecting files
@@ -263,22 +263,13 @@ const addEditOutcomeServices = (() => {
 
     function toggleButtonsDisabled(filesList) {
       const importButton = document.getElementById('upload-import');
-      const selectButton = document.getElementById('select-files');
 
       if (filesList.length > 0) {
-        //if a file is selected, disable the select file button and enable the import files button
         importButton.disabled = false;
         importButton.classList.remove('disabled');
-
-        selectButton.disabled = true;
-        selectButton.classList.add('disabled');
       } else {
-        //if no file is selected, disable the import button and enable the select files button
         importButton.disabled = true;
         importButton.classList.add('disabled');
-
-        selectButton.disabled = false;
-        selectButton.classList.remove('disabled');
       }
   }
 
@@ -292,15 +283,14 @@ const addEditOutcomeServices = (() => {
 
     // Function to process files for upload
     async function processFilesForUpload(files) {
-      let attachment;
+      let attachments = [];
   
       for (const file of files) {
           const attachmentDetails = await _DOM.getAttachmentDetails(file);
-          attachment = attachmentDetails.attachment;
-          break; // only want the first file's attachment; remove if handling multiple files
+          attachments.push(attachmentDetails.attachment);
       }
   
-      return attachment; // Return just the attachment data
+      return attachments; // Return just the attachment data
     }
   }
 

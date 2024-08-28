@@ -5434,7 +5434,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/importedOutcomesPDFData/")]
-        ExtractedTables importedOutcomesPDFData(string token, string file);
+        ExtractedTables importedOutcomesPDFData(string token, string[] files);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
