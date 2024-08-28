@@ -161,9 +161,9 @@ const outcomesReview = (function () {
 
   // Table
   //----------------------------------------------------
-  const toggleIcon = document.createElement('div');
-  toggleIcon.classList.add('');
-  toggleIcon.innerHTML = icons['keyArrowRight'];
+  // const toggleIcon = document.createElement('div');
+  // toggleIcon.classList.add('');
+  // toggleIcon.innerHTML = icons['keyArrowRight'];
 
   function buildTable() {
     const table = _DOM.createElement('table');
