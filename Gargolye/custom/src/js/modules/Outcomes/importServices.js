@@ -67,8 +67,16 @@ const importServices = (() => {
 
         function handleCheckboxSelection(event, rowData) {
             let checkbox = event.target;
-            const tableWrapper = checkbox.closest('.table');
-            const outcomeRowContainer = tableWrapper.querySelector('.addToExistingOutcomesRowContainer');
+            const currentTable = checkbox.closest('.table');
+            const tableRow = checkbox.closest('.table__row');
+            const tableRowId = tableRow.id;
+            const outcomeRowId = `${tableRowId}999`;
+
+            // Use CSS.escape to ensure the ID is properly escaped for querySelector
+            const escapedOutcomeRowId = `#${CSS.escape(outcomeRowId)}`;
+
+            // Find the outcomeRowContainer within the current table
+            const outcomeRowContainer = currentTable.querySelector(escapedOutcomeRowId);
         
             // Check if the target is the checkbox itself
             if (checkbox.type !== 'checkbox') {
@@ -80,7 +88,7 @@ const importServices = (() => {
                 // add the newly checked row data to the selected outcomes array
                 selectedOutcomes.push(rowData);
 
-                // show the existing outcomes div at the bottom of the table
+                // show the existing outcomes div below the checkbox row
                 outcomeRowContainer.style.display = 'flex';
 
             } else {
@@ -89,14 +97,8 @@ const importServices = (() => {
                     selectedRow => selectedRow !== rowData
                 );
 
-                //check if any row in the table is checked 
-                const anyRowsChecked = Array.from(tableWrapper.querySelectorAll('.row-checkbox'))
-                                            .some(cb => cb.checked);
-
-                // hide the exising outcomes div if no rows are checked
-                if (!anyRowsChecked) {
-                    outcomeRowContainer.style.display = 'none';
-                }
+                // remove the existing outcomes div below the checkbox row
+                outcomeRowContainer.style.display = 'none';
             }
         }
 
@@ -117,7 +119,7 @@ const importServices = (() => {
             });
         }
 
-        function createAddToExistingOutcomesRow(tableDiv) {
+        function createAddToExistingOutcomesRow() {
             const exitingOutcomDropdown = dropdown.build({
                 id: 'existingOutcomeDropdown',
                 label: 'Add to Existing Outcome',
@@ -143,12 +145,32 @@ const importServices = (() => {
             createAddToExistingOutcomesRowContainerDiv.appendChild(exitingOutcomDropdown);
             createAddToExistingOutcomesRowContainerDiv.appendChild(serviceDateStartInput);
             createAddToExistingOutcomesRowContainerDiv.appendChild(serviceDateEndInput);
-            tableDiv.appendChild(createAddToExistingOutcomesRowContainerDiv);
+            //tableDiv.appendChild(createAddToExistingOutcomesRowContainerDiv);
 
             dropdown.populate(exitingOutcomDropdown, existingOutcomesVendorData, existingOutcomesVendorData[0]?.value);
 
             createAddToExistingOutcomesRowContainerDiv.style.display = 'none';
+            return createAddToExistingOutcomesRowContainerDiv;
         };
+
+        const newRow = createAddToExistingOutcomesRow();
+
+        function appendToEachRow(table, newRowContent) {       
+            const tableBody = table.querySelector('.table__body');
+            const rows = Array.from(tableBody.querySelectorAll('.table__row'));
+        
+            rows.forEach(row => {
+                // Clone the new row element for each table row
+                const clonedNewRow = newRowContent.cloneNode(true);
+                clonedNewRow.style.display = 'none';
+
+                // add 999 as unique identifier to differientiate and link these rows to data rows they share
+                clonedNewRow.id = row.id + '999';
+        
+                // Insert the new row after the current row
+                row.insertAdjacentElement('afterend', clonedNewRow);
+            });
+        }
 
         knownAndLikelyRisksTable = table.build({
             tableId: `importedPlanRisksTable`,
@@ -183,9 +205,8 @@ const importServices = (() => {
                 });
 
             table.populate(knownAndLikelyRisksTable, tableData, false);
+            appendToEachRow(knownAndLikelyRisksTable, newRow);
         };
-
-        createAddToExistingOutcomesRow(knownAndLikelyRisksTable);
   
         // Experiences Table
          experiencesTable = table.build({
@@ -220,9 +241,8 @@ const importServices = (() => {
                 });
         
             table.populate(experiencesTable, tableData, false);
+            appendToEachRow(experiencesTable, newRow);
         }
-
-        createAddToExistingOutcomesRow(experiencesTable);
   
         // Paid Supports Table
         paidSupportsTable = table.build({
@@ -261,9 +281,8 @@ const importServices = (() => {
                 });
 
             table.populate(paidSupportsTable, tableData, false, true);
+            appendToEachRow(paidSupportsTable, newRow);
         };
-
-        createAddToExistingOutcomesRow(paidSupportsTable);
         
         // Additional Supports Table
         additionalSupportsTable = table.build({
@@ -299,9 +318,9 @@ const importServices = (() => {
                 });
         
             table.populate(additionalSupportsTable, tableData, false);
+
+            appendToEachRow(additionalSupportsTable, newRow);
         }
-        
-        createAddToExistingOutcomesRow(additionalSupportsTable);
   
         // Professional Referrals Table
         professionalReferralsTable = table.build({
@@ -336,9 +355,8 @@ const importServices = (() => {
                 });
         
             table.populate(professionalReferralsTable, tableData, false);
+            appendToEachRow(professionalReferralsTable, newRow);
         }
-
-        createAddToExistingOutcomesRow(professionalReferralsTable);
 
         const importSelectedSerivcesAndCancelBtnWrap = document.createElement('div');
         const importSelectedServicesBtn = button.build({
