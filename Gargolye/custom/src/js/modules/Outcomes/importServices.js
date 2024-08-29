@@ -71,13 +71,13 @@ const importServices = (() => {
             const tableRow = checkbox.closest('.table__row');
             const tableRowId = tableRow.id;
             const outcomeRowId = `${tableRowId}999`;
-        
+            
             // Use CSS.escape to ensure the ID is properly escaped for querySelector
             const escapedOutcomeRowId = `#${CSS.escape(outcomeRowId)}`;
-        
+            
             // Find the outcomeRowContainer within the current table
             const outcomeRowContainer = currentTable.querySelector(escapedOutcomeRowId);
-        
+            
             // Check if the target is the checkbox itself
             if (checkbox.type !== 'checkbox') {
                 // If not, assume we're in the div and select the checkbox within the startIcon div
@@ -85,25 +85,42 @@ const importServices = (() => {
             }
         
             if (checkbox && checkbox.checked) {
-                // add the newly checked row data to the selected outcomes array
-                selectedOutcomes.push(rowData);
+                // Gather values from the outcomeRowContainer inputs
+                const dropdown = outcomeRowContainer.querySelector('select');
+                const serviceDateStart = outcomeRowContainer.querySelector('input[type="date"]:first-of-type');
+                const serviceDateEnd = outcomeRowContainer.querySelector('input[type="date"]:last-of-type');
         
-                // show the existing outcomes div below the checkbox row
+                // Add these input values to the rowData
+                const outcomeData = {
+                    rowId: tableRowId,
+                    existingOutcomeGoalId: dropdown ? dropdown.value : null,
+                    serviceDateStart: serviceDateStart ? serviceDateStart.value : null,
+                    serviceDateEnd: serviceDateEnd ? serviceDateEnd.value : null
+                };
+        
+                // Merge the rowData with the outcomeData
+                const combinedData = { ...rowData, ...outcomeData };
+        
+                // Add the newly checked row data to the selected outcomes array
+                selectedOutcomes.push(combinedData);
+        
+                // Show the existing outcomes div below the checkbox row
                 outcomeRowContainer.style.display = 'flex';
         
             } else {
-                // remove the now unselected row data from the selected outcomes array
+                // Remove the now unselected row data from the selected outcomes array
                 selectedOutcomes = selectedOutcomes.filter(
-                    selectedRow => selectedRow !== rowData
+                    selectedRow => selectedRow.rowId !== tableRowId
                 );
         
-                // hide the existing outcomes div below the checkbox row
+                // Hide the existing outcomes div below the checkbox row
                 outcomeRowContainer.style.display = 'none';
             }
         
             // Toggle the import button based on the current state of checkboxes
             toggleImportButton();
         }
+        
         
 
         function handleHeaderCheckboxSelection(headerCheckboxSelector, tableSelector) {
@@ -137,7 +154,8 @@ const importServices = (() => {
                 label: 'Service Date Start',
                 style: 'secondary',
                 callback: () => toggleImportButton(),
-                callbackType: 'input'
+                callbackType: 'input',
+                value: extractionData.importedOutcomesPDFDataResult.startDate
             });
         
             const serviceDateEndInput = input.build({
@@ -145,7 +163,8 @@ const importServices = (() => {
                 label: 'Service Date End',
                 style: 'secondary',
                 callback: () => toggleImportButton(),
-                callbackType: 'input'
+                callbackType: 'input',
+                value: extractionData.importedOutcomesPDFDataResult.endDate
             });
         
             const createAddToExistingOutcomesRowContainerDiv = document.createElement('div');
@@ -163,7 +182,7 @@ const importServices = (() => {
             return createAddToExistingOutcomesRowContainerDiv;
         }
 
-        const newRow = createAddToExistingOutcomesRow();
+        //const newRow = createAddToExistingOutcomesRow();
 
         function appendToEachRow(table) {       
             const tableBody = table.querySelector('.table__body');
@@ -211,7 +230,7 @@ const importServices = (() => {
                 });
 
             table.populate(knownAndLikelyRisksTable, tableData, false);
-            appendToEachRow(knownAndLikelyRisksTable, newRow);
+            appendToEachRow(knownAndLikelyRisksTable);
         };
   
         // Experiences Table
@@ -247,7 +266,7 @@ const importServices = (() => {
                 });
         
             table.populate(experiencesTable, tableData, false);
-            appendToEachRow(experiencesTable, newRow);
+            appendToEachRow(experiencesTable);
         }
   
         // Paid Supports Table
@@ -287,7 +306,7 @@ const importServices = (() => {
                 });
 
             table.populate(paidSupportsTable, tableData, false, true);
-            appendToEachRow(paidSupportsTable, newRow);
+            appendToEachRow(paidSupportsTable);
         };
         
         // Additional Supports Table
@@ -325,7 +344,7 @@ const importServices = (() => {
         
             table.populate(additionalSupportsTable, tableData, false);
 
-            appendToEachRow(additionalSupportsTable, newRow);
+            appendToEachRow(additionalSupportsTable);
         }
   
         // Professional Referrals Table
@@ -361,7 +380,7 @@ const importServices = (() => {
                 });
         
             table.populate(professionalReferralsTable, tableData, false);
-            appendToEachRow(professionalReferralsTable, newRow);
+            appendToEachRow(professionalReferralsTable);
         }
 
         const importSelectedSerivcesAndCancelBtnWrap = document.createElement('div');
