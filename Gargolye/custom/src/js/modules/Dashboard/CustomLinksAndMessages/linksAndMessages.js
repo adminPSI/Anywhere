@@ -64,7 +64,7 @@ var linksAndMessages = (function () {
         });
     }
 
-    function buildAddMessagePopup() {
+    function buildAddMessagePopup() { 
         var widgetFilter = messagesWidget.querySelector('.widget__filters');
         if (widgetFilter) return;
 
@@ -87,11 +87,17 @@ var linksAndMessages = (function () {
             },
         });
 
+        let today = UTIL.getTodaysDate(true);
+        let tomorrowDate = moment(dates.addDays(today, 1), 'YYYY-MM-DD').format('YYYY-MM-DD'); 
         expirationDate = input.build({
             id: 'expirationDate',
             type: 'date',
             label: 'Expiration Date',
             style: 'secondary',
+            value: tomorrowDate,
+            attributes: [
+                { key: 'min', value: tomorrowDate },
+            ],
         });
 
         expirationTime = input.build({
@@ -99,6 +105,7 @@ var linksAndMessages = (function () {
             type: 'time',
             label: 'Expiration Time',
             style: 'secondary',
+            value: UTIL.getCurrentTime(),
         });
 
         messageInput = input.build({
@@ -132,10 +139,10 @@ var linksAndMessages = (function () {
         addMessagePopup.appendChild(messageInput);
         addMessagePopup.appendChild(btnWrap);
         messagesWidget.insertBefore(addMessagePopup, widgetBody);
-        expirationDate.classList.add('error');
-        expirationTime.classList.add('error');
         messageInput.classList.add('error');
         saveBtn.classList.add('disabled');
+        eventSetup(); 
+        populateEmployeeDropdown();  
     }
 
     function eventSetup() {
@@ -192,7 +199,7 @@ var linksAndMessages = (function () {
             expirationTime.classList.remove('error');
         }
 
-        if (message.value === '') {
+        if (message.value.trim() === '') {  
             messageInput.classList.add('error');
         } else {
             messageInput.classList.remove('error');
@@ -218,10 +225,10 @@ var linksAndMessages = (function () {
         selectedEmployee.push(Employer[0].employerId); 
         let data = Employer.map((employer) => ({
             id: employer.employerId,
-            value: employer.employerName,
+            value: employer.employerId,
             text: employer.employerName
         }));
-        dropdown.populate("employeesDropdown", data);
+        dropdown.populate("employeesDropdown", data);       
     }
 
     function toggleAssignButton() {
@@ -329,18 +336,20 @@ var linksAndMessages = (function () {
 
         // Action Buttons
         assignBtn = button.build({
-            text: 'ASSIGN',
+            text: 'SAVE',
             style: 'secondary',
             type: 'contained',
             callback: async function () {
                 selectedEmployee = [];
-                selectedEmployee = currentconsumersSelected;
+                selectedEmployee = currentconsumersSelected;  
+                document.getElementById('employeesDropdown').value = selectedEmployee[0];
                 POPUP.hide(assignEmployeePopup);
                 overlay.show();
                 addMessagePopup.classList.add('visible');
                 saveBtn.classList.remove('disabled');               
                 checkRequiredFieldsOfNewMessage();
                 cancelBtn.classList.remove('disabled');
+                currentconsumersSelected = []; 
             },
         });
         assignBtn.classList.add('disabled');
@@ -396,7 +405,11 @@ var linksAndMessages = (function () {
         messagesWidget = document.getElementById('dashsystemmessagewidget');
         widgetBody = messagesWidget.querySelector('.widget__body');
         linksWidget = document.getElementById('dashcustomlinks');
-
+ 
+        // append add message button
+        dashboard.appendAddMessageButton('dashsystemmessagewidget', 'addMessageFilterBtn');
+        buildAddMessagePopup();
+        
         if (links.length > 0 || messages.length > 0) {
             loadSystemMessages();
             loadCustomLinks();
@@ -414,17 +427,12 @@ var linksAndMessages = (function () {
             separateLinksAndMessages(results);
             loadSystemMessages();
             loadCustomLinks();
-        });
-
-        // append add message button
-        dashboard.appendAddMessageButton('dashsystemmessagewidget', 'addMessageFilterBtn');
-        buildAddMessagePopup();
-        eventSetup();
-        populateEmployeeDropdown();
+        });     
     }
 
     return {
-        init
+        init,
+        buildAddMessagePopup
     }
 
 }());
