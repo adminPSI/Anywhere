@@ -123,61 +123,58 @@ const importServices = (() => {
             });
         }
 
-        function createAddToExistingOutcomesRow() {
+        function createAddToExistingOutcomesRow(rowId) {
             const exitingOutcomDropdown = dropdown.build({
-                id: 'existingOutcomeDropdown',
+                id: `existingOutcomeDropdown_${rowId}`,
                 label: 'Add to Existing Outcome',
-                dropdownId: 'existingOutcomeDropdown',
+                dropdownId: `existingOutcomeDropdown_${rowId}`,
+                callback: () => toggleImportButton(),
+                callbackType: 'change'
             });
-
+        
             const serviceDateStartInput = input.build({
                 type: 'date',
                 label: 'Service Date Start',
                 style: 'secondary',
-                //value: filterValues.serviceDateStart,
+                callback: () => toggleImportButton(),
+                callbackType: 'input'
             });
-
-             const serviceDateEndInput = input.build({
+        
+            const serviceDateEndInput = input.build({
                 type: 'date',
                 label: 'Service Date End',
                 style: 'secondary',
-                //value: filterValues.serviceDateEnd,
+                callback: () => toggleImportButton(),
+                callbackType: 'input'
             });
-
+        
             const createAddToExistingOutcomesRowContainerDiv = document.createElement('div');
-            createAddToExistingOutcomesRowContainerDiv.classList.add('addToExistingOutcomesRowContainer')
+            createAddToExistingOutcomesRowContainerDiv.classList.add('addToExistingOutcomesRowContainer');
+            createAddToExistingOutcomesRowContainerDiv.id = `${rowId}999`;
+            
             createAddToExistingOutcomesRowContainerDiv.appendChild(exitingOutcomDropdown);
             createAddToExistingOutcomesRowContainerDiv.appendChild(serviceDateStartInput);
             createAddToExistingOutcomesRowContainerDiv.appendChild(serviceDateEndInput);
-            //tableDiv.appendChild(createAddToExistingOutcomesRowContainerDiv);
-
+        
+            // Populate dropdown with options
             dropdown.populate(exitingOutcomDropdown, existingOutcomesVendorData, existingOutcomesVendorData[0]?.value);
-
-            // Add event listeners to trigger toggleImportButton on any change
-            exitingOutcomDropdown.addEventListener('change', toggleImportButton);
-            serviceDateStartInput.addEventListener('input', toggleImportButton);
-            serviceDateEndInput.addEventListener('input', toggleImportButton);
-
+        
             createAddToExistingOutcomesRowContainerDiv.style.display = 'none';
             return createAddToExistingOutcomesRowContainerDiv;
-        };
+        }
 
         const newRow = createAddToExistingOutcomesRow();
 
-        function appendToEachRow(table, newRowContent) {       
+        function appendToEachRow(table) {       
             const tableBody = table.querySelector('.table__body');
             const rows = Array.from(tableBody.querySelectorAll('.table__row'));
         
             rows.forEach(row => {
-                // Clone the new row element for each table row
-                const clonedNewRow = newRowContent.cloneNode(true);
-                clonedNewRow.style.display = 'none';
-
-                // add 999 as unique identifier to differientiate and link these rows to data rows they share
-                clonedNewRow.id = row.id + '999';
+                // Create a new row for each existing table row
+                const newRow = createAddToExistingOutcomesRow(row.id);
         
                 // Insert the new row after the current row
-                row.insertAdjacentElement('afterend', clonedNewRow);
+                row.insertAdjacentElement('afterend', newRow);
             });
         }
 
