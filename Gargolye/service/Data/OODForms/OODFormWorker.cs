@@ -702,7 +702,7 @@ namespace OODForms
                     }
                 }
 
-                string TaskSummary = obj.OODForm8GetJobTasksSummary(AuthorizationNumber);
+                string TaskSummary = obj.OODForm8GetJobTasksSummary(AuthorizationNumber, StartDate, EndDate);
                 if (TaskSummary.Length > 0) ;
                 {
                     TaskSummary = TaskSummary.Trim();
