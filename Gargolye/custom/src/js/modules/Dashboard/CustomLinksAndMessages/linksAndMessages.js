@@ -63,7 +63,7 @@ var linksAndMessages = (function () {
         });
     }
 
-    function buildAddMessagePopup() { 
+    function buildAddMessagePopup() {
         addMessagePopup = POPUP.build({
             id: 'sig_addMessagePopup',
             classNames: 'assignEmployeePopup',
@@ -83,12 +83,12 @@ var linksAndMessages = (function () {
             callback: async () => {
                 await showAssignEmployeePopup();
                 saveBtn.classList.add('disabled');
-                cancelBtn.classList.add('disabled'); 
+                cancelBtn.classList.add('disabled');
             },
         });
         selectMoreEmployeeBtn.style.width = '100%';
         let today = UTIL.getTodaysDate(true);
-        let tomorrowDate = moment(dates.addDays(today, 1), 'YYYY-MM-DD').format('YYYY-MM-DD'); 
+        let tomorrowDate = moment(dates.addDays(today, 1), 'YYYY-MM-DD').format('YYYY-MM-DD');
         dateOfExpiration = tomorrowDate;
         expirationDate = input.build({
             id: 'expirationDate',
@@ -100,7 +100,7 @@ var linksAndMessages = (function () {
                 { key: 'min', value: tomorrowDate },
             ],
         });
-        timeOfExpiration = UTIL.getCurrentTime();  
+        timeOfExpiration = UTIL.getCurrentTime();
         expirationTime = input.build({
             id: 'expirationTime',
             type: 'time',
@@ -142,23 +142,24 @@ var linksAndMessages = (function () {
         POPUP.show(addMessagePopup);
         messageInput.classList.add('error');
         saveBtn.classList.add('disabled');
-        eventSetup(); 
-        populateEmployeeDropdown();  
+        eventSetup();
+        populateEmployeeDropdown();
     }
 
-    function eventSetup() { 
+    function eventSetup() {
         employeeDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             selectedEmployee = [];
             selectedEmployee.push(selectedOption.id);
         });
-        saveBtn.addEventListener('click', async () => {    
+        saveBtn.addEventListener('click', async () => {
             const result = await linksAndMessagesWidgetAjax.addSystemMessageAsync(textMessage, timeOfExpiration, dateOfExpiration, selectedEmployee);
             const { addSystemMessageResult } = result;
             if (addSystemMessageResult[0].NoteID != null) {
-                POPUP.hide(addMessagePopup);  
+                POPUP.hide(addMessagePopup);
                 selectedEmployee = [];
-            }           
+                dashboard.load();
+            }
         });
 
         cancelBtn.addEventListener('click', () => {
@@ -196,7 +197,7 @@ var linksAndMessages = (function () {
             expirationTime.classList.remove('error');
         }
 
-        if (message.value.trim() === '') {  
+        if (message.value.trim() === '') {
             messageInput.classList.add('error');
         } else {
             messageInput.classList.remove('error');
@@ -219,13 +220,13 @@ var linksAndMessages = (function () {
             getEmployeeListResult: Employer,
         } = await linksAndMessagesWidgetAjax.getEmployersAsync();
         consumerswithEmployeeIds = Employer;
-        selectedEmployee.push(Employer[0].employerId); 
+        selectedEmployee.push(Employer[0].employerId);
         let data = Employer.map((employer) => ({
             id: employer.employerId,
             value: employer.employerId,
             text: employer.employerName
         }));
-        dropdown.populate("employeesDropdown", data);       
+        dropdown.populate("employeesDropdown", data);
     }
 
     function toggleAssignButton() {
@@ -338,13 +339,13 @@ var linksAndMessages = (function () {
             type: 'contained',
             callback: async function () {
                 selectedEmployee = [];
-                selectedEmployee = currentconsumersSelected;  
+                selectedEmployee = currentconsumersSelected;
                 document.getElementById('employeesDropdown').value = selectedEmployee[0];
-                POPUP.hide(assignEmployeePopup);              
-                saveBtn.classList.remove('disabled');               
+                POPUP.hide(assignEmployeePopup);
+                saveBtn.classList.remove('disabled');
                 checkRequiredFieldsOfNewMessage();
                 cancelBtn.classList.remove('disabled');
-                currentconsumersSelected = []; 
+                currentconsumersSelected = [];
                 overlay.show();
             },
         });
@@ -357,9 +358,9 @@ var linksAndMessages = (function () {
             callback: function () {
                 currentconsumersSelected = [];
                 POPUP.hide(assignEmployeePopup);
-                saveBtn.classList.remove('disabled');               
+                saveBtn.classList.remove('disabled');
                 checkRequiredFieldsOfNewMessage();
-                cancelBtn.classList.remove('disabled'); 
+                cancelBtn.classList.remove('disabled');
                 overlay.show();
             },
         });
@@ -399,14 +400,13 @@ var linksAndMessages = (function () {
     function init() {
         messagesWidget = document.getElementById('dashsystemmessagewidget');
         linksWidget = document.getElementById('dashcustomlinks');
- 
+
         // append add message button
         dashboard.appendAddMessageButton('dashsystemmessagewidget', 'addMessageFilterBtn');
-  
+
         if (links.length > 0 || messages.length > 0) {
-            loadSystemMessages();
-            loadCustomLinks();
-            return;
+            links = [];
+            messages = [];   
         }
 
         linksAndMessagesWidgetAjax.getSystemMessagesAndCustomLinks(function (results, error) {
@@ -420,7 +420,7 @@ var linksAndMessages = (function () {
             separateLinksAndMessages(results);
             loadSystemMessages();
             loadCustomLinks();
-        });     
+        });
     }
 
     return {
