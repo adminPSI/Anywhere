@@ -153,6 +153,11 @@ const importServices = (() => {
 
             dropdown.populate(exitingOutcomDropdown, existingOutcomesVendorData, existingOutcomesVendorData[0]?.value);
 
+            // Add event listeners to trigger toggleImportButton on any change
+            exitingOutcomDropdown.addEventListener('change', toggleImportButton);
+            serviceDateStartInput.addEventListener('input', toggleImportButton);
+            serviceDateEndInput.addEventListener('input', toggleImportButton);
+
             createAddToExistingOutcomesRowContainerDiv.style.display = 'none';
             return createAddToExistingOutcomesRowContainerDiv;
         };
@@ -388,19 +393,64 @@ const importServices = (() => {
         function toggleImportButton() {
             const importButton = document.getElementById('importSelectedServicesBtn');
             const checkboxes = document.querySelectorAll('.row-checkbox');
-            
-            // Check if any checkbox is checked
+
+             // Check if any checkbox is checked at all
             const anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-            
-            // Enable or disable the button based on the checkbox state
-            if (anyChecked) {
-                importButton.disabled = false;
-                importButton.classList.remove('disabled');
-            } else {
+
+            // no checkboxes are selected, keep the import button disabled
+            if (!anyChecked) {
                 importButton.disabled = true;
                 importButton.classList.add('disabled');
+                return;
+            }
+            
+            let enableButton = false;
+        
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const currentTable = checkbox.closest('.table');
+                    const tableRow = checkbox.closest('.table__row');
+                    const tableRowId = tableRow.id;
+                    const outcomeRowId = `${tableRowId}999`;
+                
+                    // Use CSS.escape to ensure the ID is properly escaped for querySelector
+                    const escapedOutcomeRowId = `#${CSS.escape(outcomeRowId)}`;
+                
+                    // Find the outcomeRowContainer within the current table
+                    const outcomeRowContainer = currentTable.querySelector(escapedOutcomeRowId);
+                    
+                    if (outcomeRowContainer) {
+                        const dropdown = outcomeRowContainer.querySelector('select');
+                        const startDateInput = outcomeRowContainer.querySelector('input[type="date"]:first-of-type');
+                        const endDateInput = outcomeRowContainer.querySelector('input[type="date"]:last-of-type');
+        
+                        // Validate dropdown and date inputs
+                        const isDropdownSelected = dropdown && dropdown.value !== "";
+                        const isStartDateValid = startDateInput && startDateInput.value !== "";
+                        const isEndDateValid = endDateInput && endDateInput.value !== "";
+                        const isDateRangeValid = isStartDateValid && isEndDateValid && (new Date(startDateInput.value) <= new Date(endDateInput.value));
+        
+                        // If all conditions are met, we can enable the button
+                        if (!isDropdownSelected || !isStartDateValid || !isEndDateValid || !isDateRangeValid) {
+                            // one of the checkboxes existing outcomes values are not correct, keep the import button disabled
+                            enableButton = false;
+                            importButton.disabled = true;
+                            importButton.classList.add('disabled');
+                            return;
+                        } else {
+                            enableButton = true;
+                        }
+                    }
+                }
+            });
+        
+            // Enable or disable the button based on the validation checks
+            if (enableButton) {
+                importButton.disabled = false;
+                importButton.classList.remove('disabled');
             }
         }
+        
 
         importSelectedSerivcesAndCancelBtnWrap.appendChild(importSelectedServicesBtn);
         importSelectedSerivcesAndCancelBtnWrap.appendChild(cancelBtn);
