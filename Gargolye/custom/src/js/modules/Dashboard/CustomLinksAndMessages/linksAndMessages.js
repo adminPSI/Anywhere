@@ -6,7 +6,6 @@ var linksAndMessages = (function () {
 
     // New System Message
     //-----------------------
-    var widgetBody;
     var addMessagePopup;
     var employeeDropdown;
     var saveBtn;
@@ -65,10 +64,11 @@ var linksAndMessages = (function () {
     }
 
     function buildAddMessagePopup() { 
-        var widgetFilter = messagesWidget.querySelector('.widget__filters');
-        if (widgetFilter) return;
-
-        addMessagePopup = dashboard.buildFilterPopup();
+        addMessagePopup = POPUP.build({
+            id: 'sig_addMessagePopup',
+            classNames: 'assignEmployeePopup',
+            hideX: true,
+        });
 
         employeeDropdown = dropdown.build({
             dropdownId: 'employeesDropdown',
@@ -86,9 +86,10 @@ var linksAndMessages = (function () {
                 cancelBtn.classList.add('disabled'); 
             },
         });
-
+        selectMoreEmployeeBtn.style.width = '100%';
         let today = UTIL.getTodaysDate(true);
         let tomorrowDate = moment(dates.addDays(today, 1), 'YYYY-MM-DD').format('YYYY-MM-DD'); 
+        dateOfExpiration = tomorrowDate;
         expirationDate = input.build({
             id: 'expirationDate',
             type: 'date',
@@ -99,7 +100,7 @@ var linksAndMessages = (function () {
                 { key: 'min', value: tomorrowDate },
             ],
         });
-
+        timeOfExpiration = UTIL.getCurrentTime();  
         expirationTime = input.build({
             id: 'expirationTime',
             type: 'time',
@@ -117,12 +118,12 @@ var linksAndMessages = (function () {
         });
 
         saveBtn = button.build({
-            text: 'Apply',
+            text: 'SAVE',
             style: 'secondary',
             type: 'contained',
         });
         cancelBtn = button.build({
-            text: 'Cancel',
+            text: 'CANCEL',
             style: 'secondary',
             type: 'outlined',
         });
@@ -138,35 +139,31 @@ var linksAndMessages = (function () {
         addMessagePopup.appendChild(expirationTime);
         addMessagePopup.appendChild(messageInput);
         addMessagePopup.appendChild(btnWrap);
-        messagesWidget.insertBefore(addMessagePopup, widgetBody);
+        POPUP.show(addMessagePopup);
         messageInput.classList.add('error');
         saveBtn.classList.add('disabled');
         eventSetup(); 
         populateEmployeeDropdown();  
     }
 
-    function eventSetup() {
+    function eventSetup() { 
         employeeDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             selectedEmployee = [];
             selectedEmployee.push(selectedOption.id);
         });
-        saveBtn.addEventListener('click', async () => {
+        saveBtn.addEventListener('click', async () => {    
             const result = await linksAndMessagesWidgetAjax.addSystemMessageAsync(textMessage, timeOfExpiration, dateOfExpiration, selectedEmployee);
             const { addSystemMessageResult } = result;
             if (addSystemMessageResult[0].NoteID != null) {
-                addMessagePopup.classList.remove('visible');
-                overlay.hide();
-                bodyScrollLock.enableBodyScroll(addMessagePopup);
+                POPUP.hide(addMessagePopup);  
                 selectedEmployee = [];
             }           
         });
 
         cancelBtn.addEventListener('click', () => {
-            addMessagePopup.classList.remove('visible');
-            overlay.hide();
-            bodyScrollLock.enableBodyScroll(addMessagePopup);
             selectedEmployee = [];
+            POPUP.hide(addMessagePopup);
         });
         messageInput.addEventListener('input', event => {
             textMessage = event.target.value;
@@ -343,13 +340,12 @@ var linksAndMessages = (function () {
                 selectedEmployee = [];
                 selectedEmployee = currentconsumersSelected;  
                 document.getElementById('employeesDropdown').value = selectedEmployee[0];
-                POPUP.hide(assignEmployeePopup);
-                overlay.show();
-                addMessagePopup.classList.add('visible');
+                POPUP.hide(assignEmployeePopup);              
                 saveBtn.classList.remove('disabled');               
                 checkRequiredFieldsOfNewMessage();
                 cancelBtn.classList.remove('disabled');
                 currentconsumersSelected = []; 
+                overlay.show();
             },
         });
         assignBtn.classList.add('disabled');
@@ -361,11 +357,10 @@ var linksAndMessages = (function () {
             callback: function () {
                 currentconsumersSelected = [];
                 POPUP.hide(assignEmployeePopup);
-                overlay.show();
-                addMessagePopup.classList.add('visible'); 
                 saveBtn.classList.remove('disabled');               
                 checkRequiredFieldsOfNewMessage();
-                cancelBtn.classList.remove('disabled');  
+                cancelBtn.classList.remove('disabled'); 
+                overlay.show();
             },
         });
 
@@ -403,13 +398,11 @@ var linksAndMessages = (function () {
 
     function init() {
         messagesWidget = document.getElementById('dashsystemmessagewidget');
-        widgetBody = messagesWidget.querySelector('.widget__body');
         linksWidget = document.getElementById('dashcustomlinks');
  
         // append add message button
         dashboard.appendAddMessageButton('dashsystemmessagewidget', 'addMessageFilterBtn');
-        buildAddMessagePopup();
-        
+  
         if (links.length > 0 || messages.length > 0) {
             loadSystemMessages();
             loadCustomLinks();

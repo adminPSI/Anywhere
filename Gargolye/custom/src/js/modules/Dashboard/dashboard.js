@@ -232,13 +232,9 @@
                 type: 'text',
                 icon: 'add',
                 iconPos: 'right',
-                callback: function () {
-                    var filtersSelector = `#${widgetId} .widget__filters`;  
-                    var widgetFilters = document.querySelector(filtersSelector);
-                    overlay.show();
-                    bodyScrollLock.disableBodyScroll(widgetFilters);
-                    widgetFilters.classList.add('visible');                                   
-                },
+                callback: function () {   
+                    linksAndMessages.buildAddMessagePopup();  
+                }, 
             });
             widgetHeader.appendChild(addMessageBtn);
         }
