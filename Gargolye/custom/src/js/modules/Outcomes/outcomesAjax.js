@@ -477,7 +477,7 @@ var outcomesAjax = (function () {
     }
   }
 
-  async function getOutcomeTypeDropDownAsync(selectedConsumer) {
+    async function getOutcomeTypeDropDownAsync(selectedConsumer, effectiveDateStart) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -492,7 +492,8 @@ var outcomesAjax = (function () {
           '/getOutcomeTypeDropDown/',
         data: JSON.stringify({
           token: $.session.Token,
-          consumerId: selectedConsumerId
+          consumerId: selectedConsumerId,
+          effectiveDateStart
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
