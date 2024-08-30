@@ -422,3 +422,57 @@
         }
     }
 }
+
+.assignEmployeePopup {
+    min-height : 75%;
+    .popupMessage {
+        margin: 0 0 10px;
+        font-style: italic;
+    }
+
+    .peopleListWrap {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        margin: 0 0 15px;
+    }
+
+    .assignPeopleList {
+        flex-basis: 100%;
+        margin: 0 0 10px;
+
+        > p {
+            font-weight: $bold;
+            margin: 0 0 5px;
+        }
+
+        div {
+            max-height: 200px;
+            overflow-x: hidden;
+            overflow-y: scroll;
+
+            p {
+                cursor: pointer;
+                padding: 2px 0px 2px 4px;
+
+                &.selected {
+                    background: $secondary;
+                }
+            }
+        }
+    }
+
+    .btnWrap {
+        margin: 0;
+    }
+}
+
+@media screen and (min-width: 700px) {
+    .assignEmployeePopup {
+        max-width: 400px;
+
+        .assignPeopleList {
+            flex-basis: 100%;
+        }
+    }
+}

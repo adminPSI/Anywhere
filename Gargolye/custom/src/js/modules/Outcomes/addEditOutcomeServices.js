@@ -212,8 +212,8 @@ const addEditOutcomeServices = (() => {
     popupContent.appendChild(heading);
     popupContent.appendChild(dropArea);
     popupContent.appendChild(fileListDisplay);
-    uploadBtnsWrap.appendChild(closeButton);
     uploadBtnsWrap.appendChild(importButton);
+    uploadBtnsWrap.appendChild(closeButton);
     popupContent.appendChild(uploadBtnsWrap);
 
     // Append the content container to the popup

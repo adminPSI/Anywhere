@@ -56,6 +56,7 @@ using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
+using static Anywhere.service.Data.DashboardWorker;
 
 namespace Anywhere
 {
@@ -4163,6 +4164,16 @@ namespace Anywhere
         public List<ImportedTables> importSelectedServices(string token, ImportedTables[] importedTables)
         {
             return ioas.importSelectedServices(token, importedTables);
+        }
+
+        public Employer[] getEmployeeList(string token)
+        {
+            return dashWork.getEmployeeList(token);
+        }
+
+        public SystemNotes[] addSystemMessage(string token, string textMessage, string timeOfExpiration, string dateOfExpiration, string[] selectedEmployee)
+        {
+            return dashWork.addSystemMessage(token, textMessage, timeOfExpiration, dateOfExpiration, selectedEmployee);
         }
 
     }

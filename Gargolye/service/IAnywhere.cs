@@ -30,6 +30,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
+using static Anywhere.service.Data.DashboardWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.ESign.ESignWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
@@ -5443,6 +5444,23 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/importSelectedServices/")]
         List<ImportedTables> importSelectedServices(string token, ImportedTables[] importedTables);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/getEmployeeList/")]
+        EmploymentWorker.Employer[] getEmployeeList(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/addSystemMessage/")]
+        SystemNotes[] addSystemMessage(string token, string textMessage, string timeOfExpiration, string dateOfExpiration, string[] selectedEmployee);
+
 
     }
 

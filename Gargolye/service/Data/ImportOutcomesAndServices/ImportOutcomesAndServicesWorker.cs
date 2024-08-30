@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using pdftron.Common;
 using pdftron.PDF;
@@ -58,6 +60,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         public List<PaidSupports> paidSupports { get; set; }
         public List<AdditionalSupports> additionalSupports { get; set; }
         public List<ProfessionalReferrals> professionalReferrals { get; set; }
+        public string startDate { get; set; }
+        public string endDate { get; set; }
     }
 
     public class ImportedTables
@@ -193,6 +197,31 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                             // Save the first two lines for later checks
                             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                            string input = "ISP Span Dates: August 31, 2023 - August 30, 2024";
+
+                            // Regular expression pattern to match the two dates
+                            string pattern = @"ISP Span Dates:\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})\s*-\s*([A-Za-z]+\s+\d{1,2},\s+\d{4})";
+
+                            Match match = Regex.Match(input, pattern);
+
+                            if (match.Success)
+                            {
+                                string startDateStr = match.Groups[1].Value;
+                                string endDateStr = match.Groups[2].Value;
+
+                                // Parse the date strings into DateTime objects
+                                DateTime startDate = DateTime.ParseExact(startDateStr, "MMMM d, yyyy", CultureInfo.InvariantCulture);
+                                DateTime endDate = DateTime.ParseExact(endDateStr, "MMMM d, yyyy", CultureInfo.InvariantCulture);
+
+                                // Format the dates as needed for the front end
+                                string startDateFormatted = startDate.ToString("yyyy-MM-dd");
+                                string endDateFormatted = endDate.ToString("yyyy-MM-dd");
+
+                                extractedTables.startDate = startDateFormatted;
+                                extractedTables.endDate = endDateFormatted;
+                            }
+
                             string firstTwoLines = lines.Length > 1 ? lines[0] + "\n" + lines[1] : "";
 
                             // Print combined text for debugging

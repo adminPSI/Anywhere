@@ -1,5 +1,8 @@
 ﻿using Anywhere.Data;
+using System.ServiceModel.Web;
+using System;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.Employment.EmploymentWorker;
 
 namespace Anywhere.service.Data
 {
@@ -136,12 +139,44 @@ namespace Anywhere.service.Data
                 if (listName == "Case Note Productivity")
                     nameOfTab = "Case_Note_Productivity";
                 if (listName == "My Case Load")
-                    nameOfTab = "Case Load Widget"; 
- 
+                    nameOfTab = "Case Load Widget";
+
                 dg.updateUserWidgetOrderSettings(token, nameOfTab, orderCount.ToString());
                 orderCount++;
             }
             return "true";
+        }
+
+        public Employer[] getEmployeeList(string token)
+        {
+
+            try
+            {
+                Employer[] employers = js.Deserialize<Employer[]>(dg.getEmployeeList(token));               
+                return employers;
+            }
+            catch (Exception ex)
+            {
+                throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+            }
+
+        }
+
+        public SystemNotes[] addSystemMessage(string token, string textMessage, string timeOfExpiration, string dateOfExpiration, string[] selectedEmployee)
+        {
+            var expirationDate = DateTime.Parse(dateOfExpiration);
+            var expirationTime = TimeSpan.Parse(timeOfExpiration);
+            var mergeDateTime = expirationDate + expirationTime; 
+            string expiration= mergeDateTime.ToString("yyyy-MM-dd HH:mm");  
+
+            string noteId = dg.insertSystemNotes(token, textMessage, expiration);
+            SystemNotes[] systemNotesObj = js.Deserialize<SystemNotes[]>(noteId);
+
+            foreach (string employeeId in selectedEmployee)
+            {
+                dg.insertSystemNoteSharing(token, systemNotesObj[0].NoteID, employeeId);
+            }
+            return systemNotesObj;
         }
 
         public class UserWidgetSettings
@@ -257,6 +292,12 @@ namespace Anywhere.service.Data
             public string linkaddress { get; set; }
             public string linktarget { get; set; }
         }
+
+        public class SystemNotes
+        {
+            public string NoteID { get; set; }
+        }
+
     }
 
 }

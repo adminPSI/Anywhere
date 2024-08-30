@@ -135,7 +135,7 @@ namespace OODForms
             return rv;
 
         }
-        public string OODForm8GetJobTasksSummary(string AuthorizationNumber)
+        public string OODForm8GetJobTasksSummary(string AuthorizationNumber, string StartDate, string EndDate)
         {
             string Tasks = string.Empty;
 
@@ -147,22 +147,30 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
             sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
             sb.Append("AND dba.EM_Job_Task.Task_Number > 7 ");
+            sb.AppendFormat("AND dba.Case_Notes.Service_Date between '{0}' and '{1}' ", StartDate, EndDate);
             sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
-            long PosNumber = 0;
+            DataSet dsPos = di.SelectRowsDS(sb.ToString());
+            List<long> posNumbers = new List<long>();
 
-            DataSet ds = di.SelectRowsDS(sb.ToString());
-            if (ds.Tables.Count > 0)
+            if (dsPos.Tables.Count > 0 && dsPos.Tables[0].Rows.Count > 0)
             {
-                if (ds.Tables[0].Rows.Count > 0)
+                foreach (DataRow row in dsPos.Tables[0].Rows)
                 {
-                    PosNumber = (long)ds.Tables[0].Rows[0]["Position_ID"];
+                    posNumbers.Add((long)row["Position_ID"]);
                 }
+            } else
+            {
+                return Tasks;
             }
+
+            string posNumbersString = string.Join(",", posNumbers);
 
             sb.Clear();
             sb.Append("SELECT Task_Notes ");
             sb.Append("FROM dba.EM_Job_Task ");
-            sb.AppendFormat("WHERE Task_Number > 7 AND Position_ID = {0} ", PosNumber);
+            sb.AppendFormat("WHERE Task_Number > 7 AND Position_ID in ({0}) ", posNumbersString);
+            sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}')", EndDate, StartDate);
+            DataSet ds = di.SelectRowsDS(sb.ToString());
             ds = di.SelectRowsDS(sb.ToString());
 
             if (ds.Tables.Count > 0)

@@ -67,9 +67,17 @@ const importServices = (() => {
 
         function handleCheckboxSelection(event, rowData) {
             let checkbox = event.target;
-            const tableWrapper = checkbox.closest('.table');
-            const outcomeRowContainer = tableWrapper.querySelector('.addToExistingOutcomesRowContainer');
-        
+            const currentTable = checkbox.closest('.table');
+            const tableRow = checkbox.closest('.table__row');
+            const tableRowId = tableRow.id;
+            const outcomeRowId = `${tableRowId}999`;
+            
+            // Use CSS.escape to ensure the ID is properly escaped for querySelector
+            const escapedOutcomeRowId = `#${CSS.escape(outcomeRowId)}`;
+            
+            // Find the outcomeRowContainer within the current table
+            const outcomeRowContainer = currentTable.querySelector(escapedOutcomeRowId);
+            
             // Check if the target is the checkbox itself
             if (checkbox.type !== 'checkbox') {
                 // If not, assume we're in the div and select the checkbox within the startIcon div
@@ -77,28 +85,43 @@ const importServices = (() => {
             }
         
             if (checkbox && checkbox.checked) {
-                // add the newly checked row data to the selected outcomes array
-                selectedOutcomes.push(rowData);
-
-                // show the existing outcomes div at the bottom of the table
+                // Gather values from the outcomeRowContainer inputs
+                const dropdown = outcomeRowContainer.querySelector('select');
+                const serviceDateStart = outcomeRowContainer.querySelector('input[type="date"]:first-of-type');
+                const serviceDateEnd = outcomeRowContainer.querySelector('input[type="date"]:last-of-type');
+        
+                // Add these input values to the rowData
+                const outcomeData = {
+                    rowId: tableRowId,
+                    existingOutcomeGoalId: dropdown ? dropdown.value : null,
+                    serviceDateStart: serviceDateStart ? serviceDateStart.value : null,
+                    serviceDateEnd: serviceDateEnd ? serviceDateEnd.value : null
+                };
+        
+                // Merge the rowData with the outcomeData
+                const combinedData = { ...rowData, ...outcomeData };
+        
+                // Add the newly checked row data to the selected outcomes array
+                selectedOutcomes.push(combinedData);
+        
+                // Show the existing outcomes div below the checkbox row
                 outcomeRowContainer.style.display = 'flex';
-
+        
             } else {
-                // remove the now unselected row data from the selected outcomes array
+                // Remove the now unselected row data from the selected outcomes array
                 selectedOutcomes = selectedOutcomes.filter(
-                    selectedRow => selectedRow !== rowData
+                    selectedRow => selectedRow.rowId !== tableRowId
                 );
-
-                //check if any row in the table is checked 
-                const anyRowsChecked = Array.from(tableWrapper.querySelectorAll('.row-checkbox'))
-                                            .some(cb => cb.checked);
-
-                // hide the exising outcomes div if no rows are checked
-                if (!anyRowsChecked) {
-                    outcomeRowContainer.style.display = 'none';
-                }
+        
+                // Hide the existing outcomes div below the checkbox row
+                outcomeRowContainer.style.display = 'none';
             }
+        
+            // Toggle the import button based on the current state of checkboxes
+            toggleImportButton();
         }
+        
+        
 
         function handleHeaderCheckboxSelection(headerCheckboxSelector, tableSelector) {
             const headerCheckbox = document.querySelector(headerCheckboxSelector);
@@ -117,38 +140,62 @@ const importServices = (() => {
             });
         }
 
-        function createAddToExistingOutcomesRow(tableDiv) {
+        function createAddToExistingOutcomesRow(rowId) {
             const exitingOutcomDropdown = dropdown.build({
-                id: 'existingOutcomeDropdown',
+                id: `existingOutcomeDropdown_${rowId}`,
                 label: 'Add to Existing Outcome',
-                dropdownId: 'existingOutcomeDropdown',
+                dropdownId: `existingOutcomeDropdown_${rowId}`,
+                callback: () => toggleImportButton(),
+                callbackType: 'change'
             });
-
+        
             const serviceDateStartInput = input.build({
                 type: 'date',
                 label: 'Service Date Start',
                 style: 'secondary',
-                //value: filterValues.serviceDateStart,
+                callback: () => toggleImportButton(),
+                callbackType: 'input',
+                value: extractionData.importedOutcomesPDFDataResult.startDate
             });
-
-             const serviceDateEndInput = input.build({
+        
+            const serviceDateEndInput = input.build({
                 type: 'date',
                 label: 'Service Date End',
                 style: 'secondary',
-                //value: filterValues.serviceDateEnd,
+                callback: () => toggleImportButton(),
+                callbackType: 'input',
+                value: extractionData.importedOutcomesPDFDataResult.endDate
             });
-
+        
             const createAddToExistingOutcomesRowContainerDiv = document.createElement('div');
-            createAddToExistingOutcomesRowContainerDiv.classList.add('addToExistingOutcomesRowContainer')
+            createAddToExistingOutcomesRowContainerDiv.classList.add('addToExistingOutcomesRowContainer');
+            createAddToExistingOutcomesRowContainerDiv.id = `${rowId}999`;
+            
             createAddToExistingOutcomesRowContainerDiv.appendChild(exitingOutcomDropdown);
             createAddToExistingOutcomesRowContainerDiv.appendChild(serviceDateStartInput);
             createAddToExistingOutcomesRowContainerDiv.appendChild(serviceDateEndInput);
-            tableDiv.appendChild(createAddToExistingOutcomesRowContainerDiv);
-
+        
+            // Populate dropdown with options
             dropdown.populate(exitingOutcomDropdown, existingOutcomesVendorData, existingOutcomesVendorData[0]?.value);
-
+        
             createAddToExistingOutcomesRowContainerDiv.style.display = 'none';
-        };
+            return createAddToExistingOutcomesRowContainerDiv;
+        }
+
+        //const newRow = createAddToExistingOutcomesRow();
+
+        function appendToEachRow(table) {       
+            const tableBody = table.querySelector('.table__body');
+            const rows = Array.from(tableBody.querySelectorAll('.table__row'));
+        
+            rows.forEach(row => {
+                // Create a new row for each existing table row
+                const newRow = createAddToExistingOutcomesRow(row.id);
+        
+                // Insert the new row after the current row
+                row.insertAdjacentElement('afterend', newRow);
+            });
+        }
 
         knownAndLikelyRisksTable = table.build({
             tableId: `importedPlanRisksTable`,
@@ -183,9 +230,8 @@ const importServices = (() => {
                 });
 
             table.populate(knownAndLikelyRisksTable, tableData, false);
+            appendToEachRow(knownAndLikelyRisksTable);
         };
-
-        createAddToExistingOutcomesRow(knownAndLikelyRisksTable);
   
         // Experiences Table
          experiencesTable = table.build({
@@ -220,9 +266,8 @@ const importServices = (() => {
                 });
         
             table.populate(experiencesTable, tableData, false);
+            appendToEachRow(experiencesTable);
         }
-
-        createAddToExistingOutcomesRow(experiencesTable);
   
         // Paid Supports Table
         paidSupportsTable = table.build({
@@ -261,9 +306,8 @@ const importServices = (() => {
                 });
 
             table.populate(paidSupportsTable, tableData, false, true);
+            appendToEachRow(paidSupportsTable);
         };
-
-        createAddToExistingOutcomesRow(paidSupportsTable);
         
         // Additional Supports Table
         additionalSupportsTable = table.build({
@@ -299,9 +343,9 @@ const importServices = (() => {
                 });
         
             table.populate(additionalSupportsTable, tableData, false);
+
+            appendToEachRow(additionalSupportsTable);
         }
-        
-        createAddToExistingOutcomesRow(additionalSupportsTable);
   
         // Professional Referrals Table
         professionalReferralsTable = table.build({
@@ -336,17 +380,17 @@ const importServices = (() => {
                 });
         
             table.populate(professionalReferralsTable, tableData, false);
+            appendToEachRow(professionalReferralsTable);
         }
 
-        createAddToExistingOutcomesRow(professionalReferralsTable);
-
         const importSelectedSerivcesAndCancelBtnWrap = document.createElement('div');
+        importSelectedSerivcesAndCancelBtnWrap.classList.add('importSelectedSerivcesAndCancelBtnWrap');
         const importSelectedServicesBtn = button.build({
             id: 'importSelectedServicesBtn',
             text: 'Import Selected Services',
             style: 'secondary',
             type: 'contained',
-            classNames: 'importSelectedServicesBtn',
+            classNames: ['importSelectedServicesBtn', 'disabled'],
             callback: async () => {showImportSelectedServicesPopup()},
         });
 
@@ -361,6 +405,68 @@ const importServices = (() => {
                 addEditOutcomeServices.init(currentlySelectedConsumer);
             },
         });
+
+        function toggleImportButton() {
+            const importButton = document.getElementById('importSelectedServicesBtn');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+
+             // Check if any checkbox is checked at all
+            const anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+            // no checkboxes are selected, keep the import button disabled
+            if (!anyChecked) {
+                importButton.disabled = true;
+                importButton.classList.add('disabled');
+                return;
+            }
+            
+            let enableButton = false;
+        
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const currentTable = checkbox.closest('.table');
+                    const tableRow = checkbox.closest('.table__row');
+                    const tableRowId = tableRow.id;
+                    const outcomeRowId = `${tableRowId}999`;
+                
+                    // Use CSS.escape to ensure the ID is properly escaped for querySelector
+                    const escapedOutcomeRowId = `#${CSS.escape(outcomeRowId)}`;
+                
+                    // Find the outcomeRowContainer within the current table
+                    const outcomeRowContainer = currentTable.querySelector(escapedOutcomeRowId);
+                    
+                    if (outcomeRowContainer) {
+                        const dropdown = outcomeRowContainer.querySelector('select');
+                        const startDateInput = outcomeRowContainer.querySelector('input[type="date"]:first-of-type');
+                        const endDateInput = outcomeRowContainer.querySelector('input[type="date"]:last-of-type');
+        
+                        // Validate dropdown and date inputs
+                        const isDropdownSelected = dropdown && dropdown.value !== "";
+                        const isStartDateValid = startDateInput && startDateInput.value !== "";
+                        const isEndDateValid = endDateInput && endDateInput.value !== "";
+                        const isDateRangeValid = isStartDateValid && isEndDateValid && (new Date(startDateInput.value) <= new Date(endDateInput.value));
+        
+                        // If all conditions are met, we can enable the button
+                        if (!isDropdownSelected || !isStartDateValid || !isEndDateValid || !isDateRangeValid) {
+                            // one of the checkboxes existing outcomes values are not correct, keep the import button disabled
+                            enableButton = false;
+                            importButton.disabled = true;
+                            importButton.classList.add('disabled');
+                            return;
+                        } else {
+                            enableButton = true;
+                        }
+                    }
+                }
+            });
+        
+            // Enable or disable the button based on the validation checks
+            if (enableButton) {
+                importButton.disabled = false;
+                importButton.classList.remove('disabled');
+            }
+        }
+        
 
         importSelectedSerivcesAndCancelBtnWrap.appendChild(importSelectedServicesBtn);
         importSelectedSerivcesAndCancelBtnWrap.appendChild(cancelBtn);

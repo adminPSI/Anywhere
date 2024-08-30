@@ -863,8 +863,8 @@ const OOD = (() => {
             referenceNumber: filterValues.referenceNumber,
             peopleId: selectedConsumerIds[0],
             serviceCodeId: filterValues.serviceId,
-            startDate: filterValues.serviceDateStart,
-            endDate: filterValues.serviceDateEnd,
+            startDate: createFilterValues.serviceDateStart,
+            endDate: createFilterValues.serviceDateEnd,
             userId: filterValues.userId
         };
     
