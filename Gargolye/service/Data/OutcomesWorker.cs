@@ -403,9 +403,9 @@ namespace Anywhere.service.Data
             return JSONString;
         }
 
-        public OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)
+        public OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId)
         {
-            string outcomeTypeString = dg.getOutcomeTypeDropDown(token);
+            string outcomeTypeString = dg.getOutcomeTypeDropDown(token, consumerId);
             OutcomeTypeForFilter[] outcomeTypeObj = js.Deserialize<OutcomeTypeForFilter[]>(outcomeTypeString);
             return outcomeTypeObj;
         }

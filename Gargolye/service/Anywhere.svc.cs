@@ -3978,9 +3978,9 @@ namespace Anywhere
             return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId, appName);
         }
 
-        public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)
+        public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId)
         {
-            return outcomesWorker.getOutcomeTypeDropDown(token);
+            return outcomesWorker.getOutcomeTypeDropDown(token, consumerId);
         }
 
         public OutcomesWorker.LocationType[] getLocationDropDown(string token)

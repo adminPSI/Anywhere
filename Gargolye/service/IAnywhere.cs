@@ -5280,7 +5280,7 @@ namespace Anywhere
         ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/getOutcomeTypeDropDown/")]
-        OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token);
+        OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
