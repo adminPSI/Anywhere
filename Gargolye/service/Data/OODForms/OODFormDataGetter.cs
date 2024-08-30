@@ -16,6 +16,7 @@ using static Anywhere.service.Data.SimpleMar.SignInUser;
 using iTextSharp.text.pdf;
 using System.Linq.Expressions;
 using Microsoft.Extensions.Primitives;
+using static Anywhere.service.Data.AnywhereWorkshopWorkerTwo;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -99,19 +100,80 @@ namespace OODForms
 
             return ds;
         }
-        public DataSet OODForm8BussinessAddress(long PeopleID)
+        public DataSet OODForm8BussinessAddress(string AuthorizationNumber, string StartDate, string EndDate)
         {
+            DataSet dsPositionIds = new DataSet();
+            DataSet dsEmployerIds = new DataSet();
+            DataSet dsBusinessAddresses = new DataSet();
+
             sb.Clear();
-            sb.Append("SELECT DISTINCT  dba.Employer.Name, dba.Employer.Address1, dba.Employer.City, dba.Employer.State, ");
-            sb.Append("dba.Employer.Zip_Code, dba.Employer.Primary_Phone ");
-            sb.Append("FROM dba.EM_Employee_Position ");
-            sb.Append("LEFT OUTER JOIN dba.Employer ON dba.EM_Employee_Position.Employer_ID = dba.Employer.Employer_ID ");
-            sb.Append("LEFT OUTER JOIN emp_ood ON emp_ood.position_id = dba.EM_Employee_Position.position_id ");
-            sb.Append("LEFT OUTER JOIN people ON people.id = dba.EM_Employee_Position.People_ID ");
-            sb.AppendFormat("WHERE people.consumer_id = {0} ", PeopleID);
-            sb.AppendFormat("    AND dba.EM_Employee_Position.End_Date IS NULL ");
-            sb.AppendFormat("    AND emp_ood.position_id IS NOT NULL;");
-            return di.SelectRowsDS(sb.ToString());
+
+            sb.Append("Select Case_Notes.Case_Note_ID, Emp_OOD.Position_ID, Emp_OOD.Employer_ID FROM dba.EM_Job_Task ");
+            sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+            sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}' AND dba.EM_Job_Task.Task_Number > 7 ", AuthorizationNumber);
+            sb.AppendFormat("AND dba.Case_Notes.Service_Date between '{0}' and '{1}' ", StartDate, EndDate);
+            sb.Append("GROUP BY Case_Notes.Case_Note_ID, Emp_OOD.Position_ID, Emp_OOD.Employer_ID ");
+            //  return di.SelectRowsDS(sb.ToString());
+            dsPositionIds = di.SelectRowsDS(sb.ToString());
+            List<long> positionIds = new List<long>();
+
+            if (dsPositionIds.Tables.Count > 0 && dsPositionIds.Tables[0].Rows.Count > 0)
+            {
+                foreach (DataRow row in dsPositionIds.Tables[0].Rows)
+                {
+                    positionIds.Add((long)row["Position_ID"]);
+                }
+            }
+            else
+            {
+                return dsPositionIds;
+            }
+
+            string posNumbersString = string.Join(",", positionIds);
+
+            sb.Clear();
+            sb.AppendFormat("Select Employer_ID from Em_employee_Position where Position_ID in ({0}) ", posNumbersString);
+            dsEmployerIds = di.SelectRowsDS(sb.ToString());
+            List<string> employerIds = new List<string>();
+            DataTable dt = dsEmployerIds.Tables[0];
+
+                if (dsEmployerIds.Tables.Count > 0 && dsEmployerIds.Tables[0].Rows.Count > 0)
+
+                { 
+                foreach (DataRow row in dt.Rows)
+                {
+                    employerIds.Add(row["Employer_ID"].ToString());
+                }
+            }
+            else
+            {
+                return dsEmployerIds;
+            }
+
+            string EmployerIdsString = string.Join(",", employerIds);
+
+            sb.Clear();
+            sb.AppendFormat("Select Name, Address1, City, State from Employer where Employer_ID in ({0}) ", EmployerIdsString);
+            dsBusinessAddresses = di.SelectRowsDS(sb.ToString());
+      
+            return dsBusinessAddresses;
+
+            //sb.Clear();
+            //sb.Append("SELECT DISTINCT  dba.Employer.Name, dba.Employer.Address1, dba.Employer.City, dba.Employer.State, ");
+            //sb.Append("dba.Employer.Zip_Code, dba.Employer.Primary_Phone ");
+            //sb.Append("FROM dba.EM_Employee_Position ");
+            //sb.Append("LEFT OUTER JOIN dba.Employer ON dba.EM_Employee_Position.Employer_ID = dba.Employer.Employer_ID ");
+            //sb.Append("LEFT OUTER JOIN emp_ood ON emp_ood.position_id = dba.EM_Employee_Position.position_id ");
+            //sb.Append("LEFT OUTER JOIN people ON people.id = dba.EM_Employee_Position.People_ID ");
+            //sb.AppendFormat("WHERE people.consumer_id = {0} ", PeopleID);
+            //sb.AppendFormat("    AND dba.EM_Employee_Position.End_Date IS NULL ");
+            //sb.AppendFormat("    AND emp_ood.position_id IS NOT NULL;");
+            //return di.SelectRowsDS(sb.ToString());
+
+
+
         }
         public string OODForm8GetSupportAndTransistion(string AuthorizationNumber, string StartDate)
         {

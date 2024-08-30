@@ -689,15 +689,18 @@ namespace OODForms
                     WS.Cell("a12").Value = "Service Description 1";
                 }
 
-                ds = obj.OODForm8BussinessAddress(PeopleID);
-                if (ds.Tables.Count > 0)
+                ds = obj.OODForm8BussinessAddress(AuthorizationNumber, StartDate, EndDate);
+                if (ds.Tables.Count > 0 )
                 {
                     if (ds.Tables[0].Rows.Count > 0)
                     {
-                        row = ds.Tables[0].Rows[0];
                         sb.Clear();
-                        sb.AppendFormat("{0}, ", row["Name"].ToString().Trim());
-                        sb.AppendFormat("{0}, {1}", row["City"].ToString().Trim(), row["State"].ToString().Trim());
+                        foreach (DataRow thisrow in ds.Tables[0].Rows)
+                        {
+                            sb.AppendFormat("{0}, ", thisrow["Name"].ToString().Trim());
+                            sb.AppendFormat("{0}, {1}", thisrow["City"].ToString().Trim(), thisrow["State"].ToString().Trim());
+                        }
+                          //  row = ds.Tables[0].Rows[0];           
                         WS.Cell("m19").Value = sb.ToString().Trim();
                     }
                 }
