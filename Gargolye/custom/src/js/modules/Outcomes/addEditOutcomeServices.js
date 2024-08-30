@@ -568,7 +568,7 @@ const addEditOutcomeServices = (() => {
   }
 
   async function populateOutcomeTypeDropdown() {
-    const { getOutcomeTypeDropDownResult: OutcomeType } = await outcomesAjax.getOutcomeTypeDropDownAsync();
+    const { getOutcomeTypeDropDownResult: OutcomeType } = await outcomesAjax.getOutcomeTypeDropDownAsync(selectedConsumer);
     let outcomeTypeData = OutcomeType.map(outcomeTypes => ({
       id: outcomeTypes.Goal_Type_ID,
       value: outcomeTypes.Goal_Type_ID,

@@ -403,9 +403,9 @@ namespace Anywhere.service.Data
             return JSONString;
         }
 
-        public OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)
+        public OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
         {
-            string outcomeTypeString = dg.getOutcomeTypeDropDown(token);
+            string outcomeTypeString = dg.getOutcomeTypeDropDown(token, consumerId, effectiveDateStart);
             OutcomeTypeForFilter[] outcomeTypeObj = js.Deserialize<OutcomeTypeForFilter[]>(outcomeTypeString);
             return outcomeTypeObj;
         }
@@ -431,10 +431,10 @@ namespace Anywhere.service.Data
             return objectiveObj;
         }
 
-        public OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId)
+        public OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart)
         {
             js.MaxJsonLength = Int32.MaxValue;
-            string outcomeTypeString = dg.getOutcomeServiceDropDown(token, consumerId);
+            string outcomeTypeString = dg.getOutcomeServiceDropDown(token, consumerId, effectiveDateStart);
             OutcomeService[] outcomeTypeObj = js.Deserialize<OutcomeService[]>(outcomeTypeString);
             return outcomeTypeObj;
         }
