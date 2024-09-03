@@ -25,6 +25,66 @@ namespace Anywhere.service.Data
             return di.SelectRowsDS(sb.ToString());
 
         }
+
+        public DataSet TimeDetailSupervisor(string supervisorId, string startDate, string endDate, string locationId, string personId, string status, string workCodeId)
+        {
+            sb.Clear();
+            sb.Append("SELECT ");
+            sb.Append("se.date_of_service AS dateofservice, ");
+            sb.Append("se.anywhere_status AS submitted, ");
+            sb.Append("loc.description AS location, ");
+            sb.Append("wc.work_code + ' - ' + wc.description AS workcode, ");
+            sb.Append("se.start_time AS starttime, ");
+            sb.Append("se.end_time AS endtime, ");
+            sb.Append("se.check_hours AS hours, ");
+            sb.Append("(SELECT COUNT(*) FROM AA_Consumers_Present WHERE AA_Single_entry_ID = se.Single_entry_ID) AS consumers, ");
+            sb.Append("se.transportation_units AS miles ");
+            sb.Append("FROM dba.aa_single_entry AS se ");
+            sb.Append("LEFT OUTER JOIN persons AS p ON se.person_id = p.person_id ");
+            sb.Append("LEFT OUTER JOIN Locations AS loc ON loc.location_id = se.location_id ");
+            sb.Append("LEFT OUTER JOIN work_codes AS wc ON wc.work_code_id = se.work_code_id ");
+            sb.Append("LEFT OUTER JOIN AA_Single_Entry_Transportation AS trans ON se.Single_Entry_ID = trans.Single_Entry_ID ");
+            sb.Append("LEFT OUTER JOIN People AS peo ON peo.Person_ID = p.Person_ID ");
+            sb.Append("WHERE se.person_ID = ANY( ");
+            sb.Append("    SELECT DISTINCT p.Person_ID ");
+            sb.Append("    FROM persons AS p ");
+            sb.Append("    JOIN AA_Single_Entry AS a ON a.Person_ID = p.Person_ID ");
+            sb.Append("    WHERE (Supervisor_ID LIKE 7357 ");
+            sb.Append("    OR se.Location_ID = ANY( ");
+            sb.Append("        SELECT Location_id ");
+            sb.Append("        FROM location_supervisors AS ls ");
+            sb.Append("        WHERE person_id LIKE 7357 ");
+            sb.Append("        AND ls.start_date <= NOW() ");
+            sb.Append("        AND (ls.end_date >= NOW() OR ls.end_date IS NULL)) ");
+            sb.Append("    AND se.Location_ID = ANY( ");
+            sb.Append("        SELECT Location_id ");
+            sb.Append("        FROM location_supervisors AS ls ");
+            sb.Append("        WHERE person_id = ANY( ");
+            sb.Append("            SELECT person_id ");
+            sb.Append("            FROM persons ");
+            sb.Append("            WHERE supervisor_id LIKE 7357) ");
+            sb.Append("        AND ls.start_date <= NOW() ");
+            sb.Append("        AND (ls.end_date >= NOW() OR ls.end_date IS NULL)) ");
+            sb.Append("    OR se.Location_ID = ANY( ");
+            sb.Append("        SELECT location_supervisors.location_id ");
+            sb.Append("        FROM location_supervisors ");
+            sb.Append("        WHERE location_supervisors.person_id LIKE 7357 ");
+            sb.Append("        AND (location_supervisors.start_date <= se.Date_of_Service ");
+            sb.Append("        AND (location_supervisors.end_date >= se.Date_of_Service ");
+            sb.Append("        OR location_supervisors.end_date IS NULL)))) ");
+            sb.Append("    AND (p.term_date >= NOW() OR p.term_date IS NULL)) ");
+            sb.AppendFormat("AND se.date_of_service BETWEEN '{0}' AND '{1}' ", startDate, endDate);
+            sb.AppendFormat("AND se.Location_ID LIKE '{0}' ", locationId);
+            sb.AppendFormat("AND se.Person_ID LIKE '{0}' ", personId);
+            sb.Append("AND se.person_ID <> 0 ");
+            sb.AppendFormat("AND se.Anywhere_Status LIKE '{0}' ", status);
+            sb.AppendFormat("AND se.Work_Code_ID LIKE '{0}' ", workCodeId);
+            sb.Append("ORDER BY se.date_of_service DESC, start_time ASC;");
+
+            return di.SelectRowsDS(sb.ToString());
+        }
+
+
         public DataSet TimeHeader(string UserName)
         {
 

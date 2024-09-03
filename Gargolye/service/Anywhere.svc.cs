@@ -3520,6 +3520,28 @@ namespace Anywhere
             return ms;
         }
 
+        public MemoryStream BasicSingleEntrySupervisorReport(string token, string userId, string supervisorId, string startDate, string endDate, string locationId, string personId, string status, string workCodeId)
+        {
+
+            MemoryStream ms = null;
+            try
+            {
+                ms = ser.createRegReportSupervisor(token, userId, supervisorId, startDate, endDate, locationId, personId, status, workCodeId);
+            }
+            catch (Exception ex)
+            {
+                var builder = new StringBuilder();
+                WriteExceptionDetails(ex, builder, 0);
+                logger2.debug(builder.ToString());
+            }
+            if (ms != null)
+            {
+                ms.Close();
+            }
+
+            return ms;
+        }
+
         public MemoryStream SingleEntryOverLapReport(string token, string userId, string startDate, string endDate)
         {
 

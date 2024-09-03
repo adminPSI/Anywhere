@@ -1702,7 +1702,17 @@ var timeApproval = (function () {
             style: 'secondary',
             type: 'contained',
             callback: function () {
-                reports.init(payPeriod);
+                var filterData = {
+                    token: $.session.Token,
+                    endDate,
+                    startDate,
+                    supervisorId: supervisorId ? supervisorId : $.session.PeopleId,
+                    locationId: locationId ? locationId : '%',
+                    employeeId: employeeId ? employeeId : '%',
+                    status: status || status !== '%' ? status : '%',
+                    workCodeId: workCodeId ? workCodeId : '%',
+                };
+                reports.init(payPeriod, true, filterData);
             },
         });
 
