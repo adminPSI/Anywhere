@@ -642,9 +642,9 @@ namespace OODForms
                     DataTable dtOODStaff = dsOODStaff.Tables[0];
                     foreach (DataRow rowOODStaff in dtOODStaff.Rows)
                     {
-                        if (rowOODStaff["FirstName"].ToString().Trim().Length > 0 && rowOODStaff["LastName"].ToString().Trim().Length > 0)
+                        if (rowOODStaff["First_Name"].ToString().Trim().Length > 0 && rowOODStaff["Last_Name"].ToString().Trim().Length > 0)
                         {
-                            OODStaff = String.Format("{0} {1}, ", rowOODStaff["FirstName"].ToString().Trim(), rowOODStaff["LastName"].ToString().Trim());
+                            OODStaff = String.Format("{0} {1}, ", rowOODStaff["First_Name"].ToString().Trim(), rowOODStaff["Last_Name"].ToString().Trim());
                         }
                     }
 

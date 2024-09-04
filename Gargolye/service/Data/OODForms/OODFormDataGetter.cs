@@ -312,8 +312,9 @@ namespace OODForms
                 sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
                 sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
                 sb.Append(" LEFT OUTER JOIN  dba.People ON dba.People.Person_ID = dba.Case_Notes.Case_Manager_ID ");
-                sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID IN ({0}) ", posNumbersString);
-                sb.AppendFormat("AND dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+                // sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID IN ({0}) ", posNumbersString);
+                sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+               // sb.AppendFormat("AND dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
                 sb.Append("AND dba.Code_Table.Table_ID = 'Employment_Code' ");
                 sb.Append("AND Field_ID = 'ContactMethod' ");
                 sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
@@ -691,7 +692,7 @@ namespace OODForms
             sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
             sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
 
-            if (ServiceCodeID != "%")
+            if (ServiceCodeID != "%" && ServiceCodeID != "All")
             {
                 sb.AppendFormat("AND dba.Case_Notes.Service_ID = {0} ", ServiceCodeID);
             }
