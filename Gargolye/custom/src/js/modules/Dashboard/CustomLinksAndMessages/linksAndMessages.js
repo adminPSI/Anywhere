@@ -107,7 +107,7 @@ var linksAndMessages = (function () {
             style: 'secondary',
             value: tomorrowDate,
             attributes: [
-                { key: 'min', value: tomorrowDate },
+                { key: 'min', value: UTIL.getTodaysDate() },
             ],
         });
         timeOfExpiration = UTIL.getCurrentTime();
@@ -178,6 +178,8 @@ var linksAndMessages = (function () {
             isMultiSelection = false;
         });
         saveBtn.addEventListener('click', async () => {
+            if (selectedEmployee.length > 1)
+                selectedEmployee.push($.session.UserId); 
             const result = await linksAndMessagesWidgetAjax.addSystemMessageAsync(textMessage, timeOfExpiration, dateOfExpiration, selectedEmployee);
             const { addSystemMessageResult } = result;
             if (addSystemMessageResult[0].NoteID != null) {
@@ -276,7 +278,7 @@ var linksAndMessages = (function () {
         });
         const popupMessage = document.createElement('p');
         popupMessage.classList.add('popupMessage');
-        popupMessage.innerText = '*Must select at least one consumer before clicking Assign button.';
+        popupMessage.innerText = '*Must select at least one employee before clicking Save button.';
 
         const innerWrap = document.createElement('div');
         innerWrap.classList.add('peopleListWrap');
