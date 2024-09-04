@@ -105,6 +105,9 @@ namespace OODForms
             DataSet dsPositionIds = new DataSet();
             DataSet dsEmployerIds = new DataSet();
             DataSet dsBusinessAddresses = new DataSet();
+            List<string> employerIds = new List<string>();
+            List<long> positionIds = new List<long>();
+            List<string> retrievedemployerIds = new List<string>();
 
             sb.Clear();
 
@@ -117,13 +120,24 @@ namespace OODForms
             sb.Append("GROUP BY Case_Notes.Case_Note_ID, Emp_OOD.Position_ID, Emp_OOD.Employer_ID ");
             //  return di.SelectRowsDS(sb.ToString());
             dsPositionIds = di.SelectRowsDS(sb.ToString());
-            List<long> positionIds = new List<long>();
+            
 
             if (dsPositionIds.Tables.Count > 0 && dsPositionIds.Tables[0].Rows.Count > 0)
             {
                 foreach (DataRow row in dsPositionIds.Tables[0].Rows)
                 {
-                    positionIds.Add((long)row["Position_ID"]);
+                    long thispositionid = (long)row["Position_ID"];
+                    if (thispositionid > 0)
+                    {
+                        positionIds.Add(thispositionid);
+                    }          
+                }
+
+                foreach (DataRow row in dsPositionIds.Tables[0].Rows)
+                {
+                    string thisemployerId = row["Employer_ID"].ToString();
+                    if (thisemployerId != "0" && thisemployerId != "" && thisemployerId != null)
+                        employerIds.Add(thisemployerId);
                 }
             }
             else
@@ -131,28 +145,41 @@ namespace OODForms
                 return dsPositionIds;
             }
 
-            string posNumbersString = string.Join(",", positionIds);
-
-            sb.Clear();
-            sb.AppendFormat("Select Employer_ID from Em_employee_Position where Position_ID in ({0}) ", posNumbersString);
-            dsEmployerIds = di.SelectRowsDS(sb.ToString());
-            List<string> employerIds = new List<string>();
-            DataTable dt = dsEmployerIds.Tables[0];
-
-                if (dsEmployerIds.Tables.Count > 0 && dsEmployerIds.Tables[0].Rows.Count > 0)
-
-                { 
-                foreach (DataRow row in dt.Rows)
-                {
-                    employerIds.Add(row["Employer_ID"].ToString());
-                }
-            }
-            else
+            if (positionIds.Count > 0)
             {
-                return dsEmployerIds;
+          
+                    string posNumbersString = string.Join(",", positionIds);
+
+                    sb.Clear();
+                    sb.AppendFormat("Select Employer_ID from Em_employee_Position where Position_ID in ({0}) ", posNumbersString);
+                    dsEmployerIds = di.SelectRowsDS(sb.ToString());
+                    
+
+                DataTable dt = dsEmployerIds.Tables[0];
+
+                        if (dsEmployerIds.Tables.Count > 0 && dsEmployerIds.Tables[0].Rows.Count > 0)
+
+                        { 
+                            foreach (DataRow row in dt.Rows)
+                            {
+                            string thisemployerId = row["Employer_ID"].ToString();
+                                if (thisemployerId != "0" && thisemployerId != "" && thisemployerId != null)
+                                {
+                                    retrievedemployerIds.Add(row["Employer_ID"].ToString());
+                                }
+                            
+                            }
+                        }
+                    else
+                    {
+                        return dsEmployerIds;
+                    }
+
             }
 
-            string EmployerIdsString = string.Join(",", employerIds);
+            retrievedemployerIds.AddRange(employerIds);
+
+            string EmployerIdsString = string.Join(",", retrievedemployerIds);
 
             sb.Clear();
             sb.AppendFormat("Select Name, Address1, City, State from Employer where Employer_ID in ({0}) ", EmployerIdsString);

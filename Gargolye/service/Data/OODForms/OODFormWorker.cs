@@ -699,6 +699,7 @@ namespace OODForms
                         {
                             sb.AppendFormat("{0}, ", thisrow["Name"].ToString().Trim());
                             sb.AppendFormat("{0}, {1}", thisrow["City"].ToString().Trim(), thisrow["State"].ToString().Trim());
+                            sb.Append(Environment.NewLine);
                         }
                           //  row = ds.Tables[0].Rows[0];           
                         WS.Cell("m19").Value = sb.ToString().Trim();
