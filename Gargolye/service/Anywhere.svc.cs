@@ -57,6 +57,7 @@ using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWo
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 using static Anywhere.service.Data.DashboardWorker;
+using static Anywhere.service.Data.OutcomesWorker;
 
 namespace Anywhere
 {
@@ -3999,6 +4000,11 @@ namespace Anywhere
         public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)
         {
             return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId, appName);
+        }
+
+        public OutcomesWorker.OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string startDate, string endDate)
+        {
+            return outcomesWorker.getOutcomesReviewGrid( token,  consumerId,  startDate,  endDate);
         }
 
         public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)

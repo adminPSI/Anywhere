@@ -294,6 +294,25 @@ namespace Anywhere.service.Data
             public string duration { get; set; }
         }
 
+        public class OutcomesReviewGrid
+        {
+            public string consumerName { get; set; }
+            public string consumerId { get; set; }
+            public string objectiveStatement { get; set; }
+            public string frequencyModifier { get; set; }
+            public string objectiveIncrement { get; set; }
+            public string objectiveRecurrance { get; set; }
+            public string objectiveActivityId { get; set; }
+            public string objectiveId { get; set; }
+            public string timesDocumented { get; set; }
+            public string objective_date { get; set; }
+            public string staffId { get; set; }
+            public string employee { get; set; }
+            public string objectiveSuccess { get; set; }
+            public string promptType { get; set; }
+            public string promptNumber { get; set; }
+        }
+
         public class OutComePageData
         {
             public PDParentOutcome[] pageDataParent { get; set; }
@@ -401,6 +420,13 @@ namespace Anywhere.service.Data
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);
             return JSONString;
+        }
+
+        public OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string startDate, string endDate)
+        {
+            string reviewGrid = dg.getOutcomesReviewGrid(token, consumerId, startDate, endDate);
+            OutcomesReviewGrid[] reviewGridObj = js.Deserialize<OutcomesReviewGrid[]>(reviewGrid);
+            return reviewGridObj;
         }
 
         public OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
