@@ -618,7 +618,7 @@ namespace OODForms
                 sb.Append("FROM ( SELECT Start_Time, End_Time,  ");
                 sb.Append("DATEDIFF(hour, CONVERT(datetime, Start_Time, 101), CONVERT(datetime, End_Time, 101)) AS total_time_in_hours ");
                 sb.Append(" FROM Em_Work_Schedule ");
-                sb.AppendFormat("WHERE Position_ID in ({0})  ", 123); //lstPositionstr
+                sb.AppendFormat("WHERE Position_ID in ({0})  ", lstPositionstr); //lstPositionstr
                 sb.AppendFormat(") AS SubQuery");
                 
                 ds = di.SelectRowsDS(sb.ToString());
