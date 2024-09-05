@@ -1411,10 +1411,10 @@ const outcomes = (function () {
       attemptsDropdown = buildAttemptsDropdown(editData.Prompt_Number);
       cIDropdown = buildCommunityIntegrationDropdown(editData.community_integration_level);
       timeInputs = buildTimeInputs(editData.start_time, editData.end_time);
-      enteredByUser = editData.submitted_by_user_id;
       noteInput = buildNoteInput(editData.Objective_Activity_Note);
       saveBtn = buildSaveButton(true);
       deleteBtn = buildDeleteButton();
+      enteredByUser = editData.submitted_by_user_id;
       edit__lastEditedByDetails = buildCardEnteredByDetails(enteredByUser, lastEdited);
     } else {
       primaryLocationDropdown = buildPrimaryLocationDropdown();
@@ -1445,10 +1445,12 @@ const outcomes = (function () {
     detailsPopup.appendChild(resultsDropdown);
     detailsPopup.appendChild(promptsDropdown);
     detailsPopup.appendChild(attemptsDropdown);
+
     if ($.session.applicationName !== 'Gatekeeper') {
       detailsPopup.appendChild(cIDropdown);
       detailsPopup.appendChild(timeWrap);
     }
+
     detailsPopup.appendChild(noteInput);
     detailsPopup.appendChild(btnWrap);
 
@@ -1457,9 +1459,6 @@ const outcomes = (function () {
     if (editData && enteredByUser && enteredByUser.toUpperCase() !== $.session.UserId.toUpperCase()) {
       disableOutcomeFieldsOtherUser();
       btnWrap.classList.add('hidden');
-    }
-    if (dailyAbsent) {
-      //  disableOutcomeFieldsOtherUser();
     }
 
     POPUP.show(detailsPopup);
@@ -1988,7 +1987,7 @@ const outcomes = (function () {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        outcomesReview.init(selectedConsume)
+        outcomesReview.init(selectedConsumerId)
       }
     })
     topFilterDateWrap.appendChild(editOutcomeBtn);

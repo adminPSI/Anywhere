@@ -1,4 +1,4 @@
-var outcomesAjax = (function () {
+const outcomesAjax = (function () {
   function deleteGoal(activityId, consumerId, goalDate, callback) {
     $.ajax({
       type: 'POST',
@@ -723,6 +723,37 @@ var outcomesAjax = (function () {
     }
   }
 
+  // Review
+  async function getReviewTableData(retrieveData) {
+    //consumerId, startDate, endDate
+    //4365, '2024/07/01', '2024/10/01'
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getOutcomesReviewGrid/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          ...retrieveData
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return result.getOutcomesReviewGridResults;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+
+
   return {
     deleteGoal,
     getGoals,
@@ -752,5 +783,7 @@ var outcomesAjax = (function () {
     insertOutcomeInfoAsync,
     insertOutcomeServiceInfoAsync,
     getLocationDropDownAsync,
+    // Review
+    getReviewTableData
   };
 })();
