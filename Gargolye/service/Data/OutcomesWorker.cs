@@ -294,6 +294,25 @@ namespace Anywhere.service.Data
             public string duration { get; set; }
         }
 
+        public class OutcomesReviewGrid
+        {
+            public string consumerName { get; set; }
+            public string consumerId { get; set; }
+            public string objectiveStatement { get; set; }
+            public string frequencyModifier { get; set; }
+            public string objectiveIncrement { get; set; }
+            public string objectiveRecurrance { get; set; }
+            public string objectiveActivityId { get; set; }
+            public string objectiveId { get; set; }
+            public string timesDocumented { get; set; }
+            public string objective_date { get; set; }
+            public string staffId { get; set; }
+            public string employee { get; set; }
+            public string objectiveSuccess { get; set; }
+            public string promptType { get; set; }
+            public string promptNumber { get; set; }
+        }
+
         public class OutComePageData
         {
             public PDParentOutcome[] pageDataParent { get; set; }
@@ -403,9 +422,16 @@ namespace Anywhere.service.Data
             return JSONString;
         }
 
-        public OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)
+        public OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string startDate, string endDate)
         {
-            string outcomeTypeString = dg.getOutcomeTypeDropDown(token);
+            string reviewGrid = dg.getOutcomesReviewGrid(token, consumerId, startDate, endDate);
+            OutcomesReviewGrid[] reviewGridObj = js.Deserialize<OutcomesReviewGrid[]>(reviewGrid);
+            return reviewGridObj;
+        }
+
+        public OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
+        {
+            string outcomeTypeString = dg.getOutcomeTypeDropDown(token, consumerId, effectiveDateStart);
             OutcomeTypeForFilter[] outcomeTypeObj = js.Deserialize<OutcomeTypeForFilter[]>(outcomeTypeString);
             return outcomeTypeObj;
         }
@@ -431,10 +457,10 @@ namespace Anywhere.service.Data
             return objectiveObj;
         }
 
-        public OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId)
+        public OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart)
         {
             js.MaxJsonLength = Int32.MaxValue;
-            string outcomeTypeString = dg.getOutcomeServiceDropDown(token, consumerId);
+            string outcomeTypeString = dg.getOutcomeServiceDropDown(token, consumerId, effectiveDateStart);
             OutcomeService[] outcomeTypeObj = js.Deserialize<OutcomeService[]>(outcomeTypeString);
             return outcomeTypeObj;
         }

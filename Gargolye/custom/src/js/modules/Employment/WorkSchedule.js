@@ -14,6 +14,7 @@ const WorkSchedule = (() => {
     let nameOfEvent;
     let toRemoveWeekName;
     let totalHours;
+    let messagetext;
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
@@ -406,7 +407,7 @@ const WorkSchedule = (() => {
         var weekDay = dayOfWeekDropdown.querySelector('#dayOfWeekDropdown');
         var timeEnd = NewEndTime.querySelector('#NewEndTime');
         var timeStart = NewStartTime.querySelector('#NewStartTime');
-
+        messagetext.innerHTML = ``; 
         if (nameOfEvent == 'Add') {
             var sundaychk = sundaychkBox.querySelector('#sundaychkBox');
             var mondaychk = mondaychkBox.querySelector('#mondaychkBox');
@@ -504,7 +505,7 @@ const WorkSchedule = (() => {
         const result = await EmploymentAjax.insertWorkScheduleAsync(weekDaysSelection, startTime, endTime, PositionId, WorkScheduleID, $.session.UserId);
         const { insertWorkScheduleResult } = result;
 
-        var messagetext = document.getElementById('confirmMessage');
+        messagetext = document.getElementById('confirmMessage');
         messagetext.innerHTML = ``;
         if (insertWorkScheduleResult.WorkScheduleId == '-1') {
             messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot be saved.';

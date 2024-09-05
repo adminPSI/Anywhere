@@ -315,6 +315,7 @@ const communityBasedAssessmentForm = (() => {
     inputContainer1.classList.add('ood_form8monthlyplacement_inputContainer1'); // new _OOD.scss setting  -- ood_form8monthlyplacement_inputContainer1
    
      const wrapHeading = document.createElement('div');
+     wrapHeading.classList.add('ChoosePositionEmployer')
      wrapHeading.innerHTML = '<p>Choose either a Position or Employer.</p>';
 
     inputContainer1.appendChild(wrapHeading);
@@ -449,11 +450,11 @@ const communityBasedAssessmentForm = (() => {
 						if (index === -1) {
 							// case note employer not in the employers DDL
               employer = '';
-              positiondropdown.disabled = false;
+             // positiondropdown.disabled = false;
              // position = '';
 						} else {
               
-              positiondropdown.disabled = true;
+             // positiondropdown.disabled = true;
               // position = '0' // 'SEE OTHER EMPLOYER DROPDOWN';
             }
 
@@ -555,17 +556,17 @@ const communityBasedAssessmentForm = (() => {
             
             employerWrap[0].classList.add('error');
             let otheremployerdropdown = document.getElementById("otherEmployerDropdown");
-            otheremployerdropdown.disabled = false; 
+          //  otheremployerdropdown.disabled = false; 
             let positiondropdown = document.getElementById("positionDropdown");
-            positiondropdown.disabled = false;
+          //  positiondropdown.disabled = false;
           } else {
             positionDropdown.classList.remove('error');
             otherEmployerDropdown.classList.remove('error'); 
             employerWrap[0].classList.remove('error');
             let otheremployerdropdown = document.getElementById("otherEmployerDropdown");
-            otheremployerdropdown.disabled = false; 
+         //   otheremployerdropdown.disabled = false; 
             let positiondropdown = document.getElementById("positionDropdown");
-            positiondropdown.disabled = true;
+          //  positiondropdown.disabled = true;
           }
       
     } else {
@@ -573,9 +574,9 @@ const communityBasedAssessmentForm = (() => {
       otherEmployerDropdown.classList.remove('error');  
       employerWrap[0].classList.remove('error');
       let otheremployerdropdown = document.getElementById("otherEmployerDropdown");
-      otheremployerdropdown.disabled = true;
+    //  otheremployerdropdown.disabled = true;
       let positiondropdown = document.getElementById("positionDropdown");
-      positiondropdown.disabled = false; 
+     // positiondropdown.disabled = false; 
     }
 
    // if (!employer || employer === '') {
@@ -769,14 +770,16 @@ const communityBasedAssessmentForm = (() => {
 
       if (selectedOption.value == 'SELECT') {
         position = '';
-        otherEmployerdropdown.disabled = false; 
-        addEmployersBtn.disabled = false;
-        employer = '';
+      //  otherEmployerdropdown.disabled = false; 
+       // addEmployersBtn.disabled = false;
+       // employer = '';
       } else {
         position = selectedOption.value;
-        otherEmployerdropdown.disabled = true; 
-        addEmployersBtn.disabled = true;
+      //  otherEmployerdropdown.disabled = true; 
+       // addEmployersBtn.disabled = true;
         // employer = '0' // 'SEE POSITION DROPDOWN';
+        employer = '';
+        populateOtherEmployerDropdown();
       }
       checkRequiredFields();
     });
@@ -787,12 +790,14 @@ const communityBasedAssessmentForm = (() => {
 
       if (selectedOption.value == "SELECT") {
         employer = '';
-        positiondropdown.disabled = false; 
-        position = '';
+       // positiondropdown.disabled = false; 
+       // position = '';
       } else {
         employer = selectedOption.value;
-        positiondropdown.disabled = true;
-        // position = '0' //'SEE OTHER EMPLOYER DROPDOWN'; 
+      //  positiondropdown.disabled = true;
+        // position = '0' //'SEE OTHER EMPLOYER DROPDOWN';
+        position = ''; 
+        populatePositionDropdown();
       }
       checkRequiredFields();
     });
@@ -1192,6 +1197,10 @@ async function editEmployerPopupDoneBtn(postType) {
             //    employer = selectedOption.value;
             //  }
           //    checkRequiredFields();
+
+            position = ''; 
+            populatePositionDropdown();
+            checkRequiredFields();
 
               POPUP.hide(editEmployerPopup)
             successfulSave.show();

@@ -56,6 +56,8 @@ using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
+using static Anywhere.service.Data.DashboardWorker;
+using static Anywhere.service.Data.OutcomesWorker;
 
 namespace Anywhere
 {
@@ -3519,6 +3521,28 @@ namespace Anywhere
             return ms;
         }
 
+        public MemoryStream BasicSingleEntrySupervisorReport(string token, string userId, string supervisorId, string startDate, string endDate, string locationId, string personId, string status, string workCodeId)
+        {
+
+            MemoryStream ms = null;
+            try
+            {
+                ms = ser.createRegReportSupervisor(token, userId, supervisorId, startDate, endDate, locationId, personId, status, workCodeId);
+            }
+            catch (Exception ex)
+            {
+                var builder = new StringBuilder();
+                WriteExceptionDetails(ex, builder, 0);
+                logger2.debug(builder.ToString());
+            }
+            if (ms != null)
+            {
+                ms.Close();
+            }
+
+            return ms;
+        }
+
         public MemoryStream SingleEntryOverLapReport(string token, string userId, string startDate, string endDate)
         {
 
@@ -3978,9 +4002,14 @@ namespace Anywhere
             return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId, appName);
         }
 
-        public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)
+        public OutcomesWorker.OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string startDate, string endDate)
         {
-            return outcomesWorker.getOutcomeTypeDropDown(token);
+            return outcomesWorker.getOutcomesReviewGrid( token,  consumerId,  startDate,  endDate);
+        }
+
+        public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
+        {
+            return outcomesWorker.getOutcomeTypeDropDown(token, consumerId, effectiveDateStart);
         }
 
         public OutcomesWorker.LocationType[] getLocationDropDown(string token)
@@ -3998,9 +4027,9 @@ namespace Anywhere
             return outcomesWorker.getObjectiveEntriesById(token, objectiveId);
         }
 
-        public OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId)
+        public OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart)
         {
-            return outcomesWorker.getOutcomeServiceDropDown(token, consumerId);
+            return outcomesWorker.getOutcomeServiceDropDown(token, consumerId, effectiveDateStart);
         }
 
         public OutcomesWorker.ServiceFrequencyType[] getServiceFrequencyTypeDropDown(string token, string type)
@@ -4155,14 +4184,24 @@ namespace Anywhere
             return rosterWorker.getRosterToDoListWidgetData(token, responsiblePartyId);
         }
 
-        public ExtractedTables importedOutcomesPDFData(string token, string file)
+        public ExtractedTables importedOutcomesPDFData(string token, string[] files)
         {
-            return ioas.importedOutcomesPDFData(token, file);
+            return ioas.importedOutcomesPDFData(token, files);
         }
 
         public List<ImportedTables> importSelectedServices(string token, ImportedTables[] importedTables)
         {
             return ioas.importSelectedServices(token, importedTables);
+        }
+
+        public Employer[] getEmployeeList(string token)
+        {
+            return dashWork.getEmployeeList(token);
+        }
+
+        public SystemNotes[] addSystemMessage(string token, string textMessage, string timeOfExpiration, string dateOfExpiration, string[] selectedEmployee)
+        {
+            return dashWork.addSystemMessage(token, textMessage, timeOfExpiration, dateOfExpiration, selectedEmployee);
         }
 
     }

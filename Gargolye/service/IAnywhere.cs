@@ -30,6 +30,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
+using static Anywhere.service.Data.DashboardWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.ESign.ESignWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
@@ -1253,6 +1254,14 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/BasicSingleEntryReport/")]
         System.IO.MemoryStream BasicSingleEntryReport(string token, string userId, string startDate, string endDate);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/BasicSingleEntrySupervisorReport/")]
+        System.IO.MemoryStream BasicSingleEntrySupervisorReport(string token, string userId, string supervisorId, string startDate, string endDate, string locationId, string personId, string status, string workCodeId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5279,8 +5288,16 @@ namespace Anywhere
         BodyStyle = WebMessageBodyStyle.Wrapped,
         ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getOutcomesReviewGrid/")]
+        OutcomesWorker.OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string startDate, string endDate);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/getOutcomeTypeDropDown/")]
-        OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token);
+        OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5312,7 +5329,7 @@ namespace Anywhere
         ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/getOutcomeServiceDropDown/")]
-        OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId);
+        OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5434,7 +5451,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/importedOutcomesPDFData/")]
-        ExtractedTables importedOutcomesPDFData(string token, string file);
+        ExtractedTables importedOutcomesPDFData(string token, string[] files);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5443,6 +5460,23 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/importSelectedServices/")]
         List<ImportedTables> importSelectedServices(string token, ImportedTables[] importedTables);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/getEmployeeList/")]
+        EmploymentWorker.Employer[] getEmployeeList(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/addSystemMessage/")]
+        SystemNotes[] addSystemMessage(string token, string textMessage, string timeOfExpiration, string dateOfExpiration, string[] selectedEmployee);
+
 
     }
 

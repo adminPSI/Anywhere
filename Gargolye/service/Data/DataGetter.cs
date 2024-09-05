@@ -1758,7 +1758,7 @@ namespace Anywhere.Data
         }
 
         public string getSingleEntryEvvEligibilityJSON(string token, string consumerId, string entryDate)
-        { 
+        {
             if (tokenValidator(token) == false) return null;
             logger.debug("getSingleEntryEvvEligibility" + token);
             try
@@ -6106,7 +6106,7 @@ namespace Anywhere.Data
             }
         }
 
-        
+
         public static bool IsDateValidFormat(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
@@ -6123,7 +6123,7 @@ namespace Anywhere.Data
             // Check if the input matches the regex pattern
             return regex.IsMatch(input);
         }
-        
+
 
         public string removeUnsavableNoteText(string note)
         {
@@ -6630,12 +6630,35 @@ namespace Anywhere.Data
             }
         }
 
-        public string getOutcomeTypeDropDown(string token)
+        public string getOutcomesReviewGrid(string token, string consumerId, string startDate, string endDate)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getOutcomeTypeDropDown" + token);
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(consumerId);
+            list.Add(startDate);
+            list.Add(endDate);
+            string text = "CALL DBA.ANYW_GoalsAndServices__GetReviewPageGrid(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices__GetReviewPageGrid(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices__GetReviewPageGrid";
+            }
+        }
+
+        public string getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getOutcomeTypeDropDown" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(effectiveDateStart);
             string text = "CALL DBA.ANYW_GoalsAndServices_getOutcomeTypeDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -6704,13 +6727,14 @@ namespace Anywhere.Data
             }
         }
 
-        public string getOutcomeServiceDropDown(string token, string consumerId)
+        public string getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getOutcomeServiceDropDown" + token);
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(consumerId);
+            list.Add(effectiveDateStart);
             string text = "CALL DBA.ANYW_GoalsAndServices_getOutcomeServiceDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -6832,6 +6856,58 @@ namespace Anywhere.Data
             {
                 logger.error("739", ex.Message + "ANYW_Dashboard_RosterToDoListWidget(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "739: error ANYW_Dashboard_RosterToDoListWidget";
+            }
+        }
+
+
+        public string getEmployeeList(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getEmployeeList" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Dashboard_getEmployeeList('" + token + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("559", ex.Message + " ANYW_Dashboard_getEmployeeList('" + token + "')");
+                return "559: Error getting existing time entry";
+            }
+
+        }
+
+        public string insertSystemNotes(string token, string textMessage, string expiration)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertSystemNotes");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(textMessage);
+            list.Add(expiration);
+            string text = "CALL DBA.ANYW_Dashboard_insertSystemNotes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("742", ex.Message + "ANYW_Dashboard_insertSystemNotes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "742: error ANYW_Dashboard_insertSystemNotes";
+            }
+        }
+       
+        public string insertSystemNoteSharing(string token, string noteId, string employeeId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertSystemNoteSharing" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Dashboard_insertSystemNoteSharing('" + token + "', '" + noteId + "', '" + employeeId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("607", ex.Message + "ANYW_Dashboard_insertSystemNoteSharing('" + token + "', '" + noteId + "', '" + employeeId + "')");
+                return "607: error inserting System Note Sharing";
             }
         }
 

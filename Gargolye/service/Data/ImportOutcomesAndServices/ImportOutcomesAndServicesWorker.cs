@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using pdftron.Common;
 using pdftron.PDF;
+using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
 
 namespace Anywhere.service.Data.ImportOutcomesAndServices
 {
@@ -57,6 +60,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         public List<PaidSupports> paidSupports { get; set; }
         public List<AdditionalSupports> additionalSupports { get; set; }
         public List<ProfessionalReferrals> professionalReferrals { get; set; }
+        public string startDate { get; set; }
+        public string endDate { get; set; }
     }
 
     public class ImportedTables
@@ -144,62 +149,98 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             "Healthy Living"
         };
 
-        public ExtractedTables importedOutcomesPDFData(string token, string file)
+        public ExtractedTables importedOutcomesPDFData(string token, string[] files)
         {
-            byte[] pdfBytes = System.Convert.FromBase64String(file);
-
             // Initialize the PDFNet library
             pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20240512):89A5A05D0437C60A0320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
 
-            ExtractedTables extractedTables = new ExtractedTables();
+            ExtractedTables extractedTables = new ExtractedTables
+            {
+                riskAssessments = new List<RiskAssessment>(),
+                paidSupports = new List<PaidSupports>(),
+                additionalSupports = new List<AdditionalSupports>(),
+                professionalReferrals = new List<ProfessionalReferrals>(),
+                experiences = new List<Experiences>()
+            };
 
             try
             {
-                using (MemoryStream pdfStream = new MemoryStream(pdfBytes))
+                foreach (string file in files)
                 {
-                    using (PDFDoc doc = new PDFDoc(pdfStream))
+                    byte[] pdfBytes = System.Convert.FromBase64String(file);
+
+                    using (MemoryStream pdfStream = new MemoryStream(pdfBytes))
                     {
-                        doc.InitSecurityHandler();
-
-                        string combinedText = "";
-                        for (int i = 1; i <= doc.GetPageCount(); i++)
+                        using (PDFDoc doc = new PDFDoc(pdfStream))
                         {
-                            TextExtractor textExtractor = new TextExtractor();
-                            Page page = doc.GetPage(i);
+                            doc.InitSecurityHandler();
 
-                            if (page != null)
+                            string combinedText = "";
+                            for (int i = 1; i <= doc.GetPageCount(); i++)
                             {
-                                textExtractor.Begin(page, null, TextExtractor.ProcessingFlags.e_extract_using_zorder);
-                                combinedText += ProcessTextExtractor(textExtractor, page) + "\n\n";
+                                TextExtractor textExtractor = new TextExtractor();
+                                Page page = doc.GetPage(i);
+
+                                if (page != null)
+                                {
+                                    textExtractor.Begin(page, null, TextExtractor.ProcessingFlags.e_extract_using_zorder);
+                                    combinedText += ProcessTextExtractor(textExtractor, page) + "\n\n";
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"Page {i} not found in the document.");
+                                }
                             }
-                            else
+
+                            // Store the results in variables for further inspection
+                            var debugPageText = combinedText;
+
+                            // Save the first two lines for later checks
+                            string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                            string input = "ISP Span Dates: August 31, 2023 - August 30, 2024";
+
+                            // Regular expression pattern to match the two dates
+                            string pattern = @"ISP Span Dates:\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})\s*-\s*([A-Za-z]+\s+\d{1,2},\s+\d{4})";
+
+                            Match match = Regex.Match(input, pattern);
+
+                            if (match.Success)
                             {
-                                Console.WriteLine($"Page {i} not found in the document.");
+                                string startDateStr = match.Groups[1].Value;
+                                string endDateStr = match.Groups[2].Value;
+
+                                // Parse the date strings into DateTime objects
+                                DateTime startDate = DateTime.ParseExact(startDateStr, "MMMM d, yyyy", CultureInfo.InvariantCulture);
+                                DateTime endDate = DateTime.ParseExact(endDateStr, "MMMM d, yyyy", CultureInfo.InvariantCulture);
+
+                                // Format the dates as needed for the front end
+                                string startDateFormatted = startDate.ToString("yyyy-MM-dd");
+                                string endDateFormatted = endDate.ToString("yyyy-MM-dd");
+
+                                extractedTables.startDate = startDateFormatted;
+                                extractedTables.endDate = endDateFormatted;
                             }
+
+                            string firstTwoLines = lines.Length > 1 ? lines[0] + "\n" + lines[1] : "";
+
+                            // Print combined text for debugging
+                            Console.WriteLine(combinedText);
+
+                            // Process the combined text for risk assessments
+                            var riskAssessments = ProcessCombinedTextForRiskAssessment(combinedText);
+                            var paidSupports = ProcessCombinedTextForPaidSupports(combinedText, firstTwoLines);
+                            var additionalSupports = ProcessCombinedTextForAdditionalSupports(combinedText);
+                            var professionalReferrals = ProcessCombinedTextForProfessionalReferrals(combinedText);
+                            var experiences = ProcessCombinedTextForExperiences(combinedText);
+
+                            // Combine the extracted tables from the current file with the overall extracted tables
+                            extractedTables.riskAssessments.AddRange(riskAssessments);
+                            extractedTables.paidSupports.AddRange(paidSupports);
+                            extractedTables.additionalSupports.AddRange(additionalSupports);
+                            extractedTables.professionalReferrals.AddRange(professionalReferrals);
+                            extractedTables.experiences.AddRange(experiences);
                         }
-
-                        // Store the results in variables for further inspection
-                        var debugPageText = combinedText;
-
-                        // Save the first two lines for later checks
-                        string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                        string firstTwoLines = lines.Length > 1 ? lines[0] + "\n" + lines[1] : "";
-
-                        // Print combined text for debugging
-                        Console.WriteLine(combinedText);
-
-                        // Process the combined text for risk assessments
-                        var riskAssessments = ProcessCombinedTextForRiskAssessment(combinedText);
-                        var paidSupports = ProcessCombinedTextForPaidSupports(combinedText, firstTwoLines);
-                        var additionalSupports = ProcessCombinedTextForAdditionalSupports(combinedText);
-                        var professionalReferrals = ProcessCombinedTextForProfessionalReferrals(combinedText);
-                        var experiences = ProcessCombinedTextForExperiences(combinedText);
-
-                        extractedTables.riskAssessments = riskAssessments;
-                        extractedTables.paidSupports = paidSupports;
-                        extractedTables.additionalSupports = additionalSupports;
-                        extractedTables.professionalReferrals = professionalReferrals;
-                        extractedTables.experiences = experiences;
                     }
                 }
             }
