@@ -119,6 +119,8 @@ const OOD = (() => {
             selectedConsumerPeopleId,
         );
 
+        employmentGoalText = EmploymentGoal;
+
         let employmentGoalDIV = document.createElement('div');
 
         

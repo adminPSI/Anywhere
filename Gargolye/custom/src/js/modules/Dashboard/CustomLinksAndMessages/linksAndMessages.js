@@ -8,6 +8,8 @@ var linksAndMessages = (function () {
     //-----------------------
     var addMessagePopup;
     var employeeDropdown;
+    var EmployeeListWrap;
+    var EmployeeNameList = [];
     var saveBtn;
     var cancelBtn;
     var selectMoreEmployeeBtn;
@@ -18,14 +20,16 @@ var linksAndMessages = (function () {
     let timeOfExpiration;
     let dateOfExpiration;
     let selectedEmployee = [];
+
     // Employee Selection Popup
     //-----------------------
-
     let consumerswithEmployeeIds;
     let currentconsumersSelected = [];
     let assignEmployeePopup;
     let assignBtn;
-    let isEmoplyeeAlreadySelected;
+    let isMultiSelection;
+    let nameHeading;
+    let nameList;
 
     function loadCustomLinks() {
         var linksList = linksWidget.querySelector('.customLinksList');
@@ -65,7 +69,7 @@ var linksAndMessages = (function () {
     }
 
     function buildAddMessagePopup() {
-        isEmoplyeeAlreadySelected = false;
+        isMultiSelection = false;
         addMessagePopup = POPUP.build({
             id: 'sig_addMessagePopup',
             classNames: 'assignEmployeePopup',
@@ -83,7 +87,7 @@ var linksAndMessages = (function () {
             style: 'secondary',
             type: 'contained',
             callback: async () => {
-                if (isEmoplyeeAlreadySelected) 
+                if (isMultiSelection)
                     POPUP.show(assignEmployeePopup);
                 else
                     await showAssignEmployeePopup();
@@ -103,7 +107,7 @@ var linksAndMessages = (function () {
             style: 'secondary',
             value: tomorrowDate,
             attributes: [
-                { key: 'min', value: tomorrowDate },
+                { key: 'min', value: UTIL.getTodaysDate() },
             ],
         });
         timeOfExpiration = UTIL.getCurrentTime();
@@ -138,33 +142,51 @@ var linksAndMessages = (function () {
         btnWrap.classList.add('btnWrap');
         btnWrap.appendChild(saveBtn);
         btnWrap.appendChild(cancelBtn);
+        nameHeading = document.createElement('b');
+        nameHeading.classList.add('boldfont');
+        nameHeading.innerText = 'Selected Employees: ';
+        nameList = document.createElement('p');
+        nameList.classList.add('nameListFont');
+        nameList.innerText = EmployeeNameList.toString().replace(/,/g, ', ');
+        EmployeeListWrap = document.createElement('div');
+        EmployeeListWrap.classList.add('nameListWrap');
+        EmployeeListWrap.appendChild(nameHeading);
+        EmployeeListWrap.appendChild(nameList);
+        EmployeeListWrap.style.marginBottom = '10px';
 
         addMessagePopup.appendChild(employeeDropdown);
+        addMessagePopup.appendChild(EmployeeListWrap);
         addMessagePopup.appendChild(selectMoreEmployeeBtn);
         addMessagePopup.appendChild(expirationDate);
         addMessagePopup.appendChild(expirationTime);
         addMessagePopup.appendChild(messageInput);
-        addMessagePopup.appendChild(btnWrap);        
+        addMessagePopup.appendChild(btnWrap);
         messageInput.classList.add('error');
         saveBtn.classList.add('disabled');
         eventSetup();
-        populateEmployeeDropdown();   
-        POPUP.show(addMessagePopup);  
+        populateEmployeeDropdown();
+        EmployeeListWrap.style.display = 'none'; 
+        POPUP.show(addMessagePopup);
     }
 
     function eventSetup() {
         employeeDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             selectedEmployee = [];
+            currentconsumersSelected = []; 
             selectedEmployee.push(selectedOption.id);
+            isMultiSelection = false;
         });
         saveBtn.addEventListener('click', async () => {
+            if (selectedEmployee.length > 1)
+                selectedEmployee.push($.session.UserId); 
             const result = await linksAndMessagesWidgetAjax.addSystemMessageAsync(textMessage, timeOfExpiration, dateOfExpiration, selectedEmployee);
             const { addSystemMessageResult } = result;
             if (addSystemMessageResult[0].NoteID != null) {
                 POPUP.hide(addMessagePopup);
                 selectedEmployee = [];
                 currentconsumersSelected = [];
+                EmployeeNameList = [];
                 dashboard.load();
             }
         });
@@ -172,6 +194,7 @@ var linksAndMessages = (function () {
         cancelBtn.addEventListener('click', () => {
             selectedEmployee = [];
             currentconsumersSelected = [];
+            EmployeeNameList = [];
             POPUP.hide(addMessagePopup);
         });
         messageInput.addEventListener('input', event => {
@@ -255,7 +278,7 @@ var linksAndMessages = (function () {
         });
         const popupMessage = document.createElement('p');
         popupMessage.classList.add('popupMessage');
-        popupMessage.innerText = '*Must select at least one consumer before clicking Assign button.';
+        popupMessage.innerText = '*Must select at least one employee before clicking Save button.';
 
         const innerWrap = document.createElement('div');
         innerWrap.classList.add('peopleListWrap');
@@ -304,10 +327,12 @@ var linksAndMessages = (function () {
                 const isSelected = e.target.classList.contains('selected');
                 if (isSelected) {
                     e.target.classList.remove('selected');
-                    currentconsumersSelected = currentconsumersSelected.filter(cs => cs.employerId !== person.employerId);
+                    currentconsumersSelected = currentconsumersSelected.filter(emp => emp !== person.employerId);
+                    EmployeeNameList = EmployeeNameList.filter(empName => empName !== person.employerName.replace(/,/g, ''));
                 } else {
                     e.target.classList.add('selected');
                     currentconsumersSelected.push(person.employerId);
+                    EmployeeNameList.push(person.employerName.replace(/,/g, ''));
                 }
                 toggleAssignButton();
             });
@@ -347,14 +372,25 @@ var linksAndMessages = (function () {
             type: 'contained',
             callback: async function () {
                 selectedEmployee = [];
-                selectedEmployee = currentconsumersSelected;
-                document.getElementById('employeesDropdown').value = selectedEmployee[0];
+                selectedEmployee = currentconsumersSelected; 
+
                 POPUP.hide(assignEmployeePopup);
                 saveBtn.classList.remove('disabled');
                 checkRequiredFieldsOfNewMessage();
                 cancelBtn.classList.remove('disabled');
-                isEmoplyeeAlreadySelected = true;
+                isMultiSelection = true;
                 overlay.show();
+                if (selectedEmployee.length > 1) {
+                    nameList.innerText = EmployeeNameList.toString().replace(/,/g, ', ');
+                    EmployeeListWrap.style.display = 'block';
+                    employeeDropdown.style.display = 'none'
+                }
+                else {
+                    EmployeeListWrap.style.display = 'none';
+                    employeeDropdown.style.display = 'flex'
+                    document.getElementById('employeesDropdown').value = selectedEmployee[0];
+                }
+
             },
         });
         assignBtn.classList.add('disabled');
@@ -370,7 +406,7 @@ var linksAndMessages = (function () {
                 cancelBtn.classList.remove('disabled');
                 overlay.show();
                 currentconsumersSelected = [];
-                isEmoplyeeAlreadySelected = false; 
+                isMultiSelection = true;
             },
         });
 
@@ -417,7 +453,6 @@ var linksAndMessages = (function () {
             links = [];
             messages = [];
         }
-
         linksAndMessagesWidgetAjax.getSystemMessagesAndCustomLinks(function (results, error) {
             if (error) {
                 var messageError = messagesWidget.querySelector('.widget__error');
@@ -436,5 +471,4 @@ var linksAndMessages = (function () {
         init,
         buildAddMessagePopup
     }
-
 }());

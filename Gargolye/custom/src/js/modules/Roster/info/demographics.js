@@ -529,6 +529,11 @@ const demographics = (function () {
                     dataLoad.secondaryphone = name == 'secondaryPhone' ? saveValue : dataLoad.secondaryphone;
                     dataLoad.primaryphone = name == 'primaryPhone' ? saveValue : dataLoad.primaryphone;
                     dataLoad.email = name == 'email' ? saveValue : dataLoad.email;  
+                    dataLoad.addressone = name == 'addressOne' ? saveValue : dataLoad.addressone; 
+                    dataLoad.addresstwo = name == 'addressTwo' ? saveValue : dataLoad.addresstwo;
+                    dataLoad.mailcity = name == 'city' ? saveValue : dataLoad.mailcity; 
+                    dataLoad.mailstate = name == 'state' ? saveValue : dataLoad.mailstate;
+                    dataLoad.mailzipcode = name == 'zip' ? saveValue : dataLoad.mailzipcode; 
                     populateDemographicsSection(sectionLoad, dataLoad, consumerIDLoad);                         
                 } else {
                     saveIcon.innerHTML = icons['error'];
