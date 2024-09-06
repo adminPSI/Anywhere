@@ -165,7 +165,7 @@ var linksAndMessages = (function () {
         saveBtn.classList.add('disabled');
         eventSetup();
         populateEmployeeDropdown();
-        EmployeeListWrap.style.display = 'none'; 
+        EmployeeListWrap.style.display = 'none';
         POPUP.show(addMessagePopup);
     }
 
@@ -173,13 +173,12 @@ var linksAndMessages = (function () {
         employeeDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             selectedEmployee = [];
-            currentconsumersSelected = []; 
+            currentconsumersSelected = [];
             selectedEmployee.push(selectedOption.id);
             isMultiSelection = false;
         });
         saveBtn.addEventListener('click', async () => {
-            if (selectedEmployee.length > 1)
-                selectedEmployee.push($.session.UserId); 
+            selectedEmployee.push($.session.UserId);
             const result = await linksAndMessagesWidgetAjax.addSystemMessageAsync(textMessage, timeOfExpiration, dateOfExpiration, selectedEmployee);
             const { addSystemMessageResult } = result;
             if (addSystemMessageResult[0].NoteID != null) {
@@ -372,7 +371,7 @@ var linksAndMessages = (function () {
             type: 'contained',
             callback: async function () {
                 selectedEmployee = [];
-                selectedEmployee = currentconsumersSelected; 
+                selectedEmployee = currentconsumersSelected;
 
                 POPUP.hide(assignEmployeePopup);
                 saveBtn.classList.remove('disabled');
