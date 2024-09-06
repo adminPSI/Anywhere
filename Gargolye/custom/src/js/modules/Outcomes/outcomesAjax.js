@@ -749,7 +749,7 @@ const outcomesAjax = (function () {
         dataType: 'json',
       });
 
-      return result.getOutcomesReviewGridResults;
+      return result.getOutcomesReviewGridResult;
     } catch (error) {
       throw new Error(error.responseText);
     }
