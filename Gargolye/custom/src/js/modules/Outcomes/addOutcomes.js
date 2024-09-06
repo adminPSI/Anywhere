@@ -166,7 +166,7 @@ const addOutcomes = (() => {
 
         const {
             getLocationDropDownResult: locationDrop,
-        } = await outcomesAjax.getLocationDropDownAsync(selectedConsumers, startDate);
+        } = await outcomesAjax.getLocationDropDownAsync(selectedConsumerId, startDate);
 
         let locationData = locationDrop.map((locationDrops) => ({
             id: locationDrops.locationID,
