@@ -534,6 +534,11 @@ const demographics = (function () {
                     dataLoad.mailcity = name == 'city' ? saveValue : dataLoad.mailcity; 
                     dataLoad.mailstate = name == 'state' ? saveValue : dataLoad.mailstate;
                     dataLoad.mailzipcode = name == 'zip' ? saveValue : dataLoad.mailzipcode; 
+                    dataLoad.MedicaidNumber = name == 'medicaidNumber' ? saveValue : dataLoad.MedicaidNumber; 
+                    dataLoad.MedicareNumber = name == 'medicareNumber' ? saveValue : dataLoad.MedicareNumber; 
+                    dataLoad.ResidentNumber = name == 'residentNumber' ? saveValue : dataLoad.ResidentNumber; 
+                    dataLoad.DOB = name == 'dateOfBirth' ? saveValue : dataLoad.DOB; 
+                    dataLoad.SSN = name == 'ssn' ? saveValue : dataLoad.SSN; 
                     populateDemographicsSection(sectionLoad, dataLoad, consumerIDLoad);                         
                 } else {
                     saveIcon.innerHTML = icons['error'];
