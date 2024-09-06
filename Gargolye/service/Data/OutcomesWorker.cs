@@ -457,10 +457,10 @@ namespace Anywhere.service.Data
             return objectiveObj;
         }
 
-        public OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart)
+        public OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId)
         {
             js.MaxJsonLength = Int32.MaxValue;
-            string outcomeTypeString = dg.getOutcomeServiceDropDown(token, consumerId, effectiveDateStart);
+            string outcomeTypeString = dg.getOutcomeServiceDropDown(token, consumerId);
             OutcomeService[] outcomeTypeObj = js.Deserialize<OutcomeService[]>(outcomeTypeString);
             return outcomeTypeObj;
         }
