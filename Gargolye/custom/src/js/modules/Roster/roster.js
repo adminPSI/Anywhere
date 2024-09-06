@@ -1436,7 +1436,8 @@ const roster2 = (function () {
                     $.loadedApp === 'ConsumerFinances' ||
                     $.loadedApp === 'CFEditAccount' ||
                     $.loadedApp === 'employment' ||
-                    $.loadedApp === 'assessmentHistory'
+                    $.loadedApp === 'assessmentHistory' ||
+                    $.loadedApp === 'OOD'
                 ) {
                     clearSelectedConsumers();
                     clearActiveConsumers();

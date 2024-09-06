@@ -523,7 +523,7 @@ const demographics = (function () {
                     saveIcon.innerHTML = icons['checkmark'];
                     saveIcon.classList.add('success');
                     viewElement.innerHTML = formatViewInnerHTML(name, e.target.value);
-
+ 
                     // below code Implement of Phone or email Icon does not immediately show when adding a phone or email #
                     dataLoad.cellphone = name == 'cellPhone' ? saveValue : dataLoad.cellphone;  
                     dataLoad.secondaryphone = name == 'secondaryPhone' ? saveValue : dataLoad.secondaryphone;
@@ -534,6 +534,12 @@ const demographics = (function () {
                     dataLoad.mailcity = name == 'city' ? saveValue : dataLoad.mailcity; 
                     dataLoad.mailstate = name == 'state' ? saveValue : dataLoad.mailstate;
                     dataLoad.mailzipcode = name == 'zip' ? saveValue : dataLoad.mailzipcode; 
+                    dataLoad.MedicaidNumber = name == 'medicaidNumber' ? saveValue : dataLoad.MedicaidNumber; 
+                    dataLoad.MedicareNumber = name == 'medicareNumber' ? saveValue : dataLoad.MedicareNumber; 
+                    dataLoad.ResidentNumber = name == 'residentNumber' ? saveValue : dataLoad.ResidentNumber; 
+                    dataLoad.DOB = name == 'dateOfBirth' ? saveValue : dataLoad.DOB; 
+                    dataLoad.SSN = name == 'ssn' ? saveValue : dataLoad.SSN; 
+                    dataLoad.localID = name == 'localID' ? saveValue : dataLoad.localID; 
                     populateDemographicsSection(sectionLoad, dataLoad, consumerIDLoad);                         
                 } else {
                     saveIcon.innerHTML = icons['error'];
