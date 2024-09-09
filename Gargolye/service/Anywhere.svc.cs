@@ -576,6 +576,26 @@ namespace Anywhere
             return rosterWorker.getConsumerRelationshipsJSON(token, consumerId);
         }
 
+        public RosterWorker.ConsumerEditRelationship[] getEditConsumerRelationshipsJSON(string token, string consumerId, string isActive)
+        {
+            return rosterWorker.getEditConsumerRelationshipsJSON(token, consumerId, isActive);
+        }
+
+        public RosterWorker.ConsumerRelationshipType[] getRelationshipsTypeJSON(string token)
+        {
+            return rosterWorker.getRelationshipsTypeJSON(token);
+        }
+
+        public RosterWorker.ConsumerRelationshipName[] getRelationshipsNameJSON(string token)
+        {
+            return rosterWorker.getRelationshipsNameJSON(token);
+        }
+
+        public string insertEditRelationship(string token, string userId, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsNewList, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsList)
+        {
+            return rosterWorker.insertEditRelationship(token, userId, consumerRelationshipsNewList, consumerRelationshipsList);
+        }
+
         public string updateDemographicInformation(string token, string addressOne, string addressTwo, string city, string state, string zipCode, string mobilePhone, string email, string carrier)
         {
             return dg.updateDemographicInformation(token, addressOne, addressTwo, city, state, zipCode, mobilePhone, email, carrier);

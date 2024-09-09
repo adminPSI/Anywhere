@@ -13,6 +13,27 @@ const consumerInfo = (function () {
     let nextScreen = '';
     let backwordBtn;
     let forwardBtn;
+    let rosterList;
+
+    // Edit relationship 
+    let editRelationshipPopup;
+    let numberOfRows;
+    let btnWrapInputsN = [];
+    let hasADropdownN = [];
+    let startDateInputN = [];
+    let whoIsDropdownN = [];
+    let endDateInputN = [];
+    let deleteBtnN = [];
+    let showInactive;
+    let tempConsumer;
+    let consumerRelationships = [];
+    let consumerRelationshipsNew = [];
+    let relationshipPopupBtnWrap;
+    let dataType;
+    let dataName;
+    let isValueChanged;
+    let deletedIds = [];
+
 
     function getImageOrientation(file, callback) {
         var reader = new FileReader();
@@ -104,7 +125,7 @@ const consumerInfo = (function () {
 
             rosterAjax.updatePortrait(srcData, id, portraitPath);
 
-      getImageOrientation(event.target.files[0], function (orientation) {});
+            getImageOrientation(event.target.files[0], function (orientation) { });
         };
         //ctx.drawImage(imageObj, 0, 0, 152, 127);
         var imageObjSrcVal = `#${id}`;
@@ -181,6 +202,7 @@ const consumerInfo = (function () {
     }
     // Hide/Show
     function showCard(consumer) {
+        tempConsumer = consumer;
         var consumersWithUnreadNotes = roster2.getConsumersWithUnreadNotes();
         hasUnreadNote = consumersWithUnreadNotes[consumer.dataset.consumerId];
 
@@ -211,7 +233,7 @@ const consumerInfo = (function () {
 
         setConsumerToCard(consumer);
 
-        var rosterList = document.querySelector('.roster');
+        rosterList = document.querySelector('.roster');
         rosterList.classList.add('fadeOut');
         DOM.toggleHeaderOpacity();
 
@@ -242,11 +264,11 @@ const consumerInfo = (function () {
         // wait till consumer card is hidden
         setTimeout(function () {
             // reshow roster list
-            var rosterList = document.querySelector('.roster');     
-            if (rosterList != null) { 
+            rosterList = document.querySelector('.roster');
+            if (rosterList != null) {
                 rosterList.classList.remove('hidden');
                 rosterList.classList.remove('fadeOut');
-            }         
+            }
             DOM.removeHeaderOpacity();
             if (!isMobile) {
                 bodyScrollLock.enableBodyScroll(consumerInfoCard);
@@ -530,8 +552,22 @@ const consumerInfo = (function () {
       <div class="relationship__name">Name</div>
       <div class="relationship__type">Relationship</div>
      `;
+        const endIcon = document.createElement('div');
+        endIcon.classList.add('relationshipTable__endIcon');
+        if ($.session.DemographicsUpdateRelationship == true) {
+            endIcon.innerHTML = icons['edit'];
+        } else {
+            endIcon.innerHTML = `<div></div>`;
+        }
+
         relationshipTable.appendChild(relationshipHeader);
+        relationshipHeader.appendChild(endIcon);
         sectionInner.appendChild(relationshipTable);
+
+        endIcon.addEventListener('click', e => {
+            relationshipEditPopup();
+            closeCard();
+        });
 
         data.forEach(d => {
             var eventName;
@@ -560,8 +596,7 @@ const consumerInfo = (function () {
                 subDataRowPrimaryPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
                 subDataRowPrimaryPhone.innerHTML = `<div></div> 
                 <div class="relationship__phone">
-                    ${
-                      d.primaryPhone && d.primaryPhone.trim().length != 0
+                    ${d.primaryPhone && d.primaryPhone.trim().length != 0
                         ? `<b>Primary Phone: </b><a href=tel:+1-${UTIL.formatPhoneNumber(
                             d.primaryPhone.trim(),
                         )}>${UTIL.formatPhoneNumber(d.primaryPhone.trim())}</a><br>`
@@ -576,8 +611,7 @@ const consumerInfo = (function () {
                 subDataRowSecondaryPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
                 subDataRowSecondaryPhone.innerHTML = `<div></div> 
                 <div class="relationship__phone">               
-                    ${
-                      d.secondaryPhone && d.secondaryPhone.trim().length != 0
+                    ${d.secondaryPhone && d.secondaryPhone.trim().length != 0
                         ? `<b>Secondary Phone: </b> <a href=tel:+1-${UTIL.formatPhoneNumber(
                             d.secondaryPhone.trim(),
                         )}>${UTIL.formatPhoneNumber(d.secondaryPhone.trim())}</a><br>`
@@ -592,8 +626,7 @@ const consumerInfo = (function () {
                 subDataRowCellularPhone.classList.add('relationshipTable__subDataRow', 'relationshipTable__dataRow');
                 subDataRowCellularPhone.innerHTML = `<div></div> 
                 <div class="relationship__phone">              
-                    ${
-                      d.cellularPhone && d.cellularPhone.trim().length != 0
+                    ${d.cellularPhone && d.cellularPhone.trim().length != 0
                         ? `<b>Cellular Phone: </b> <a href=tel:+1-${UTIL.formatPhoneNumber(
                             d.cellularPhone.trim(),
                         )}>${UTIL.formatPhoneNumber(d.cellularPhone.trim())}</a>`
@@ -639,6 +672,276 @@ const consumerInfo = (function () {
 
             sectionInner.appendChild(rowWrap);
         });
+    }
+
+    async function relationshipEditPopup(isActive = false) {
+
+        const result = await rosterAjax.getEditConsumerRelationships(consumerId, isActive);
+        const { getEditConsumerRelationshipsJSONResult } = result;
+
+        if (getEditConsumerRelationshipsJSONResult.length == 0)
+            return;
+
+        consumerRelationships = getEditConsumerRelationshipsJSONResult;
+        numberOfRows = consumerRelationships.length;
+        editRelationshipPopup = POPUP.build({
+            hideX: true,
+            id: "editRelationshipPopup"
+        });
+
+        editRelationshipPopup.style.maxWidth = '65%';
+        editRelationshipPopup.style.left = '50%';
+
+        showInactive = input.buildCheckbox({
+            text: 'Show Inactive',
+            id: 'chkShowInactive',
+            isChecked: isActive,
+            callback: () => {
+                POPUP.hide(editRelationshipPopup); 
+                relationshipEditPopup(event.target.checked);
+            }
+        });
+
+        const popupHeader = document.createElement("div");
+        popupHeader.classList.add("popupHeader");
+        const headerWrap = document.createElement("div");
+        headerWrap.classList.add("editRelationshipInputWrap");
+        const headerText = document.createElement("div");
+        headerText.innerHTML = consumerName + "'s Relationship";
+        headerWrap.appendChild(headerText);
+        headerWrap.appendChild(showInactive);
+        popupHeader.appendChild(headerWrap);
+        editRelationshipPopup.appendChild(popupHeader);
+
+        for (let i = 0; i < numberOfRows; i++) {
+            await createPopupElements(i, consumerRelationships);
+            editRelationshipPopup.appendChild(btnWrapInputsN[i]);
+        }
+
+        saveRelationshipBtn = button.build({
+            id: "saveRelationshipBtn",
+            text: "save",
+            type: "contained",
+            style: "secondary",
+            classNames: 'disabled',
+            callback: () => {
+                editRelationshipSaveData();
+                POPUP.hide(editRelationshipPopup);
+                showCard(tempConsumer);
+                setupCard('Relationships');
+            },
+        });
+
+        AddRelationshipBtn = button.build({
+            id: "AddRelationshipBtn",
+            text: "New", 
+            type: "contained",
+            style: "secondary",
+            callback: async () => {
+                let i = numberOfRows;
+                numberOfRows = numberOfRows + 1;
+                await createPopupElements(i, null);
+                editRelationshipPopup.insertBefore(btnWrapInputsN[i], relationshipPopupBtnWrap);
+                dropdown.populate("hasADropdownN" + i, dataType, '');
+                dropdown.populate("whoIsDropdownN" + i, dataName, '');
+                popUpSplitTransectionEventHandlers();
+                checkRequiredFieldsEditConsumerRelationships();
+            },
+        });
+
+        cancelRelationshipBtn = button.build({
+            id: "cancelRelationshipBtn",
+            text: "cancel",
+            type: "outlined",
+            style: "secondary",
+            callback: () => {
+                POPUP.hide(editRelationshipPopup);
+                showCard(tempConsumer);
+                setupCard('Relationships');
+            },
+        });
+
+        relationshipPopupBtnWrap = document.createElement("div");
+        relationshipPopupBtnWrap.classList.add("editRelationshipBtnWrap");
+        relationshipPopupBtnWrap.appendChild(saveRelationshipBtn);
+        relationshipPopupBtnWrap.appendChild(AddRelationshipBtn);
+        relationshipPopupBtnWrap.appendChild(cancelRelationshipBtn);
+        editRelationshipPopup.appendChild(relationshipPopupBtnWrap);
+        POPUP.show(editRelationshipPopup);
+        await populateEditRelationshipDropdown();
+        isValueChanged = false;
+        checkRequiredFieldsEditConsumerRelationships();
+        popUpSplitTransectionEventHandlers();
+    }
+
+    async function createPopupElements(i, getEditConsumerRelationshipsJSONResult) {
+        hasADropdownN[i] = dropdown.build({
+            id: 'hasADropdownN' + i,
+            label: "Has a:",
+            dropdownId: "hasADropdownN" + i,
+        });
+
+        whoIsDropdownN[i] = dropdown.build({
+            id: 'whoIsDropdownN' + i,
+            label: "Who is:",
+            dropdownId: "whoIsDropdownN" + i,
+        });
+
+        startDateInputN[i] = input.build({
+            id: 'startDateInputN' + i,
+            type: 'date',
+            label: 'Start Date:',
+            style: 'secondary',
+            value: getEditConsumerRelationshipsJSONResult == null ? UTIL.getTodaysDate() : moment(getEditConsumerRelationshipsJSONResult[i].startDate).format('YYYY-MM-DD'),
+        });
+
+        endDateInputN[i] = input.build({
+            id: 'endDateInputN' + i,
+            type: 'date',
+            label: 'End Date:',
+            style: 'secondary',
+            value: getEditConsumerRelationshipsJSONResult == null ? '' : moment(getEditConsumerRelationshipsJSONResult[i].endDate).format('YYYY-MM-DD'),
+        });
+
+        deleteBtnN[i] = button.build({
+            id: 'deleteBtnN' + i,
+            type: 'text',
+            icon: 'delete',
+            style: 'secondary',
+            callback: function (event) {
+                isValueChanged = true;
+                var deleteToId = Number(event.target.id.replace('deleteBtnN', ''));
+                editRelationshipPopup.removeChild(btnWrapInputsN[deleteToId]);
+                deletedIds.push(deleteToId);
+                checkRequiredFieldsEditConsumerRelationships();
+                popUpSplitTransectionEventHandlers();
+            },
+        });
+
+        btnWrapInputsN[i] = document.createElement("div");
+        btnWrapInputsN[i].classList.add("editRelationshipInputWrap");
+        hasADropdownN[i].classList.add('width22Per');
+        btnWrapInputsN[i].appendChild(hasADropdownN[i]);
+        whoIsDropdownN[i].classList.add('width22Per');
+        btnWrapInputsN[i].appendChild(whoIsDropdownN[i]);
+        startDateInputN[i].classList.add('width23Per');
+        btnWrapInputsN[i].appendChild(startDateInputN[i]);
+        endDateInputN[i].classList.add('width23Per');
+        btnWrapInputsN[i].appendChild(endDateInputN[i]);
+        deleteBtnN[i].classList.add('width4Per');
+        btnWrapInputsN[i].appendChild(deleteBtnN[i]);
+    }
+
+    function popUpSplitTransectionEventHandlers() {
+        for (let i = 0; i < numberOfRows; i++) {  
+            startDateInputN[i].addEventListener('input', event => {
+                isValueChanged = true;
+                checkRequiredFieldsEditConsumerRelationships();
+            });
+            endDateInputN[i].addEventListener('input', event => {
+                isValueChanged = true;
+                checkRequiredFieldsEditConsumerRelationships();
+            });
+
+            hasADropdownN[i].addEventListener('change', event => {
+                isValueChanged = true;
+                checkRequiredFieldsEditConsumerRelationships();
+            });
+            whoIsDropdownN[i].addEventListener('change', event => {
+                isValueChanged = true;
+                checkRequiredFieldsEditConsumerRelationships();
+            });
+        }
+    }
+
+    function checkRequiredFieldsEditConsumerRelationships() {
+        for (let i = 0; i < numberOfRows; i++) {
+            var hasA = hasADropdownN[i].querySelector('#hasADropdownN' + i);
+            var whoIs = whoIsDropdownN[i].querySelector('#whoIsDropdownN' + i);
+            var startDate = startDateInputN[i].querySelector('#startDateInputN' + i);
+
+            if (hasA.value === '') {
+                hasADropdownN[i].classList.add('errorPopup');
+            } else {
+                hasADropdownN[i].classList.remove('errorPopup');
+            }
+
+            if (whoIs.value === '') {
+                whoIsDropdownN[i].classList.add('errorPopup');
+            } else {
+                whoIsDropdownN[i].classList.remove('errorPopup');
+            }
+
+            if (startDate.value === '') {
+                startDateInputN[i].classList.add('errorPopup');
+            } else {
+                startDateInputN[i].classList.remove('errorPopup');
+            }
+        }
+        setBtnStatusEditConsumerRelationships();
+    }
+
+    function setBtnStatusEditConsumerRelationships() {
+        var hasErrors = [].slice.call(document.querySelectorAll('.errorPopup'));
+        if (hasErrors.length !== 0) {
+            saveRelationshipBtn.classList.add('disabled');
+            return;
+        } else {
+            if (isValueChanged)
+                saveRelationshipBtn.classList.remove('disabled');
+            else
+                saveRelationshipBtn.classList.add('disabled');
+        }
+    }
+
+    async function populateEditRelationshipDropdown() {
+        const {
+            getRelationshipsTypeJSONResult: RelationshipsType,
+        } = await rosterAjax.getRelationshipsType();
+        dataType = RelationshipsType.map((relationshipsType) => ({
+            id: relationshipsType.typeID,
+            value: relationshipsType.typeID,
+            text: relationshipsType.description
+        }));
+        dataType.unshift({ id: null, value: '', text: '' });
+        for (let i = 0; i < numberOfRows; i++) {
+            dropdown.populate("hasADropdownN" + i, dataType, consumerRelationships[i] != undefined ? consumerRelationships[i].typeID : '');
+        }
+
+        const {
+            getRelationshipsNameJSONResult: RelationshipsName,
+        } = await rosterAjax.getRelationshipsName();
+        dataName = RelationshipsName.map((relationshipsName) => ({
+            id: relationshipsName.personID,
+            value: relationshipsName.personID,
+            text: relationshipsName.name
+        }));
+        dataName.unshift({ id: null, value: '', text: '' });
+        for (let i = 0; i < numberOfRows; i++) {
+            dropdown.populate("whoIsDropdownN" + i, dataName, consumerRelationships[i] != undefined ? consumerRelationships[i].personID : '');
+        }
+    }
+
+    function editRelationshipSaveData() {
+        consumerRelationshipsNew = []; 
+        for (let i = 0; i < numberOfRows; i++) {
+            var hasA = hasADropdownN[i].querySelector('#hasADropdownN' + i);
+            var whoIs = whoIsDropdownN[i].querySelector('#whoIsDropdownN' + i);
+            var startDate = startDateInputN[i].querySelector('#startDateInputN' + i);
+            var endDate = endDateInputN[i].querySelector('#endDateInputN' + i);
+            
+            if (hasA.value !== '' && !deletedIds.includes(i)) {
+                consumerRelationshipsNew.push({
+                    "consumerId": consumerId,
+                    "personID": whoIs.options[whoIs.selectedIndex].id,
+                    "typeID": hasA.options[hasA.selectedIndex].id,
+                    "endDate": endDate.value,
+                    "startDate": startDate.value
+                });
+            }
+        }  
+
+        rosterAjax.insertEditRelationship(consumerRelationshipsNew, consumerRelationships);
     }
 
     // workflow
@@ -937,7 +1240,7 @@ const consumerInfo = (function () {
         });
     }
 
-    async function setupCard(action) {
+    async function setupCard(action) { 
         var targetSection;
         currentScreen = action;
         var arraynumber = menuNewList.findIndex(x => x.title == currentScreen);
@@ -1056,7 +1359,7 @@ const consumerInfo = (function () {
             }
         }
 
-        if (targetSection) {
+        if (targetSection) { 
             var sectionBackBtn = document.querySelector('.sectionBackBtn');
             sectionBackBtn.classList.remove('hidden');
             showCardSection(targetSection);

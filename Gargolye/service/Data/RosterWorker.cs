@@ -5,6 +5,13 @@ using System.Web.Script.Serialization;
 using static Anywhere.service.Data.WorkflowWorker;
 using OneSpanSign.Sdk;
 using System.Runtime.Serialization;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
+using static System.Windows.Forms.AxHost;
+using System.Reflection.Emit;
+using System.Threading;
+using System.Runtime.InteropServices.ComTypes;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Anywhere.service.Data
 {
@@ -70,6 +77,46 @@ namespace Anywhere.service.Data
             return consumerRelObj;
         }
 
+        public ConsumerEditRelationship[] getEditConsumerRelationshipsJSON(string token, string consumerId, string isActive)
+        {
+            string consumerRelString = dg.getEditConsumerRelationshipsJSON(token, consumerId, isActive);
+            ConsumerEditRelationship[] consumerRelObj = js.Deserialize<ConsumerEditRelationship[]>(consumerRelString);
+            return consumerRelObj;
+        }
+
+        public ConsumerRelationshipType[] getRelationshipsTypeJSON(string token)
+        {
+            string consumerRelString = dg.getRelationshipsTypeJSON(token);
+            ConsumerRelationshipType[] consumerRelObj = js.Deserialize<ConsumerRelationshipType[]>(consumerRelString);
+            return consumerRelObj;
+        }
+
+        public ConsumerRelationshipName[] getRelationshipsNameJSON(string token)
+        {
+            string personString = dg.getRelationshipsNameJSON(token);
+            ConsumerRelationshipName[] personObj = js.Deserialize<ConsumerRelationshipName[]>(personString);
+            return personObj;
+        }
+
+        public string insertEditRelationship(string token, string userId, ConsumerEditRelationship[] consumerRelationshipsNewList, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsList)
+        {
+            string sucess;          
+            try
+            {
+                dg.deleteRelationship(token, consumerRelationshipsNewList[0].consumerId);
+                foreach (ConsumerEditRelationship relationship in consumerRelationshipsNewList)
+                {
+                    dg.insertEditRelationship(token, userId, relationship.consumerId, relationship.startDate, relationship.endDate, relationship.personID, relationship.typeID);
+                }                 
+                sucess = "true";
+            }
+            catch (Exception)
+            {
+                sucess = "false";
+            }
+            return sucess;
+        }
+
         public ConsumerPlanYearInfo getConsumerPlanYearInfo(string token, string consumerId)
         {
             string consumerPlanYearInfoString = dg.getConsumerPlanYearInfo(token, consumerId);
@@ -81,7 +128,7 @@ namespace Anywhere.service.Data
         {
             string rosterToDoListDataString = dg.getRosterToDoListWidgetData(responsiblePartyId, token);
             RosterToDoListWidgetData[] rosterToDoListObj = js.Deserialize<RosterToDoListWidgetData[]>(rosterToDoListDataString);
-            return rosterToDoListObj;           
+            return rosterToDoListObj;
         }
 
         public class MobileCarrierDropdown
@@ -211,6 +258,27 @@ namespace Anywhere.service.Data
             public string workflowStepDueDate { get; set; }
             [DataMember(Order = 8)]
             public string responsiblePartyId { get; set; }
+        }
+
+        public class ConsumerEditRelationship
+        {
+            public string consumerId { get; set; }
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+            public string personID { get; set; }
+            public string typeID { get; set; }
+        }
+
+        public class ConsumerRelationshipType
+        {
+            public string typeID { get; set; }
+            public string description { get; set; }
+        }
+
+        public class ConsumerRelationshipName
+        {
+            public string personID { get; set; }
+            public string name { get; set; }
         }
 
     }

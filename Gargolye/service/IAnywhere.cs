@@ -674,6 +674,39 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getEditConsumerRelationshipsJSON/")]
+        RosterWorker.ConsumerEditRelationship[] getEditConsumerRelationshipsJSON(string token, string consumerId, string isActive);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getRelationshipsTypeJSON/")]
+        RosterWorker.ConsumerRelationshipType[] getRelationshipsTypeJSON(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getRelationshipsNameJSON/")]
+        RosterWorker.ConsumerRelationshipName[] getRelationshipsNameJSON(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/insertEditRelationship/")]
+        string insertEditRelationship(string token, string userId, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsNewList, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsList);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
@@ -4530,9 +4563,9 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-             BodyStyle = WebMessageBodyStyle.Wrapped,
-             ResponseFormat = WebMessageFormat.Json,
-             RequestFormat = WebMessageFormat.Json,
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateEmploymentGoal/")]
         string updateEmploymentGoal(string peopleId, string userId, string ServiceGoal);
 
