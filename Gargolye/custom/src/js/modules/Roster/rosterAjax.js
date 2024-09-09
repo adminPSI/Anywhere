@@ -20,9 +20,10 @@ const rosterAjax = (function () {
         // data = {selectedGroupCode, selectedGroupId, selectedLocationId, selectedDate}
         var groupCode = data.selectedGroupCode;
         var retrieveId =
-            groupCode === 'CST' || groupCode === 'TRA' || groupCode === 'NAT'
+            groupCode === 'CST' || groupCode === 'TRA' || groupCode === 'NAT'  
                 ? data.selectedGroupId
                 : data.selectedLocationId;
+        retrieveId = groupCode === 'CAS' ? '0' : retrieveId; 
         var date = data.selectedDate;
         var daysBackDate = convertDaysBack($.session.defaultProgressNoteReviewDays);
 
