@@ -37,6 +37,14 @@ const importServices = (() => {
         const token = $.session.Token
         currentlySelectedConsumer = selectedConsumer;
 
+        DOM.clearActionCenter();
+        DOM.scrollToTopOfPage();
+        landingPage = document.createElement('div');
+        DOM.ACTIONCENTER.appendChild(landingPage);
+
+        const spinner = PROGRESS.SPINNER.get('Gathering Data...');
+        landingPage.appendChild(spinner);
+
         extractionData = await _UTIL.fetchData('importedOutcomesPDFData', {token, files});
         existingOutcomesVendorData = outcomesServicesData.pageDataParent.map(outcome => ({
             value: outcome.goal_id,
