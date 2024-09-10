@@ -637,29 +637,21 @@ const importServices = (() => {
         // Split the string into two parts
         const [bDate, eDate] = (ps.BeginDateEndDate).split(/(?<=\d{4})\s+/);
 
-        let provderId = '';
-
         const serviceName = ps.ServiceName || "";
         const scopeOfService = ps.ScopeOfService || "";
         const howOftenValue = ps.HowOftenHowMuch || "";
-        const howOftenFrequencyText = ps.HowOftenHowMuch || "";
         const howOftenText = ps.HowOftenHowMuch || "";
-        const fundingSourceDesc = ps.FundingSource || "";
         const fundingSourceText = ps.FundingSource || "";
         const paidSupportsId = '';
+        const providerName = ps.ProviderName || "";
 
         const assessmentAreaId = getAssessmentAreaId(ps.AssessmentArea);
         const assessmentArea = ps.AssessmentArea;
-
-        const providerName = '';
 
         const section = 'Paid Supports';
 
         let howOften = '';
         if (howOftenValue) howOften += howOftenValue;
-        // if (howOftenFrequency && howOftenFrequency !== '4') {
-        //   howOften += ` x `;
-        // }
 
         if (howOftenText) howOften += ` ${howOftenText}`;
 
@@ -676,17 +668,13 @@ const importServices = (() => {
             ],
             psData: {
                 assessmentAreaId,
-                //providerId,
                 providerName,
-                //serviceNameId,
                 //serviceNameOther,
                 scopeOfService,
                 howOftenValue,
-                //howOftenFrequency,
                 howOftenText,
                 bDate,
                 eDate,
-                //fundingSource,
                 fundingSourceText,
                 paidSupportsId,
                 section
