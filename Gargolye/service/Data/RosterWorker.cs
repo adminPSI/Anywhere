@@ -103,7 +103,7 @@ namespace Anywhere.service.Data
             string sucess;          
             try
             {
-                dg.deleteRelationship(token, consumerRelationshipsNewList[0].consumerId);
+                dg.deleteRelationship(token, consumerRelationshipsList[0].consumerId);
                 foreach (ConsumerEditRelationship relationship in consumerRelationshipsNewList)
                 {
                     dg.insertEditRelationship(token, userId, relationship.consumerId, relationship.startDate, relationship.endDate, relationship.personID, relationship.typeID);
