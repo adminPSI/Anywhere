@@ -65,12 +65,20 @@ const importServices = (() => {
         rowCheckbox.style.pointerEvents = 'all';
         rowCheckbox.style.position = 'relative';
 
+        function formatDateToYYYYMMDD(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         function handleCheckboxSelection(event, rowData) {
             let checkbox = event.target;
             const currentTable = checkbox.closest('.table');
             const tableRow = checkbox.closest('.table__row');
             const tableRowId = tableRow.id;
-            const outcomeRowId = `${tableRowId}999`;
+            const outcomeRowId = `${tableRowId}A`;
             
             // Use CSS.escape to ensure the ID is properly escaped for querySelector
             const escapedOutcomeRowId = `#${CSS.escape(outcomeRowId)}`;
@@ -121,8 +129,6 @@ const importServices = (() => {
             toggleImportButton();
         }
         
-        
-
         function handleHeaderCheckboxSelection(headerCheckboxSelector, tableSelector) {
             const headerCheckbox = document.querySelector(headerCheckboxSelector);
             const rowCheckboxes = document.querySelectorAll(`${tableSelector} .row-checkbox`);
@@ -140,7 +146,21 @@ const importServices = (() => {
             });
         }
 
-        function createAddToExistingOutcomesRow(rowId) {
+        function createAddToExistingOutcomesRow(rowId, isPaidSupportsTable) {
+            let serviceDateStartValue = extractionData.importedOutcomesPDFDataResult.startDate;
+            let serviceDateEndValue = extractionData.importedOutcomesPDFDataResult.endDate;
+            // Only check for BeginDateEndDate if we are dealing with the paidSupports table
+            if (isPaidSupportsTable) {
+                const index = parseInt(rowId, 10) - 1; // Convert rowId to an integer and adjust for 0-based index
+                const [bDate, eDate] = extractionData.importedOutcomesPDFDataResult.paidSupports[index].BeginDateEndDate.split(/(?<=\d{4})\s+/);
+
+                // Format the dates to 'YYYY-MM-DD'
+                const formattedBDate = formatDateToYYYYMMDD(bDate);
+                const formattedEDate = formatDateToYYYYMMDD(eDate);
+
+                serviceDateStartValue = formattedBDate;
+                serviceDateEndValue = formattedEDate;
+            }
             const exitingOutcomDropdown = dropdown.build({
                 id: `existingOutcomeDropdown_${rowId}`,
                 label: 'Add to Existing Outcome',
@@ -155,7 +175,7 @@ const importServices = (() => {
                 style: 'secondary',
                 callback: () => toggleImportButton(),
                 callbackType: 'input',
-                value: extractionData.importedOutcomesPDFDataResult.startDate
+                value: serviceDateStartValue
             });
         
             const serviceDateEndInput = input.build({
@@ -164,12 +184,12 @@ const importServices = (() => {
                 style: 'secondary',
                 callback: () => toggleImportButton(),
                 callbackType: 'input',
-                value: extractionData.importedOutcomesPDFDataResult.endDate
+                value: serviceDateEndValue
             });
         
             const createAddToExistingOutcomesRowContainerDiv = document.createElement('div');
             createAddToExistingOutcomesRowContainerDiv.classList.add('addToExistingOutcomesRowContainer');
-            createAddToExistingOutcomesRowContainerDiv.id = `${rowId}999`;
+            createAddToExistingOutcomesRowContainerDiv.id = `${rowId}A`;
             
             createAddToExistingOutcomesRowContainerDiv.appendChild(exitingOutcomDropdown);
             createAddToExistingOutcomesRowContainerDiv.appendChild(serviceDateStartInput);
@@ -182,15 +202,13 @@ const importServices = (() => {
             return createAddToExistingOutcomesRowContainerDiv;
         }
 
-        //const newRow = createAddToExistingOutcomesRow();
-
-        function appendToEachRow(table) {       
+        function appendToEachRow(table, isPaidSupportsTable = false) {       
             const tableBody = table.querySelector('.table__body');
             const rows = Array.from(tableBody.querySelectorAll('.table__row'));
         
             rows.forEach(row => {
                 // Create a new row for each existing table row
-                const newRow = createAddToExistingOutcomesRow(row.id);
+                const newRow = createAddToExistingOutcomesRow(row.id, isPaidSupportsTable);
         
                 // Insert the new row after the current row
                 row.insertAdjacentElement('afterend', newRow);
@@ -306,7 +324,7 @@ const importServices = (() => {
                 });
 
             table.populate(paidSupportsTable, tableData, false, true);
-            appendToEachRow(paidSupportsTable);
+            appendToEachRow(paidSupportsTable, true);
         };
         
         // Additional Supports Table
@@ -427,7 +445,7 @@ const importServices = (() => {
                     const currentTable = checkbox.closest('.table');
                     const tableRow = checkbox.closest('.table__row');
                     const tableRowId = tableRow.id;
-                    const outcomeRowId = `${tableRowId}999`;
+                    const outcomeRowId = `${tableRowId}A`;
                 
                     // Use CSS.escape to ensure the ID is properly escaped for querySelector
                     const escapedOutcomeRowId = `#${CSS.escape(outcomeRowId)}`;
