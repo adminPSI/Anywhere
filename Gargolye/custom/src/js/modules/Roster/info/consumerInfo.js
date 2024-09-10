@@ -729,6 +729,7 @@ const consumerInfo = (function () {
                 POPUP.hide(editRelationshipPopup);
                 showCard(tempConsumer);
                 setupCard('Relationships');
+                resetPopupValues(); 
             },
         });
 
@@ -758,6 +759,7 @@ const consumerInfo = (function () {
                 POPUP.hide(editRelationshipPopup);
                 showCard(tempConsumer);
                 setupCard('Relationships');
+                resetPopupValues();
             },
         });
 
@@ -942,6 +944,18 @@ const consumerInfo = (function () {
         }  
 
         rosterAjax.insertEditRelationship(consumerRelationshipsNew, consumerRelationships);
+    }
+
+    function resetPopupValues() {
+        btnWrapInputsN = [];
+        hasADropdownN = [];
+        startDateInputN = [];
+        whoIsDropdownN = [];
+        endDateInputN = [];
+        deleteBtnN = [];
+        consumerRelationships = [];
+        consumerRelationshipsNew = [];
+        deletedIds = [];
     }
 
     // workflow
