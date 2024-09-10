@@ -26,6 +26,7 @@ using static log4net.Appender.RollingFileAppender;
 using System.Windows.Forms;
 using System.Management.Automation;
 using static Anywhere.service.Data.FormWorker;
+using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
 
 namespace OODForms
 {
@@ -1535,15 +1536,17 @@ namespace OODForms
 
                         if (row["VTS_Review"].ToString().ToUpper() == "Y")
                         {
-                            WS.Cell("G87").Value = "Yes";						//*************BOTTOM3.  Have you reviewed the Vocational Training Stipend (VTS) with the individual?
+                            WS.Cell("G87").Value = "Yes";						//*************BOTTOM3.  Provider's Summary and Recommendations
                         }
                         else
                         {
-                            WS.Cell("G87").Value = "No";						//*************BOTTOM3.  Have you reviewed the Vocational Training Stipend (VTS) with the individual?
+                            WS.Cell("G87").Value = "No";						//*************BOTTOM3.  
                         }
                     }
-
                 }
+
+                // Have you reviewed the Vocational Training Stipend(VTS) with the individual?
+                WS.Cell("G89").Value = "Yes";
 
                 // Create Attachment from  the XLS SPREADSHEET********************************************************************************************************	
 
