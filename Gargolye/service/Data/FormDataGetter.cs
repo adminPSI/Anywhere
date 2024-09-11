@@ -32,22 +32,41 @@ namespace Anywhere.service.Data
         }
 
         // used to retrieve form templates for the Forms Module
-        public string getUserFormTemplates(string userId, string hasAssignedFormTypes, DistributedTransaction transaction)
+        public string getUserFormTemplates(string userId, string hasAssignedFormTypes, string typeId, DistributedTransaction transaction)
         {
             Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
 
             try
             {
                 logger.debug("getUserFormTemplates ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[3];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@hasAssignedFormTypes", DbType.String, hasAssignedFormTypes);
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Forms_getUserFormTemplates(?,?)", args, ref transaction);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@typeId", DbType.String, typeId);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Forms_getUserFormTemplates(?,?,?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
             {
                 logger.error("WFDG", ex.Message + "ANYW_Forms_GetUserFormTemplates()");
+                throw ex;
+            }
+        }
+
+        // used to retrieve form type for the Forms Module
+        public string getFormType(DistributedTransaction transaction)
+        {
+            Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
+
+            try
+            {
+                logger.debug("getFormType");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Forms_getFormType()", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Forms_getFormType()");
                 throw ex;
             }
         }

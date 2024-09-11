@@ -10,7 +10,9 @@
 
     // values for selectTemplatePopup
     let templateId;
+    let typeId;
     let templateDropdown;
+    let typeDropdown;
     let doneBtn;
 
     async function handleActionNavEvent(target) {
@@ -179,6 +181,11 @@
             id: 'selectTemplatePopup',
         });
 
+        typeDropdown = dropdown.build({
+            label: 'Form Type',
+            dropdownId: 'typeDropdown',
+        });
+
         templateDropdown = dropdown.build({
             label: 'Form Templates',
             dropdownId: 'templateDropdown',
@@ -235,11 +242,13 @@
         btnWrap.classList.add('btnWrap');
         btnWrap.appendChild(doneBtn);
         btnWrap.appendChild(cancelBtn);
+        selectTemplatePopup.appendChild(typeDropdown);
         selectTemplatePopup.appendChild(templateDropdown);
         selectTemplatePopup.appendChild(completeDateInput);
         selectTemplatePopup.appendChild(btnWrap);
 
-        populateDropdown();
+        populateTypeDropdown();
+        populateDropdown('0'); 
 
         // validation of templateDropdown
         templateId = templateDropdown.value;
@@ -251,6 +260,13 @@
             templateId = e.target.value;
             templateDropdownValidation();
             setBtnStatus();
+        });
+
+        typeDropdown.addEventListener('change', e => { 
+            typeId = e.target.value; 
+            populateDropdown(typeId);
+            templateDropdownValidation();
+            setBtnStatus(); 
         });
 
         POPUP.show(selectTemplatePopup);
@@ -295,12 +311,27 @@
         POPUP.hide(selectTemplatePopup);
     }
 
+    // Populate the DDL on the Type Form Popup Window
+    async function populateTypeDropdown(){
+        const {
+            getFormTypeResult: FormType,
+        } = await formsAjax.getFormTypeAsync();       
+        let data = FormType.map((formType) => ({
+            id: formType.formTypeId,
+            value: formType.formTypeId,
+            text: formType.formTypeDescription
+        }));
+        data.unshift({ id: null, value: '0', text: 'ALL' }); 
+        dropdown.populate("typeDropdown", data, '0');
+    }
+
     // Populate the DDL on the Template Form Popup Window
-    async function populateDropdown() {
+    async function populateDropdown(typeId) {
         let hasAssignedFormTypes = $.session.formsFormtype ? '1' : '0';
         const { getUserFormTemplatesResult: templates } = await formsAjax.getUserFormTemplatesAsync(
             $.session.UserId,
             hasAssignedFormTypes,
+            typeId,
         );
 
         // Array to store unique template objects
@@ -322,9 +353,15 @@
             value: template.formTemplateId,
             text: template.formType + ' -- ' + template.formDescription,
         }));
-
-        data.unshift({ id: null, value: '', text: '' }); // Add blank value
-        dropdown.populate('templateDropdown', data);
+  
+        if (typeId == '0') {
+            data.unshift({ id: null, value: '', text: '' }); // Add blank value
+            dropdown.populate('templateDropdown', data);
+        }
+        else {
+            data.unshift({ id: null, value: '0', text: 'ALL' }); // Add blank value
+            dropdown.populate('templateDropdown', data, '0');
+        }          
     }
 
 
