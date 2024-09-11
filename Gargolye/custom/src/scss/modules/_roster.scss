@@ -1281,4 +1281,71 @@
 .marginRight10px{
     margin-right: 10px; 
 }
- 
+
+.editRelationshipInputWrap {  
+    display: flow;
+
+    .width4Per, .width23Per, .width22Per {
+        width: 97%;
+    }
+
+    @media screen and (min-width: 560px) {
+        display: flex;
+        justify-content: space-between;
+
+        .width4Per {
+            width: 4%;
+        }
+
+        .width23Per {
+            width: 23.5%;
+        }
+
+        .width22Per {
+            width: 22%;
+        }
+    }
+}
+
+.editRelationshipBtnWrap {
+    display: flex;
+    justify-content: space-between;
+
+    .btn {
+        width:30%; 
+    }
+}
+
+.popupHeader {
+    background: #366a98;
+    color: #fff;
+    font-size: 1.125rem;
+    padding: 5px 5px 0px 1px;
+    margin-bottom: 15px;
+    margin-top: -30px;
+
+    .checkbox-mtd {
+        color: white !important;
+        font-size: 14px !important;
+    }
+
+    .checkbox-mtd > span:after {
+        left: -24px;
+        top: 2px;
+    }
+
+    .checkbox-mtd:before {
+        border: 2px solid white;
+    }
+
+    .checkbox-mtd > input:checked + span:after {
+        border-color: white !important;
+    }
+}
+
+
+.popup {
+     .btn-icon {
+         color: black !important;
+     }
+} 

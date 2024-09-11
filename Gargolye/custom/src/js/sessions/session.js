@@ -28,6 +28,7 @@ $.session.DemographicsViewResident = false;
 $.session.DemographicsViewSSN = false;
 $.session.DemographicsViewLocalId = false;
 $.session.DemographicsViewConsumerNumber = false;
+$.session.DemographicsUpdateRelationship = false;
 $.session.GoalsView = false;
 $.session.GoalsUpdate = false;
 $.session.InsertOutcomes = false;
@@ -654,6 +655,9 @@ function setSessionVariables() {
             }
             if (tmpPerm == 'View Local ID') {
                 $.session.DemographicsViewLocalId = true;
+            }
+            if (tmpPerm == 'Update Relationships') {
+                $.session.DemographicsUpdateRelationship = true;
             }
         }
 

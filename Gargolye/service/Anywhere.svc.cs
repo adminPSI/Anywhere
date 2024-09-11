@@ -381,6 +381,11 @@ namespace Anywhere
             return dg.deleteGoal(token, activityId);
         }
 
+        public string getAllGoalTypes(string token)
+        {
+            return getAllGoalTypes(token);
+        }
+
         public string getSingleEntry(string token)
         {
             return dg.getSingleEntry(token);
@@ -574,6 +579,26 @@ namespace Anywhere
         public RosterWorker.ConsumerRelationships[] getConsumerRelationshipsJSON(string token, string consumerId)
         {
             return rosterWorker.getConsumerRelationshipsJSON(token, consumerId);
+        }
+
+        public RosterWorker.ConsumerEditRelationship[] getEditConsumerRelationshipsJSON(string token, string consumerId, string isActive)
+        {
+            return rosterWorker.getEditConsumerRelationshipsJSON(token, consumerId, isActive);
+        }
+
+        public RosterWorker.ConsumerRelationshipType[] getRelationshipsTypeJSON(string token)
+        {
+            return rosterWorker.getRelationshipsTypeJSON(token);
+        }
+
+        public RosterWorker.ConsumerRelationshipName[] getRelationshipsNameJSON(string token)
+        {
+            return rosterWorker.getRelationshipsNameJSON(token);
+        }
+
+        public string insertEditRelationship(string token, string userId, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsNewList, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsList, string consumerId)
+        {
+            return rosterWorker.insertEditRelationship(token, userId, consumerRelationshipsNewList, consumerRelationshipsList, consumerId);
         }
 
         public string updateDemographicInformation(string token, string addressOne, string addressTwo, string city, string state, string zipCode, string mobilePhone, string email, string carrier)
@@ -1914,11 +1939,15 @@ namespace Anywhere
             return fw.getFormTemplates(token);
         }
 
-        public FormWorker.FormTemplate[] getUserFormTemplates(string token, string userId, string hasAssignedFormTypes)
+        public FormWorker.FormTemplate[] getUserFormTemplates(string token, string userId, string hasAssignedFormTypes, string typeId)
         {
-            return fw.getUserFormTemplates(token, userId, hasAssignedFormTypes);
+            return fw.getUserFormTemplates(token, userId, hasAssignedFormTypes, typeId);
         }
 
+        public FormWorker.FormType[] getFormType(string token)
+        {
+            return fw.getFormType(token);
+        }
 
         public WorkflowWorker.PlanWorkflowWidgetData[] getPlanWorkflowWidgetData(string token, string responsiblePartyId)
         {
@@ -4027,9 +4056,9 @@ namespace Anywhere
             return outcomesWorker.getObjectiveEntriesById(token, objectiveId);
         }
 
-        public OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart)
+        public OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId)
         {
-            return outcomesWorker.getOutcomeServiceDropDown(token, consumerId, effectiveDateStart);
+            return outcomesWorker.getOutcomeServiceDropDown(token, consumerId);
         }
 
         public OutcomesWorker.ServiceFrequencyType[] getServiceFrequencyTypeDropDown(string token, string type)

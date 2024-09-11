@@ -74,10 +74,10 @@ namespace OODForms
             }
 
             sb.Clear();
-            sb.Append("SELECT DISTINCT   dba.People.Last_Name, dba.People.First_Name, dba.People.Middle_Name, '' AS Initials ");
+            sb.Append("SELECT DISTINCT   dba.Persons.Last_Name, dba.Persons.First_Name, dba.Persons.Middle_Name, '' AS Initials ");
             sb.Append("FROM dba.EMP_OOD ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
-            sb.Append("LEFT OUTER JOIN dba.People ON dba.People.Person_ID = dba.Case_Notes.Case_Manager_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Persons.Person_ID = dba.Case_Notes.Case_Manager_ID ");
             sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID = {0} ", PosNumber);
             sb.Append("AND Last_Name > '' and First_Name > '' ");
             sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));

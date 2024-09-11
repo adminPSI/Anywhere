@@ -153,7 +153,7 @@ const addOutcomes = (() => {
     async function populateOutcomeTypesDropdown() {
         const {
             getOutcomeTypeDropDownResult: OutcomeType,
-        } = await outcomesAjax.getOutcomeTypeDropDownAsync();
+        } = await outcomesAjax.getOutcomeTypeDropDownAsync(selectedConsumerId, startDate);
 
         let outcomeTypeData = OutcomeType.map((outcomeTypes) => ({
             id: outcomeTypes.Goal_Type_ID,
@@ -166,7 +166,7 @@ const addOutcomes = (() => {
 
         const {
             getLocationDropDownResult: locationDrop,
-        } = await outcomesAjax.getLocationDropDownAsync(selectedConsumerId, startDate);
+        } = await outcomesAjax.getLocationDropDownAsync();
 
         let locationData = locationDrop.map((locationDrops) => ({
             id: locationDrops.locationID,

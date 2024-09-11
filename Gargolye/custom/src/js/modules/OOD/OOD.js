@@ -134,7 +134,7 @@ const OOD = (() => {
 
             employmentGoalDIV.classList.add("EmployeeGoal");
             employmentGoalDIV.appendChild(employmentGoalMessage) 
-            employmentGoalDIV.appendChild(updateEmploymentGoalBtn)  
+            if ($.session.OODUpdate) employmentGoalDIV.appendChild(updateEmploymentGoalBtn);
 
            // employmentGoalDIV.appendChild(employmentGoalMessage);
            // employmentGoalDIV.appendChild(updateEmploymentGoalBtn);

@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereWorkshopWorkerTwo;
@@ -571,6 +572,24 @@ namespace Anywhere.Data
             {
                 logger.error("523", ex.Message + " ANYW_GoalsAndServices_DeleteGoal('" + token + "','" + activityId + "')", token);
                 return "523: Error deleting goal";
+            }
+        }
+
+        public string getAllGoalTypes(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getAllGoalTypes " + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_GoalsAndServices_GetAllGoalTypes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("646", ex.Message + "ANYW_GoalsAndServices_GetAllGoalTypes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "646: error ANYW_GoalsAndServices_GetAllGoalTypes";
             }
         }
 
@@ -1291,6 +1310,99 @@ namespace Anywhere.Data
             {
                 logger.error("547", ex.Message + " ANYW_Demographics_GetConsumerRelationships('" + token + "', '" + consumerId + "')");
                 return "547: Error Getting Consumer Demographics";
+            }
+        }
+
+        public string getEditConsumerRelationshipsJSON(string token, string consumerId, string isActive)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("GetEditConsumerRelationshipsJson" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Demographics_GetEditConsumerRelationships('" + token + "', '" + consumerId + "', '" + isActive + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("547", ex.Message + " ANYW_Demographics_GetEditConsumerRelationships('" + token + "', '" + consumerId + "', '" + isActive + "')");
+                return "547: Error Getting Consumer Demographics";
+            }
+        }
+
+        public string getRelationshipsTypeJSON(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getRelationshipsTypeJSON" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Demographics_GetRelationshipsType('" + token + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("547", ex.Message + " ANYW_Demographics_GetRelationshipsType('" + token + "')");
+                return "547: Error Getting Consumer Demographics";
+            }
+        }
+
+        public string getRelationshipsNameJSON(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getRelationshipsNameJSON" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Demographics_getRelationshipsName('" + token + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("547", ex.Message + " ANYW_Demographics_getRelationshipsName('" + token + "')");
+                return "547: Error Getting person list Demographics";
+            }
+        }
+
+        public string insertEditRelationship(string token, string userId, string consumerId, string startDate, string endDate, string personID, string typeID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertEditRelationship");
+
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_Demographics_insertEditRelationship('" + token + "', '" + userId + "', '" + consumerId + "', '" + startDate + "', '" + endDate + "', '" + personID + "', '" + typeID + "');", "results", "result");
+            }
+            catch (Exception ex)
+            {
+                logger.error("584", ex.Message + " ANYW_Demographics_insertEditRelationship('" + token + "', '" + userId + "', '" + consumerId + "', '" + startDate + "', '" + endDate + "', '" + personID + "', '" + typeID + "')", token);
+                return "584: Error insert Edit Relationship";
+            }
+        }
+
+        public string insertArchiveRelationship(string token, string userId, string consumerId, string startDate, string endDate, string personID, string typeID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertArchiveRelationship");
+
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_Demographics_insertArchiveRelationship('" + token + "', '" + userId + "', '" + consumerId + "', '" + startDate + "', '" + endDate + "', '" + personID + "', '" + typeID + "');", "results", "result");
+            }
+            catch (Exception ex)
+            {
+                logger.error("584", ex.Message + " ANYW_Demographics_insertArchiveRelationship('" + token + "', '" + userId + "', '" + consumerId + "', '" + startDate + "', '" + endDate + "', '" + personID + "', '" + typeID + "')", token);
+                return "584: Error insert Archive Relationship";
+            }
+        }
+
+        public string deleteRelationship(string token, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("deleteRelationship");
+
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_Demographics_deleteRelationship('" + token + "', '" + consumerId + "');", "results", "result");
+            }
+            catch (Exception ex)
+            {
+                logger.error("584", ex.Message + " ANYW_Demographics_deleteRelationship('" + token + "', '" + consumerId + "')", token);
+                return "584: Error delete Relationship";
             }
         }
 
@@ -6727,14 +6839,13 @@ namespace Anywhere.Data
             }
         }
 
-        public string getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart)
+        public string getOutcomeServiceDropDown(string token, string consumerId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getOutcomeServiceDropDown" + token);
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(consumerId);
-            list.Add(effectiveDateStart);
             string text = "CALL DBA.ANYW_GoalsAndServices_getOutcomeServiceDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -6841,7 +6952,7 @@ namespace Anywhere.Data
 
         }
 
-        public string getRosterToDoListWidgetData(string responsiblePartyId,string token)
+        public string getRosterToDoListWidgetData(string responsiblePartyId, string token)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getRosterToDoListWidgetData");
@@ -6895,7 +7006,7 @@ namespace Anywhere.Data
                 return "742: error ANYW_Dashboard_insertSystemNotes";
             }
         }
-       
+
         public string insertSystemNoteSharing(string token, string noteId, string employeeId)
         {
             if (tokenValidator(token) == false) return null;
