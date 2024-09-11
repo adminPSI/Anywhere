@@ -12,6 +12,7 @@ using System.Threading;
 using System.Runtime.InteropServices.ComTypes;
 using System.Collections.Generic;
 using System.Linq;
+using static Anywhere.service.Data.PlanReport;
 
 namespace Anywhere.service.Data
 {
@@ -98,16 +99,20 @@ namespace Anywhere.service.Data
             return personObj;
         }
 
-        public string insertEditRelationship(string token, string userId, ConsumerEditRelationship[] consumerRelationshipsNewList, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsList)
+        public string insertEditRelationship(string token, string userId, ConsumerEditRelationship[] consumerRelationshipsNewList, ConsumerEditRelationship[] consumerRelationshipsList, string consumerId)
         {
-            string sucess;          
+            string sucess;
             try
             {
-                dg.deleteRelationship(token, consumerRelationshipsList[0].consumerId);
+                dg.deleteRelationship(token, consumerId);
                 foreach (ConsumerEditRelationship relationship in consumerRelationshipsNewList)
                 {
-                    dg.insertEditRelationship(token, userId, relationship.consumerId, relationship.startDate, relationship.endDate, relationship.personID, relationship.typeID);
-                }                 
+                    dg.insertEditRelationship(token, userId, consumerId, relationship.startDate, relationship.endDate, relationship.personID, relationship.typeID);
+                }
+                foreach (ConsumerEditRelationship archiveRelationship in consumerRelationshipsList)
+                {
+                    dg.insertArchiveRelationship(token, userId, consumerId, archiveRelationship.startDate, archiveRelationship.endDate, archiveRelationship.personID, archiveRelationship.typeID);
+                }
                 sucess = "true";
             }
             catch (Exception)

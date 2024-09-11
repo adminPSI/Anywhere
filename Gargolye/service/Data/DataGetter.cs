@@ -1356,6 +1356,22 @@ namespace Anywhere.Data
             }
         }
 
+        public string insertArchiveRelationship(string token, string userId, string consumerId, string startDate, string endDate, string personID, string typeID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertArchiveRelationship");
+
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_Demographics_insertArchiveRelationship('" + token + "', '" + userId + "', '" + consumerId + "', '" + startDate + "', '" + endDate + "', '" + personID + "', '" + typeID + "');", "results", "result");
+            }
+            catch (Exception ex)
+            {
+                logger.error("584", ex.Message + " ANYW_Demographics_insertArchiveRelationship('" + token + "', '" + userId + "', '" + consumerId + "', '" + startDate + "', '" + endDate + "', '" + personID + "', '" + typeID + "')", token);
+                return "584: Error insert Archive Relationship";
+            }
+        }
+
         public string deleteRelationship(string token, string consumerId)
         {
             if (tokenValidator(token) == false) return null;

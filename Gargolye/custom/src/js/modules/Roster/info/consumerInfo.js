@@ -33,6 +33,7 @@ const consumerInfo = (function () {
     let dataName;
     let isValueChanged;
     let deletedIds = [];
+    let archiveConsumerRelationships = [];
 
 
     function getImageOrientation(file, callback) {
@@ -537,10 +538,6 @@ const consumerInfo = (function () {
         var sectionInner = section.querySelector('.sectionInner');
         sectionInner.innerHTML = '';
 
-        if (data.length === 0) {
-            sectionInner.innerHTML = `<p class="infoNotFoundMessage">No relationships found.</p>`;
-            return;
-        }
 
         const relationshipTable = document.createElement('div');
         relationshipTable.classList.add('relationshipTable');
@@ -568,6 +565,11 @@ const consumerInfo = (function () {
             relationshipEditPopup();
             closeCard();
         });
+        if (data.length === 0) {
+            const errorMessage = document.createElement('div');
+            errorMessage.innerHTML = `<p class="infoNotFoundMessage">No relationships found.</p>`;
+            sectionInner.appendChild(errorMessage);
+        }
 
         data.forEach(d => {
             var eventName;
@@ -679,10 +681,8 @@ const consumerInfo = (function () {
         const result = await rosterAjax.getEditConsumerRelationships(consumerId, isActive);
         const { getEditConsumerRelationshipsJSONResult } = result;
 
-        if (getEditConsumerRelationshipsJSONResult.length == 0)
-            return;
-
         consumerRelationships = getEditConsumerRelationshipsJSONResult;
+        archiveConsumerRelationships = getEditConsumerRelationshipsJSONResult;
         numberOfRows = consumerRelationships.length;
         editRelationshipPopup = POPUP.build({
             hideX: true,
@@ -697,7 +697,7 @@ const consumerInfo = (function () {
             id: 'chkShowInactive',
             isChecked: isActive,
             callback: () => {
-                POPUP.hide(editRelationshipPopup); 
+                POPUP.hide(editRelationshipPopup);
                 relationshipEditPopup(event.target.checked);
             }
         });
@@ -724,18 +724,17 @@ const consumerInfo = (function () {
             type: "contained",
             style: "secondary",
             classNames: 'disabled',
-            callback: () => {
-                editRelationshipSaveData();
+            callback: async () => {
+                await editRelationshipSaveData();
                 POPUP.hide(editRelationshipPopup);
                 showCard(tempConsumer);
                 setupCard('Relationships');
-                resetPopupValues(); 
             },
         });
 
         AddRelationshipBtn = button.build({
             id: "AddRelationshipBtn",
-            text: "New", 
+            text: "New",
             type: "contained",
             style: "secondary",
             callback: async () => {
@@ -835,7 +834,7 @@ const consumerInfo = (function () {
     }
 
     function popUpSplitTransectionEventHandlers() {
-        for (let i = 0; i < numberOfRows; i++) {  
+        for (let i = 0; i < numberOfRows; i++) {
             startDateInputN[i].addEventListener('input', event => {
                 isValueChanged = true;
                 checkRequiredFieldsEditConsumerRelationships();
@@ -924,26 +923,39 @@ const consumerInfo = (function () {
         }
     }
 
-    function editRelationshipSaveData() {
-        consumerRelationshipsNew = []; 
+    async function editRelationshipSaveData() {
+        consumerRelationshipsNew = [];
         for (let i = 0; i < numberOfRows; i++) {
             var hasA = hasADropdownN[i].querySelector('#hasADropdownN' + i);
             var whoIs = whoIsDropdownN[i].querySelector('#whoIsDropdownN' + i);
             var startDate = startDateInputN[i].querySelector('#startDateInputN' + i);
             var endDate = endDateInputN[i].querySelector('#endDateInputN' + i);
-            
+
             if (hasA.value !== '' && !deletedIds.includes(i)) {
                 consumerRelationshipsNew.push({
                     "consumerId": consumerId,
-                    "personID": whoIs.options[whoIs.selectedIndex].id,
-                    "typeID": hasA.options[hasA.selectedIndex].id,
                     "endDate": endDate.value,
-                    "startDate": startDate.value
+                    "personID": whoIs.options[whoIs.selectedIndex].id,
+                    "startDate": startDate.value,
+                    "typeID": hasA.options[hasA.selectedIndex].id
                 });
             }
-        }  
+        }
 
-        rosterAjax.insertEditRelationship(consumerRelationshipsNew, consumerRelationships);
+        for (let i = 0; i < consumerRelationships.length; i++) {
+            for (let j = 0; j < consumerRelationshipsNew.length; j++) {
+                let endDateFormat = consumerRelationships[i].endDate == '' ? '' : moment(consumerRelationships[i].endDate).format('YYYY-MM-DD');
+                archiveConsumerRelationships[i].endDate = endDateFormat;
+                archiveConsumerRelationships[i].startDate = moment(consumerRelationships[i].startDate).format('YYYY-MM-DD');
+                if (endDateFormat == consumerRelationshipsNew[j].endDate && consumerRelationships[i].personID == consumerRelationshipsNew[j].personID
+                    && moment(consumerRelationships[i].startDate).format('YYYY-MM-DD') == consumerRelationshipsNew[j].startDate && consumerRelationships[i].typeID == consumerRelationshipsNew[j].typeID) {
+                    archiveConsumerRelationships.splice(i, 1);
+                }
+            }
+
+        } 
+        rosterAjax.insertEditRelationship(consumerRelationshipsNew, archiveConsumerRelationships, consumerId);
+        resetPopupValues();
     }
 
     function resetPopupValues() {
@@ -956,6 +968,7 @@ const consumerInfo = (function () {
         consumerRelationships = [];
         consumerRelationshipsNew = [];
         deletedIds = [];
+        archiveConsumerRelationships = []
     }
 
     // workflow
@@ -1254,7 +1267,7 @@ const consumerInfo = (function () {
         });
     }
 
-    async function setupCard(action) { 
+    async function setupCard(action) {
         var targetSection;
         currentScreen = action;
         var arraynumber = menuNewList.findIndex(x => x.title == currentScreen);
@@ -1373,7 +1386,7 @@ const consumerInfo = (function () {
             }
         }
 
-        if (targetSection) { 
+        if (targetSection) {
             var sectionBackBtn = document.querySelector('.sectionBackBtn');
             sectionBackBtn.classList.remove('hidden');
             showCardSection(targetSection);
