@@ -754,6 +754,31 @@ const outcomesAjax = (function () {
       throw new Error(error.responseText);
     }
   }
+  async function getAllGoalTypes() {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getAllGoalTypes/',
+        data: JSON.stringify({
+          token: $.session.Token,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return result.getAllGoalTypesResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
 
 
   return {
@@ -786,6 +811,7 @@ const outcomesAjax = (function () {
     insertOutcomeServiceInfoAsync,
     getLocationDropDownAsync,
     // Review
-    getReviewTableData
+    getReviewTableData,
+    getAllGoalTypes
   };
 })();

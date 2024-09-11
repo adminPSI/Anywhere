@@ -725,10 +725,12 @@ const consumerInfo = (function () {
             style: "secondary",
             classNames: 'disabled',
             callback: async () => {
-                await editRelationshipSaveData();
-                POPUP.hide(editRelationshipPopup);
-                showCard(tempConsumer);
-                setupCard('Relationships');
+                if (!saveRelationshipBtn.classList.contains('disabled')) {
+                    await editRelationshipSaveData();
+                    POPUP.hide(editRelationshipPopup);
+                    showCard(tempConsumer);
+                    setupCard('Relationships');
+                }
             },
         });
 
@@ -860,6 +862,7 @@ const consumerInfo = (function () {
             var hasA = hasADropdownN[i].querySelector('#hasADropdownN' + i);
             var whoIs = whoIsDropdownN[i].querySelector('#whoIsDropdownN' + i);
             var startDate = startDateInputN[i].querySelector('#startDateInputN' + i);
+            var endDate = endDateInputN[i].querySelector('#endDateInputN' + i);
 
             if (hasA.value === '') {
                 hasADropdownN[i].classList.add('errorPopup');
@@ -873,7 +876,7 @@ const consumerInfo = (function () {
                 whoIsDropdownN[i].classList.remove('errorPopup');
             }
 
-            if (startDate.value === '') {
+            if (startDate.value === '' || (endDate.value != '' && startDate.value > endDate.value)) {
                 startDateInputN[i].classList.add('errorPopup');
             } else {
                 startDateInputN[i].classList.remove('errorPopup');
@@ -942,18 +945,21 @@ const consumerInfo = (function () {
             }
         }
 
-        for (let i = 0; i < consumerRelationships.length; i++) {
-            for (let j = 0; j < consumerRelationshipsNew.length; j++) {
-                let endDateFormat = consumerRelationships[i].endDate == '' ? '' : moment(consumerRelationships[i].endDate).format('YYYY-MM-DD');
-                archiveConsumerRelationships[i].endDate = endDateFormat;
+
+        for (let j = 0; j < consumerRelationshipsNew.length; j++) {
+            for (let i = 0; i < consumerRelationships.length; i++) {  
+
+                archiveConsumerRelationships[i].endDate = consumerRelationships[i].endDate == '' ? '' : moment(consumerRelationships[i].endDate).format('YYYY-MM-DD');
                 archiveConsumerRelationships[i].startDate = moment(consumerRelationships[i].startDate).format('YYYY-MM-DD');
-                if (endDateFormat == consumerRelationshipsNew[j].endDate && consumerRelationships[i].personID == consumerRelationshipsNew[j].personID
+
+                if (archiveConsumerRelationships[i].endDate == consumerRelationshipsNew[j].endDate && consumerRelationships[i].personID == consumerRelationshipsNew[j].personID
                     && moment(consumerRelationships[i].startDate).format('YYYY-MM-DD') == consumerRelationshipsNew[j].startDate && consumerRelationships[i].typeID == consumerRelationshipsNew[j].typeID) {
-                    archiveConsumerRelationships.splice(i, 1);
+                    const index = archiveConsumerRelationships.indexOf(archiveConsumerRelationships[i]);
+                    archiveConsumerRelationships.splice(index, 1);
                 }
             }
+        }
 
-        } 
         rosterAjax.insertEditRelationship(consumerRelationshipsNew, archiveConsumerRelationships, consumerId);
         resetPopupValues();
     }
