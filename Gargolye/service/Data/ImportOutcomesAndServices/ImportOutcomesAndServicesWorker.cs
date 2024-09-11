@@ -35,6 +35,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         public string HowOftenHowMuch { get; set; }
         public string BeginDateEndDate { get; set; }
         public string FundingSource { get; set; }
+        public string ProviderName { get; set; }
     }
 
     public class AdditionalSupports
@@ -425,6 +426,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             var paidSupportsList = new List<PaidSupports>();
             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             string[] firstTwoLinesArray = firstTwoLines.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            string providerName = string.Empty; // Variable to store provider name
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -444,6 +446,20 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                     if (headersFound)
                     {
+                        // Reverse search for "Who is Responsible:" and capture the next line
+                        for (int k = i - 1; k >= 0; k--)
+                        {
+                            if (lines[k].Contains("Who is responsible:"))
+                            {
+                                // Ensure that there's a next line after "Who is Responsible:"
+                                if (k + 1 < lines.Length)
+                                {
+                                    providerName = lines[k + 1].Trim(); // Capture the next line as providerName
+                                }
+                                break; // Exit the reverse search once found
+                            }
+                        }
+
                         i += paidSupportsHeaders.Count; // Move past the headers
                         while (i < lines.Length)
                         {
@@ -465,6 +481,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                             var paidSupport = new PaidSupports
                             {
+                                ProviderName = providerName, // Assign providerName to each row
                                 AssessmentArea = assessmentArea,
                                 ServiceName = GetNextLine(lines, ref i),
                                 ScopeOfService = GetNextLine(lines, ref i),
