@@ -176,7 +176,7 @@ const planAjax = (function () {
       });
       return data.insertAutomatedWorkflowsResult;
     } catch (error) {
-      console.log(error.responseText);
+      console.log(error.responseText);//
     }
   }
   async function addSelectedAttachmentsToReport(retrieveData) {

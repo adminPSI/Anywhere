@@ -383,7 +383,7 @@ namespace Anywhere
 
         public string getAllGoalTypes(string token)
         {
-            return getAllGoalTypes(token);
+            return dg.getAllGoalTypes(token);
         }
 
         public string getSingleEntry(string token)
