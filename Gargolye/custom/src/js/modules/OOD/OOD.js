@@ -867,7 +867,7 @@ const OOD = (() => {
             serviceCodeId: filterValues.serviceId,
             startDate: createFilterValues.serviceDateStart,
             endDate: createFilterValues.serviceDateEnd,
-            userId: filterValues.userId
+            userId: createFilterValues.userId
         };
     
         try {
@@ -1273,6 +1273,18 @@ const OOD = (() => {
         dropdown.populate('employeeDropdown', data, filterValues.userId);
     }
 
+    async function populateCreateEmployeeDropdown() {
+        const { getActiveEmployeesResult: employees } = await OODAjax.getActiveEmployeesAsync();
+        // const templates = WorkflowViewerComponent.getTemplates();
+        let data = employees.map(employee => ({
+            id: employee.userId,
+            value: employee.userId,
+            text: employee.userName,
+        }));
+        data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
+        dropdown.populate('employeeDropdown', data, createFilterValues.userId);
+    }
+
     // Populate the Service Code DDL on the Filter Popup Window
     async function populateServiceCodeDropdown() {
         const { getActiveServiceCodesResult: services } = await OODAjax.getActiveServiceCodesAsync(
@@ -1437,7 +1449,7 @@ const OOD = (() => {
             serviceDateStart: thisStartDate.toISOString().split('T')[0],
             serviceDateEnd: thisEndDate.toISOString().split('T')[0],
 
-            // userId: $.session.UserId,
+             userId: '%',
             // userName: $.session.LName + ', ' + $.session.Name,
             // serviceId: '%',
             // serviceName: '',
@@ -1454,6 +1466,7 @@ const OOD = (() => {
         employeeDropdown = dropdown.build({
             label: 'Employee',
             dropdownId: 'employeeDropdown',
+          // value: createFilterValues.userId,
         });
 
         createServiceDateStartInput = input.build({
@@ -1503,7 +1516,7 @@ const OOD = (() => {
             createfilterPopup.appendChild(createreferenceNumbersDropdown);
             createfilterPopup.appendChild(btnWrap);
 
-        populateEmployeeDropdown();
+        populateCreateEmployeeDropdown();
         populatecreateReferenceNumberDropdown(formNumber);
         createeventListeners(formNumber);
         // setupFilterEvent();
@@ -1548,8 +1561,8 @@ const OOD = (() => {
             }
         });
         employeeDropdown.addEventListener('change', event => {
-            filterValues.userId = event.target.value;
-            filterValues.userName = event.target.options[event.target.selectedIndex].text;
+            createFilterValues.userId = event.target.value;
+            createFilterValues.userName = event.target.options[event.target.selectedIndex].text;
         });
      
         createreferenceNumbersDropdown.addEventListener('change', event => {
