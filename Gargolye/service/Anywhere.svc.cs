@@ -381,6 +381,11 @@ namespace Anywhere
             return dg.deleteGoal(token, activityId);
         }
 
+        public string getAllGoalTypes(string token)
+        {
+            return getAllGoalTypes(token);
+        }
+
         public string getSingleEntry(string token)
         {
             return dg.getSingleEntry(token);
