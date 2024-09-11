@@ -22,8 +22,7 @@ const rosterAjax = (function () {
         var retrieveId =
             groupCode === 'CST' || groupCode === 'TRA' || groupCode === 'NAT'  
                 ? data.selectedGroupId
-                : data.selectedLocationId;
-        retrieveId = groupCode === 'CAS' ? '0' : retrieveId; 
+                : data.selectedLocationId;         
         var date = data.selectedDate;
         var daysBackDate = convertDaysBack($.session.defaultProgressNoteReviewDays);
 
@@ -439,7 +438,7 @@ const rosterAjax = (function () {
         }
     }
 
-    async function insertEditRelationship(consumerRelationshipsNew, consumerRelationships) {
+    async function insertEditRelationship(consumerRelationshipsNew, consumerRelationships, consumerId) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -456,7 +455,8 @@ const rosterAjax = (function () {
                     token: $.session.Token,
                     userId: $.session.UserId,
                     consumerRelationshipsNewList: consumerRelationshipsNew,
-                    consumerRelationshipsList: consumerRelationships
+                    consumerRelationshipsList: consumerRelationships,
+                    consumerId: consumerId
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
