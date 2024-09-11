@@ -1,12 +1,60 @@
-//TODO: refactor god awful sort functions
 const outcomesReview = (function () {
   let selectedConsumerId;
   let locations;
   let successTypes;
-  let date;
+  let goalTypes;
+
+  let tabSections;
+
+  // Util
+  //----------------------------------------------------
+  async function getReviewTableData() {
+    const data = await outcomesAjax.getReviewTableData({
+      consumerId: '4365',
+      startDate: '2024/07/01',
+      endDate: '2024/10/01',
+    });
+
+    outcomesData = data.reduce((a, d) => {
+      const occurrence = d.objectiveRecurrance ?? 'NF';
+
+      if (!a[occurrence]) {
+        a[occurrence] = [];
+      }
+
+      a[occurrence].push(d);
+
+      return a;
+    }, {});
+  }
+
+  // Mini Roster
+  //----------------------------------------------------
+  async function handleActionNavEvent(target) {
+    if (target.dataset.actionNav === 'miniRosterCancel') {
+      DOM.toggleNavLayout();
+    }
+
+    if (target.dataset.actionNav === 'miniRosterDone') {
+      DOM.toggleNavLayout();
+      PROGRESS.SPINNER.show('Loading...');
+
+      const activeConsumers = roster2.getActiveConsumers();
+      selectedConsumerId = activeConsumers[0].id;
+
+      // rebuild & populate tabs/tables
+      const outcomeTabs = buildTabs();
+      outcomesReview.appendChild(outcomeTabs);
+
+      await getReviewTableData();
+
+      populateTabSections();
+    }
+  }
 
   // Filtering
   //----------------------------------------------------
+  // current filter display
   function updateCurrentFilterDisplay(service, outcomeType) {
     var currentFilterDisplay = document.querySelector('.filteredByData');
 
@@ -106,48 +154,90 @@ const outcomesReview = (function () {
     outcomeTypeBtnWrap.appendChild(outcomeTypeCloseBtn);
     btnWrap.appendChild(outcomeTypeBtnWrap);
   }
-  function showFilterPopup(IsShow) {
-    filterPopup = POPUP.build({});
-
-    serviceDropdown = dropdown.build({
-      label: 'Service',
-      style: 'secondary',
-      readonly: false,
-    });
-    outcomeDropdown = dropdown.build({
+  // filter popup
+  function filterOutcomes() {}
+  function applyFilter() {
+    updateCurrentFilterDisplay(); //TODO: pass new service and type
+    filterOutcomes();
+  }
+  async function buildTypesDropdown() {
+    const typesDrop = dropdown.build({
       dropdownId: 'outcomeDropdown',
       label: 'Outcome Type',
       style: 'secondary',
       readonly: false,
     });
-    applyButton = button.build({
+
+    typesDrop.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+    });
+
+   
+    const data = goalTypes.map(type => {
+      return {
+        value: type.Goal_Type_ID,
+        text: type.goal_type_description,
+      };
+    });
+    data.unshift({ value: '%', text: 'All' });
+    dropdown.populate(typesDrop, data, '%');;
+
+    return typesDrop;
+  }
+  function buildServiceDropdown() {
+    const servDrop = dropdown.build({
+      label: 'Service',
+      style: 'secondary',
+      readonly: false,
+    });
+
+    const data = [
+      { value: 'All', text: 'All' },
+      { value: 'Complete', text: 'Complete' },
+      { value: 'Incomplete', text: 'Incomplete' },
+    ];
+    dropdown.populate(servDrop, data, 'All');
+
+    serviceDropdown.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+    });
+
+    return servDrop;
+  }
+  function showFilterPopup(IsShow) {
+    filterPopup = POPUP.build({});
+
+    const serviceDropdown = buildServiceDropdown();
+    const typesDropdown = buildTypesDropdown();
+    const applyButton = button.build({
       text: 'Apply',
       style: 'secondary',
       type: 'contained',
     });
-
     applyButton.classList.add('singleBtn');
-    if (IsShow == 'ALL' || IsShow == 'serviceBtn') filterPopup.appendChild(serviceDropdown);
-    if (IsShow == 'ALL' || IsShow == 'outcomeTypeBtn') filterPopup.appendChild(outcomeDropdown);
-    filterPopup.appendChild(applyButton);
+    applyButton.addEventListener('click', () => {
+      applyFilter();
+      POPUP.hide(filterPopup);
+    });
 
-    populateDropdowns();
-    setupFilterEvents();
+    if (IsShow == 'ALL' || IsShow == 'serviceBtn') filterPopup.appendChild(serviceDropdown);
+    if (IsShow == 'ALL' || IsShow == 'outcomeTypeBtn') filterPopup.appendChild(typesDropdown);
+    filterPopup.appendChild(applyButton);
 
     POPUP.show(filterPopup);
   }
 
-  function buildFilterDates() {
+  function buildFilterDates(unitType) {
     const dateToggle = `
       <div class="dateFilterToggle">
-        <button id="days-back-btn" class="active">Days Back</button>
+        <button id="days-back-btn" class="active">${unitType} Back</button>
         <button id="date-range-btn">Date Range</button>
       </div>
     `;
 
     const dateInputs = `
       <div id="daysBack">
-        <label for="daysBack">Days Back:</label>
+        <label for="daysBack">${unitType} Back:</label>
         <input type="number" id="daysBack" name="daysBack" min="1" />
       </div>
 
@@ -160,7 +250,7 @@ const outcomesReview = (function () {
     `;
   }
 
-  // 
+  // Detail View
   //----------------------------------------------------
   function buildPrimaryLocationDropdown(locId) {
     var select = dropdown.build({
@@ -261,34 +351,6 @@ const outcomesReview = (function () {
     const deleteBtn = buildDeleteButton();
   }
 
-  //
-  //----------------------------------------------------
-  function buildTabs(outcomesData = {}) {
-    const sections = [];
-    const noFreqOutcomes = outcomesData['NF'];
-    const hourlyOutcomes = outcomesData['H'];
-    const dailyOutcomes = outcomesData['D'];
-    const weeklyOutcomes = outcomesData['W'];
-    const monthlyOutcomes = outcomesData['M'];
-    const yearlyOutcomes = outcomesData['Y'];
-
-    if (noFreqOutcomes) sections.push('No Frequency');
-    if (hourlyOutcomes) sections.push('Hourly');
-    if (dailyOutcomes) sections.push('Daily');
-    if (weeklyOutcomes) sections.push('Weekly');
-    if (monthlyOutcomes) sections.push('Monthly');
-    if (yearlyOutcomes) sections.push('Yearly');
-
-    const outcomeTabs = tabs.build({
-      sections,
-      active: 0,
-      tabNavCallback: function (data) {
-        currentSection = data.activeSection;
-        setUpOutcomesTabSpans();
-      },
-    });
-  }
-
   // Table
   //----------------------------------------------------
   function sortOutcomeLocations(results) {
@@ -344,18 +406,18 @@ const outcomesReview = (function () {
     // TODO: get Goal_Type_ID
     const getSuccessTypes = new Promise((resolve, reject) => {
       outcomesAjax.getOutcomesSuccessTypes(outcome.Goal_Type_ID, results => {
-        sortSuccessTypes(results)
+        sortSuccessTypes(results);
         resolve('success');
       });
-    })
-    
+    });
+
     const getLocations = new Promise((resolve, reject) => {
       outcomesAjax.getOutcomesPrimaryAndSecondaryLocations(selectedConsumerId, date, results => {
         sortOutcomeLocations(results);
         resolve('success');
       });
     });
-    
+
     // TODO: get activityID
     const getActivity = new Promise((resolve, reject) => {
       outcomesAjax.getObjectiveActivity(activityId, results => {
@@ -371,7 +433,6 @@ const outcomesReview = (function () {
   function buildTable() {
     const table = _DOM.createElement('table');
 
-    
     // const toggleIcon = document.createElement('div');
     // toggleIcon.classList.add('');
     // toggleIcon.innerHTML = icons['keyArrowRight'];
@@ -379,15 +440,69 @@ const outcomesReview = (function () {
     return table;
   }
 
-  function init(consumerId) {
-    DOM.clearActionCenter();
-    PROGRESS.SPINNER.show('Loading Outcomes...');
+  // Tabs
+  //----------------------------------------------------
+  function buildTabs() {
+    tabSections = {};
 
-    selectedConsumerId = consumerId;
-    date = UTIL.getTodaysDate();
+    if (outcomesData.hasOwnProperty('NF')) tabSections['NF'] = 'No Frequency';
+    if (outcomesData.hasOwnProperty('H')) tabSections['H'] = 'Hourly';
+    if (outcomesData.hasOwnProperty('D')) tabSections['D'] = 'Daily';
+    if (outcomesData.hasOwnProperty('W')) tabSections['W'] = 'Weekly';
+    if (outcomesData.hasOwnProperty('M')) tabSections['M'] = 'Monthly';
+    if (outcomesData.hasOwnProperty('Y')) tabSections['Y'] = 'Yearly';
+
+    return tabs.build({
+      sections: Object.keys(tabSections),
+      active: 0,
+      tabNavCallback: function (data) {
+        console.log(data);
+      },
+    });
+  }
+  function populateTabSections() {
+    for (const key in outcomesData) {
+      const sectionID = tabSections[key];
+      const section = document.getElementById(sectionID);
+      section.innerHTML = '';
+      
+      const sectionTable = buildTable(outcomesData[key]);
+
+      section.appendChild(sectionTable);
+    }
+  }
+
+  // Main
+  //----------------------------------------------------
+  async function init(consumer) {
+    console.clear();
+
+    selectedConsumerId = consumer.id;
+
+    setActiveModuleSectionAttribute('outcomes-review');
+    DOM.clearActionCenter();
+    
+    const outcomesReview = document.createElement('div');
+    outcomesReview.classList.add('outcomesReview');
+    const outcomeTabs = buildTabs();
+    outcomesReview.appendChild(outcomeTabs);
+    DOM.ACTIONCENTER.appendChild(outcomesReview);
+
+    await getReviewTableData();
+
+    populateTabSections();
+    
+    goalTypes = await outcomesAjax.getAllGoalTypes();
+
+    roster2.setAllowedConsumers(['%']);
+    roster2.addConsumerToActiveConsumers(consumer.card);
+    roster2.miniRosterinit(null, {
+      hideDate: true,
+    });
   }
 
   return {
     init,
+    handleActionNavEvent
   };
 })();

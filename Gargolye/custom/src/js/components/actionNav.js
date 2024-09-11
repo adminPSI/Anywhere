@@ -84,7 +84,12 @@ var ACTION_NAV = (function () {
                 break;
             }
             case 'outcomes': {
-                outcomes.handleActionNavEvent(target);
+                if (activeSection === 'outcomes-review') {
+                    outcomesReview.handleActionNavEvent(target);
+                } else {
+                    outcomes.handleActionNavEvent(target);
+                }
+                
                 clear();
                 hide();
                 break;

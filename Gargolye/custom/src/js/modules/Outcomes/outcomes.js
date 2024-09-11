@@ -92,6 +92,10 @@ const outcomes = (function () {
   let tmpOutcomeId;
   let editOutcomeBtn;
 
+  function getAllowedConsumerIds() {
+    return allowedConsumerIds;
+  }
+
   // Workers
   //------------------------------------
   function disableNewOutcomeFields() {
@@ -1913,42 +1917,6 @@ const outcomes = (function () {
       topFilterDateWrap.appendChild(dateInput);
     }
 
-    // function getFilterValues() {
-    //   return (filterValues = {
-    //     outcomesService: currService ? currService : 'All',
-    //     outcomesType: currOutcomeId ? currOutcomeId : '0',
-    //     outcomesConsumer: selectedConsumerId,
-    //     outcomesDate: currDate,
-    //   });
-    // }
-    // Helper function to create the main reports button on the module page
-    // function createMainReportButton(buttonsData) {
-    //   return button.build({
-    //     text: 'Reports',
-    //     icon: 'add',
-    //     style: 'secondary',
-    //     type: 'contained',
-    //     classNames: 'reportBtn',
-    //     callback: function () {
-    //       // Iterate through each item in the buttonsData array
-    //       buttonsData.forEach(function (buttonData) {
-    //         buttonData.filterValues = getFilterValues();
-    //       });
-
-    //       generateReports.showReportsPopup(buttonsData);
-    //     },
-    //   });
-    // }
-    // let filterValues = {
-    //   // outcomesService: outcome.Objective_id,
-    //   outcomesConsumer: selectedConsumerId,
-    //   outcomesDate: currDate,
-    // };
-    // reportsBtn = createMainReportButton([
-    //   { text: 'Documentation - Completed With Percentages', filterValues },
-    //   { text: 'Outcome Activity - With Community Integration by Employee, Consumer, Date', filterValues },
-    // ]);
-
     reportsBtn = button.build({
       text: 'Reports',
       icon: 'add',
@@ -1987,7 +1955,7 @@ const outcomes = (function () {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        outcomesReview.init(selectedConsumerId)
+        outcomesReview.init(selectedConsumerObj)
       }
     })
     topFilterDateWrap.appendChild(editOutcomeBtn);
@@ -2077,6 +2045,7 @@ const outcomes = (function () {
         showAlertIcon: showAlert,
       };
     });
+    allowedConsumerIds = consumerIds;
 
     roster2.setAllowedConsumers(consumerIds);
     if (initLoad) {
@@ -2131,5 +2100,6 @@ const outcomes = (function () {
     dashHandler,
     init,
     backToOutcomeLoad,
+    getAllowedConsumerIds
   };
 })();
