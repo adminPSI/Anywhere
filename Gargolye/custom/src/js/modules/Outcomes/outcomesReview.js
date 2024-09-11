@@ -16,7 +16,7 @@ const outcomesReview = (function () {
     });
 
     outcomesData = data.reduce((a, d) => {
-      const occurrence = d.objectiveRecurrance ?? 'NF';
+      const occurrence = d.objectiveRecurrance || 'NF';
 
       if (!a[occurrence]) {
         a[occurrence] = [];
@@ -490,7 +490,7 @@ const outcomesReview = (function () {
 
     await getReviewTableData();
 
-    populateTabSections();
+    //populateTabSections();
     
     goalTypes = await outcomesAjax.getAllGoalTypes();
 
