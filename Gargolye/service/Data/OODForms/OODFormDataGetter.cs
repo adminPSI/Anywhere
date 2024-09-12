@@ -118,6 +118,14 @@ namespace OODForms
             sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}' AND dba.EM_Job_Task.Task_Number > 7 ", AuthorizationNumber);
             sb.AppendFormat("AND dba.Case_Notes.Service_Date between '{0}' and '{1}' ", StartDate, EndDate);
             sb.Append("GROUP BY Case_Notes.Case_Note_ID, Emp_OOD.Position_ID, Emp_OOD.Employer_ID ");
+            sb.Append("Union ");
+            sb.Append("Select Case_Notes.Case_Note_ID, Emp_OOD.Position_ID, Emp_OOD.Employer_ID FROM dba.Employer ");
+            sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.Employer.Employer_ID = dba.EMP_OOD.Employer_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+            sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.AppendFormat("AND dba.Case_Notes.Service_Date between '{0}' and '{1}' ", StartDate, EndDate);
+            sb.Append("GROUP BY Case_Notes.Case_Note_ID, Emp_OOD.Position_ID, Emp_OOD.Employer_ID ");
             //  return di.SelectRowsDS(sb.ToString());
             dsPositionIds = di.SelectRowsDS(sb.ToString());
             
@@ -126,11 +134,14 @@ namespace OODForms
             {
                 foreach (DataRow row in dsPositionIds.Tables[0].Rows)
                 {
-                    long thispositionid = (long)row["Position_ID"];
-                    if (thispositionid > 0)
+                    if (row["Position_ID"].ToString() != "0" && row["Position_ID"].ToString() != "" && row["Position_ID"] != null)
                     {
-                        positionIds.Add(thispositionid);
-                    }          
+                        long thispositionid = (long)row["Position_ID"];
+                        if (thispositionid > 0)
+                        {
+                            positionIds.Add(thispositionid);
+                        }
+                    }            
                 }
 
                 foreach (DataRow row in dsPositionIds.Tables[0].Rows)
