@@ -14,6 +14,7 @@
     let templateDropdown;
     let typeDropdown;
     let doneBtn;
+    let formIds = [];
 
     async function handleActionNavEvent(target) {
         const targetAction = target.dataset.actionNav;
@@ -248,7 +249,7 @@
         selectTemplatePopup.appendChild(btnWrap);
 
         populateTypeDropdown();
-        populateDropdown('0'); 
+        populateDropdown('0');
 
         // validation of templateDropdown
         templateId = templateDropdown.value;
@@ -262,18 +263,18 @@
             setBtnStatus();
         });
 
-        typeDropdown.addEventListener('change', e => { 
-            typeId = e.target.value; 
-            populateDropdown(typeId);
+        typeDropdown.addEventListener('change', async e => {
+            typeId = e.target.value;
+            await populateDropdown(typeId);
             templateDropdownValidation();
-            setBtnStatus(); 
+            setBtnStatus();
         });
 
         POPUP.show(selectTemplatePopup);
         setBtnStatus();
     }
 
-    function templateDropdownValidation() {
+    function templateDropdownValidation() {  
         var templateDropdownOptions = document.getElementById('templateDropdown');
         templateId = templateDropdownOptions.options[templateDropdownOptions.selectedIndex].value;
         if (templateId === '') {
@@ -312,16 +313,16 @@
     }
 
     // Populate the DDL on the Type Form Popup Window
-    async function populateTypeDropdown(){
+    async function populateTypeDropdown() {
         const {
             getFormTypeResult: FormType,
-        } = await formsAjax.getFormTypeAsync();       
+        } = await formsAjax.getFormTypeAsync();
         let data = FormType.map((formType) => ({
             id: formType.formTypeId,
             value: formType.formTypeId,
             text: formType.formTypeDescription
         }));
-        data.unshift({ id: null, value: '0', text: 'ALL' }); 
+        data.unshift({ id: null, value: '0', text: 'ALL' });
         dropdown.populate("typeDropdown", data, '0');
     }
 
@@ -336,6 +337,7 @@
 
         // Array to store unique template objects
         const uniqueForms = [];
+        formIds = []; 
 
         // Iterate over the templates array
         templates.forEach(template => {
@@ -345,6 +347,9 @@
             if (!exists) {
                 uniqueForms.push(template);
             }
+
+            if (typeId != '0')
+                formIds.push(template.formTemplateId);
         });
 
         // Prepare data for dropdown
@@ -353,15 +358,15 @@
             value: template.formTemplateId,
             text: template.formType + ' -- ' + template.formDescription,
         }));
-  
-        if (typeId == '0') {
+
+        if (typeId == '0' || templates.length == 0) { 
             data.unshift({ id: null, value: '', text: '' }); // Add blank value
             dropdown.populate('templateDropdown', data);
         }
         else {
             data.unshift({ id: null, value: '0', text: 'ALL' }); // Add blank value
             dropdown.populate('templateDropdown', data, '0');
-        }          
+        }
     }
 
 
@@ -427,16 +432,24 @@
             }
         }
 
-        formsAjax.openFormEditor(
-            formId,
-            documentEdited,
-            consumerId,
-            isRefresh,
-            isTemplate,
-            $.session.applicationName,
-            formCompleteDate,
-            isFormLocked,
-        );
+        if (formId == '0') {         
+            await formsAjax.insertSeveralConsumerFormAsync($.session.UserId, consumerId, formIds, isTemplate, formCompleteDate); 
+            POPUP.hide(formPopup);
+            forms.loadPDFFormsLanding();  
+        }
+        else {
+            formsAjax.openFormEditor(
+                formId,
+                documentEdited,
+                consumerId,
+                isRefresh,
+                isTemplate,
+                $.session.applicationName,
+                formCompleteDate,
+                isFormLocked,
+            );
+        }
+
         isFormLocked = false;
     }
 

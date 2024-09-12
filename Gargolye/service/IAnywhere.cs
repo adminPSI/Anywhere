@@ -4109,6 +4109,14 @@ namespace Anywhere
           UriTemplate = "/insertConsumerForm/")]
         Anywhere.service.Data.FormWorker.consumerForm insertConsumerForm(string token, string userId, string consumerId, string formtemplateid, string formdata, string formCompleteDate);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/insertSeveralConsumerForm/")]
+        Anywhere.service.Data.FormWorker.consumerForm insertSeveralConsumerForm(string token, string userId, string consumerId, string[] formtemplateid, string isTemplate, string formCompleteDate);
+
 
         [OperationContract]
         [WebInvoke(Method = "POST",

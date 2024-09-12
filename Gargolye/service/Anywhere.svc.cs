@@ -2853,6 +2853,10 @@ namespace Anywhere
             return fw.insertConsumerForm(token, userId, consumerId, formtemplateid, formdata, formCompleteDate);
         }
 
+        public Anywhere.service.Data.FormWorker.consumerForm insertSeveralConsumerForm(string token, string userId, string consumerId, string[] formtemplateid, string isTemplate, string formCompleteDate)
+        {
+            return fw.insertSeveralConsumerForm(token, userId, consumerId, formtemplateid, isTemplate, formCompleteDate);
+        }
         public Anywhere.service.Data.FormWorker.consumerForm updateConsumerForm(string token, string formId, string formdata, string documentEdited)
         {
             return fw.UpdateConsumerForm(token, formId, formdata, documentEdited);
@@ -4033,7 +4037,7 @@ namespace Anywhere
 
         public OutcomesWorker.OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string startDate, string endDate)
         {
-            return outcomesWorker.getOutcomesReviewGrid( token,  consumerId,  startDate,  endDate);
+            return outcomesWorker.getOutcomesReviewGrid(token, consumerId, startDate, endDate);
         }
 
         public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
