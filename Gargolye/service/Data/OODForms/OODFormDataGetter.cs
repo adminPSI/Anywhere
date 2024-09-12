@@ -50,6 +50,15 @@ namespace OODForms
             sb.AppendFormat("WHERE Vendor_ID = {0} ", VendorID);
             return di.SelectRowsDS(sb.ToString());
         }
+
+        public DataSet getPersonCompletingReport(string userId)
+        {
+            sb.Clear();
+            sb.Append("select * from Persons where Person_ID = ");
+            sb.AppendFormat("(select people_id from users_groups where user_id = '{0}') ", userId);
+            return di.SelectRowsDS(sb.ToString());
+        }
+
         public DataSet OODForm8GetDirectStaff(string AuthorizationNumber, string StartDate, string EndDate)
         {
             sb.Clear();

@@ -1014,7 +1014,7 @@ namespace OODForms
                 string MiddleName = string.Empty;
                 DataSet ds = obj.OODForm8GetDirectStaff(AuthorizationNumber, StartDate, EndDate);
 
-                WS.Cell("G6").Value = personCompletingReport;
+              
 
                 if (ds.Tables.Count > 0)
                 {
@@ -1058,6 +1058,13 @@ namespace OODForms
                     }
 
                 }
+
+                DataSet ds3 = obj.getPersonCompletingReport(userID);
+                if (ds3.Tables.Count > 0 && ds3.Tables[0].Rows.Count > 0)
+                {
+                    WS.Cell("G6").Value = String.Format("{0} {1} ", ds3.Tables[0].Rows[0]["First_Name"], ds3.Tables[0].Rows[0]["Last_Name"]);
+                }
+
 
                 WS.Cell("G7").Value = OODStaff;
 
