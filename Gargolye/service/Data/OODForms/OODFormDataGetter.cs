@@ -377,7 +377,7 @@ namespace OODForms
         //on the OOD Landing Page 
         public string getEmploymentGoal(string peopleId)
         {
-            string rv = "No Employment Goals on record.";
+            string rv = "";
 
             // select service_goals from em_employee_general where People_Id = 4139
 
