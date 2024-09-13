@@ -1543,17 +1543,17 @@ namespace OODForms
 
                         if (row["VTS_Review"].ToString().ToUpper() == "Y")
                         {
-                            WS.Cell("G87").Value = "Yes";						//*************BOTTOM3.  Provider's Summary and Recommendations
+                            WS.Cell("G89").Value = "Yes";						//*************BOTTOM3.  Provider's Summary and Recommendations
                         }
                         else
                         {
-                            WS.Cell("G87").Value = "No";						//*************BOTTOM3.  
+                            WS.Cell("G89").Value = "No";						//*************BOTTOM3.  
                         }
                     }
                 }
 
                 // Have you reviewed the Vocational Training Stipend(VTS) with the individual?
-                WS.Cell("G89").Value = "Yes";
+                // WS.Cell("G89").Value = "Yes";
 
                 // Create Attachment from  the XLS SPREADSHEET********************************************************************************************************	
 
