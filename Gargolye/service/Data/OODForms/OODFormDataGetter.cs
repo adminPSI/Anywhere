@@ -61,33 +61,47 @@ namespace OODForms
 
         public DataSet OODForm8GetDirectStaff(string AuthorizationNumber, string StartDate, string EndDate)
         {
+            List<long> positionIds = new List<long>();
+
             sb.Clear();
             sb.Append("SELECT DISTINCT  dba.EM_Job_Task.Position_ID ");
             sb.Append("FROM dba.EM_Job_Task ");
             sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-            sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.AppendFormat("WHERE   dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
             sb.Append("AND dba.EM_Job_Task.Task_Number > 7 ");
             sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
             sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
-            long PosNumber = 0;
+           // long PosNumber = 0;
             DataSet ds = di.SelectRowsDS(sb.ToString());
-            if (ds.Tables.Count > 0)
+            if (ds.Tables.Count > 0 )
             {
                 if (ds.Tables[0].Rows.Count > 0)
                 {
-                    PosNumber = (long)ds.Tables[0].Rows[0]["Position_ID"];
-
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        if (row["Position_ID"].ToString() != "0" && row["Position_ID"].ToString() != "" && row["Position_ID"] != null)
+                        {
+                            long thispositionid = (long)row["Position_ID"];
+                            if (thispositionid > 0)
+                            {
+                                positionIds.Add(thispositionid);
+                            }
+                        }
+                    }
+                    
                 }
             }
+
+            string posNumbersString = string.Join(",", positionIds);
 
             sb.Clear();
             sb.Append("SELECT DISTINCT   dba.Persons.Last_Name, dba.Persons.First_Name, dba.Persons.Middle_Name, '' AS Initials ");
             sb.Append("FROM dba.EMP_OOD ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Persons.Person_ID = dba.Case_Notes.Case_Manager_ID ");
-            sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID = {0} ", PosNumber);
+            sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID in ({0}) ", posNumbersString);
             sb.Append("AND Last_Name > '' and First_Name > '' ");
             sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
             ds = di.SelectRowsDS(sb.ToString());
