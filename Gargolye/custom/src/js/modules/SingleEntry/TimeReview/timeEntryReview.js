@@ -892,7 +892,7 @@ var timeEntryReview = (function () {
             style: 'secondary',
             type: 'contained',
             callback: function () {
-                reports.init(payPeriod);
+                reports.init(payPeriod, false);
             },
         });
 
