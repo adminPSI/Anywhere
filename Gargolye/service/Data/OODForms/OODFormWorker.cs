@@ -942,7 +942,7 @@ namespace OODForms
             }
         }
 
-        public string generateForm16(string token, string AuthorizationNumber, string consumerIDString, string StartDate, string EndDate, string serviceCode, string userID)
+        public string generateForm16(string token, string AuthorizationNumber, string consumerIDString, string StartDate, string EndDate, string serviceCode, string userID, string loggedInUserPersonId)
         {
             try
             {
@@ -1058,8 +1058,16 @@ namespace OODForms
                     }
 
                 }
+                DataSet ds3 = new DataSet();
 
-                DataSet ds3 = obj.getPersonCompletingReport(userID);
+                if (!string.IsNullOrEmpty(loggedInUserPersonId)) {
+
+                   // long lng_loggedInUserPersonId = long.Parse(loggedInUserPersonId);
+                    ds3 = obj.getPersonCompletingReport(token, loggedInUserPersonId);
+                }
+                
+
+
                 if (ds3.Tables.Count > 0 && ds3.Tables[0].Rows.Count > 0)
                 {
                     WS.Cell("G6").Value = String.Format("{0} {1} ", ds3.Tables[0].Rows[0]["First_Name"], ds3.Tables[0].Rows[0]["Last_Name"]);

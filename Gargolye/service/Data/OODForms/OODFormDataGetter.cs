@@ -17,6 +17,7 @@ using iTextSharp.text.pdf;
 using System.Linq.Expressions;
 using Microsoft.Extensions.Primitives;
 using static Anywhere.service.Data.AnywhereWorkshopWorkerTwo;
+using System.Management.Automation.Language;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -51,11 +52,13 @@ namespace OODForms
             return di.SelectRowsDS(sb.ToString());
         }
 
-        public DataSet getPersonCompletingReport(string userId)
+        public DataSet getPersonCompletingReport(string token, string loggedInUserPersonId)
         {
             sb.Clear();
-            sb.Append("select * from Persons where Person_ID = ");
-            sb.AppendFormat("(select people_id from users_groups where user_id = '{0}') ", userId);
+            sb.AppendFormat("select * from Persons where Person_Id = {0}", loggedInUserPersonId);
+            //sb.AppendFormat("(select User_ID from ANYW_TOKENS where Token = '{0}' ) ", token);
+           // sb.AppendFormat("(select Person_id from People where ID = {0}", loggedInUserPersonId);
+            //sb.AppendFormat("(select people_id from users_groups where user_id = '{0}') ", userId);
             return di.SelectRowsDS(sb.ToString());
         }
 
@@ -430,7 +433,7 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-            sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.AppendFormat("WHERE   dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
             sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
             string listPosNumber = string.Empty;
             DataSet ds = di.SelectRowsDS(sb.ToString());
@@ -467,7 +470,11 @@ namespace OODForms
             sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID in ({0}) ", lstPositionstr);
             sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
             sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
-            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+            if (userId != "%25")
+            {
+                sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+            }
+            
             sb.Append(" ORDER BY Service_Date ASC");
             //sb.Append("AND Last_Name > '' ");
             ds = di.SelectRowsDS(sb.ToString());
@@ -501,7 +508,7 @@ namespace OODForms
                 sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
                 sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
                 sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-                sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+                sb.AppendFormat("WHERE   dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
                 sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
                 string listPosNumber = string.Empty;
                 DataSet ds = di.SelectRowsDS(sb.ToString());
@@ -532,7 +539,12 @@ namespace OODForms
                 sb.AppendFormat("WHERE Em_work_schedule.Position_ID in ({0}) ", lstPositionstr); //lstPositionstr
                 sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
                 sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
-                sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+
+                if (userId != "%25")
+                {
+                    sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+                }
+
                 ds = di.SelectRowsDS(sb.ToString());
 
                 return ds;

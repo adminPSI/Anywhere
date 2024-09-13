@@ -867,7 +867,8 @@ const OOD = (() => {
             serviceCodeId: filterValues.serviceId,
             startDate: createFilterValues.serviceDateStart,
             endDate: createFilterValues.serviceDateEnd,
-            userId: createFilterValues.userId
+            userId: createFilterValues.userId,
+            loggedInUserPersonId: $.session.PeopleId 
         };
     
         try {
