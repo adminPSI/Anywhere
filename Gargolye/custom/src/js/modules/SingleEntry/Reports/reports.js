@@ -18,7 +18,7 @@ var reports = (function(){
     reportCurrentlyProcessing = true;
     var userId = $.session.UserId;
 
-    if (!timeApproval) {
+    if (!isTimeApproval) {
       reportsAjax.getEmpSingleEntryDetailReportAjax(userId, startDate, endDate);
     } else {
       reportsAjax.getEmpSingleEntrySupervisorDetailReportAjax(userId, filterValues);
@@ -86,11 +86,11 @@ var reports = (function(){
     actioncenter = document.getElementById('actioncenter');
     startDate = payPeriod.start;
     endDate = payPeriod.end;
-    
+
+    isTimeApproval = timeApproval;
 
     if (filterData && timeApproval) {
       filterValues = filterData;
-      isTimeApproval = timeApproval;
     }
 
     showReportsPopup();
