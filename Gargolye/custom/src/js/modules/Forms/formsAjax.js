@@ -772,6 +772,42 @@
         }
     }
 
+    async function insertSeveralConsumerFormAsync(
+        userId,
+        consumerId,
+        formtemplateid,
+        isTemplate,
+        formCompleteDate,
+    ) {
+        try {          
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertSeveralConsumerForm/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    userId,
+                    consumerId,
+                    formtemplateid,
+                    isTemplate,
+                    formCompleteDate,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
     async function updateConsumerFormAsync(
         formId,
         formdata,
@@ -1089,6 +1125,7 @@
         getPDFFormData,
         removeFormsLock,
         checkFormsLock,
-        getFormTypeAsync
+        getFormTypeAsync,
+        insertSeveralConsumerFormAsync
     };
 })();

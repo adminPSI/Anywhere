@@ -2853,6 +2853,10 @@ namespace Anywhere
             return fw.insertConsumerForm(token, userId, consumerId, formtemplateid, formdata, formCompleteDate);
         }
 
+        public Anywhere.service.Data.FormWorker.consumerForm insertSeveralConsumerForm(string token, string userId, string consumerId, string[] formtemplateid, string isTemplate, string formCompleteDate)
+        {
+            return fw.insertSeveralConsumerForm(token, userId, consumerId, formtemplateid, isTemplate, formCompleteDate);
+        }
         public Anywhere.service.Data.FormWorker.consumerForm updateConsumerForm(string token, string formId, string formdata, string documentEdited)
         {
             return fw.UpdateConsumerForm(token, formId, formdata, documentEdited);
@@ -3078,6 +3082,7 @@ namespace Anywhere
             string startDate;
             string endDate;
             string userId;
+            string loggedInUserPersonId;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
@@ -3088,6 +3093,7 @@ namespace Anywhere
             serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
 
             if (serviceCodeId == "%25")
             {
@@ -3099,7 +3105,7 @@ namespace Anywhere
                 referenceNumber = "All";
             }
 
-            return OODfw.generateForm16(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
+            return OODfw.generateForm16(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId, loggedInUserPersonId);
         }
 
         public Anywhere.service.Data.OODWorker.OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
@@ -4033,7 +4039,7 @@ namespace Anywhere
 
         public OutcomesWorker.OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string startDate, string endDate)
         {
-            return outcomesWorker.getOutcomesReviewGrid( token,  consumerId,  startDate,  endDate);
+            return outcomesWorker.getOutcomesReviewGrid(token, consumerId, startDate, endDate);
         }
 
         public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
