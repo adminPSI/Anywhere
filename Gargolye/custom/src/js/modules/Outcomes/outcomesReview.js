@@ -6,27 +6,17 @@ const outcomesReview = (function () {
 
   let tabSections;
 
-  // Util
+  let currentFilterDisplay;
+  let filterBtn;
+  let servBtnWrap;
+  let serviceBtn;
+  let serviceCloseBtn;
+  let typeBtnWrap;
+  let outcomeTypeBtn;
+  let outcomeTypeCloseBtn;
+
+  //
   //----------------------------------------------------
-  async function getReviewTableData() {
-    const data = await outcomesAjax.getReviewTableData({
-      consumerId: '4365',
-      startDate: '2024/07/01',
-      endDate: '2024/10/01',
-    });
-
-    outcomesData = data.reduce((a, d) => {
-      const occurrence = d.objectiveRecurrance || 'NF';
-
-      if (!a[occurrence]) {
-        a[occurrence] = [];
-      }
-
-      a[occurrence].push(d);
-
-      return a;
-    }, {});
-  }
 
   // Mini Roster
   //----------------------------------------------------
@@ -55,38 +45,12 @@ const outcomesReview = (function () {
   // Filtering
   //----------------------------------------------------
   // current filter display
-  function updateCurrentFilterDisplay(service, outcomeType) {
-    var currentFilterDisplay = document.querySelector('.filteredByData');
+  function buildCurrentFilterdisplay() {
+    currentFilterDisplay = _DOM.createElement('div', { class: 'filteredByData' });
+    const btnWrap = _DOM.createElement('div', { class: 'filterBtnWrap' });
+    servBtnWrap = _DOM.createElement('div', { class: 'filterSelectionBtnWrap' });
+    typeBtnWrap = _DOM.createElement('div', { class: 'filterSelectionBtnWrap' });
 
-    if (!currentFilterDisplay) {
-      currentFilterDisplay = document.createElement('div');
-      currentFilterDisplay.classList.add('filteredByData');
-      filterButtonSet(service, outcomeType);
-      currentFilterDisplay.appendChild(btnWrap);
-    }
-
-    currentFilterDisplay.style.maxWidth = '100%';
-
-    if (service === '%' || service === 'All') {
-      btnWrap.appendChild(serviceBtnWrap);
-      btnWrap.removeChild(serviceBtnWrap);
-    } else {
-      btnWrap.appendChild(serviceBtnWrap);
-      if (document.getElementById('serviceBtn') != null)
-        document.getElementById('serviceBtn').innerHTML = 'Service: ' + service;
-    }
-
-    if (outcomeType === '%' || outcomeType === 'All') {
-      btnWrap.appendChild(outcomeTypeBtnWrap);
-      btnWrap.removeChild(outcomeTypeBtnWrap);
-    } else {
-      btnWrap.appendChild(outcomeTypeBtnWrap);
-      if (document.getElementById('outcomeTypeBtn') != null)
-        document.getElementById('outcomeTypeBtn').innerHTML = 'Outcome Type: ' + outcomeType;
-    }
-    return currentFilterDisplay;
-  }
-  function filterButtonSet(service = 'All', outcomeType = 'All') {
     filterBtn = button.build({
       text: 'Filter',
       icon: 'filter',
@@ -100,7 +64,7 @@ const outcomesReview = (function () {
 
     serviceBtn = button.build({
       id: 'serviceBtn',
-      text: 'Service: ' + service,
+      text: 'Service:',
       style: 'secondary',
       type: 'text',
       classNames: 'filterSelectionBtn',
@@ -120,7 +84,7 @@ const outcomesReview = (function () {
 
     outcomeTypeBtn = button.build({
       id: 'outcomeTypeBtn',
-      text: 'Outcome Type: ' + outcomeType,
+      text: 'Outcome Type:',
       style: 'secondary',
       type: 'text',
       classNames: 'filterSelectionBtn',
@@ -138,27 +102,35 @@ const outcomesReview = (function () {
       },
     });
 
-    btnWrap = document.createElement('div');
-    btnWrap.classList.add('filterBtnWrap');
     btnWrap.appendChild(filterBtn);
 
-    serviceBtnWrap = document.createElement('div');
-    serviceBtnWrap.classList.add('filterSelectionBtnWrap');
-    serviceBtnWrap.appendChild(serviceBtn);
-    serviceBtnWrap.appendChild(serviceCloseBtn);
-    btnWrap.appendChild(serviceBtnWrap);
+    servBtnWrap.appendChild(serviceBtn);
+    servBtnWrap.appendChild(serviceCloseBtn);
 
-    outcomeTypeBtnWrap = document.createElement('div');
-    outcomeTypeBtnWrap.classList.add('filterSelectionBtnWrap');
-    outcomeTypeBtnWrap.appendChild(outcomeTypeBtn);
-    outcomeTypeBtnWrap.appendChild(outcomeTypeCloseBtn);
-    btnWrap.appendChild(outcomeTypeBtnWrap);
+    typeBtnWrap.appendChild(outcomeTypeBtn);
+    typeBtnWrap.appendChild(outcomeTypeCloseBtn);
+
+    return currentFilterDisplay;
+  }
+  function updateCurrentFilterDisplay(service, outcomeType) {
+    if (service === '%' || service === 'All') {
+      servBtnWrap.classList.add('hidden');
+    } else {
+      servBtnWrap.classList.remove('hidden');
+      serviceBtn.textContent = `Service: ${service}`;
+    }
+
+    if (outcomeType === '%' || outcomeType === 'All') {
+      typeBtnWrap.classList.add('hidden');
+    } else {
+      typeBtnWrap.classList.remove('hidden');
+      typeBtnWrap.textContent = `Outcome Type: ${outcomeType}`;
+    }
   }
   // filter popup
-  function filterOutcomes() {}
   function applyFilter() {
     updateCurrentFilterDisplay(); //TODO: pass new service and type
-    filterOutcomes();
+    //TODO: filter Outcomes
   }
   async function buildTypesDropdown() {
     const typesDrop = dropdown.build({
@@ -172,7 +144,6 @@ const outcomesReview = (function () {
       const selectedOption = event.target.options[event.target.selectedIndex];
     });
 
-   
     const data = goalTypes.map(type => {
       return {
         value: type.Goal_Type_ID,
@@ -180,7 +151,7 @@ const outcomesReview = (function () {
       };
     });
     data.unshift({ value: '%', text: 'All' });
-    dropdown.populate(typesDrop, data, '%');;
+    dropdown.populate(typesDrop, data, '%');
 
     return typesDrop;
   }
@@ -226,8 +197,8 @@ const outcomesReview = (function () {
 
     POPUP.show(filterPopup);
   }
-
-  function buildFilterDates(unitType) {
+  // date filter
+  function buildFilterDates(unitType = 'Days') {
     const dateToggle = `
       <div class="dateFilterToggle">
         <button id="days-back-btn" class="active">${unitType} Back</button>
@@ -236,7 +207,7 @@ const outcomesReview = (function () {
     `;
 
     const dateInputs = `
-      <div id="daysBack">
+      <div id="daysBack" class="active">
         <label for="daysBack">${unitType} Back:</label>
         <input type="number" id="daysBack" name="daysBack" min="1" />
       </div>
@@ -248,9 +219,24 @@ const outcomesReview = (function () {
         <input type="date" id="toDate" name="toDate" />
       </div>
     `;
+
+    const dateWrap = _DOM.createElement('div', { class: 'dateFilter' });
+    dateWrap.innerHTML = dateToggle;
+    dateWrap.innerHTML += dateInputs;
+
+    return dateWrap;
   }
 
-  // Detail View
+  
+  // Add Review Note Popup
+  //----------------------------------------------------
+  function showAddReviewNotePopup() {
+    const reviewNotePopup = POPUP.build();
+
+    reviewNotePopup.show();
+  }
+
+  // Detail View Popup
   //----------------------------------------------------
   function buildPrimaryLocationDropdown(locId) {
     var select = dropdown.build({
@@ -336,7 +322,39 @@ const outcomesReview = (function () {
 
     return noteInput;
   }
-  function showDetailViewPopup(data) {
+  function buildSaveButton(isEdit) {
+    var text = isEdit ? 'Update' : 'Save';
+    var btn = button.build({
+      text,
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'disabled',
+      //callback: saveNewOutcome,
+    });
+
+    return btn;
+  }
+  function buildDeleteButton() {
+    var btn = button.build({
+      text: 'Delete',
+      style: 'secondary',
+      type: 'contained',
+      //callback: deleteIncident,
+    });
+
+    return btn;
+  }
+  function buildAddNoteButton() {
+    var btn = button.build({
+      text: 'Add Review Note',
+      style: 'secondary',
+      type: 'contained',
+      //callback: deleteIncident,
+    });
+
+    return btn;
+  }
+  function showDetailViewPopup(editData) {
     const detailsPopup = POPUP.build();
 
     const primaryLocationDropdown = buildPrimaryLocationDropdown(editData.Location_ID);
@@ -349,71 +367,79 @@ const outcomesReview = (function () {
     const noteInput = buildNoteInput(editData.Objective_Activity_Note);
     const saveBtn = buildSaveButton(true);
     const deleteBtn = buildDeleteButton();
-  }
+    const addReviewNoteBtn = buildAddNoteButton();
 
-  // Table
-  //----------------------------------------------------
-  function sortOutcomeLocations(results) {
-    locations = {};
+    detailsPopup.appendChild(primaryLocationDropdown);
+    detailsPopup.appendChild(secondaryLocationDropdown);
+    detailsPopup.appendChild(resultsDropdown);
+    detailsPopup.appendChild(promptsDropdown);
+    detailsPopup.appendChild(attemptsDropdown);
+    detailsPopup.appendChild(cIDropdown);
+    detailsPopup.appendChild(timeInputs);
+    detailsPopup.appendChild(noteInput);
+    detailsPopup.appendChild(saveBtn);
+    detailsPopup.appendChild(deleteBtn);
+    detailsPopup.appendChild(addReviewNoteBtn);
 
-    results.forEach(res => {
-      if (!locations[res.type]) {
-        locations[res.type] = [];
-      }
-
-      locations[res.type].push(res);
-    });
-    locations['Primary'].sort(function (a, b) {
-      if (a.description < b.description) {
-        return -1;
-      }
-      if (a.description > b.description) {
-        return 1;
-      }
-      return 0;
-    });
-
-    if (locations.Secondary) {
-      locations['Secondary'].sort(function (a, b) {
-        if (a.description < b.description) {
-          return -1;
-        }
-        if (a.description > b.description) {
-          return 1;
-        }
-        return 0;
-      });
-    }
-  }
-  function sortSuccessTypes(results) {
-    unOrderedSuccessObj = {};
-    successTypes = {};
-
-    results.forEach(st => {
-      var label = st.Objective_Success_Description;
-      if (!unOrderedSuccessObj[label]) {
-        unOrderedSuccessObj[label] = st;
-      }
-    });
-
-    Object.keys(unOrderedSuccessObj)
-      .sort()
-      .forEach(key => {
-        successTypes[key] = unOrderedSuccessObj[key];
-      });
+    detailsPopup.show();
   }
   function onDetailRowClick(outcome) {
     // TODO: get Goal_Type_ID
     const getSuccessTypes = new Promise((resolve, reject) => {
       outcomesAjax.getOutcomesSuccessTypes(outcome.Goal_Type_ID, results => {
-        sortSuccessTypes(results);
+        unOrderedSuccessObj = {};
+        successTypes = {};
+
+        results.forEach(st => {
+          var label = st.Objective_Success_Description;
+          if (!unOrderedSuccessObj[label]) {
+            unOrderedSuccessObj[label] = st;
+          }
+        });
+
+        Object.keys(unOrderedSuccessObj)
+          .sort()
+          .forEach(key => {
+            successTypes[key] = unOrderedSuccessObj[key];
+          });
+
         resolve('success');
       });
     });
 
     const getLocations = new Promise((resolve, reject) => {
       outcomesAjax.getOutcomesPrimaryAndSecondaryLocations(selectedConsumerId, date, results => {
-        sortOutcomeLocations(results);
+        locations = {};
+
+        results.forEach(res => {
+          if (!locations[res.type]) {
+            locations[res.type] = [];
+          }
+
+          locations[res.type].push(res);
+        });
+        locations['Primary'].sort(function (a, b) {
+          if (a.description < b.description) {
+            return -1;
+          }
+          if (a.description > b.description) {
+            return 1;
+          }
+          return 0;
+        });
+
+        if (locations.Secondary) {
+          locations['Secondary'].sort(function (a, b) {
+            if (a.description < b.description) {
+              return -1;
+            }
+            if (a.description > b.description) {
+              return 1;
+            }
+            return 0;
+          });
+        }
+
         resolve('success');
       });
     });
@@ -430,12 +456,82 @@ const outcomesReview = (function () {
       showDetailViewPopup(activityRes);
     });
   }
-  function buildTable() {
-    const table = _DOM.createElement('table');
 
-    // const toggleIcon = document.createElement('div');
-    // toggleIcon.classList.add('');
-    // toggleIcon.innerHTML = icons['keyArrowRight'];
+  // Table
+  //----------------------------------------------------
+  function buildToggleIcon() {
+    const toggleIcon = _DOM.createElement('div', { class: 'rowToggle' });
+    toggleIcon.innerHTML = icons['keyArrowRight'];
+    return toggleIcon;
+  }
+  function buildTable(data) {
+    console.table(data);
+    const table = _DOM.createElement('div');
+    table.classList.add('outcomesReviewTable');
+
+    const mainHeading = _DOM.createElement('div', { class: ['heading', 'heading-main'] });
+    mainHeading.innerHTML = `
+      <div></div>
+      <div>Individual</div>
+      <div>Service Statement</div>
+      <div>Frequency</div>
+      <div>Times Documented</div>  
+      <div>Success Rate</div>
+    `;
+    table.appendChild(mainHeading);
+
+    for (const objId in data) {
+      const d = data[objId];
+      
+      const mainRowWrap = _DOM.createElement('div', { class: 'rowWrap' });
+      table.appendChild(mainRowWrap);
+      
+      const mainRow = _DOM.createElement('div', { class: ['row', 'row-main'] });
+      const mainTI = buildToggleIcon();
+      mainRow.appendChild(mainTI);
+      mainRow.innerHTML += `
+        <div>${d.individual}</div>
+        <div>${d.serviceStatement}</div>
+        <div>${d.frequency}</div>
+        <div>${d.timesDoc}</div>
+        <div>${d.successRate}</div>
+      `;
+      mainRowWrap.appendChild(mainRow);
+
+      for (const date in data[objId].reviewDates) {
+        const dateRowWrap = _DOM.createElement('div', { class: 'rowWrap' });
+        mainRowWrap.appendChild(dateRowWrap);
+    
+        const dateRow = _DOM.createElement('div', { class: ['row', 'row-date'] });
+        const dateTI = buildToggleIcon();
+        dateRow.appendChild(dateTI);
+        dateRow.innerHTML += `<div>${date}</div>`;
+        dateRowWrap.appendChild(dateRow);
+
+        const detailsHeading = _DOM.createElement('div', { class: ['heading', 'heading-details'] });
+        detailsHeading.innerHTML = `
+          <div>Employee</div>
+          <div>Result</div>
+          <div>Attempts</div>
+          <div>Prompts</div>  
+          <div>Note</div>
+        `;
+        dateRowWrap.appendChild(detailsHeading);
+
+        for (const staffId in data[objId].reviewDates[date]) {
+          const details = data[objId].reviewDates[date][staffId];
+          const detailRow = _DOM.createElement('div', { class: ['row', 'row-details'] });
+          detailRow.innerHTML = `
+            <div>${details.employee}</div>
+            <div>${details.result}</div>
+            <div>${details.attempts}</div>
+            <div>${details.prompts}</div>
+            <div>${details.note}</div>
+          `;
+          dateRowWrap.appendChild(detailRow);
+        }
+      }
+    }
 
     return table;
   }
@@ -453,7 +549,7 @@ const outcomesReview = (function () {
     if (outcomesData.hasOwnProperty('Y')) tabSections['Y'] = 'Yearly';
 
     return tabs.build({
-      sections: Object.keys(tabSections),
+      sections: Object.values(tabSections),
       active: 0,
       tabNavCallback: function (data) {
         console.log(data);
@@ -462,10 +558,10 @@ const outcomesReview = (function () {
   }
   function populateTabSections() {
     for (const key in outcomesData) {
-      const sectionID = tabSections[key];
+      const sectionID = tabSections[key].toLowerCase();
       const section = document.getElementById(sectionID);
       section.innerHTML = '';
-      
+
       const sectionTable = buildTable(outcomesData[key]);
 
       section.appendChild(sectionTable);
@@ -474,25 +570,83 @@ const outcomesReview = (function () {
 
   // Main
   //----------------------------------------------------
+  async function getReviewTableData() {
+    const data = await outcomesAjax.getReviewTableData({
+      consumerId: '4365',
+      startDate: '2023/01/01',
+      endDate: '2024/10/01',
+    });
+
+    outcomesDataRaw = data;
+
+    outcomesData = data.reduce((a, d) => {
+      const occurrence = d.objectiveRecurrance || 'NF';
+      const objID = d.objectiveId;
+      const date = d.objective_date.split(' ')[0];
+      const staffId = d.staffId;
+
+      if (!a[occurrence]) {
+        a[occurrence] = {};
+      }
+
+      if (!a[occurrence][objID]) {
+        a[occurrence][objID] = {
+          reviewDates: {},
+        };
+      }
+
+      if (!a[occurrence][objID].reviewDates[date]) {
+        a[occurrence][objID].reviewDates[date] = {};
+      }
+
+      if (!a[occurrence][objID].reviewDates[date][staffId]) {
+        a[occurrence][objID].reviewDates[date][staffId] = {};
+      }
+
+      // main row
+      a[occurrence][objID].individual = d.consumerName;
+      a[occurrence][objID].serviceStatement = d.objectiveStatement;
+      a[occurrence][objID].frequency = `${d.frequencyModifier} ${d.objectiveIncrement} ${d.objectiveRecurrance}`;
+      a[occurrence][objID].timesDoc = 'TODO';
+      a[occurrence][objID].successRate = d.objectiveSuccess;
+
+      // detail row
+      a[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
+      a[occurrence][objID].reviewDates[date][staffId].result = '';
+      a[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
+      a[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
+      a[occurrence][objID].reviewDates[date][staffId].note = '';
+      
+      return a;
+    }, {});
+  }
   async function init(consumer) {
     console.clear();
 
     selectedConsumerId = consumer.id;
 
     setActiveModuleSectionAttribute('outcomes-review');
-    DOM.clearActionCenter();
-    
-    const outcomesReview = document.createElement('div');
-    outcomesReview.classList.add('outcomesReview');
-    const outcomeTabs = buildTabs();
-    outcomesReview.appendChild(outcomeTabs);
-    DOM.ACTIONCENTER.appendChild(outcomesReview);
+    PROGRESS.SPINNER.show('Loading Outcomes...');
 
     await getReviewTableData();
 
-    //populateTabSections();
-    
-    goalTypes = await outcomesAjax.getAllGoalTypes();
+    DOM.clearActionCenter();
+
+    const outcomesReview = _DOM.createElement('div');
+    outcomesReview.classList.add('outcomesReview');
+
+    const filterDisplay = buildCurrentFilterdisplay();
+    const dateFilter = buildFilterDates();
+    const outcomeTabs = buildTabs();
+
+    outcomesReview.appendChild(filterDisplay);
+    outcomesReview.appendChild(dateFilter);
+    outcomesReview.appendChild(outcomeTabs);
+    DOM.ACTIONCENTER.appendChild(outcomesReview);
+
+    populateTabSections();
+
+    //goalTypes = await outcomesAjax.getAllGoalTypes();
 
     roster2.setAllowedConsumers(['%']);
     roster2.addConsumerToActiveConsumers(consumer.card);
@@ -503,6 +657,6 @@ const outcomesReview = (function () {
 
   return {
     init,
-    handleActionNavEvent
+    handleActionNavEvent,
   };
 })();

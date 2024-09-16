@@ -27,3 +27,18 @@
 
 //* Bottom Row
 // employee, result, attempts, prompts, note
+
+// {
+//   'nf': {
+//     'id:1234': {
+//       ...topRowData,
+//       reviewDates: {
+//         '12/01/2024': {
+//           'staffid:4567': {
+//             ...detailRowData
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
