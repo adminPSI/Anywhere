@@ -294,7 +294,7 @@ const addServicesForm = (() => {
     async function populateOutcomeDropdown() {
         const {
             getOutcomeServiceDropDownResult: OutcomeType,
-        } = await outcomesAjax.getOutcomeServiceDropDownAsync(selectedConsumerId);
+        } = await outcomesAjax.getOutcomeServiceDropDownAsync(selectedConsumerId, startDate);
 
         let outcomeTypeData = OutcomeType.map(outcomeTypes => ({
           id: outcomeTypes.goal_id,
