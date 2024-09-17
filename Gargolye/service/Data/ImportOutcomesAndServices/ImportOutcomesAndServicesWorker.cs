@@ -341,7 +341,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                     double gapBetweenLines = lineBBox.x1 - previousLine.GetBBox().x1;
                     if (gapBetweenLines > 250)
                     {
-                        combinedLines.Add("BLANK CELL"); // Insert "BLANK CELL" when the gap is too large
+                        combinedLines.Add(" "); // Insert "BLANK CELL" when the gap is too large
                     }
                 }
 
