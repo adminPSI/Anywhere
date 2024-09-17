@@ -337,6 +337,8 @@ namespace OODForms
 
             if (posNumbers.Count > 0)
             {
+                if (userId == "%25") userId = "%";
+
                 string posNumbersString = string.Join(",", posNumbers);
                 sb.Clear();
                 sb.AppendFormat("SELECT   dba.Case_Notes.Service_Date, DATEFORMAT(Cast(dba.Case_Notes.Start_Time AS CHAR), 'hh:mm AA') as Start_Time, DATEFORMAT(CAST(dba.Case_Notes.End_Time AS CHAR), 'hh:mm AA') AS End_Time, ");
