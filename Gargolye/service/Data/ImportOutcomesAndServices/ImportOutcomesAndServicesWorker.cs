@@ -229,10 +229,10 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             Console.WriteLine(combinedText);
 
                             // Process the combined text for risk assessments
-                            var riskAssessments = ProcessCombinedTextForRiskAssessment(combinedText);
+                            var riskAssessments = ProcessCombinedTextForRiskAssessment(combinedText, firstTwoLines);
                             var paidSupports = ProcessCombinedTextForPaidSupports(combinedText, firstTwoLines);
-                            var additionalSupports = ProcessCombinedTextForAdditionalSupports(combinedText);
-                            var professionalReferrals = ProcessCombinedTextForProfessionalReferrals(combinedText);
+                            var additionalSupports = ProcessCombinedTextForAdditionalSupports(combinedText, firstTwoLines);
+                            var professionalReferrals = ProcessCombinedTextForProfessionalReferrals(combinedText, firstTwoLines);
                             var experiences = ProcessCombinedTextForExperiences(combinedText);
 
                             // Combine the extracted tables from the current file with the overall extracted tables
@@ -285,6 +285,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             }
             reader.End();
 
+            TextExtractor.Line previousLine = null;
+
             for (TextExtractor.Line line = textExtractor.GetFirstLine(); line.IsValid(); line = line.GetNextLine())
             {
                 Rect lineBBox = line.GetBBox();
@@ -297,6 +299,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                 }
 
                 TextExtractor.Word previousWord = null;
+                
 
                 for (TextExtractor.Word word = line.GetFirstWord(); word.IsValid(); word = word.GetNextWord())
                 {
@@ -331,6 +334,18 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                     currentLineBBox.x2 = Math.Max(currentLineBBox.x2, lineBBox.x2);
                     currentLineBBox.y2 = Math.Min(currentLineBBox.y2, lineBBox.y2);
                 }
+
+                if (previousLine != null)
+                {
+                    // Check if the gap between the starting `x` values of two lines is greater than 350
+                    double gapBetweenLines = lineBBox.x1 - previousLine.GetBBox().x1;
+                    if (gapBetweenLines > 250)
+                    {
+                        combinedLines.Add(" "); // Insert "BLANK CELL" when the gap is too large
+                    }
+                }
+
+                previousLine = line;
             }
 
             // Add the last line if any
@@ -363,10 +378,11 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         }
 
 
-        List<RiskAssessment> ProcessCombinedTextForRiskAssessment(string combinedText)
+        List<RiskAssessment> ProcessCombinedTextForRiskAssessment(string combinedText, string firstTwoLines)
         {
             var riskAssessmentsList = new List<RiskAssessment>();
             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] firstTwoLinesArray = firstTwoLines.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -392,6 +408,15 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             var assessmentArea = lines[i].Trim();
                             if (!assessmentAreas.Contains(assessmentArea))
                             {
+                                // Check for first two lines and skip if found
+                                bool skipNextTwoLines = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
+
+                                if (skipNextTwoLines)
+                                {
+                                    i += 4; // Skip the next four lines
+                                    continue;
+                                }
+
                                 break;
                             }
 
@@ -419,6 +444,57 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             }
 
             return riskAssessmentsList;
+        }
+
+        List<Experiences> ProcessCombinedTextForExperiences(string combinedText)
+        {
+            var experiencesList = new List<Experiences>();
+            string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                // Check if the line contains the first header
+                if (lines[i].Contains(experienceHeaders[0]))
+                {
+                    // Check for the presence of subsequent headers in the next lines
+                    bool headersFound = true;
+                    for (int j = 1; j < experienceHeaders.Count; j++)
+                    {
+                        if (i + j >= lines.Length || !lines[i + j].Contains(experienceHeaders[j]))
+                        {
+                            headersFound = false;
+                            break;
+                        }
+                    }
+
+                    if (headersFound)
+                    {
+                        i += experienceHeaders.Count; // Move past the headers
+                        while (i < lines.Length)
+                        {
+                            var experience = new Experiences
+                            {
+                                WhatNeedsToHappen = lines[i],
+                                HowItShouldHappen = GetNextLine(lines, ref i),
+                                WhoIsResponsible = GetNextLine(lines, ref i),
+                                WhenHowOften = GetNextLine(lines, ref i),
+                            };
+
+                            experiencesList.Add(experience);
+
+                            // Move to the next line to check if it's the start of a new assessment area
+                            i++;
+                            if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
+                            {
+                                i--; // Step back one line as the current line doesn't start a new assessment area
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return experiencesList;
         }
 
         List<PaidSupports> ProcessCombinedTextForPaidSupports(string combinedText, string firstTwoLines)
@@ -516,61 +592,11 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             return paidSupportsList;
         }
 
-        List<Experiences> ProcessCombinedTextForExperiences(string combinedText)
-        {
-            var experiencesList = new List<Experiences>();
-            string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-
-            for (int i = 0; i < lines.Length; i++)
-            {
-                // Check if the line contains the first header
-                if (lines[i].Contains(experienceHeaders[0]))
-                {
-                    // Check for the presence of subsequent headers in the next lines
-                    bool headersFound = true;
-                    for (int j = 1; j < experienceHeaders.Count; j++)
-                    {
-                        if (i + j >= lines.Length || !lines[i + j].Contains(experienceHeaders[j]))
-                        {
-                            headersFound = false;
-                            break;
-                        }
-                    }
-
-                    if (headersFound)
-                    {
-                        i += experienceHeaders.Count; // Move past the headers
-                        while (i < lines.Length)
-                        {
-                            var experience = new Experiences
-                            {
-                                WhatNeedsToHappen = lines[i],
-                                HowItShouldHappen = GetNextLine(lines, ref i),
-                                WhoIsResponsible = GetNextLine(lines, ref i),
-                                WhenHowOften = GetNextLine(lines, ref i),
-                            };
-
-                            experiencesList.Add(experience);
-
-                            // Move to the next line to check if it's the start of a new assessment area
-                            i++;
-                            if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
-                            {
-                                i--; // Step back one line as the current line doesn't start a new assessment area
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return experiencesList;
-        }
-
-        List<AdditionalSupports> ProcessCombinedTextForAdditionalSupports(string combinedText)
+        List<AdditionalSupports> ProcessCombinedTextForAdditionalSupports(string combinedText, string firstTwoLines)
         {
             var additionalSupportsList = new List<AdditionalSupports>();
             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] firstTwoLinesArray = firstTwoLines.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -596,6 +622,15 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             var assessmentArea = lines[i].Trim();
                             if (!assessmentAreas.Contains(assessmentArea))
                             {
+                                // Check for first two lines and skip if found
+                                bool skipNextTwoLines = (i + 1 < lines.Length && lines[i + 1].Contains(firstTwoLinesArray[0]) && lines[i + 2].Contains(firstTwoLinesArray[1]));
+
+                                if (skipNextTwoLines)
+                                {
+                                    i += 4; // Skip the next four lines
+                                    continue;
+                                }
+
                                 break;
                             }
 
@@ -613,6 +648,15 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             i++;
                             if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
                             {
+                                // Check for first two lines and skip if found
+                                bool skipNextTwoLines = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
+
+                                if (skipNextTwoLines)
+                                {
+                                    i += 4; // Skip the next four lines
+                                    continue;
+                                }
+
                                 i--; // Step back one line as the current line doesn't start a new assessment area
                                 break;
                             }
@@ -624,10 +668,11 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             return additionalSupportsList;
         }
 
-        List<ProfessionalReferrals> ProcessCombinedTextForProfessionalReferrals(string combinedText)
+        List<ProfessionalReferrals> ProcessCombinedTextForProfessionalReferrals(string combinedText, string firstTwoLines)
         {
             var professionalReferralsList = new List<ProfessionalReferrals>();
             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] firstTwoLinesArray = firstTwoLines.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -653,6 +698,15 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             var assessmentArea = lines[i].Trim();
                             if (!assessmentAreas.Contains(assessmentArea))
                             {
+                                // Check for first two lines and skip if found
+                                bool skipNextTwoLines = (i + 1 < lines.Length && lines[i + 1].Contains(firstTwoLinesArray[0]) && lines[i + 2].Contains(firstTwoLinesArray[1]));
+
+                                if (skipNextTwoLines)
+                                {
+                                    i += 4; // Skip the next four lines
+                                    continue;
+                                }
+
                                 break;
                             }
 
@@ -670,6 +724,15 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             i++;
                             if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
                             {
+                                // Check for first two lines and skip if found
+                                bool skipNextTwoLines = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
+
+                                if (skipNextTwoLines)
+                                {
+                                    i += 4; // Skip the next four lines
+                                    continue;
+                                }
+
                                 i--; // Step back one line as the current line doesn't start a new assessment area
                                 break;
                             }
