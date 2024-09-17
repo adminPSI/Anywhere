@@ -601,6 +601,7 @@ namespace OODForms
                 WS.Cell("m4").Font = new Font(WS.Cell("m4").Font.Name, WS.Cell("m4").Font.Size, FontStyle.Bold);
 
                 string Staff = string.Empty;
+                string DirectStaff = string.Empty;
                 string StaffWithInitals = string.Empty;
                 string OODStaff = string.Empty;
                 string MiddleName = string.Empty;
@@ -617,7 +618,7 @@ namespace OODForms
                         {
                             Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
                             MiddleName = row2["Middle_Name"].ToString();
-                            OODStaff += String.Format("{0}, ", Staff.Trim());
+                            DirectStaff += String.Format("{0}, ", Staff.Trim());
                         }
 
                         if (Staff.ToString().Trim().Length > 0)
