@@ -711,11 +711,11 @@ const outcomes = (function () {
     outcomeTypeBtnWrap.appendChild(outcomeTypeCloseBtn);
     btnWrap.appendChild(outcomeTypeBtnWrap);
   }
-  function closeFilter(closeFilter) {
-    if (closeFilter == 'serviceBtn') {
+  function closeFilter(closefilter) {
+    if (closefilter == 'serviceBtn') {
       tmpService = 'All';
     }
-    if (closeFilter == 'outcomeTypeBtn') {
+    if (closefilter == 'outcomeTypeBtn') {
       tmpOutcome = 'All';
       tmpOutcomeId = '%';
     }
