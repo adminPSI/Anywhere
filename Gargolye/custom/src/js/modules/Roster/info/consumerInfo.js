@@ -960,7 +960,7 @@ const consumerInfo = (function () {
             }
         }
 
-        rosterAjax.insertEditRelationship(consumerRelationshipsNew, archiveConsumerRelationships, consumerId);
+        await rosterAjax.insertEditRelationship(consumerRelationshipsNew, archiveConsumerRelationships, consumerId);
         resetPopupValues();
     }
 
