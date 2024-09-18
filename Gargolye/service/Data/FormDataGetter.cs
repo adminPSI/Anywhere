@@ -57,14 +57,16 @@ namespace Anywhere.service.Data
         }
 
         // used to retrieve form type for the Forms Module
-        public string getFormType(DistributedTransaction transaction)
+        public string getFormType(string token, DistributedTransaction transaction)
         {
             Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
 
             try
             {
                 logger.debug("getFormType");
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Forms_getFormType()", ref transaction);
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@token", DbType.String, token);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Forms_getFormType(?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)

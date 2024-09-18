@@ -82,7 +82,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    FormType[] formType = js.Deserialize<FormType[]>(fdg.getFormType(transaction));
+                    FormType[] formType = js.Deserialize<FormType[]>(fdg.getFormType(token,transaction));
                     return formType;
                 }
                 catch (Exception ex)
