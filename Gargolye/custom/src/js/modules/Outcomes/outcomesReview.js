@@ -715,15 +715,15 @@ const outcomesReview = (function () {
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${d.frequencyModifier} ${d.objectiveIncrement} ${d.objectiveRecurrance}`;
-      a[occurrence][objID].timesDoc = 'TODO';
+      a[occurrence][objID].timesDoc = d.timesDocumented;
       a[occurrence][objID].successRate = d.objectiveSuccess;
 
       // detail row
       a[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
-      a[occurrence][objID].reviewDates[date][staffId].result = '';
+      a[occurrence][objID].reviewDates[date][staffId].result = `${d.objectiveSuccessSymbol } ${d.objectiveSuccessDescription }`;
       a[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
       a[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
-      a[occurrence][objID].reviewDates[date][staffId].note = '';
+      a[occurrence][objID].reviewDates[date][staffId].note = d.objectiveActivityNote ;
       // data for detail popup
       a[occurrence][objID].reviewDates[date][staffId].activityId = d.objectiveActivityId;
       
