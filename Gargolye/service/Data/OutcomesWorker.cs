@@ -313,6 +313,7 @@ namespace Anywhere.service.Data
             public string promptNumber { get; set; }
             public string objectiveSuccessSymbol { get; set; }
             public string objectiveSuccessDescription { get; set; }
+            public string objectiveActivityNote { get; set; }
         }
 
         public class OutComePageData
