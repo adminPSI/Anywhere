@@ -6766,6 +6766,7 @@ namespace Anywhere.Data
         public string getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(effectiveDateStart) == false) return null;
             logger.debug("getOutcomeTypeDropDown" + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -6839,13 +6840,15 @@ namespace Anywhere.Data
             }
         }
 
-        public string getOutcomeServiceDropDown(string token, string consumerId)
+        public string getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(effectiveDateStart) == false) return null;
             logger.debug("getOutcomeServiceDropDown" + token);
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(consumerId);
+            list.Add(effectiveDateStart);
             string text = "CALL DBA.ANYW_GoalsAndServices_getOutcomeServiceDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

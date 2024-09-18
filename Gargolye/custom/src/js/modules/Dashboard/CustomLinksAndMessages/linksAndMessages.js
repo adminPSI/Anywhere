@@ -30,6 +30,7 @@ var linksAndMessages = (function () {
     let isMultiSelection;
     let nameHeading;
     let nameList;
+    let singleSelectedEmployee;
 
     function loadCustomLinks() {
         var linksList = linksWidget.querySelector('.customLinksList');
@@ -172,6 +173,7 @@ var linksAndMessages = (function () {
     function eventSetup() {
         employeeDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
+            singleSelectedEmployee = selectedOption.id;
             selectedEmployee = [];
             currentconsumersSelected = [];
             selectedEmployee.push(selectedOption.id);
@@ -250,6 +252,7 @@ var linksAndMessages = (function () {
             getEmployeeListResult: Employer,
         } = await linksAndMessagesWidgetAjax.getEmployersAsync();
         consumerswithEmployeeIds = Employer;
+        singleSelectedEmployee = Employer[0].employerId;
         selectedEmployee.push(Employer[0].employerId);
         let data = Employer.map((employer) => ({
             id: employer.employerId,
@@ -320,6 +323,11 @@ var linksAndMessages = (function () {
             consumer.setAttribute('data-personId', person.employerId);
             consumer.innerText = person.employerName;
             multiSelectBodyC.appendChild(consumer);
+             
+            if (person.employerId == singleSelectedEmployee) {
+                consumer.classList.add('selected');  
+                currentconsumersSelected.push(person.employerId);
+            }
 
             consumer.addEventListener('click', e => {
                 //* Multiple consumers can be selected
@@ -327,11 +335,9 @@ var linksAndMessages = (function () {
                 if (isSelected) {
                     e.target.classList.remove('selected');
                     currentconsumersSelected = currentconsumersSelected.filter(emp => emp !== person.employerId);
-                    EmployeeNameList = EmployeeNameList.filter(empName => empName !== person.employerName.replace(/,/g, ''));
                 } else {
                     e.target.classList.add('selected');
                     currentconsumersSelected.push(person.employerId);
-                    EmployeeNameList.push(person.employerName.replace(/,/g, ''));
                 }
                 toggleAssignButton();
             });
@@ -369,9 +375,17 @@ var linksAndMessages = (function () {
             text: 'SAVE',
             style: 'secondary',
             type: 'contained',
-            callback: async function () {
+            callback: async function () {               
                 selectedEmployee = [];
                 selectedEmployee = currentconsumersSelected;
+                EmployeeNameList = [];
+                consumerswithEmployeeIds.forEach(person => {
+                    currentconsumersSelected.forEach(selected => {
+                        if (person.employerId == selected) {
+                            EmployeeNameList.push(person.employerName.replace(/,/g, ''));
+                        }
+                    });
+                });
 
                 POPUP.hide(assignEmployeePopup);
                 saveBtn.classList.remove('disabled');
@@ -392,7 +406,6 @@ var linksAndMessages = (function () {
 
             },
         });
-        assignBtn.classList.add('disabled');
 
         var cancelSelectBtn = button.build({
             text: 'CANCEL',

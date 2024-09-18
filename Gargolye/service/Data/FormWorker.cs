@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.ServiceModel.Web;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.RosterWorker;
 
 namespace Anywhere.service.Data
 {
@@ -81,7 +82,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    FormType[] formType = js.Deserialize<FormType[]>(fdg.getFormType(transaction));
+                    FormType[] formType = js.Deserialize<FormType[]>(fdg.getFormType(token,transaction));
                     return formType;
                 }
                 catch (Exception ex)
@@ -305,6 +306,35 @@ namespace Anywhere.service.Data
 
                     return consumerForm;
 
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+        public consumerForm insertSeveralConsumerForm(string token, string userId, string consumerId, string[] formtemplateid, string isTemplate, string formCompleteDate)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    if (userId == null) throw new Exception("userId is required");
+                    if (consumerId == null) throw new Exception("consumerId is required");
+                    if (formtemplateid == null) throw new Exception("formtemplateid is required");
+                    if (formCompleteDate == null) throw new Exception("formCompleteDate is required");
+
+                    foreach (string formId in formtemplateid)
+                    {
+                        // insert document
+                        fdg.insertSeveralConsumerForm(userId, consumerId, formId, isTemplate, formCompleteDate, transaction);
+                    }
+
+                    consumerForm consumerForm = new consumerForm();
+                    consumerForm.formId = formtemplateid[0];
+                    return consumerForm;
                 }
                 catch (Exception ex)
                 {

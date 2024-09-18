@@ -1,8 +1,11 @@
 ﻿using Anywhere.Log;
+using OneSpanSign.Sdk;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using static Anywhere.service.Data.FormWorker;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 
 namespace Anywhere.service.Data
 {
@@ -54,14 +57,16 @@ namespace Anywhere.service.Data
         }
 
         // used to retrieve form type for the Forms Module
-        public string getFormType(DistributedTransaction transaction)
+        public string getFormType(string token, DistributedTransaction transaction)
         {
             Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
 
             try
             {
                 logger.debug("getFormType");
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Forms_getFormType()", ref transaction);
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@token", DbType.String, token);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Forms_getFormType(?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
@@ -155,6 +160,28 @@ namespace Anywhere.service.Data
             catch (Exception ex)
             {
                 logger.error("WFDG", ex.Message + "ANYW_Forms_insertConsumerForm(" + userId + "," + consumerId + "," + formtemplateid + ")");
+                throw ex;
+            }
+        }
+
+        public string insertSeveralConsumerForm(string userId, string consumerId, string formtemplateid, string isTemplate, string formCompleteDate, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("insertSeveralConsumerForm");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[5];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerId", DbType.String, consumerId);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@formtemplateid", DbType.String, formtemplateid);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@isTemplate", DbType.String, isTemplate);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@formCompletionDate", DbType.String, formCompleteDate);
+
+                // returns the formId of the document that was just inserted
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Forms_insertSeveralConsumerForm(?, ?, ?, ?, ?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Forms_insertSeveralConsumerForm(" + userId + "," + consumerId + "," + formtemplateid + ")");
                 throw ex;
             }
         }

@@ -601,6 +601,7 @@ namespace OODForms
                 WS.Cell("m4").Font = new Font(WS.Cell("m4").Font.Name, WS.Cell("m4").Font.Size, FontStyle.Bold);
 
                 string Staff = string.Empty;
+                string DirectStaff = string.Empty;
                 string StaffWithInitals = string.Empty;
                 string OODStaff = string.Empty;
                 string MiddleName = string.Empty;
@@ -617,7 +618,7 @@ namespace OODForms
                         {
                             Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
                             MiddleName = row2["Middle_Name"].ToString();
-                            OODStaff += String.Format("{0}, ", Staff.Trim());
+                            DirectStaff += String.Format("{0}, ", Staff.Trim());
                         }
 
                         if (Staff.ToString().Trim().Length > 0)
@@ -942,7 +943,7 @@ namespace OODForms
             }
         }
 
-        public string generateForm16(string token, string AuthorizationNumber, string consumerIDString, string StartDate, string EndDate, string serviceCode, string userID)
+        public string generateForm16(string token, string AuthorizationNumber, string consumerIDString, string StartDate, string EndDate, string serviceCode, string userID, string loggedInUserPersonId)
         {
             try
             {
@@ -1014,7 +1015,7 @@ namespace OODForms
                 string MiddleName = string.Empty;
                 DataSet ds = obj.OODForm8GetDirectStaff(AuthorizationNumber, StartDate, EndDate);
 
-                WS.Cell("G6").Value = personCompletingReport;
+              
 
                 if (ds.Tables.Count > 0)
                 {
@@ -1058,6 +1059,21 @@ namespace OODForms
                     }
 
                 }
+                DataSet ds3 = new DataSet();
+
+                if (!string.IsNullOrEmpty(loggedInUserPersonId)) {
+
+                   // long lng_loggedInUserPersonId = long.Parse(loggedInUserPersonId);
+                    ds3 = obj.getPersonCompletingReport(token, loggedInUserPersonId);
+                }
+                
+
+
+                if (ds3.Tables.Count > 0 && ds3.Tables[0].Rows.Count > 0)
+                {
+                    WS.Cell("G6").Value = String.Format("{0} {1} ", ds3.Tables[0].Rows[0]["First_Name"], ds3.Tables[0].Rows[0]["Last_Name"]);
+                }
+
 
                 WS.Cell("G7").Value = OODStaff;
 
@@ -1536,17 +1552,17 @@ namespace OODForms
 
                         if (row["VTS_Review"].ToString().ToUpper() == "Y")
                         {
-                            WS.Cell("G87").Value = "Yes";						//*************BOTTOM3.  Provider's Summary and Recommendations
+                            WS.Cell("G89").Value = "Yes";						//*************BOTTOM3.  Provider's Summary and Recommendations
                         }
                         else
                         {
-                            WS.Cell("G87").Value = "No";						//*************BOTTOM3.  
+                            WS.Cell("G89").Value = "No";						//*************BOTTOM3.  
                         }
                     }
                 }
 
                 // Have you reviewed the Vocational Training Stipend(VTS) with the individual?
-                WS.Cell("G89").Value = "Yes";
+                // WS.Cell("G89").Value = "Yes";
 
                 // Create Attachment from  the XLS SPREADSHEET********************************************************************************************************	
 

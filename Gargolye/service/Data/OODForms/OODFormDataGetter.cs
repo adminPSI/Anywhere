@@ -17,6 +17,7 @@ using iTextSharp.text.pdf;
 using System.Linq.Expressions;
 using Microsoft.Extensions.Primitives;
 using static Anywhere.service.Data.AnywhereWorkshopWorkerTwo;
+using System.Management.Automation.Language;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -50,37 +51,84 @@ namespace OODForms
             sb.AppendFormat("WHERE Vendor_ID = {0} ", VendorID);
             return di.SelectRowsDS(sb.ToString());
         }
+
+        public DataSet getPersonCompletingReport(string token, string loggedInUserPersonId)
+        {
+            sb.Clear();
+            sb.AppendFormat("select * from Persons where Person_Id = {0}", loggedInUserPersonId);
+            //sb.AppendFormat("(select User_ID from ANYW_TOKENS where Token = '{0}' ) ", token);
+           // sb.AppendFormat("(select Person_id from People where ID = {0}", loggedInUserPersonId);
+            //sb.AppendFormat("(select people_id from users_groups where user_id = '{0}') ", userId);
+            return di.SelectRowsDS(sb.ToString());
+        }
+
         public DataSet OODForm8GetDirectStaff(string AuthorizationNumber, string StartDate, string EndDate)
         {
+            List<long> positionIds = new List<long>();
+
             sb.Clear();
             sb.Append("SELECT DISTINCT  dba.EM_Job_Task.Position_ID ");
             sb.Append("FROM dba.EM_Job_Task ");
             sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-            sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.AppendFormat("WHERE   dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
             sb.Append("AND dba.EM_Job_Task.Task_Number > 7 ");
             sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
             sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
-            long PosNumber = 0;
+           // long PosNumber = 0;
             DataSet ds = di.SelectRowsDS(sb.ToString());
-            if (ds.Tables.Count > 0)
+            if (ds.Tables.Count > 0 )
             {
                 if (ds.Tables[0].Rows.Count > 0)
                 {
-                    PosNumber = (long)ds.Tables[0].Rows[0]["Position_ID"];
-
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        if (row["Position_ID"].ToString() != "0" && row["Position_ID"].ToString() != "" && row["Position_ID"] != null)
+                        {
+                            long thispositionid = (long)row["Position_ID"];
+                            if (thispositionid > 0)
+                            {
+                                positionIds.Add(thispositionid);
+                            }
+                        }
+                    }
+                    
                 }
             }
-
+            string posNumbersString = String.Empty;
             sb.Clear();
-            sb.Append("SELECT DISTINCT   dba.Persons.Last_Name, dba.Persons.First_Name, dba.Persons.Middle_Name, '' AS Initials ");
-            sb.Append("FROM dba.EMP_OOD ");
-            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
-            sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Persons.Person_ID = dba.Case_Notes.Case_Manager_ID ");
-            sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID = {0} ", PosNumber);
-            sb.Append("AND Last_Name > '' and First_Name > '' ");
-            sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+
+            if (positionIds.Count > 0 )
+            {
+                posNumbersString = string.Join(",", positionIds);
+
+                sb.Append("SELECT DISTINCT   dba.Persons.Last_Name, dba.Persons.First_Name, dba.Persons.Middle_Name, '' AS Initials ");
+                sb.Append("FROM dba.EMP_OOD ");
+                sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Persons.Person_ID = dba.Case_Notes.Case_Manager_ID ");
+                sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID in ({0}) ", posNumbersString);
+                sb.Append("AND Last_Name > '' and First_Name > '' ");
+                sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+                sb.Append("UNION ");
+                sb.Append("SELECT DISTINCT   dba.Persons.Last_Name, dba.Persons.First_Name, dba.Persons.Middle_Name, '' AS Initials ");
+                sb.Append("FROM dba.EMP_OOD ");
+                sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Persons.Person_ID = dba.Case_Notes.Case_Manager_ID ");
+                //sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID in ({0}) ", posNumbersString);
+                sb.Append("Where Last_Name > '' and First_Name > '' ");
+                sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+            } else
+            {
+                sb.Append("SELECT DISTINCT   dba.Persons.Last_Name, dba.Persons.First_Name, dba.Persons.Middle_Name, '' AS Initials ");
+                sb.Append("FROM dba.EMP_OOD ");
+                sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Persons.Person_ID = dba.Case_Notes.Case_Manager_ID ");
+                //sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID in ({0}) ", posNumbersString);
+                sb.Append("Where Last_Name > '' and First_Name > '' ");
+                sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+            }
+
             ds = di.SelectRowsDS(sb.ToString());
 
             if (ds.Tables.Count > 0)
@@ -118,6 +166,14 @@ namespace OODForms
             sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}' AND dba.EM_Job_Task.Task_Number > 7 ", AuthorizationNumber);
             sb.AppendFormat("AND dba.Case_Notes.Service_Date between '{0}' and '{1}' ", StartDate, EndDate);
             sb.Append("GROUP BY Case_Notes.Case_Note_ID, Emp_OOD.Position_ID, Emp_OOD.Employer_ID ");
+            sb.Append("Union ");
+            sb.Append("Select Case_Notes.Case_Note_ID, Emp_OOD.Position_ID, Emp_OOD.Employer_ID FROM dba.Employer ");
+            sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.Employer.Employer_ID = dba.EMP_OOD.Employer_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+            sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.AppendFormat("AND dba.Case_Notes.Service_Date between '{0}' and '{1}' ", StartDate, EndDate);
+            sb.Append("GROUP BY Case_Notes.Case_Note_ID, Emp_OOD.Position_ID, Emp_OOD.Employer_ID ");
             //  return di.SelectRowsDS(sb.ToString());
             dsPositionIds = di.SelectRowsDS(sb.ToString());
             
@@ -126,11 +182,14 @@ namespace OODForms
             {
                 foreach (DataRow row in dsPositionIds.Tables[0].Rows)
                 {
-                    long thispositionid = (long)row["Position_ID"];
-                    if (thispositionid > 0)
+                    if (row["Position_ID"].ToString() != "0" && row["Position_ID"].ToString() != "" && row["Position_ID"] != null)
                     {
-                        positionIds.Add(thispositionid);
-                    }          
+                        long thispositionid = (long)row["Position_ID"];
+                        if (thispositionid > 0)
+                        {
+                            positionIds.Add(thispositionid);
+                        }
+                    }            
                 }
 
                 foreach (DataRow row in dsPositionIds.Tables[0].Rows)
@@ -300,6 +359,8 @@ namespace OODForms
 
             if (posNumbers.Count > 0)
             {
+                if (userId == "%25") userId = "%";
+
                 string posNumbersString = string.Join(",", posNumbers);
                 sb.Clear();
                 sb.AppendFormat("SELECT   dba.Case_Notes.Service_Date, DATEFORMAT(Cast(dba.Case_Notes.Start_Time AS CHAR), 'hh:mm AA') as Start_Time, DATEFORMAT(CAST(dba.Case_Notes.End_Time AS CHAR), 'hh:mm AA') AS End_Time, ");
@@ -366,7 +427,7 @@ namespace OODForms
         //on the OOD Landing Page 
         public string getEmploymentGoal(string peopleId)
         {
-            string rv = "No Employment Goals on record.";
+            string rv = "";
 
             // select service_goals from em_employee_general where People_Id = 4139
 
@@ -396,7 +457,7 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-            sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.AppendFormat("WHERE   dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
             sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
             string listPosNumber = string.Empty;
             DataSet ds = di.SelectRowsDS(sb.ToString());
@@ -433,7 +494,11 @@ namespace OODForms
             sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID in ({0}) ", lstPositionstr);
             sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
             sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
-            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+            if (userId != "%25")
+            {
+                sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+            }
+            
             sb.Append(" ORDER BY Service_Date ASC");
             //sb.Append("AND Last_Name > '' ");
             ds = di.SelectRowsDS(sb.ToString());
@@ -467,7 +532,7 @@ namespace OODForms
                 sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
                 sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
                 sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-                sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+                sb.AppendFormat("WHERE   dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
                 sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
                 string listPosNumber = string.Empty;
                 DataSet ds = di.SelectRowsDS(sb.ToString());
@@ -498,7 +563,12 @@ namespace OODForms
                 sb.AppendFormat("WHERE Em_work_schedule.Position_ID in ({0}) ", lstPositionstr); //lstPositionstr
                 sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
                 sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
-                sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+
+                if (userId != "%25")
+                {
+                    sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
+                }
+
                 ds = di.SelectRowsDS(sb.ToString());
 
                 return ds;
