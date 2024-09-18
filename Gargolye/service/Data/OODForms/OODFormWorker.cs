@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using System.Management.Automation;
 using static Anywhere.service.Data.FormWorker;
 using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
+using System.Security.Cryptography;
 
 namespace OODForms
 {
@@ -344,10 +345,9 @@ namespace OODForms
             return "Success";
         }
 
-        public string generateForm6(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId)
+        public string generateForm6(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId, string loggedInUserPersonId)
         {
-            try
-            {
+           try {
                 OODFormDataGetter oodfdg = new OODFormDataGetter();
                 string pdfTronKeyResult = oodfdg.getPDFTronKey(token);
                 LicenseResponse[] pdfTronKey = JsonConvert.DeserializeObject<LicenseResponse[]>(pdfTronKeyResult);
@@ -358,13 +358,16 @@ namespace OODForms
                 string path = pathdatalist[0].path;
                 string crname = "Tier1andJDPlan_Form6.pdf";
                 string reportpath = string.Format(path, crname);
+                string personCompletingReport = string.Empty;
 
                 PDFDoc form6Template = new PDFDoc(reportpath);
 
                 // Gather Data for the Person Completing the Report
-                string personCompletingReportData = oodfdg.getPersonCompletingReportName(token);
-                personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
-                string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+
+
+                //string loggedInUserPersonId = oodfdg.getPersonCompletingReportName(token);
+                //personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                //string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
 
                 DataTable dt;
                 DataRow row;
@@ -464,6 +467,24 @@ namespace OODForms
                         SAMLevel = "";
                     }
                 }
+
+                DataSet ds3 = new DataSet();
+                //string personCompletingReport;
+
+                if (!string.IsNullOrEmpty(loggedInUserPersonId))
+                {
+
+                    // long lng_loggedInUserPersonId = long.Parse(loggedInUserPersonId);
+                    ds3 = oodfdg.getPersonCompletingReport(token, loggedInUserPersonId);
+                }
+
+
+
+                if (ds3.Tables.Count > 0 && ds3.Tables[0].Rows.Count > 0)
+                {
+                    personCompletingReport = String.Format("{0} {1} ", ds3.Tables[0].Rows[0]["First_Name"], ds3.Tables[0].Rows[0]["Last_Name"]);
+                }
+
 
 
                 DateTime currentDate = DateTime.Now;

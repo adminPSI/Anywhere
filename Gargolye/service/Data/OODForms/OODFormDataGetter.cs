@@ -999,6 +999,51 @@ namespace OODForms
             }
         }
 
+        public DataSet OODForm6GetNotes(string AuthorizationNumber, string StartDate, string EndDate, string userId)
+        {
+            
+            sb.Clear();
+            sb.Append("Select DISTINCT dba.Case_Notes.Case_Note_ID, dba.Case_Notes.Service_Date, emp_ood.service_area_modifier, emp_ood.narrative, code_table.caption from emp_ood ");
+            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
+            sb.Append("LEFT OUTER JOIN code_table ON emp_ood.contact_method = code_table.code ");
+            sb.AppendFormat("WHERE dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+            sb.Append("AND code_table.field_id = 'ContactMethod' ");
+            sb.Append("-- and code_table.Table_ID = 'Employment_Code_OOD_6' ");
+           // sb.AppendFormat("AND Case_notes.User_Id = '{0}' ", userId);
+            
+
+            if (userId != "%25")
+            {
+                sb.AppendFormat("AND Case_notes.User_Id = '{0}' ", userId);
+            } else
+            {
+                sb.Append("AND Case_notes.User_Id = '%' ");
+            }
+
+            sb.Append(" ORDER BY dba.Case_Notes.Service_Date ASC");
+            //sb.Append("AND Last_Name > '' ");
+            DataSet ds = di.SelectRowsDS(sb.ToString());
+
+            //if (ds.Tables.Count > 0)
+            //{
+            //    DataTable dt = ds.Tables[0];
+            //    foreach (DataRow row in dt.Rows)
+            //    {
+            //        string MN = string.Empty;
+
+            //        if (row["Middle_Name"].ToString().Length > 0)
+            //        {
+            //            MN = row["Middle_Name"].ToString().Substring(0, 1).ToUpper();
+            //        }
+
+            //        row["Initials"] = String.Format("{0}{1}{2}", row["First_Name"].ToString().Substring(0, 1).ToUpper(), MN, row["Last_Name"].ToString().Substring(0, 1).ToUpper());
+            //    }
+            //}
+
+            return ds;
+        }
+
         #endregion
 
         public string getPersonCompletingReportName(string token)
