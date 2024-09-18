@@ -1,12 +1,14 @@
 const outcomesReview = (function () {
   let selectedConsumerId;
+  let outcomesData;
+  let outcomesDataRaw;
+  let activityRes;
   let locations;
   let successTypes;
   let goalTypes;
 
   let tabSections;
 
-  let currentFilterDisplay;
   let filterBtn;
   let servBtnWrap;
   let serviceBtn;
@@ -14,9 +16,6 @@ const outcomesReview = (function () {
   let typeBtnWrap;
   let outcomeTypeBtn;
   let outcomeTypeCloseBtn;
-
-  //
-  //----------------------------------------------------
 
   // Mini Roster
   //----------------------------------------------------
@@ -44,9 +43,44 @@ const outcomesReview = (function () {
 
   // Filtering
   //----------------------------------------------------
+  // date filter
+  function buildFilterDates(unitType = 'Days') {
+    const dateToggle = `
+      <div class="dateFilterToggle">
+        <button id="days-back-btn" class="active">${unitType} Back</button>
+        <button id="date-range-btn">Date Range</button>
+      </div>
+    `;
+
+    const dateInputs = `
+      <div class="daysBack active" >
+        <label for="daysBack">${unitType} Back:</label>
+        <input type="number" id="daysBack" name="daysBack" min="1" />
+      </div>
+
+      <div class="dateRange">
+        <div>
+          <label for="fromDate">From:</label>
+          <input type="date" id="fromDate" name="fromDate" />
+        </div>
+        <div>
+          <label for="toDate">To:</label>
+          <input type="date" id="toDate" name="toDate" />
+        </div>
+      </div>
+    `;
+
+    const dateWrap = _DOM.createElement('div', { class: 'dateFilter' });
+    dateWrap.innerHTML = dateToggle;
+    dateWrap.innerHTML += dateInputs;
+
+    return dateWrap;
+  }
   // current filter display
   function buildCurrentFilterdisplay() {
-    currentFilterDisplay = _DOM.createElement('div', { class: 'filteredByData' });
+    const currentFilterDisplay = _DOM.createElement('div', { class: 'filteredByData' });
+    const dateFilter = buildFilterDates();
+    const filteredByWrap = _DOM.createElement('div', { class: 'filteredByWrap' });
     const btnWrap = _DOM.createElement('div', { class: 'filterBtnWrap' });
     servBtnWrap = _DOM.createElement('div', { class: 'filterSelectionBtnWrap' });
     typeBtnWrap = _DOM.createElement('div', { class: 'filterSelectionBtnWrap' });
@@ -110,9 +144,15 @@ const outcomesReview = (function () {
     typeBtnWrap.appendChild(outcomeTypeBtn);
     typeBtnWrap.appendChild(outcomeTypeCloseBtn);
 
+    filteredByWrap.appendChild(btnWrap);
+    filteredByWrap.appendChild(servBtnWrap);
+    filteredByWrap.appendChild(typeBtnWrap);
+    currentFilterDisplay.appendChild(filteredByWrap);
+    currentFilterDisplay.appendChild(dateFilter);
+
     return currentFilterDisplay;
   }
-  function updateCurrentFilterDisplay(service, outcomeType) {
+  function updateCurrentFilterDisplay(service = '%', outcomeType = '%') {
     if (service === '%' || service === 'All') {
       servBtnWrap.classList.add('hidden');
     } else {
@@ -169,7 +209,7 @@ const outcomesReview = (function () {
     ];
     dropdown.populate(servDrop, data, 'All');
 
-    serviceDropdown.addEventListener('change', event => {
+    servDrop.addEventListener('change', event => {
       const selectedOption = event.target.options[event.target.selectedIndex];
     });
 
@@ -197,54 +237,32 @@ const outcomesReview = (function () {
 
     POPUP.show(filterPopup);
   }
-  // date filter
-  function buildFilterDates(unitType = 'Days') {
-    const dateToggle = `
-      <div class="dateFilterToggle">
-        <button id="days-back-btn" class="active">${unitType} Back</button>
-        <button id="date-range-btn">Date Range</button>
-      </div>
-    `;
 
-    const dateInputs = `
-      <div id="daysBack" class="active">
-        <label for="daysBack">${unitType} Back:</label>
-        <input type="number" id="daysBack" name="daysBack" min="1" />
-      </div>
-
-      <div id="dateRange">
-        <label for="fromDate">From:</label>
-        <input type="date" id="fromDate" name="fromDate" />
-        <label for="toDate">To:</label>
-        <input type="date" id="toDate" name="toDate" />
-      </div>
-    `;
-
-    const dateWrap = _DOM.createElement('div', { class: 'dateFilter' });
-    dateWrap.innerHTML = dateToggle;
-    dateWrap.innerHTML += dateInputs;
-
-    return dateWrap;
-  }
-
-  
   // Add Review Note Popup
   //----------------------------------------------------
   function showAddReviewNotePopup() {
     const reviewNotePopup = POPUP.build();
 
-    reviewNotePopup.show();
+    const noteInput = input.build({
+      label: 'Review Note',
+      style: 'secondary',
+      type: 'textarea',
+    });
+
+    reviewNotePopup.appendChild(noteInput);
+
+    POPUP.show(reviewNotePopup);
   }
 
   // Detail View Popup
   //----------------------------------------------------
   function buildPrimaryLocationDropdown(locId) {
-    var select = dropdown.build({
+    const select = dropdown.build({
       label: 'Primary Location',
       style: 'secondary',
     });
 
-    var data = outcomesLocations.Primary.map(pl => {
+    const data = outcomesLocations.Primary.map(pl => {
       return {
         value: pl.Location_ID,
         text: pl.description,
@@ -254,7 +272,7 @@ const outcomesReview = (function () {
     return select;
   }
   function buildSecondaryLocationDropdown(locId) {
-    var select = dropdown.build({
+    const select = dropdown.build({
       label: 'Secondary Location',
       style: 'secondary',
     });
@@ -262,7 +280,7 @@ const outcomesReview = (function () {
     return select;
   }
   function buildResultsDropdown(result) {
-    var select = dropdown.build({
+    const select = dropdown.build({
       label: 'Results',
       style: 'secondary',
     });
@@ -270,7 +288,7 @@ const outcomesReview = (function () {
     return select;
   }
   function buildPromptsDropdown(code) {
-    var select = dropdown.build({
+    const select = dropdown.build({
       label: 'Prompts',
       style: 'secondary',
     });
@@ -278,7 +296,7 @@ const outcomesReview = (function () {
     return select;
   }
   function buildAttemptsDropdown(attempt) {
-    var select = dropdown.build({
+    const select = dropdown.build({
       label: 'Attempts',
       style: 'secondary',
     });
@@ -286,7 +304,7 @@ const outcomesReview = (function () {
     return select;
   }
   function buildCommunityIntegrationDropdown(ciLevel) {
-    var select = dropdown.build({
+    const select = dropdown.build({
       label: 'Community Integration',
       style: 'secondary',
     });
@@ -294,26 +312,28 @@ const outcomesReview = (function () {
     return select;
   }
   function buildTimeInputs(startTime, endTime) {
-    var start = input.build({
+    const start = input.build({
       label: 'Start Time',
       style: 'secondary',
       type: 'time',
       value: startTime,
     });
-    var end = input.build({
+    const end = input.build({
       label: 'End Time',
       style: 'secondary',
       type: 'time',
       value: endTime,
     });
 
-    return {
-      start,
-      end,
-    };
+    
+    const timeWrap = document.createElement('div');
+    timeWrap.appendChild(start);
+    timeWrap.appendChild(end);
+
+    return timeWrap;
   }
   function buildNoteInput(note) {
-    var noteInput = input.build({
+    const noteInput = input.build({
       label: 'Note',
       style: 'secondary',
       type: 'textarea',
@@ -323,8 +343,8 @@ const outcomesReview = (function () {
     return noteInput;
   }
   function buildSaveButton(isEdit) {
-    var text = isEdit ? 'Update' : 'Save';
-    var btn = button.build({
+    const text = isEdit ? 'Update' : 'Save';
+    const btn = button.build({
       text,
       style: 'secondary',
       type: 'contained',
@@ -335,7 +355,7 @@ const outcomesReview = (function () {
     return btn;
   }
   function buildDeleteButton() {
-    var btn = button.build({
+    const btn = button.build({
       text: 'Delete',
       style: 'secondary',
       type: 'contained',
@@ -345,14 +365,30 @@ const outcomesReview = (function () {
     return btn;
   }
   function buildAddNoteButton() {
-    var btn = button.build({
+    const btn = button.build({
       text: 'Add Review Note',
       style: 'secondary',
       type: 'contained',
-      //callback: deleteIncident,
+      callback: () => {
+        showAddReviewNotePopup();
+      },
     });
 
     return btn;
+  }
+  function buildCardEnteredByDetails(enteredBy, lastUpdatedDateDirty) {
+    let lastEditedTime = lastUpdatedDateDirty.split(' ')[1];
+    let lastEditHH = lastEditedTime.split(':')[0];
+    let lastEditMM = UTIL.leadingZero(lastEditedTime.split(':')[1]);
+    lastEditedTime = `${lastEditHH}:${lastEditMM} ${lastUpdatedDateDirty.split(' ')[2]}`;
+    let lastEditedDate = editData.Last_Update.split(' ')[0];
+    let lastEdited = `${lastEditedDate} ${lastEditedTime}`;
+
+    const txtArea = document.createElement('p');
+    txtArea.classList.add('enteredByDetail');
+    txtArea.innerHTML = `Entered By: ${enteredBy} <br>Last Updated: ${lastEdited}`;
+
+    return txtArea;
   }
   function showDetailViewPopup(editData) {
     const detailsPopup = POPUP.build();
@@ -368,25 +404,49 @@ const outcomesReview = (function () {
     const saveBtn = buildSaveButton(true);
     const deleteBtn = buildDeleteButton();
     const addReviewNoteBtn = buildAddNoteButton();
+    const lastEditBy = buildCardEnteredByDetails(editData.submitted_by_user_id, editData.Last_Update);
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    btnWrap.appendChild(saveBtn);
+    btnWrap.appendChild(deleteBtn);
+    btnWrap.appendChild(addReviewNoteBtn);
 
     detailsPopup.appendChild(primaryLocationDropdown);
     detailsPopup.appendChild(secondaryLocationDropdown);
     detailsPopup.appendChild(resultsDropdown);
     detailsPopup.appendChild(promptsDropdown);
     detailsPopup.appendChild(attemptsDropdown);
-    detailsPopup.appendChild(cIDropdown);
-    detailsPopup.appendChild(timeInputs);
-    detailsPopup.appendChild(noteInput);
-    detailsPopup.appendChild(saveBtn);
-    detailsPopup.appendChild(deleteBtn);
-    detailsPopup.appendChild(addReviewNoteBtn);
 
-    detailsPopup.show();
+    if ($.session.applicationName !== 'Gatekeeper') {
+      detailsPopup.appendChild(cIDropdown);
+      detailsPopup.appendChild(timeInputs);
+    }
+
+    detailsPopup.appendChild(noteInput);
+    detailsPopup.appendChild(btnWrap);
+    detailsPopup.appendChild(lastEditBy);
+
+    POPUP.show(detailsPopup);
+
+    //? Might need below but need more data from Mike
+    if (editData && editData.submitted_by_user_id && editData.submitted_by_user_id.toUpperCase() !== $.session.UserId.toUpperCase()) {
+      primaryLocationDropdown.classList.add('disabled');
+      secondaryLocationDropdown.classList.add('disabled');
+      resultsDropdown.classList.add('disabled');
+      attemptsDropdown.classList.add('disabled');
+      promptsDropdown.classList.add('disabled');
+      cIDropdown.classList.add('disabled');
+      timeInputs.classList.add('disabled');
+      noteInput.querySelector('.input-field__input').setAttribute('readonly', 'true');
+      saveBtn.classList.add('disabled');
+      deleteBtn.classList.add('disabled');
+      btnWrap.classList.add('hidden');
+    }
   }
   function onDetailRowClick(outcome) {
-    // TODO: get Goal_Type_ID
     const getSuccessTypes = new Promise((resolve, reject) => {
-      outcomesAjax.getOutcomesSuccessTypes(outcome.Goal_Type_ID, results => {
+      outcomesAjax.getOutcomesSuccessTypes(outcome.goalTypeID, results => {
         unOrderedSuccessObj = {};
         successTypes = {};
 
@@ -408,7 +468,7 @@ const outcomesReview = (function () {
     });
 
     const getLocations = new Promise((resolve, reject) => {
-      outcomesAjax.getOutcomesPrimaryAndSecondaryLocations(selectedConsumerId, date, results => {
+      outcomesAjax.getOutcomesPrimaryAndSecondaryLocations(selectedConsumerId, outcome.date, results => {
         locations = {};
 
         results.forEach(res => {
@@ -446,7 +506,7 @@ const outcomesReview = (function () {
 
     // TODO: get activityID
     const getActivity = new Promise((resolve, reject) => {
-      outcomesAjax.getObjectiveActivity(activityId, results => {
+      outcomesAjax.getObjectiveActivity(outcome.activityId, results => {
         activityRes = results;
         resolve('success');
       });
@@ -460,12 +520,11 @@ const outcomesReview = (function () {
   // Table
   //----------------------------------------------------
   function buildToggleIcon() {
-    const toggleIcon = _DOM.createElement('div', { class: 'rowToggle' });
+    const toggleIcon = _DOM.createElement('div', { class:[ 'rowToggle', 'closed'] });
     toggleIcon.innerHTML = icons['keyArrowRight'];
     return toggleIcon;
   }
   function buildTable(data) {
-    console.table(data);
     const table = _DOM.createElement('div');
     table.classList.add('outcomesReviewTable');
 
@@ -483,11 +542,12 @@ const outcomesReview = (function () {
     for (const objId in data) {
       const d = data[objId];
       
-      const mainRowWrap = _DOM.createElement('div', { class: 'rowWrap' });
+      const mainRowWrap = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-main'] });
       table.appendChild(mainRowWrap);
       
       const mainRow = _DOM.createElement('div', { class: ['row', 'row-main'] });
       const mainTI = buildToggleIcon();
+      mainTI.classList.add('mainToggle');
       mainRow.appendChild(mainTI);
       mainRow.innerHTML += `
         <div>${d.individual}</div>
@@ -498,15 +558,58 @@ const outcomesReview = (function () {
       `;
       mainRowWrap.appendChild(mainRow);
 
+      const mainRowSubWrap = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-main-sub', 'hidden'] });
+      mainRowWrap.appendChild(mainRowSubWrap);
+      
+      mainRow.addEventListener('click', e => {
+        const target = e.target;
+
+        if (!target.classList.contains('mainToggle')) return;
+  
+        const showChildren = target.classList.contains('closed');
+
+        if (showChildren) {
+          target.innerHTML = icons.keyArrowDown;
+          target.classList.remove('closed');
+          mainRowSubWrap.classList.remove('hidden');
+        } else {
+          target.innerHTML = icons.keyArrowRight;
+          target.classList.add('closed');
+          mainRowSubWrap.classList.add('hidden');
+        }
+      });
+
       for (const date in data[objId].reviewDates) {
-        const dateRowWrap = _DOM.createElement('div', { class: 'rowWrap' });
-        mainRowWrap.appendChild(dateRowWrap);
-    
+        const dateRowWrap = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-date'] });
+        mainRowSubWrap.appendChild(dateRowWrap);
+
         const dateRow = _DOM.createElement('div', { class: ['row', 'row-date'] });
         const dateTI = buildToggleIcon();
+        dateTI.classList.add('subToggle');
         dateRow.appendChild(dateTI);
         dateRow.innerHTML += `<div>${date}</div>`;
         dateRowWrap.appendChild(dateRow);
+        
+        const detailsTable = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-date-sub', 'hidden'] });
+        dateRowWrap.appendChild(detailsTable);
+
+        dateRow.addEventListener('click', e => {
+          const target = e.target;
+  
+          if (!target.classList.contains('subToggle')) return;
+    
+          const showChildren = target.classList.contains('closed');
+  
+          if (showChildren) {
+            target.innerHTML = icons.keyArrowDown;
+            target.classList.remove('closed');
+            detailsTable.classList.remove('hidden');
+          } else {
+            target.innerHTML = icons.keyArrowRight;
+            target.classList.add('closed');
+            detailsTable.classList.add('hidden');
+          }
+        });
 
         const detailsHeading = _DOM.createElement('div', { class: ['heading', 'heading-details'] });
         detailsHeading.innerHTML = `
@@ -516,7 +619,7 @@ const outcomesReview = (function () {
           <div>Prompts</div>  
           <div>Note</div>
         `;
-        dateRowWrap.appendChild(detailsHeading);
+        detailsTable.appendChild(detailsHeading);
 
         for (const staffId in data[objId].reviewDates[date]) {
           const details = data[objId].reviewDates[date][staffId];
@@ -528,7 +631,12 @@ const outcomesReview = (function () {
             <div>${details.prompts}</div>
             <div>${details.note}</div>
           `;
-          dateRowWrap.appendChild(detailRow);
+          detailsTable.appendChild(detailRow);
+
+          detailRow.addEventListener('click', () => {
+            console.log('detail row click', details.activityId);
+            onDetailRowClick({goalTypeID: objId, activityId: details.activityId, date: date});
+          });
         }
       }
     }
@@ -572,7 +680,7 @@ const outcomesReview = (function () {
   //----------------------------------------------------
   async function getReviewTableData() {
     const data = await outcomesAjax.getReviewTableData({
-      consumerId: '4365',
+      consumerId: selectedConsumerId,
       startDate: '2023/01/01',
       endDate: '2024/10/01',
     });
@@ -616,6 +724,8 @@ const outcomesReview = (function () {
       a[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
       a[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
       a[occurrence][objID].reviewDates[date][staffId].note = '';
+      // data for detail popup
+      a[occurrence][objID].reviewDates[date][staffId].activityId = d.objectiveActivityId;
       
       return a;
     }, {});
@@ -623,7 +733,8 @@ const outcomesReview = (function () {
   async function init(consumer) {
     console.clear();
 
-    selectedConsumerId = consumer.id;
+    //selectedConsumerId = consumer.id;
+    selectedConsumerId = '4365';
 
     setActiveModuleSectionAttribute('outcomes-review');
     PROGRESS.SPINNER.show('Loading Outcomes...');
@@ -636,14 +747,13 @@ const outcomesReview = (function () {
     outcomesReview.classList.add('outcomesReview');
 
     const filterDisplay = buildCurrentFilterdisplay();
-    const dateFilter = buildFilterDates();
     const outcomeTabs = buildTabs();
 
     outcomesReview.appendChild(filterDisplay);
-    outcomesReview.appendChild(dateFilter);
     outcomesReview.appendChild(outcomeTabs);
     DOM.ACTIONCENTER.appendChild(outcomesReview);
 
+    updateCurrentFilterDisplay();
     populateTabSections();
 
     //goalTypes = await outcomesAjax.getAllGoalTypes();

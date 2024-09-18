@@ -582,38 +582,69 @@ div.textarea {
 }
 
 .outcomesReview {
-  .dateFilter {
-    display: flex;
+  .filteredByData {
+    justify-content: space-between;
 
-    .dateFilterToggle {
+    .filteredByWrap {
       display: flex;
+    }
 
-      button {
-        background: rgba(54, 106, 152, 0.5);
+    .dateFilter {
+      display: flex;
+      column-gap: 10px;
+  
+      .dateFilterToggle {
+        display: flex;
+  
+        button {
+          background: rgba(54, 106, 152, 0.5);
+          color: $white;
+          cursor: pointer;
+          padding: 10px;
+  
+          &.active {
+            background: $primary;
+          }
+        }
 
+        button:first-child {
+          border-top-left-radius: 6px;
+          border-bottom-left-radius: 6px;
+        }
+        button:last-child {
+          border-top-right-radius: 6px;
+          border-bottom-right-radius: 6px;
+        }
+      }
+  
+      .daysBack,
+      .dateRange {
+        display: none;
+  
         &.active {
-          background: $primary;
+          display: flex;
+          align-items: center;
+          flex-flow: row wrap;
+          column-gap: 10px;
+        }
+      }
+
+      .daysBack {
+        input {
+          width: 30px;
+        }
+      }
+
+      .dateRange {
+        > div {
+          display: flex;
+          align-items: center;
+          width: 100%;
         }
       }
     }
-
-    .daysBack,
-    .dateRange {
-      display: none;
-
-      &.active {
-        display: block;
-      }
-    }
-
-    // .daysBack {
-
-    // }
-
-    // .dateRange {
-
-    // }
   }
+  
 
   .tabs {
     .tabs__nav--item {
@@ -657,17 +688,12 @@ div.textarea {
       padding: 6px 0px;
     }
 
-    .rowWrap {
-      display: flex;
-      flex-flow: row wrap;
-      width: 100%;
+    .row {
+      padding: 10px;
     }
 
-
-    // columns
-    .rowToggle {
-      flex-basis: 24px;
-      max-width: 24px;
+    .row-details {
+      cursor: pointer;
     }
 
     .heading,
@@ -678,6 +704,38 @@ div.textarea {
 
       > div {
         flex-grow: 1;
+      }
+
+      > div:not(:first-child) {
+        pointer-events: none;
+      }
+    }
+
+    .rowWrap {
+      display: flex;
+      flex-flow: row wrap;
+      width: 100%;
+
+      &-main-sub {
+        &.hidden {
+          display: none;
+        }
+      }
+
+      &-date-sub {
+        &.hidden {
+          display: none;
+        }
+      }
+    }
+
+    // columns
+    .rowToggle {
+      flex-basis: 24px;
+      max-width: 24px;
+
+      * {
+        pointer-events: none;
       }
     }
 
