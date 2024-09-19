@@ -199,12 +199,10 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             // Save the first two lines for later checks
                             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-                            string input = "ISP Span Dates: August 31, 2023 - August 30, 2024";
-
                             // Regular expression pattern to match the two dates
                             string pattern = @"ISP Span Dates:\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})\s*-\s*([A-Za-z]+\s+\d{1,2},\s+\d{4})";
 
-                            Match match = Regex.Match(input, pattern);
+                            Match match = Regex.Match(lines[1], pattern);
 
                             if (match.Success)
                             {

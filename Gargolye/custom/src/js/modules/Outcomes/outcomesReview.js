@@ -685,13 +685,18 @@ const outcomesReview = (function () {
       endDate: '2024/10/01',
     });
 
-    outcomesDataRaw = data;
+    outcomesDataRaw = {};
 
     outcomesData = data.reduce((a, d) => {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
       const staffId = d.staffId;
+
+      if (!outcomesDataRaw[occurrence]) {
+        outcomesDataRaw[occurrence] = [];
+      }
+      outcomesDataRaw[occurrence].push(d);
 
       if (!a[occurrence]) {
         a[occurrence] = {};
@@ -729,12 +734,15 @@ const outcomesReview = (function () {
       
       return a;
     }, {});
+
+    console.table(outcomesDataRaw);
   }
   async function init(consumer) {
     console.clear();
 
     //selectedConsumerId = consumer.id;
-    selectedConsumerId = '4365';
+    //selectedConsumerId = '4365';
+    selectedConsumerId = '3190';
 
     setActiveModuleSectionAttribute('outcomes-review');
     PROGRESS.SPINNER.show('Loading Outcomes...');
