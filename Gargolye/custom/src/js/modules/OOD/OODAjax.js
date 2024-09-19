@@ -1340,7 +1340,8 @@ var OODAjax = (function () {
       serviceCodeId: data.serviceCodeId,
       startDate: data.startDate,
       endDate: data.endDate,
-      userId: data.userId
+      userId: data.userId,
+      loggedInUserPersonId: data.loggedInUserPersonId
     }
 
     var form = document.createElement('form');
@@ -1382,6 +1383,11 @@ var OODAjax = (function () {
     startDateInput.setAttribute('value', data.startDate);
     startDateInput.id = 'startDate';
 
+    var loggedInUserPersonIdInput = document.createElement('input');
+    loggedInUserPersonIdInput.setAttribute('name', 'loggedInUserPersonId');
+    loggedInUserPersonIdInput.setAttribute('value', data.loggedInUserPersonId);
+    loggedInUserPersonIdInput.id = 'loggedInUserPersonId';
+
     var endDateInput = document.createElement('input');
     endDateInput.setAttribute('name', 'endDate');
     endDateInput.setAttribute('value', data.endDate);
@@ -1394,6 +1400,7 @@ var OODAjax = (function () {
     form.appendChild(serviceCodeIdInput);
     form.appendChild(startDateInput);
     form.appendChild(endDateInput);
+    form.appendChild(loggedInUserPersonIdInput);
 
     form.style.position = 'absolute';
     form.style.opacity = '0';

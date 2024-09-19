@@ -539,13 +539,19 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                         i += paidSupportsHeaders.Count; // Move past the headers
                         while (i < lines.Length)
                         {
+                            // Check for first two lines
+                            bool skipNextTwoLines = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i +1].Contains(firstTwoLinesArray[1]));
+
+                            if (skipNextTwoLines)
+                            {
+                                i += 4; // Skip the next four lines
+                                continue;
+                            }
+
                             var assessmentArea = lines[i].Trim();
 
                             if (!assessmentAreas.Contains(assessmentArea))
                             {
-                                // Check for first two lines
-                                bool skipNextTwoLines = (i + 1 < lines.Length && lines[i + 1].Contains(firstTwoLinesArray[0]) && lines[i + 2].Contains(firstTwoLinesArray[1]));
-
                                 if (skipNextTwoLines)
                                 {
                                     i += 4; // Skip the next four lines
@@ -573,9 +579,9 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
                             {
                                 // Check for first two lines
-                                bool skipNextTwoLines = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
+                                bool skipNextTwoLines2 = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
 
-                                if (skipNextTwoLines)
+                                if (skipNextTwoLines2)
                                 {
                                     i += 4; // Skip the next four lines
                                     continue;
@@ -619,13 +625,22 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                         i += additionalSupportsHeaders.Count; // Move past the headers
                         while (i < lines.Length)
                         {
+                            // Check for first two lines
+                            bool skipNextTwoLines = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
+
+                            if (skipNextTwoLines)
+                            {
+                                i += 4; // Skip the next four lines
+                                continue;
+                            }
+
                             var assessmentArea = lines[i].Trim();
                             if (!assessmentAreas.Contains(assessmentArea))
                             {
                                 // Check for first two lines and skip if found
-                                bool skipNextTwoLines = (i + 1 < lines.Length && lines[i + 1].Contains(firstTwoLinesArray[0]) && lines[i + 2].Contains(firstTwoLinesArray[1]));
+                                bool skipNextTwoLines2 = (i + 1 < lines.Length && lines[i + 1].Contains(firstTwoLinesArray[0]) && lines[i + 2].Contains(firstTwoLinesArray[1]));
 
-                                if (skipNextTwoLines)
+                                if (skipNextTwoLines2)
                                 {
                                     i += 4; // Skip the next four lines
                                     continue;
@@ -649,9 +664,9 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
                             {
                                 // Check for first two lines and skip if found
-                                bool skipNextTwoLines = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
+                                bool skipNextTwoLines3 = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
 
-                                if (skipNextTwoLines)
+                                if (skipNextTwoLines3)
                                 {
                                     i += 4; // Skip the next four lines
                                     continue;
@@ -695,13 +710,22 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                         i += professionalReferralHeaders.Count; // Move past the headers
                         while (i < lines.Length)
                         {
+                            // Check for first two lines
+                            bool skipNextTwoLines = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
+
+                            if (skipNextTwoLines)
+                            {
+                                i += 4; // Skip the next four lines
+                                continue;
+                            }
+
                             var assessmentArea = lines[i].Trim();
                             if (!assessmentAreas.Contains(assessmentArea))
                             {
                                 // Check for first two lines and skip if found
-                                bool skipNextTwoLines = (i + 1 < lines.Length && lines[i + 1].Contains(firstTwoLinesArray[0]) && lines[i + 2].Contains(firstTwoLinesArray[1]));
+                                bool skipNextTwoLines2 = (i + 1 < lines.Length && lines[i + 1].Contains(firstTwoLinesArray[0]) && lines[i + 2].Contains(firstTwoLinesArray[1]));
 
-                                if (skipNextTwoLines)
+                                if (skipNextTwoLines2)
                                 {
                                     i += 4; // Skip the next four lines
                                     continue;
@@ -725,9 +749,9 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
                             {
                                 // Check for first two lines and skip if found
-                                bool skipNextTwoLines = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
+                                bool skipNextTwoLines3 = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
 
-                                if (skipNextTwoLines)
+                                if (skipNextTwoLines3)
                                 {
                                     i += 4; // Skip the next four lines
                                     continue;
