@@ -18,6 +18,8 @@ using System.Linq.Expressions;
 using Microsoft.Extensions.Primitives;
 using static Anywhere.service.Data.AnywhereWorkshopWorkerTwo;
 using System.Management.Automation.Language;
+using CrystalDecisions.Shared.Json;
+using System.Security.Cryptography;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -110,6 +112,7 @@ namespace OODForms
                 sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID in ({0}) ", posNumbersString);
                 sb.Append("AND Last_Name > '' and First_Name > '' ");
                 sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+                sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
                 sb.Append("UNION ");
                 sb.Append("SELECT DISTINCT   dba.Persons.Last_Name, dba.Persons.First_Name, dba.Persons.Middle_Name, '' AS Initials ");
                 sb.Append("FROM dba.EMP_OOD ");
@@ -118,6 +121,7 @@ namespace OODForms
                 //sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID in ({0}) ", posNumbersString);
                 sb.Append("Where Last_Name > '' and First_Name > '' ");
                 sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+                sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
             } else
             {
                 sb.Append("SELECT DISTINCT   dba.Persons.Last_Name, dba.Persons.First_Name, dba.Persons.Middle_Name, '' AS Initials ");
@@ -127,6 +131,7 @@ namespace OODForms
                 //sb.AppendFormat("WHERE dba.EMP_OOD.Position_ID in ({0}) ", posNumbersString);
                 sb.Append("Where Last_Name > '' and First_Name > '' ");
                 sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+                sb.AppendFormat("AND dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
             }
 
             ds = di.SelectRowsDS(sb.ToString());
@@ -756,16 +761,17 @@ namespace OODForms
             sb.Clear();
             sb.Append("SELECT DISTINCT DBA.Persons.Last_Name, DBA.Persons.Middle_Name, DBA.Persons.First_Name ");
             sb.Append("FROM dba.Consumer_Services_Master ");
-            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-            sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
+            //sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+            //sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Consumer_Services_Master.Person_Id = dba.Persons.Person_ID ");
-            sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
-            sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
+            sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+            //sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
+            sb.AppendFormat("AND ((From_Date <= '{1}' and To_Date >= '{0}') or (From_Date <= '{1}' and To_Date is Null))", StartDate, EndDate);
 
-            if (ServiceCodeID != "%" && ServiceCodeID != "All")
-            {
-                sb.AppendFormat("AND dba.Case_Notes.Service_ID = {0} ", ServiceCodeID);
-            }
+            //if (ServiceCodeID != "%" && ServiceCodeID != "All")
+            //{
+            //    sb.AppendFormat("AND dba.Case_Notes.Service_ID = {0} ", ServiceCodeID);
+            //}
 
             return di.SelectRowsDS(sb.ToString());
         }
