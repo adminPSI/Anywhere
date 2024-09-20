@@ -1562,6 +1562,11 @@ namespace Anywhere
             return singleEntryWorker.getConsumersSignaturesAndNotes(token, singleEntryId);
         }
 
+        public string addReviewNote(string token, string objectiveActivityId, string consumerId, string employeeId, string objectiveActivityDate, string note, string result, string notifyEmployee)
+        {
+            return dg.addReviewNote( token,  objectiveActivityId,  consumerId,  employeeId,  objectiveActivityDate,  note,  result,  notifyEmployee);
+        }
+
         public OutcomesWorker.SuccessSymbolLookup[] getSuccessSymbolLookup(string token)
         {
             return outcomesWorker.getSuccessSymbolLookup(token);
@@ -4039,9 +4044,9 @@ namespace Anywhere
             return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId, appName);
         }
 
-        public OutcomesWorker.OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string startDate, string endDate)
+        public OutcomesWorker.OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string objectiveDate)
         {
-            return outcomesWorker.getOutcomesReviewGrid(token, consumerId, startDate, endDate);
+            return outcomesWorker.getOutcomesReviewGrid(token, consumerId, objectiveDate);
         }
 
         public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
