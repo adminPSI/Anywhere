@@ -539,7 +539,7 @@ const importServices = (() => {
                     assessmentAreaId: rowData.assessmentAreaId || null,
                     assessmentArea: rowData.assessmentArea || "",
                     whatIsRisk: rowData.whatIsRisk || "",
-                    whatSupportLooksLike: rowData.whatSupportLooksLike || "",
+                    whatSupportLooksLike: rowData.whatSupportMustLookLike || "",
                     riskRequiresSupervision: rowData.riskRequiresSupervision || "",
                     whatNeedsToHappen: rowData.whatNeedsToHappen || "",
                     howItShouldHappen: rowData.howItShouldHappen || "",
