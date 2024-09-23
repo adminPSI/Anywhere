@@ -427,9 +427,9 @@ namespace Anywhere.service.Data
             return JSONString;
         }
 
-        public OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string startDate, string endDate)
+        public OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string objectiveDate)
         {
-            string reviewGrid = dg.getOutcomesReviewGrid(token, consumerId, startDate, endDate);
+            string reviewGrid = dg.getOutcomesReviewGrid(token, consumerId, objectiveDate);
             OutcomesReviewGrid[] reviewGridObj = js.Deserialize<OutcomesReviewGrid[]>(reviewGrid);
             return reviewGridObj;
         }

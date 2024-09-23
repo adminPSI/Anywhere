@@ -46,7 +46,7 @@ namespace Anywhere.service.Data
         }
 
 
-            public ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType)
+            public ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime)
         {
             List<string> consumerIdList = new List<string>();
             List<string> locationIdList = new List<string>();
@@ -82,7 +82,7 @@ namespace Anywhere.service.Data
                     consumerIdString = string.Join(",", locConList);
                     consumerAndLocation[j].consumerId = consumerIdString;
                     //consumerAndLocation[j].singleEntryId =  dg.insertSingleEntry(token, userId, dateOfService, location, workCodeID, startTime, endTime, checkHours, consumerIdString, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude);
-                    string singleEntryId = dg.insertSingleEntry(token, userId, updaterId, personId, dateOfService, location, workCodeID, startTime, endTime, checkHours, consumerIdString, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType);
+                    string singleEntryId = dg.insertSingleEntry(token, userId, updaterId, personId, dateOfService, location, workCodeID, startTime, endTime, checkHours, consumerIdString, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType, transportationStartTime, transportationEndTime);
                     singleEntryId = singleEntryId.Replace("<results><results><@singleEntryRecordID>", "");
                     singleEntryId = singleEntryId.Replace("</@singleEntryRecordID></results></results>", "");
                     consumerAndLocation[j].singleEntryId = singleEntryId;
@@ -473,6 +473,8 @@ namespace Anywhere.service.Data
             public string supervisorId { get; set; }
             public string locationTypeCode { get; set; }
             public string Anywhere_Closed { get; set; }
+            public string transportationendtime { get; set; }
+            public string transportationstarttime { get; set; }
         }
 
         public class SEFilteredListResults

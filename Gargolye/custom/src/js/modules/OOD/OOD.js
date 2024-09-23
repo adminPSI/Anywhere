@@ -6,6 +6,7 @@ const OOD = (() => {
 
     let editEmployersBtn;
     let createFormsBtn;
+    let createfilterPopupCreateBTN;
     let updateEmploymentGoalBtn;
     let employmentGoalText;
     let filterRow;
@@ -862,7 +863,7 @@ const OOD = (() => {
     async function generateAndTrackFormProgress(formNumber) {
         // Prepare data for form generation
         let data = {
-            referenceNumber: filterValues.referenceNumber,
+            referenceNumber: createFilterValues.referenceNumber,
             peopleId: selectedConsumerIds[0],
             serviceCodeId: filterValues.serviceId,
             startDate: createFilterValues.serviceDateStart,
@@ -1138,6 +1139,10 @@ const OOD = (() => {
             callback: () => { closeFilter('referenceNumberBtn') },
         });
 
+       // if (filterValues.referenceNumber != 'ALL' && filterValues.referenceNumber != '%' && filterValues.referenceNumber != '') {
+       //         createFilterValues.referenceNumber = filterValues.referenceNumber;
+      //  }
+
         btnWrap = document.createElement('div');
         btnWrap.classList.add('filterBtnWrap');
         btnWrap.appendChild(filterBtn);
@@ -1180,6 +1185,7 @@ const OOD = (() => {
         }
         if (closeFilter == 'referenceNumberBtn') {
             filterValues.referenceNumber = '%';
+          //  createFilterValues.referenceNumber = '%';
         }
         loadOODLanding();
     }  
@@ -1330,9 +1336,9 @@ const OOD = (() => {
             value: referencenumber.referenceNumber,
             text: referencenumber.referenceNumber,
         }));
-        data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
+        data.unshift({ id: null, value: '%', text: '' }); //ADD Blank value
        // dropdown.populate('referenceNumbersDropdown', data, filterValues.referenceNumber);
-        dropdown.populate('createreferenceNumbersDropdown', data, filterValues.referenceNumber);
+        dropdown.populate('createreferenceNumbersDropdown', data, createFilterValues.referenceNumber);
     }
 
     // Populate the Service Code DDL for the 'Entry' Service Popup Window
@@ -1400,6 +1406,7 @@ const OOD = (() => {
         });
         referenceNumbersDropdown.addEventListener('change', event => {
             filterValues.referenceNumber = event.target.value;
+           // createFilterValues.referenceNumber = event.target.value;
         });
         //routeStatusDropdown.addEventListener('change', event => {
         //  filterOpts.routeStatus = event.target.value;
@@ -1486,10 +1493,12 @@ const OOD = (() => {
         createreferenceNumbersDropdown = dropdown.build({
             label: 'Reference Number',
             dropdownId: 'createreferenceNumbersDropdown',
+            id: 'createreferenceNumbersDropdown',
+            // value: '',
         });
 
         // apply filters button
-        APPLY_BTN = button.build({
+        createfilterPopupCreateBTN = button.build({
             text: `Create Form ${formNumber}`,
             style: 'secondary',
             type: 'contained',
@@ -1503,7 +1512,7 @@ const OOD = (() => {
         });
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
-        btnWrap.appendChild(APPLY_BTN);
+        btnWrap.appendChild(createfilterPopupCreateBTN);
         btnWrap.appendChild(CANCEL_BTN);
 
         // build popup
@@ -1520,15 +1529,17 @@ const OOD = (() => {
         populateCreateEmployeeDropdown();
         populatecreateReferenceNumberDropdown(formNumber);
         createeventListeners(formNumber);
+        // checkCreatePopupRequiredFields();
         // setupFilterEvent();
 
-      
+        
 
         //return filterPopup;
         const formsPopup = document.getElementById('createOODFormsPopup');
             formsPopup.remove();
 
         POPUP.show(createfilterPopup);
+        checkCreatePopupRequiredFields();
 
     }
 
@@ -1567,9 +1578,24 @@ const OOD = (() => {
         });
      
         createreferenceNumbersDropdown.addEventListener('change', event => {
-            filterValues.referenceNumber = event.target.value;
+            createFilterValues.referenceNumber = event.target.value;
+            checkCreatePopupRequiredFields();
         });
         
+    }
+
+    function checkCreatePopupRequiredFields() {
+       // var createreferenceNumbersDropdown = document.querySelector('#createreferenceNumbersDropdown');
+       let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
+        if (createreferenceNumbersDropDown.value === '') { 
+            createreferenceNumbersDropDown.parentElement.classList.add('error');
+            createfilterPopupCreateBTN.classList.add('disabled'); 
+            return;
+        } else {
+            createreferenceNumbersDropDown.parentElement.classList.remove('error');
+            createfilterPopupCreateBTN.classList.remove('disabled');
+        }
+
     }
 
     function buildEmploymentGoalPopUp() {

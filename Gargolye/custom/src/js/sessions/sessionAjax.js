@@ -1020,6 +1020,7 @@ function getDefaultAnywhereSettings() {
       //Hide stuff
       $.session.useAbsentFeature = res.useAbsentFeature;
       $.session.billableTransportation = res.billableTransportation;
+      $.session.requireTimeEntryTransportationTimes = res.requireTimeEntryTransportationTimes;
       $.session.ohioEVVChangeDate = res.ohioEVVChangeDate; 
       $.session.anyRequireEndTime = res.anyRequireEndTime;
       $.session.useProgressNotes = res.useProgressNotes;

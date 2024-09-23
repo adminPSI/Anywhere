@@ -854,6 +854,8 @@
         // For text areas with colName "What’s Working" and "What's Not Working"
         if (colName.trim().split(' ').pop() === 'Working') {
           textAreaCharLimit = 1000;
+        } else if (colName === 'Who Said it?') {
+          textAreaCharLimit = 250;
         }
 
         questionInput = input.build({
