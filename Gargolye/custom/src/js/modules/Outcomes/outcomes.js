@@ -1955,7 +1955,7 @@ const outcomes = (function () {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        outcomesReview.init(selectedConsumerObj)
+        outcomesReview.init(selectedConsumerObj, currDate)
       }
     })
     topFilterDateWrap.appendChild(editOutcomeBtn);

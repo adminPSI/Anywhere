@@ -728,8 +728,8 @@ const outcomesAjax = (function () {
 
   // Review
   async function getReviewTableData(retrieveData) {
-    //consumerId, startDate, endDate
-    //4365, '2024/07/01', '2024/10/01'
+    //consumerId, objectiveDate
+    //4365, '2024/07/01'
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -755,6 +755,34 @@ const outcomesAjax = (function () {
       throw new Error(error.responseText);
     }
   }
+  async function getReviewTableDataSecondary(retrieveData) {
+    //consumerId, startDate, endDate, objectiveIdList
+    //4365, '2024/07/01', '2024/10/01', 
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getReviewTableDataSecondary/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          ...retrieveData
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return result.getReviewTableDataSecondaryResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
   async function getAllGoalTypes() {
     try {
       const result = await $.ajax({
@@ -776,6 +804,46 @@ const outcomesAjax = (function () {
       });
 
       return result.getAllGoalTypesResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+  async function addReviewNote() {
+    // @token
+    // @objectiveActivityId
+    // @consumerId
+    // @employeeId
+    // @objectiveActivityDate
+    // @note
+    // @result
+    // @notifyEmployee 
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/addReviewNote/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          objectiveActivityId: '',
+          consumerId: '',
+          employeeId: '',
+          objectiveActivityDate: '',
+          note: '',
+          result: '',
+          notifyEmployee: '',
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return result.addReviewNoteResult;
     } catch (error) {
       throw new Error(error.responseText);
     }
