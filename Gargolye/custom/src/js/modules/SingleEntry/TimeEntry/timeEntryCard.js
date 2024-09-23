@@ -1015,7 +1015,7 @@ var timeEntryCard = (function () {
                 if (transportationStartTimeVal === '' || !transportationStartTimeVal) {
                     transportationStartTimeInput.classList.add('error');
                 } else {
-                    transportationEndTimeInput.classList.remove('error');
+                    transportationStartTimeInput.classList.remove('error');
                 }
 
                 if (transportationEndTimeVal === '' || !transportationEndTimeVal) {
