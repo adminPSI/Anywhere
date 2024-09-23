@@ -584,6 +584,7 @@ namespace Anywhere.service.Data
             public string ohioEVVChangeDate { get; set; }
             public string anyRequireEndTime { get; set; }
 
+            public string requireTimeEntryTransportationTimes { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)
