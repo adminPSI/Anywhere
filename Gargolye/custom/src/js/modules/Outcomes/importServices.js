@@ -567,7 +567,7 @@ const importServices = (() => {
                 const tableDiv = document.getElementById(tableId);
 
                 const dropdownId = `existingOutcomeDropdown_${rowData.rowId}`;
-                const dropdown = document.getElementById(dropdownId);
+                const dropdown = tableDiv.querySelector(`#${dropdownId}`);
                 const serviceDateStart = tableDiv.querySelector('.addToExistingOutcomesRowContainer input.startDate');
                 const serviceDateEnd = tableDiv.querySelector('.addToExistingOutcomesRowContainer input.endDate');
 
