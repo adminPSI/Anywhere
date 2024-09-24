@@ -290,7 +290,7 @@ namespace OODForms
             return rv;
 
         }
-        public string OODForm8GetJobTasksSummary(string AuthorizationNumber, string StartDate, string EndDate)
+        public string OODForm8GetJobTasksSummary(string AuthorizationNumber, string StartDate, string EndDate, string userId)
         {
             string Tasks = string.Empty;
 
@@ -320,13 +320,22 @@ namespace OODForms
 
             string posNumbersString = string.Join(",", posNumbers);
 
+            if (userId == "%25") userId = "%";
+
             sb.Clear();
             sb.Append("SELECT Task_Notes ");
             sb.Append("FROM dba.EM_Job_Task ");
             sb.AppendFormat("WHERE Task_Number > 7 AND Position_ID in ({0}) ", posNumbersString);
-            sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}')", EndDate, StartDate);
+            sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
+            sb.AppendFormat("AND User_ID like '{0}' ", userId);
+            sb.Append("Union ");
+            sb.Append("SELECT Task_Notes ");
+            sb.Append("FROM dba.EM_Job_Task ");
+            sb.Append("WHERE Task_Number > 7 ");
+            sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
+            sb.AppendFormat("AND User_ID like '{0}' ", userId);
             DataSet ds = di.SelectRowsDS(sb.ToString());
-            ds = di.SelectRowsDS(sb.ToString());
+            // ds = di.SelectRowsDS(sb.ToString());
 
             if (ds.Tables.Count > 0)
             {
