@@ -372,6 +372,7 @@ $.session.isActiveUsers = true; // to get active and inactive user both
 
 $.session.activeModule = '';
 $.session.billableTransportation = 'N';
+$.session.requireTimeEntryTransportationTimes = 'N';
 $.session.ohioEVVChangeDate = '';
 $.session.anyRequireEndTime = '';
 $(window).resize(function () {

@@ -33,7 +33,7 @@ const outcomesReview = (function () {
 
       // rebuild & populate tabs/tables
       const outcomeTabs = buildTabs();
-      outcomesReview.appendChild(outcomeTabs);
+      outcomesReviewDiv.appendChild(outcomeTabs);
 
       await getReviewTableData();
 
@@ -241,15 +241,50 @@ const outcomesReview = (function () {
   // Add Review Note Popup
   //----------------------------------------------------
   function showAddReviewNotePopup() {
-    const reviewNotePopup = POPUP.build();
+    const reviewNotePopup = POPUP.build({
+      id: 'reviewNotePopup'
+    });
+
+    const header = _DOM.createElement('div', {class: ['reviewNoteHeader']});
+
+    const topInfo = _DOM.createElement('div');
 
     const noteInput = input.build({
       label: 'Review Note',
       style: 'secondary',
       type: 'textarea',
     });
+    const notifyEmployeeCheckbox = input.buildCheckbox({
+      text: 'Notify Employee',
+  });
+    const savebtn = button.build({
+      text: 'Save',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'disabled',
+      callback: () => {
+
+      },
+    });
+    const cancelbtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'disabled',
+      callback: () => {
+        POPUP.hide(reviewNotePopup)
+      },
+    });
+
+    
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    btnWrap.appendChild(savebtn);
+    btnWrap.appendChild(cancelbtn);
 
     reviewNotePopup.appendChild(noteInput);
+    reviewNotePopup.appendChild(notifyEmployeeCheckbox);
+    reviewNotePopup.appendChild(btnWrap);
 
     POPUP.show(reviewNotePopup);
   }
@@ -468,7 +503,7 @@ const outcomesReview = (function () {
     });
 
     const getLocations = new Promise((resolve, reject) => {
-      outcomesAjax.getOutcomesPrimaryAndSecondaryLocations(selectedConsumerId, outcome.date, results => {
+      outcomesAjax.getOutcomesPrimaryAndSecondaryLocations(selectedConsumerId, dates.formateToISO(outcome.date), results => {
         locations = {};
 
         results.forEach(res => {
@@ -610,34 +645,6 @@ const outcomesReview = (function () {
             detailsTable.classList.add('hidden');
           }
         });
-
-        const detailsHeading = _DOM.createElement('div', { class: ['heading', 'heading-details'] });
-        detailsHeading.innerHTML = `
-          <div>Employee</div>
-          <div>Result</div>
-          <div>Attempts</div>
-          <div>Prompts</div>  
-          <div>Note</div>
-        `;
-        detailsTable.appendChild(detailsHeading);
-
-        for (const staffId in data[objId].reviewDates[date]) {
-          const details = data[objId].reviewDates[date][staffId];
-          const detailRow = _DOM.createElement('div', { class: ['row', 'row-details'] });
-          detailRow.innerHTML = `
-            <div>${details.employee}</div>
-            <div>${details.result}</div>
-            <div>${details.attempts}</div>
-            <div>${details.prompts}</div>
-            <div>${details.note}</div>
-          `;
-          detailsTable.appendChild(detailRow);
-
-          detailRow.addEventListener('click', () => {
-            console.log('detail row click', details.activityId);
-            onDetailRowClick({goalTypeID: objId, activityId: details.activityId, date: date});
-          });
-        }
       }
     }
 
@@ -681,8 +688,7 @@ const outcomesReview = (function () {
   async function getReviewTableData() {
     const data = await outcomesAjax.getReviewTableData({
       consumerId: selectedConsumerId,
-      startDate: '2023/01/01',
-      endDate: '2024/10/01',
+      objectiveDate: dates.formateToISO(selectedDate),
     });
 
     outcomesDataRaw = {};
@@ -691,7 +697,6 @@ const outcomesReview = (function () {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
-      const staffId = d.staffId;
 
       if (!outcomesDataRaw[occurrence]) {
         outcomesDataRaw[occurrence] = [];
@@ -712,37 +717,22 @@ const outcomesReview = (function () {
         a[occurrence][objID].reviewDates[date] = {};
       }
 
-      if (!a[occurrence][objID].reviewDates[date][staffId]) {
-        a[occurrence][objID].reviewDates[date][staffId] = {};
-      }
-
-      // main row
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${d.frequencyModifier} ${d.objectiveIncrement} ${d.objectiveRecurrance}`;
       a[occurrence][objID].timesDoc = d.timesDocumented;
       a[occurrence][objID].successRate = d.objectiveSuccess;
-
-      // detail row
-      a[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
-      a[occurrence][objID].reviewDates[date][staffId].result = `${d.objectiveSuccessSymbol } ${d.objectiveSuccessDescription }`;
-      a[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
-      a[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
-      a[occurrence][objID].reviewDates[date][staffId].note = d.objectiveActivityNote ;
-      // data for detail popup
-      a[occurrence][objID].reviewDates[date][staffId].activityId = d.objectiveActivityId;
-      
+  
       return a;
     }, {});
-
-    console.table(outcomesDataRaw);
   }
-  async function init(consumer) {
+  async function init(consumer, date) {
     console.clear();
 
-    //selectedConsumerId = consumer.id;
+    selectedConsumerId = consumer.id;
+    selectedDate = date;
     //selectedConsumerId = '4365';
-    selectedConsumerId = '3190';
+    //selectedConsumerId = '3190';
 
     setActiveModuleSectionAttribute('outcomes-review');
     PROGRESS.SPINNER.show('Loading Outcomes...');
@@ -751,15 +741,15 @@ const outcomesReview = (function () {
 
     DOM.clearActionCenter();
 
-    const outcomesReview = _DOM.createElement('div');
-    outcomesReview.classList.add('outcomesReview');
+    const outcomesReviewDiv = _DOM.createElement('div');
+    outcomesReviewDiv.classList.add('outcomesReview');
 
     const filterDisplay = buildCurrentFilterdisplay();
     const outcomeTabs = buildTabs();
 
-    outcomesReview.appendChild(filterDisplay);
-    outcomesReview.appendChild(outcomeTabs);
-    DOM.ACTIONCENTER.appendChild(outcomesReview);
+    outcomesReviewDiv.appendChild(filterDisplay);
+    outcomesReviewDiv.appendChild(outcomeTabs);
+    DOM.ACTIONCENTER.appendChild(outcomesReviewDiv);
 
     updateCurrentFilterDisplay();
     populateTabSections();
