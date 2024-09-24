@@ -62,6 +62,7 @@ const roster2 = (function () {
     let MASS_DESELECT_ALL_BTN;
 
     var locationHasUnreadNote;
+    let isCaseLoad = false;
     // Selected & Active Consumers
     //---------------------------------------------
     function selectedConsumersToActiveList() {
@@ -1545,6 +1546,7 @@ const roster2 = (function () {
             || ($.session.CaseNotesCaseloadRestriction === true && $.loadedApp === 'casenotes')
             || ($.session.transportationCaseLoad === true && $.loadedApp === 'transportation')) {
             selectedGroupCode = 'CAS';
+            isCaseLoad = true;
         }
         const getConsumerByGroupData = {
             selectedGroupCode,
@@ -1552,6 +1554,7 @@ const roster2 = (function () {
             selectedLocationId,
             selectedDate,
             selectedActive,
+            isCaseLoad
         };
 
         if (!rosterConsumers || rosterConsumers.length === 0 || forceGroupFilter) {
