@@ -1021,13 +1021,19 @@ var timeEntryCard = (function () {
                 if (transportationEndTimeVal === '' || !transportationEndTimeVal) {
                     transportationEndTimeInput.classList.add('error');
                 } else {
-                    if (transportationStartTimeVal > transportationEndTimeVal) {
+                    if (transportationStartTimeVal >= transportationEndTimeVal) {
                         transportationEndTimeInput.classList.add('error');
                     } else {
                         transportationEndTimeInput.classList.remove('error');
                     }
-                }                
-            }
+                }
+            } else {
+                if (transportationStartTimeVal && transportationEndTimeVal && transportationEndTimeVal !== '' && transportationStartTimeVal !== '' && transportationStartTimeVal >= transportationEndTimeVal) {
+                    transportationEndTimeInput.classList.add('error');
+                } else {
+                    transportationEndTimeInput.classList.remove('error');
+                }
+            }      
         }
 
         checkTotalMiles();
