@@ -566,13 +566,17 @@ const importServices = (() => {
                 const tableId = sectionToTableMap[rowData.section];
                 const tableDiv = document.getElementById(tableId);
 
+                const escapedId = CSS.escape(`${rowData.rowId}A`);  // Escape the ID to handle special characters like digits or others
+                const existingOutcomeContainer = tableDiv.querySelector(`#${escapedId}`);
+
                 const dropdownId = `existingOutcomeDropdown_${rowData.rowId}`;
-                const dropdown = tableDiv.querySelector(`#${dropdownId}`);
-                const serviceDateStart = tableDiv.querySelector('.addToExistingOutcomesRowContainer input.startDate');
-                const serviceDateEnd = tableDiv.querySelector('.addToExistingOutcomesRowContainer input.endDate');
+                const esitingOutcomeContainerDropdown = tableDiv.querySelector(`#${dropdownId}`);
+
+                const serviceDateStart = existingOutcomeContainer.querySelector('.addToExistingOutcomesRowContainer input.startDate');
+                const serviceDateEnd = existingOutcomeContainer.querySelector('.addToExistingOutcomesRowContainer input.endDate');
 
                 const additionalData = {
-                    existingOutcomeGoalId: dropdown ? dropdown.value : null,
+                    existingOutcomeGoalId: esitingOutcomeContainerDropdown ? esitingOutcomeContainerDropdown.value : null,
                     serviceDateStart: serviceDateStart ? serviceDateStart.value : null,
                     serviceDateEnd: serviceDateEnd ? serviceDateEnd.value : null
                 };
