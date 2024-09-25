@@ -811,9 +811,9 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 break;
                             case "Additional Supports":
                                 objectiveStatement = importedTable.whatSupportLooksLike ?? "";
-                                objectiveRecurrance = (importedTable.whenHowOften ?? "").Contains("Daily") ? "D" :
-                                                      (importedTable.whenHowOften ?? "").Contains("Weekly") ? "W" :
-                                                      (importedTable.whenHowOften ?? "").Contains("Monthly") ? "M" : null;
+                                objectiveRecurrance = (importedTable.howOftenText ?? "").Contains("Daily") ? "D" :
+                                                      (importedTable.howOftenText ?? "").Contains("Weekly") ? "W" :
+                                                      (importedTable.howOftenText ?? "").Contains("Monthly") ? "M" : null;
                                 break;
                             case "Professional Referrals":
                                 objectiveStatement = importedTable.reasonForReferral ?? "";

@@ -653,7 +653,7 @@ const importServices = (() => {
         const whatNeedsToHappen = ex.WhatNeedsToHappen || "";
         const howItShouldHappen = ex.HowItShouldHappen || "";
         const whoIsResponsible = ex.WhoIsResponsible || "";
-        const WhenHowOften = ex.WhenHowOften || "";
+        const whenHowOften = ex.WhenHowOften || "";
 
         const section = 'Experiences';
         const assessmentAreaId = getAssessmentAreaId(ex.AssessmentArea);
@@ -664,7 +664,7 @@ const importServices = (() => {
                 whatNeedsToHappen,
                 howItShouldHappen,
                 whoIsResponsible,
-                WhenHowOften,
+                whenHowOften,
             ],
             exData: {
                 assessmentAreaId,
@@ -672,7 +672,7 @@ const importServices = (() => {
                 whatNeedsToHappen,
                 howItShouldHappen,
                 whoIsResponsible,
-                WhenHowOften,
+                whenHowOften,
                 section
             },
         };
