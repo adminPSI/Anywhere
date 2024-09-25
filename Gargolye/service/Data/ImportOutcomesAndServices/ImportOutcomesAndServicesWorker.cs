@@ -70,6 +70,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         public int? assessmentAreaId { get; set; }
         public string assessmentArea { get; set; }
         public string whatIsRisk { get; set; }
+        public string whatSupportMustLookLike { get; set; }
         public string whatSupportLooksLike { get; set; }
         public string riskRequiresSupervision { get; set; }
         public string whatNeedsToHappen { get; set; }
@@ -793,7 +794,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                         switch (importedTable.section)
                         {
                             case "Known & Likely Risks":
-                                objectiveStatement = importedTable.whatSupportLooksLike ?? "";
+                                objectiveStatement = importedTable.whatSupportMustLookLike ?? "";
                                 objectiveMethod = importedTable.whatIsRisk ?? "";
                                 break;
                             case "Experiences":
