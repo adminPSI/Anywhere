@@ -270,7 +270,7 @@ async function getOverlapDataforSelectedShiftAjax(shiftId, personId) {
       });
   }
 
-  async function approveDenyDaysOffRequestSchedulingAjax(insertData) {//token, daysOffIdString(comma separated), decision)
+    async function approveDenyDaysOffRequestSchedulingAjax(insertData) {//token, daysOffIdString(comma separated), decision, dateTime)
     try {  
         const result = await $.ajax({
           type: "POST",

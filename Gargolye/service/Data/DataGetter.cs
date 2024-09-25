@@ -5178,7 +5178,7 @@ namespace Anywhere.Data
             }
         }
 
-        public string approveDenyDaysOffRequestSchedulingNotification(string token, string dayOffId, string decision)
+        public string approveDenyDaysOffRequestSchedulingNotification(string token, string dayOffId, string decision, string dateTimes)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("approveDenyDaysOffRequestSchedulingNotification ");
@@ -5186,6 +5186,7 @@ namespace Anywhere.Data
             list.Add(token);
             list.Add(dayOffId);
             list.Add(decision);
+            list.Add(dateTimes);
             string text = "CALL DBA.ANYW_Scheduling_ApproveDenyDaysOffRequestNotification(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
