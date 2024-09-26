@@ -62,7 +62,7 @@ const importServices = (() => {
 
         var headerCheckbox = document.createElement('input');
         headerCheckbox.type = 'checkbox';
-        rowCheckbox.classList.add('header-checkbox');
+        headerCheckbox.classList.add('header-checkbox');
 
         var rowCheckbox = document.createElement('input');
         rowCheckbox.type = 'checkbox';
