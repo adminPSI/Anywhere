@@ -318,6 +318,22 @@ namespace Anywhere.service.Data
             public string endTime { get; set; }
         }
 
+        public class OutcomesReviewGridSecondary
+        {
+            public string objectiveActivityId { get; set; }
+            public string objectiveId { get; set; }
+            public string objective_date { get; set; }
+            public string staffId { get; set; }
+            public string employee { get; set; }
+            public string promptType { get; set; }
+            public string promptNumber { get; set; }
+            public string objectiveSuccessSymbol { get; set; }
+            public string objectiveSuccessDescription { get; set; }
+            public string objectiveActivityNote { get; set; }
+            public string startTime { get; set; }
+            public string endTime { get; set; }
+        }
+
         public class OutComePageData
         {
             public PDParentOutcome[] pageDataParent { get; set; }
@@ -431,6 +447,13 @@ namespace Anywhere.service.Data
         {
             string reviewGrid = dg.getOutcomesReviewGrid(token, consumerId, objectiveDate);
             OutcomesReviewGrid[] reviewGridObj = js.Deserialize<OutcomesReviewGrid[]>(reviewGrid);
+            return reviewGridObj;
+        }
+
+        public OutcomesReviewGridSecondary[] getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList)
+        {
+            string reviewGrid = dg.getOutcomesReviewGridSecondary(token, consumerId, startDate, endDate, objectiveIdList);
+            OutcomesReviewGridSecondary[] reviewGridObj = js.Deserialize<OutcomesReviewGridSecondary[]>(reviewGrid);
             return reviewGridObj;
         }
 

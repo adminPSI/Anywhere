@@ -6787,6 +6787,28 @@ namespace Anywhere.Data
             }
         }
 
+        public string getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getOutcomeTypeDropDown" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(startDate);
+            list.Add(endDate);
+            list.Add(objectiveIdList);
+            string text = "CALL DBA.ANYW_GoalsAndServices__GetReviewPageGridSecondary(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices__GetReviewPageGridSecondary(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices__GetReviewPageGridSecondary";
+            }
+        }
+
         public string getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
         {
             if (tokenValidator(token) == false) return null;

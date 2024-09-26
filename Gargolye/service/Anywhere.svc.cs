@@ -4049,6 +4049,11 @@ namespace Anywhere
             return outcomesWorker.getOutcomesReviewGrid(token, consumerId, objectiveDate);
         }
 
+        public OutcomesWorker.OutcomesReviewGridSecondary[] getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList)
+        {
+            return outcomesWorker.getOutcomesReviewGridSecondary(token, consumerId, startDate, endDate, objectiveIdList);
+        }
+
         public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
         {
             return outcomesWorker.getOutcomeTypeDropDown(token, consumerId, effectiveDateStart);
