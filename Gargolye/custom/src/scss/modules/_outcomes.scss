@@ -792,3 +792,9 @@ div.textarea {
     }
   }
 }
+
+.row-checkbox, .header-checkbox {
+  z-index: 29;
+  pointer-events: all;
+  position: relative;
+}

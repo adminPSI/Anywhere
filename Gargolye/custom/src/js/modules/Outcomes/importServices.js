@@ -62,16 +62,11 @@ const importServices = (() => {
 
         var headerCheckbox = document.createElement('input');
         headerCheckbox.type = 'checkbox';
-        headerCheckbox.style.zIndex = '999999';
-        headerCheckbox.style.pointerEvents = 'all';
-        headerCheckbox.style.position = 'relative';
+        headerCheckbox.classList.add('header-checkbox');
 
         var rowCheckbox = document.createElement('input');
         rowCheckbox.type = 'checkbox';
         rowCheckbox.classList.add('row-checkbox');
-        rowCheckbox.style.zIndex = '999999';
-        rowCheckbox.style.pointerEvents = 'all';
-        rowCheckbox.style.position = 'relative';
 
         function formatDateToYYYYMMDD(dateString) {
             const date = new Date(dateString);
