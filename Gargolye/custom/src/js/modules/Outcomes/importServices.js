@@ -62,16 +62,11 @@ const importServices = (() => {
 
         var headerCheckbox = document.createElement('input');
         headerCheckbox.type = 'checkbox';
-        headerCheckbox.style.zIndex = '999999';
-        headerCheckbox.style.pointerEvents = 'all';
-        headerCheckbox.style.position = 'relative';
+        headerCheckbox.classList.add('header-checkbox');
 
         var rowCheckbox = document.createElement('input');
         rowCheckbox.type = 'checkbox';
         rowCheckbox.classList.add('row-checkbox');
-        rowCheckbox.style.zIndex = '999999';
-        rowCheckbox.style.pointerEvents = 'all';
-        rowCheckbox.style.position = 'relative';
 
         function formatDateToYYYYMMDD(dateString) {
             const date = new Date(dateString);
@@ -102,9 +97,10 @@ const importServices = (() => {
         
             if (checkbox && checkbox.checked) {
                 // Gather values from the outcomeRowContainer inputs
-                const dropdown = outcomeRowContainer.querySelector('select');
-                const serviceDateStart = outcomeRowContainer.querySelector('input[type="date"]:first-of-type');
-                const serviceDateEnd = outcomeRowContainer.querySelector('input[type="date"]:last-of-type');
+                const dropdownId = `existingOutcomeDropdown_${tableRowId}`;
+                const dropdown = document.getElementById(dropdownId);
+                const serviceDateStart = outcomeRowContainer.querySelector('input.startDate');
+                const serviceDateEnd = outcomeRowContainer.querySelector('input.endDate');
         
                 // Add these input values to the rowData
                 const outcomeData = {
@@ -174,7 +170,8 @@ const importServices = (() => {
                 label: 'Add to Existing Outcome',
                 dropdownId: `existingOutcomeDropdown_${rowId}`,
                 callback: () => toggleImportButton(),
-                callbackType: 'change'
+                callbackType: 'change',
+                classNames: "existingOutcomesDropdown"
             });
         
             const serviceDateStartInput = input.build({
@@ -183,7 +180,8 @@ const importServices = (() => {
                 style: 'secondary',
                 callback: () => toggleImportButton(),
                 callbackType: 'input',
-                value: serviceDateStartValue
+                value: serviceDateStartValue,
+                classNames: "startDate"
             });
         
             const serviceDateEndInput = input.build({
@@ -192,7 +190,8 @@ const importServices = (() => {
                 style: 'secondary',
                 callback: () => toggleImportButton(),
                 callbackType: 'input',
-                value: serviceDateEndValue
+                value: serviceDateEndValue,
+                classNames: "endDate"
             });
         
             const createAddToExistingOutcomesRowContainerDiv = document.createElement('div');
@@ -535,6 +534,7 @@ const importServices = (() => {
                     assessmentAreaId: rowData.assessmentAreaId || null,
                     assessmentArea: rowData.assessmentArea || "",
                     whatIsRisk: rowData.whatIsRisk || "",
+                    whatSupportMustLookLike: rowData.whatSupportMustLookLike || "",
                     whatSupportLooksLike: rowData.whatSupportLooksLike || "",
                     riskRequiresSupervision: rowData.riskRequiresSupervision || "",
                     whatNeedsToHappen: rowData.whatNeedsToHappen || "",
@@ -562,12 +562,17 @@ const importServices = (() => {
                 const tableId = sectionToTableMap[rowData.section];
                 const tableDiv = document.getElementById(tableId);
 
-                const dropdown = tableDiv.querySelector('.addToExistingOutcomesRowContainer .dropdown select');
-                const serviceDateStart = tableDiv.querySelector('.addToExistingOutcomesRowContainer input[type="date"]:first-of-type');
-                const serviceDateEnd = tableDiv.querySelector('.addToExistingOutcomesRowContainer input[type="date"]:last-of-type');
+                const escapedId = CSS.escape(`${rowData.rowId}A`);  // Escape the ID to handle special characters like digits or others
+                const existingOutcomeContainer = tableDiv.querySelector(`#${escapedId}`);
+
+                const dropdownId = `existingOutcomeDropdown_${rowData.rowId}`;
+                const esitingOutcomeContainerDropdown = tableDiv.querySelector(`#${dropdownId}`);
+
+                const serviceDateStart = existingOutcomeContainer.querySelector('.addToExistingOutcomesRowContainer input.startDate');
+                const serviceDateEnd = existingOutcomeContainer.querySelector('.addToExistingOutcomesRowContainer input.endDate');
 
                 const additionalData = {
-                    existingOutcomeGoalId: dropdown ? dropdown.value : null,
+                    existingOutcomeGoalId: esitingOutcomeContainerDropdown ? esitingOutcomeContainerDropdown.value : null,
                     serviceDateStart: serviceDateStart ? serviceDateStart.value : null,
                     serviceDateEnd: serviceDateEnd ? serviceDateEnd.value : null
                 };
@@ -643,7 +648,7 @@ const importServices = (() => {
         const whatNeedsToHappen = ex.WhatNeedsToHappen || "";
         const howItShouldHappen = ex.HowItShouldHappen || "";
         const whoIsResponsible = ex.WhoIsResponsible || "";
-        const WhenHowOften = ex.WhenHowOften || "";
+        const whenHowOften = ex.WhenHowOften || "";
 
         const section = 'Experiences';
         const assessmentAreaId = getAssessmentAreaId(ex.AssessmentArea);
@@ -654,7 +659,7 @@ const importServices = (() => {
                 whatNeedsToHappen,
                 howItShouldHappen,
                 whoIsResponsible,
-                WhenHowOften,
+                whenHowOften,
             ],
             exData: {
                 assessmentAreaId,
@@ -662,7 +667,7 @@ const importServices = (() => {
                 whatNeedsToHappen,
                 howItShouldHappen,
                 whoIsResponsible,
-                WhenHowOften,
+                whenHowOften,
                 section
             },
         };

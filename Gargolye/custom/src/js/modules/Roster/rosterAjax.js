@@ -22,7 +22,8 @@ const rosterAjax = (function () {
         var retrieveId =
             groupCode === 'CST' || groupCode === 'TRA' || groupCode === 'NAT'  
                 ? data.selectedGroupId
-                : data.selectedLocationId;         
+                : data.selectedLocationId;  
+        retrieveId = data.isCaseLoad === true ? '0' : retrieveId;
         var date = data.selectedDate;
         var daysBackDate = convertDaysBack($.session.defaultProgressNoteReviewDays);
 
