@@ -567,7 +567,7 @@ namespace OODForms
         }
 
 
-        public string generateForm8(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
+        public string generateForm8(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID, string loggedInUserPersonId)
         {
             try
             {
@@ -589,11 +589,29 @@ namespace OODForms
                 DateTime currentDate = DateTime.Now;
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
+                string personCompletingReport = string.Empty;
 
                 // Gather Data for the Person Completing the Report
-                string personCompletingReportData = obj.getPersonCompletingReportName(token);
-                personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
-                string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+                DataSet ds3 = new DataSet();
+                //string personCompletingReport;
+
+                if (!string.IsNullOrEmpty(loggedInUserPersonId))
+                {
+
+                    // long lng_loggedInUserPersonId = long.Parse(loggedInUserPersonId);
+                    ds3 = obj.getPersonCompletingReport(token, loggedInUserPersonId);
+                }
+
+                if (ds3.Tables.Count > 0 && ds3.Tables[0].Rows.Count > 0)
+                {
+                    personCompletingReport = String.Format("{0} {1} ", ds3.Tables[0].Rows[0]["First_Name"], ds3.Tables[0].Rows[0]["Last_Name"]);
+                }
+
+                // string personCompletingReportData = obj.getPersonCompletingReportName(token);
+                // personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                // string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+
+
                 Spreadsheet SS = new Spreadsheet();
                 SS.RegistrationName = registrationName;
                 SS.RegistrationKey = registrationKey;
@@ -673,7 +691,8 @@ namespace OODForms
 
                 }
 
-                WS.Cell("m7").Value = OODStaff;
+                 
+                WS.Cell("m7").Value = OODStaff.TrimEnd(' ', ',');
 
                 WS.Cell("m8").ValueAsDateTime = DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy"));
 
