@@ -596,6 +596,11 @@ namespace Anywhere
             return rosterWorker.getRelationshipsNameJSON(token);
         }
 
+        public RosterWorker.ConsumerRelationshipName[] getRelationshipsNameByIDJSON(string token, string relationType)
+        {
+            return rosterWorker.getRelationshipsNameByIDJSON(token, relationType);
+        }
+
         public string insertEditRelationship(string token, string userId, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsNewList, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsList, string consumerId)
         {
             return rosterWorker.insertEditRelationship(token, userId, consumerRelationshipsNewList, consumerRelationshipsList, consumerId);
@@ -1503,9 +1508,9 @@ namespace Anywhere
             return anywhereScheduleWorker.approveDenyCallOffRequestScheduling(token, callOffShiftId, decision);
         }
 
-        public string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision)
+        public string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision, string dateTime)
         {
-            return anywhereScheduleWorker.approveDenyDaysOffRequestScheduling(token, daysOffIdString, decision);
+            return anywhereScheduleWorker.approveDenyDaysOffRequestScheduling(token, daysOffIdString, decision, dateTime);
         }
 
         public AnywhereScheduleWorker.OverlapData[] requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
@@ -3031,6 +3036,7 @@ namespace Anywhere
             string startDate;
             string endDate;
             string userId;
+            string loggedInUserPersonId;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
@@ -3041,6 +3047,7 @@ namespace Anywhere
             serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
 
             if (serviceCodeId == "%25")
             {
@@ -3052,7 +3059,7 @@ namespace Anywhere
                 referenceNumber = "All";
             }
 
-            return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
+            return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId, loggedInUserPersonId);
         }
 
         public string generateForm10(System.IO.Stream testInput)

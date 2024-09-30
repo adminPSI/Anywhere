@@ -567,7 +567,7 @@ namespace OODForms
         }
 
 
-        public string generateForm8(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
+        public string generateForm8(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID, string loggedInUserPersonId)
         {
             try
             {
@@ -589,11 +589,29 @@ namespace OODForms
                 DateTime currentDate = DateTime.Now;
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
+                string personCompletingReport = string.Empty;
 
                 // Gather Data for the Person Completing the Report
-                string personCompletingReportData = obj.getPersonCompletingReportName(token);
-                personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
-                string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+                DataSet ds3 = new DataSet();
+                //string personCompletingReport;
+
+                if (!string.IsNullOrEmpty(loggedInUserPersonId))
+                {
+
+                    // long lng_loggedInUserPersonId = long.Parse(loggedInUserPersonId);
+                    ds3 = obj.getPersonCompletingReport(token, loggedInUserPersonId);
+                }
+
+                if (ds3.Tables.Count > 0 && ds3.Tables[0].Rows.Count > 0)
+                {
+                    personCompletingReport = String.Format("{0} {1} ", ds3.Tables[0].Rows[0]["First_Name"], ds3.Tables[0].Rows[0]["Last_Name"]);
+                }
+
+                // string personCompletingReportData = obj.getPersonCompletingReportName(token);
+                // personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                // string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+
+
                 Spreadsheet SS = new Spreadsheet();
                 SS.RegistrationName = registrationName;
                 SS.RegistrationKey = registrationKey;
@@ -673,7 +691,8 @@ namespace OODForms
 
                 }
 
-                WS.Cell("m7").Value = OODStaff;
+                 
+                WS.Cell("m7").Value = OODStaff.TrimEnd(' ', ',');
 
                 WS.Cell("m8").ValueAsDateTime = DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy"));
 
@@ -729,7 +748,7 @@ namespace OODForms
                     }
                 }
 
-                string TaskSummary = obj.OODForm8GetJobTasksSummary(AuthorizationNumber, StartDate, EndDate);
+                string TaskSummary = obj.OODForm8GetJobTasksSummary(AuthorizationNumber, StartDate, EndDate, userID);
                 if (TaskSummary.Length > 0) ;
                 {
                     TaskSummary = TaskSummary.Trim();
@@ -1370,29 +1389,42 @@ namespace OODForms
                             scheduledTimes.Add(new form16ScheduledWorkTimes {Service_Date = scheduledWorkTimeServiceDate, Time_Range = scheduledWorkTime });
                         }
 
-                        for (var i = 0; i <= scheduledTimes.Count-1; i++)
-                        {
-                            if (i == scheduledTimes.Count - 1)
-                            {
-                                finalScheduledTimes.Add(new form16ScheduledWorkTimes { Service_Date = scheduledTimes[i].Service_Date, Time_Range = scheduledTimes[i].Time_Range });
-                                break;
-                            }
-                            if (scheduledTimes[i].Service_Date == scheduledTimes[i + 1].Service_Date)
-                            {
-                                finalScheduledTimes.Add(new form16ScheduledWorkTimes { Service_Date = scheduledTimes[i].Service_Date, Time_Range = scheduledTimes[i].Time_Range + scheduledTimes[i+1].Time_Range });
-                            } else
-                            {
-                                if (!finalScheduledTimes.Exists(ts => ts.Service_Date == scheduledTimes[i].Service_Date))
-                                {
-                                    finalScheduledTimes.Add(new form16ScheduledWorkTimes { Service_Date = scheduledTimes[i].Service_Date, Time_Range = scheduledTimes[i].Time_Range });
-                                }   
-                            }
-                           
-                        }
+                        //for (var i = 0; i <= scheduledTimes.Count-1; i++)
+                        //{
+                        //    if (i == scheduledTimes.Count - 1)
+                        //    {
+                        //        finalScheduledTimes.Add(new form16ScheduledWorkTimes { Service_Date = scheduledTimes[i].Service_Date, Time_Range = scheduledTimes[i].Time_Range });
+                        //        break;
+                        //    }
+                        //    if (scheduledTimes[i].Service_Date == scheduledTimes[i + 1].Service_Date)
+                        //    {
+                        //        finalScheduledTimes.Add(new form16ScheduledWorkTimes { Service_Date = scheduledTimes[i].Service_Date, Time_Range = scheduledTimes[i].Time_Range + scheduledTimes[i+1].Time_Range });
+                        //    } else
+                        //    {
+                        //        if (!finalScheduledTimes.Exists(ts => ts.Service_Date == scheduledTimes[i].Service_Date))
+                        //        {
+                        //            finalScheduledTimes.Add(new form16ScheduledWorkTimes { Service_Date = scheduledTimes[i].Service_Date, Time_Range = scheduledTimes[i].Time_Range });
+                        //        }   
+                        //    }
 
-                        foreach (form16ScheduledWorkTimes thisthing in finalScheduledTimes)
-                        {
+                        //}
 
+                        //List<string> Week1Ranges = new List<string>();
+                        //List<string> Week2Ranges = new List<string>();
+                        //List<string> Week3Ranges = new List<string>();
+                        //List<string> Week4Ranges = new List<string>();
+                        //List<string> Week5Ranges = new List<string>();
+
+                        string Week1Ranges = " ";
+                        string Week2Ranges = " ";
+                        string Week3Ranges = " ";
+                        string Week4Ranges = " ";
+                        string Week5Ranges = " ";
+
+
+                        foreach (form16ScheduledWorkTimes thisthing in scheduledTimes)
+                        {
+                            
                             DateTime thisServiceDate = Convert.ToDateTime(thisthing.Service_Date);
 
                             if (thisServiceDate != null)
@@ -1403,22 +1435,42 @@ namespace OODForms
                                     {
 
                                         case ("1"):
-                                            WS.Cell("B20").Value = thisthing.Time_Range;
+
+                                            // WS.Cell("B20").Value = WS.Cell("B20").Value + thisthing.Time_Range;
+                                            Week1Ranges = Week1Ranges.AddIfNotPresent(thisthing.Time_Range);
+                                            //Week1Ranges.Add(thisthing.Time_Range);
+                                            WS.Cell("B20").Value = "";
+                                            WS.Cell("B20").Value = Week1Ranges;
                                             break;
                                         case ("2"):
-                                            WS.Cell("B33").Value = thisthing.Time_Range;
+
+                                            // WS.Cell("B33").Value = WS.Cell("B33").Value + thisthing.Time_Range;
+                                            Week2Ranges = Week2Ranges.AddIfNotPresent(thisthing.Time_Range);
+                                            //Week2Ranges.Add(thisthing.Time_Range);
+                                            WS.Cell("B33").Value = "";
+                                            WS.Cell("B33").Value = Week2Ranges;
 
                                             break;
                                         case ("3"):
-                                            WS.Cell("B46").Value = thisthing.Time_Range;
-
+                                            //  WS.Cell("B46").Value = WS.Cell("B46").Value + thisthing.Time_Range;
+                                            Week3Ranges = Week3Ranges.AddIfNotPresent(thisthing.Time_Range);
+                                            //Week3Ranges.Add(thisthing.Time_Range);
+                                            WS.Cell("B46").Value = "";
+                                            WS.Cell("B46").Value = Week3Ranges;
                                             break;
                                         case ("4"):
-                                            WS.Cell("B59").Value = thisthing.Time_Range;
-
+                                            // WS.Cell("B59").Value = WS.Cell("B59").Value + thisthing.Time_Range;
+                                            Week4Ranges = Week4Ranges.AddIfNotPresent(thisthing.Time_Range);
+                                           // Week4Ranges.Add(thisthing.Time_Range);
+                                            WS.Cell("B59").Value = "";
+                                            WS.Cell("B59").Value = Week4Ranges;
                                             break;
                                         case ("5"):
-                                            WS.Cell("B72").Value = thisthing.Time_Range;
+                                            //WS.Cell("B72").Value = WS.Cell("B72").Value + thisthing.Time_Range;
+                                             Week5Ranges = Week5Ranges.AddIfNotPresent(thisthing.Time_Range);
+                                            //Week5Ranges.Add(thisthing.Time_Range);
+                                            WS.Cell("B72").Value = "";
+                                            WS.Cell("B72").Value = Week5Ranges;
 
                                             break;
                                         case ("6"):
@@ -1865,6 +1917,29 @@ namespace OODForms
         public static bool IsInRange(this DateTime dateToCheck, DateTime startDate, DateTime endDate)
         {
             return dateToCheck >= startDate && dateToCheck <= endDate;
+        }
+    }
+
+    public static class StringExtensions
+    {
+        public static string AddIfNotPresent(this string existingString, string newString)
+        {
+            // Check if both strings are not null or empty
+            if (!string.IsNullOrEmpty(existingString) && !string.IsNullOrEmpty(newString))
+            {
+                // Check if the new string is not already present (case-insensitive)
+                //if (!existingString.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                  //  .Select(s => s.ToLower())
+                   // .Contains(newString.ToLower()))
+                if (!existingString.Contains(newString))
+                {
+                    // If not present, concatenate the new string
+                    return existingString + "" + newString;
+                }
+            }
+
+            // Return the original string if nothing changed
+            return existingString;
         }
     }
 }

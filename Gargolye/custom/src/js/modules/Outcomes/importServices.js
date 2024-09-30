@@ -62,16 +62,11 @@ const importServices = (() => {
 
         var headerCheckbox = document.createElement('input');
         headerCheckbox.type = 'checkbox';
-        headerCheckbox.style.zIndex = '999999';
-        headerCheckbox.style.pointerEvents = 'all';
-        headerCheckbox.style.position = 'relative';
+        headerCheckbox.classList.add('header-checkbox');
 
         var rowCheckbox = document.createElement('input');
         rowCheckbox.type = 'checkbox';
         rowCheckbox.classList.add('row-checkbox');
-        rowCheckbox.style.zIndex = '999999';
-        rowCheckbox.style.pointerEvents = 'all';
-        rowCheckbox.style.position = 'relative';
 
         function formatDateToYYYYMMDD(dateString) {
             const date = new Date(dateString);
@@ -539,7 +534,8 @@ const importServices = (() => {
                     assessmentAreaId: rowData.assessmentAreaId || null,
                     assessmentArea: rowData.assessmentArea || "",
                     whatIsRisk: rowData.whatIsRisk || "",
-                    whatSupportLooksLike: rowData.whatSupportMustLookLike || "",
+                    whatSupportMustLookLike: rowData.whatSupportMustLookLike || "",
+                    whatSupportLooksLike: rowData.whatSupportLooksLike || "",
                     riskRequiresSupervision: rowData.riskRequiresSupervision || "",
                     whatNeedsToHappen: rowData.whatNeedsToHappen || "",
                     howItShouldHappen: rowData.howItShouldHappen || "",
@@ -566,13 +562,17 @@ const importServices = (() => {
                 const tableId = sectionToTableMap[rowData.section];
                 const tableDiv = document.getElementById(tableId);
 
+                const escapedId = CSS.escape(`${rowData.rowId}A`);  // Escape the ID to handle special characters like digits or others
+                const existingOutcomeContainer = tableDiv.querySelector(`#${escapedId}`);
+
                 const dropdownId = `existingOutcomeDropdown_${rowData.rowId}`;
-                const dropdown = document.getElementById(dropdownId);
-                const serviceDateStart = tableDiv.querySelector('.addToExistingOutcomesRowContainer input.startDate');
-                const serviceDateEnd = tableDiv.querySelector('.addToExistingOutcomesRowContainer input.endDate');
+                const esitingOutcomeContainerDropdown = tableDiv.querySelector(`#${dropdownId}`);
+
+                const serviceDateStart = existingOutcomeContainer.querySelector('.addToExistingOutcomesRowContainer input.startDate');
+                const serviceDateEnd = existingOutcomeContainer.querySelector('.addToExistingOutcomesRowContainer input.endDate');
 
                 const additionalData = {
-                    existingOutcomeGoalId: dropdown ? dropdown.value : null,
+                    existingOutcomeGoalId: esitingOutcomeContainerDropdown ? esitingOutcomeContainerDropdown.value : null,
                     serviceDateStart: serviceDateStart ? serviceDateStart.value : null,
                     serviceDateEnd: serviceDateEnd ? serviceDateEnd.value : null
                 };
@@ -648,7 +648,7 @@ const importServices = (() => {
         const whatNeedsToHappen = ex.WhatNeedsToHappen || "";
         const howItShouldHappen = ex.HowItShouldHappen || "";
         const whoIsResponsible = ex.WhoIsResponsible || "";
-        const WhenHowOften = ex.WhenHowOften || "";
+        const whenHowOften = ex.WhenHowOften || "";
 
         const section = 'Experiences';
         const assessmentAreaId = getAssessmentAreaId(ex.AssessmentArea);
@@ -659,7 +659,7 @@ const importServices = (() => {
                 whatNeedsToHappen,
                 howItShouldHappen,
                 whoIsResponsible,
-                WhenHowOften,
+                whenHowOften,
             ],
             exData: {
                 assessmentAreaId,
@@ -667,7 +667,7 @@ const importServices = (() => {
                 whatNeedsToHappen,
                 howItShouldHappen,
                 whoIsResponsible,
-                WhenHowOften,
+                whenHowOften,
                 section
             },
         };

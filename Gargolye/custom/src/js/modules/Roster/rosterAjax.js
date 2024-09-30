@@ -22,7 +22,8 @@ const rosterAjax = (function () {
         var retrieveId =
             groupCode === 'CST' || groupCode === 'TRA' || groupCode === 'NAT'  
                 ? data.selectedGroupId
-                : data.selectedLocationId;         
+                : data.selectedLocationId;  
+       
         var date = data.selectedDate;
         var daysBackDate = convertDaysBack($.session.defaultProgressNoteReviewDays);
 
@@ -438,6 +439,32 @@ const rosterAjax = (function () {
         }
     }
 
+    async function getRelationshipsNameByID(selectedValue) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getRelationshipsNameByIDJSON/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    relationType: selectedValue,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
     async function insertEditRelationship(consumerRelationshipsNew, consumerRelationships, consumerId) {
         try {
             const result = await $.ajax({
@@ -485,6 +512,7 @@ const rosterAjax = (function () {
         getEditConsumerRelationships,
         getRelationshipsType,
         getRelationshipsName,
-        insertEditRelationship
+        insertEditRelationship,
+        getRelationshipsNameByID
     };
 })();

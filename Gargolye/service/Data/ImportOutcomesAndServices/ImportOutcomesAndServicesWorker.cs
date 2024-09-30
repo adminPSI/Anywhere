@@ -70,6 +70,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         public int? assessmentAreaId { get; set; }
         public string assessmentArea { get; set; }
         public string whatIsRisk { get; set; }
+        public string whatSupportMustLookLike { get; set; }
         public string whatSupportLooksLike { get; set; }
         public string riskRequiresSupervision { get; set; }
         public string whatNeedsToHappen { get; set; }
@@ -793,7 +794,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                         switch (importedTable.section)
                         {
                             case "Known & Likely Risks":
-                                objectiveStatement = importedTable.whatSupportLooksLike ?? "";
+                                objectiveStatement = importedTable.whatSupportMustLookLike ?? "";
                                 objectiveMethod = importedTable.whatIsRisk ?? "";
                                 break;
                             case "Experiences":
@@ -810,9 +811,9 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 break;
                             case "Additional Supports":
                                 objectiveStatement = importedTable.whatSupportLooksLike ?? "";
-                                objectiveRecurrance = (importedTable.whenHowOften ?? "").Contains("Daily") ? "D" :
-                                                      (importedTable.whenHowOften ?? "").Contains("Weekly") ? "W" :
-                                                      (importedTable.whenHowOften ?? "").Contains("Monthly") ? "M" : null;
+                                objectiveRecurrance = (importedTable.howOftenText ?? "").Contains("Daily") ? "D" :
+                                                      (importedTable.howOftenText ?? "").Contains("Weekly") ? "W" :
+                                                      (importedTable.howOftenText ?? "").Contains("Monthly") ? "M" : null;
                                 break;
                             case "Professional Referrals":
                                 objectiveStatement = importedTable.reasonForReferral ?? "";

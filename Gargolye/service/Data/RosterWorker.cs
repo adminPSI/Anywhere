@@ -99,6 +99,13 @@ namespace Anywhere.service.Data
             return personObj;
         }
 
+        public ConsumerRelationshipName[] getRelationshipsNameByIDJSON(string token, string relationType)
+        {
+            string personString = dg.getRelationshipsNameByIDJSON(token, relationType);
+            ConsumerRelationshipName[] personObj = js.Deserialize<ConsumerRelationshipName[]>(personString);
+            return personObj;
+        }
+
         public string insertEditRelationship(string token, string userId, ConsumerEditRelationship[] consumerRelationshipsNewList, ConsumerEditRelationship[] consumerRelationshipsList, string consumerId)
         {
             string sucess;

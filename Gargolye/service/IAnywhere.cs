@@ -706,6 +706,14 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/getRelationshipsNameByIDJSON/")]
+        RosterWorker.ConsumerRelationshipName[] getRelationshipsNameByIDJSON(string token, string relationType);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
                 BodyStyle = WebMessageBodyStyle.Wrapped,
                 ResponseFormat = WebMessageFormat.Json,
        RequestFormat = WebMessageFormat.Json,
@@ -2235,7 +2243,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/approveDenyDaysOffRequestScheduling/")]
-        string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision);
+        string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision, string dateTime);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

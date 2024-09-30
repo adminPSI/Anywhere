@@ -20,6 +20,8 @@ using static Anywhere.service.Data.AnywhereWorkshopWorkerTwo;
 using System.Management.Automation.Language;
 using CrystalDecisions.Shared.Json;
 using System.Security.Cryptography;
+using static log4net.Appender.RollingFileAppender;
+using System.Web.UI.MobileControls;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -288,9 +290,10 @@ namespace OODForms
             return rv;
 
         }
-        public string OODForm8GetJobTasksSummary(string AuthorizationNumber, string StartDate, string EndDate)
+        public string OODForm8GetJobTasksSummary(string AuthorizationNumber, string StartDate, string EndDate, string userId)
         {
             string Tasks = string.Empty;
+            string posNumbersString = string.Empty;
 
             sb.Clear();
             sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
@@ -311,20 +314,39 @@ namespace OODForms
                 {
                     posNumbers.Add((long)row["Position_ID"]);
                 }
+            } 
+
+            if (userId == "%25") userId = "%";
+
+            if (posNumbers.Count > 0) {
+
+                posNumbersString = string.Join(",", posNumbers);
+
+                sb.Clear();
+                sb.Append("SELECT Task_Notes ");
+                sb.Append("FROM dba.EM_Job_Task ");
+                sb.AppendFormat("WHERE Task_Number > 7 AND Position_ID in ({0}) ", posNumbersString);
+                sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
+                sb.AppendFormat("AND User_ID like '{0}' ", userId);
+                sb.Append("Union ");
+                sb.Append("SELECT Task_Notes ");
+                sb.Append("FROM dba.EM_Job_Task ");
+                sb.Append("WHERE Task_Number > 7 ");
+                sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
+                sb.AppendFormat("AND User_ID like '{0}' ", userId);
             } else
             {
-                return Tasks;
-            }
+                sb.Clear();
+                sb.Append("SELECT Task_Notes ");
+                sb.Append("FROM dba.EM_Job_Task ");
+                sb.Append("WHERE Task_Number > 7 ");
+                sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
+                sb.AppendFormat("AND User_ID like '{0}' ", userId);
 
-            string posNumbersString = string.Join(",", posNumbers);
+            } 
 
-            sb.Clear();
-            sb.Append("SELECT Task_Notes ");
-            sb.Append("FROM dba.EM_Job_Task ");
-            sb.AppendFormat("WHERE Task_Number > 7 AND Position_ID in ({0}) ", posNumbersString);
-            sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}')", EndDate, StartDate);
             DataSet ds = di.SelectRowsDS(sb.ToString());
-            ds = di.SelectRowsDS(sb.ToString());
+            // ds = di.SelectRowsDS(sb.ToString());
 
             if (ds.Tables.Count > 0)
             {
@@ -667,6 +689,9 @@ namespace OODForms
                 sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
                 sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
                 sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+                sb.Append("AND dba.EM_Job_Task.Task_Number > 7 ");
+                sb.AppendFormat("AND dba.Case_Notes.Service_Date between '{0}' and '{1}' ", StartDate, EndDate);
+                sb.AppendFormat("AND dba.case_notes.reference_number = '{0}' ", AuthorizationNumber);
                 sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
                 string listPosNumber = string.Empty;
                 DataSet ds = di.SelectRowsDS(sb.ToString());
@@ -689,13 +714,14 @@ namespace OODForms
 
 
                 sb.Clear();
-                sb.AppendFormat("SELECT SUM(total_time_in_hours) AS TotalHoursSum ");
+                sb.AppendFormat("SELECT SUM(total_time_in_hours +total_time_in_minutes / 60.0) AS TotalHoursSum ");
                 sb.Append("FROM ( SELECT Start_Time, End_Time,  ");
-                sb.Append("DATEDIFF(hour, CONVERT(datetime, Start_Time, 101), CONVERT(datetime, End_Time, 101)) AS total_time_in_hours ");
+                sb.Append("DATEDIFF(hour, CONVERT(datetime, Start_Time, 101), CONVERT(datetime, End_Time, 101)) AS total_time_in_hours, ");
+                sb.Append("DATEDIFF(minute, CONVERT(datetime, Start_Time, 101), CONVERT(datetime, End_Time, 101)) % 60 AS total_time_in_minutes ");
                 sb.Append(" FROM Em_Work_Schedule ");
                 sb.AppendFormat("WHERE Position_ID in ({0})  ", lstPositionstr); //lstPositionstr
-                sb.AppendFormat(") AS SubQuery");
-                
+                sb.Append(") AS SubQuery");
+
                 ds = di.SelectRowsDS(sb.ToString());
 
                 return ds;
@@ -1078,6 +1104,12 @@ namespace OODForms
             if (tokenValidator(token) == false) return null;
             logger.debug("getSS ");
             List<string> list = new List<string>();
+
+            if (userId == "%25")
+            {
+                userId = "%";
+            }
+
             list.Add(token);
             list.Add(referenceNumber);
             list.Add(startDate);

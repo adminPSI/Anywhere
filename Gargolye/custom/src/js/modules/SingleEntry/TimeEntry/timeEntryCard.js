@@ -1021,13 +1021,19 @@ var timeEntryCard = (function () {
                 if (transportationEndTimeVal === '' || !transportationEndTimeVal) {
                     transportationEndTimeInput.classList.add('error');
                 } else {
-                    if (transportationStartTimeVal > transportationEndTimeVal) {
+                    if (transportationStartTimeVal >= transportationEndTimeVal) {
                         transportationEndTimeInput.classList.add('error');
                     } else {
                         transportationEndTimeInput.classList.remove('error');
                     }
-                }                
-            }
+                }
+            } else {
+                if (transportationStartTimeVal && transportationEndTimeVal && transportationEndTimeVal !== '' && transportationStartTimeVal !== '' && transportationStartTimeVal >= transportationEndTimeVal) {
+                    transportationEndTimeInput.classList.add('error');
+                } else {
+                    transportationEndTimeInput.classList.remove('error');
+                }
+            }      
         }
 
         checkTotalMiles();
@@ -1119,7 +1125,7 @@ var timeEntryCard = (function () {
             checkPermissions();
         });
         deleteTransBtn.addEventListener('click', deleteTransportation);
-        cancelTransBtn.addEventListener('click', () => {
+        cancelTransBtn.addEventListener('click', () => { 
             if (transportationSaved) {
                 transportationType = oldTransportationType ? oldTransportationType : transportationType;
                 transportationReimbursable = oldTransportationReimbursable
@@ -1130,9 +1136,9 @@ var timeEntryCard = (function () {
                 odometerEnd = oldOdometerEnd || oldOdometerEnd === '' ? oldOdometerEnd : odometerEnd;
                 transportationEndTime = oldTransportationEndTime || oldTransportationEndTime === '' ? oldTransportationEndTime : transportationEndTime;
                 transportationStartTime = oldTransportationStartTime || oldTransportationStartTime === '' ? oldTransportationStartTime : transportationStartTime;
-                destination = oldDestination ? oldDestination : destination;
-                reason = oldReason ? oldReason : reason;
-                licensePlateNumber = oldlicenseplate ? oldlicenseplate : licensePlateNumber;
+                destination = oldDestination || oldDestination === '' ? oldDestination : destination;
+                reason = oldReason || oldReason === '' ? oldReason : reason;
+                licensePlateNumber = oldlicenseplate || oldlicenseplate ==='' ? oldlicenseplate : licensePlateNumber;
             } else {
                 clearTransportationValues();
             }
