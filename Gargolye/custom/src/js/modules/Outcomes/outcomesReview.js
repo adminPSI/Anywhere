@@ -8,6 +8,7 @@ const outcomesReview = (function () {
   let goalTypes;
 
   let tabSections;
+  let activeTab;
 
   let filterBtn;
   let servBtnWrap;
@@ -654,20 +655,12 @@ const outcomesReview = (function () {
   // Tabs
   //----------------------------------------------------
   function buildTabs() {
-    tabSections = {};
-
-    if (outcomesData.hasOwnProperty('NF')) tabSections['NF'] = 'No Frequency';
-    if (outcomesData.hasOwnProperty('H')) tabSections['H'] = 'Hourly';
-    if (outcomesData.hasOwnProperty('D')) tabSections['D'] = 'Daily';
-    if (outcomesData.hasOwnProperty('W')) tabSections['W'] = 'Weekly';
-    if (outcomesData.hasOwnProperty('M')) tabSections['M'] = 'Monthly';
-    if (outcomesData.hasOwnProperty('Y')) tabSections['Y'] = 'Yearly';
-
     return tabs.build({
       sections: Object.values(tabSections),
       active: 0,
       tabNavCallback: function (data) {
-        console.log(data);
+        activeTab = data;
+        console.log(activeTab);
       },
     });
   }
@@ -725,14 +718,31 @@ const outcomesReview = (function () {
   
       return a;
     }, {});
+
+    tabSections = {};
+    Object.keys(outcomesData).forEach((key, index) => {
+      tabSections[index] = {};
+      if (key === 'NF') tabSections[index] = { key,  name: 'No Frequency' };
+      if (key === 'H') tabSections[index] = { key,  name: 'Hourly' };
+      if (key === 'D') tabSections[index] = { key,  name: 'Daily' };
+      if (key === 'W') tabSections[index] = { key,  name: 'Weekly' };
+      if (key === 'M') tabSections[index] = { key,  name: 'Monthly' };
+      if (key === 'Y') tabSections[index] = { key,  name: 'Yearly' };
+    });
+    // if (outcomesData.hasOwnProperty('NF')) tabSections['NF'] = 'No Frequency';
+    // if (outcomesData.hasOwnProperty('H')) tabSections['H'] = 'Hourly';
+    // if (outcomesData.hasOwnProperty('D')) tabSections['D'] = 'Daily';
+    // if (outcomesData.hasOwnProperty('W')) tabSections['W'] = 'Weekly';
+    // if (outcomesData.hasOwnProperty('M')) tabSections['M'] = 'Monthly';
+    // if (outcomesData.hasOwnProperty('Y')) tabSections['Y'] = 'Yearly';
+
+    activeTab = 0;
   }
   async function init(consumer, date) {
     console.clear();
 
     selectedConsumerId = consumer.id;
     selectedDate = date;
-    //selectedConsumerId = '4365';
-    //selectedConsumerId = '3190';
 
     setActiveModuleSectionAttribute('outcomes-review');
     PROGRESS.SPINNER.show('Loading Outcomes...');
