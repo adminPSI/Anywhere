@@ -596,6 +596,11 @@ namespace Anywhere
             return rosterWorker.getRelationshipsNameJSON(token);
         }
 
+        public RosterWorker.ConsumerRelationshipName[] getRelationshipsNameByIDJSON(string token, string relationType)
+        {
+            return rosterWorker.getRelationshipsNameByIDJSON(token, relationType);
+        }
+
         public string insertEditRelationship(string token, string userId, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsNewList, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsList, string consumerId)
         {
             return rosterWorker.insertEditRelationship(token, userId, consumerRelationshipsNewList, consumerRelationshipsList, consumerId);

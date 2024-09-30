@@ -1359,6 +1359,21 @@ namespace Anywhere.Data
             }
         }
 
+        public string getRelationshipsNameByIDJSON(string token, string relationType)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getRelationshipsNameByIDJSON" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Demographics_getRelationshipsNameByID('" + token + "','" + relationType + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("547", ex.Message + " ANYW_Demographics_getRelationshipsNameByID('" + token + "','" + relationType + "')");
+                return "547: Error Getting person list byId Demographics";
+            }
+        }
+
         public string insertEditRelationship(string token, string userId, string consumerId, string startDate, string endDate, string personID, string typeID)
         {
             if (tokenValidator(token) == false) return null;

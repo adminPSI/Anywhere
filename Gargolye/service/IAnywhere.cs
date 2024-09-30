@@ -706,6 +706,14 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/getRelationshipsNameByIDJSON/")]
+        RosterWorker.ConsumerRelationshipName[] getRelationshipsNameByIDJSON(string token, string relationType);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
                 BodyStyle = WebMessageBodyStyle.Wrapped,
                 ResponseFormat = WebMessageFormat.Json,
        RequestFormat = WebMessageFormat.Json,

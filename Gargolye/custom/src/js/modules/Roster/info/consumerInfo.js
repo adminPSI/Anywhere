@@ -849,6 +849,11 @@ const consumerInfo = (function () {
             hasADropdownN[i].addEventListener('change', event => {
                 isValueChanged = true;
                 checkRequiredFieldsEditConsumerRelationships();
+                if ($.session.applicationName === 'Gatekeeper') {
+                    var selectedDropdownId = event.target.id.replace('hasADropdownN', '');
+                    var selectedValue = event.target.value;
+                    rePopulateEditRelationshipDropdown(selectedDropdownId, selectedValue);
+                }
             });
             whoIsDropdownN[i].addEventListener('change', event => {
                 isValueChanged = true;
@@ -926,6 +931,21 @@ const consumerInfo = (function () {
         }
     }
 
+    async function rePopulateEditRelationshipDropdown(selectedDropdownId, selectedValue) {
+        const {
+            getRelationshipsNameByIDJSONResult: RelationshipsName,
+        } = await rosterAjax.getRelationshipsNameByID(selectedValue);
+
+        dataName = RelationshipsName.map((relationshipsName) => ({
+            id: relationshipsName.personID,
+            value: relationshipsName.personID,
+            text: relationshipsName.name
+        }));
+        dataName.unshift({ id: null, value: '', text: '' });
+        dropdown.populate("whoIsDropdownN" + selectedDropdownId, dataName, '');
+
+    }
+
     async function editRelationshipSaveData() {
         consumerRelationshipsNew = [];
         for (let i = 0; i < numberOfRows; i++) {
@@ -947,7 +967,7 @@ const consumerInfo = (function () {
 
 
         for (let j = 0; j < consumerRelationshipsNew.length; j++) {
-            for (let i = 0; i < consumerRelationships.length; i++) {  
+            for (let i = 0; i < consumerRelationships.length; i++) {
 
                 archiveConsumerRelationships[i].endDate = consumerRelationships[i].endDate == '' ? '' : moment(consumerRelationships[i].endDate).format('YYYY-MM-DD');
                 archiveConsumerRelationships[i].startDate = moment(consumerRelationships[i].startDate).format('YYYY-MM-DD');
