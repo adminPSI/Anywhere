@@ -1125,7 +1125,7 @@ var timeEntryCard = (function () {
             checkPermissions();
         });
         deleteTransBtn.addEventListener('click', deleteTransportation);
-        cancelTransBtn.addEventListener('click', () => {
+        cancelTransBtn.addEventListener('click', () => { 
             if (transportationSaved) {
                 transportationType = oldTransportationType ? oldTransportationType : transportationType;
                 transportationReimbursable = oldTransportationReimbursable
@@ -1136,9 +1136,9 @@ var timeEntryCard = (function () {
                 odometerEnd = oldOdometerEnd || oldOdometerEnd === '' ? oldOdometerEnd : odometerEnd;
                 transportationEndTime = oldTransportationEndTime || oldTransportationEndTime === '' ? oldTransportationEndTime : transportationEndTime;
                 transportationStartTime = oldTransportationStartTime || oldTransportationStartTime === '' ? oldTransportationStartTime : transportationStartTime;
-                destination = oldDestination ? oldDestination : destination;
-                reason = oldReason ? oldReason : reason;
-                licensePlateNumber = oldlicenseplate ? oldlicenseplate : licensePlateNumber;
+                destination = oldDestination || oldDestination === '' ? oldDestination : destination;
+                reason = oldReason || oldReason === '' ? oldReason : reason;
+                licensePlateNumber = oldlicenseplate || oldlicenseplate ==='' ? oldlicenseplate : licensePlateNumber;
             } else {
                 clearTransportationValues();
             }
