@@ -688,9 +688,9 @@ namespace OODForms
                 sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
                 sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
                 sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-                sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
-                sb.Append("AND dba.EM_Job_Task.Task_Number > 7 ");
-                sb.AppendFormat("AND dba.Case_Notes.Service_Date between '{0}' and '{1}' ", StartDate, EndDate);
+                //sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+                // sb.Append("AND dba.EM_Job_Task.Task_Number > 7 ");
+                sb.AppendFormat("WHERE dba.Case_Notes.Service_Date between '{0}' and '{1}' ", StartDate, EndDate);
                 sb.AppendFormat("AND dba.case_notes.reference_number = '{0}' ", AuthorizationNumber);
                 sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
                 string listPosNumber = string.Empty;
