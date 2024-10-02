@@ -1,5 +1,6 @@
 const outcomesReview = (function () {
   let selectedConsumerId;
+  let selectedDate;
   let outcomesData;
   let outcomesDataRaw;
   let activityRes;
@@ -17,6 +18,20 @@ const outcomesReview = (function () {
   let typeBtnWrap;
   let outcomeTypeBtn;
   let outcomeTypeCloseBtn;
+
+  let selectedDateSpan = { to: null, from: null };
+  let spanLength;
+  let daysBackInput;
+  let toDateInput;
+  let fromDateInput;
+
+  // Constants
+  const NO_FREQ = 'No Frequency';
+  const HOUR = 'Hourly';
+  const DAY = 'Daily';
+  const WEEK = 'Weekly';
+  const MONTH = 'Monthly';
+  const YEAR = 'Yearly';
 
   // Mini Roster
   //----------------------------------------------------
@@ -44,36 +59,79 @@ const outcomesReview = (function () {
 
   // Filtering
   //----------------------------------------------------
-  // date filter
-  function buildFilterDates(unitType = 'Days') {
-    const dateToggle = `
-      <div class="dateFilterToggle">
-        <button id="days-back-btn" class="active">${unitType} Back</button>
-        <button id="date-range-btn">Date Range</button>
-      </div>
-    `;
+  // date span filter
+  function buildFilterDates() {
+    const toggleButtonWrap = _DOM.createElement('div', { class: 'dateFilterToggle' });
+    const daysBackToggleBtn = _DOM.createElement('button', { class: 'active', id: 'days-back-btn', text: `${unitType} Back` });
+    const dateRangeToggleBtn = _DOM.createElement('button', { id: 'date-range-btn', text: 'Date Range' });
+    toggleButtonWrap.appendChild(daysBackToggleBtn);
+    toggleButtonWrap.appendChild(dateRangeToggleBtn);
 
-    const dateInputs = `
-      <div class="daysBack active" >
-        <label for="daysBack">${unitType} Back:</label>
-        <input type="number" id="daysBack" name="daysBack" min="1" />
-      </div>
+    
+    const daysBackInputWrap = _DOM.createElement('div', { class: ['daysBack', 'active'] });
+    const daysBackLabel = _DOM.createElement('label', { for: 'daysBack', text: `${unitType} Back` });
+    daysBackInput = _DOM.createElement('input', { id: 'daysBack', type: 'number', name: 'daysBack', min: '1', value: spanLength });
+    daysBackInputWrap.appendChild(daysBackLabel);
+    daysBackInputWrap.appendChild(daysBackInput);
 
-      <div class="dateRange">
-        <div>
-          <label for="fromDate">From:</label>
-          <input type="date" id="fromDate" name="fromDate" />
-        </div>
-        <div>
-          <label for="toDate">To:</label>
-          <input type="date" id="toDate" name="toDate" />
-        </div>
-      </div>
-    `;
+    
+    const dateRangeInputWrap = _DOM.createElement('div', { class: ['dateRange'] });
+    const dateRangeInnerWrap1 = _DOM.createElement('div');
+    const dateRangeInnerWrap2 = _DOM.createElement('div');
+    dateRangeInputWrap.appendChild(dateRangeInnerWrap1);
+    dateRangeInputWrap.appendChild(dateRangeInnerWrap2);
+    
+    const fromDateLabel = _DOM.createElement('label', { for: 'fromDate', text: `From:` });
+    fromDateInput = _DOM.createElement('input', { id: 'fromDate', type: 'date', name: 'fromDate' });
+    dateRangeInnerWrap1.appendChild(fromDateLabel);
+    dateRangeInnerWrap1.appendChild(fromDateInput);
+
+    const toDateLabel = _DOM.createElement('label', { for: 'toDate', text: `To:` });
+    toDateInput = _DOM.createElement('input', { id: 'toDate', type: 'date', name: 'toDate' });
+    dateRangeInnerWrap2.appendChild(toDateLabel);
+    dateRangeInnerWrap2.appendChild(toDateInput);
 
     const dateWrap = _DOM.createElement('div', { class: 'dateFilter' });
-    dateWrap.innerHTML = dateToggle;
-    dateWrap.innerHTML += dateInputs;
+    dateWrap.appendChild(toggleButtonWrap);
+    dateWrap.appendChild(daysBackInputWrap);
+    dateWrap.appendChild(dateRangeInputWrap);
+
+    toggleButtonWrap.addEventListener('click', (e) => {
+      if (e.target.classList.contains('active')) {
+        return;
+      }
+
+      const daysBack = dateWrap.querySelector('.daysBack')
+      const dateRange = dateWrap.querySelector('.dateRange')
+
+      if (e.target === daysBackToggleBtn) {
+        daysBack.classList.add('active');
+        daysBackToggleBtn.classList.add('active');
+        dateRange.classList.remove('active');
+        dateRangeToggleBtn.classList.remove('active');
+        return;
+      }
+
+      daysBack.classList.remove('active');
+      daysBackToggleBtn.classList.remove('active');
+      dateRange.classList.add('active');
+      dateRangeToggleBtn.classList.add('active');
+    });
+
+    dateWrap.addEventListener('change', (e) => {
+      if (e.target.id === 'daysBack') {
+        console.log('days back input changed', e.target.value);
+        spanLength = e.target.value;
+      }
+      if (e.target.id === 'fromDate') {
+        console.log('from date input changed', e.target.value);
+        selectedDateSpan.from = e.target.value;
+      }
+      if (e.target.id === 'toDate') {
+        console.log('to date input changed', e.target.value);
+        selectedDateSpan.to = e.target.value;
+      }
+    });
 
     return dateWrap;
   }
@@ -659,8 +717,8 @@ const outcomesReview = (function () {
       sections: Object.values(tabSections),
       active: 0,
       tabNavCallback: function (data) {
-        activeTab = data;
-        console.log(activeTab);
+        activeTab = data.activeSection;
+        setUnitType();
       },
     });
   }
@@ -678,6 +736,70 @@ const outcomesReview = (function () {
 
   // Main
   //----------------------------------------------------
+  function setUnitType() {
+    selectedDateSpan.to = selectedDate;
+
+    switch (activeTab) {
+      case NO_FREQ:  {
+        const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), 7);
+        selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+        unitType = 'Day(s)';
+        spanLength = 7;
+        break;
+      }
+      case HOUR:  {
+        const dateObj = dates.subHours(new Date(`${selectedDate} 00:00:00`), 24);
+        selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+        unitType = 'Hour(s)';
+        spanLength = 24;
+        break;
+      }
+      case DAY:  {
+        const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), 2);
+        selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+        unitType = 'Day(s)';
+        spanLength = 2;
+        break;
+      }
+      case WEEK:  {
+        const dateObj = dates.subWeeks(new Date(`${selectedDate} 00:00:00`), 1);
+        selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+        unitType = 'Week(s)';
+        spanLength = 1;
+        break;
+      }
+      case MONTH:  {
+        const dateObj = dates.subMonths(new Date(`${selectedDate} 00:00:00`), 2);
+        selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+        unitType = 'Month(s)';
+        spanLength = 2;
+        break;
+      }
+      case YEAR:  {
+        const dateObj = dates.subYears(new Date(`${selectedDate} 00:00:00`), 2);
+        selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+        unitType = 'Year(s)';
+        spanLength = 2;
+        break;
+      }
+      default: {
+        console.error(activeTab)
+        throw new Error('something went wrong setting unit types')
+      }
+    }
+  }
+  function setTabSections() {
+    tabSections = {};
+
+    if (outcomesData.hasOwnProperty('NF')) tabSections['NF'] = NO_FREQ;
+    if (outcomesData.hasOwnProperty('H')) tabSections['H'] = HOUR;
+    if (outcomesData.hasOwnProperty('D')) tabSections['D'] = DAY;
+    if (outcomesData.hasOwnProperty('W')) tabSections['W'] = WEEK;
+    if (outcomesData.hasOwnProperty('M')) tabSections['M'] = MONTH;
+    if (outcomesData.hasOwnProperty('Y')) tabSections['Y'] = YEAR;
+
+    activeTab = Object.values(tabSections)[0];
+  }
   async function getReviewTableData() {
     const data = await outcomesAjax.getReviewTableData({
       consumerId: selectedConsumerId,
@@ -719,24 +841,32 @@ const outcomesReview = (function () {
       return a;
     }, {});
 
-    tabSections = {};
-    Object.keys(outcomesData).forEach((key, index) => {
-      tabSections[index] = {};
-      if (key === 'NF') tabSections[index] = { key,  name: 'No Frequency' };
-      if (key === 'H') tabSections[index] = { key,  name: 'Hourly' };
-      if (key === 'D') tabSections[index] = { key,  name: 'Daily' };
-      if (key === 'W') tabSections[index] = { key,  name: 'Weekly' };
-      if (key === 'M') tabSections[index] = { key,  name: 'Monthly' };
-      if (key === 'Y') tabSections[index] = { key,  name: 'Yearly' };
-    });
-    // if (outcomesData.hasOwnProperty('NF')) tabSections['NF'] = 'No Frequency';
-    // if (outcomesData.hasOwnProperty('H')) tabSections['H'] = 'Hourly';
-    // if (outcomesData.hasOwnProperty('D')) tabSections['D'] = 'Daily';
-    // if (outcomesData.hasOwnProperty('W')) tabSections['W'] = 'Weekly';
-    // if (outcomesData.hasOwnProperty('M')) tabSections['M'] = 'Monthly';
-    // if (outcomesData.hasOwnProperty('Y')) tabSections['Y'] = 'Yearly';
+    setTabSections();
+  }
+  async function getReviewTableDataSecondary() {
+    const rtPromises = [];
 
-    activeTab = 0;
+    for (const [occ, value] of Object.entries(outcomesData)) {
+      for (const [objId, value2] of Object.entries(value)) {
+        const data = await outcomesAjax.getReviewTableDataSecondary({
+          consumerId: selectedConsumerId,
+          startDate: selectedDateSpan.from,
+          endDate: selectedDateSpan.to,
+          objectiveIdList: objId
+        });
+        console.log(data);
+        // rtPromises.push(outcomesAjax.getReviewTableDataSecondary({
+        //   consumerId: selectedConsumerId,
+        //   startDate: dates.formateToISO(selectedDateSpan.from),
+        //   endDate: dates.formateToISO(selectedDateSpan.to),
+        //   objectiveIdList: objId
+        // }));
+      }
+    }
+
+    // Promise.all(rtPromises).then(value => {
+    //   console.log(value);
+    // });
   }
   async function init(consumer, date) {
     console.clear();
@@ -748,6 +878,8 @@ const outcomesReview = (function () {
     PROGRESS.SPINNER.show('Loading Outcomes...');
 
     await getReviewTableData();
+    setUnitType();
+    await getReviewTableDataSecondary();
 
     DOM.clearActionCenter();
 

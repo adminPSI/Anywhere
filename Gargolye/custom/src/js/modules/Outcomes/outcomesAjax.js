@@ -881,6 +881,8 @@ const outcomesAjax = (function () {
     getLocationDropDownAsync,
     // Review
     getReviewTableData,
-    getAllGoalTypes
+    getReviewTableDataSecondary,
+    getAllGoalTypes,
+    addReviewNote
   };
 })();
