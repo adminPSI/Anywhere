@@ -1021,19 +1021,19 @@ var timeEntryCard = (function () {
                 if (transportationEndTimeVal === '' || !transportationEndTimeVal) {
                     transportationEndTimeInput.classList.add('error');
                 } else {
-                    if (transportationStartTimeVal >= transportationEndTimeVal) {
-                        transportationEndTimeInput.classList.add('error');
-                    } else {
+                    if (UTIL.checkValidDateRange(transportationStartTimeVal, transportationEndTimeVal)) {                       
                         transportationEndTimeInput.classList.remove('error');
+                    } else {
+                        transportationEndTimeInput.classList.add('error');
                     }
                 }
             } else {
-                if (transportationStartTimeVal && transportationEndTimeVal && transportationEndTimeVal !== '' && transportationStartTimeVal !== '' && transportationStartTimeVal >= transportationEndTimeVal) {
-                    transportationEndTimeInput.classList.add('error');
-                } else {
+                if (transportationStartTimeVal && transportationEndTimeVal && transportationEndTimeVal !== '' && transportationStartTimeVal !== '' && UTIL.checkValidDateRange(transportationStartTimeVal, transportationEndTimeVal)) {                   
                     transportationEndTimeInput.classList.remove('error');
+                } else {
+                    transportationEndTimeInput.classList.add('error');
                 }
-            }      
+            }
         }
 
         checkTotalMiles();
@@ -1125,7 +1125,7 @@ var timeEntryCard = (function () {
             checkPermissions();
         });
         deleteTransBtn.addEventListener('click', deleteTransportation);
-        cancelTransBtn.addEventListener('click', () => { 
+        cancelTransBtn.addEventListener('click', () => {
             if (transportationSaved) {
                 transportationType = oldTransportationType ? oldTransportationType : transportationType;
                 transportationReimbursable = oldTransportationReimbursable
@@ -1138,7 +1138,7 @@ var timeEntryCard = (function () {
                 transportationStartTime = oldTransportationStartTime || oldTransportationStartTime === '' ? oldTransportationStartTime : transportationStartTime;
                 destination = oldDestination || oldDestination === '' ? oldDestination : destination;
                 reason = oldReason || oldReason === '' ? oldReason : reason;
-                licensePlateNumber = oldlicenseplate || oldlicenseplate ==='' ? oldlicenseplate : licensePlateNumber;
+                licensePlateNumber = oldlicenseplate || oldlicenseplate === '' ? oldlicenseplate : licensePlateNumber;
             } else {
                 clearTransportationValues();
             }
