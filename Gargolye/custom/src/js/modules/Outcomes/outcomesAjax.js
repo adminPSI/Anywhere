@@ -769,7 +769,7 @@ const outcomesAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/getReviewTableDataSecondary/',
+          '/getOutcomesReviewGridSecondary/',
         data: JSON.stringify({
           token: $.session.Token,
           ...retrieveData
@@ -778,7 +778,7 @@ const outcomesAjax = (function () {
         dataType: 'json',
       });
 
-      return result.getReviewTableDataSecondaryResult;
+      return result.getOutcomesReviewGridSecondaryResult;
     } catch (error) {
       throw new Error(error.responseText);
     }

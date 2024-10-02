@@ -848,25 +848,25 @@ const outcomesReview = (function () {
 
     for (const [occ, value] of Object.entries(outcomesData)) {
       for (const [objId, value2] of Object.entries(value)) {
-        const data = await outcomesAjax.getReviewTableDataSecondary({
-          consumerId: selectedConsumerId,
-          startDate: selectedDateSpan.from,
-          endDate: selectedDateSpan.to,
-          objectiveIdList: objId
-        });
-        console.log(data);
-        // rtPromises.push(outcomesAjax.getReviewTableDataSecondary({
+        // const data = await outcomesAjax.getReviewTableDataSecondary({
         //   consumerId: selectedConsumerId,
-        //   startDate: dates.formateToISO(selectedDateSpan.from),
-        //   endDate: dates.formateToISO(selectedDateSpan.to),
+        //   startDate: selectedDateSpan.from,
+        //   endDate: selectedDateSpan.to,
         //   objectiveIdList: objId
-        // }));
+        // });
+        // console.log(data);
+        rtPromises.push(outcomesAjax.getReviewTableDataSecondary({
+          consumerId: selectedConsumerId,
+          startDate: dates.formateToISO(selectedDateSpan.from),
+          endDate: dates.formateToISO(selectedDateSpan.to),
+          objectiveIdList: objId
+        }));
       }
     }
 
-    // Promise.all(rtPromises).then(value => {
-    //   console.log(value);
-    // });
+    Promise.all(rtPromises).then(value => {
+      console.log(value);
+    });
   }
   async function init(consumer, date) {
     console.clear();
