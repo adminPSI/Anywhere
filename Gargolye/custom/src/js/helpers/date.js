@@ -1,4 +1,6 @@
 const dates = (function () {
+  const millisecondsInHour = 3600000;
+
   // PRIVATE
   //------------------------------------
   function toDate(argument) {
@@ -91,6 +93,10 @@ const dates = (function () {
     return lastDayOfMonth.getDate();
   }
   // ADD
+  function addHours(date, amount) {
+    const newDateValue = +toDate(date) + amount * millisecondsInHour; // Add hours converted to milliseconds
+    return new Date(newDateValue);
+  }
   function addDays(dirtyDate, dirtyAmount) {
     var date = cloneDate(dirtyDate);
     var amount = toInteger(dirtyAmount);
@@ -119,6 +125,9 @@ const dates = (function () {
     return addMonths(dirtyDate, amount * 12);
   }
   // SUB
+  function subHours(date, amount) {
+    return addHours(date, -amount)
+  }
   function subDays(dirtyDate, dirtyAmount) {
     var amount = toInteger(dirtyAmount);
     return addDays(dirtyDate, -amount);
@@ -126,6 +135,7 @@ const dates = (function () {
   function subWeeks(date, amount) {
     return addWeeks(date, -amount);
   }
+  function subMonths() {}
   function subYears(dirtyDate, dirtyAmount) {
     var amount = toInteger(dirtyAmount);
     return addYears(dirtyDate, -amount);
@@ -520,12 +530,15 @@ const dates = (function () {
     getTodaysDateObj,
     getTodaysDateISOString,
     getDaysInMonth,
+    addHours,
     addDays,
     addWeeks,
     addMonths,
     addYears,
+    subHours,
     subDays,
     subWeeks,
+    subMonths,
     subYears,
     endOfWeek,
     startDayOfWeek,

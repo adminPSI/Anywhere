@@ -293,6 +293,7 @@ namespace OODForms
         public string OODForm8GetJobTasksSummary(string AuthorizationNumber, string StartDate, string EndDate, string userId)
         {
             string Tasks = string.Empty;
+            string posNumbersString = string.Empty;
 
             sb.Clear();
             sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
@@ -313,27 +314,37 @@ namespace OODForms
                 {
                     posNumbers.Add((long)row["Position_ID"]);
                 }
-            } else
-            {
-                return Tasks;
-            }
-
-            string posNumbersString = string.Join(",", posNumbers);
+            } 
 
             if (userId == "%25") userId = "%";
 
-            sb.Clear();
-            sb.Append("SELECT Task_Notes ");
-            sb.Append("FROM dba.EM_Job_Task ");
-            sb.AppendFormat("WHERE Task_Number > 7 AND Position_ID in ({0}) ", posNumbersString);
-            sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
-            sb.AppendFormat("AND User_ID like '{0}' ", userId);
-            sb.Append("Union ");
-            sb.Append("SELECT Task_Notes ");
-            sb.Append("FROM dba.EM_Job_Task ");
-            sb.Append("WHERE Task_Number > 7 ");
-            sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
-            sb.AppendFormat("AND User_ID like '{0}' ", userId);
+            if (posNumbers.Count > 0) {
+
+                posNumbersString = string.Join(",", posNumbers);
+
+                sb.Clear();
+                sb.Append("SELECT Task_Notes ");
+                sb.Append("FROM dba.EM_Job_Task ");
+                sb.AppendFormat("WHERE Task_Number > 7 AND Position_ID in ({0}) ", posNumbersString);
+                sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
+                sb.AppendFormat("AND User_ID like '{0}' ", userId);
+                sb.Append("Union ");
+                sb.Append("SELECT Task_Notes ");
+                sb.Append("FROM dba.EM_Job_Task ");
+                sb.Append("WHERE Task_Number > 7 ");
+                sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
+                sb.AppendFormat("AND User_ID like '{0}' ", userId);
+            } else
+            {
+                sb.Clear();
+                sb.Append("SELECT Task_Notes ");
+                sb.Append("FROM dba.EM_Job_Task ");
+                sb.Append("WHERE Task_Number > 7 ");
+                sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
+                sb.AppendFormat("AND User_ID like '{0}' ", userId);
+
+            } 
+
             DataSet ds = di.SelectRowsDS(sb.ToString());
             // ds = di.SelectRowsDS(sb.ToString());
 
@@ -677,9 +688,10 @@ namespace OODForms
                 sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
                 sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
                 sb.Append("LEFT OUTER JOIN dba.Consumer_Services_Master ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
-                sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
-                sb.Append("AND dba.EM_Job_Task.Task_Number > 7 ");
-                sb.AppendFormat("AND dba.Case_Notes.Service_Date between '{0}' and '{1}' ", StartDate, EndDate);
+                //sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+                // sb.Append("AND dba.EM_Job_Task.Task_Number > 7 ");
+                sb.AppendFormat("WHERE dba.Case_Notes.Service_Date between '{0}' and '{1}' ", StartDate, EndDate);
+                sb.AppendFormat("AND dba.case_notes.reference_number = '{0}' ", AuthorizationNumber);
                 sb.Append("GROUP BY dba.EM_Job_Task.Position_ID ");
                 string listPosNumber = string.Empty;
                 DataSet ds = di.SelectRowsDS(sb.ToString());

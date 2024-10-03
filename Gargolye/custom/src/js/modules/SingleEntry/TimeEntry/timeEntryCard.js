@@ -1021,19 +1021,19 @@ var timeEntryCard = (function () {
                 if (transportationEndTimeVal === '' || !transportationEndTimeVal) {
                     transportationEndTimeInput.classList.add('error');
                 } else {
-                    if (transportationStartTimeVal >= transportationEndTimeVal) {
-                        transportationEndTimeInput.classList.add('error');
-                    } else {
+                    if (UTIL.checkValidDateRange(transportationStartTimeVal, transportationEndTimeVal)) {
                         transportationEndTimeInput.classList.remove('error');
+                    } else {
+                        transportationEndTimeInput.classList.add('error');
                     }
                 }
             } else {
-                if (transportationStartTimeVal && transportationEndTimeVal && transportationEndTimeVal !== '' && transportationStartTimeVal !== '' && transportationStartTimeVal >= transportationEndTimeVal) {
+                if (transportationStartTimeVal && transportationEndTimeVal && transportationEndTimeVal !== '' && transportationStartTimeVal !== '' && !UTIL.checkValidDateRange(transportationStartTimeVal, transportationEndTimeVal)) {
                     transportationEndTimeInput.classList.add('error');
                 } else {
                     transportationEndTimeInput.classList.remove('error');
                 }
-            }      
+            }
         }
 
         checkTotalMiles();
@@ -1136,9 +1136,9 @@ var timeEntryCard = (function () {
                 odometerEnd = oldOdometerEnd || oldOdometerEnd === '' ? oldOdometerEnd : odometerEnd;
                 transportationEndTime = oldTransportationEndTime || oldTransportationEndTime === '' ? oldTransportationEndTime : transportationEndTime;
                 transportationStartTime = oldTransportationStartTime || oldTransportationStartTime === '' ? oldTransportationStartTime : transportationStartTime;
-                destination = oldDestination ? oldDestination : destination;
-                reason = oldReason ? oldReason : reason;
-                licensePlateNumber = oldlicenseplate ? oldlicenseplate : licensePlateNumber;
+                destination = oldDestination || oldDestination === '' ? oldDestination : destination;
+                reason = oldReason || oldReason === '' ? oldReason : reason;
+                licensePlateNumber = oldlicenseplate || oldlicenseplate === '' ? oldlicenseplate : licensePlateNumber;
             } else {
                 clearTransportationValues();
             }

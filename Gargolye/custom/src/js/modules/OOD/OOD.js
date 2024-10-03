@@ -1338,7 +1338,14 @@ const OOD = (() => {
         }));
         data.unshift({ id: null, value: '%', text: '' }); //ADD Blank value
        // dropdown.populate('referenceNumbersDropdown', data, filterValues.referenceNumber);
+       
+       if (filterValues.referenceNumber === '%' || filterValues.referenceNumber === 'ALL') {
         dropdown.populate('createreferenceNumbersDropdown', data, createFilterValues.referenceNumber);
+       } else {
+        dropdown.populate('createreferenceNumbersDropdown', data, filterValues.referenceNumber);
+        checkCreatePopupRequiredFields();
+       }
+        
     }
 
     // Populate the Service Code DDL for the 'Entry' Service Popup Window
@@ -1587,7 +1594,7 @@ const OOD = (() => {
     function checkCreatePopupRequiredFields() {
        // var createreferenceNumbersDropdown = document.querySelector('#createreferenceNumbersDropdown');
        let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
-        if (createreferenceNumbersDropDown.value === '') { 
+        if (createreferenceNumbersDropDown.value === '' || createreferenceNumbersDropDown.value === '%') { 
             createreferenceNumbersDropDown.parentElement.classList.add('error');
             createfilterPopupCreateBTN.classList.add('disabled'); 
             return;
