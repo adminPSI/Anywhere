@@ -808,10 +808,14 @@ const outcomesReview = (function () {
 
     outcomesDataRaw = {};
 
+    objIdSet = new Set();
+
     outcomesData = data.reduce((a, d) => {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
+
+      objIdSet.add(objID);
 
       if (!outcomesDataRaw[occurrence]) {
         outcomesDataRaw[occurrence] = [];
@@ -844,29 +848,14 @@ const outcomesReview = (function () {
     setTabSections();
   }
   async function getReviewTableDataSecondary() {
-    const rtPromises = [];
-
-    for (const [occ, value] of Object.entries(outcomesData)) {
-      for (const [objId, value2] of Object.entries(value)) {
-        // const data = await outcomesAjax.getReviewTableDataSecondary({
-        //   consumerId: selectedConsumerId,
-        //   startDate: selectedDateSpan.from,
-        //   endDate: selectedDateSpan.to,
-        //   objectiveIdList: objId
-        // });
-        // console.log(data);
-        rtPromises.push(outcomesAjax.getReviewTableDataSecondary({
-          consumerId: selectedConsumerId,
-          startDate: dates.formateToISO(selectedDateSpan.from),
-          endDate: dates.formateToISO(selectedDateSpan.to),
-          objectiveIdList: objId
-        }));
-      }
-    }
-
-    Promise.all(rtPromises).then(value => {
-      console.log(value);
+    const data = await outcomesAjax.getReviewTableDataSecondary({
+      consumerId: selectedConsumerId,
+      startDate: selectedDateSpan.from,
+      endDate: selectedDateSpan.to,
+      objectiveIdList: Array.from(objIdSet).join(',')
     });
+
+   console.log(data);
   }
   async function init(consumer, date) {
     console.clear();
