@@ -579,6 +579,8 @@ namespace OODForms
             try
             {
                 OODFormDataGetter obj = new OODFormDataGetter();
+                Anywhere.Data.DataGetter odg = new Anywhere.Data.DataGetter();
+
 
                 string SSinfo = obj.getSpreadsheetNameAndKey(token);
                 SSInfo[] SSInfoObj = JsonConvert.DeserializeObject<SSInfo[]>(SSinfo);
@@ -591,8 +593,21 @@ namespace OODForms
                 string templateFileName = "Form8WorkActivitiesAndAssessment.xlsx";
                 string reportPath = string.Format(path, templateFileName);
 
-                long PeopleID = long.Parse(peopleIDString);
-                
+               // long consumerID = long.Parse(peopleIDString);
+                string jsonPeopleID = odg.getConsumerPeopleId(peopleIDString);
+                string PeopleID = string.Empty;
+                peopleId[] peopleIdObj = JsonConvert.DeserializeObject<peopleId[]>(jsonPeopleID);
+                PeopleID = peopleIdObj[0].id;
+
+
+                //string cleanedString;
+                //if (!string.IsNullOrEmpty(jsonPeopleID)) {
+                //    cleanedString = jsonPeopleID.Trim('}', '{').Trim('"');
+                //    var parts = cleanedString.Split(':');
+                //    if (parts.Length > 0) { PeopleID = parts[1].Trim(); }
+                //    Regex.Replace(PeopleID, @"[^0-9]", "");
+                //}
+
                 DateTime currentDate = DateTime.Now;
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
@@ -758,7 +773,7 @@ namespace OODForms
                     }
                 }
 
-                string TaskSummary = obj.OODForm8GetJobTasksSummary(AuthorizationNumber, StartDate, EndDate, userID);
+                string TaskSummary = obj.OODForm8GetJobTasksSummary(AuthorizationNumber, StartDate, EndDate, userID, PeopleID);
                 if (TaskSummary.Length > 0) ;
                 {
                     TaskSummary = TaskSummary.Trim();
@@ -1901,6 +1916,12 @@ namespace OODForms
     {
         public string First_Name { get; set; }
         public string Last_Name { get; set; }
+    }
+
+    public class peopleId
+    {
+        public string id { get; set; }
+
     }
 
     public class Attachment

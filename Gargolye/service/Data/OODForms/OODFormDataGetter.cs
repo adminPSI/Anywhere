@@ -22,6 +22,7 @@ using CrystalDecisions.Shared.Json;
 using System.Security.Cryptography;
 using static log4net.Appender.RollingFileAppender;
 using System.Web.UI.MobileControls;
+using static Anywhere.service.Data.AnywhereWorker;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -290,11 +291,13 @@ namespace OODForms
             return rv;
 
         }
-        public string OODForm8GetJobTasksSummary(string AuthorizationNumber, string StartDate, string EndDate, string userId)
+        public string OODForm8GetJobTasksSummary(string AuthorizationNumber, string StartDate, string EndDate, string userId, string peopleId)
         {
             string Tasks = string.Empty;
             string posNumbersString = string.Empty;
+            string emplyerNumbersString = string.Empty;
 
+            // Step 1 -- Get Position Ids ******************************************
             sb.Clear();
             sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
             sb.Append("FROM dba.EM_Job_Task ");
@@ -318,34 +321,84 @@ namespace OODForms
 
             if (userId == "%25") userId = "%";
 
-            if (posNumbers.Count > 0) {
+            // Step 2 -- Get EmployerIds ******************************************
+            sb.Clear();
+            sb.Append("SELECT distinct emp_ood.employer_ID FROM dba.EM_Job_Task ");
+            sb.Append("left outer join em_employee_position on em_employee_position.position_id = em_job_task.position_id ");
+            sb.Append("left outer join emp_ood on emp_ood.employer_id = em_employee_position.employer_id ");
+            sb.AppendFormat("WHERE(EM_Job_Task.Start_Date <= '{0}' and(EM_Job_Task.End_Date >= '{1}' or EM_Job_Task.End_Date is NULL)) ",  EndDate, StartDate);
+            sb.AppendFormat("and em_employee_position.People_ID = {0} ", peopleId);
+            sb.Append("and emp_ood.employer_ID is not null ");
+            DataSet dsEmployer = di.SelectRowsDS(sb.ToString());
+            List<string> employerNumbers = new List<string>();
 
-                posNumbersString = string.Join(",", posNumbers);
+            if (dsEmployer.Tables.Count > 0 && dsEmployer.Tables[0].Rows.Count > 0)
+            {
+                foreach (DataRow row in dsEmployer.Tables[0].Rows)
+                {
+                    string thisemployerId = row["employer_ID"].ToString();
+
+                    if (thisemployerId != "0" && thisemployerId != "" && thisemployerId != null)
+                    {
+                        employerNumbers.Add(thisemployerId); ;
+                    }
+
+                }
+            }
+
+            DataSet ds = new DataSet();
+            posNumbersString = string.Join(",", posNumbers);
+            emplyerNumbersString = string.Join(",", employerNumbers);
+
+            // Step 3 -- Get List of Tasks ******************************************
+            if (posNumbers.Count > 0 && employerNumbers.Count > 0)
+            {
 
                 sb.Clear();
-                sb.Append("SELECT Task_Notes ");
+                sb.Append("SELECT Distinct Task_Notes ");
                 sb.Append("FROM dba.EM_Job_Task ");
                 sb.AppendFormat("WHERE Task_Number > 7 AND Position_ID in ({0}) ", posNumbersString);
-                sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
-                sb.AppendFormat("AND User_ID like '{0}' ", userId);
+                sb.AppendFormat("AND (EM_Job_Task.Start_Date <= '{0}' and (EM_Job_Task.End_Date >= '{1}' or EM_Job_Task.End_Date is NULL)) ", EndDate, StartDate);
+                sb.Append("and Task_Notes is not null ");
+                // sb.AppendFormat("AND User_ID like '{0}' ", userId);
                 sb.Append("Union ");
-                sb.Append("SELECT Task_Notes ");
+                sb.Append("SELECT Distinct Task_Notes ");
                 sb.Append("FROM dba.EM_Job_Task ");
+                sb.Append("Left outer JOIN EM_Employee_Position ON EM_Job_Task.Position_ID = EM_Employee_Position.Position_ID ");
+                sb.Append("left outer JOIN emp_ood ON EM_Employee_Position.employer_id = emp_ood.employer_id ");
                 sb.Append("WHERE Task_Number > 7 ");
-                sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
-                sb.AppendFormat("AND User_ID like '{0}' ", userId);
-            } else
+                sb.AppendFormat("and emp_ood.employer_id in ({0}) ", emplyerNumbersString);
+                sb.AppendFormat("and People_ID = {0} ", peopleId);
+                sb.Append("and Task_Notes is not null ");
+                ds = di.SelectRowsDS(sb.ToString());
+            }
+            else if (posNumbers.Count > 0 && employerNumbers.Count == 0)
             {
                 sb.Clear();
-                sb.Append("SELECT Task_Notes ");
+                sb.Append("SELECT Distinct Task_Notes ");
                 sb.Append("FROM dba.EM_Job_Task ");
+                sb.AppendFormat("WHERE Task_Number > 7 AND Position_ID in ({0}) ", posNumbersString);
+                sb.AppendFormat("AND (EM_Job_Task.Start_Date <= '{0}' and (EM_Job_Task.End_Date >= '{1}' or EM_Job_Task.End_Date is NULL)) ", EndDate, StartDate);
+                sb.Append("and Task_Notes is not null ");
+                ds = di.SelectRowsDS(sb.ToString());
+
+            }
+            else if (posNumbers.Count == 0 && employerNumbers.Count > 0) 
+            { 
+
+                sb.Clear();
+                sb.Append("SELECT Distinct Task_Notes ");
+                sb.Append("FROM dba.EM_Job_Task ");
+                sb.Append("Left outer JOIN EM_Employee_Position ON EM_Job_Task.Position_ID = EM_Employee_Position.Position_ID ");
+                sb.Append("left outer JOIN emp_ood ON EM_Employee_Position.employer_id = emp_ood.employer_id ");
                 sb.Append("WHERE Task_Number > 7 ");
-                sb.AppendFormat("AND (Start_Date <= '{0}' and End_Date >= '{1}') ", EndDate, StartDate);
-                sb.AppendFormat("AND User_ID like '{0}' ", userId);
+                sb.AppendFormat("and emp_ood.employer_id in ({0}) ", emplyerNumbersString);
+                sb.AppendFormat("and People_ID = {0} ", peopleId);
+                sb.Append("and Task_Notes is not null ");
+                 ds = di.SelectRowsDS(sb.ToString());
 
             } 
-
-            DataSet ds = di.SelectRowsDS(sb.ToString());
+      
             // ds = di.SelectRowsDS(sb.ToString());
 
             if (ds.Tables.Count > 0)
