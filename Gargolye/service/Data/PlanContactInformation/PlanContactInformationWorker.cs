@@ -255,6 +255,10 @@ namespace Anywhere.service.Data.PlanContactInformation
             ImportantPeople[] importantPeopleObj = js.Deserialize<ImportantPeople[]>(importantPeopleString);
             for (int i = 0; i < importantPeopleObj.Length; i++)
             {
+                if(importantPeopleObj[i].name.Contains("Other -"))
+                {
+                    importantPeopleObj[i].name = "Other";
+                }
                 pcidg.insertPlanContactImportantPeople(token, newContactId, importantPeopleObj[i].type, importantPeopleObj[i].name, importantPeopleObj[i].relationship, importantPeopleObj[i].address, importantPeopleObj[i].phone, importantPeopleObj[i].email, importantPeopleObj[i].phone2, importantPeopleObj[i].phoneExt, importantPeopleObj[i].phone2Ext, importantPeopleObj[i].typeOther);
             }
             //IMPORTANT GROUPS

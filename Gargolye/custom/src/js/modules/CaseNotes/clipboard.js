@@ -1,38 +1,3 @@
-// consumerId: '4365';
-// consumerName: 'Carol Brady';        || TOP ROW - individual
-// objectiveStatement: 'Washing Hair'; || TOP ROW - service statement
-// frequencyModifier: 'OBJFMEX';       || TOP ROW - frequency
-// objectiveIncrement: '1';            || TOP ROW - frequency
-// objectiveRecurrance: 'D';           || TOP ROW - frequency
-// timesDocumented                     || TOP ROW - times documented
-// objectiveSuccess: 'C';              || TOP ROW - success rate ?
-
-// objective_date: '8/20/2024 12:00:00 AM'; || MID ROW - date (no column headings)
-
-// employee: 'Jennifer Keiser'; || BOTTOM ROW - employee
-// promptNumber: '';            || BOTTOM ROW - attempts
-// promptType: 'p';             || BOTTOM ROW - prompts
-
-// objectiveActivityId: '189';
-// objectiveId: '238';
-// staffId: '7853';
-
-//* TOP ROW
-// individual, service statement, frequency, times doced, success rate
-//* Mid Row
-// date
-//* Bottom Row
-// employee, result, attempts, prompts, note
-
-//TODO: If the user has the Review key for Anywhere Service Activity, display the Review Outcomes/Services button
-//TODO: date filter
-// If user lands on No Frequency, set value to "Last 7 days".
-// If user lands on Hourly, set value to "Last 24 hours".
-// If user lands on Daily, set to "Last 2 days".
-// If user lands on Weekly, set to "Last 1 week".
-// If user lands on Monthly, set to "Last 2 months".
-// If user lands on Yearly, set to "Last 2 years".
-
 // async function getReviewTableData() {
 //   const data = await outcomesAjax.getReviewTableData({
 //     consumerId: selectedConsumerId,
@@ -209,30 +174,3 @@
 //   return table;
 // }
 
-// Constants
-// const NO_FREQ = 'No Frequency';
-// const HOUR = 'Hourly';
-// const DAY = 'Daily';
-// const WEEK = 'Weekly';
-// const MONTH = 'Monthly';
-// const YEAR = 'Yearly';
-
-// let selectedDateSpan = { to: null, from: null };
-
-// const dateInputs = `
-// <div class="daysBack active">
-//   <label for="daysBack">${unitType} Back:</label>
-//   <input type="number" id="daysBack" name="daysBack" min="1" value="${spanLength}" />
-// </div>
-
-// <div class="dateRange">
-//   <div>
-//     <label for="fromDate">From:</label>
-//     <input type="date" id="fromDate" name="fromDate" />
-//   </div>
-//   <div>
-//     <label for="toDate">To:</label>
-//     <input type="date" id="toDate" name="toDate" />
-//   </div>
-// </div>
-// `;
