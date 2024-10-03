@@ -1021,17 +1021,17 @@ var timeEntryCard = (function () {
                 if (transportationEndTimeVal === '' || !transportationEndTimeVal) {
                     transportationEndTimeInput.classList.add('error');
                 } else {
-                    if (UTIL.checkValidDateRange(transportationStartTimeVal, transportationEndTimeVal)) {                       
+                    if (UTIL.checkValidDateRange(transportationStartTimeVal, transportationEndTimeVal)) {
                         transportationEndTimeInput.classList.remove('error');
                     } else {
                         transportationEndTimeInput.classList.add('error');
                     }
                 }
             } else {
-                if (transportationStartTimeVal && transportationEndTimeVal && transportationEndTimeVal !== '' && transportationStartTimeVal !== '' && UTIL.checkValidDateRange(transportationStartTimeVal, transportationEndTimeVal)) {                   
-                    transportationEndTimeInput.classList.remove('error');
-                } else {
+                if (transportationStartTimeVal && transportationEndTimeVal && transportationEndTimeVal !== '' && transportationStartTimeVal !== '' && !UTIL.checkValidDateRange(transportationStartTimeVal, transportationEndTimeVal)) {
                     transportationEndTimeInput.classList.add('error');
+                } else {
+                    transportationEndTimeInput.classList.remove('error');
                 }
             }
         }
