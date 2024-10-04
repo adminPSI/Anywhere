@@ -332,6 +332,7 @@ namespace Anywhere.service.Data
             public string objectiveActivityNote { get; set; }
             public string startTime { get; set; }
             public string endTime { get; set; }
+            public string objectiveRecurrance { get; set; }
         }
 
         public class OutComePageData
