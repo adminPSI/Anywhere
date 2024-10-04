@@ -581,6 +581,7 @@ div.textarea {
   }
 }
 
+// OUTCOMES REVIEW PAGE
 .outcomesReview {
   .filteredByData {
     justify-content: space-between;
@@ -631,7 +632,8 @@ div.textarea {
 
       .daysBack {
         input {
-          width: 30px;
+          border: 1px solid black;
+          min-width: 30px;
         }
       }
 

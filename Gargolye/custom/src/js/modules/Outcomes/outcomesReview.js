@@ -67,13 +67,11 @@ const outcomesReview = (function () {
     toggleButtonWrap.appendChild(daysBackToggleBtn);
     toggleButtonWrap.appendChild(dateRangeToggleBtn);
 
-    
     const daysBackInputWrap = _DOM.createElement('div', { class: ['daysBack', 'active'] });
     const daysBackLabel = _DOM.createElement('label', { for: 'daysBack', text: `${unitType} Back` });
     daysBackInput = _DOM.createElement('input', { id: 'daysBack', type: 'number', name: 'daysBack', min: '1', value: spanLength });
     daysBackInputWrap.appendChild(daysBackLabel);
     daysBackInputWrap.appendChild(daysBackInput);
-
     
     const dateRangeInputWrap = _DOM.createElement('div', { class: ['dateRange'] });
     const dateRangeInnerWrap1 = _DOM.createElement('div');
@@ -82,12 +80,12 @@ const outcomesReview = (function () {
     dateRangeInputWrap.appendChild(dateRangeInnerWrap2);
     
     const fromDateLabel = _DOM.createElement('label', { for: 'fromDate', text: `From:` });
-    fromDateInput = _DOM.createElement('input', { id: 'fromDate', type: 'date', name: 'fromDate' });
+    fromDateInput = _DOM.createElement('input', { id: 'fromDate', type: 'date', name: 'fromDate', value: selectedDateSpan.from });
     dateRangeInnerWrap1.appendChild(fromDateLabel);
     dateRangeInnerWrap1.appendChild(fromDateInput);
 
     const toDateLabel = _DOM.createElement('label', { for: 'toDate', text: `To:` });
-    toDateInput = _DOM.createElement('input', { id: 'toDate', type: 'date', name: 'toDate' });
+    toDateInput = _DOM.createElement('input', { id: 'toDate', type: 'date', name: 'toDate', value:selectedDateSpan.to  });
     dateRangeInnerWrap2.appendChild(toDateLabel);
     dateRangeInnerWrap2.appendChild(toDateInput);
 
@@ -704,6 +702,34 @@ const outcomesReview = (function () {
             detailsTable.classList.add('hidden');
           }
         });
+
+        // const detailsHeading = _DOM.createElement('div', { class: ['heading', 'heading-details'] });
+        // detailsHeading.innerHTML = `
+        //   <div>Employee</div>
+        //   <div>Result</div>
+        //   <div>Attempts</div>
+        //   <div>Prompts</div>  
+        //   <div>Note</div>
+        // `;
+        // detailsTable.appendChild(detailsHeading);
+
+        // for (const staffId in data[objId].reviewDates[date]) {
+        //   const details = data[objId].reviewDates[date][staffId];
+        //   const detailRow = _DOM.createElement('div', { class: ['row', 'row-details'] });
+        //   detailRow.innerHTML = `
+        //     <div>${details.employee}</div>
+        //     <div>${details.result}</div>
+        //     <div>${details.attempts}</div>
+        //     <div>${details.prompts}</div>
+        //     <div>${details.note}</div>
+        //   `;
+        //   detailsTable.appendChild(detailRow);
+
+        //   detailRow.addEventListener('click', () => {
+        //     console.log('detail row click', details.activityId);
+        //     onDetailRowClick({goalTypeID: objId, activityId: details.activityId, date: date});
+        //   });
+        // }
       }
     }
 
@@ -741,10 +767,10 @@ const outcomesReview = (function () {
 
     switch (activeTab) {
       case NO_FREQ:  {
-        const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), 7);
+        const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), 70);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Day(s)';
-        spanLength = 7;
+        spanLength = 70;
         break;
       }
       case HOUR:  {
@@ -854,8 +880,17 @@ const outcomesReview = (function () {
       endDate: selectedDateSpan.to,
       objectiveIdList: Array.from(objIdSet).join(',')
     });
+  
+    console.log(data);
 
-   console.log(data);
+    // // detail row
+    // a[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
+    // a[occurrence][objID].reviewDates[date][staffId].result = `${d.objectiveSuccessSymbol } ${d.objectiveSuccessDescription }`;
+    // a[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
+    // a[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
+    // a[occurrence][objID].reviewDates[date][staffId].note = d.objectiveActivityNote;
+    // // data for detail popup
+    // a[occurrence][objID].reviewDates[date][staffId].activityId = d.objectiveActivityId;
   }
   async function init(consumer, date) {
     console.clear();
