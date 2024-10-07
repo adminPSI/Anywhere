@@ -35,6 +35,21 @@ const outcomesReview = (function () {
   const MONTH = 'Monthly';
   const YEAR = 'Yearly';
 
+  const FREQUENCY = {
+    'OBJFMAL': "At least", 
+    'OBJFMAN': "As needed", 
+    'OBJFMAR': "As Requested", 
+    'OBJFMEX': "Exactly", 
+    'OBJFMNM': "No more than"
+  };
+  const RECURRANCE = {
+    D: "per day", 
+    Y: "per year", 
+    W: "per week", 
+    M: "per month", 
+    H: "per hour"
+  };
+
   // Mini Roster
   //----------------------------------------------------
   async function handleActionNavEvent(target) {
@@ -268,12 +283,13 @@ const outcomesReview = (function () {
   }
   // filter popup
   function applyFilter() {
-    updateCurrentFilterDisplay();
+    updateCurrentFilterDisplay(serviceFilterVal, outcomeTypeFilterVal);
 
     const tableData = {};
     
-    for (const key in data) {
-
+    for (const key in outcomesData) {
+      // TODO filter shit here
+      console.log(outcomesData[key]);
     }
 
     populateTabSections(tableData);
@@ -323,11 +339,11 @@ const outcomesReview = (function () {
 
     return servDrop;
   }
-  function showFilterPopup(IsShow) {
+  async function showFilterPopup(IsShow) {
     filterPopup = POPUP.build({});
 
     const serviceDropdown = buildServiceDropdown();
-    const typesDropdown = buildTypesDropdown();
+    const typesDropdown = await buildTypesDropdown();
     const applyButton = button.build({
       text: 'Apply',
       style: 'secondary',
@@ -820,10 +836,10 @@ const outcomesReview = (function () {
 
     switch (activeTab) {
       case NO_FREQ:  {
-        const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), 70);
+        const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), 7);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Day(s)';
-        spanLength = 70;
+        spanLength = 7;
         break;
       }
       case HOUR:  {
@@ -885,6 +901,11 @@ const outcomesReview = (function () {
       objectiveDate: dates.formateToISO(selectedDate),
     });
 
+    if (!data || !data.length) {
+      console.log(`No data for consumerID: ${selectedConsumerId}`);
+      return null;
+    }
+
     outcomesDataRaw = {};
 
     objIdSet = new Set();
@@ -911,13 +932,16 @@ const outcomesReview = (function () {
         };
       }
 
-      if (!a[occurrence][objID].reviewDates[date]) {
-        a[occurrence][objID].reviewDates[date] = {};
-      }
+      // if (!a[occurrence][objID].reviewDates[date]) {
+      //   a[occurrence][objID].reviewDates[date] = {};
+      // }
+
+      const freq = FREQUENCY[d.frequencyModifier] || '';
+      const recurr = RECURRANCE[d.objectiveRecurrance] || '';
 
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
-      a[occurrence][objID].frequency = `${d.frequencyModifier} ${d.objectiveIncrement} ${d.objectiveRecurrance}`;
+      a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
       a[occurrence][objID].timesDoc = d.timesDocumented;
       a[occurrence][objID].successRate = d.objectiveSuccess;
   
@@ -925,6 +949,8 @@ const outcomesReview = (function () {
     }, {});
 
     setTabSections();
+
+    return true;
   }
   async function getReviewTableDataSecondary() {
     const data = await outcomesAjax.getReviewTableDataSecondary({
@@ -944,6 +970,10 @@ const outcomesReview = (function () {
 
       if (outcomesData[occurrence]) {
         if (outcomesData[occurrence][objID]) {
+          if (!outcomesData[occurrence][objID].reviewDates[date]) {
+            outcomesData[occurrence][objID].reviewDates[date] = {};
+          }
+
           if (!outcomesData[occurrence][objID].reviewDates[date][staffId]) {
             outcomesData[occurrence][objID].reviewDates[date][staffId] = {};
           }
@@ -968,7 +998,8 @@ const outcomesReview = (function () {
     setActiveModuleSectionAttribute('outcomes-review');
     PROGRESS.SPINNER.show('Loading Outcomes...');
 
-    await getReviewTableData();
+    const data = await getReviewTableData();
+    if (!data) return;
     setUnitType();
     await getReviewTableDataSecondary();
 
@@ -987,7 +1018,7 @@ const outcomesReview = (function () {
     updateCurrentFilterDisplay();
     populateTabSections();
 
-    //goalTypes = await outcomesAjax.getAllGoalTypes();
+    goalTypes = await outcomesAjax.getAllGoalTypes();
 
     roster2.setAllowedConsumers(['%']);
     roster2.addConsumerToActiveConsumers(consumer.card);
