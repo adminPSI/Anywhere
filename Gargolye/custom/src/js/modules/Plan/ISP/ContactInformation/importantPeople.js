@@ -143,6 +143,9 @@ const isp_ci_importantPeople = (() => {
             phoneInput.classList.remove('error');
         }
 
+        // EMAIL
+        emailInput.querySelector('input').value = opts.email; 
+
         checkForErrors();
     }
 
