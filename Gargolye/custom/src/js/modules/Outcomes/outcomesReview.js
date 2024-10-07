@@ -18,6 +18,8 @@ const outcomesReview = (function () {
   let typeBtnWrap;
   let outcomeTypeBtn;
   let outcomeTypeCloseBtn;
+  let serviceFilterVal;
+  let outcomeTypeFilterVal;
 
   let selectedDateSpan = { to: null, from: null };
   let spanLength;
@@ -69,7 +71,7 @@ const outcomesReview = (function () {
 
     const daysBackInputWrap = _DOM.createElement('div', { class: ['daysBack', 'active'] });
     const daysBackLabel = _DOM.createElement('label', { for: 'daysBack', text: `${unitType} Back` });
-    daysBackInput = _DOM.createElement('input', { id: 'daysBack', type: 'number', name: 'daysBack', min: '1', value: spanLength });
+    daysBackInput = _DOM.createElement('input', { id: 'daysBack', type: 'number', name: 'daysBack', value: spanLength });
     daysBackInputWrap.appendChild(daysBackLabel);
     daysBackInputWrap.appendChild(daysBackInput);
     
@@ -116,18 +118,58 @@ const outcomesReview = (function () {
       dateRangeToggleBtn.classList.add('active');
     });
 
-    dateWrap.addEventListener('change', (e) => {
+    dateWrap.addEventListener('change', async (e) => {
       if (e.target.id === 'daysBack') {
         console.log('days back input changed', e.target.value);
         spanLength = e.target.value;
+        selectedDateSpan.to = selectedDate;
+
+        switch(activeTab) {
+          case NO_FREQ: {
+            const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+          case HOUR: {
+            const dateObj = dates.subHours(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+          case DAY: {
+            const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+          case WEEK: {
+            const dateObj = dates.subWeeks(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+          case MONTH: {
+            const dateObj = dates.subMonths(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+          case YEAR: {
+            const dateObj = dates.subYears(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+        }
+
+        await getReviewTableData();
+        await getReviewTableDataSecondary();
+        populateTabSections();
       }
       if (e.target.id === 'fromDate') {
         console.log('from date input changed', e.target.value);
         selectedDateSpan.from = e.target.value;
+
+        await getReviewTableData();
+        await getReviewTableDataSecondary();
+        populateTabSections();
       }
       if (e.target.id === 'toDate') {
         console.log('to date input changed', e.target.value);
         selectedDateSpan.to = e.target.value;
+
+        await getReviewTableData();
+        await getReviewTableDataSecondary();
+        populateTabSections();
       }
     });
 
@@ -226,8 +268,15 @@ const outcomesReview = (function () {
   }
   // filter popup
   function applyFilter() {
-    updateCurrentFilterDisplay(); //TODO: pass new service and type
-    //TODO: filter Outcomes
+    updateCurrentFilterDisplay();
+
+    const tableData = {};
+    
+    for (const key in data) {
+
+    }
+
+    populateTabSections(tableData);
   }
   async function buildTypesDropdown() {
     const typesDrop = dropdown.build({
@@ -239,6 +288,7 @@ const outcomesReview = (function () {
 
     typesDrop.addEventListener('change', event => {
       const selectedOption = event.target.options[event.target.selectedIndex];
+      outcomeTypeFilterVal = selectedOption;
     });
 
     const data = goalTypes.map(type => {
@@ -268,6 +318,7 @@ const outcomesReview = (function () {
 
     servDrop.addEventListener('change', event => {
       const selectedOption = event.target.options[event.target.selectedIndex];
+      serviceFilterVal = selectedOption;
     });
 
     return servDrop;
@@ -703,33 +754,33 @@ const outcomesReview = (function () {
           }
         });
 
-        // const detailsHeading = _DOM.createElement('div', { class: ['heading', 'heading-details'] });
-        // detailsHeading.innerHTML = `
-        //   <div>Employee</div>
-        //   <div>Result</div>
-        //   <div>Attempts</div>
-        //   <div>Prompts</div>  
-        //   <div>Note</div>
-        // `;
-        // detailsTable.appendChild(detailsHeading);
+        const detailsHeading = _DOM.createElement('div', { class: ['heading', 'heading-details'] });
+        detailsHeading.innerHTML = `
+          <div>Employee</div>
+          <div>Result</div>
+          <div>Attempts</div>
+          <div>Prompts</div>  
+          <div>Note</div>
+        `;
+        detailsTable.appendChild(detailsHeading);
 
-        // for (const staffId in data[objId].reviewDates[date]) {
-        //   const details = data[objId].reviewDates[date][staffId];
-        //   const detailRow = _DOM.createElement('div', { class: ['row', 'row-details'] });
-        //   detailRow.innerHTML = `
-        //     <div>${details.employee}</div>
-        //     <div>${details.result}</div>
-        //     <div>${details.attempts}</div>
-        //     <div>${details.prompts}</div>
-        //     <div>${details.note}</div>
-        //   `;
-        //   detailsTable.appendChild(detailRow);
+        for (const staffId in data[objId].reviewDates[date]) {
+          const details = data[objId].reviewDates[date][staffId];
+          const detailRow = _DOM.createElement('div', { class: ['row', 'row-details'] });
+          detailRow.innerHTML = `
+            <div>${details.employee}</div>
+            <div>${details.result}</div>
+            <div>${details.attempts}</div>
+            <div>${details.prompts}</div>
+            <div>${details.note}</div>
+          `;
+          detailsTable.appendChild(detailRow);
 
-        //   detailRow.addEventListener('click', () => {
-        //     console.log('detail row click', details.activityId);
-        //     onDetailRowClick({goalTypeID: objId, activityId: details.activityId, date: date});
-        //   });
-        // }
+          detailRow.addEventListener('click', () => {
+            console.log('detail row click', details.activityId);
+            onDetailRowClick({goalTypeID: objId, activityId: details.activityId, date: date});
+          });
+        }
       }
     }
 
@@ -748,13 +799,15 @@ const outcomesReview = (function () {
       },
     });
   }
-  function populateTabSections() {
-    for (const key in outcomesData) {
+  function populateTabSections(data) {
+    if (!data) data = outcomesData;
+
+    for (const key in data) {
       const sectionID = tabSections[key].toLowerCase();
       const section = document.getElementById(sectionID);
       section.innerHTML = '';
 
-      const sectionTable = buildTable(outcomesData[key]);
+      const sectionTable = buildTable(data[key]);
 
       section.appendChild(sectionTable);
     }
@@ -883,14 +936,28 @@ const outcomesReview = (function () {
   
     console.log(data);
 
-    // // detail row
-    // a[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
-    // a[occurrence][objID].reviewDates[date][staffId].result = `${d.objectiveSuccessSymbol } ${d.objectiveSuccessDescription }`;
-    // a[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
-    // a[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
-    // a[occurrence][objID].reviewDates[date][staffId].note = d.objectiveActivityNote;
-    // // data for detail popup
-    // a[occurrence][objID].reviewDates[date][staffId].activityId = d.objectiveActivityId;
+    data.forEach(d => {
+      const occurrence = d.objectiveRecurrance || 'NF';
+      const objID = d.objectiveId;
+      const date = d.objective_date.split(' ')[0];
+      const staffId = d.staffId;
+
+      if (outcomesData[occurrence]) {
+        if (outcomesData[occurrence][objID]) {
+          if (!outcomesData[occurrence][objID].reviewDates[date][staffId]) {
+            outcomesData[occurrence][objID].reviewDates[date][staffId] = {};
+          }
+
+          outcomesData[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
+          outcomesData[occurrence][objID].reviewDates[date][staffId].result = `${d.objectiveSuccessSymbol } ${d.objectiveSuccessDescription }`;
+          outcomesData[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
+          outcomesData[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
+          outcomesData[occurrence][objID].reviewDates[date][staffId].note = d.objectiveActivityNote;
+
+          outcomesData[occurrence][objID].reviewDates[date][staffId].activityId = d.objectiveActivityId;
+        }
+      }
+    });
   }
   async function init(consumer, date) {
     console.clear();

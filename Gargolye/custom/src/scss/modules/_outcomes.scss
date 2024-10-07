@@ -617,11 +617,17 @@ div.textarea {
           border-bottom-right-radius: 6px;
         }
       }
+
+      input {
+        border: 1px solid black;
+        border-radius: 10px;
+      }
   
       .daysBack,
       .dateRange {
         display: none;
-  
+        width: 200px;
+
         &.active {
           display: flex;
           align-items: center;
@@ -632,8 +638,7 @@ div.textarea {
 
       .daysBack {
         input {
-          border: 1px solid black;
-          min-width: 30px;
+          width: 60px;
         }
       }
 
@@ -641,6 +646,7 @@ div.textarea {
         > div {
           display: flex;
           align-items: center;
+          column-gap: 10px;
           width: 100%;
         }
       }
@@ -692,6 +698,11 @@ div.textarea {
 
     .row {
       padding: 10px;
+    }
+
+    .row-date {
+      background: $gray;
+      padding-left: 20px;
     }
 
     .row-details {
@@ -763,10 +774,6 @@ div.textarea {
         flex-basis: 60px;
         // max-width: 60px;
       }
-    }
-
-    .row-date {
-      background: $gray;
     }
 
     .heading-details,
