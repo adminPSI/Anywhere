@@ -98,6 +98,7 @@ namespace Anywhere.service.Data.Authorization
         {
             public string vendorID { get; set; }
             public string name { get; set; }
+            public string DBA { get; set; }
             public string DDNumber { get; set; }
             public string localNumber { get; set; }
             public string contact { get; set; }
@@ -152,6 +153,7 @@ namespace Anywhere.service.Data.Authorization
             public string FSSVendor { get; set; }
             public string sanctionsAdministered { get; set; }
             public string homeServices { get; set; }
+            public string DBA { get; set; }
         }
 
         public class DropdownValue
