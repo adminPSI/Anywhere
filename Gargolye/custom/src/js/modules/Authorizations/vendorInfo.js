@@ -191,7 +191,8 @@ const vendorInfo = (function () {
                 consumerObj = {
                     vendorID: consumer.vendorID,
                     name: consumer.name,
-                    DDNumber: consumer.DDNumber,
+                    DBA: consumer.DBA, 
+                    DDNumber: consumer.DDNumber, 
                     localNumber: consumer.localNumber,
                     contact: consumer.contact,
                     phone: consumer.phone,
