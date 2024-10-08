@@ -307,7 +307,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getAllGoalTypes/")]
-        string getAllGoalTypes(string token);
+        OutcomesWorker.AllGoalTypes[] getAllGoalTypes(string token);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
