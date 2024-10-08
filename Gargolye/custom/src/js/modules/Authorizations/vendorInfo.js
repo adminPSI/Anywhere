@@ -38,10 +38,11 @@ const vendorInfo = (function () {
         // Set the data type for each header, for sorting purposes
         const headers = userTable.querySelectorAll('.header div');
         headers[0].setAttribute('data-type', 'string'); // Name
-        headers[1].setAttribute('data-type', 'string'); // DD Number
-        headers[2].setAttribute('data-type', 'string'); // Local Number 
-        headers[3].setAttribute('data-type', 'string'); // Contact 
-        headers[4].setAttribute('data-type', 'string'); //  Phone
+        headers[1].setAttribute('data-type', 'string'); // DBA
+        headers[2].setAttribute('data-type', 'string'); // DD Number
+        headers[3].setAttribute('data-type', 'string'); // Local Number 
+        headers[4].setAttribute('data-type', 'string'); // Contact 
+        headers[5].setAttribute('data-type', 'string'); //  Phone
 
         filterRow = document.createElement('div');
         filterRow.classList.add('filterElement');
@@ -58,7 +59,7 @@ const vendorInfo = (function () {
         document.getElementById('loadMoreBtn').style.display = 'none';
 
         // Call function to allow table sorting by clicking on a header.
-        table.sortTableByHeader(userTable); 
+        table.sortTableByHeader(userTable);
 
         SEARCH_BTN.addEventListener('click', event => {
             SEARCH_WRAP.classList.toggle('searchOpen');
@@ -104,7 +105,7 @@ const vendorInfo = (function () {
             plain: false,
             headline: 'Vendor Info',
             tableId: 'vendorInfoTable',
-            columnHeadings: ['Name', 'DD Number', 'Local Number', 'Contact', 'Phone'],
+            columnHeadings: ['Name', 'DBA', 'DD Number', 'Local Number', 'Contact', 'Phone'],
             callback: handleVendorInfoTableEvents,
             endIcon: false,
             secondendIcon: false,
@@ -121,15 +122,17 @@ const vendorInfo = (function () {
             var localNumber = td.localNumber;
             var contact = td.contact;
             var phone = td.phone;
+            var DBA = td.DBA;
 
             return {
                 vendorID: vendorID,
                 name: name,
+                DBA: DBA,
                 DDNumber: DDNumber,
                 localNumber: localNumber,
                 contact: contact,
                 phone: phone,
-                values: [name, DDNumber, localNumber, contact, formatPhoneNumber(phone)],
+                values: [name, DBA, DDNumber, localNumber, contact, formatPhoneNumber(phone)],
                 attributes: [{ key: 'vendorId', value: vendorID }],
             };
         });
@@ -143,10 +146,11 @@ const vendorInfo = (function () {
     }
 
     function handleVendorInfoTableEvents(event) {
+        if (event.target.childNodes[0].innerText == undefined) return;
         var name = event.target.childNodes[0].innerText;
-        var DDNum = event.target.childNodes[1].innerText;
-        var localNum = event.target.childNodes[2].innerText;
-        var phone = event.target.childNodes[4].innerText;
+        var DDNum = event.target.childNodes[2].innerText;
+        var localNum = event.target.childNodes[3].innerText;
+        var phone = event.target.childNodes[5].innerText;
         var vendorId = event.target.attributes.vendorId.value;
         newVendorInfo.refreshVendor(vendorId, DDNum, localNum, phone, name);
     }
@@ -187,7 +191,8 @@ const vendorInfo = (function () {
                 consumerObj = {
                     vendorID: consumer.vendorID,
                     name: consumer.name,
-                    DDNumber: consumer.DDNumber,
+                    DBA: consumer.DBA, 
+                    DDNumber: consumer.DDNumber, 
                     localNumber: consumer.localNumber,
                     contact: consumer.contact,
                     phone: consumer.phone,
