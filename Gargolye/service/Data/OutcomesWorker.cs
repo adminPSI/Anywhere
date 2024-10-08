@@ -175,6 +175,19 @@ namespace Anywhere.service.Data
             public string primaryLocId { get; set; }
         }
 
+        public class AllGoalTypes
+        {
+            public string goalTypeId { get; set; }
+            public string goalTypeDescription { get; set; }
+        }
+
+        public AllGoalTypes[] getAllGoalTypes(string token)
+        {
+            string allGoalsString = dg.getAllGoalTypes(token);
+            AllGoalTypes[] allGoalsObj = js.Deserialize<AllGoalTypes[]>(allGoalsString);
+            return allGoalsObj;
+        }
+         
         //New
         public PromptsData[] getOutcomesPrompts()
         {
