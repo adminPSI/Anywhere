@@ -1251,8 +1251,12 @@
 
             switch (answerStyle) {
               case 'TEXTAREA': {
-                if (data.colName === 'What’s Working' || data.colName === 'What’s Not Working') {
+
+                // Handle text limit for the working/not working section
+                if (questionId === "605" || questionId === "606") {
                   textAreaCharLimit = 1000;
+                } else if (questionId === "607") {
+                  textAreaCharLimit = 250;
                 }
 
                 const questionInput = input.build({
