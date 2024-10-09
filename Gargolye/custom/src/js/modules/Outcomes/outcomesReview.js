@@ -3,6 +3,7 @@ const outcomesReview = (function () {
   let selectedDate;
   let outcomesData;
   let outcomesDataRaw;
+  let outcomesDataSecondaryRaw;
   let activityRes;
   let locations;
   let successTypes;
@@ -283,14 +284,10 @@ const outcomesReview = (function () {
   }
   // filter popup
   function applyFilter() {
-    updateCurrentFilterDisplay(serviceFilterVal, outcomeTypeFilterVal);
+    updateCurrentFilterDisplay(serviceFilterVal.text, outcomeTypeFilterVal.text);
 
-    const tableData = {};
-    
-    for (const key in outcomesData) {
-      // TODO filter shit here
-      console.log(outcomesData[key]);
-    }
+    const tableData = sortReviewTableData(outcomesDataRaw, { service: serviceFilterVal.value, type: outcomeTypeFilterVal.value });
+    sortReviewTableDataSecondary(outcomesDataSecondaryRaw, tableData, { service: serviceFilterVal.value, type: outcomeTypeFilterVal.value });
 
     populateTabSections(tableData);
   }
@@ -309,8 +306,8 @@ const outcomesReview = (function () {
 
     const data = goalTypes.map(type => {
       return {
-        value: type.Goal_Type_ID,
-        text: type.goal_type_description,
+        value: type.goalTypeId,
+        text: type.goalTypeDescription,
       };
     });
     data.unshift({ value: '%', text: 'All' });
@@ -895,32 +892,15 @@ const outcomesReview = (function () {
 
     activeTab = Object.values(tabSections)[0];
   }
-  async function getReviewTableData() {
-    const data = await outcomesAjax.getReviewTableData({
-      consumerId: selectedConsumerId,
-      objectiveDate: dates.formateToISO(selectedDate),
-    });
-
-    if (!data || !data.length) {
-      console.log(`No data for consumerID: ${selectedConsumerId}`);
-      return null;
-    }
-
-    outcomesDataRaw = {};
-
+  function sortReviewTableData(data, filterBy) {
     objIdSet = new Set();
 
-    outcomesData = data.reduce((a, d) => {
+    return data.reduce((a, d) => {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
 
       objIdSet.add(objID);
-
-      if (!outcomesDataRaw[occurrence]) {
-        outcomesDataRaw[occurrence] = [];
-      }
-      outcomesDataRaw[occurrence].push(d);
 
       if (!a[occurrence]) {
         a[occurrence] = {};
@@ -947,10 +927,54 @@ const outcomesReview = (function () {
   
       return a;
     }, {});
+  }
+  function sortReviewTableDataSecondary(data, outcomeOjb, filterBy) {
+    data.forEach(d => {
+      const occurrence = d.objectiveRecurrance || 'NF';
+      const objID = d.objectiveId;
+      const date = d.objective_date.split(' ')[0];
+      const staffId = d.staffId;
 
+      if (filterBy) {
+        if (filterBy.service !== d.objectiveSuccessDescription) return;
+      }
+
+      if (outcomeOjb[occurrence]) {
+        if (outcomeOjb[occurrence][objID]) {
+          if (!outcomeOjb[occurrence][objID].reviewDates[date]) {
+            outcomeOjb[occurrence][objID].reviewDates[date] = {};
+          }
+
+          if (!outcomeOjb[occurrence][objID].reviewDates[date][staffId]) {
+            outcomeOjb[occurrence][objID].reviewDates[date][staffId] = {};
+          }
+
+          outcomeOjb[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
+          outcomeOjb[occurrence][objID].reviewDates[date][staffId].result = `${d.objectiveSuccessSymbol } ${d.objectiveSuccessDescription }`;
+          outcomeOjb[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
+          outcomeOjb[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
+          outcomeOjb[occurrence][objID].reviewDates[date][staffId].note = d.objectiveActivityNote;
+
+          outcomeOjb[occurrence][objID].reviewDates[date][staffId].activityId = d.objectiveActivityId;
+        }
+      }
+    });
+  }
+  async function getReviewTableData() {
+    const data = await outcomesAjax.getReviewTableData({
+      consumerId: selectedConsumerId,
+      objectiveDate: dates.formateToISO(selectedDate),
+    });
+
+    outcomesDataRaw = data;
+
+    if (!data || !data.length) {
+      console.log(`No data for consumerID: ${selectedConsumerId}`);
+    }
+    
+    outcomesData = sortReviewTableData(data);
     setTabSections();
-
-    return true;
+    setUnitType();
   }
   async function getReviewTableDataSecondary() {
     const data = await outcomesAjax.getReviewTableDataSecondary({
@@ -959,35 +983,12 @@ const outcomesReview = (function () {
       endDate: selectedDateSpan.to,
       objectiveIdList: Array.from(objIdSet).join(',')
     });
+
+    outcomesDataSecondaryRaw = data;
   
     console.log(data);
 
-    data.forEach(d => {
-      const occurrence = d.objectiveRecurrance || 'NF';
-      const objID = d.objectiveId;
-      const date = d.objective_date.split(' ')[0];
-      const staffId = d.staffId;
-
-      if (outcomesData[occurrence]) {
-        if (outcomesData[occurrence][objID]) {
-          if (!outcomesData[occurrence][objID].reviewDates[date]) {
-            outcomesData[occurrence][objID].reviewDates[date] = {};
-          }
-
-          if (!outcomesData[occurrence][objID].reviewDates[date][staffId]) {
-            outcomesData[occurrence][objID].reviewDates[date][staffId] = {};
-          }
-
-          outcomesData[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
-          outcomesData[occurrence][objID].reviewDates[date][staffId].result = `${d.objectiveSuccessSymbol } ${d.objectiveSuccessDescription }`;
-          outcomesData[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
-          outcomesData[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
-          outcomesData[occurrence][objID].reviewDates[date][staffId].note = d.objectiveActivityNote;
-
-          outcomesData[occurrence][objID].reviewDates[date][staffId].activityId = d.objectiveActivityId;
-        }
-      }
-    });
+    sortReviewTableDataSecondary(data, outcomesData);
   }
   async function init(consumer, date) {
     console.clear();
@@ -998,9 +999,7 @@ const outcomesReview = (function () {
     setActiveModuleSectionAttribute('outcomes-review');
     PROGRESS.SPINNER.show('Loading Outcomes...');
 
-    const data = await getReviewTableData();
-    if (!data) return;
-    setUnitType();
+    await getReviewTableData();
     await getReviewTableDataSecondary();
 
     DOM.clearActionCenter();
