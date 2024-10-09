@@ -7087,6 +7087,108 @@ namespace Anywhere.Data
             }
         }
 
+        public string addOutcomePlan(string token, string userId, string consumerId, string attachmentType, string attachment, string startDate, string endDate)
+        {
+            logger.debug("AddOutcomePlan");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(userId);
+            list.Add(consumerId);
+            list.Add(attachment);
+            list.Add(startDate);
+            list.Add(endDate);
+
+            string text = "CALL DBA.ANYW_GoalsAndServices_AddOutcomePlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("707", ex.Message + "ANYW_GoalsAndServices_AddOutcomePlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "707: error ANYW_GoalsAndServices_AddOutcomePlan";
+            }
+        }
+
+        public string getPlanHistorybyConsumer(string token, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getPlanHistorybyConsumer");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_GoalsAndServices_getPlanHistorybyConsumer(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("734", ex.Message + "ANYW_GoalsAndServices_getPlanHistorybyConsumer");
+                return "734: error ANYW_GoalsAndServices_getPlanHistorybyConsumer";
+            }
+        }
+
+        public string addOutcomePlanLater(string token, string consumerId)
+        {
+            logger.debug("AddOutcomePlanLater");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+
+            string text = "CALL DBA.ANYW_GoalsAndServices_AddOutcomePlanLater(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("707", ex.Message + "ANYW_GoalsAndServices_AddOutcomePlanLater(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "707: error ANYW_GoalsAndServices_AddOutcomePlanLater";
+            }
+        }
+
+        public string addOutcomePlanNow(string token, string consumerId)
+        {
+            logger.debug("AddOutcomePlanNow");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+
+            string text = "CALL DBA.ANYW_GoalsAndServices_AddOutcomePlanNow(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("707", ex.Message + "ANYW_GoalsAndServices_AddOutcomePlanNow(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "707: error ANYW_GoalsAndServices_AddOutcomePlanNow";
+            }
+        }
+
+        public string isNewBtnDisabledByPlanHistory(string token, string consumerId, string goalTypeID, string ObjectiveID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("isNewBtnDisabledByPlanHistory");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(goalTypeID);
+            list.Add(ObjectiveID);
+            string text = "CALL DBA.ANYW_GoalsAndServices_isNewBtnDisabledByPlanHistory(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("734", ex.Message + "ANYW_GoalsAndServices_isNewBtnDisabledByPlanHistory");
+                return "734: error ANYW_GoalsAndServices_isNewBtnDisabledByPlanHistory";
+            }
+        }
+
+
     }
 
 }

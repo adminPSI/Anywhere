@@ -146,7 +146,7 @@ var CN_ProductivityWidget = (function() {
         canvas.width = 290;
         canvas.height = height;  
 
-
+        if (widgetBody == null) return; 
         widgetBody.appendChild(canvas)
 
         const options = {
