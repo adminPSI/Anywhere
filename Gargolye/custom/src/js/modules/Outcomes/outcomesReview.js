@@ -937,6 +937,7 @@ const outcomesReview = (function () {
 
       if (filterBy) {
         if (filterBy.service !== d.objectiveSuccessDescription) return;
+        if (filterBy.type !== d.goalTypeId) return;
       }
 
       if (outcomeOjb[occurrence]) {
