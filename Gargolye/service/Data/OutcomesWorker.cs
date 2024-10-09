@@ -343,6 +343,7 @@ namespace Anywhere.service.Data
             public string objectiveSuccessSymbol { get; set; }
             public string objectiveSuccessDescription { get; set; }
             public string objectiveActivityNote { get; set; }
+            public string goalTypeId { get; set; }
             public string startTime { get; set; }
             public string endTime { get; set; }
             public string objectiveRecurrance { get; set; }
