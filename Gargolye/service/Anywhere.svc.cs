@@ -58,6 +58,8 @@ using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 using static Anywhere.service.Data.DashboardWorker;
 using static Anywhere.service.Data.OutcomesWorker;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Anywhere
 {
@@ -4256,6 +4258,31 @@ namespace Anywhere
         public SystemNotes[] addSystemMessage(string token, string textMessage, string timeOfExpiration, string dateOfExpiration, string[] selectedEmployee)
         {
             return dashWork.addSystemMessage(token, textMessage, timeOfExpiration, dateOfExpiration, selectedEmployee);
+        }
+
+        public string addOutcomePlan(string token, string userId, string consumerId, string attachmentType, string attachment, string startDate, string endDate)
+        {
+            return dg.addOutcomePlan(token, userId, consumerId, attachmentType, attachment, startDate, endDate);
+        }
+
+        public OutcomesWorker.PlanViewHistory[] getPlanHistorybyConsumer(string token, string consumerId)
+        {
+            return outcomesWorker.getPlanHistorybyConsumer(token, consumerId);
+        }
+
+        public string addOutcomePlanLater(string token, string consumerId)
+        {
+            return dg.addOutcomePlanLater(token, consumerId);
+        }
+
+        public string addOutcomePlanNow(string token, string consumerId)
+        {
+            return dg.addOutcomePlanNow(token, consumerId);
+        }
+
+        public OutcomesWorker.PlanViewHistory[] isNewBtnDisabledByPlanHistory(string token, string consumerId, string goalTypeID, string ObjectiveID)
+        {
+            return outcomesWorker.isNewBtnDisabledByPlanHistory(token, consumerId, goalTypeID, ObjectiveID);
         }
 
     }

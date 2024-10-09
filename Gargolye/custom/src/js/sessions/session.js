@@ -35,6 +35,7 @@ $.session.InsertOutcomes = false;
 $.session.UpdateOutcomes = false;
 $.session.InsertServices = false;
 $.session.UpdateServices = false;
+$.session.UpdatePlan = false;
 $.session.ServiceActivityCaseLoad = false;
 $.session.CaseNotesView = false;
 $.session.CaseNotesTablePermissionView = false;
@@ -533,6 +534,9 @@ function setSessionVariables() {
             }
             if (tmpPerm == 'Case Load' || tmpPerm == 'Caseload' || tmpPerm == 'Caseload only') {
                 $.session.ServiceActivityCaseLoad = true;
+            }
+            if (tmpPerm == 'Update Plan') {
+                $.session.UpdatePlan = true;
             }
         }
 
