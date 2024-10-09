@@ -373,6 +373,18 @@ namespace Anywhere.service.Data
             public string locationID { get; set; }
         }
 
+        public class PlanViewHistory
+        {
+            public string isPlanAvailable { get; set; }
+            public string isPlanLaterDisable { get; set; }          
+            public string attachmentId { get; set; }
+            public string denyCount { get; set; }
+            public string peopleId { get; set; }
+            public string acknowledgeDatetime { get; set; }
+            public string PlanId { get; set; }
+            public string isNewDisabled { get; set; }
+        }
+
         public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)
         {
             OutComePageData pageData = new OutComePageData();
@@ -527,6 +539,20 @@ namespace Anywhere.service.Data
             string insertOutcomeServiceString = dg.insertOutcomeServiceInfo(token, startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId, location, duration);
             OutcomesWorker.PDChildOutcome[] insertOutcomeServiceObj = js.Deserialize<OutcomesWorker.PDChildOutcome[]>(insertOutcomeServiceString);
             return insertOutcomeServiceObj;
+        }
+
+        public PlanViewHistory[] getPlanHistorybyConsumer(string token, string consumerId)
+        {
+            string planHistoryString = dg.getPlanHistorybyConsumer(token, consumerId);
+            PlanViewHistory[] planHistoryObj = js.Deserialize<PlanViewHistory[]>(planHistoryString);
+            return planHistoryObj;
+        }
+
+        public PlanViewHistory[] isNewBtnDisabledByPlanHistory(string token, string consumerId, string goalTypeID, string ObjectiveID)
+        {
+            string planHistoryString = dg.isNewBtnDisabledByPlanHistory(token, consumerId, goalTypeID, ObjectiveID);
+            PlanViewHistory[] planHistoryObj = js.Deserialize<PlanViewHistory[]>(planHistoryString);
+            return planHistoryObj;
         }
 
     }

@@ -1020,7 +1020,7 @@ namespace OODForms
             {
 
                 sb.Clear();
-                sb.Append("Select eg.IPE as IPEGoal from em_employee_general eg ");
+                sb.Append("Select eg.service_goals as IPEGoal from em_employee_general eg ");
                 sb.Append("left outer join people p on p.ID = eg.People_ID ");
                 sb.AppendFormat("where p.Consumer_Id = '{0}' ", strConsumerId);
 
