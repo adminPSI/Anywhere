@@ -33,6 +33,7 @@ $.session.GoalsView = false;
 $.session.GoalsUpdate = false;
 $.session.InsertOutcomes = false;
 $.session.UpdateOutcomes = false;
+$.session.OutcomesReview = false;
 $.session.InsertServices = false;
 $.session.UpdateServices = false;
 $.session.UpdatePlan = false;
@@ -537,6 +538,9 @@ function setSessionVariables() {
             }
             if (tmpPerm == 'Update Plan') {
                 $.session.UpdatePlan = true;
+            }
+            if (tmpPerm == 'Review') {
+                $.session.OutcomesReview = true;
             }
         }
 

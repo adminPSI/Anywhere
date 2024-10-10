@@ -1979,8 +1979,10 @@ const outcomes = (function () {
             },
         });
         topFilterDateWrap.appendChild(editOutcomeBtn);
-        topFilterDateWrap.appendChild(reviewOutcomesBtn);
-
+        if ($.session.OutcomesReview) {
+            topFilterDateWrap.appendChild(reviewOutcomesBtn);
+        }
+        
         if (
             $.session.InsertOutcomes == true ||
             $.session.UpdateOutcomes == true ||
