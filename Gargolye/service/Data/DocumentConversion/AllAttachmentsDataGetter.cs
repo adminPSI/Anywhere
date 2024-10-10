@@ -161,6 +161,23 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
+        public MemoryStream GetOutcomePlanAttachmentData(string consumerID)
+        {
+            logger.debug("GetOutcomePlanAttachmentData " + consumerID);
+            List<string> list = new List<string>();
+            list.Add(consumerID);
+            string text = "CALL DBA.ANYW_GoalsAndServices_GetOutcomePlanAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeSQLReturnMemoryStream(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("640", ex.Message + "ANYW_GoalsAndServices_GetOutcomePlanAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return null;
+            }
+        }
+
         public string getReportSectionOrder()
         {
             try

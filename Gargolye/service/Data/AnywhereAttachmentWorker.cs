@@ -207,7 +207,7 @@ namespace Anywhere.service.Data
             {
                 char value = '-';
                 bool guid = attachmentId.Contains(value);
-               
+
                 try
                 {
                     attachment.filename = aadg.getCFAttachmentFileName(attachmentId);
@@ -216,9 +216,25 @@ namespace Anywhere.service.Data
                 catch (Exception ex)
                 {
 
-                }               
+                }
             }
             displayAttachment(attachment);
+        }
+
+        public void viewOutcomePlanAttachment(string token, string consumerId)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = "viewPlan";
+            attachment.data = null;
+            bool isTokenValid = anywhereWorker.ValidateToken(token);
+            if (isTokenValid)
+            {
+                attachment.data = aadg.GetOutcomePlanAttachmentData(consumerId);
+
+                if (attachment.data != null)
+                    displayAttachment(attachment);
+            }
+
         }
 
         public class Attachments

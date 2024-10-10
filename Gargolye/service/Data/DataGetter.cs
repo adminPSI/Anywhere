@@ -7188,7 +7188,24 @@ namespace Anywhere.Data
             }
         }
 
-
+        public string isViewPlabBtnDisabled(string token, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("IsViewPlabBtnDisabled");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_GoalsAndServices_IsViewPlabBtnDisabled(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("734", ex.Message + "ANYW_GoalsAndServices_IsViewPlabBtnDisabled");
+                return "734: error ANYW_GoalsAndServices_IsViewPlabBtnDisabled";
+            }
+        }      
     }
 
 }

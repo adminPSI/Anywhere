@@ -4275,14 +4275,28 @@ namespace Anywhere
             return dg.addOutcomePlanLater(token, consumerId);
         }
 
-        public string addOutcomePlanNow(string token, string consumerId)
+        public void addOutcomePlanNow(System.IO.Stream testInput)
         {
-            return dg.addOutcomePlanNow(token, consumerId);
+            string token;
+            string consumerId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            consumerId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            dg.addOutcomePlanNow(token, consumerId);
+            anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            
         }
 
         public OutcomesWorker.PlanViewHistory[] isNewBtnDisabledByPlanHistory(string token, string consumerId, string goalTypeID, string ObjectiveID)
         {
             return outcomesWorker.isNewBtnDisabledByPlanHistory(token, consumerId, goalTypeID, ObjectiveID);
+        }
+
+        public OutcomesWorker.PlanViewHistory[] isViewPlabBtnDisabled(string token, string consumerId)
+        {
+            return outcomesWorker.isViewPlabBtnDisabled(token, consumerId);
         }
 
     }
