@@ -1749,7 +1749,7 @@ const outcomes = (function () {
         dailyAbsent = false;
         var objectiveActivities = buildObjectiveActivities(outcome);
 
-        const result = await outcomesAjax.isNewBtnDisabledByPlanHistory(selectedConsumerId, outcome.Goal_Type_ID, outcome.Objective_id);
+        const result = await outcomesAjax.isNewBtnDisabledByPlanHistory(selectedConsumerId, outcome.goal_id, outcome.Objective_id);
         const { isNewBtnDisabledByPlanHistoryResult } = result;
 
         if (dailyAbsent || isNewBtnDisabledByPlanHistoryResult[0].isNewDisabled == 'true') {
