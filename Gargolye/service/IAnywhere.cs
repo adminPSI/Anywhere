@@ -5584,11 +5584,9 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-        BodyStyle = WebMessageBodyStyle.Wrapped,
-        ResponseFormat = WebMessageFormat.Json,
-        RequestFormat = WebMessageFormat.Json,
-        UriTemplate = "/addOutcomePlanNow/")]
-        string addOutcomePlanNow(string token, string consumerId);
+           BodyStyle = WebMessageBodyStyle.Bare,
+           UriTemplate = "/addOutcomePlanNow/")]
+        void addOutcomePlanNow(System.IO.Stream testInput);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5598,6 +5596,13 @@ namespace Anywhere
                 UriTemplate = "/isNewBtnDisabledByPlanHistory/")]
         OutcomesWorker.PlanViewHistory[] isNewBtnDisabledByPlanHistory(string token, string consumerId, string goalTypeID, string ObjectiveID);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
+               UriTemplate = "/isViewPlabBtnDisabled/")]
+        OutcomesWorker.PlanViewHistory[] isViewPlabBtnDisabled(string token, string consumerId);
     }
 
 

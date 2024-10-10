@@ -926,27 +926,39 @@ const outcomesAjax = (function () {
         }
     }
 
-    async function addOutcomePlanNow(retrieveData) {
-        try {
-            const data = await $.ajax({
-                type: 'POST',
-                url:
-                    $.webServer.protocol +
-                    '://' +
-                    $.webServer.address +
-                    ':' +
-                    $.webServer.port +
-                    '/' +
-                    $.webServer.serviceName +
-                    '/addOutcomePlanNow/',
-                data: JSON.stringify(retrieveData),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-            });
-            return data.addOutcomePlanNowResult;
-        } catch (error) {
-            console.log(error.responseText);
-        }
+    function addOutcomePlanNow(selectedConsumerId) {
+        data = {
+            token: $.session.Token,
+            consumerId: selectedConsumerId,
+        };
+        var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/addOutcomePlanNow/`;
+        var successFunction = function (resp) {
+            var res = JSON.stringify(response);
+        };
+       
+        var form = document.createElement('form');
+        form.setAttribute('action', action);
+        form.setAttribute('method', 'POST');
+        form.setAttribute('target', '_blank');
+        form.setAttribute('enctype', 'application/json');
+        form.setAttribute('success', successFunction);
+        var tokenInput = document.createElement('input');
+        tokenInput.setAttribute('name', 'token');
+        tokenInput.setAttribute('value', $.session.Token);
+        tokenInput.id = 'token';
+        var attachmentInput = document.createElement('input');
+        attachmentInput.setAttribute('name', 'consumerId');
+        attachmentInput.setAttribute('value', selectedConsumerId); 
+        attachmentInput.id = 'consumerId';
+
+        form.appendChild(tokenInput);
+        form.appendChild(attachmentInput);
+        form.style.position = 'absolute';
+        form.style.opacity = '0';
+        document.body.appendChild(form);
+
+        form.submit();
+        form.remove();
     }
 
     async function isNewBtnDisabledByPlanHistory(selectedConsumerId, goalTypeID, ObjectiveID) { 
@@ -963,6 +975,29 @@ const outcomesAjax = (function () {
                     $.webServer.serviceName +
                     '/isNewBtnDisabledByPlanHistory/',
                 data: '{"token":"' + $.session.Token + '", "consumerId":"' + selectedConsumerId + '", "goalTypeID":"' + goalTypeID + '", "ObjectiveID":"' + ObjectiveID + '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function isViewPlabBtnDisabled(selectedConsumerId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/isViewPlabBtnDisabled/',
+                data: '{"token":"' + $.session.Token + '", "consumerId":"' + selectedConsumerId + '"}',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
@@ -1011,6 +1046,7 @@ const outcomesAjax = (function () {
         getPlanHistorybyConsumer,
         addOutcomePlanLater,
         addOutcomePlanNow,
-        isNewBtnDisabledByPlanHistory
+        isNewBtnDisabledByPlanHistory,
+        isViewPlabBtnDisabled
     };
 })();

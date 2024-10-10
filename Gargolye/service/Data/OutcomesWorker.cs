@@ -555,5 +555,12 @@ namespace Anywhere.service.Data
             return planHistoryObj;
         }
 
+        public PlanViewHistory[] isViewPlabBtnDisabled(string token, string consumerId)
+        {
+            string planHistoryString = dg.isViewPlabBtnDisabled(token, consumerId);
+            PlanViewHistory[] planHistoryObj = js.Deserialize<PlanViewHistory[]>(planHistoryString);
+            return planHistoryObj;
+        }
+
     }
 }

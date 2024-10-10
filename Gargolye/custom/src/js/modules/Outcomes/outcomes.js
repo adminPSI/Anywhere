@@ -1748,10 +1748,10 @@ const outcomes = (function () {
         });
         dailyAbsent = false;
         var objectiveActivities = buildObjectiveActivities(outcome);
-        
-        const result = await outcomesAjax.isNewBtnDisabledByPlanHistory(selectedConsumerId, outcome.Goal_Type_ID, outcome.Objective_id);
+
+        const result = await outcomesAjax.isNewBtnDisabledByPlanHistory(selectedConsumerId, outcome.goal_id, outcome.Objective_id);
         const { isNewBtnDisabledByPlanHistoryResult } = result;
-        
+
         if (dailyAbsent || isNewBtnDisabledByPlanHistoryResult[0].isNewDisabled == 'true') {
             newBtn.classList.add('disabled');
         }
@@ -1971,11 +1971,12 @@ const outcomes = (function () {
 
         viewPlanBtn = button.build({
             text: buttonName,
-            icon: 'add',
             style: 'secondary',
             type: 'contained',
             callback: () => {
-                planViewPOPUP();
+                if (!viewPlanBtn.classList.contains('disabled')) {
+                    planViewPOPUP();
+                }
             },
         });
         topFilterDateWrap.appendChild(editOutcomeBtn);
@@ -1998,6 +1999,15 @@ const outcomes = (function () {
             topFilterDateWrap.appendChild(reportsBtn);
         }
         topFilterDateWrap.appendChild(viewPlanBtn);
+
+        const result = await outcomesAjax.isViewPlabBtnDisabled(selectedConsumerId);
+        const { isViewPlabBtnDisabledResult } = result;
+
+        if (isViewPlabBtnDisabledResult[0].isPlanAvailable == 'false' && !$.session.UpdatePlan) {
+            viewPlanBtn.classList.add('disabled');
+        }
+
+
         if (!document.querySelector('.topOutcomeWrap')) {
             DOM.ACTIONCENTER.appendChild(topFilterDateWrap);
         }
@@ -2156,6 +2166,15 @@ const outcomes = (function () {
 
         if ($.session.UpdatePlan)
             viewPlanPOPUP.appendChild(planUpdate);
+
+        const resultCheckPlan = await outcomesAjax.isViewPlabBtnDisabled(selectedConsumerId);
+        const { isViewPlabBtnDisabledResult } = resultCheckPlan;
+
+        if (isViewPlabBtnDisabledResult[0].isPlanAvailable == 'false' && $.session.UpdatePlan) {
+            message.style.display = "none";
+            planNow.style.display = "none";
+            planLater.style.display = "none";
+        }
         POPUP.show(viewPlanPOPUP);
     }
 
@@ -2168,11 +2187,7 @@ const outcomes = (function () {
     }
 
     async function savePlanNow() {
-        const saveData = {
-            token: $.session.Token,
-            consumerId: selectedConsumerId,
-        };
-        outcomesAjax.addOutcomePlanNow(saveData);
+        outcomesAjax.addOutcomePlanNow(selectedConsumerId);
     }
 
     function planUpdatePOPUP() {
