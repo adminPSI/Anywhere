@@ -205,11 +205,12 @@ const planOutcomes = (() => {
     data.forEach((d, index) => {
       if (vendorIds.has(d.value)) {
         const conflictIndex = vendorIds.get(d.value);
+        
+        coflictingIds[d.value] = true;
 
         data[conflictIndex].value = `${data[conflictIndex].value}|${data[conflictIndex].salesforce}`;
         data[index].value = `${d.value}|${d.salesforce}`;
 
-        coflictingIds[d.value] = true;
       } else {
         vendorIds.set(d.value, index);
       }
