@@ -956,13 +956,16 @@ const incidentOverview = (function () {
             type: 'contained',
             callback: () => {
                 POPUP.hide(importPopup);
+                selectedRelation = selectedRelation.filter(n => n);
                 emailString = selectedRelation.toString();
-                if (emailString != undefined || emailString != '') {
-                    document.getElementById('toAddress').value = emailString;
+                document.getElementById('toAddress').value = emailString;
+                if (emailString == '')
+                    emailSendBtn.classList.add('disabled');
+                else
                     emailSendBtn.classList.remove('disabled');
-                }
                 overlay.show();
                 mainPopup.style.removeProperty('display');
+                selectedRelation = [];
             },
         });
 
@@ -991,8 +994,7 @@ const incidentOverview = (function () {
                     selectedRelation = selectedRelation.filter(e => e !== rel.email);
                 } else {
                     e.target.classList.add('selected');
-                    if (rel.email != '')
-                        selectedRelation.push(rel.email);   
+                    selectedRelation.push(rel.email);
                 }
                 toggleAssignButton();
             });
