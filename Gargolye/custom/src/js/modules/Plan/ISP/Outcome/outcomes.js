@@ -323,11 +323,11 @@ const planOutcomes = (() => {
         let vendor = dropdownData.serviceVendors.filter(vendor => vendor.vendorId === value);
         if (!vendor.length) return false;
         if (vendor.length === 1) {
-            return vendor ? vendor.isSalesforceLocation === 'True' : false;
+            return vendor[0] ? vendor[0].isSalesforceLocation === 'True' : false;
         }
         
         vendor = vendor.filter(vendor => vendor.vendorName === name);
-        return vendor ? vendor.isSalesforceLocation === 'True' : false;
+        return vendor[0] ? vendor[0].isSalesforceLocation === 'True' : false;
     }
 
     //*------------------------------------------------------
@@ -690,6 +690,7 @@ const planOutcomes = (() => {
             } else {
                 if ($.session.applicationName === 'Advisor') {
                     resp.isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider, resp.responsibleProviderName);
+                    delete resp.responsibleProviderName;
                     respData.isSalesforceLocation.push(resp.isSalesforceLocation);
                     respData.responsibleProvider.push(resp.responsibleProvider);
                 } else {
@@ -837,6 +838,7 @@ const planOutcomes = (() => {
             const responsibleContact =
                 resp.responsibleContact === '%' ? 0 : parseInt(resp.responsibleContact);
             const isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider, resp.responsibleProviderName);
+            delete resp.responsibleProviderName;
             const responsibleProvider = resp.responsibleProvider === '%' ? 0 : resp.responsibleProvider;
             const whenHowOftenFrequency = parseInt(resp.whenHowOftenFrequency);
             const whenHowOftenValue = resp.whenHowOftenValue;
