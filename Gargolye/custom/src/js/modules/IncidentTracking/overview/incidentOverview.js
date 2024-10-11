@@ -957,7 +957,7 @@ const incidentOverview = (function () {
             callback: () => {
                 POPUP.hide(importPopup);
                 selectedRelation = selectedRelation.filter(n => n);
-                emailString = selectedRelation.toString();
+                emailString = selectedRelation.toString().replaceAll(",", ";");  
                 document.getElementById('toAddress').value = emailString;
                 if (emailString == '')
                     emailSendBtn.classList.add('disabled');
