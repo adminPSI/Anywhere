@@ -275,7 +275,7 @@ const planOutcomes = (() => {
       }
     } else {
         if (coflictingIds[defaultValue]) {
-            defaultVal = `${defaultValue}|${defaultValueSalesForce}`;
+            defaultValue = `${defaultValue}|${defaultValueSalesForce}`;
         }
     }
 
