@@ -17,6 +17,7 @@ const planOutcomes = (() => {
     // Selected Vendors => Experiences/WhoResponsible
     let selectedVendors = {};
     let validationCheck;
+    let respProviderIdToNameMap;
     function getSelectedVendors() {
         return Object.values(selectedVendors);
     }
@@ -317,9 +318,15 @@ const planOutcomes = (() => {
         }
     }
 
-    function isSalesforceLocationTrue(value) {
+    function isSalesforceLocationTrue(value, name) {
         // Check if value exists in dropdownData.serviceVendors array and its isSalesforceLocation is 'True'
-        const vendor = dropdownData.serviceVendors.find(vendor => vendor.vendorId === value);
+        let vendor = dropdownData.serviceVendors.filter(vendor => vendor.vendorId === value);
+        if (!vendor.length) return false;
+        if (vendor.length === 1) {
+            return vendor ? vendor.isSalesforceLocation === 'True' : false;
+        }
+        
+        vendor = vendor.filter(vendor => vendor.vendorName === name);
         return vendor ? vendor.isSalesforceLocation === 'True' : false;
     }
 
@@ -682,7 +689,7 @@ const planOutcomes = (() => {
                 respData.isSalesforceLocation.push(false);
             } else {
                 if ($.session.applicationName === 'Advisor') {
-                    resp.isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider);
+                    resp.isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider, resp.responsibleProviderName);
                     respData.isSalesforceLocation.push(resp.isSalesforceLocation);
                     respData.responsibleProvider.push(resp.responsibleProvider);
                 } else {
@@ -829,7 +836,7 @@ const planOutcomes = (() => {
         Object.entries(updateData.responsibilities).map(async ([key, resp], index) => {
             const responsibleContact =
                 resp.responsibleContact === '%' ? 0 : parseInt(resp.responsibleContact);
-            const isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider);
+            const isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider, resp.responsibleProviderName);
             const responsibleProvider = resp.responsibleProvider === '%' ? 0 : resp.responsibleProvider;
             const whenHowOftenFrequency = parseInt(resp.whenHowOftenFrequency);
             const whenHowOftenValue = resp.whenHowOftenValue;
@@ -1116,6 +1123,7 @@ const planOutcomes = (() => {
                 style: 'secondary',
                 callback: (e, selectedOption) => {
                     saveUpdateDataRef.responsibleProvider = selectedOption.value;
+                    saveUpdateDataRef.responsibleProviderName = selectedOption.text;
 
                     if (saveUpdateDataRef.responsibleProvider !== '%') {
                         whoReponsibleWrap.classList.remove('error');
