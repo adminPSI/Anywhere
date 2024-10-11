@@ -536,7 +536,7 @@ var timeEntryCard = (function () {
         if (isEdit) {
         }
 
-        clearConsumerSection();
+        //clearConsumerSection();
         checkPermissions();
     }
 
@@ -1896,7 +1896,7 @@ var timeEntryCard = (function () {
         } else {
             // roster.setAllowedConsumers([]);
             var allowedConsumers = await getAllowedConsumersBasedOffServiceLocations();
-            roster2.setAllowedConsumers(allowedConsumers);
+            roster2.setAllowedConsumers(allowedConsumers);            
         }
 
         var miniRosterBtn = document.querySelector('.consumerListBtn');
@@ -1905,10 +1905,11 @@ var timeEntryCard = (function () {
                 miniRosterBtn.classList.remove('disabled');
             } else {
                 miniRosterBtn.classList.add('disabled');
+                clearConsumerSection();   
             }
         }
 
-        clearCard();
+        clearCard(); 
         // Set start time after card gets cleared
         if (keyStartStop === 'Y') {
             startTimeInput.getElementsByTagName('input')[0].value = `${nowHour}:${nowMinutes}`;
