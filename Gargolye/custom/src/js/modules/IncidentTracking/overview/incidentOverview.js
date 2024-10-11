@@ -59,6 +59,7 @@ const incidentOverview = (function () {
         viewCaseLoad: $.session.incidentTrackingViewCaseLoad,
     };
     let emailString;
+    let selectedRelation = [];
     let gkRelationships;
     let relationshipDoneBtn;
     let relationshipCancelBtn;
@@ -955,12 +956,13 @@ const incidentOverview = (function () {
             type: 'contained',
             callback: () => {
                 POPUP.hide(importPopup);
+                emailString = selectedRelation.toString();
                 if (emailString != undefined || emailString != '') {
                     document.getElementById('toAddress').value = emailString;
                     emailSendBtn.classList.remove('disabled');
-                }         
+                }
                 overlay.show();
-                mainPopup.style.removeProperty('display');               
+                mainPopup.style.removeProperty('display');
             },
         });
 
@@ -982,12 +984,18 @@ const incidentOverview = (function () {
             relationshipDisp.innerHTML = `Name: <span>${name}</span>`;
             relationshipDisp.classList.add('sig_gkRelationships');
 
-            relationshipDisp.addEventListener('click', () =>
-                applyGKRelationship({
-                    popup: importPopup,
-                    email: rel.email,
-                }),
-            );
+            relationshipDisp.addEventListener('click', e => {
+                const isSelected = e.target.classList.contains('selected');
+                if (isSelected) {
+                    e.target.classList.remove('selected');
+                    selectedRelation = selectedRelation.filter(e => e !== rel.email);
+                } else {
+                    e.target.classList.add('selected');
+                    if (rel.email != '')
+                        selectedRelation.push(rel.email);   
+                }
+                toggleAssignButton();
+            });
 
             relationshipSection.appendChild(relationshipDisp);
         });
@@ -1007,16 +1015,11 @@ const incidentOverview = (function () {
 
     }
 
-    function applyGKRelationship(opts) {
-        debugger;
-        if (emailString == undefined || emailString == '')
-            emailString = opts.email;
-        else if (opts.email != '')
-            emailString = emailString + ',' + opts.email;
-        else
-            emailString = emailString + '';
-
-
+    function toggleAssignButton() {
+        if (selectedRelation.length === 0) {
+            relationshipDoneBtn.classList.add('disabled');
+            return;
+        }
         relationshipDoneBtn.classList.remove('disabled');
     }
 
