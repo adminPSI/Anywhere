@@ -641,3 +641,15 @@
     margin-left: 0px;
     margin-bottom: 5px;
 }
+
+.sig_gkRelationships {
+    cursor: pointer;
+    font-weight: $bold;
+    color: $primary;
+    margin-bottom: 15px;
+
+    span {
+        font-weight: $light;
+        color: $font-dark;
+    }
+}

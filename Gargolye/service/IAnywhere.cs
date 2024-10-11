@@ -5603,6 +5603,15 @@ namespace Anywhere
                RequestFormat = WebMessageFormat.Json,
                UriTemplate = "/isViewPlabBtnDisabled/")]
         OutcomesWorker.PlanViewHistory[] isViewPlabBtnDisabled(string token, string consumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getRelationshipData/")]
+        IncidentTrackingWorker.ConsumerRelationship[] getRelationshipData(string token, string supervisorId, string consumerId);
+
     }
 
 

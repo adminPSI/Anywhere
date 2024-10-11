@@ -38,7 +38,7 @@ const incidentOverview = (function () {
         categoryName: null,
         fromDate: null,
         toDate: null,
-        show:null,
+        show: null,
     };
     // alpha beta stuff
     let changedSelectedAlphaBetas;
@@ -58,7 +58,10 @@ const incidentOverview = (function () {
         toDate: '',
         viewCaseLoad: $.session.incidentTrackingViewCaseLoad,
     };
-
+    let emailString;
+    let gkRelationships;
+    let relationshipDoneBtn;
+    let relationshipCancelBtn;
     // Filtering
     //------------------------------------
     function populateSelectedFilterValues() {
@@ -69,7 +72,7 @@ const incidentOverview = (function () {
             DOM.ACTIONCENTER.appendChild(selectedFilters);
             filterData.alphaName = $.session.LName + ', ' + $.session.Name;
             filterButtonSet();
-            selectedFilters.appendChild(btnWrap);  
+            selectedFilters.appendChild(btnWrap);
         }
 
         if (filterData.locationName === null || filterData.locationName === 'All' || filterData.locationName === 'All Locations') {
@@ -99,22 +102,22 @@ const incidentOverview = (function () {
         }
         if (filterData.categoryName === null || filterData.categoryName === 'All' || filterData.categoryName === 'All Categories') {
             btnWrap.appendChild(categoryBtnWrap);
-            btnWrap.removeChild(categoryBtnWrap); 
+            btnWrap.removeChild(categoryBtnWrap);
         }
         else {
             btnWrap.appendChild(categoryBtnWrap);
             document.getElementById('categoryBtn').innerHTML = 'Category / Subcategory: ' + filterData.categoryName;
         }
 
-        if (filterData.show === null || filterData.show === 'All' ) {
+        if (filterData.show === null || filterData.show === 'All') {
             btnWrap.appendChild(showBtnWrap);
             btnWrap.removeChild(showBtnWrap);
         }
         else {
             btnWrap.appendChild(showBtnWrap);
-            document.getElementById('showBtn').innerHTML = 'Show: ' + filterData.show; 
+            document.getElementById('showBtn').innerHTML = 'Show: ' + filterData.show;
         }
-        
+
         document.getElementById('supervisorBtn').innerHTML = 'Supervisor: ' + filterData.alphaName;
         document.getElementById('fromDateBtn').innerHTML = 'From Date: ' + UTIL.formatDateFromIso(filterData.fromDate);
         document.getElementById('toDateBtn').innerHTML = 'To Date: ' + UTIL.formatDateFromIso(filterData.toDate);
@@ -275,7 +278,7 @@ const incidentOverview = (function () {
         showBtnWrap.classList.add('filterSelectionBtnWrap');
         showBtnWrap.appendChild(showBtn);
         showBtnWrap.appendChild(showCloseBtn);
-        btnWrap.appendChild(showBtnWrap);   
+        btnWrap.appendChild(showBtnWrap);
 
         fromDateBtnWrap = document.createElement('div');
         fromDateBtnWrap.classList.add('filterSelectionBtnWrap');
@@ -292,7 +295,7 @@ const incidentOverview = (function () {
         if (closeFilter == 'locationBtn') {
             filterData.locationName = 'All';
             retrieveData.locationId = '%';
-            filterData.location = '%'; 
+            filterData.location = '%';
         }
         if (closeFilter == 'consumerBtn') {
             filterData.consumerName = 'All';
@@ -311,12 +314,12 @@ const incidentOverview = (function () {
         }
 
         if (closeFilter == 'showBtn') {
-            filterData.show = 'All';  
+            filterData.show = 'All';
         }
 
         populateSelectedFilterValues();
         incidentTrackingAjax.getITReviewTableData(retrieveData, populateOverviewTable);
-    } 
+    }
 
     function saveFilterData(data) {
         filterData.alpha = data.alphaId ? data.alphaId : filterData.alpha;
@@ -341,7 +344,7 @@ const incidentOverview = (function () {
         incidentTrackingAjax.getITReviewPageEmployeeListAndSubList(
             $.session.PeopleId,
             populateUserAndEmployeeDropdowns,
-        );       
+        );
     }
     function getFromDateValue() {
         if (filterData.fromDate) return filterData.fromDate;
@@ -421,7 +424,7 @@ const incidentOverview = (function () {
             filterPopup.appendChild(betaDropdown);
         if (IsShow == 'ALL' || IsShow == 'categoryBtn')
             filterPopup.appendChild(categoryDropdown);
-        if (IsShow == 'ALL' || IsShow == 'showBtn') 
+        if (IsShow == 'ALL' || IsShow == 'showBtn')
             filterPopup.appendChild(showDropdown);
         if (IsShow == 'ALL' || IsShow == 'fromDateBtn')
             filterPopup.appendChild(fromDateInput);
@@ -548,7 +551,7 @@ const incidentOverview = (function () {
         showDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             // temp cache data
-            tmpShow = selectedOption.innerHTML;  
+            tmpShow = selectedOption.innerHTML;
         });
         toDateInput.addEventListener('change', event => {
             var selectedDate = event.target.value;
@@ -745,8 +748,8 @@ const incidentOverview = (function () {
             { id: 1, value: 'Unread', text: 'Unread' },
             { id: 2, value: 'Read', text: 'Read' },
         ]);
-        showDropdownData.unshift({ id: null, value: 'All', text: 'All' }); 
-        dropdown.populate(showDropdown, showDropdownData, filterData.show); 
+        showDropdownData.unshift({ id: null, value: 'All', text: 'All' });
+        dropdown.populate(showDropdown, showDropdownData, filterData.show);
     }
 
     function populateConsumersDropdown() {
@@ -801,7 +804,7 @@ const incidentOverview = (function () {
         }
     }
     // Incident Overview Email Button and Popup
-    async function showIncidentEmailPopup(incidentId) {
+    async function showIncidentEmailPopup(incidentId, consumerId) {
         //*--------------------------------------
         //* POPUP
         //*--------------------------------------
@@ -809,6 +812,16 @@ const incidentOverview = (function () {
             header: 'Email Report',
             id: 'sig_mainPopup',
         });
+
+        const importFromRelationshipsBtn = button.build({
+            text: 'SELECT FROM RELATIONSHIPS',
+            type: 'contained',
+            style: 'secondary',
+            callback: () => {
+                popFromRelationships(consumerId);
+            },
+        });
+        importFromRelationshipsBtn.style.width = '100%';
 
         //* INPUTS
         //*------------------------------
@@ -895,8 +908,14 @@ const incidentOverview = (function () {
             },
         });
 
+        const result = await incidentTrackingAjax.getRelationshipData(consumerId);
+        const { getRelationshipDataResult } = result;
+        gkRelationships = getRelationshipDataResult;
+
         //* Add elements to popup
         //*------------------------------
+        incidentEmailPopup.appendChild(importFromRelationshipsBtn);
+        if (gkRelationships.length == 0) importFromRelationshipsBtn.classList.add('disabled');
         incidentEmailPopup.appendChild(toAddress);
         incidentEmailPopup.appendChild(ccAddress);
         incidentEmailPopup.appendChild(bccAddress);
@@ -913,6 +932,92 @@ const incidentOverview = (function () {
         incidentEmailPopup.appendChild(mainWrap);
 
         POPUP.show(incidentEmailPopup);
+    }
+
+    async function popFromRelationships(consumerId) {
+        const mainPopup = document.getElementById('sig_mainPopup');
+        const emailSendBtn = document.getElementById('incidentEmailSendBtn');
+        mainPopup.style.display = 'none';
+
+        const importPopup = POPUP.build({
+            id: 'sig_importPopup',
+            closeCallback: () => {
+                overlay.show();
+                mainPopup.style.removeProperty('display');
+            },
+        });
+        const relationshipSection = document.createElement('div');
+
+        relationshipDoneBtn = button.build({
+            id: 'incidentDoneBtn',
+            text: 'Done',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                POPUP.hide(importPopup);
+                if (emailString != undefined || emailString != '') {
+                    document.getElementById('toAddress').value = emailString;
+                    emailSendBtn.classList.remove('disabled');
+                }         
+                overlay.show();
+                mainPopup.style.removeProperty('display');               
+            },
+        });
+
+        relationshipCancelBtn = button.build({
+            id: 'incidentCancelBtn',
+            text: 'cancel',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => {
+                POPUP.hide(importPopup);
+            },
+        });
+        gkRelationships.forEach(rel => {
+            const name = contactInformation.cleanName(rel);
+            const address = contactInformation.cleanAddress(rel, true);
+            const cityStateZip = contactInformation.cleanCityStateZip(rel);
+
+            const relationshipDisp = document.createElement('div');
+            relationshipDisp.innerHTML = `Name: <span>${name}</span>`;
+            relationshipDisp.classList.add('sig_gkRelationships');
+
+            relationshipDisp.addEventListener('click', () =>
+                applyGKRelationship({
+                    popup: importPopup,
+                    email: rel.email,
+                }),
+            );
+
+            relationshipSection.appendChild(relationshipDisp);
+        });
+
+        importPopup.appendChild(relationshipSection);
+
+        const mainWrap = document.createElement('div');
+        const btnWrap2 = document.createElement('div');
+        btnWrap2.classList.add('btnWrap');
+        btnWrap2.appendChild(relationshipDoneBtn);
+        relationshipDoneBtn.classList.add('disabled');
+        btnWrap2.appendChild(relationshipCancelBtn);
+        mainWrap.appendChild(btnWrap2);
+        importPopup.appendChild(mainWrap);
+
+        POPUP.show(importPopup);
+
+    }
+
+    function applyGKRelationship(opts) {
+        debugger;
+        if (emailString == undefined || emailString == '')
+            emailString = opts.email;
+        else if (opts.email != '')
+            emailString = emailString + ',' + opts.email;
+        else
+            emailString = emailString + '';
+
+
+        relationshipDoneBtn.classList.remove('disabled');
     }
 
     // Repeatedly checks to see if the report is ready
@@ -961,7 +1066,7 @@ const incidentOverview = (function () {
                 endIcon: true,
             };
         }
-     
+
         overviewTable = table.build(tableOptions);
 
         // Set the data type for each header, for sorting purposes
@@ -977,7 +1082,7 @@ const incidentOverview = (function () {
         DOM.ACTIONCENTER.appendChild(overviewTable);
 
         // Call function to allow table sorting by clicking on a header.
-        table.sortTableByHeader(overviewTable); 
+        table.sortTableByHeader(overviewTable);
     }
     function populateOverviewTable(res) {
         var incidents = {};
@@ -1030,7 +1135,7 @@ const incidentOverview = (function () {
                 if (!orginUser && !userHasViewed) {
                     showBold = true;
                 }
- 
+
                 if (filterData.show == 'Read' && showBold) {
                     removeArray.push(count);
                 }
@@ -1038,7 +1143,7 @@ const incidentOverview = (function () {
                     removeArray.push(count);
                 }
                 count = count + 1;
-                var incidentEmailBtn = document.createElement('button'); 
+                var incidentEmailBtn = document.createElement('button');
                 incidentEmailBtn.classList.add('btn', 'btn--secondary', 'btn--contained');
                 incidentEmailBtn.textContent = 'EMAIL';
                 incidentEmailBtn.style.zIndex = '9999';
@@ -1069,7 +1174,7 @@ const incidentOverview = (function () {
                             var isParentRow = e.target.parentNode.classList.contains('table__row');
                             if (!isParentRow) return;
 
-                            showIncidentEmailPopup(obj.incidentId);
+                            showIncidentEmailPopup(obj.incidentId, obj.consumerId);
                         },
                         onClick: async event => {
                             await incidentTrackingAjax.updateIncidentViewByUser({
@@ -1108,7 +1213,7 @@ const incidentOverview = (function () {
 
             return newDateOne > newDateTwo ? -1 : 1;
         });
-       
+
         table.populate(overviewTable, data);
     }
 
