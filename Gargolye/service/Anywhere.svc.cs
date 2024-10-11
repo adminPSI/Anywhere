@@ -4299,5 +4299,10 @@ namespace Anywhere
             return outcomesWorker.isViewPlabBtnDisabled(token, consumerId);
         }
 
+        public IncidentTrackingWorker.ConsumerRelationship[] getRelationshipData(string token, string supervisorId, string consumerId)
+        {
+            return iTW.getRelationshipData(token, supervisorId, consumerId);
+        }
+
     }
 }

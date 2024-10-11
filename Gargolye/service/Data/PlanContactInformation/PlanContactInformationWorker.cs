@@ -255,7 +255,7 @@ namespace Anywhere.service.Data.PlanContactInformation
             ImportantPeople[] importantPeopleObj = js.Deserialize<ImportantPeople[]>(importantPeopleString);
             for (int i = 0; i < importantPeopleObj.Length; i++)
             {
-                if(importantPeopleObj[i].name.Contains("Other -"))
+                if(importantPeopleObj[i].name.Contains("Other"))
                 {
                     importantPeopleObj[i].name = "Other";
                 }

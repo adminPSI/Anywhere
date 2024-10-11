@@ -7205,7 +7205,28 @@ namespace Anywhere.Data
                 logger.error("734", ex.Message + "ANYW_GoalsAndServices_IsViewPlabBtnDisabled");
                 return "734: error ANYW_GoalsAndServices_IsViewPlabBtnDisabled";
             }
-        }      
-    }
+        }
 
+        public string getRelationshipData(string token, string supervisorId, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getRelationshipData ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(supervisorId);
+
+
+            string text = "CALL DBA.ANYW_IncidentTracking_getRelationshipData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("677", ex.Message + "ANYW_IncidentTracking_getRelationshipData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "677: error ANYW_IncidentTracking_getRelationshipData";
+            }
+        }
+    }
 }

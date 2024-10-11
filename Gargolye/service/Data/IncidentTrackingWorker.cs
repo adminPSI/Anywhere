@@ -548,6 +548,13 @@ namespace Anywhere.service.Data
             return dg.sendIncidentTrackingReport(token, reportScheduleId, toAddresses, ccAddresses, bccAddresses, emailSubject, emailBody);
         }
 
+        public IncidentTrackingWorker.ConsumerRelationship[] getRelationshipData(string token, string supervisorId, string consumerId)
+        {
+            string relationshipDataString = dg.getRelationshipData(token, supervisorId, consumerId);
+            ConsumerRelationship[] relationshipData = js.Deserialize<ConsumerRelationship[]>(relationshipDataString);
+            return relationshipData;
+        }
+
         public class ReportingCategories
         {
             public string itReportingCategoryId { get; set; }
@@ -833,6 +840,22 @@ namespace Anywhere.service.Data
         public class ReportScheduleId
         {
             public string reportScheduleId { get; set; }
+        }
+
+        public class ConsumerRelationship
+        {
+            public string peopleId { get; set; }
+            public string firstName { get; set; }
+            public string lastName { get; set; }
+            public string middleName { get; set; }
+            public string address1 { get; set; }
+            public string address2 { get; set; }
+            public string city { get; set; }
+            public string state { get; set; }
+            public string zip { get; set; }
+            public string email { get; set; }
+            public string phone { get; set; }
+         
         }
 
     }
