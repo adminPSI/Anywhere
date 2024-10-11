@@ -205,7 +205,7 @@ const planOutcomes = (() => {
     data.forEach((d, index) => {
       if (vendorIds.has(d.value)) {
         const conflictIndex = vendorIds.get(d.value);
-        
+
         coflictingIds[d.value] = true;
 
         data[conflictIndex].value = `${data[conflictIndex].value}|${data[conflictIndex].salesforce}`;
@@ -221,8 +221,8 @@ const planOutcomes = (() => {
 
     const selectedVendorIds = getSelectedVendorIds();
 
-    const nonPaidSupportData = data.filter(provider => !selectedVendorIds.includes(provider.value));
-    const paidSupportData = data.filter(provider => selectedVendorIds.includes(provider.value));
+    const nonPaidSupportData = data.filter(provider => !selectedVendorIds.includes(provider.value.split('|')[0]));
+    const paidSupportData = data.filter(provider => selectedVendorIds.includes(provider.value.split('|')[0]));
 
     const nonPaidSupportDropdownData = nonPaidSupportData.map(dd => {
       return {
