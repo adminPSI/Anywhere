@@ -67,6 +67,7 @@ const planOutcomes = (() => {
                             responsibilityIds: resp.responsibilityId,
                             responsibleContact: !resp.responsibleContact ? '%' : resp.responsibleContact,
                             responsibleProvider: !resp.responsibleProvider ? '%' : resp.responsibleProvider,
+                            rresponsibleProviderSalesforce: !resp.isSalesforceLocation ? '' : resp.isSalesforceLocation,
                             whenHowOftenValue: resp.whenValue,
                             whenHowOftenFrequency: resp.whenFrequency,
                             whenHowOftenText: resp.whenOther,
