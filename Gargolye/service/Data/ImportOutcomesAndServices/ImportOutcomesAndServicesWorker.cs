@@ -285,6 +285,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             reader.End();
 
             TextExtractor.Line previousLine = null;
+            double gapBetweenLines = 250; // Default value
+            bool foundKnownAndLikelyRisks = false; // Flag for "Known and Likely Risks" line
 
             for (TextExtractor.Line line = textExtractor.GetFirstLine(); line.IsValid(); line = line.GetNextLine())
             {
@@ -298,7 +300,6 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                 }
 
                 TextExtractor.Word previousWord = null;
-                
 
                 for (TextExtractor.Word word = line.GetFirstWord(); word.IsValid(); word = word.GetNextWord())
                 {
@@ -334,11 +335,30 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                     currentLineBBox.y2 = Math.Min(currentLineBBox.y2, lineBBox.y2);
                 }
 
+                // Check if the current line contains "Known and Likely Risks"
+                if (currentLineText.Contains("Known and Likely Risks --include any MUI trends and preventative measures"))
+                {
+                    foundKnownAndLikelyRisks = true; // Set flag to true but don't change gap yet
+                }
+
+                // Check if the current line contains "Who is responsible:"
+                if (foundKnownAndLikelyRisks && currentLineText.Contains("Who is responsible:"))
+                {
+                    gapBetweenLines = 200; // Set the gap to 150 when "Who is responsible:" is found
+                    foundKnownAndLikelyRisks = false; // Reset the flag
+                }
+
+                // Check if the current line contains "Service and Supports"
+                if (currentLineText.Contains("Service and Supports"))
+                {
+                    gapBetweenLines = 250; // Reset the gap to the default
+                }
+
                 if (previousLine != null)
                 {
-                    // Check if the gap between the starting `x` values of two lines is greater than 350
-                    double gapBetweenLines = lineBBox.x1 - previousLine.GetBBox().x1;
-                    if (gapBetweenLines > 250)
+                    // Check if the gap between the starting `x` values of two lines exceeds the current gap threshold
+                    double gapBetweenLinesValue = lineBBox.x1 - previousLine.GetBBox().x1;
+                    if (gapBetweenLinesValue > gapBetweenLines)
                     {
                         combinedLines.Add(" "); // Insert "BLANK CELL" when the gap is too large
                     }
@@ -428,6 +448,13 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 WhoIsResponsible = GetNextLine(lines, ref i)
                             };
 
+                            // Check if WhoIsResponsible is an assessment area, and replace it with " " if it is
+                            if (assessmentAreas.Contains(riskAssessment.WhoIsResponsible))
+                            {
+                                riskAssessment.WhoIsResponsible = " ";
+                                i--;
+                            }
+
                             riskAssessmentsList.Add(riskAssessment);
 
                             // Move to the next line to check if it's the start of a new assessment area
@@ -444,6 +471,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
             return riskAssessmentsList;
         }
+
 
         List<Experiences> ProcessCombinedTextForExperiences(string combinedText)
         {
