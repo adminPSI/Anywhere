@@ -279,7 +279,7 @@ const outcomesReview = (function () {
       typeBtnWrap.classList.add('hidden');
     } else {
       typeBtnWrap.classList.remove('hidden');
-      typeBtnWrap.textContent = `Outcome Type: ${outcomeType}`;
+      outcomeTypeBtn.textContent = `Outcome Type: ${outcomeType}`;
     }
   }
   // filter popup
@@ -297,11 +297,6 @@ const outcomesReview = (function () {
       label: 'Outcome Type',
       style: 'secondary',
       readonly: false,
-    });
-
-    typesDrop.addEventListener('change', event => {
-      const selectedOption = event.target.options[event.target.selectedIndex];
-      outcomeTypeFilterVal = selectedOption;
     });
 
     const data = goalTypes.map(type => {
@@ -329,15 +324,16 @@ const outcomesReview = (function () {
     ];
     dropdown.populate(servDrop, data, 'All');
 
-    servDrop.addEventListener('change', event => {
-      const selectedOption = event.target.options[event.target.selectedIndex];
-      serviceFilterVal = selectedOption;
-    });
-
     return servDrop;
   }
   async function showFilterPopup(IsShow) {
-    filterPopup = POPUP.build({});
+    let tempServiceVal, tempTypeVal;
+
+    filterPopup = POPUP.build({
+      closeCallback: () => {
+
+      }
+    });
 
     const serviceDropdown = buildServiceDropdown();
     const typesDropdown = await buildTypesDropdown();
@@ -347,7 +343,18 @@ const outcomesReview = (function () {
       type: 'contained',
     });
     applyButton.classList.add('singleBtn');
+
+    serviceDropdown.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+      tempServiceVal = selectedOption;
+    });
+    typesDropdown.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+      tempTypeVal = selectedOption;
+    });
     applyButton.addEventListener('click', () => {
+      serviceFilterVal = tempServiceVal ?? undefined;
+      outcomeTypeFilterVal = tempTypeVal ?? undefined;
       applyFilter();
       POPUP.hide(filterPopup);
     });
