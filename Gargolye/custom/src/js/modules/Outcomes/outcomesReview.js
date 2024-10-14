@@ -68,8 +68,9 @@ const outcomesReview = (function () {
       selectedConsumerId = activeConsumers[0].id;
 
       // rebuild & populate tabs/tables
-      const outcomeTabs = buildTabs();
-      outcomesReviewDiv.appendChild(outcomeTabs);
+      const newOutcomeTabs = buildTabs();
+      outcomesReviewDiv.replaceChild(newOutcomeTabs, outcometabs);
+      outcomeTabs = newOutcomeTabs;
 
       await getReviewTableData();
       await getReviewTableDataSecondary();
@@ -1023,7 +1024,7 @@ const outcomesReview = (function () {
     outcomesReviewDiv.classList.add('outcomesReview');
 
     const filterDisplay = buildCurrentFilterdisplay();
-    const outcomeTabs = buildTabs();
+    outcomeTabs = buildTabs();
 
     outcomesReviewDiv.appendChild(filterDisplay);
     outcomesReviewDiv.appendChild(outcomeTabs);
