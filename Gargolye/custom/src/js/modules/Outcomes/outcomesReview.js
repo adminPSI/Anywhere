@@ -64,8 +64,11 @@ const outcomesReview = (function () {
     if (target.dataset.actionNav === 'miniRosterDone') {
       DOM.toggleNavLayout();
 
+      roster2.removeConsumerFromActiveConsumers(selectedConsumerId);
+
       const activeConsumers = roster2.getActiveConsumers();
       selectedConsumerId = activeConsumers[0].id;
+      //selectedConsumerCard = activeConsumers[0].card;
 
       await getReviewTableData();
       await getReviewTableDataSecondary();
@@ -76,6 +79,7 @@ const outcomesReview = (function () {
       outcomeTabs = newOutcomeTabs;
 
       populateTabSections();
+      
     }
   }
 
@@ -1010,6 +1014,7 @@ const outcomesReview = (function () {
     console.clear();
 
     selectedConsumerId = consumer.id;
+    selectedConsumerCard = consumer.card;
     selectedDate = date;
 
     setActiveModuleSectionAttribute('outcomes-review');
@@ -1036,7 +1041,7 @@ const outcomesReview = (function () {
     goalTypes = await outcomesAjax.getAllGoalTypes();
 
     roster2.setAllowedConsumers(allowedConsumerIds);
-    roster2.addConsumerToActiveConsumers(consumer.card);
+    roster2.addConsumerToActiveConsumers(selectedConsumerCard);
     roster2.miniRosterinit(null, {
       hideDate: true,
     });
