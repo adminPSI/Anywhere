@@ -67,13 +67,13 @@ const outcomesReview = (function () {
       const activeConsumers = roster2.getActiveConsumers();
       selectedConsumerId = activeConsumers[0].id;
 
+      await getReviewTableData();
+      await getReviewTableDataSecondary();
+
       // rebuild & populate tabs/tables
       const newOutcomeTabs = buildTabs();
       outcomesReviewDiv.replaceChild(newOutcomeTabs, outcometabs);
       outcomeTabs = newOutcomeTabs;
-
-      await getReviewTableData();
-      await getReviewTableDataSecondary();
 
       populateTabSections();
     }
