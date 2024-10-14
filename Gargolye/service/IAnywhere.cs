@@ -3735,7 +3735,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/setSalesForceIdForTeamMemberUpdate/")]
-        string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId);
+        string setSalesForceIdForTeamMemberUpdate(string peopleId, string teamMemberType, string salesForceId);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
