@@ -28,6 +28,8 @@ const outcomesReview = (function () {
   let toDateInput;
   let fromDateInput;
 
+  let outcomesReviewDiv;
+
   // Constants
   const NO_FREQ = 'No Frequency';
   const HOUR = 'Hourly';
@@ -70,6 +72,7 @@ const outcomesReview = (function () {
       outcomesReviewDiv.appendChild(outcomeTabs);
 
       await getReviewTableData();
+      await getReviewTableDataSecondary();
 
       populateTabSections();
     }
@@ -1016,7 +1019,7 @@ const outcomesReview = (function () {
 
     DOM.clearActionCenter();
 
-    const outcomesReviewDiv = _DOM.createElement('div');
+    outcomesReviewDiv = _DOM.createElement('div');
     outcomesReviewDiv.classList.add('outcomesReview');
 
     const filterDisplay = buildCurrentFilterdisplay();
