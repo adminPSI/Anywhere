@@ -306,7 +306,9 @@ const outcomesReview = (function () {
       };
     });
     data.unshift({ value: '%', text: 'All' });
-    dropdown.populate(typesDrop, data, '%');
+
+    const defaultValue = outcomeTypeFilterVal?.value ?? '%';
+    dropdown.populate(typesDrop, data, defaultValue);
 
     return typesDrop;
   }
@@ -322,7 +324,9 @@ const outcomesReview = (function () {
       { value: 'Complete', text: 'Complete' },
       { value: 'Incomplete', text: 'Incomplete' },
     ];
-    dropdown.populate(servDrop, data, 'All');
+
+    const defaultValue = serviceFilterVal?.value ?? 'All';
+    dropdown.populate(servDrop, data, defaultValue);
 
     return servDrop;
   }
@@ -331,7 +335,7 @@ const outcomesReview = (function () {
 
     filterPopup = POPUP.build({
       closeCallback: () => {
-
+        
       }
     });
 
