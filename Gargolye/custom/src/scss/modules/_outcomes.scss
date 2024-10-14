@@ -734,6 +734,10 @@ div.textarea {
       flex-flow: row wrap;
       width: 100%;
 
+      &-main {
+        border-bottom: 1px solid black;
+      }
+
       &-main-sub {
         &.hidden {
           display: none;
@@ -749,9 +753,6 @@ div.textarea {
 
     // columns
     .rowToggle {
-      flex-basis: 24px;
-      max-width: 24px;
-
       * {
         pointer-events: none;
       }
@@ -759,25 +760,30 @@ div.textarea {
 
     .heading-main,
     .row-main {
+      > div:nth-child(1) {
+        flex-grow: 0;
+        flex-basis: 24px;
+        max-width: 24px;
+      }
       > div:nth-child(2) {
-        flex-basis: 100px;
-        // max-width: 100px;
+        flex-basis: 200px;
+        max-width: 300px;
       }
       > div:nth-child(3) {
         flex-basis: 100px;
-        // max-width: 100px;
+        max-width: 200px;
       }
       > div:nth-child(4) {
-        flex-basis: 80px;
-        // max-width: 80px;
+        flex-basis: 120px;
+        max-width: 200px;
       }
       > div:nth-child(5) {
-        flex-basis: 60px;
-        // max-width: 60px;
+        flex-basis: 80px;
+        max-width: 170px;
       }
       > div:nth-child(6) {
         flex-basis: 60px;
-        // max-width: 60px;
+        max-width: 120px;
       }
     }
 
