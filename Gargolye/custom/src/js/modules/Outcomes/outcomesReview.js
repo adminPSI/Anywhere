@@ -29,6 +29,7 @@ const outcomesReview = (function () {
   let fromDateInput;
 
   let outcomesReviewDiv;
+  let outcomeTabs;
 
   // Constants
   const NO_FREQ = 'No Frequency';
@@ -72,7 +73,7 @@ const outcomesReview = (function () {
 
       // rebuild & populate tabs/tables
       const newOutcomeTabs = buildTabs();
-      outcomesReviewDiv.replaceChild(newOutcomeTabs, outcometabs);
+      outcomesReviewDiv.replaceChild(newOutcomeTabs, outcomeTabs);
       outcomeTabs = newOutcomeTabs;
 
       populateTabSections();
@@ -1006,7 +1007,7 @@ const outcomesReview = (function () {
 
     sortReviewTableDataSecondary(data, outcomesData);
   }
-  async function init(consumer, date) {
+  async function init(consumer, date, allowedConsumerIds) {
     console.clear();
 
     selectedConsumerId = consumer.id;
@@ -1035,7 +1036,7 @@ const outcomesReview = (function () {
 
     goalTypes = await outcomesAjax.getAllGoalTypes();
 
-    roster2.setAllowedConsumers(['%']);
+    roster2.setAllowedConsumers(allowedConsumerIds);
     roster2.addConsumerToActiveConsumers(consumer.card);
     roster2.miniRosterinit(null, {
       hideDate: true,

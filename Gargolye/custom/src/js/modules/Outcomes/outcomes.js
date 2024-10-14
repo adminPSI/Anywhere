@@ -1962,7 +1962,7 @@ const outcomes = (function () {
             style: 'secondary',
             type: 'contained',
             callback: () => {
-                outcomesReview.init(selectedConsumerObj, currDate)
+                outcomesReview.init(selectedConsumerObj, currDate, allowedConsumerIds)
             }
         })
         let buttonName = 'VIEW PLAN';
