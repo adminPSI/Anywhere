@@ -63,7 +63,6 @@ const outcomesReview = (function () {
 
     if (target.dataset.actionNav === 'miniRosterDone') {
       DOM.toggleNavLayout();
-      PROGRESS.SPINNER.show('Loading...');
 
       const activeConsumers = roster2.getActiveConsumers();
       selectedConsumerId = activeConsumers[0].id;
