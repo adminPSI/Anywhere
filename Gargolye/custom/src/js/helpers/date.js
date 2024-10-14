@@ -135,7 +135,7 @@ const dates = (function () {
   function subWeeks(date, amount) {
     return addWeeks(date, -amount);
   }
-  function subMonths() {
+  function subMonths(date, amount) {
     return addMonths(date, -amount);
   }
   function subYears(dirtyDate, dirtyAmount) {

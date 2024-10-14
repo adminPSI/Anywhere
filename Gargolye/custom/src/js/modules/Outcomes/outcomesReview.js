@@ -23,6 +23,7 @@ const outcomesReview = (function () {
   let outcomeTypeFilterVal;
 
   let selectedDateSpan = { to: null, from: null };
+  let unitType;
   let spanLength;
   let daysBackInput;
   let toDateInput;
@@ -86,15 +87,19 @@ const outcomesReview = (function () {
   // Filtering
   //----------------------------------------------------
   // date span filter
+  function updateFilterDates() {
+    daysBackToggleBtn.textContent = `${unitType} Back`;
+    daysBackLabel.textContent = `${unitType} Back`;
+  }
   function buildFilterDates() {
     const toggleButtonWrap = _DOM.createElement('div', { class: 'dateFilterToggle' });
-    const daysBackToggleBtn = _DOM.createElement('button', { class: 'active', id: 'days-back-btn', text: `${unitType} Back` });
+    daysBackToggleBtn = _DOM.createElement('button', { class: 'active', id: 'days-back-btn', text: `${unitType} Back` });
     const dateRangeToggleBtn = _DOM.createElement('button', { id: 'date-range-btn', text: 'Date Range' });
     toggleButtonWrap.appendChild(daysBackToggleBtn);
     toggleButtonWrap.appendChild(dateRangeToggleBtn);
 
     const daysBackInputWrap = _DOM.createElement('div', { class: ['daysBack', 'active'] });
-    const daysBackLabel = _DOM.createElement('label', { for: 'daysBack', text: `${unitType} Back` });
+    daysBackLabel = _DOM.createElement('label', { for: 'daysBack', text: `${unitType} Back` });
     daysBackInput = _DOM.createElement('input', { id: 'daysBack', type: 'number', name: 'daysBack', value: spanLength });
     daysBackInputWrap.appendChild(daysBackLabel);
     daysBackInputWrap.appendChild(daysBackInput);
@@ -828,6 +833,7 @@ const outcomesReview = (function () {
       tabNavCallback: function (data) {
         activeTab = data.activeSection;
         setUnitType();
+        updateFilterDates();
       },
     });
   }
