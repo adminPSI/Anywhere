@@ -364,9 +364,9 @@ namespace Anywhere.service.Data.PlanSignature
             string response = iSPDT.PostAllLocalProviders();
         }
 
-        public string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId)
+        public string setSalesForceIdForTeamMemberUpdate(string peopleId, string teamMemberType, string salesForceId)
         {
-            return psdg.setSalesForceIdForTeamMemberUpdate(peopleId, salesForceId);
+            return psdg.setSalesForceIdForTeamMemberUpdate(peopleId, teamMemberType, salesForceId);
         }
 
         public bool validateConsumerForSalesForceId(string consumerId)

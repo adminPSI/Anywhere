@@ -2656,9 +2656,9 @@ namespace Anywhere
             return psw.assignStateCaseManagertoConsumers(caseManagerId, consumers);
         }
 
-        public string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId)
+        public string setSalesForceIdForTeamMemberUpdate(string peopleId, string teamMemberType, string salesForceId)
         {
-            return psw.setSalesForceIdForTeamMemberUpdate(peopleId, salesForceId);
+            return psw.setSalesForceIdForTeamMemberUpdate(peopleId, teamMemberType, salesForceId);
         }
 
         public bool validateConsumerForSalesForceId(string consumerId)
