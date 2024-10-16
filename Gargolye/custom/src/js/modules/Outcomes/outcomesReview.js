@@ -343,6 +343,17 @@ const outcomesReview = (function () {
 
     return servDrop;
   }
+  function closeFilter(closefilter) {
+    if (closefilter == 'serviceBtn') {
+      serviceFilterVal.text = 'All';
+      serviceFilterVal.value = 'All'
+    }
+    if (closefilter == 'outcomeTypeBtn') {
+      outcomeTypeFilterVal.text = 'All';
+      outcomeTypeFilterVal.value = '%';
+    }
+    applyFilter();
+  }
   async function showFilterPopup(IsShow) {
     let tempServiceVal, tempTypeVal;
 
@@ -370,8 +381,8 @@ const outcomesReview = (function () {
       tempTypeVal = selectedOption;
     });
     applyButton.addEventListener('click', () => {
-      serviceFilterVal = tempServiceVal ?? undefined;
-      outcomeTypeFilterVal = tempTypeVal ?? undefined;
+      serviceFilterVal = tempServiceVal ?? serviceFilterVal;
+      outcomeTypeFilterVal = tempTypeVal ?? outcomeTypeFilterVal;
       applyFilter();
       POPUP.hide(filterPopup);
     });
@@ -961,8 +972,8 @@ const outcomesReview = (function () {
       const staffId = d.staffId;
 
       if (filterBy) {
-        if (filterBy.service !== d.objectiveSuccessDescription) return;
-        if (filterBy.type !== d.goalTypeId) return;
+        if (filterBy.service && filterBy.service !== d.objectiveSuccessDescription) return;
+        if (filterBy.type && filterBy.type !== d.goalTypeId) return;
       }
 
       if (outcomeOjb[occurrence]) {
@@ -1021,7 +1032,9 @@ const outcomesReview = (function () {
 
     selectedConsumerId = consumer.id;
     selectedConsumerCard = consumer.card;
-    selectedDate = date;
+    selectedDate = date; 
+    serviceFilterVal = {};
+    outcomeTypeFilterVal = {};
 
     setActiveModuleSectionAttribute('outcomes-review');
     PROGRESS.SPINNER.show('Loading Outcomes...');
