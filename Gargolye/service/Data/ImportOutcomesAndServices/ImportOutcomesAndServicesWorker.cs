@@ -203,7 +203,16 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             // Regular expression pattern to match the two dates
                             string pattern = @"ISP Span Dates:\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})\s*-\s*([A-Za-z]+\s+\d{1,2},\s+\d{4})";
 
-                            Match match = Regex.Match(lines[1], pattern);
+                            // Loop through lines[0] to lines[3] and find the first match
+                            Match match = null;
+                            for (int i = 0; i <= 3 && i < lines.Length; i++)
+                            {
+                                match = Regex.Match(lines[i], pattern);
+                                if (match.Success)
+                                {
+                                    break;  // Exit the loop when a match is found
+                                }
+                            }
 
                             if (match.Success)
                             {
