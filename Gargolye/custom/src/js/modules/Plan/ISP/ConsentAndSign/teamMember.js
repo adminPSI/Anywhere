@@ -79,22 +79,30 @@ const csTeamMember = (() => {
 
     async function populateGuardiansDropDown() {
         var selectedConsumer = plan.getSelectedConsumer();
-        stateGuardiansObj = await consentAndSignAjax.getStateGuardiansforConsumer({
+        stateGuardiansObj = await consentAndSignAjax.getTeamMemberListFromState({
             peopleId: selectedConsumer.id,
         });
 
         let guarddata;
         if (stateGuardiansObj && stateGuardiansObj.length !== 0) {
-            guarddata = stateGuardiansObj.map(dd => {
-                return {
-                    value: dd.Id,
-                    text: dd.FirstName + ' ' + dd.LastName,
-                };
-            });
-            guarddata.unshift({ value: '', text: 'SELECT MATCHING STATE GUARDIAN' });
+            guarddata = stateGuardiansObj
+                .filter(dd => dd.Role === "Guardian")  // Filter by role "Guardian"
+                .map(dd => {
+                    return {
+                        value: dd.Id,
+                        text: dd.FirstName + ' ' + dd.LastName,
+                    };
+                });
+        
+            if (guarddata.length > 0) {
+                guarddata.unshift({ value: '', text: 'SELECT MATCHING STATE GUARDIAN' });
+            } else {
+                guarddata = [{ value: '', text: 'NO STATE GUARDIANS FOUND' }];
+            }
         } else {
             guarddata = [{ value: '', text: 'NO STATE GUARDIANS FOUND' }];
         }
+        
 
         dropdown.populate(stateGuardianDropdown, guarddata);
     }
