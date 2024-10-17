@@ -431,6 +431,7 @@ namespace Anywhere.service.Data.PlanSignature
             public string Role { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
+            public string AccountName { get; set; }
             public string Email { get; set; }
         }
 
