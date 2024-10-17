@@ -320,7 +320,8 @@
                         instance.UI.setFitMode(FitMode.FitWidth);
                         // hide the ribbons
                         instance.UI.disableElements(['ribbons']);
-                        //  instance.disableFeatures([instance.Feature.Download]);
+                        
+                        instance.UI.useEmbeddedPrint(true);
 
                         const docViewer = instance.Core.documentViewer;
                         const annotManager = instance.Core.annotationManager;
