@@ -37,6 +37,10 @@ namespace OODForms
 
         public string generateForm4(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
         {
+            try
+            {
+
+            
                 OODFormDataGetter obj = new OODFormDataGetter();
 
                 string SSinfo = obj.getSpreadsheetNameAndKey(token);
@@ -187,7 +191,10 @@ namespace OODForms
 
             WS.Cell("j18").Value = "No";
 
-            ds = obj.OODDevelopment2(AuthorizationNumber, StartDate, EndDate, serviceCode, userID);
+                WS.Cell("k9").Value = DateTime.Parse(StartDate).ToString("MM/dd/yy");
+                WS.Cell("k10").Value = DateTime.Parse(EndDate).ToString("MM/dd/yy");
+
+                ds = obj.OODDevelopment2(AuthorizationNumber, StartDate, EndDate, serviceCode, userID);
             if (ds.Tables.Count > 0)
             {
                 dt = ds.Tables[0];
@@ -196,8 +203,6 @@ namespace OODForms
                     // long i = dt.Rows.IndexOf(row2) + 21;
                     long i = dt.Rows.IndexOf(row2) + 22;
 
-                    WS.Cell("k9").Value = DateTime.Parse(StartDate).ToString("MM/dd/yy"); ;
-                    WS.Cell("k10").Value = DateTime.Parse(EndDate).ToString("MM/dd/yy"); ;
 
                     DateTime parsedStartTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["StartTime"]));
 
@@ -221,9 +226,12 @@ namespace OODForms
 
                     WS.Cell(String.Format("a{0}", i)).ValueAsDateTime = Convert.ToDateTime(row2["serviceDate"]);
 
-                    WS.Cell(String.Format("b{0}", i)).ValueAsDateTime = DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"), row2["StartTime"]));
+                   // WS.Cell(String.Format("b{0}", i)).ValueAsDateTime = DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"), row2["StartTime"]));
 
-                    WS.Cell(String.Format("c{0}", i)).ValueAsDateTime = DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"), row2["EndTime"]));
+                   // WS.Cell(String.Format("c{0}", i)).ValueAsDateTime = DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"), row2["EndTime"]));
+
+                    WS.Cell(String.Format("b{0}", i)).Value = formattedStartTime;
+                    WS.Cell(String.Format("c{0}", i)).Value = formattedEndTime;
 
                     switch (row2["SAMLevel"].ToString())
                     {
@@ -350,6 +358,11 @@ namespace OODForms
             DisplayAttachment(attachment);
 
             return "Success";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
         }
 
         public string generateForm6(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId, string loggedInUserPersonId)
