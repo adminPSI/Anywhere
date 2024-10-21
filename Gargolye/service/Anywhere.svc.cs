@@ -3074,6 +3074,7 @@ namespace Anywhere
             string startDate;
             string endDate;
             string userId;
+            string loggedInUserPersonId;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
@@ -3084,8 +3085,9 @@ namespace Anywhere
             serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
 
-            return OODfw.generateForm10(token, referenceNumber, 22, peopleId, startDate, endDate, userId);
+            return OODfw.generateForm10(token, referenceNumber, 22, peopleId, startDate, endDate, userId, loggedInUserPersonId);
 
         }
 
