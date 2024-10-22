@@ -910,7 +910,13 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.Code_Table ON dba.EM_Contacts.Activity_Code = dba.Code_Table.Code ");
             sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
             sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
-            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userID);
+
+            if (userID != "%25")
+            {
+                sb.AppendFormat("AND dba.Case_Notes.Original_User_ID LIKE '{0}' ", userID);
+            }
+
+            // sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userID);
 
             if (ServiceCodeID != "%")
             {
