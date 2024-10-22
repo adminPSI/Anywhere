@@ -961,7 +961,7 @@ const outcomesReview = (function () {
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
-      a[occurrence][objID].timesDoc = d.timesDocumented;
+      a[occurrence][objID].timesDoc = d.timesDocumented || '0';
       a[occurrence][objID].successRate = d.objectiveSuccess;
   
       return a;
