@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Configuration;
 using System.Data;
+using System.Management.Automation.Language;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAbsentWorker;
@@ -383,6 +384,11 @@ namespace Anywhere.service.Data
             public string acknowledgeDatetime { get; set; }
             public string PlanId { get; set; }
             public string isNewDisabled { get; set; }
+        }
+
+        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote)
+        {
+            return dg.updateReviewNote(token, objectiveActivityId, reviewNote);
         }
 
         public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)

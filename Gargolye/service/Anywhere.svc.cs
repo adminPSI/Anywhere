@@ -4053,6 +4053,11 @@ namespace Anywhere
             return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId, appName);
         }
 
+        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote)
+        {
+            return outcomesWorker.updateReviewNote( token, objectiveActivityId, reviewNote);
+        }
+
         public OutcomesWorker.OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string objectiveDate)
         {
             return outcomesWorker.getOutcomesReviewGrid(token, consumerId, objectiveDate);

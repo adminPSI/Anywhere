@@ -6783,6 +6783,26 @@ namespace Anywhere.Data
             }
         }
 
+        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getOutcomeTypeDropDown" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(objectiveActivityId);
+            list.Add(reviewNote);
+            string text = "CALL DBA.ANYW_GoalsAndServices_UpdateReviewNote(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices_UpdateReviewNote(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices_UpdateReviewNote";
+            }
+        }
+
         public string getOutcomesReviewGrid(string token, string consumerId, string objectiveDate)
         {
             if (tokenValidator(token) == false) return null;
