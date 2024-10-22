@@ -2335,7 +2335,7 @@ const outcomes = (function () {
                     token: $.session.Token,
                     userId: $.session.UserId,
                     consumerId: selectedConsumerId,
-                    attachmentType: attachment.type,
+                    attachmentType: attachment.description,
                     attachment: attachment.arrayBuffer,
                     startDate: startDate,
                     endDate: endDate,
