@@ -37,6 +37,10 @@ namespace OODForms
 
         public string generateForm4(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
         {
+            try
+            {
+
+            
                 OODFormDataGetter obj = new OODFormDataGetter();
 
                 string SSinfo = obj.getSpreadsheetNameAndKey(token);
@@ -101,21 +105,21 @@ namespace OODForms
 
                 string potentialIssues = ds.Tables[0].Rows[0]["PotentialIssues"].ToString();
 
-                WS.Cell("K19").Value = employeeGoal;
-                //WS.Cell("K20").Value = employeeGoal;
+                //WS.Cell("K19").Value = employeeGoal;
+                WS.Cell("K20").Value = employeeGoal;
 
 
-                WS.Cell("K73").Value = individualsInputOnSearch;
-               // WS.Cell("K74").Value = individualsInputOnSearch;
+               // WS.Cell("K73").Value = individualsInputOnSearch;
+               WS.Cell("K74").Value = individualsInputOnSearch;
 
-                WS.Cell("K74").Value = potentialIssues;
-               // WS.Cell("K75").Value = potentialIssues;
+               // WS.Cell("K74").Value = potentialIssues;
+                WS.Cell("K75").Value = potentialIssues;
             }
             else
             {
-                WS.Cell("K19").Value = string.Empty;
-                WS.Cell("K73").Value = string.Empty;
+                WS.Cell("K20").Value = string.Empty;
                 WS.Cell("K74").Value = string.Empty;
+                WS.Cell("K75").Value = string.Empty;
             }
 
             string OODStaff = string.Empty;
@@ -166,7 +170,17 @@ namespace OODForms
                 }
             }
 
-            WS.Cell("k7").Value = OODStaff;
+                if (OODStaff.Length > 0)
+                {
+                    WS.Cell("k7").Value = OODStaff.ToString().Trim().Substring(0, OODStaff.Length - 2);
+                }
+                else
+                {
+                    WS.Cell("k7").Value = String.Empty;
+                }
+
+
+              //  WS.Cell("k7").Value = OODStaff;
 
             WS.Cell("k8").Value = DateTime.Now.ToString("MM/dd/yy");
 
@@ -185,19 +199,20 @@ namespace OODForms
 
             }
 
-           // WS.Cell("j18").Value = "No";
+            WS.Cell("j18").Value = "No";
 
-            ds = obj.OODDevelopment2(AuthorizationNumber, StartDate, EndDate, serviceCode, userID);
+                WS.Cell("k9").Value = DateTime.Parse(StartDate).ToString("MM/dd/yy");
+                WS.Cell("k10").Value = DateTime.Parse(EndDate).ToString("MM/dd/yy");
+
+                ds = obj.OODDevelopment2(AuthorizationNumber, StartDate, EndDate, serviceCode, userID);
             if (ds.Tables.Count > 0)
             {
                 dt = ds.Tables[0];
                 foreach (DataRow row2 in dt.Rows)
                 {
-                     long i = dt.Rows.IndexOf(row2) + 21;
-                    //long i = dt.Rows.IndexOf(row2) + 22;
+                    // long i = dt.Rows.IndexOf(row2) + 21;
+                    long i = dt.Rows.IndexOf(row2) + 22;
 
-                    WS.Cell("k9").Value = DateTime.Parse(StartDate).ToString("MM/dd/yy"); ;
-                    WS.Cell("k10").Value = DateTime.Parse(EndDate).ToString("MM/dd/yy"); ;
 
                     DateTime parsedStartTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["StartTime"]));
 
@@ -221,9 +236,12 @@ namespace OODForms
 
                     WS.Cell(String.Format("a{0}", i)).ValueAsDateTime = Convert.ToDateTime(row2["serviceDate"]);
 
-                    WS.Cell(String.Format("b{0}", i)).ValueAsDateTime = DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"), row2["StartTime"]));
+                   // WS.Cell(String.Format("b{0}", i)).ValueAsDateTime = DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"), row2["StartTime"]));
 
-                    WS.Cell(String.Format("c{0}", i)).ValueAsDateTime = DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"), row2["EndTime"]));
+                   // WS.Cell(String.Format("c{0}", i)).ValueAsDateTime = DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"), row2["EndTime"]));
+
+                    WS.Cell(String.Format("b{0}", i)).Value = formattedStartTime;
+                    WS.Cell(String.Format("c{0}", i)).Value = formattedEndTime;
 
                     switch (row2["SAMLevel"].ToString())
                     {
@@ -330,9 +348,9 @@ namespace OODForms
                     WS.Cell(String.Format("k{0}", i)).AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
                 }
 
-                WS.Cell("a19").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
-                WS.Cell("a73").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
+                WS.Cell("a20").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
                 WS.Cell("a74").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
+                WS.Cell("a75").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
             }
 
             WS.Calculate();
@@ -350,6 +368,11 @@ namespace OODForms
             DisplayAttachment(attachment);
 
             return "Success";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
         }
 
         public string generateForm6(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId, string loggedInUserPersonId)
@@ -730,30 +753,32 @@ namespace OODForms
 
                 if (row["ServiceDescription"].ToString().ToUpper().Contains("CBA"))
                 {
-                    WS.Cell("a12").Value = "Community Based Assessment";
+                    
+                   WS.Cell("a12").Value = "Community Work Experience (Assessment)";
+                    // WS.Cell("a12").Value = "Service Description 1";
                 }
                 else if (row["ServiceDescription"].ToString().ToUpper().Contains("JRTNS"))
                 {
-                    WS.Cell("a12").Value = "Job Readiness (Non-School)";
+                    WS.Cell("a12").Value = "Community Work Experience (Internship-Non-School)";
                 }
                 else if (row["ServiceDescription"].ToString().ToUpper().Contains("JRTSB"))
                 {
-                    WS.Cell("a12").Value = "Job Readiness (School)";
+                    WS.Cell("a12").Value = "Community Work Experience (Internship-School)";
                 }
                 else if (row["ServiceDescription"].ToString().ToUpper().Contains("OJSUPPT"))
                 {
-                    WS.Cell("a12").Value = "On-The-Job Supports";
+                    WS.Cell("a12").Value = "Job Coaching";
                 }
                 else if (row["ServiceDescription"].ToString().ToUpper().Contains("WADJ"))
                 {
-                    WS.Cell("a12").Value = "Work Adjustment";
+                    WS.Cell("a12").Value = "Community Work Experience (Adjustment)";
                 }
                 else
                 {
                     WS.Cell("a12").Value = "Service Description 1";
                 }
 
-               // WS.Cell("l18").Value = "No";
+                WS.Cell("l18").Value = "No";
 
                 ds = obj.OODForm8BussinessAddress(AuthorizationNumber, StartDate, EndDate);
                 if (ds.Tables.Count > 0 )
@@ -779,24 +804,31 @@ namespace OODForms
                     TaskSummary = TaskSummary.Trim();
                 }
 
-                WS.Cell("m20").Value = TaskSummary;
-                //WS.Cell("m21").Value = TaskSummary;
+               // WS.Cell("m20").Value = TaskSummary;
+                WS.Cell("m21").Value = TaskSummary;
 
-               WS.Cell("m21").Value = obj.OODForm8GetSupportAndTransistion(AuthorizationNumber, StartDate).ToString().Trim();
-               // WS.Cell("m22").Value = obj.OODForm8GetSupportAndTransistion(AuthorizationNumber, StartDate).ToString().Trim();
+              // WS.Cell("m21").Value = obj.OODForm8GetSupportAndTransistion(AuthorizationNumber, StartDate).ToString().Trim();
+                WS.Cell("m22").Value = obj.OODForm8GetSupportAndTransistion(AuthorizationNumber, StartDate).ToString().Trim();
 
                 ds = obj.OODForm8GetNotes(AuthorizationNumber, StartDate, EndDate, userID);
 
-                Int32 t = 23;
-                //Int32 t = 24;
+                //Int32 t = 23;
+                Int32 t = 24;
                 foreach (DataRow row2 in ds.Tables[0].Rows)
                 {
-                    WS.Cell(String.Format("a{0}", t)).ValueAsDateTime = Convert.ToDateTime(row2["Service_date"]);// Convert.ToDateTime(Convert.ToDateTime(row2["Service_date"]).ToString("MM/dd/yyyy")); //.ToString("MM/dd/yyyy"); //DateTime.ParseExact((DateTime)row2["Service_date"],"MM/dd/yyyy",CultureInfo.InvariantCulture); 
-                    WS.Cell(String.Format("a{0}", t)).NumberFormatString = "MM/dd/yyy"; //  Bytescout.Spreadsheet.ExtendedFormat.;
-                    WS.Cell(String.Format("b{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["Start_Time"])); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
-                    WS.Cell(String.Format("c{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["End_Time"]));
+                  
+                     WS.Cell(String.Format("a{0}", t)).ValueAsDateTime = Convert.ToDateTime(row2["Service_Date"]);// Convert.ToDateTime(Convert.ToDateTime(row2["Service_date"]).ToString("MM/dd/yyyy")); //.ToString("MM/dd/yyyy"); //DateTime.ParseExact((DateTime)row2["Service_date"],"MM/dd/yyyy",CultureInfo.InvariantCulture); 
+                     WS.Cell(String.Format("a{0}", t)).NumberFormatString = "MM/dd/yy"; //  Bytescout.Spreadsheet.ExtendedFormat.;
+                    var starttime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["Start_Time"])); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
+                    var endtime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["End_Time"]));
+                    string formattedEndTime = endtime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
+                    string formattedStartTime = starttime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
+                    WS.Cell(String.Format("b{0}", t)).Value = formattedStartTime;
+                    WS.Cell(String.Format("c{0}", t)).Value = formattedEndTime;
+                   // WS.Cell(String.Format("b{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["Start_Time"])); //  Convert.ToDateTime(Convert.ToDateTime(row2["Start_Time"]).ToString("h:mm tt")); // CDate(String.Format("{0} {1}", "12/31/1899", row("Start_Time"))).ToString("MM/dd/yyyy h:mm:00 tt")
+                   // WS.Cell(String.Format("c{0}", t)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["End_Time"]));
                     WS.Cell(String.Format("d{0}", t)).Value = "0";
-                    WS.Cell(String.Format("g{0}", t)).Value = row2["SAM"].ToString().Trim(); ;
+                   // WS.Cell(String.Format("g{0}", t)).Value = row2["SAM"].ToString().Trim(); 
                     WS.Cell(String.Format("h{0}", t)).Value = row2["Initials"].ToString().Trim();
                     WS.Cell(String.Format("i{0}", t)).Value = row2["Contact_Method"].ToString().Trim();
                     WS.Cell(String.Format("j{0}", t)).Value = row2["Behavioral_Indicators"].ToString().Trim();
@@ -815,27 +847,27 @@ namespace OODForms
                     if (ds.Tables[0].Rows.Count > 0)
                     {
                         row = ds.Tables[0].Rows[0];
-                        WS.Cell("m75").Value = row["EM_Sum_Ind_Self_Assess"].ToString().Trim();
-                        WS.Cell("m76").Value = row["EM_Sum_Provider_Assess"].ToString().Trim();
-                      //  WS.Cell("m76").Value = row["EM_Sum_Ind_Self_Assess"].ToString().Trim();
-                      //  WS.Cell("m77").Value = row["EM_Sum_Provider_Assess"].ToString().Trim();
+                      //  WS.Cell("m75").Value = row["EM_Sum_Ind_Self_Assess"].ToString().Trim();
+                       // WS.Cell("m76").Value = row["EM_Sum_Provider_Assess"].ToString().Trim();
+                        WS.Cell("m76").Value = row["EM_Sum_Ind_Self_Assess"].ToString().Trim();
+                        WS.Cell("m77").Value = row["EM_Sum_Provider_Assess"].ToString().Trim();
 
                         if (row["VTS_Review"].ToString().ToUpper() == "Y")
                         {
-                            WS.Cell("m79").Value = "Yes";
-                           // WS.Cell("m80").Value = "Yes";
+                          //  WS.Cell("m79").Value = "Yes";
+                            WS.Cell("m80").Value = "Yes";
                         }
                         else
                         {
-                           WS.Cell("m79").Value = "No";
-                          //  WS.Cell("m80").Value = "No";
+                         //  WS.Cell("m79").Value = "No";
+                            WS.Cell("m80").Value = "No";
                         }
                     }
 
                 }
 
-                WS.Cell("a21").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
-               // WS.Cell("a22").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
+               // WS.Cell("a21").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
+                WS.Cell("a22").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
 
                 MemoryStream ms = new MemoryStream();
                 SS.SaveToStreamXLSX(ms);
@@ -858,54 +890,70 @@ namespace OODForms
             }
         }
 
-        public string generateForm10(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId)
+        public string generateForm10(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId, string loggedInUserPersonId)
         {
             try
             {
-            OODFormDataGetter oodfdg = new OODFormDataGetter();
-            string pdfTronKeyResult = oodfdg.getPDFTronKey(token);
-            LicenseResponse[] pdfTronKey = JsonConvert.DeserializeObject<LicenseResponse[]>(pdfTronKeyResult);
-            pdftron.PDFNet.Initialize(pdfTronKey[0].PDFTronKey);
+                OODFormDataGetter oodfdg = new OODFormDataGetter();
+                string pdfTronKeyResult = oodfdg.getPDFTronKey(token);
+                LicenseResponse[] pdfTronKey = JsonConvert.DeserializeObject<LicenseResponse[]>(pdfTronKeyResult);
+                pdftron.PDFNet.Initialize(pdfTronKey[0].PDFTronKey);
 
-            string crpath = oodfdg.getFormTemplatePath(token);
-            PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
-            string path = pathdatalist[0].path;
-            string crname = "OOD_transportation_10.pdf";
-            string reportpath = string.Format(path, crname);
+                string crpath = oodfdg.getFormTemplatePath(token);
+                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+                string path = pathdatalist[0].path;
+                string crname = "OOD_transportation_10.pdf";
+                string reportpath = string.Format(path, crname);
 
-            PDFDoc form10Template = new PDFDoc(reportpath);
+                PDFDoc form10Template = new PDFDoc(reportpath);
 
-            // Gather Data for the Person Completing the Report
-            string personCompletingReportData = oodfdg.getPersonCompletingReportName(token);
-            personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
-            string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+                // Gather Data for the Person Completing the Report
+                string personCompletingReport = string.Empty;
 
-            // Creates a unique string of numbers for the Invoice # field
-            DateTime currentDate = DateTime.Now;
-            string currentDateStr = currentDate.ToString("M/d/yy");
-            string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
-            string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
+                // Gather Data for the Person Completing the Report
+                DataSet ds3 = new DataSet();
 
-            long consumerId = long.Parse(consumerIdString);
-            //long serviceCodeId = long.Parse(serviceCode);
+                if (!string.IsNullOrEmpty(loggedInUserPersonId))
+                {
+                    ds3 = oodfdg.getPersonCompletingReport(token, loggedInUserPersonId);
+                }
 
-            // Gathers all the data for the table in the pdf (startTime, endTime, startLocation, endLocation, units, # in vehicle per trip, staff initials)
-            string returnedData = oodfdg.getForm10PDFData(token, referenceNumber, startDate, endDate, consumerIdString, userId);
-            List<form10Data> form10DataList = JsonConvert.DeserializeObject<List<form10Data>>(returnedData);
+                if (ds3.Tables.Count > 0 && ds3.Tables[0].Rows.Count > 0)
+                {
+                    personCompletingReport = String.Format("{0} {1} ", ds3.Tables[0].Rows[0]["First_Name"], ds3.Tables[0].Rows[0]["Last_Name"]);
+                }
+                //string personCompletingReportData = oodfdg.getPersonCompletingReportName(token, loggedInUserPersonId);
+                //personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                //string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
 
-            string startDateOnReport = minDate(form10DataList);
-            string endDateOnReport = maxDate(form10DataList);
+                // Creates a unique string of numbers for the Invoice # field
+                DateTime currentDate = DateTime.Now;
+                string currentDateStr = currentDate.ToString("M/d/yy");
+                string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
+                //string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
+                string invoiceNumber = DateTime.Now.ToString("MMddyyyyHHmmss");
 
-            string authorizationNumber = referenceNumber;
-            if (referenceNumber == "%")
-            {
-                authorizationNumber = form10DataList[0].authorizationNumber;
-            };
 
-            // Takes all the staff Initials from the table and uses unique values to store the direct service staff initials
-            string directServiceStaffNames = string.Join(" ", form10DataList.Select(data => data.nameAndInitials).Distinct());
+                long consumerId = long.Parse(consumerIdString);
+                //long serviceCodeId = long.Parse(serviceCode);
 
-            var fieldData = new List<(string fieldName, string value)>
+                // Gathers all the data for the table in the pdf (startTime, endTime, startLocation, endLocation, units, # in vehicle per trip, staff initials)
+                string returnedData = oodfdg.getForm10PDFData(token, referenceNumber, startDate, endDate, consumerIdString, userId);
+                List<form10Data> form10DataList = JsonConvert.DeserializeObject<List<form10Data>>(returnedData);
+
+                string startDateOnReport = minDate(form10DataList);
+                string endDateOnReport = maxDate(form10DataList);
+
+                string authorizationNumber = referenceNumber;
+                if (referenceNumber == "%")
+                {
+                    authorizationNumber = form10DataList[0].authorizationNumber;
+                };
+
+                // Takes all the staff Initials from the table and uses unique values to store the direct service staff initials
+                string directServiceStaffNames = string.Join(" ", form10DataList.Select(data => data.nameAndInitials).Distinct());
+
+                var fieldData = new List<(string fieldName, string value)>
                 {
                     ("Authorization", authorizationNumber),
                     ("Provider_Invoice", invoiceNumber),
@@ -922,28 +970,28 @@ namespace OODForms
 
                 double invoiceTotal = 0;
 
-            // Iterate through the field data and set values
-            foreach (var (fieldName, value) in fieldData)
-            {
-                Field field = form10Template.GetField(fieldName);
-                field.SetValue(value);
+                // Iterate through the field data and set values
+                foreach (var (fieldName, value) in fieldData)
+                {
+                    Field field = form10Template.GetField(fieldName);
+                    field.SetValue(value);
 
-                // resets a value on the pdf so all fields show (otherwise the fields may not show correctly on finished pdf)
-                field.RefreshAppearance();
-            }
+                    // resets a value on the pdf so all fields show (otherwise the fields may not show correctly on finished pdf)
+                    field.RefreshAppearance();
+                }
 
-            for (int i = 1; i <= form10DataList.Count; i++)
-            {
-                DateTime dateTime = DateTime.Parse(form10DataList[i - 1].date);
-                string datePart = dateTime.ToString("M/d/yy");
+                for (int i = 1; i <= form10DataList.Count; i++)
+                {
+                    DateTime dateTime = DateTime.Parse(form10DataList[i - 1].date);
+                    string datePart = dateTime.ToString("M/d/yy");
 
-                DateTime parsedStartTime = DateTime.ParseExact(form10DataList[i - 1].startTime, "HH:mm:ss", CultureInfo.InvariantCulture);
+                    DateTime parsedStartTime = DateTime.ParseExact(form10DataList[i - 1].startTime, "HH:mm:ss", CultureInfo.InvariantCulture);
 
-                string formattedStartTime = parsedStartTime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
+                    string formattedStartTime = parsedStartTime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
 
-                DateTime parsedEndTime = DateTime.ParseExact(form10DataList[i - 1].endTime, "HH:mm:ss", CultureInfo.InvariantCulture);
+                    DateTime parsedEndTime = DateTime.ParseExact(form10DataList[i - 1].endTime, "HH:mm:ss", CultureInfo.InvariantCulture);
 
-                string formattedEndTime = parsedEndTime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
+                    string formattedEndTime = parsedEndTime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
 
                     TimeSpan timeDifference = parsedEndTime - parsedStartTime;
                     double minutesDifference = timeDifference.TotalMinutes;
@@ -973,42 +1021,42 @@ namespace OODForms
                         ("Text4", invoiceTotal.ToString("C2"))
                     };
 
-                // Iterate through the table data and set values for each row
-                foreach (var (fieldName, value) in tableData)
-                {
-                    Field field = form10Template.GetField(fieldName);
-                    field.SetValue(value);
-                    field.RefreshAppearance();
+                    // Iterate through the table data and set values for each row
+                    foreach (var (fieldName, value) in tableData)
+                    {
+                        Field field = form10Template.GetField(fieldName);
+                        field.SetValue(value);
+                        field.RefreshAppearance();
+                    }
                 }
-            }
 
 
-            List<string> fieldNames = new List<string>();
+                List<string> fieldNames = new List<string>();
                 List<string> test = new List<string>();
                 FieldIterator itr;
 
-            for (itr = form10Template.GetFieldIterator(); itr.HasNext(); itr.Next())
-            {
-                Field field = itr.Current();
-                string fieldName = field.GetName();
-                fieldNames.Add(fieldName);
+                for (itr = form10Template.GetFieldIterator(); itr.HasNext(); itr.Next())
+                {
+                    Field field = itr.Current();
+                    string fieldName = field.GetName();
+                    fieldNames.Add(fieldName);
 
-                string testing = field.GetType().ToString();
-                test.Add(testing);
-            }
+                    string testing = field.GetType().ToString();
+                    test.Add(testing);
+                }
 
-            MemoryStream pdfStream = new MemoryStream();
-            form10Template.Save(pdfStream, SDFDoc.SaveOptions.e_linearized);
+                MemoryStream pdfStream = new MemoryStream();
+                form10Template.Save(pdfStream, SDFDoc.SaveOptions.e_linearized);
 
-            Attachment attachment = new Attachment
-            {
-                filename = "Form10",
-                data = pdfStream
-            };
+                Attachment attachment = new Attachment
+                {
+                    filename = "Form10",
+                    data = pdfStream
+                };
 
-            DisplayAttachmentPDF(attachment);
+                DisplayAttachmentPDF(attachment);
 
-            return "Success";
+                return "Success";
             }
             catch (Exception ex)
             {

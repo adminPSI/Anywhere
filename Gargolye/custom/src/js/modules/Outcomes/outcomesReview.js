@@ -23,10 +23,14 @@ const outcomesReview = (function () {
   let outcomeTypeFilterVal;
 
   let selectedDateSpan = { to: null, from: null };
+  let unitType;
   let spanLength;
   let daysBackInput;
   let toDateInput;
   let fromDateInput;
+
+  let outcomesReviewDiv;
+  let outcomeTabs;
 
   // Constants
   const NO_FREQ = 'No Frequency';
@@ -60,33 +64,45 @@ const outcomesReview = (function () {
 
     if (target.dataset.actionNav === 'miniRosterDone') {
       DOM.toggleNavLayout();
-      PROGRESS.SPINNER.show('Loading...');
+
+      roster2.removeConsumerFromActiveConsumers(selectedConsumerId);
 
       const activeConsumers = roster2.getActiveConsumers();
       selectedConsumerId = activeConsumers[0].id;
-
-      // rebuild & populate tabs/tables
-      const outcomeTabs = buildTabs();
-      outcomesReviewDiv.appendChild(outcomeTabs);
+      //selectedConsumerCard = activeConsumers[0].card;
 
       await getReviewTableData();
+      await getReviewTableDataSecondary();
+
+      // rebuild & populate tabs/tables
+      const newOutcomeTabs = buildTabs();
+      outcomesReviewDiv.replaceChild(newOutcomeTabs, outcomeTabs);
+      outcomeTabs = newOutcomeTabs;
 
       populateTabSections();
+      
     }
   }
 
   // Filtering
   //----------------------------------------------------
   // date span filter
+  function updateFilterDates() {
+    daysBackToggleBtn.textContent = `${unitType} Back`;
+    daysBackLabel.textContent = `${unitType} Back`;
+    daysBackInput.value = spanLength;
+    fromDateInput.value = selectedDateSpan.from;
+    toDateInput.value = selectedDateSpan.to;
+  }
   function buildFilterDates() {
     const toggleButtonWrap = _DOM.createElement('div', { class: 'dateFilterToggle' });
-    const daysBackToggleBtn = _DOM.createElement('button', { class: 'active', id: 'days-back-btn', text: `${unitType} Back` });
+    daysBackToggleBtn = _DOM.createElement('button', { class: 'active', id: 'days-back-btn', text: `${unitType} Back` });
     const dateRangeToggleBtn = _DOM.createElement('button', { id: 'date-range-btn', text: 'Date Range' });
     toggleButtonWrap.appendChild(daysBackToggleBtn);
     toggleButtonWrap.appendChild(dateRangeToggleBtn);
 
     const daysBackInputWrap = _DOM.createElement('div', { class: ['daysBack', 'active'] });
-    const daysBackLabel = _DOM.createElement('label', { for: 'daysBack', text: `${unitType} Back` });
+    daysBackLabel = _DOM.createElement('label', { for: 'daysBack', text: `${unitType} Back` });
     daysBackInput = _DOM.createElement('input', { id: 'daysBack', type: 'number', name: 'daysBack', value: spanLength });
     daysBackInputWrap.appendChild(daysBackLabel);
     daysBackInputWrap.appendChild(daysBackInput);
@@ -279,7 +295,7 @@ const outcomesReview = (function () {
       typeBtnWrap.classList.add('hidden');
     } else {
       typeBtnWrap.classList.remove('hidden');
-      typeBtnWrap.textContent = `Outcome Type: ${outcomeType}`;
+      outcomeTypeBtn.textContent = `Outcome Type: ${outcomeType}`;
     }
   }
   // filter popup
@@ -299,11 +315,6 @@ const outcomesReview = (function () {
       readonly: false,
     });
 
-    typesDrop.addEventListener('change', event => {
-      const selectedOption = event.target.options[event.target.selectedIndex];
-      outcomeTypeFilterVal = selectedOption;
-    });
-
     const data = goalTypes.map(type => {
       return {
         value: type.goalTypeId,
@@ -311,7 +322,9 @@ const outcomesReview = (function () {
       };
     });
     data.unshift({ value: '%', text: 'All' });
-    dropdown.populate(typesDrop, data, '%');
+
+    const defaultValue = outcomeTypeFilterVal?.value ?? '%';
+    dropdown.populate(typesDrop, data, defaultValue);
 
     return typesDrop;
   }
@@ -327,17 +340,31 @@ const outcomesReview = (function () {
       { value: 'Complete', text: 'Complete' },
       { value: 'Incomplete', text: 'Incomplete' },
     ];
-    dropdown.populate(servDrop, data, 'All');
 
-    servDrop.addEventListener('change', event => {
-      const selectedOption = event.target.options[event.target.selectedIndex];
-      serviceFilterVal = selectedOption;
-    });
+    const defaultValue = serviceFilterVal?.value ?? 'All';
+    dropdown.populate(servDrop, data, defaultValue);
 
     return servDrop;
   }
+  function closeFilter(closefilter) {
+    if (closefilter == 'serviceBtn') {
+      serviceFilterVal.text = 'All';
+      serviceFilterVal.value = 'All'
+    }
+    if (closefilter == 'outcomeTypeBtn') {
+      outcomeTypeFilterVal.text = 'All';
+      outcomeTypeFilterVal.value = '%';
+    }
+    applyFilter();
+  }
   async function showFilterPopup(IsShow) {
-    filterPopup = POPUP.build({});
+    let tempServiceVal, tempTypeVal;
+
+    filterPopup = POPUP.build({
+      closeCallback: () => {
+        
+      }
+    });
 
     const serviceDropdown = buildServiceDropdown();
     const typesDropdown = await buildTypesDropdown();
@@ -347,7 +374,18 @@ const outcomesReview = (function () {
       type: 'contained',
     });
     applyButton.classList.add('singleBtn');
+
+    serviceDropdown.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+      tempServiceVal = selectedOption;
+    });
+    typesDropdown.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+      tempTypeVal = selectedOption;
+    });
     applyButton.addEventListener('click', () => {
+      serviceFilterVal = tempServiceVal ?? serviceFilterVal;
+      outcomeTypeFilterVal = tempTypeVal ?? outcomeTypeFilterVal;
       applyFilter();
       POPUP.hide(filterPopup);
     });
@@ -809,6 +847,7 @@ const outcomesReview = (function () {
       tabNavCallback: function (data) {
         activeTab = data.activeSection;
         setUnitType();
+        updateFilterDates();
       },
     });
   }
@@ -922,7 +961,7 @@ const outcomesReview = (function () {
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
-      a[occurrence][objID].timesDoc = d.timesDocumented;
+      a[occurrence][objID].timesDoc = d.timesDocumented || '0';
       a[occurrence][objID].successRate = d.objectiveSuccess;
   
       return a;
@@ -936,8 +975,8 @@ const outcomesReview = (function () {
       const staffId = d.staffId;
 
       if (filterBy) {
-        if (filterBy.service !== d.objectiveSuccessDescription) return;
-        if (filterBy.type !== d.goalTypeId) return;
+        if (filterBy.service && filterBy.service !== d.objectiveSuccessDescription) return;
+        if (filterBy.type && filterBy.type !== d.goalTypeId) return;
       }
 
       if (outcomeOjb[occurrence]) {
@@ -991,25 +1030,29 @@ const outcomesReview = (function () {
 
     sortReviewTableDataSecondary(data, outcomesData);
   }
-  async function init(consumer, date) {
+  async function init(consumer, date, allowedConsumerIds) {
     console.clear();
 
     selectedConsumerId = consumer.id;
-    selectedDate = date;
+    selectedConsumerCard = consumer.card;
+    selectedDate = date; 
+    serviceFilterVal = {};
+    outcomeTypeFilterVal = {};
 
     setActiveModuleSectionAttribute('outcomes-review');
     PROGRESS.SPINNER.show('Loading Outcomes...');
 
     await getReviewTableData();
     await getReviewTableDataSecondary();
+    console.table(outcomesData);
 
     DOM.clearActionCenter();
 
-    const outcomesReviewDiv = _DOM.createElement('div');
+    outcomesReviewDiv = _DOM.createElement('div');
     outcomesReviewDiv.classList.add('outcomesReview');
 
     const filterDisplay = buildCurrentFilterdisplay();
-    const outcomeTabs = buildTabs();
+    outcomeTabs = buildTabs();
 
     outcomesReviewDiv.appendChild(filterDisplay);
     outcomesReviewDiv.appendChild(outcomeTabs);
@@ -1020,8 +1063,8 @@ const outcomesReview = (function () {
 
     goalTypes = await outcomesAjax.getAllGoalTypes();
 
-    roster2.setAllowedConsumers(['%']);
-    roster2.addConsumerToActiveConsumers(consumer.card);
+    roster2.setAllowedConsumers(allowedConsumerIds);
+    roster2.addConsumerToActiveConsumers(selectedConsumerCard);
     roster2.miniRosterinit(null, {
       hideDate: true,
     });

@@ -7,6 +7,7 @@ using System.Data.Odbc;
 using System.IO;
 using System.Linq;
 using System.Web.Script.Serialization;
+using System.Windows.Forms;
 
 namespace Anywhere.service.Data.PlanSignature
 {
@@ -358,11 +359,12 @@ namespace Anywhere.service.Data.PlanSignature
             }
         }
 
-        public string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId)
+        public string setSalesForceIdForTeamMemberUpdate(string peopleId, string teamMemberType, string salesForceId)
         {
             logger.debug("updateSignatureOrder ");
             List<string> list = new List<string>();
             list.Add(peopleId);
+            list.Add(teamMemberType);
             list.Add(salesForceId);
             string text = "CALL DBA.ANYW_ISP_SetSalesForceIdForTeamMemberUpdate(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try

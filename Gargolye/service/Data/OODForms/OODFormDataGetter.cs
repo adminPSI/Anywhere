@@ -910,7 +910,13 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.Code_Table ON dba.EM_Contacts.Activity_Code = dba.Code_Table.Code ");
             sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
             sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
-            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userID);
+
+            if (userID != "%25")
+            {
+                sb.AppendFormat("AND dba.Case_Notes.Original_User_ID LIKE '{0}' ", userID);
+            }
+
+            // sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userID);
 
             if (ServiceCodeID != "%")
             {
@@ -971,8 +977,13 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Case_Notes.Case_Manager_ID = dba.Persons.Person_ID ");
             sb.Append("LEFT OUTER JOIN dba.Employer ON dba.EM_Contacts.Employer_ID = dba.Employer.Employer_ID ");
             sb.Append("LEFT OUTER JOIN dba.Code_Table ON dba.EM_Contacts.Activity_Code = dba.Code_Table.Code ");
-            sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
-            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userID);
+            sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+
+            if (userID != "%25")
+            {
+                sb.AppendFormat("AND dba.Case_Notes.Original_User_ID LIKE '{0}' ", userID);
+            } 
+                
 
             //'sb.Append("AND (DBA.Code_Table.Field_ID = 'outcome') ") 'Removed per ticket 84964
             sb.AppendFormat("AND  dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);

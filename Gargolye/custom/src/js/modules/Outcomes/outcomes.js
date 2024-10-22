@@ -1962,7 +1962,7 @@ const outcomes = (function () {
             style: 'secondary',
             type: 'contained',
             callback: () => {
-                outcomesReview.init(selectedConsumerObj, currDate)
+                outcomesReview.init(selectedConsumerObj, currDate, allowedConsumerIds)
             }
         })
         let buttonName = 'VIEW PLAN';
@@ -2335,7 +2335,7 @@ const outcomes = (function () {
                     token: $.session.Token,
                     userId: $.session.UserId,
                     consumerId: selectedConsumerId,
-                    attachmentType: attachment.type,
+                    attachmentType: attachment.description,
                     attachment: attachment.arrayBuffer,
                     startDate: startDate,
                     endDate: endDate,
