@@ -1343,6 +1343,7 @@ const OOD = (() => {
         dropdown.populate('createreferenceNumbersDropdown', data, createFilterValues.referenceNumber);
        } else {
         dropdown.populate('createreferenceNumbersDropdown', data, filterValues.referenceNumber);
+        createFilterValues.referenceNumber = filterValues.referenceNumber
         checkCreatePopupRequiredFields();
        }
         

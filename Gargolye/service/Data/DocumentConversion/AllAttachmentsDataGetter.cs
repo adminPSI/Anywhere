@@ -229,6 +229,23 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
+        public string getOutcomePlanAttachmentFileName(string consumerId)
+        {
+            logger.debug("getOutcomePlanAttachmentFileName " + consumerId);
+            List<string> list = new List<string>();
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_getOutcomePlanAttachmentFileName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallRaw(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("640.1", ex.Message + "ANYW_getOutcomePlanAttachmentFileName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "640.1: error ANYW_getOutcomePlanAttachmentFileName";
+            }
+        }
+
         public bool ValidateToken(string token)
         {
             return dg.validateToken(token);

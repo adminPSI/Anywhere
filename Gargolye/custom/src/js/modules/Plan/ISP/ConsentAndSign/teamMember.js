@@ -90,7 +90,7 @@ const csTeamMember = (() => {
                 .map(dd => {
                     return {
                         value: dd.Id,
-                        text: dd.FirstName + ' ' + dd.LastName,
+                        text: dd.AccountName,
                     };
                 });
         

@@ -224,11 +224,12 @@ namespace Anywhere.service.Data
         public void viewOutcomePlanAttachment(string token, string consumerId)
         {
             Attachment attachment = new Attachment();
-            attachment.filename = "viewPlan";
+            attachment.filename = "";
             attachment.data = null;
             bool isTokenValid = anywhereWorker.ValidateToken(token);
             if (isTokenValid)
             {
+                attachment.filename = aadg.getOutcomePlanAttachmentFileName(consumerId);
                 attachment.data = aadg.GetOutcomePlanAttachmentData(consumerId);
 
                 if (attachment.data != null)

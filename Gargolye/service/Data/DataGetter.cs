@@ -7097,6 +7097,7 @@ namespace Anywhere.Data
             list.Add(attachment);
             list.Add(startDate);
             list.Add(endDate);
+            list.Add(attachmentType);
 
             string text = "CALL DBA.ANYW_GoalsAndServices_AddOutcomePlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
