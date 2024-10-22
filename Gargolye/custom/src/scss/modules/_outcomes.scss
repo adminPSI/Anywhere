@@ -753,6 +753,10 @@ div.textarea {
 
     // columns
     .rowToggle {
+      flex-grow: 0;
+      flex-basis: 24px;
+      max-width: 24px;
+
       * {
         pointer-events: none;
       }

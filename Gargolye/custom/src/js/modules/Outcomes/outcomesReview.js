@@ -90,6 +90,9 @@ const outcomesReview = (function () {
   function updateFilterDates() {
     daysBackToggleBtn.textContent = `${unitType} Back`;
     daysBackLabel.textContent = `${unitType} Back`;
+    daysBackInput.value = spanLength;
+    fromDateInput.value = selectedDateSpan.from;
+    toDateInput.value = selectedDateSpan.to;
   }
   function buildFilterDates() {
     const toggleButtonWrap = _DOM.createElement('div', { class: 'dateFilterToggle' });
@@ -1041,6 +1044,7 @@ const outcomesReview = (function () {
 
     await getReviewTableData();
     await getReviewTableDataSecondary();
+    console.table(outcomesData);
 
     DOM.clearActionCenter();
 
