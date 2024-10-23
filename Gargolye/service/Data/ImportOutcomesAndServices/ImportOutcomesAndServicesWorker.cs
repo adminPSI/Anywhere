@@ -7,6 +7,7 @@ using System.Web.Script.Serialization;
 using pdftron.Common;
 using pdftron.PDF;
 using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
+using static pdftron.PDF.Page;
 
 namespace Anywhere.service.Data.ImportOutcomesAndServices
 {
@@ -265,6 +266,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             return extractedTables;
         }
 
+
+        List<Rect> linePositions = new List<Rect>(); // To store corresponding bbox values
         string ProcessTextExtractor(TextExtractor textExtractor, Page page)
         {
             List<string> combinedLines = new List<string>();
@@ -304,6 +307,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                 if (currentLineBBox.x1 != 0 && currentLineBBox.x1 != lineBBox.x1)
                 {
                     combinedLines.Add($"{currentLineText.Trim()}");
+                    linePositions.Add(currentLineBBox); // Add the current line's BBox to the positions list
+
                     currentLineText = "";
                     currentLineBBox = new Rect();
                 }
@@ -315,6 +320,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                     if (previousWord != null && IsVerticalLineBetweenWords(previousWord, word, verticalLines))
                     {
                         combinedLines.Add($"{currentLineText.Trim()}");
+                        linePositions.Add(currentLineBBox); // Add the current line's BBox to the positions list
+
                         currentLineText = "";
                         currentLineBBox = new Rect();
                     }
@@ -370,6 +377,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                     if (gapBetweenLinesValue > gapBetweenLines)
                     {
                         combinedLines.Add(" "); // Insert "BLANK CELL" when the gap is too large
+                        linePositions.Add(new Rect()); // Add a blank BBox for the "BLANK CELL"
                     }
                 }
 
@@ -380,6 +388,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             if (!string.IsNullOrEmpty(currentLineText))
             {
                 combinedLines.Add($"{currentLineText.Trim()}");
+                linePositions.Add(currentLineBBox); // Add the last line's BBox
             }
 
             return string.Join("\n", combinedLines);
@@ -457,11 +466,15 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 WhoIsResponsible = GetNextLine(lines, ref i)
                             };
 
-                            // Check if WhoIsResponsible is an assessment area, and replace it with " " if it is
-                            if (assessmentAreas.Contains(riskAssessment.WhoIsResponsible))
+
+                            if (assessmentAreas.Contains(riskAssessment.WhoIsResponsible))  // Check if WhoIsResponsible is an assessment area, and replace it with " " if it is
                             {
                                 riskAssessment.WhoIsResponsible = " ";
-                                i--;
+                                i--; // Move back so the current assessment area is not skipped
+                            }
+                            else if (linePositions[i].x1 < 300)
+                            {
+                                riskAssessment.WhoIsResponsible = " "; // Set to " " if x1 is not is correct spot
                             }
 
                             riskAssessmentsList.Add(riskAssessment);

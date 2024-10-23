@@ -774,8 +774,8 @@ div.textarea {
         max-width: 300px;
       }
       > div:nth-child(3) {
+        flex-grow: 2;
         flex-basis: 100px;
-        max-width: 200px;
       }
       > div:nth-child(4) {
         flex-basis: 120px;
@@ -813,6 +813,23 @@ div.textarea {
         flex-basis: 80px;
         // max-width: 80px;
       }
+    }
+  }
+}
+
+#reviewNotePopup {
+  .reviewNoteHeader {
+    margin-bottom: 10px;
+
+    p {
+      font-weight: $bold;
+    }
+  }
+  .reviewNoteInfo {
+    margin-bottom: 16px;
+
+    p {
+      margin-bottom: 6px;
     }
   }
 }
