@@ -465,7 +465,7 @@ const outcomesReview = (function () {
     const notifyEmployeeCheckbox = input.buildCheckbox({
       text: 'Notify Employee',
       callback: e => {
-        saveData.notifyEmployee = e.target.checked;
+        saveData.notifyEmployee = e.target.checked ? 'T' : 'F';
       }
     });
     const savebtn = button.build({
