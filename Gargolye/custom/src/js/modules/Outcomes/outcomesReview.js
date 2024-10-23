@@ -1,17 +1,18 @@
 const outcomesReview = (function () {
+  // Data
   let selectedConsumerId;
   let selectedDate;
   let outcomesData;
   let outcomesDataRaw;
   let outcomesDataSecondaryRaw;
+  let dropdownData;
   let activityRes;
   let locations;
   let successTypes;
   let goalTypes;
-
   let tabSections;
   let activeTab;
-
+  // Filter
   let filterBtn;
   let servBtnWrap;
   let serviceBtn;
@@ -21,17 +22,18 @@ const outcomesReview = (function () {
   let outcomeTypeCloseBtn;
   let serviceFilterVal;
   let outcomeTypeFilterVal;
-
+  // Date span/days back filter
   let selectedDateSpan = { to: null, from: null };
   let unitType;
   let spanLength;
   let daysBackInput;
   let toDateInput;
   let fromDateInput;
-
+  // DOM
   let outcomesReviewDiv;
   let outcomeTabs;
-
+  let detailsPopup;
+  let reviewNotePopup;
   // Constants
   const NO_FREQ = 'No Frequency';
   const HOUR = 'Hourly';
@@ -39,20 +41,19 @@ const outcomesReview = (function () {
   const WEEK = 'Weekly';
   const MONTH = 'Monthly';
   const YEAR = 'Yearly';
-
   const FREQUENCY = {
-    'OBJFMAL': "At least", 
-    'OBJFMAN': "As needed", 
-    'OBJFMAR': "As Requested", 
-    'OBJFMEX': "Exactly", 
-    'OBJFMNM': "No more than"
+    OBJFMAL: 'At least',
+    OBJFMAN: 'As needed',
+    OBJFMAR: 'As Requested',
+    OBJFMEX: 'Exactly',
+    OBJFMNM: 'No more than',
   };
   const RECURRANCE = {
-    D: "per day", 
-    Y: "per year", 
-    W: "per week", 
-    M: "per month", 
-    H: "per hour"
+    D: 'per day',
+    Y: 'per year',
+    W: 'per week',
+    M: 'per month',
+    H: 'per hour',
   };
 
   // Mini Roster
@@ -69,7 +70,7 @@ const outcomesReview = (function () {
 
       const activeConsumers = roster2.getActiveConsumers();
       selectedConsumerId = activeConsumers[0].id;
-      //selectedConsumerCard = activeConsumers[0].card;
+      selectedConsumerCard = activeConsumers[0].card;
 
       await getReviewTableData();
       await getReviewTableDataSecondary();
@@ -80,7 +81,16 @@ const outcomesReview = (function () {
       outcomeTabs = newOutcomeTabs;
 
       populateTabSections();
-      
+
+      // data that is based off consumerID
+      outcomesAjax.getDaysBackForEditingGoalsAndUseConsumerLocation(selectedConsumerId, res => {
+        defaultPrimaryLocation = results[0].consumer_location;
+      });
+      outcomesAjax.getOutcomesPrimaryAndSecondaryLocations(
+        selectedConsumerId,
+        dates.formateToISO(selectedDate),
+        results => sortLocations(results),
+      );
     }
   }
 
@@ -96,30 +106,49 @@ const outcomesReview = (function () {
   }
   function buildFilterDates() {
     const toggleButtonWrap = _DOM.createElement('div', { class: 'dateFilterToggle' });
-    daysBackToggleBtn = _DOM.createElement('button', { class: 'active', id: 'days-back-btn', text: `${unitType} Back` });
+    daysBackToggleBtn = _DOM.createElement('button', {
+      class: 'active',
+      id: 'days-back-btn',
+      text: `${unitType} Back`,
+    });
     const dateRangeToggleBtn = _DOM.createElement('button', { id: 'date-range-btn', text: 'Date Range' });
     toggleButtonWrap.appendChild(daysBackToggleBtn);
     toggleButtonWrap.appendChild(dateRangeToggleBtn);
 
     const daysBackInputWrap = _DOM.createElement('div', { class: ['daysBack', 'active'] });
     daysBackLabel = _DOM.createElement('label', { for: 'daysBack', text: `${unitType} Back` });
-    daysBackInput = _DOM.createElement('input', { id: 'daysBack', type: 'number', name: 'daysBack', value: spanLength });
+    daysBackInput = _DOM.createElement('input', {
+      id: 'daysBack',
+      type: 'number',
+      name: 'daysBack',
+      value: spanLength,
+    });
     daysBackInputWrap.appendChild(daysBackLabel);
     daysBackInputWrap.appendChild(daysBackInput);
-    
+
     const dateRangeInputWrap = _DOM.createElement('div', { class: ['dateRange'] });
     const dateRangeInnerWrap1 = _DOM.createElement('div');
     const dateRangeInnerWrap2 = _DOM.createElement('div');
     dateRangeInputWrap.appendChild(dateRangeInnerWrap1);
     dateRangeInputWrap.appendChild(dateRangeInnerWrap2);
-    
+
     const fromDateLabel = _DOM.createElement('label', { for: 'fromDate', text: `From:` });
-    fromDateInput = _DOM.createElement('input', { id: 'fromDate', type: 'date', name: 'fromDate', value: selectedDateSpan.from });
+    fromDateInput = _DOM.createElement('input', {
+      id: 'fromDate',
+      type: 'date',
+      name: 'fromDate',
+      value: selectedDateSpan.from,
+    });
     dateRangeInnerWrap1.appendChild(fromDateLabel);
     dateRangeInnerWrap1.appendChild(fromDateInput);
 
     const toDateLabel = _DOM.createElement('label', { for: 'toDate', text: `To:` });
-    toDateInput = _DOM.createElement('input', { id: 'toDate', type: 'date', name: 'toDate', value:selectedDateSpan.to  });
+    toDateInput = _DOM.createElement('input', {
+      id: 'toDate',
+      type: 'date',
+      name: 'toDate',
+      value: selectedDateSpan.to,
+    });
     dateRangeInnerWrap2.appendChild(toDateLabel);
     dateRangeInnerWrap2.appendChild(toDateInput);
 
@@ -128,13 +157,13 @@ const outcomesReview = (function () {
     dateWrap.appendChild(daysBackInputWrap);
     dateWrap.appendChild(dateRangeInputWrap);
 
-    toggleButtonWrap.addEventListener('click', (e) => {
+    toggleButtonWrap.addEventListener('click', e => {
       if (e.target.classList.contains('active')) {
         return;
       }
 
-      const daysBack = dateWrap.querySelector('.daysBack')
-      const dateRange = dateWrap.querySelector('.dateRange')
+      const daysBack = dateWrap.querySelector('.daysBack');
+      const dateRange = dateWrap.querySelector('.dateRange');
 
       if (e.target === daysBackToggleBtn) {
         daysBack.classList.add('active');
@@ -150,13 +179,12 @@ const outcomesReview = (function () {
       dateRangeToggleBtn.classList.add('active');
     });
 
-    dateWrap.addEventListener('change', async (e) => {
+    dateWrap.addEventListener('change', async e => {
       if (e.target.id === 'daysBack') {
-        console.log('days back input changed', e.target.value);
         spanLength = e.target.value;
         selectedDateSpan.to = selectedDate;
 
-        switch(activeTab) {
+        switch (activeTab) {
           case NO_FREQ: {
             const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
@@ -188,7 +216,6 @@ const outcomesReview = (function () {
         populateTabSections();
       }
       if (e.target.id === 'fromDate') {
-        console.log('from date input changed', e.target.value);
         selectedDateSpan.from = e.target.value;
 
         await getReviewTableData();
@@ -196,7 +223,6 @@ const outcomesReview = (function () {
         populateTabSections();
       }
       if (e.target.id === 'toDate') {
-        console.log('to date input changed', e.target.value);
         selectedDateSpan.to = e.target.value;
 
         await getReviewTableData();
@@ -302,8 +328,14 @@ const outcomesReview = (function () {
   function applyFilter() {
     updateCurrentFilterDisplay(serviceFilterVal.text, outcomeTypeFilterVal.text);
 
-    const tableData = sortReviewTableData(outcomesDataRaw, { service: serviceFilterVal.value, type: outcomeTypeFilterVal.value });
-    sortReviewTableDataSecondary(outcomesDataSecondaryRaw, tableData, { service: serviceFilterVal.value, type: outcomeTypeFilterVal.value });
+    const tableData = sortReviewTableData(outcomesDataRaw, {
+      service: serviceFilterVal.value,
+      type: outcomeTypeFilterVal.value,
+    });
+    sortReviewTableDataSecondary(outcomesDataSecondaryRaw, tableData, {
+      service: serviceFilterVal.value,
+      type: outcomeTypeFilterVal.value,
+    });
 
     populateTabSections(tableData);
   }
@@ -349,7 +381,7 @@ const outcomesReview = (function () {
   function closeFilter(closefilter) {
     if (closefilter == 'serviceBtn') {
       serviceFilterVal.text = 'All';
-      serviceFilterVal.value = 'All'
+      serviceFilterVal.value = 'All';
     }
     if (closefilter == 'outcomeTypeBtn') {
       outcomeTypeFilterVal.text = 'All';
@@ -361,9 +393,7 @@ const outcomesReview = (function () {
     let tempServiceVal, tempTypeVal;
 
     filterPopup = POPUP.build({
-      closeCallback: () => {
-        
-      }
+      closeCallback: () => {},
     });
 
     const serviceDropdown = buildServiceDropdown();
@@ -396,33 +426,60 @@ const outcomesReview = (function () {
 
     POPUP.show(filterPopup);
   }
-
   // Add Review Note Popup
   //----------------------------------------------------
-  function showAddReviewNotePopup() {
-    const reviewNotePopup = POPUP.build({
-      id: 'reviewNotePopup'
+  function showAddReviewNotePopup({date, result, attempts, prompts, employeeId, activityId}) {
+    const saveData = {
+      consumerId: selectedConsumerId,
+      employeeId: employeeId,
+      objectiveActivityId: activityId,
+      objectiveActivityDate: date.split(' ')[0],
+      note: '',
+      result: result,
+      notifyEmployee: '',
+    };
+
+    reviewNotePopup = POPUP.build({
+      id: 'reviewNotePopup',
     });
 
-    const header = _DOM.createElement('div', {class: ['reviewNoteHeader']});
-
-    const topInfo = _DOM.createElement('div');
+    const header = _DOM.createElement('div', { class: ['reviewNoteHeader'] });
+    header.innerHTML = `<p>Service Review Note - ${selectedConsumerName}</p>`
+    const topInfo = _DOM.createElement('div', { class: ['reviewNoteInfo'] });
+    topInfo.innerHTML = `
+      <p>Date: ${date}</p>
+      <p>Result: ${result}</p>
+      <p>Attempts: ${attempts}</p>
+      <p>Prompts: ${prompts}</p>
+    `;
 
     const noteInput = input.build({
       label: 'Review Note',
       style: 'secondary',
       type: 'textarea',
+      callback: e => {
+        saveData.note = e.target.value;
+      }
     });
     const notifyEmployeeCheckbox = input.buildCheckbox({
       text: 'Notify Employee',
-  });
+      callback: e => {
+        saveData.notifyEmployee = e.target.checked;
+      }
+    });
     const savebtn = button.build({
       text: 'Save',
       style: 'secondary',
       type: 'contained',
       classNames: 'disabled',
       callback: () => {
+        outcomesAjax.addReviewNote({
+          token: $.session.Token,
+          ...saveData
+        });
 
+        POPUP.hide(reviewNotePopup);
+        POPUP.show(detailsPopup);
       },
     });
     const cancelbtn = button.build({
@@ -431,16 +488,18 @@ const outcomesReview = (function () {
       type: 'contained',
       classNames: 'disabled',
       callback: () => {
-        POPUP.hide(reviewNotePopup)
+        POPUP.hide(reviewNotePopup);
+        POPUP.show(detailsPopup);
       },
     });
 
-    
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     btnWrap.appendChild(savebtn);
     btnWrap.appendChild(cancelbtn);
 
+    reviewNotePopup.appendChild(header);
+    reviewNotePopup.appendChild(topInfo);
     reviewNotePopup.appendChild(noteInput);
     reviewNotePopup.appendChild(notifyEmployeeCheckbox);
     reviewNotePopup.appendChild(btnWrap);
@@ -450,58 +509,140 @@ const outcomesReview = (function () {
 
   // Detail View Popup
   //----------------------------------------------------
+  // Popup
   function buildPrimaryLocationDropdown(locId) {
     const select = dropdown.build({
       label: 'Primary Location',
       style: 'secondary',
     });
 
-    const data = outcomesLocations.Primary.map(pl => {
+    const data = locations.Primary.map(pl => {
       return {
         value: pl.Location_ID,
         text: pl.description,
       };
     });
 
+    dropdown.populate(select, data, locId);
+
     return select;
   }
-  function buildSecondaryLocationDropdown(locId) {
+  function buildSecondaryLocationDropdown(secLocId) {
     const select = dropdown.build({
       label: 'Secondary Location',
       style: 'secondary',
     });
 
+    if (!locations.Secondary || locations.Secondary.legnth < 1) return select;
+
+    const data = locations.Secondary.filter(sloc => {
+      return sloc.primaryLocId === secLocId ? true : false;
+    }).map(sl => {
+      return {
+        value: sl.Location_ID,
+        text: sl.description,
+        attributes: [{ key: 'data-primary-loc-id', value: sl.primaryLocId }],
+      };
+    });
+    data.unshift({
+      value: '',
+      text: '',
+    });
+
+    dropdown.populate(select, data, secLocId);
+
     return select;
   }
-  function buildResultsDropdown(result) {
+  function buildResultsDropdown(result = '') {
     const select = dropdown.build({
       label: 'Results',
       style: 'secondary',
     });
 
+    const data = Object.values(successTypes).map(r => {
+      return {
+        value: r.Objective_Success_Description,
+        text: `${r.Objective_Success} ${r.Objective_Success_Description}`,
+        attributes: [{ key: 'data-success', value: r.Objective_Success }],
+      };
+    });
+    data.unshift({
+      value: '',
+      text: '',
+    });
+
+    const successType = result || data[0].value;
+    successDetails = successTypes[successType];
+
+    dropdown.populate(select, data, result);
+
     return select;
   }
-  function buildPromptsDropdown(code) {
+  function buildPromptsDropdown(code = '') {
     const select = dropdown.build({
       label: 'Prompts',
       style: 'secondary',
     });
 
+    const data = dropdownData.prompts.map(op => {
+      return {
+        value: op.Code,
+        text: `${op.Code} ${op.Caption}`,
+      };
+    });
+    data.unshift({
+      value: '',
+      text: '',
+    });
+
+    dropdown.populate(select, data, code);
+
     return select;
   }
-  function buildAttemptsDropdown(attempt) {
+  function buildAttemptsDropdown(attempt = '') {
     const select = dropdown.build({
       label: 'Attempts',
       style: 'secondary',
     });
 
+    const data = [
+      { value: '', text: '' },
+      // { value: '', text: '&#216' },
+      // { value: '0', text: '0' },
+      { value: '1', text: '1' },
+      { value: '2', text: '2' },
+      { value: '3', text: '3' },
+      { value: '4', text: '4' },
+      { value: '5', text: '5' },
+      { value: '6', text: '6' },
+      { value: '7', text: '7' },
+      { value: '8', text: '8' },
+      { value: '9', text: '9' },
+    ];
+
+    dropdown.populate(select, data, attempt);
+
     return select;
   }
-  function buildCommunityIntegrationDropdown(ciLevel) {
+  function buildCommunityIntegrationDropdown(ciLevel = '') {
     const select = dropdown.build({
       label: 'Community Integration',
       style: 'secondary',
     });
+
+    const data = dropdownData.ci.map(ci => {
+      return {
+        value: ci.code,
+        text: `${ci.code} ${ci.captionname}`,
+      };
+    });
+    var defaultVal = {
+      value: '',
+      text: '',
+    };
+    data.unshift(defaultVal);
+
+    dropdown.populate(select, data, ciLevel);
 
     return select;
   }
@@ -519,12 +660,11 @@ const outcomesReview = (function () {
       value: endTime,
     });
 
-    
     const timeWrap = document.createElement('div');
     timeWrap.appendChild(start);
     timeWrap.appendChild(end);
 
-    return timeWrap;
+    return { timeWrap, start, end };
   }
   function buildNoteInput(note) {
     const noteInput = input.build({
@@ -542,8 +682,6 @@ const outcomesReview = (function () {
       text,
       style: 'secondary',
       type: 'contained',
-      classNames: 'disabled',
-      //callback: saveNewOutcome,
     });
 
     return btn;
@@ -553,7 +691,6 @@ const outcomesReview = (function () {
       text: 'Delete',
       style: 'secondary',
       type: 'contained',
-      //callback: deleteIncident,
     });
 
     return btn;
@@ -563,20 +700,17 @@ const outcomesReview = (function () {
       text: 'Add Review Note',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        showAddReviewNotePopup();
-      },
     });
 
     return btn;
   }
   function buildCardEnteredByDetails(enteredBy, lastUpdatedDateDirty) {
     let lastEditedTime = lastUpdatedDateDirty.split(' ')[1];
-    let lastEditHH = lastEditedTime.split(':')[0];
-    let lastEditMM = UTIL.leadingZero(lastEditedTime.split(':')[1]);
+    const lastEditHH = lastEditedTime.split(':')[0];
+    const lastEditMM = UTIL.leadingZero(lastEditedTime.split(':')[1]);
     lastEditedTime = `${lastEditHH}:${lastEditMM} ${lastUpdatedDateDirty.split(' ')[2]}`;
-    let lastEditedDate = editData.Last_Update.split(' ')[0];
-    let lastEdited = `${lastEditedDate} ${lastEditedTime}`;
+    const lastEditedDate = lastUpdatedDateDirty.split(' ')[0];
+    const lastEdited = `${lastEditedDate} ${lastEditedTime}`;
 
     const txtArea = document.createElement('p');
     txtArea.classList.add('enteredByDetail');
@@ -584,8 +718,18 @@ const outcomesReview = (function () {
 
     return txtArea;
   }
-  function showDetailViewPopup(editData) {
-    const detailsPopup = POPUP.build();
+  function showDetailViewPopup(editData, outcomeData) {
+    console.table(editData);
+    detailsPopup = POPUP.build({});
+    const tmpData = {};
+
+    if (editData) {
+      locationID = editData.Location_ID;
+    } else {
+      // TODO: defaultObjLocationId, defaultGoalLocationId, useConsumerLocation||defaultPrimaryLocation
+      // TODO: outcomes.js line 1021 ^^^^^
+      locationID = '';
+    }
 
     const primaryLocationDropdown = buildPrimaryLocationDropdown(editData.Location_ID);
     const secondaryLocationDropdown = buildSecondaryLocationDropdown(editData.Locations_Secondary_ID);
@@ -599,6 +743,173 @@ const outcomesReview = (function () {
     const deleteBtn = buildDeleteButton();
     const addReviewNoteBtn = buildAddNoteButton();
     const lastEditBy = buildCardEnteredByDetails(editData.submitted_by_user_id, editData.Last_Update);
+
+    const checkRequiredFields = () => {
+      const showAttempts = successDetails?.Show_Attempts;
+      const showPrompts = successDetails?.Show_Prompts;
+      const showTime = successDetails?.Show_Time;
+      const showCI = successDetails?.Show_Community_Integration;
+  
+      const attemptsRequired = successDetails?.Attempts_Required;
+      const promptsRequired = successDetails?.Prompt_Required;
+      const timeRequired = successDetails?.Times_Required;
+      const ciRequired = successDetails?.Community_Integration_Required;
+      const noteRequired = successDetails?.Notes_Required;
+  
+      // attempts
+      if (showAttempts === 'Y') {
+        attemptsDropdown.classList.remove('hidden');
+        attemptsDropdown.classList.remove('disabled');
+        if (attemptsRequired === 'Y') {
+          if (!currAttempts || currAttempts === '') {
+            attemptsDropdown.classList.add('error');
+          } else {
+            attemptsDropdown.classList.remove('error');
+          }
+        } else {
+          attemptsDropdown.classList.remove('error');
+        }
+      } else {
+        attemptsDropdown.classList.add('hidden');
+        attemptsDropdown.classList.add('disabled');
+      }
+      // prompts
+      if (showPrompts === 'Y') {
+        promptsDropdown.classList.remove('hidden');
+        promptsDropdown.classList.remove('disabled');
+        if (promptsRequired === 'Y') {
+          if (!currPrompt || currPrompt === '') {
+            promptsDropdown.classList.add('error');
+          } else {
+            promptsDropdown.classList.remove('error');
+          }
+        } else {
+          promptsDropdown.classList.remove('error');
+        }
+      } else {
+        promptsDropdown.classList.add('hidden');
+        promptsDropdown.classList.add('disabled');
+      }
+      // community integration
+      if (showCI === 'Y') {
+        cIDropdown.classList.remove('hidden');
+        cIDropdown.classList.remove('disabled');
+        if (ciRequired === 'Y') {
+          if (!currCI || currCI === '') {
+            cIDropdown.classList.add('error');
+          } else {
+            cIDropdown.classList.remove('error');
+          }
+        } else {
+          cIDropdown.classList.remove('error');
+        }
+      } else {
+        cIDropdown.classList.add('hidden');
+        cIDropdown.classList.add('disabled');
+      }
+      // start and end time
+      if (showTime === 'Y') {
+        timeInputs.start.classList.remove('disabled');
+        timeInputs.end.classList.remove('disabled');
+        if (timeRequired === 'Y') {
+          if (currStartTime === '') {
+            timeInputs.start.classList.add('error');
+          } else {
+            timeInputs.start.classList.remove('error');
+          }
+          if (currEndTime === '') {
+            timeInputs.end.classList.add('error');
+          } else {
+            timeInputs.end.classList.remove('error');
+          }
+        } else {
+          timeInputs.start.classList.remove('error');
+          timeInputs.end.classList.remove('error');
+        }
+      } else {
+        timeInputs.start.classList.add('disabled');
+        timeInputs.end.classList.add('disabled');
+      }
+      // note
+      if (noteRequired === 'Y') {
+        if (!currNote || currNote === '') {
+          noteInput.classList.add('error');
+        } else {
+          noteInput.classList.remove('error');
+        }
+      } else {
+        noteInput.classList.remove('error');
+      }
+
+      const errors = [...detailsPopup.querySelectorAll('.error')];
+      if (errors.length === 0) {
+        saveBtn.classList.remove('disabled');
+      } else {
+        saveBtn.classList.add('disabled');
+      }
+    }
+    
+    primaryLocationDropdown.addEventListener('change', e => {
+      tmpData.primaryLoc = e.target.value;
+    });
+    secondaryLocationDropdown.addEventListener('change', e => {
+      tmpData.secLoc = e.target.value;
+    });
+    resultsDropdown.addEventListener('change', e => {
+      tmpData.result = e.target.value;
+      checkRequiredFields();
+    });
+    promptsDropdown.addEventListener('change', e => {
+      tmpData.prompt = e.target.value;
+      checkRequiredFields();
+    });
+    attemptsDropdown.addEventListener('change', e => {
+      tmpData.attempt = e.target.value;
+      checkRequiredFields();
+    });
+    cIDropdown.addEventListener('change', e => {
+      tmpData.ci = e.target.value;
+      checkRequiredFields();
+    });
+
+    timeInputs.start.addEventListener('change', e => {
+      if (e.target) {
+        tmpData.startTime = e.target.value;
+      }
+      checkRequiredFields();
+    });
+    timeInputs.end.addEventListener('change', e => {
+      if (e.target) {
+        tmpData.endTime = e.target.value;
+      }
+      checkRequiredFields();
+    });
+    noteInput.addEventListener('change', e => {
+      tmpData.note = e.target.value;
+      checkRequiredFields();
+    });
+
+    addReviewNoteBtn.addEventListener('click', e => {
+      POPUP.hide(detailsPopup);
+      showAddReviewNotePopup({
+        date: editData.Objective_Date,
+        result: outcomeData.result,
+        attempts: outcomeData.attempt,
+        prompts: editData.Prompt_Number,
+        employeeId: outcomeData.employeeId,
+        activityId: outcomeData.activityId
+      });
+    });
+    saveBtn.addEventListener('click', e => {
+      outcomesAjax.saveGoals(data, () => {
+        POPUP.hide(detailsPopup);
+      });
+    });
+    deleteBtn.addEventListener('click', e => {
+      outcomesAjax.deleteGoal(activityId, selectedConsumerId, selectedDate, async () => {
+        POPUP.hide(detailsPopup);
+      });
+    });
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
@@ -614,7 +925,7 @@ const outcomesReview = (function () {
 
     if ($.session.applicationName !== 'Gatekeeper') {
       detailsPopup.appendChild(cIDropdown);
-      detailsPopup.appendChild(timeInputs);
+      detailsPopup.appendChild(timeInputs.timeWrap);
     }
 
     detailsPopup.appendChild(noteInput);
@@ -623,8 +934,16 @@ const outcomesReview = (function () {
 
     POPUP.show(detailsPopup);
 
+    checkRequiredFields();
+
+    return;
+
     //? Might need below but need more data from Mike
-    if (editData && editData.submitted_by_user_id && editData.submitted_by_user_id.toUpperCase() !== $.session.UserId.toUpperCase()) {
+    if (
+      editData &&
+      editData.submitted_by_user_id &&
+      editData.submitted_by_user_id.toUpperCase() !== $.session.UserId.toUpperCase()
+    ) {
       primaryLocationDropdown.classList.add('disabled');
       secondaryLocationDropdown.classList.add('disabled');
       resultsDropdown.classList.add('disabled');
@@ -661,44 +980,6 @@ const outcomesReview = (function () {
       });
     });
 
-    const getLocations = new Promise((resolve, reject) => {
-      outcomesAjax.getOutcomesPrimaryAndSecondaryLocations(selectedConsumerId, dates.formateToISO(outcome.date), results => {
-        locations = {};
-
-        results.forEach(res => {
-          if (!locations[res.type]) {
-            locations[res.type] = [];
-          }
-
-          locations[res.type].push(res);
-        });
-        locations['Primary'].sort(function (a, b) {
-          if (a.description < b.description) {
-            return -1;
-          }
-          if (a.description > b.description) {
-            return 1;
-          }
-          return 0;
-        });
-
-        if (locations.Secondary) {
-          locations['Secondary'].sort(function (a, b) {
-            if (a.description < b.description) {
-              return -1;
-            }
-            if (a.description > b.description) {
-              return 1;
-            }
-            return 0;
-          });
-        }
-
-        resolve('success');
-      });
-    });
-
-    // TODO: get activityID
     const getActivity = new Promise((resolve, reject) => {
       outcomesAjax.getObjectiveActivity(outcome.activityId, results => {
         activityRes = results;
@@ -706,15 +987,15 @@ const outcomesReview = (function () {
       });
     });
 
-    Promise.all([getSuccessTypes, getLocations, getActivity]).then(function () {
-      showDetailViewPopup(activityRes);
+    Promise.all([getSuccessTypes, getActivity]).then(function () {
+      showDetailViewPopup(activityRes[0], outcome);
     });
   }
 
   // Table
   //----------------------------------------------------
   function buildToggleIcon() {
-    const toggleIcon = _DOM.createElement('div', { class:[ 'rowToggle', 'closed'] });
+    const toggleIcon = _DOM.createElement('div', { class: ['rowToggle', 'closed'] });
     toggleIcon.innerHTML = icons['keyArrowRight'];
     return toggleIcon;
   }
@@ -735,10 +1016,10 @@ const outcomesReview = (function () {
 
     for (const objId in data) {
       const d = data[objId];
-      
+
       const mainRowWrap = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-main'] });
       table.appendChild(mainRowWrap);
-      
+
       const mainRow = _DOM.createElement('div', { class: ['row', 'row-main'] });
       const mainTI = buildToggleIcon();
       mainTI.classList.add('mainToggle');
@@ -754,12 +1035,12 @@ const outcomesReview = (function () {
 
       const mainRowSubWrap = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-main-sub', 'hidden'] });
       mainRowWrap.appendChild(mainRowSubWrap);
-      
+
       mainRow.addEventListener('click', e => {
         const target = e.target;
 
         if (!target.classList.contains('mainToggle')) return;
-  
+
         const showChildren = target.classList.contains('closed');
 
         if (showChildren) {
@@ -783,17 +1064,17 @@ const outcomesReview = (function () {
         dateRow.appendChild(dateTI);
         dateRow.innerHTML += `<div>${date}</div>`;
         dateRowWrap.appendChild(dateRow);
-        
+
         const detailsTable = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-date-sub', 'hidden'] });
         dateRowWrap.appendChild(detailsTable);
 
         dateRow.addEventListener('click', e => {
           const target = e.target;
-  
+
           if (!target.classList.contains('subToggle')) return;
-    
+
           const showChildren = target.classList.contains('closed');
-  
+
           if (showChildren) {
             target.innerHTML = icons.keyArrowDown;
             target.classList.remove('closed');
@@ -828,8 +1109,14 @@ const outcomesReview = (function () {
           detailsTable.appendChild(detailRow);
 
           detailRow.addEventListener('click', () => {
-            console.log('detail row click', details.activityId);
-            onDetailRowClick({goalTypeID: objId, activityId: details.activityId, date: date});
+            onDetailRowClick({ 
+              goalTypeID: objId, 
+              activityId: details.activityId, 
+              date: date, 
+              result: details.result,
+              attempt: details.attempts,
+              employeeId: staffId
+            });
           });
         }
       }
@@ -871,42 +1158,42 @@ const outcomesReview = (function () {
     selectedDateSpan.to = selectedDate;
 
     switch (activeTab) {
-      case NO_FREQ:  {
+      case NO_FREQ: {
         const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), 7);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Day(s)';
         spanLength = 7;
         break;
       }
-      case HOUR:  {
+      case HOUR: {
         const dateObj = dates.subHours(new Date(`${selectedDate} 00:00:00`), 24);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Hour(s)';
         spanLength = 24;
         break;
       }
-      case DAY:  {
+      case DAY: {
         const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), 2);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Day(s)';
         spanLength = 2;
         break;
       }
-      case WEEK:  {
+      case WEEK: {
         const dateObj = dates.subWeeks(new Date(`${selectedDate} 00:00:00`), 1);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Week(s)';
         spanLength = 1;
         break;
       }
-      case MONTH:  {
+      case MONTH: {
         const dateObj = dates.subMonths(new Date(`${selectedDate} 00:00:00`), 2);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Month(s)';
         spanLength = 2;
         break;
       }
-      case YEAR:  {
+      case YEAR: {
         const dateObj = dates.subYears(new Date(`${selectedDate} 00:00:00`), 2);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Year(s)';
@@ -914,8 +1201,8 @@ const outcomesReview = (function () {
         break;
       }
       default: {
-        console.error(activeTab)
-        throw new Error('something went wrong setting unit types')
+        console.error(activeTab);
+        throw new Error('something went wrong setting unit types');
       }
     }
   }
@@ -963,7 +1250,7 @@ const outcomesReview = (function () {
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
       a[occurrence][objID].timesDoc = d.timesDocumented || '0';
       a[occurrence][objID].successRate = d.objectiveSuccess;
-  
+
       return a;
     }, {});
   }
@@ -990,7 +1277,9 @@ const outcomesReview = (function () {
           }
 
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
-          outcomeOjb[occurrence][objID].reviewDates[date][staffId].result = `${d.objectiveSuccessSymbol } ${d.objectiveSuccessDescription }`;
+          outcomeOjb[occurrence][objID].reviewDates[date][
+            staffId
+          ].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].note = d.objectiveActivityNote;
@@ -1008,10 +1297,6 @@ const outcomesReview = (function () {
 
     outcomesDataRaw = data;
 
-    if (!data || !data.length) {
-      console.log(`No data for consumerID: ${selectedConsumerId}`);
-    }
-    
     outcomesData = sortReviewTableData(data);
     setTabSections();
     setUnitType();
@@ -1021,30 +1306,64 @@ const outcomesReview = (function () {
       consumerId: selectedConsumerId,
       startDate: selectedDateSpan.from,
       endDate: selectedDateSpan.to,
-      objectiveIdList: Array.from(objIdSet).join(',')
+      objectiveIdList: Array.from(objIdSet).join(','),
     });
 
     outcomesDataSecondaryRaw = data;
-  
-    console.log(data);
 
     sortReviewTableDataSecondary(data, outcomesData);
   }
-  async function init(consumer, date, allowedConsumerIds) {
+  function sortLocations(results) {
+    locations = {};
+
+    results.forEach(res => {
+      if (!locations[res.type]) {
+        locations[res.type] = [];
+      }
+
+      locations[res.type].push(res);
+    });
+    locations['Primary'].sort(function (a, b) {
+      if (a.description < b.description) {
+        return -1;
+      }
+      if (a.description > b.description) {
+        return 1;
+      }
+      return 0;
+    });
+
+    if (locations.Secondary) {
+      locations['Secondary'].sort(function (a, b) {
+        if (a.description < b.description) {
+          return -1;
+        }
+        if (a.description > b.description) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+  }
+  // consumer, date, allowedConsumerIds
+  async function init({consumer, consumerName, date, allowedConsumerIds}) {
     console.clear();
 
     selectedConsumerId = consumer.id;
     selectedConsumerCard = consumer.card;
-    selectedDate = date; 
+    selectedConsumerName = consumerName;
+    selectedDate = date;
     serviceFilterVal = {};
     outcomeTypeFilterVal = {};
 
     setActiveModuleSectionAttribute('outcomes-review');
     PROGRESS.SPINNER.show('Loading Outcomes...');
 
+    otherData = outcomes.getDataForOverview();
+    dropdownData = outcomes.getDropdownValues();
+
     await getReviewTableData();
     await getReviewTableDataSecondary();
-    console.table(outcomesData);
 
     DOM.clearActionCenter();
 
@@ -1061,13 +1380,18 @@ const outcomesReview = (function () {
     updateCurrentFilterDisplay();
     populateTabSections();
 
-    goalTypes = await outcomesAjax.getAllGoalTypes();
-
     roster2.setAllowedConsumers(allowedConsumerIds);
     roster2.addConsumerToActiveConsumers(selectedConsumerCard);
     roster2.miniRosterinit(null, {
       hideDate: true,
     });
+
+    goalTypes = await outcomesAjax.getAllGoalTypes();
+    outcomesAjax.getOutcomesPrimaryAndSecondaryLocations(
+      selectedConsumerId,
+      dates.formateToISO(selectedDate),
+      results => sortLocations(results),
+    );
   }
 
   return {
