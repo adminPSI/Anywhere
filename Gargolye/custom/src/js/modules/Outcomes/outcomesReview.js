@@ -436,7 +436,7 @@ const outcomesReview = (function () {
       objectiveActivityDate: date.split(' ')[0],
       note: '',
       result: result,
-      notifyEmployee: '',
+      notifyEmployee: 'F',
     };
 
     reviewNotePopup = POPUP.build({
@@ -500,7 +500,7 @@ const outcomesReview = (function () {
     reviewNotePopup.appendChild(header);
     reviewNotePopup.appendChild(topInfo);
     reviewNotePopup.appendChild(noteInput);
-    reviewNotePopup.appendChild(notifyEmployeeCheckbox);
+    //reviewNotePopup.appendChild(notifyEmployeeCheckbox);
     reviewNotePopup.appendChild(btnWrap);
 
     POPUP.show(reviewNotePopup);
@@ -1248,6 +1248,7 @@ const outcomesReview = (function () {
       const recurr = RECURRANCE[d.objectiveRecurrance] || '';
 
       const formatTimeDoc = (timeDoc) => {
+        if (timeDoc === '0') return '1';
         if (timeDoc === '1') return '1';
 
         const parsedTime = parseInt(timeDoc);
