@@ -211,21 +211,33 @@ const outcomesReview = (function () {
           }
         }
 
-        await getReviewTableData();
+        Object.keys(outcomesData).forEach(a => {
+          Object.keys(outcomesData[a]).forEach(b => {
+            delete outcomesData[a][b].reviewDates;
+          });
+        });
         await getReviewTableDataSecondary();
         populateTabSections();
       }
       if (e.target.id === 'fromDate') {
         selectedDateSpan.from = e.target.value;
 
-        await getReviewTableData();
+        Object.keys(outcomesData).forEach(a => {
+          Object.keys(outcomesData[a]).forEach(b => {
+            delete outcomesData[a][b].reviewDates;
+          });
+        });
         await getReviewTableDataSecondary();
         populateTabSections();
       }
       if (e.target.id === 'toDate') {
         selectedDateSpan.to = e.target.value;
 
-        await getReviewTableData();
+        Object.keys(outcomesData).forEach(a => {
+          Object.keys(outcomesData[a]).forEach(b => {
+            delete outcomesData[a][b].reviewDates;
+          });
+        });
         await getReviewTableDataSecondary();
         populateTabSections();
       }
@@ -1132,10 +1144,18 @@ const outcomesReview = (function () {
     return tabs.build({
       sections: Object.values(tabSections),
       active: 0,
-      tabNavCallback: function (data) {
+      tabNavCallback: async function (data) {
         activeTab = data.activeSection;
         setUnitType();
         updateFilterDates();
+
+        Object.keys(outcomesData).forEach(a => {
+          Object.keys(outcomesData[a]).forEach(b => {
+            delete outcomesData[a][b].reviewDates;
+          });
+        });
+        await getReviewTableDataSecondary();
+        populateTabSections();
       },
     });
   }
@@ -1219,7 +1239,7 @@ const outcomesReview = (function () {
 
     activeTab = Object.values(tabSections)[0];
   }
-  function sortReviewTableData(data, filterBy) {
+  function sortReviewTableData(data) {
     objIdSet = new Set();
 
     return data.reduce((a, d) => {
