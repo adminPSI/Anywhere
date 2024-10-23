@@ -846,14 +846,14 @@ const consumerInfo = (function () {
                 checkRequiredFieldsEditConsumerRelationships();
             });
 
-            hasADropdownN[i].addEventListener('change', event => {
-                isValueChanged = true;
-                checkRequiredFieldsEditConsumerRelationships();
+            hasADropdownN[i].addEventListener('change', async event => {
+                isValueChanged = true;              
                 if ($.session.applicationName === 'Gatekeeper') {
                     var selectedDropdownId = event.target.id.replace('hasADropdownN', '');
                     var selectedValue = event.target.value;
-                    rePopulateEditRelationshipDropdown(selectedDropdownId, selectedValue, '');
+                    await rePopulateEditRelationshipDropdown(selectedDropdownId, selectedValue, ''); 
                 }
+                checkRequiredFieldsEditConsumerRelationships();
             });
             whoIsDropdownN[i].addEventListener('change', event => {
                 isValueChanged = true;
@@ -926,7 +926,7 @@ const consumerInfo = (function () {
         for (let i = 0; i < numberOfRows; i++) {
             dropdown.populate("hasADropdownN" + i, dataType, consumerRelationships[i] != undefined ? consumerRelationships[i].typeID : '');
 
-            if (consumerRelationships[i] != undefined && consumerRelationships[i].typeID != '') {
+            if ($.session.applicationName === 'Gatekeeper' && consumerRelationships[i] != undefined && consumerRelationships[i].typeID != '') {
                 await rePopulateEditRelationshipDropdown(i, consumerRelationships[i].typeID, consumerRelationships[i] != undefined ? consumerRelationships[i].personID : '')
             } else {
                 dropdown.populate("whoIsDropdownN" + i, dataName, consumerRelationships[i] != undefined ? consumerRelationships[i].personID : '');
