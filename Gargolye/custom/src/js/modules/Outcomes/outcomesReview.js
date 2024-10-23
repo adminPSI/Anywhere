@@ -1010,6 +1010,7 @@ const outcomesReview = (function () {
       <div>Frequency</div>
       <div>Times Documented</div>  
       <div>Success Rate</div>
+      <div></div>
     `;
     table.appendChild(mainHeading);
 
@@ -1029,6 +1030,7 @@ const outcomesReview = (function () {
         <div>${d.frequency}</div>
         <div>${d.timesDoc}</div>
         <div>${d.successRate}</div>
+        <div>${d.percent === 100 ? '' : icons.error}</div>
       `;
       mainRowWrap.appendChild(mainRow);
 
@@ -1224,6 +1226,11 @@ const outcomesReview = (function () {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
+      const percentData = UTIL.parseXml(d.percentData);
+      const bottomNum = percentData.getElementsByTagName('bottomnumber')[0].textContent;
+      const topNumb = percentData.getElementsByTagName('topnumber')[0].textContent;
+      let percent = (bottomNum === '0' || topNumb === '0') ? 0 : parseInt(bottomNum)/parseInt(topNumb);
+      percent = percent > 0 ? percent * 100 : 0;
   
       objIdSet.add(objID);
 
@@ -1237,10 +1244,6 @@ const outcomesReview = (function () {
         };
       }
 
-      // if (!a[occurrence][objID].reviewDates[date]) {
-      //   a[occurrence][objID].reviewDates[date] = {};
-      // }
-
       const freq = FREQUENCY[d.frequencyModifier] || '';
       const recurr = RECURRANCE[d.objectiveRecurrance] || '';
 
@@ -1252,6 +1255,7 @@ const outcomesReview = (function () {
         return `${parsedTime - 1}`;
       }
 
+      a[occurrence][objID].percent = percent;
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;

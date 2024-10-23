@@ -789,6 +789,12 @@ div.textarea {
         flex-basis: 60px;
         max-width: 120px;
       }
+      > div:last-child {
+        color: $error;
+        flex-grow: 0;
+        flex-basis: 24px;
+        max-width: 24px;
+      }
     }
 
     .heading-details,
