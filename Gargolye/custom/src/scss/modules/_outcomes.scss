@@ -784,10 +784,12 @@ div.textarea {
       > div:nth-child(5) {
         flex-basis: 80px;
         max-width: 170px;
+        text-align: center;
       }
       > div:nth-child(6) {
         flex-basis: 60px;
         max-width: 120px;
+        text-align: center;
       }
       > div:last-child {
         color: $error;
