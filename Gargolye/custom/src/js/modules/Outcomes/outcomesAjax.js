@@ -808,7 +808,7 @@ const outcomesAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-  async function addReviewNote() {
+  async function addReviewNote(data) {
     // @token
     // @objectiveActivityId
     // @consumerId
@@ -829,16 +829,7 @@ const outcomesAjax = (function () {
           '/' +
           $.webServer.serviceName +
           '/addReviewNote/',
-        data: JSON.stringify({
-          token: $.session.Token,
-          objectiveActivityId: '',
-          consumerId: '',
-          employeeId: '',
-          objectiveActivityDate: '',
-          note: '',
-          result: '',
-          notifyEmployee: '',
-        }),
+        data: JSON.stringify(data),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
@@ -1051,6 +1042,7 @@ const outcomesAjax = (function () {
     getReviewTableDataSecondary,
     getAllGoalTypes,
     addReviewNote,
+    //
     addOutcomePlan,
     getPlanHistorybyConsumer,
     addOutcomePlanLater,

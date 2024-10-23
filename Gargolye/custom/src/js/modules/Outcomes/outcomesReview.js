@@ -1224,7 +1224,7 @@ const outcomesReview = (function () {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
-
+  
       objIdSet.add(objID);
 
       if (!a[occurrence]) {
