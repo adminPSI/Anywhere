@@ -330,6 +330,7 @@ namespace Anywhere.service.Data
             public string objectiveActivityNote { get; set; }
             public string startTime { get; set; }
             public string endTime { get; set; }
+            public string percentData { get; set; }
         }
 
         public class OutcomesReviewGridSecondary
