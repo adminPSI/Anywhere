@@ -1244,10 +1244,18 @@ const outcomesReview = (function () {
       const freq = FREQUENCY[d.frequencyModifier] || '';
       const recurr = RECURRANCE[d.objectiveRecurrance] || '';
 
+      const formatTimeDoc = (timeDoc) => {
+        if (timeDoc === '1') return '1';
+
+        const parsedTime = parseInt(timeDoc);
+
+        return `${parsedTime - 1}`;
+      }
+
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
-      a[occurrence][objID].timesDoc = d.timesDocumented || '0';
+      a[occurrence][objID].timesDoc = d.timesDocumented ? formatTimeDoc(d.timesDocumented) : '0';
       a[occurrence][objID].successRate = d.objectiveSuccess;
 
       return a;
