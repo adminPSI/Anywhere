@@ -1247,21 +1247,12 @@ const outcomesReview = (function () {
       const freq = FREQUENCY[d.frequencyModifier] || '';
       const recurr = RECURRANCE[d.objectiveRecurrance] || '';
 
-      const formatTimeDoc = (timeDoc) => {
-        if (timeDoc === '0') return '1';
-        if (timeDoc === '1') return '1';
-
-        const parsedTime = parseInt(timeDoc);
-
-        return `${parsedTime - 1}`;
-      }
-
       a[occurrence][objID].percent = percent;
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
-      a[occurrence][objID].timesDoc = d.timesDocumented ? formatTimeDoc(d.timesDocumented) : '0';
-      a[occurrence][objID].successRate = d.objectiveSuccess;
+      a[occurrence][objID].timesDoc = 0;
+      a[occurrence][objID].successRate = `${percent}%`;
 
       return a;
     }, {});
@@ -1280,6 +1271,8 @@ const outcomesReview = (function () {
 
       if (outcomeOjb[occurrence]) {
         if (outcomeOjb[occurrence][objID]) {
+          a[occurrence][objID].timesDoc++
+
           if (!outcomeOjb[occurrence][objID].reviewDates[date]) {
             outcomeOjb[occurrence][objID].reviewDates[date] = {};
           }
@@ -1289,9 +1282,7 @@ const outcomesReview = (function () {
           }
 
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
-          outcomeOjb[occurrence][objID].reviewDates[date][
-            staffId
-          ].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
+          outcomeOjb[occurrence][objID].reviewDates[date][staffId].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].note = d.objectiveActivityNote;
