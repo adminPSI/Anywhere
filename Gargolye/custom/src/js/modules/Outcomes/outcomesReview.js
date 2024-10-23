@@ -441,6 +441,7 @@ const outcomesReview = (function () {
 
     reviewNotePopup = POPUP.build({
       id: 'reviewNotePopup',
+      hideX: true
     });
 
     const header = _DOM.createElement('div', { class: ['reviewNoteHeader'] });
@@ -471,7 +472,6 @@ const outcomesReview = (function () {
       text: 'Save',
       style: 'secondary',
       type: 'contained',
-      classNames: 'disabled',
       callback: () => {
         outcomesAjax.addReviewNote({
           token: $.session.Token,
@@ -486,7 +486,6 @@ const outcomesReview = (function () {
       text: 'Cancel',
       style: 'secondary',
       type: 'contained',
-      classNames: 'disabled',
       callback: () => {
         POPUP.hide(reviewNotePopup);
         POPUP.show(detailsPopup);

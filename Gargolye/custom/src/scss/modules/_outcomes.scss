@@ -819,12 +819,15 @@ div.textarea {
 
 #reviewNotePopup {
   .reviewNoteHeader {
-    font-weight: $bold;
     margin-bottom: 10px;
+
+    p {
+      font-weight: $bold;
+    }
   }
   .reviewNoteInfo {
     margin-bottom: 16px;
-    
+
     p {
       margin-bottom: 6px;
     }
