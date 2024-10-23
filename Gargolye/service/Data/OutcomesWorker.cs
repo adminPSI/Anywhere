@@ -331,6 +331,7 @@ namespace Anywhere.service.Data
             public string startTime { get; set; }
             public string endTime { get; set; }
             public string percentData { get; set; }
+            public string frequency_occurance { get; set; }
         }
 
         public class OutcomesReviewGridSecondary
