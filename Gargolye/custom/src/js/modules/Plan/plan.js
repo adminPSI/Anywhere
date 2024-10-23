@@ -143,7 +143,6 @@ const plan = (function () {
                 DOM.clearActionCenter();
                 PROGRESS.init();
                 PROGRESS.SPINNER.show('Gathering Plans...');
-                await planAjax.checkForSalesForce();  
                 selectedConsumer = roster2.getActiveConsumers()[0];
                 if ($.session.applicationName === 'Advisor') {
                     planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
@@ -3396,7 +3395,7 @@ const plan = (function () {
         btnWrap.classList.add('topOutcomeWrap');
 
         btnWrap.appendChild(newPlanBtn);
-        if ($.session.planAssignCaseload) btnWrap.appendChild(assignCaseLoadBtn);
+        if ($.session.planAssignCaseload) btnWrap.appendChild(assignCaseLoadBtn); 
 
         if ($.session.downloadPlans && $.session.areInSalesForce) {
             // validate salesforce
@@ -3435,10 +3434,11 @@ const plan = (function () {
         landingPage.appendChild(overviewTable);
     }
 
-    function init() {
+    async function init() {
         setActiveModuleAttribute('plan');
         DOM.clearActionCenter();
         roster2.showMiniRoster();
+        await planAjax.checkForSalesForce();  
         PROGRESS.init();
         PROGRESS.SPINNER.show('Gathering Plans...');        
     }

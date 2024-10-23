@@ -255,9 +255,9 @@ namespace Anywhere.service.Data.PlanContactInformation
             ImportantPeople[] importantPeopleObj = js.Deserialize<ImportantPeople[]>(importantPeopleString);
             for (int i = 0; i < importantPeopleObj.Length; i++)
             {
-                if(importantPeopleObj[i].name.Contains("Other"))
+                if(importantPeopleObj[i].type.Contains("Other"))
                 {
-                    importantPeopleObj[i].name = "Other";
+                    importantPeopleObj[i].type = "Other";
                 }
                 pcidg.insertPlanContactImportantPeople(token, newContactId, importantPeopleObj[i].type, importantPeopleObj[i].name, importantPeopleObj[i].relationship, importantPeopleObj[i].address, importantPeopleObj[i].phone, importantPeopleObj[i].email, importantPeopleObj[i].phone2, importantPeopleObj[i].phoneExt, importantPeopleObj[i].phone2Ext, importantPeopleObj[i].typeOther);
             }
@@ -273,6 +273,10 @@ namespace Anywhere.service.Data.PlanContactInformation
             ImportantPlaces[] importantPlacesObj = js.Deserialize<ImportantPlaces[]>(importantPlacesString);
             for (int i = 0; i < importantPlacesObj.Length; i++)
             {
+                if (importantPlacesObj[i].type.Contains("Other"))
+                {
+                    importantPlacesObj[i].type = "Other";
+                }
                 pcidg.insertPlanContactImportantPlaces(token, newContactId, importantPlacesObj[i].type, importantPlacesObj[i].name, importantPlacesObj[i].address, importantPlacesObj[i].phone, importantPlacesObj[i].schedule, importantPlacesObj[i].acuity, importantPlacesObj[i].typeOther);
             }
         }

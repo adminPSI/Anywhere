@@ -170,7 +170,17 @@ namespace OODForms
                 }
             }
 
-            WS.Cell("k7").Value = OODStaff;
+                if (OODStaff.Length > 0)
+                {
+                    WS.Cell("k7").Value = OODStaff.ToString().Trim().Substring(0, OODStaff.Length - 2);
+                }
+                else
+                {
+                    WS.Cell("k7").Value = String.Empty;
+                }
+
+
+              //  WS.Cell("k7").Value = OODStaff;
 
             WS.Cell("k8").Value = DateTime.Now.ToString("MM/dd/yy");
 

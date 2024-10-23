@@ -5369,6 +5369,14 @@ namespace Anywhere
         BodyStyle = WebMessageBodyStyle.Wrapped,
         ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/updateReviewNote/")]
+        string updateReviewNote(string token, string objectiveActivityId, string reviewNote);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/getOutcomesReviewGridSecondary/")]
         OutcomesWorker.OutcomesReviewGridSecondary[] getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList);
 
