@@ -4065,9 +4065,9 @@ namespace Anywhere
             return outcomesWorker.getOutcomesReviewGrid(token, consumerId, objectiveDate);
         }
 
-        public OutcomesWorker.OutcomesReviewGridSecondary[] getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList)
+        public OutcomesWorker.OutcomesReviewGridSecondary[] getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList, string frequency)
         {
-            return outcomesWorker.getOutcomesReviewGridSecondary(token, consumerId, startDate, endDate, objectiveIdList);
+            return outcomesWorker.getOutcomesReviewGridSecondary(token, consumerId, startDate, endDate, objectiveIdList, frequency);
         }
 
         public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)

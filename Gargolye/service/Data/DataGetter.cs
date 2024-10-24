@@ -6825,7 +6825,7 @@ namespace Anywhere.Data
             }
         }
 
-        public string getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList)
+        public string getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList, string frequency)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getOutcomeTypeDropDown" + token);
@@ -6835,6 +6835,7 @@ namespace Anywhere.Data
             list.Add(startDate);
             list.Add(endDate);
             list.Add(objectiveIdList);
+            list.Add(frequency);
             string text = "CALL DBA.ANYW_GoalsAndServices__GetReviewPageGridSecondary(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
