@@ -828,13 +828,13 @@ const outcomesAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/addReviewNote/',
+          '/updateReviewNote/',
         data: JSON.stringify(data),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
 
-      return result.addReviewNoteResult;
+      return result.updateReviewNoteResult;
     } catch (error) {
       throw new Error(error.responseText);
     }

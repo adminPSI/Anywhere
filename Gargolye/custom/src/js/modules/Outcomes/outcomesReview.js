@@ -512,7 +512,7 @@ const outcomesReview = (function () {
     reviewNotePopup.appendChild(header);
     reviewNotePopup.appendChild(topInfo);
     reviewNotePopup.appendChild(noteInput);
-    //reviewNotePopup.appendChild(notifyEmployeeCheckbox);
+    reviewNotePopup.appendChild(notifyEmployeeCheckbox);
     reviewNotePopup.appendChild(btnWrap);
 
     POPUP.show(reviewNotePopup);
@@ -1291,7 +1291,7 @@ const outcomesReview = (function () {
 
       if (outcomeOjb[occurrence]) {
         if (outcomeOjb[occurrence][objID]) {
-          a[occurrence][objID].timesDoc++
+          outcomeOjb[occurrence][objID].timesDoc++
 
           if (!outcomeOjb[occurrence][objID].reviewDates[date]) {
             outcomeOjb[occurrence][objID].reviewDates[date] = {};
