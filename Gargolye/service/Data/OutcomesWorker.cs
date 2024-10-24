@@ -388,9 +388,9 @@ namespace Anywhere.service.Data
             public string isNewDisabled { get; set; }
         }
 
-        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote)
+        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote, string notifyEmployee, string consumerId)
         {
-            return dg.updateReviewNote(token, objectiveActivityId, reviewNote);
+            return dg.updateReviewNote( token,  objectiveActivityId,  reviewNote,  notifyEmployee,  consumerId);
         }
 
         public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)

@@ -6783,7 +6783,7 @@ namespace Anywhere.Data
             }
         }
 
-        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote)
+        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote, string notifyEmployee, string consumerId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getOutcomeTypeDropDown" + token);
@@ -6791,6 +6791,8 @@ namespace Anywhere.Data
             list.Add(token);
             list.Add(objectiveActivityId);
             list.Add(reviewNote);
+            list.Add(notifyEmployee);
+            list.Add(consumerId);
             string text = "CALL DBA.ANYW_GoalsAndServices_UpdateReviewNote(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

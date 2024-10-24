@@ -5370,7 +5370,7 @@ namespace Anywhere
         ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/updateReviewNote/")]
-        string updateReviewNote(string token, string objectiveActivityId, string reviewNote);
+        string updateReviewNote(string token, string objectiveActivityId, string reviewNote, string notifyEmployee, string consumerId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
