@@ -1056,28 +1056,20 @@ function setSessionJQUERY(callback) {
     }, 60000);
 }
 
+
 function setSession(callback) {
     var cookieInnards = readCookie('psi');
-    // Assuming cookieInnards is a string containing JSON data
-    cookieInnards = JSON.parse(cookieInnards);
 
-    // Parsing the XML string inside cookieInnards
-    let parser = new DOMParser(cookieInnards);
-    let xmlDoc = parser.parseFromString(cookieInnards.getLogInResult, 'text/xml');
+    //sets token from cookie.  This is needed for ajax call getUserPermissions().  Other session variables set in setSessionVariables()
+    $('permissions', cookieInnards).each(function () {
+        tmpWindow = $('window_name', this).text();
+        tmpPerm = $('permission', this).text();
+        tmpSpec = $('special_data', this).text();
 
-    // Selecting all 'permissions' nodes
-    let permissions = xmlDoc.getElementsByTagName('permissions');
-
-    Array.from(permissions).forEach(function (permission) {
-        tmpWindow = permission.getElementsByTagName('window_name')[0].textContent;
-        tmpPerm = permission.getElementsByTagName('permission')[0].textContent;
-        tmpSpec = permission.getElementsByTagName('special_data')[0].textContent;
-
-        if (tmpWindow === 'Token') {
+        if (tmpWindow == 'Token') {
             $.session.Token = tmpSpec;
         }
     });
-
     getUserPermissions(callback);
 
     setInterval(function () {
