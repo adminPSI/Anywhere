@@ -4055,9 +4055,9 @@ namespace Anywhere
             return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId, appName);
         }
 
-        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote)
+        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote, string notifyEmployee, string consumerId)
         {
-            return outcomesWorker.updateReviewNote( token, objectiveActivityId, reviewNote);
+            return outcomesWorker.updateReviewNote( token,  objectiveActivityId,  reviewNote,  notifyEmployee,  consumerId);
         }
 
         public OutcomesWorker.OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string objectiveDate)
