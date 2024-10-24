@@ -810,13 +810,6 @@ const outcomesAjax = (function () {
   }
   async function addReviewNote(data) {
     // @token
-    // @objectiveActivityId
-    // @consumerId
-    // @employeeId
-    // @objectiveActivityDate
-    // @note
-    // @result
-    // @notifyEmployee
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -829,7 +822,7 @@ const outcomesAjax = (function () {
           '/' +
           $.webServer.serviceName +
           '/updateReviewNote/',
-        data: JSON.stringify(data),
+        data: JSON.stringify({token: $.session.Token, ...data}),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });

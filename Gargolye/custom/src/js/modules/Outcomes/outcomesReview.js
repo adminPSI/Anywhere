@@ -442,13 +442,11 @@ const outcomesReview = (function () {
   //----------------------------------------------------
   function showAddReviewNotePopup({date, result, attempts, prompts, employeeId, activityId}) {
     const saveData = {
-      consumerId: selectedConsumerId,
-      employeeId: employeeId,
       objectiveActivityId: activityId,
+      reviewNote: '',
+      consumerId: selectedConsumerId,
       objectiveActivityDate: date.split(' ')[0],
-      note: '',
-      result: result,
-      notifyEmployee: 'F',
+      notifyEmployee: 'N',
     };
 
     reviewNotePopup = POPUP.build({
@@ -471,21 +469,21 @@ const outcomesReview = (function () {
       style: 'secondary',
       type: 'textarea',
       callback: e => {
-        saveData.note = e.target.value;
+        saveData.reviewNote = e.target.value;
       }
     });
     const notifyEmployeeCheckbox = input.buildCheckbox({
       text: 'Notify Employee',
       callback: e => {
-        saveData.notifyEmployee = e.target.checked ? 'T' : 'F';
+        saveData.notifyEmployee = e.target.checked ? 'Y' : 'N';
       }
     });
     const savebtn = button.build({
       text: 'Save',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        outcomesAjax.addReviewNote({
+      callback: async () => {
+        await outcomesAjax.addReviewNote({
           token: $.session.Token,
           ...saveData
         });
