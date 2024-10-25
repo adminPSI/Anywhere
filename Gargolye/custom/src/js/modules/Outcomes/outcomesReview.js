@@ -5,6 +5,7 @@ const outcomesReview = (function () {
   let outcomesData;
   let outcomesDataRaw;
   let outcomesDataSecondaryRaw;
+  let exclamationIds;
   let dropdownData;
   let activityRes;
   let locations;
@@ -70,6 +71,7 @@ const outcomesReview = (function () {
 
       await getReviewTableData();
       await getReviewTableDataSecondary();
+       
 
       // rebuild & populate tabs/tables
       const newOutcomeTabs = buildTabs();
@@ -215,6 +217,7 @@ const outcomesReview = (function () {
           });
         });
         await getReviewTableDataSecondary();
+         
         populateTabSections();
       }
       if (e.target.id === 'fromDate') {
@@ -228,6 +231,7 @@ const outcomesReview = (function () {
           });
         });
         await getReviewTableDataSecondary();
+         
         populateTabSections();
       }
       if (e.target.id === 'toDate') {
@@ -241,6 +245,7 @@ const outcomesReview = (function () {
           });
         });
         await getReviewTableDataSecondary();
+         
         populateTabSections();
       }
     });
@@ -1157,6 +1162,7 @@ const outcomesReview = (function () {
           });
         });
         await getReviewTableDataSecondary();
+         
         populateTabSections();
       },
     });
@@ -1299,7 +1305,6 @@ const outcomesReview = (function () {
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
       const staffId = d.staffId;
-      const exclamationIds = d.exclamationIds.split(',');
 
       if (filterBy) {
         if (filterBy.service && filterBy.service !== d.objectiveSuccessDescription) return;
@@ -1354,9 +1359,10 @@ const outcomesReview = (function () {
       frequency: FREQ_MAP[activeTab]
     });
 
-    outcomesDataSecondaryRaw = data;
+    outcomesDataSecondaryRaw = data.gridSecondary;
+    exclamationIds = data.exIds.exclamationIds.split(',');
 
-    sortReviewTableDataSecondary(data, outcomesData);
+    sortReviewTableDataSecondary(data.gridSecondary, outcomesData);
   }
   function sortLocations(results) {
     locations = {};
