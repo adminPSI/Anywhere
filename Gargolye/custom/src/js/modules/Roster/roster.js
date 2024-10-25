@@ -260,7 +260,7 @@ const roster2 = (function () {
             selectedGroupName = rosterGroups[0].GroupName;
         }
 
-        if (($.session.formsCaseload == true && $.loadedApp === 'forms') 
+        if (($.session.formsCaseload == true && $.loadedApp === 'forms')
             || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'authorizations')
             || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'assessmentHistory')
             || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
@@ -1163,7 +1163,7 @@ const roster2 = (function () {
        />`;
         });
     }
-    function buildConsumerCard(consumerData) { 
+    function buildConsumerCard(consumerData) {
         const fName = consumerData.FN ? consumerData.FN.trim() : '';
         const lName = consumerData.LN ? consumerData.LN.trim() : '';
         const mName = consumerData.MN ? consumerData.MN.trim() : '';
@@ -1177,6 +1177,7 @@ const roster2 = (function () {
         const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
         const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
         const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
+        const SalesforceID = consumerData.SalesforceID ? consumerData.SalesforceID : '';
 
         var isInactive = false;
         if ($.session.applicationName === 'Advisor') {
@@ -1249,7 +1250,15 @@ const roster2 = (function () {
         src="./images/portraits/${id}.png?${time}"
         onerror="this.src='./images/new-icons/default.jpg'"
       />`;
-        details.innerHTML = `
+
+        if ($.loadedApp === 'plan' && SalesforceID != '')
+            details.innerHTML = `
+      <div class="name">
+        <p class="name_last">${lName},</p>
+		    <p class="name_first">${fName} ${mName}</p>   <p  class="saleforce_Id" style=" display: none;">Salesforce ID: ${SalesforceID}</p>
+      <div>`;
+        else
+            details.innerHTML = `
       <div class="name">
         <p class="name_last">${lName},</p>
 		    <p class="name_first">${fName} ${mName}</p>
@@ -1694,7 +1703,7 @@ const roster2 = (function () {
                 $.loadedApp === 'authorizations' ||
                 $.loadedApp === 'ConsumerFinances' ||
                 $.loadedApp === 'CFEditAccount' ||
-                $.loadedApp === 'employment' || 
+                $.loadedApp === 'employment' ||
                 $.loadedApp === 'fSS' ||
                 $.loadedApp === 'covid' ||
                 $.loadedApp === 'forms' ||

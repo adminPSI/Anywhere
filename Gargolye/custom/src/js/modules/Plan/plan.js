@@ -3303,6 +3303,9 @@ const plan = (function () {
     function buildConsumerCard() {
         selectedConsumer.card.classList.remove('highlighted');
 
+        const saleforceIdClass = selectedConsumer.card.querySelector('.saleforce_Id'); 
+        saleforceIdClass.style.display = 'block';
+
         const wrap = document.createElement('div');
         wrap.classList.add('planConsumerCard');
 
