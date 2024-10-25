@@ -1272,7 +1272,7 @@ const outcomesReview = (function () {
       const percentData = UTIL.parseXml(d.percentData);
       const bottomNum = percentData.getElementsByTagName('bottomnumber')[0].textContent;
       const topNumb = percentData.getElementsByTagName('topnumber')[0].textContent;
-      let percent = bottomNum === '0' ? 0 : parseInt(topNumb)/parseInt(bottomNum);
+      let percent = bottomNum === '0' || !bottomNum || topNumb === '0' || !topNumb ? 0 : parseInt(topNumb)/parseInt(bottomNum);
       percent = percent > 0 ? percent * 100 : 0;
   
       objIdSet.add(objID);
