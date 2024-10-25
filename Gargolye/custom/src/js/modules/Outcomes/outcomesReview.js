@@ -41,20 +41,16 @@ const outcomesReview = (function () {
   const WEEK = 'Weekly';
   const MONTH = 'Monthly';
   const YEAR = 'Yearly';
-  const FREQUENCY = {
-    OBJFMAL: 'At least',
-    OBJFMAN: 'As needed',
-    OBJFMAR: 'As Requested',
-    OBJFMEX: 'Exactly',
-    OBJFMNM: 'No more than',
+  const FREQ_MAP = {
+    'No Frequency': 'NF',
+    'Hourly': 'H',
+    'Daily': 'D',
+    'Weekly': 'W',
+    'Monthly': 'M',
+    'Yearly': 'Y',
   };
-  const RECURRANCE = {
-    D: 'per day',
-    Y: 'per year',
-    W: 'per week',
-    M: 'per month',
-    H: 'per hour',
-  };
+  
+  
 
   // Mini Roster
   //----------------------------------------------------
@@ -1238,6 +1234,21 @@ const outcomesReview = (function () {
     activeTab = Object.values(tabSections)[0];
   }
   function sortReviewTableData(data) {
+    const FREQUENCY = {
+      OBJFMAL: 'At least',
+      OBJFMAN: 'As needed',
+      OBJFMAR: 'As Requested',
+      OBJFMEX: 'Exactly',
+      OBJFMNM: 'No more than',
+    };
+    const RECURRANCE = {
+      D: 'per day',
+      Y: 'per year',
+      W: 'per week',
+      M: 'per month',
+      H: 'per hour',
+    };
+
     objIdSet = new Set();
 
     return data.reduce((a, d) => {
@@ -1261,7 +1272,6 @@ const outcomesReview = (function () {
           reviewDates: {},
         };
       }
-
       const freq = FREQUENCY[d.frequencyModifier] || '';
       const recurr = RECURRANCE[d.objectiveRecurrance] || '';
 
@@ -1328,6 +1338,7 @@ const outcomesReview = (function () {
       startDate: selectedDateSpan.from,
       endDate: selectedDateSpan.to,
       objectiveIdList: Array.from(objIdSet).join(','),
+      frequency: FREQ_MAP[activeTab]
     });
 
     outcomesDataSecondaryRaw = data;
