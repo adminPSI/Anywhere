@@ -210,6 +210,7 @@ const outcomesReview = (function () {
         Object.keys(outcomesData).forEach(a => {
           Object.keys(outcomesData[a]).forEach(b => {
             delete outcomesData[a][b].reviewDates;
+            outcomesData[a][b].reviewDates = {};
           });
         });
         await getReviewTableDataSecondary();
@@ -221,6 +222,7 @@ const outcomesReview = (function () {
         Object.keys(outcomesData).forEach(a => {
           Object.keys(outcomesData[a]).forEach(b => {
             delete outcomesData[a][b].reviewDates;
+            outcomesData[a][b].reviewDates = {};
           });
         });
         await getReviewTableDataSecondary();
@@ -232,6 +234,7 @@ const outcomesReview = (function () {
         Object.keys(outcomesData).forEach(a => {
           Object.keys(outcomesData[a]).forEach(b => {
             delete outcomesData[a][b].reviewDates;
+            outcomesData[a][b].reviewDates = {};
           });
         });
         await getReviewTableDataSecondary();
@@ -1146,6 +1149,7 @@ const outcomesReview = (function () {
         Object.keys(outcomesData).forEach(a => {
           Object.keys(outcomesData[a]).forEach(b => {
             delete outcomesData[a][b].reviewDates;
+            outcomesData[a][b].reviewDates = {};
           });
         });
         await getReviewTableDataSecondary();
