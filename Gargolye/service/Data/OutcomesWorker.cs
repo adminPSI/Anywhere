@@ -10,6 +10,7 @@ using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAbsentWorker;
 using static Anywhere.service.Data.Authorization.AuthorizationWorker;
+using static Anywhere.service.Data.IncidentTrackingWorker;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Anywhere.service.Data
@@ -389,6 +390,17 @@ namespace Anywhere.service.Data
             public string isNewDisabled { get; set; }
         }
 
+        public class ExclamationIds
+        {
+            public string exclamationIds { get; set; }            
+        }
+
+        public class TotalSecondGridCall
+        {
+            public OutcomesReviewGridSecondary[] gridSecondary { get; set; }
+            public ExclamationIds[] exIds { get; set; }
+        }
+
         public string updateReviewNote(string token, string objectiveActivityId, string reviewNote, string notifyEmployee, string consumerId)
         {
             return dg.updateReviewNote( token,  objectiveActivityId,  reviewNote,  notifyEmployee,  consumerId);
@@ -486,11 +498,17 @@ namespace Anywhere.service.Data
             return reviewGridObj;
         }
 
-        public OutcomesReviewGridSecondary[] getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList, string frequency)
+        public TotalSecondGridCall getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList, string frequency)
         {
             string reviewGrid = dg.getOutcomesReviewGridSecondary(token, consumerId, startDate, endDate, objectiveIdList, frequency);
             OutcomesReviewGridSecondary[] reviewGridObj = js.Deserialize<OutcomesReviewGridSecondary[]>(reviewGrid);
-            return reviewGridObj;
+            string exclationPointIds = dg.getExclclamationIds(startDate, endDate, frequency);
+            ExclamationIds[] exIdObj = js.Deserialize<ExclamationIds[]>(exclationPointIds);
+
+            TotalSecondGridCall test = new TotalSecondGridCall();
+            test.gridSecondary = reviewGridObj;
+            test.exIds = exIdObj;
+            return test;
         }
 
         public OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
@@ -499,6 +517,7 @@ namespace Anywhere.service.Data
             OutcomeTypeForFilter[] outcomeTypeObj = js.Deserialize<OutcomeTypeForFilter[]>(outcomeTypeString);
             return outcomeTypeObj;
         }
+        
 
         public OutcomesWorker.LocationType[] getLocationDropDown(string token)
         {
