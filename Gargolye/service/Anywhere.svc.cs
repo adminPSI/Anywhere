@@ -4280,6 +4280,11 @@ namespace Anywhere
             return outcomesWorker.getPlanHistorybyConsumer(token, consumerId);
         }
 
+        public OutcomesWorker.PlanViewHistory[] getPlanbyConsumerHistory(string token, string consumerId)
+        {
+            return outcomesWorker.getPlanbyConsumerHistory(token, consumerId);
+        }
+
         public string addOutcomePlanLater(string token, string consumerId)
         {
             return dg.addOutcomePlanLater(token, consumerId);

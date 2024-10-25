@@ -5589,6 +5589,14 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getPlanbyConsumerHistory/")]
+        OutcomesWorker.PlanViewHistory[] getPlanbyConsumerHistory(string token, string consumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
          BodyStyle = WebMessageBodyStyle.Wrapped,
          ResponseFormat = WebMessageFormat.Json,
          RequestFormat = WebMessageFormat.Json,
