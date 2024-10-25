@@ -189,6 +189,7 @@ $.session.passwordResetPermission = '';
 // $.session.OODPermission = '';
 $.session.anywhereResetPasswordPermission = '';
 $.session.anywhereConsumerFinancesPermission = '';
+$.session.anywhereFSSPermission = '';
 $.session.anywhereEmploymentPermission = '';
 $.session.selectedConsumerIdForGoalsDateBack = '';
 $.session.caseNoteEdit = false;
@@ -358,6 +359,13 @@ $.session.UpdateEmployers = false;
 $.session.EmploymentCaseLoad = false;
 $.session.consumerId = '';
 
+// FSS
+$.session.FSSView = false;
+$.session.FSSUpdate = false;
+$.session.FSSDelete = false;
+$.session.InsertFSS = false;
+$.session.FSSCaseLoad = false;
+
 //Waiting List
 $.session.sendWaitingListEmail = false;
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
@@ -371,7 +379,7 @@ $.session.deviceGUID = '';
 //API Keys
 $.session.azureSTTApi = '';
 $.session.isActiveUsers = true; // to get active and inactive user both
-
+$.session.isActiveFamilies = true; // to get active and inactive families both
 $.session.activeModule = '';
 $.session.billableTransportation = 'N';
 $.session.requireTimeEntryTransportationTimes = 'N';
@@ -958,6 +966,26 @@ function setSessionVariables() {
             }
             if (tmpPerm == 'Case Load' || tmpPerm == 'Caseload' || tmpPerm == 'Caseload only') {
                 $.session.EmploymentCaseLoad = true;
+            }
+        }
+
+        //FSS
+        if (tmpWindow == 'Anywhere FSS' || $.session.isPSI == true) {
+            if (tmpPerm == 'View' || $.session.isPSI == true) {
+                $('#fSSdiv').removeClass('disabledModule');
+                $.session.FSSView = true;               
+            }
+            if (tmpPerm == 'Update' || $.session.isPSI == true) {
+                $.session.FSSUpdate = true;                
+            }
+            if (tmpPerm == 'Delete' || $.session.isPSI == true) {
+                $.session.FSSDelete = true;              
+            }
+            if (tmpPerm == 'Insert' || $.session.isPSI == true) {
+                $.session.InsertFSS = true;
+            }
+            if (tmpPerm == 'Case load') {
+                $.session.FSSCaseLoad = true;
             }
         }
 
@@ -1861,6 +1889,9 @@ function checkModulePermissions() {
     if ($.session.EmploymentView == false) {
         $('#Employmentsettingsdiv').addClass('disabledModule');
     }
+    if ($.session.FSSView == false) {
+        $('#fSSdiv').addClass('disabledModule');
+    }
     if ($.session.CFView == false) {
         $('#cfAccountDiv').addClass('disabledModule');
     }
@@ -1893,6 +1924,7 @@ function disableModules() {
     if ($.session.applicationName == 'Advisor') {
         $('#authorizationsdiv').css('display', 'none');
         $('#waitingListdiv').css('display', 'none');
+        $('#fSSdiv').css('display', 'none');
     }
 
     if ($.session.dayServicesPermission == 'Anywhere_DayServices') {
@@ -2010,6 +2042,12 @@ function disableModules() {
         //Leave module on
     } else {
         $('#Employmentsettingsdiv').css('display', 'none');
+    }
+
+    if ($.session.anywhereFSSPermission == 'Anywhere_FSS') {
+        //Leave module on
+    } else {
+        $('#fSSdiv').css('display', 'none');  
     }
 }
 

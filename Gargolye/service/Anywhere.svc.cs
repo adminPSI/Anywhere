@@ -60,6 +60,8 @@ using static Anywhere.service.Data.DashboardWorker;
 using static Anywhere.service.Data.OutcomesWorker;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
 using System.Runtime.InteropServices.ComTypes;
+using static Anywhere.service.Data.FSS.FSSWorker;
+using Anywhere.service.Data.FSS;
 
 namespace Anywhere
 {
@@ -130,6 +132,7 @@ namespace Anywhere
         ESignWorker esw = new ESignWorker();
         ESignDataGetter esdg = new ESignDataGetter();
         ImportOutcomesAndServicesWorker ioas = new ImportOutcomesAndServicesWorker();
+        FSSWorker fssw = new FSSWorker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -4309,6 +4312,44 @@ namespace Anywhere
         public IncidentTrackingWorker.ConsumerRelationship[] getRelationshipData(string token, string supervisorId, string consumerId)
         {
             return iTW.getRelationshipData(token, supervisorId, consumerId);
+        }
+
+        public FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName)
+        {
+            return fssw.getFSSPageData(token, familyName, primaryPhone, address, appName);
+        }
+
+        public FSSWorker.ActiveInactiveFamily[] getActiveInactiveFamilylist(string token, string isActive)
+        {
+            return fssw.getActiveInactiveFamilylist(token, isActive);
+        }
+
+        public FSSWorker.FamilyInformation[] getFamilyInfoByID(string token, string familyId)
+        {
+            return fssw.getFamilyInfoByID(token, familyId);
+        }
+
+        public string updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID)
+        {
+            return fssw.updateFamilyInfo(token, familyName, address1, address2, city, state, zip, primaryPhone, secondaryPhone, email, notes, active, userId, familyID);
+        }
+        public FSSWorker.Members[] getFamilyMembers(string token, string familyId)
+        {
+            return fssw.getFamilyMembers(token, familyId);
+        }
+        public FSSWorker.Members[] getMembers(string token)
+        {
+            return fssw.getMembers(token);
+        }
+
+        public string insertMemberInfo(string token, string memberId, string familyID, string active, string userId, string newMemberId) 
+        {
+            return fssw.insertMemberInfo(token, memberId, familyID, active, userId, newMemberId);
+        }
+
+        public string deleteMemberInfo(string token, string memberId, string familyID)
+        {
+            return fssw.deleteMemberInfo(token, memberId, familyID);
         }
 
     }

@@ -8,6 +8,7 @@ using Anywhere.service.Data.Defaults;
 using Anywhere.service.Data.DocumentConversion;
 using Anywhere.service.Data.Employment;
 using Anywhere.service.Data.eSignature___OneSpan;
+using Anywhere.service.Data.FSS;
 using Anywhere.service.Data.ImportOutcomesAndServices;
 using Anywhere.service.Data.Plan;
 using Anywhere.service.Data.Plan.Assessment;
@@ -22,6 +23,7 @@ using Anywhere.service.Data.PlanValidation;
 using Anywhere.service.Data.ReportBuilder;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.Transportation;
+using OneSpanSign.Sdk;
 using PDFGenerator;
 using System;
 using System.Collections.Generic;
@@ -29,12 +31,15 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
+using System.Web.Security;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DashboardWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.ESign.ESignWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
+using static System.Windows.Forms.AxHost;
 
 namespace Anywhere
 {
@@ -5619,6 +5624,69 @@ namespace Anywhere
                 RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/getRelationshipData/")]
         IncidentTrackingWorker.ConsumerRelationship[] getRelationshipData(string token, string supervisorId, string consumerId);
+
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getFSSPageData/")]
+        FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getActiveInactiveFamilylist/")]
+        FSSWorker.ActiveInactiveFamily[] getActiveInactiveFamilylist(string token, string isActive);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getFamilyInfoByID/")]
+        FSSWorker.FamilyInformation[] getFamilyInfoByID(string token, string familyId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/updateFamilyInfo/")]
+        string updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                 BodyStyle = WebMessageBodyStyle.Wrapped,
+                 ResponseFormat = WebMessageFormat.Json,
+                 RequestFormat = WebMessageFormat.Json,
+                 UriTemplate = "/getFamilyMembers/")]
+        FSSWorker.Members[] getFamilyMembers(string token, string familyID); 
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getMembers/")]
+        FSSWorker.Members[] getMembers(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/insertMemberInfo/")]
+        string insertMemberInfo(string token, string memberId, string familyID, string active, string userId, string newMemberId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/deleteMemberInfo/")]
+        string deleteMemberInfo(string token, string memberId, string familyID);
 
     }
 
