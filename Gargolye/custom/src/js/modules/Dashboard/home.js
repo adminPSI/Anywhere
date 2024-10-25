@@ -237,7 +237,7 @@ function displayChangeUser() {
 		url: 'dist/templates/autologin.html?RNG=' + +new Date(),
 		success: function(HTMLresponse, status, xhr) {
 			//buildAbsentCard({ card: $("<div>").replaceWith(HTMLresponse), overlay: overlay, values: values, multi: true });
-			var card = $('<div>').replaceWith(HTMLresponse);
+			var card = $(HTMLresponse);
 			rosterAjax.getPSIUserOptionList(function(err, data) {
 				overlay
 					.click(function() {

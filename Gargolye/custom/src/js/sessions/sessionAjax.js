@@ -1057,6 +1057,7 @@ function getDefaultAnywhereSettings() {
       $.session.anywhereResetPasswordPermission = res.anywhereResetPasswordPermission;
       $.session.anywhereConsumerFinancesPermission = res.anywhereConsumerFinancesPermission;
       $.session.anywhereEmploymentPermission = res.anywhereEmploymentPermission;
+      $.session.anywhereFSSPermission = res.anywhereFSSPermission; 
       //Default Work
       //.session.
       $.session.defaultRosterLocation = res.defaultrosterlocation;

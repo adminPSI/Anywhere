@@ -811,6 +811,10 @@ const UTIL = (function () {
                 target = document.getElementById('waitingListdiv');
                 break;
             }
+            case 'fSS': {
+                target = document.getElementById('fSSdiv');
+                break;
+            }
             default: {
                 break;
             }

@@ -228,6 +228,12 @@ var ACTION_NAV = (function () {
                 hide();
                 break;
             }
+            case 'FSS': {
+                FSS.handleActionNavEvent(target); 
+                clear();
+                hide();
+                break;
+            }
         }
 
         var miniRosterBtn = document.querySelector('.consumerListBtn');

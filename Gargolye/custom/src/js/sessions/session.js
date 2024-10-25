@@ -189,6 +189,7 @@ $.session.passwordResetPermission = '';
 // $.session.OODPermission = '';
 $.session.anywhereResetPasswordPermission = '';
 $.session.anywhereConsumerFinancesPermission = '';
+$.session.anywhereFSSPermission = '';
 $.session.anywhereEmploymentPermission = '';
 $.session.selectedConsumerIdForGoalsDateBack = '';
 $.session.caseNoteEdit = false;
@@ -358,6 +359,13 @@ $.session.UpdateEmployers = false;
 $.session.EmploymentCaseLoad = false;
 $.session.consumerId = '';
 
+// FSS
+$.session.FSSView = false;
+$.session.FSSUpdate = false;
+$.session.FSSDelete = false;
+$.session.InsertFSS = false;
+$.session.FSSCaseLoad = false;
+
 //Waiting List
 $.session.sendWaitingListEmail = false;
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
@@ -371,7 +379,7 @@ $.session.deviceGUID = '';
 //API Keys
 $.session.azureSTTApi = '';
 $.session.isActiveUsers = true; // to get active and inactive user both
-
+$.session.isActiveFamilies = true; // to get active and inactive families both
 $.session.activeModule = '';
 $.session.billableTransportation = 'N';
 $.session.requireTimeEntryTransportationTimes = 'N';
@@ -961,6 +969,26 @@ function setSessionVariables() {
             }
         }
 
+        //FSS
+        if (tmpWindow == 'Anywhere FSS' || $.session.isPSI == true) {
+            if (tmpPerm == 'View' || $.session.isPSI == true) {
+                $('#fSSdiv').removeClass('disabledModule');
+                $.session.FSSView = true;               
+            }
+            if (tmpPerm == 'Update' || $.session.isPSI == true) {
+                $.session.FSSUpdate = true;                
+            }
+            if (tmpPerm == 'Delete' || $.session.isPSI == true) {
+                $.session.FSSDelete = true;              
+            }
+            if (tmpPerm == 'Insert' || $.session.isPSI == true) {
+                $.session.InsertFSS = true;
+            }
+            if (tmpPerm == 'Case load') {
+                $.session.FSSCaseLoad = true;
+            }
+        }
+
         if (tmpWindow == 'Anywhere User Home') {
             if (tmpPerm == 'Deny Staff TimeClock Change') {
                 $.session.DenyStaffClockUpdate = true;
@@ -1056,28 +1084,20 @@ function setSessionJQUERY(callback) {
     }, 60000);
 }
 
+
 function setSession(callback) {
     var cookieInnards = readCookie('psi');
-    // Assuming cookieInnards is a string containing JSON data
-    cookieInnards = JSON.parse(cookieInnards);
 
-    // Parsing the XML string inside cookieInnards
-    let parser = new DOMParser(cookieInnards);
-    let xmlDoc = parser.parseFromString(cookieInnards.getLogInResult, 'text/xml');
+    //sets token from cookie.  This is needed for ajax call getUserPermissions().  Other session variables set in setSessionVariables()
+    $('permissions', cookieInnards).each(function () {
+        tmpWindow = $('window_name', this).text();
+        tmpPerm = $('permission', this).text();
+        tmpSpec = $('special_data', this).text();
 
-    // Selecting all 'permissions' nodes
-    let permissions = xmlDoc.getElementsByTagName('permissions');
-
-    Array.from(permissions).forEach(function (permission) {
-        tmpWindow = permission.getElementsByTagName('window_name')[0].textContent;
-        tmpPerm = permission.getElementsByTagName('permission')[0].textContent;
-        tmpSpec = permission.getElementsByTagName('special_data')[0].textContent;
-
-        if (tmpWindow === 'Token') {
+        if (tmpWindow == 'Token') {
             $.session.Token = tmpSpec;
         }
     });
-
     getUserPermissions(callback);
 
     setInterval(function () {
@@ -1869,6 +1889,9 @@ function checkModulePermissions() {
     if ($.session.EmploymentView == false) {
         $('#Employmentsettingsdiv').addClass('disabledModule');
     }
+    if ($.session.FSSView == false) {
+        $('#fSSdiv').addClass('disabledModule');
+    }
     if ($.session.CFView == false) {
         $('#cfAccountDiv').addClass('disabledModule');
     }
@@ -1901,6 +1924,7 @@ function disableModules() {
     if ($.session.applicationName == 'Advisor') {
         $('#authorizationsdiv').css('display', 'none');
         $('#waitingListdiv').css('display', 'none');
+        $('#fSSdiv').css('display', 'none');
     }
 
     if ($.session.dayServicesPermission == 'Anywhere_DayServices') {
@@ -2018,6 +2042,12 @@ function disableModules() {
         //Leave module on
     } else {
         $('#Employmentsettingsdiv').css('display', 'none');
+    }
+
+    if ($.session.anywhereFSSPermission == 'Anywhere_FSS') {
+        //Leave module on
+    } else {
+        $('#fSSdiv').css('display', 'none');  
     }
 }
 

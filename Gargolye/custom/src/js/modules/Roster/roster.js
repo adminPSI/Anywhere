@@ -201,6 +201,7 @@ const roster2 = (function () {
             || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'assessmentHistory')
             || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
             || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.FSSCaseLoad === true && $.loadedApp === 'fSS')
             || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
             || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
             || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
@@ -233,6 +234,7 @@ const roster2 = (function () {
                     || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'assessmentHistory')
                     || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
                     || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+                    || ($.session.FSSCaseLoad === true && $.loadedApp === 'fSS')
                     || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
                     || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
                     || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
@@ -263,6 +265,7 @@ const roster2 = (function () {
             || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'assessmentHistory')
             || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
             || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.FSSCaseLoad === true && $.loadedApp === 'fSS')
             || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
             || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
             || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
@@ -492,6 +495,7 @@ const roster2 = (function () {
             || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'assessmentHistory')
             || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
             || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.FSSCaseLoad === true && $.loadedApp === 'fSS')
             || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
             || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
             || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
@@ -533,6 +537,7 @@ const roster2 = (function () {
                 || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'assessmentHistory')
                 || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
                 || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+                || ($.session.FSSCaseLoad === true && $.loadedApp === 'fSS')
                 || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
                 || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
                 || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
@@ -595,6 +600,7 @@ const roster2 = (function () {
             || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'assessmentHistory')
             || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
             || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.FSSCaseLoad === true && $.loadedApp === 'fSS')
             || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
             || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
             || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
@@ -732,6 +738,7 @@ const roster2 = (function () {
             || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'assessmentHistory')
             || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
             || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.FSSCaseLoad === true && $.loadedApp === 'fSS')
             || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
             || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
             || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
@@ -837,6 +844,7 @@ const roster2 = (function () {
                 || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'assessmentHistory')
                 || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
                 || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+                || ($.session.FSSCaseLoad === true && $.loadedApp === 'fSS')
                 || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
                 || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
                 || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
@@ -1155,7 +1163,7 @@ const roster2 = (function () {
        />`;
         });
     }
-    function buildConsumerCard(consumerData) {
+    function buildConsumerCard(consumerData) { 
         const fName = consumerData.FN ? consumerData.FN.trim() : '';
         const lName = consumerData.LN ? consumerData.LN.trim() : '';
         const mName = consumerData.MN ? consumerData.MN.trim() : '';
@@ -1377,6 +1385,7 @@ const roster2 = (function () {
             $.loadedApp === 'ConsumerFinances' ||
             $.loadedApp === 'CFEditAccount' ||
             $.loadedApp === 'employment' ||
+            $.loadedApp === 'fSS' ||
             $.loadedApp === 'covid' ||
             $.loadedApp === 'forms' ||
             $.loadedApp === 'assessmentHistory' ||
@@ -1437,6 +1446,7 @@ const roster2 = (function () {
                     $.loadedApp === 'ConsumerFinances' ||
                     $.loadedApp === 'CFEditAccount' ||
                     $.loadedApp === 'employment' ||
+                    $.loadedApp === 'fSS' ||
                     $.loadedApp === 'assessmentHistory' ||
                     $.loadedApp === 'OOD'
                 ) {
@@ -1533,6 +1543,7 @@ const roster2 = (function () {
             || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'assessmentHistory')
             || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
             || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.FSSCaseLoad === true && $.loadedApp === 'fSS')
             || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
             || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
             || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
@@ -1600,6 +1611,7 @@ const roster2 = (function () {
             || ($.session.authorizationsCaseLoad === true && $.loadedApp === 'assessmentHistory')
             || ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices')
             || ($.session.EmploymentCaseLoad === true && $.loadedApp === 'employment')
+            || ($.session.FSSCaseLoad === true && $.loadedApp === 'fSS')
             || ($.session.PlanCaseLoad === true && $.loadedApp === 'plan')
             || ($.session.RosterCaseLoad === true && $.loadedApp === 'roster')
             || ($.session.ServiceActivityCaseLoad === true && $.loadedApp === 'outcomes')
@@ -1682,7 +1694,8 @@ const roster2 = (function () {
                 $.loadedApp === 'authorizations' ||
                 $.loadedApp === 'ConsumerFinances' ||
                 $.loadedApp === 'CFEditAccount' ||
-                $.loadedApp === 'employment' ||
+                $.loadedApp === 'employment' || 
+                $.loadedApp === 'fSS' ||
                 $.loadedApp === 'covid' ||
                 $.loadedApp === 'forms' ||
                 $.loadedApp === 'assessmentHistory' ||

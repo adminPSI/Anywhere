@@ -485,9 +485,9 @@ namespace Anywhere.service.Data
             return reviewGridObj;
         }
 
-        public OutcomesReviewGridSecondary[] getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList)
+        public OutcomesReviewGridSecondary[] getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList, string frequency)
         {
-            string reviewGrid = dg.getOutcomesReviewGridSecondary(token, consumerId, startDate, endDate, objectiveIdList);
+            string reviewGrid = dg.getOutcomesReviewGridSecondary(token, consumerId, startDate, endDate, objectiveIdList, frequency);
             OutcomesReviewGridSecondary[] reviewGridObj = js.Deserialize<OutcomesReviewGridSecondary[]>(reviewGrid);
             return reviewGridObj;
         }
