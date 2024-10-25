@@ -1361,9 +1361,9 @@ const outcomesReview = (function () {
 
     sortReviewTableDataSecondary(data.gridSecondary, outcomesData);
 
-    Object.keys(outcomeData[frequency]).forEach(objId => {
+    Object.keys(outcomesData[frequency]).forEach(objId => {
       if (exclamationIds.find(ids => ids === objId)) {
-        outcomeData[frequency][objId].showExclamation = true;
+        outcomesData[frequency][objId].showExclamation = true;
       }
     });
   }
