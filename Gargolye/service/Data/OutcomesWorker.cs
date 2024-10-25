@@ -350,6 +350,7 @@ namespace Anywhere.service.Data
             public string startTime { get; set; }
             public string endTime { get; set; }
             public string objectiveRecurrance { get; set; }
+            public string exclamationIds { get; set; }
         }
 
         public class OutComePageData
