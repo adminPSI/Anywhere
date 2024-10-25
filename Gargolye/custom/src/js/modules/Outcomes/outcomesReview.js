@@ -1310,7 +1310,7 @@ const outcomesReview = (function () {
         if (outcomeOjb[occurrence][objID]) {
           outcomeOjb[occurrence][objID].timesDoc++
 
-          if (exclamationIds.find(objID)) {
+          if (exclamationIds.find(ids => ids === objID)) {
             outcomeOjb[occurrence][objID].showExclamation = true;
           }
 
