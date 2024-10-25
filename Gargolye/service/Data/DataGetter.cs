@@ -6847,7 +6847,25 @@ namespace Anywhere.Data
                 return "636: error ANYW_GoalsAndServices__GetReviewPageGridSecondary";
             }
         }
-
+        
+        public string getExclclamationIds( string startDate, string endDate,string frequency)
+        {
+            
+            List<string> list = new List<string>();
+            list.Add(startDate);
+            list.Add(endDate);
+            list.Add(frequency);
+            string text = "CALL DBA.ANYW_GoalsAndServices_GetReviewPageRedExclamationIds(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices_GetReviewPageRedExclamationIds(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices_GetReviewPageRedExclamationIds";
+            }
+        }
         public string getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
         {
             if (tokenValidator(token) == false) return null;
