@@ -1283,7 +1283,7 @@ const outcomesReview = (function () {
       const freq = FREQUENCY[d.frequencyModifier] || '';
       const recurr = RECURRANCE[d.objectiveRecurrance] || '';
 
-      a[occurrence][objID].showExclamation = null;
+      a[occurrence][objID].showExclamation = false;
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
@@ -1299,6 +1299,7 @@ const outcomesReview = (function () {
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
       const staffId = d.staffId;
+      const exclamationIds = d.exclamationIds.split(',');
 
       if (filterBy) {
         if (filterBy.service && filterBy.service !== d.objectiveSuccessDescription) return;
@@ -1308,6 +1309,10 @@ const outcomesReview = (function () {
       if (outcomeOjb[occurrence]) {
         if (outcomeOjb[occurrence][objID]) {
           outcomeOjb[occurrence][objID].timesDoc++
+
+          if (exclamationIds.find(objID)) {
+            outcomeOjb[occurrence][objID].showExclamation = true;
+          }
 
           if (!outcomeOjb[occurrence][objID].reviewDates[date]) {
             outcomeOjb[occurrence][objID].reviewDates[date] = {};
