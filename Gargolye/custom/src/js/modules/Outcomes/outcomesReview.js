@@ -1315,10 +1315,6 @@ const outcomesReview = (function () {
         if (outcomeOjb[occurrence][objID]) {
           outcomeOjb[occurrence][objID].timesDoc++
 
-          if (exclamationIds.find(ids => ids === objID)) {
-            outcomeOjb[occurrence][objID].showExclamation = true;
-          }
-
           if (!outcomeOjb[occurrence][objID].reviewDates[date]) {
             outcomeOjb[occurrence][objID].reviewDates[date] = {};
           }
@@ -1351,18 +1347,25 @@ const outcomesReview = (function () {
     setUnitType();
   }
   async function getReviewTableDataSecondary() {
+    const frequency = FREQ_MAP[activeTab];
     const data = await outcomesAjax.getReviewTableDataSecondary({
       consumerId: selectedConsumerId,
       startDate: selectedDateSpan.from,
       endDate: selectedDateSpan.to,
       objectiveIdList: Array.from(objIdSet).join(','),
-      frequency: FREQ_MAP[activeTab]
+      frequency
     });
 
     outcomesDataSecondaryRaw = data.gridSecondary;
-    exclamationIds = data.exIds.exclamationIds.split(',');
+    exclamationIds = data.exIds[0].exclamationIds.split(',');
 
     sortReviewTableDataSecondary(data.gridSecondary, outcomesData);
+
+    Object.keys(outcomeData[frequency]).forEach(objId => {
+      if (exclamationIds.find(ids => ids === objId)) {
+        outcomeData[frequency][objId].showExclamation = true;
+      }
+    });
   }
   function sortLocations(results) {
     locations = {};
