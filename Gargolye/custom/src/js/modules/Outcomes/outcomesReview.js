@@ -1036,7 +1036,7 @@ const outcomesReview = (function () {
         <div>${d.frequency}</div>
         <div>${d.timesDoc}</div>
         <div>${d.successRate}</div>
-        <div>${d.percent === 100 ? '' : icons.error}</div>
+        <div>${d.showExclamation ? icons.error : ''}</div>
       `;
       mainRowWrap.appendChild(mainRow);
 
@@ -1275,7 +1275,7 @@ const outcomesReview = (function () {
       const freq = FREQUENCY[d.frequencyModifier] || '';
       const recurr = RECURRANCE[d.objectiveRecurrance] || '';
 
-      a[occurrence][objID].percent = percent;
+      a[occurrence][objID].showExclamation = null;
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
