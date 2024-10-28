@@ -5,6 +5,7 @@ const outcomesReview = (function () {
   let outcomesData;
   let outcomesDataRaw;
   let outcomesDataSecondaryRaw;
+  let exclamationIds;
   let dropdownData;
   let activityRes;
   let locations;
@@ -70,6 +71,7 @@ const outcomesReview = (function () {
 
       await getReviewTableData();
       await getReviewTableDataSecondary();
+       
 
       // rebuild & populate tabs/tables
       const newOutcomeTabs = buildTabs();
@@ -215,6 +217,7 @@ const outcomesReview = (function () {
           });
         });
         await getReviewTableDataSecondary();
+         
         populateTabSections();
       }
       if (e.target.id === 'fromDate') {
@@ -228,6 +231,7 @@ const outcomesReview = (function () {
           });
         });
         await getReviewTableDataSecondary();
+         
         populateTabSections();
       }
       if (e.target.id === 'toDate') {
@@ -241,6 +245,7 @@ const outcomesReview = (function () {
           });
         });
         await getReviewTableDataSecondary();
+         
         populateTabSections();
       }
     });
@@ -1157,6 +1162,7 @@ const outcomesReview = (function () {
           });
         });
         await getReviewTableDataSecondary();
+         
         populateTabSections();
       },
     });
@@ -1256,19 +1262,26 @@ const outcomesReview = (function () {
       M: 'per month',
       H: 'per hour',
     };
+    const getPercentForSuccessRate = (dirtyXML) => {
+      const percentData = UTIL.parseXml(dirtyXML);
+      const topNumb = percentData.getElementsByTagName('topnumber')[0].textContent;
+      const bottomNum = percentData.getElementsByTagName('bottomnumber')[0].textContent;
+
+      if (!topNumb || !bottomNum || bottomNum === '0') {
+        return '';
+      }
+
+      return `${(parseInt(topNumb)/parseInt(bottomNum)) * 100}%`;
+    }
 
     objIdSet = new Set();
 
     return data.reduce((a, d) => {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
-      const date = d.objective_date.split(' ')[0];
-      const percentData = UTIL.parseXml(d.percentData);
-      const bottomNum = percentData.getElementsByTagName('bottomnumber')[0].textContent;
-      const topNumb = percentData.getElementsByTagName('topnumber')[0].textContent;
-      let percent = bottomNum === '0' ? 0 : parseInt(topNumb)/parseInt(bottomNum);
-      percent = percent > 0 ? percent * 100 : 0;
-  
+
+      if (!occurrence || !objID) return a;
+      
       objIdSet.add(objID);
 
       if (!a[occurrence]) {
@@ -1280,15 +1293,17 @@ const outcomesReview = (function () {
           reviewDates: {},
         };
       }
+
       const freq = FREQUENCY[d.frequencyModifier] || '';
       const recurr = RECURRANCE[d.objectiveRecurrance] || '';
+      const percent = getPercentForSuccessRate(d.percentData);
 
       a[occurrence][objID].showExclamation = false;
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
       a[occurrence][objID].timesDoc = 0;
-      a[occurrence][objID].successRate = `${percent}%`;
+      a[occurrence][objID].successRate = percent;
 
       return a;
     }, {});
@@ -1299,7 +1314,6 @@ const outcomesReview = (function () {
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
       const staffId = d.staffId;
-      const exclamationIds = d.exclamationIds.split(',');
 
       if (filterBy) {
         if (filterBy.service && filterBy.service !== d.objectiveSuccessDescription) return;
@@ -1309,10 +1323,6 @@ const outcomesReview = (function () {
       if (outcomeOjb[occurrence]) {
         if (outcomeOjb[occurrence][objID]) {
           outcomeOjb[occurrence][objID].timesDoc++
-
-          if (exclamationIds.find(ids => ids === objID)) {
-            outcomeOjb[occurrence][objID].showExclamation = true;
-          }
 
           if (!outcomeOjb[occurrence][objID].reviewDates[date]) {
             outcomeOjb[occurrence][objID].reviewDates[date] = {};
@@ -1346,17 +1356,25 @@ const outcomesReview = (function () {
     setUnitType();
   }
   async function getReviewTableDataSecondary() {
+    const frequency = FREQ_MAP[activeTab];
     const data = await outcomesAjax.getReviewTableDataSecondary({
       consumerId: selectedConsumerId,
       startDate: selectedDateSpan.from,
       endDate: selectedDateSpan.to,
       objectiveIdList: Array.from(objIdSet).join(','),
-      frequency: FREQ_MAP[activeTab]
+      frequency
     });
 
-    outcomesDataSecondaryRaw = data;
+    outcomesDataSecondaryRaw = data.gridSecondary;
+    exclamationIds = data.exIds[0].exclamationIds.split(',');
 
-    sortReviewTableDataSecondary(data, outcomesData);
+    sortReviewTableDataSecondary(data.gridSecondary, outcomesData);
+
+    Object.keys(outcomesData[frequency]).forEach(objId => {
+      if (exclamationIds.find(ids => ids === objId)) {
+        outcomesData[frequency][objId].showExclamation = true;
+      }
+    });
   }
   function sortLocations(results) {
     locations = {};

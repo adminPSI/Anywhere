@@ -578,6 +578,13 @@ namespace Anywhere.service.Data
             return planHistoryObj;
         }
 
+        public PlanViewHistory[] getPlanbyConsumerHistory(string token, string consumerId)
+        {
+            string planHistoryString = dg.getPlanbyConsumerHistory(token, consumerId);
+            PlanViewHistory[] planHistoryObj = js.Deserialize<PlanViewHistory[]>(planHistoryString);
+            return planHistoryObj;
+        }
+
         public PlanViewHistory[] isNewBtnDisabledByPlanHistory(string token, string consumerId, string goalTypeID, string ObjectiveID)
         {
             string planHistoryString = dg.isNewBtnDisabledByPlanHistory(token, consumerId, goalTypeID, ObjectiveID);
