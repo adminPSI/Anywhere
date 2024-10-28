@@ -225,7 +225,7 @@ const planOutcomes = (() => {
     const nonPaidSupportData = [];
     const paidSupportData = [];
     data.forEach(d => {
-      const provider = provider.value.split('|');
+      const provider = d.value.split('|');
       const isSelectedVendor = selectedVendorIds.includes(provider[0])
 
       if (provider[1]) {
