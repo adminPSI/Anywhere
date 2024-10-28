@@ -98,12 +98,13 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
-  async function GetSalesForceId(peopleId) {
+  async function GetSalesForceId(peopleId, teamMemberType) {
     // token, signatureId
     const retrieveData = {
       token: $.session.Token,
       consumerId: parseInt(plan.getSelectedConsumer().id),
       peopleId: parseInt(peopleId),
+      teamMemberType
     };
     try {
       const data = await $.ajax({

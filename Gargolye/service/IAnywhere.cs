@@ -3793,7 +3793,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/GetSalesForceId/")]
-        string GetSalesForceId(long consumerId, long peopleId);
+        string GetSalesForceId(long consumerId, long peopleId, string teamMemberType);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -5586,6 +5586,14 @@ namespace Anywhere
                 RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/getPlanHistorybyConsumer/")]
         OutcomesWorker.PlanViewHistory[] getPlanHistorybyConsumer(string token, string consumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getPlanbyConsumerHistory/")]
+        OutcomesWorker.PlanViewHistory[] getPlanbyConsumerHistory(string token, string consumerId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

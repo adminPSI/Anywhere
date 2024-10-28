@@ -103,7 +103,7 @@ namespace Anywhere.service.Data.PlanSignature
             public string id { get; set; }
         }
 
-        public string GetSalesForceId(long consumerId, long peopleId)
+        public string GetSalesForceId(long consumerId, long peopleId, string teamMemberType)
         {
             //client.BaseAddress
 
@@ -112,7 +112,7 @@ namespace Anywhere.service.Data.PlanSignature
                 if (consumerId != peopleId)
                 {
                     ISPDTData isp = new ISPDTData();
-                    string sFS = isp.AddFamilyMemberToIndividal(consumerId, peopleId);
+                    string sFS = isp.AddFamilyMemberToIndividal(consumerId, peopleId, teamMemberType);
                     //long sFId = oispW.AddFamilyMemberToIndividal(consumerId, peopleId);
                     //AddTeamMember[] sfObj = js.Deserialize<AddTeamMember[]>(sFS);
                     //return sfObj[0].id;
@@ -230,7 +230,7 @@ namespace Anywhere.service.Data.PlanSignature
                 //    // don't make call to Salesforce
                 //} else
                 //{
-                    newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
+                    newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId), teamMember);
 
                     if (newSalesForceId != null)
                     {
@@ -460,7 +460,7 @@ namespace Anywhere.service.Data.PlanSignature
                 string newSalesForceId = "";
                 if (salesForceId == "" || salesForceId == null)
                 {
-                    newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(contactId));
+                    newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(contactId), teamMember);
                     if (newSalesForceId != null)
                     {
                         salesForceId = newSalesForceId.ToString();

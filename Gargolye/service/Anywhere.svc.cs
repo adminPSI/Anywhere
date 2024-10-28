@@ -2685,9 +2685,9 @@ namespace Anywhere
             return inSalesForce;
         }
 
-        public string GetSalesForceId(long consumerId, long peopleId)
+        public string GetSalesForceId(long consumerId, long peopleId, string teamMemberType)
         {
-            return psw.GetSalesForceId(consumerId, peopleId);
+            return psw.GetSalesForceId(consumerId, peopleId, teamMemberType);
         }
 
         public string[] uploadPlanToDODD(string consumerId, string planId)
@@ -4278,6 +4278,11 @@ namespace Anywhere
         public OutcomesWorker.PlanViewHistory[] getPlanHistorybyConsumer(string token, string consumerId)
         {
             return outcomesWorker.getPlanHistorybyConsumer(token, consumerId);
+        }
+
+        public OutcomesWorker.PlanViewHistory[] getPlanbyConsumerHistory(string token, string consumerId)
+        {
+            return outcomesWorker.getPlanbyConsumerHistory(token, consumerId);
         }
 
         public string addOutcomePlanLater(string token, string consumerId)
