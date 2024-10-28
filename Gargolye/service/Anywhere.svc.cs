@@ -2685,9 +2685,9 @@ namespace Anywhere
             return inSalesForce;
         }
 
-        public string GetSalesForceId(long consumerId, long peopleId)
+        public string GetSalesForceId(long consumerId, long peopleId, string teamMemberType)
         {
-            return psw.GetSalesForceId(consumerId, peopleId);
+            return psw.GetSalesForceId(consumerId, peopleId, teamMemberType);
         }
 
         public string[] uploadPlanToDODD(string consumerId, string planId)

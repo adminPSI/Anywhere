@@ -3793,7 +3793,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/GetSalesForceId/")]
-        string GetSalesForceId(long consumerId, long peopleId);
+        string GetSalesForceId(long consumerId, long peopleId, string teamMemberType);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,

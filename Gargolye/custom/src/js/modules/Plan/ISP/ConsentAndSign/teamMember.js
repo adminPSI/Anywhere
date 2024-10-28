@@ -318,7 +318,7 @@ const csTeamMember = (() => {
                                 ) {
                                     //Do Nothing
                                 } else {
-                                    consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
+                                    consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId, selectedMemberData.teamMember);
                                 }
                             }, 700);
                         } else {
@@ -353,7 +353,7 @@ const csTeamMember = (() => {
                         ) {
                             //Do Nothing
                         } else {
-                            consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
+                            consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId, selectedMemberData.teamMember);
                         }
                     }, 700);
                 } else {
@@ -384,7 +384,7 @@ const csTeamMember = (() => {
                     ) {
                         //Do Nothing
                     } else {
-                        consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
+                        consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId, selectedMemberData.teamMember);
                     }
                 }, 700);
             } else {
