@@ -1262,19 +1262,26 @@ const outcomesReview = (function () {
       M: 'per month',
       H: 'per hour',
     };
+    const getPercentForSuccessRate = (dirtyXML) => {
+      const percentData = UTIL.parseXml(dirtyXML);
+      const topNumb = percentData.getElementsByTagName('topnumber')[0].textContent;
+      const bottomNum = percentData.getElementsByTagName('bottomnumber')[0].textContent;
+
+      if (!topNumb || !bottomNum || bottomNum === '0') {
+        return '';
+      }
+
+      return `${(parseInt(topNumb)/parseInt(bottomNum)) * 100}%`;
+    }
 
     objIdSet = new Set();
 
     return data.reduce((a, d) => {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
-      const date = d.objective_date.split(' ')[0];
-      const percentData = UTIL.parseXml(d.percentData);
-      const bottomNum = percentData.getElementsByTagName('bottomnumber')[0].textContent;
-      const topNumb = percentData.getElementsByTagName('topnumber')[0].textContent;
-      let percent = bottomNum === '0' || !bottomNum || topNumb === '0' || !topNumb ? 0 : parseInt(topNumb)/parseInt(bottomNum);
-      percent = percent > 0 ? percent * 100 : 0;
-  
+
+      if (!occurrence || !objID) return a;
+      
       objIdSet.add(objID);
 
       if (!a[occurrence]) {
@@ -1286,15 +1293,17 @@ const outcomesReview = (function () {
           reviewDates: {},
         };
       }
+
       const freq = FREQUENCY[d.frequencyModifier] || '';
       const recurr = RECURRANCE[d.objectiveRecurrance] || '';
+      const percent = getPercentForSuccessRate(d.percentData);
 
       a[occurrence][objID].showExclamation = false;
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
       a[occurrence][objID].timesDoc = 0;
-      a[occurrence][objID].successRate = `${percent}%`;
+      a[occurrence][objID].successRate = percent;
 
       return a;
     }, {});
