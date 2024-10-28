@@ -1262,17 +1262,6 @@ const outcomesReview = (function () {
       M: 'per month',
       H: 'per hour',
     };
-    const getPercentForSuccessRate = (dirtyXML) => {
-      const percentData = UTIL.parseXml(dirtyXML);
-      const topNumb = percentData.getElementsByTagName('topnumber')[0].textContent;
-      const bottomNum = percentData.getElementsByTagName('bottomnumber')[0].textContent;
-
-      if (!topNumb || !bottomNum || bottomNum === '0') {
-        return '';
-      }
-
-      return `${(parseInt(topNumb)/parseInt(bottomNum)) * 100}%`;
-    }
 
     objIdSet = new Set();
 
@@ -1296,24 +1285,33 @@ const outcomesReview = (function () {
 
       const freq = FREQUENCY[d.frequencyModifier] || '';
       const recurr = RECURRANCE[d.objectiveRecurrance] || '';
-      const percent = getPercentForSuccessRate(d.percentData);
+      //const percent = getPercentForSuccessRate(d.percentData);
 
       a[occurrence][objID].showExclamation = false;
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
       a[occurrence][objID].timesDoc = 0;
-      a[occurrence][objID].successRate = percent;
+      a[occurrence][objID].successRate = 0;
 
       return a;
     }, {});
   }
   function sortReviewTableDataSecondary(data, outcomeOjb, filterBy) {
+    const getPercentForSuccessRate = (topNumb, bottomNum) => {
+      if (!topNumb || !bottomNum || bottomNum === '0') {
+        return '';
+      }
+  
+      return `${(parseInt(topNumb)/parseInt(bottomNum)) * 100}%`;
+    }
+
     data.forEach(d => {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
       const staffId = d.staffId;
+      const percent = getPercentForSuccessRate(d.top_number, d.bottom_number);
 
       if (filterBy) {
         if (filterBy.service && filterBy.service !== d.objectiveSuccessDescription) return;
@@ -1323,6 +1321,7 @@ const outcomesReview = (function () {
       if (outcomeOjb[occurrence]) {
         if (outcomeOjb[occurrence][objID]) {
           outcomeOjb[occurrence][objID].timesDoc++
+          outcomeOjb[occurrence][objID].successRate = percent;
 
           if (!outcomeOjb[occurrence][objID].reviewDates[date]) {
             outcomeOjb[occurrence][objID].reviewDates[date] = {};
