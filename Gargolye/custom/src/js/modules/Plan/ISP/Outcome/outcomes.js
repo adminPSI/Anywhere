@@ -221,8 +221,30 @@ const planOutcomes = (() => {
 
     const selectedVendorIds = getSelectedVendorIds();
 
-    const nonPaidSupportData = data.filter(provider => !selectedVendorIds.includes(provider.value.split('|')[0]));
-    const paidSupportData = data.filter(provider => selectedVendorIds.includes(provider.value.split('|')[0]));
+    // nonPaidSupportData, paidSupportData
+    const nonPaidSupportData = [];
+    const paidSupportData = [];
+    data.forEach(d => {
+      const provider = provider.value.split('|');
+      const isSelectedVendor = selectedVendorIds.includes(provider[0])
+
+      if (provider[1]) {
+        nonPaidSupportData.push(d);
+        return;
+      }
+
+      if (isSelectedVendor) {
+        paidSupportData.push(d);
+      } else {
+        nonPaidSupportData.push(d);
+      }
+    });
+    // const nonPaidSupportData = data.filter(provider => {
+    //   return !selectedVendorIds.includes(provider.value.split('|')[0]);
+    // });
+    // const paidSupportData = data.filter(provider => {
+    //   return selectedVendorIds.includes(provider.value.split('|')[0]);
+    // });
 
     const nonPaidSupportDropdownData = nonPaidSupportData.map(dd => {
       return {
@@ -274,9 +296,9 @@ const planOutcomes = (() => {
         dropdownEle.classList.remove('error');
       }
     } else {
-        if (coflictingIds[defaultValue]) {
-            defaultValue = `${defaultValue}|${defaultValueSalesForce}`;
-        }
+      if (coflictingIds[defaultValue]) {
+        defaultValue = `${defaultValue}|${defaultValueSalesForce}`;
+      }
     }
 
     groupDropdownData.push(nonPaidSupportGroup);
@@ -294,14 +316,6 @@ const planOutcomes = (() => {
         return acc;
       }, []);
     }
-    // data.sort((a, b) => {
-    //   const textA = a.text.toUpperCase();
-    //   const textB = b.text.toUpperCase();
-    //   return textA < textB ? -1 : textA > textB ? 1 : 0;
-    // });
-    // data.unshift({ value: '%', text: '' });
-
-    // dropdown.populate(dropdownEle, data, defaultValue);
   }
   function populateResponsibleContactDropdown(dropdownEle, defaultValue) {
     const data = dropdownData.relationships.map(dd => {
