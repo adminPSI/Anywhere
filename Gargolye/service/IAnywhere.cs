@@ -5704,6 +5704,21 @@ namespace Anywhere
            UriTemplate = "/updateSalesforceIdsScriptOneTimeUse/")]
         void updateSalesforceIdsScriptOneTimeUse();
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getFunding/")]
+        FSSWorker.dropdowns[] getFunding(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/insertAuthorization/")]
+        string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID);
     }
 
 

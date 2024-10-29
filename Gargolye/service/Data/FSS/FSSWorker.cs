@@ -96,6 +96,12 @@ namespace Anywhere.service.Data.FSS
             public string active { get; set; }           
         }
 
+        public class dropdowns
+        {
+            public string id { get; set; }
+            public string name { get; set; }
+        }
+
         public FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName)
         {
             FSSPageData pageData = new FSSPageData();
@@ -235,12 +241,24 @@ namespace Anywhere.service.Data.FSS
             string objString = fdg.deleteMemberInfo(token, memberId, familyID);
             return objString;
         }
+        public dropdowns[] getFunding(string token)
+        {
+            string objString = fdg.getFunding(token);
+            dropdowns[] seByDateObj = js.Deserialize<dropdowns[]>(objString);
+            return seByDateObj;
+        }
 
         public string DataTableToJSONWithJSONNet(DataTable table)
         {
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);
             return JSONString;
+        }
+
+        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID)
+        {
+            string objString = fdg.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID);
+            return objString;
         }
 
     }

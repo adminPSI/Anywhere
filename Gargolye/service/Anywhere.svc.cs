@@ -4301,7 +4301,7 @@ namespace Anywhere
             consumerId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
             dg.addOutcomePlanNow(token, consumerId);
             anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
-            
+
         }
 
         public OutcomesWorker.PlanViewHistory[] isNewBtnDisabledByPlanHistory(string token, string consumerId, string goalTypeID, string ObjectiveID)
@@ -4347,7 +4347,7 @@ namespace Anywhere
             return fssw.getMembers(token);
         }
 
-        public string insertMemberInfo(string token, string memberId, string familyID, string active, string userId, string newMemberId) 
+        public string insertMemberInfo(string token, string memberId, string familyID, string active, string userId, string newMemberId)
         {
             return fssw.insertMemberInfo(token, memberId, familyID, active, userId, newMemberId);
         }
@@ -4360,6 +4360,16 @@ namespace Anywhere
         public void updateSalesforceIdsScriptOneTimeUse()
         {
             anywhereWorker.updateSalesforceIdsScriptOneTimeUse();
+        }
+
+        public FSSWorker.dropdowns[] getFunding(string token)
+        {
+            return fssw.getFunding(token);
+        }
+
+        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID)
+        {
+            return fssw.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID);
         }
 
     }

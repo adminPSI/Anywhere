@@ -177,6 +177,48 @@ namespace Anywhere.service.Data.FSS
             }
         }
 
+        public string getFunding(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getFunding" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_FSS_getFunding();");
+
+            }
+            catch (Exception ex)
+            {
+                logger.error("561", ex.Message + " ANYW_FSS_getFunding( '" + token + "')");
+                return "561: Error getting getFunding";
+            }
+
+        }
+
+        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertAuthorization");
+            List<string> list = new List<string>();
+            list.Add(coPay);
+            list.Add(allocation);
+            list.Add(fundingSource);
+            list.Add(startDate);
+            list.Add(endDate);
+            list.Add(userId);
+            list.Add(familyID);
+
+            string text = "CALL DBA.ANYW_FSS_insertAuthorization(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("677", ex.Message + "ANYW_FSS_insertAuthorization(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "677: error ANYW_FSS_insertAuthorization";
+            }
+        }
+
         public string executeDataBaseCallJSON(string storedProdCall)
         {
             OdbcConnection conn = null;
