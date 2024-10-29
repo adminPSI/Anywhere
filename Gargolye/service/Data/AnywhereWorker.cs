@@ -742,7 +742,7 @@ namespace Anywhere.service.Data
         }
 
 
-        public void UpdateSalesforceIdsScriptOneTimeUse(string token)
+        public void updateSalesforceIdsScriptOneTimeUse()
         {
             StringBuilder sb = new StringBuilder();
             Data.Sybase di = new Data.Sybase();

@@ -5702,7 +5702,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/updateSalesforceIdsScriptOneTimeUse/")]
-        string updateSalesforceIdsScriptOneTimeUse(string token);
+        void updateSalesforceIdsScriptOneTimeUse();
 
     }
 
