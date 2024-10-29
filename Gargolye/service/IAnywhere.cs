@@ -5696,6 +5696,14 @@ namespace Anywhere
            UriTemplate = "/deleteMemberInfo/")]
         string deleteMemberInfo(string token, string memberId, string familyID);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/updateSalesforceIdsScriptOneTimeUse/")]
+        string updateSalesforceIdsScriptOneTimeUse(string token);
+
     }
 
 

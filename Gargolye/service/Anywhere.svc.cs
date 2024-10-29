@@ -4357,5 +4357,10 @@ namespace Anywhere
             return fssw.deleteMemberInfo(token, memberId, familyID);
         }
 
+        public void updateSalesforceIdsScriptOneTimeUse(string token)
+        {
+            anywhereWorker.updateSalesforceIdsScriptOneTimeUse(token);
+        }
+
     }
 }

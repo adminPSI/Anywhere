@@ -2,12 +2,19 @@
 using Anywhere.service.Data.PlanInformedConsent;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.IncidentTrackingWorker;
 using static Anywhere.service.Data.PlanSignature.PlanSignatureWorker;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+using Anywhere.Log;
+using PSIOISP;
+using System.Text.RegularExpressions;
 
 namespace Anywhere.service.Data
 {
@@ -733,5 +740,74 @@ namespace Anywhere.service.Data
         {
             public string deviceGUID { get; set; }
         }
+
+
+        public void UpdateSalesforceIdsScriptOneTimeUse(string token)
+        {
+            StringBuilder sb = new StringBuilder();
+            Data.Sybase di = new Data.Sybase();
+
+            sb.Clear();
+            sb.Append("SELECT DBA.People.ID ");
+            sb.Append("FROM DBA.People ");
+
+            DataSet dataSet = di.SelectRowsDS(sb.ToString());
+
+            // Check if there are any tables and rows in the returned data
+            if (dataSet.Tables.Count > 0)
+            {
+                DataTable table = dataSet.Tables[0];
+
+                // Loop through each row in the DataTable
+                foreach (DataRow row in table.Rows)
+                {
+                    if (long.TryParse(row["ID"].ToString(), out long peopleId))
+                    {
+                        // Make the API call to check for Guardians
+                        ISPDTData ispDT = new ISPDTData();
+                        string theGuardians = ispDT.IndividualGuardians(peopleId);
+
+                        // Extract IDs from the returned string
+                        List<string> guardianIds = ExtractIdsFromString(theGuardians);
+
+                        // Process each guardian Id as needed
+                        foreach (string id in guardianIds)
+                        {
+                            sb.Clear();
+                            sb.Append("UPDATE DBA.People ");
+                            sb.Append("SET SalesForce_Guardian_ID = ");
+                            sb.Append($"'{id}' ");  // Ensure proper handling of quotes for string IDs
+                            //sb.Append("WHERE ID = ");
+                            //sb.Append($"{peopleId};");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to parse People ID to a long.");
+                    }
+                }
+            }
+        }
+
+        // Helper method to extract IDs from the returned string
+        private List<string> ExtractIdsFromString(string guardiansData)
+        {
+            List<string> ids = new List<string>();
+
+            // Example regex pattern to match IDs if they follow a specific format, like "Id": "12345"
+            var matches = Regex.Matches(guardiansData, @"""Id""\s*:\s*""(\d+)""");
+
+            foreach (Match match in matches)
+            {
+                ids.Add(match.Groups[1].Value); // Add the ID value from the match
+            }
+
+            return ids;
+        }
+
+
+
+
+
     }
 }
