@@ -1189,8 +1189,8 @@ const roster2 = (function () {
         const isSelected = selectedConsumers && selectedConsumers.filter(sc => sc.id === consumerData.id);
         const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
         const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
-        const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
-        const SalesforceID = consumerData.SalesforceID ? consumerData.SalesforceID : '';
+        const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : ''; 
+        const SalesforceID = consumerData.SalesforceID ? consumerData.SalesforceID.trim() : ''; 
 
         var isInactive = false;
         if ($.session.applicationName === 'Advisor') {
