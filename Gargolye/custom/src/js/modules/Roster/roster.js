@@ -1190,7 +1190,7 @@ const roster2 = (function () {
         const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
         const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
         const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : ''; 
-        const SalesforceID = consumerData.SalesforceID ? consumerData.SalesforceID.trim() : ''; 
+        const SalesforceID = consumerData.SalesforceID ? consumerData.SalesforceID : ''; 
 
         var isInactive = false;
         if ($.session.applicationName === 'Advisor') {
@@ -1264,7 +1264,7 @@ const roster2 = (function () {
         onerror="this.src='./images/new-icons/default.jpg'"
       />`;
 
-        if ($.loadedApp === 'plan' && SalesforceID != '')
+        if ($.loadedApp === 'plan')
             details.innerHTML = `
       <div class="name">
         <p class="name_last">${lName},</p>
