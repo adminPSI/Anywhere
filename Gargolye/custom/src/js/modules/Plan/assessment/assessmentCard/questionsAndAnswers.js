@@ -35,11 +35,16 @@
     entries.forEach(entry => {
       console.log(`Observing entry ${entry.target.id}`);
       if (entry.isIntersecting) {
+        console.log(entry.intersectionRatio);
+
         if (!entry.target.classList.contains('nonApplicable')) {
           const sectionId = entry.target.id;
           console.log(`${sectionId} is in view`);
           tableOfContents.highlightLink(sectionId.replace('section', ''));
         }
+        // if (entry.intersectionRatio >= 0.75) {
+          
+        // }
       }
     });
   };
@@ -49,9 +54,9 @@
   }
 
   const observer = new IntersectionObserver(observerCallback, {
-    root: null,
-    rootMargin: '50px 0px 50px 0px',
-    threshold: 0.12,
+    root: DOM.ACTIONCENTER,
+    rootMargin: '0px 0px 0px 0px',
+    threshold: 0.08,
   });
 
   function checkArrayConsistency(arr) {

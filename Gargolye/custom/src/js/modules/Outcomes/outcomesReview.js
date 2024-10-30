@@ -7,6 +7,7 @@ const outcomesReview = (function () {
   let outcomesDataSecondaryRaw;
   let exclamationIds;
   let dropdownData;
+  let promptsMap;
   let activityRes;
   let locations;
   let successTypes;
@@ -44,14 +45,12 @@ const outcomesReview = (function () {
   const YEAR = 'Yearly';
   const FREQ_MAP = {
     'No Frequency': 'NF',
-    'Hourly': 'H',
-    'Daily': 'D',
-    'Weekly': 'W',
-    'Monthly': 'M',
-    'Yearly': 'Y',
+    Hourly: 'H',
+    Daily: 'D',
+    Weekly: 'W',
+    Monthly: 'M',
+    Yearly: 'Y',
   };
-  
-  
 
   // Mini Roster
   //----------------------------------------------------
@@ -71,7 +70,6 @@ const outcomesReview = (function () {
 
       await getReviewTableData();
       await getReviewTableDataSecondary();
-       
 
       // rebuild & populate tabs/tables
       const newOutcomeTabs = buildTabs();
@@ -212,12 +210,11 @@ const outcomesReview = (function () {
         Object.keys(outcomesData).forEach(a => {
           Object.keys(outcomesData[a]).forEach(b => {
             delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].reviewDates = {};
             outcomesData[a][b].timesDoc = 0;
           });
         });
         await getReviewTableDataSecondary();
-         
+
         populateTabSections();
       }
       if (e.target.id === 'fromDate') {
@@ -226,12 +223,11 @@ const outcomesReview = (function () {
         Object.keys(outcomesData).forEach(a => {
           Object.keys(outcomesData[a]).forEach(b => {
             delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].reviewDates = {};
             outcomesData[a][b].timesDoc = 0;
           });
         });
         await getReviewTableDataSecondary();
-         
+
         populateTabSections();
       }
       if (e.target.id === 'toDate') {
@@ -240,12 +236,11 @@ const outcomesReview = (function () {
         Object.keys(outcomesData).forEach(a => {
           Object.keys(outcomesData[a]).forEach(b => {
             delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].reviewDates = {};
             outcomesData[a][b].timesDoc = 0;
           });
         });
         await getReviewTableDataSecondary();
-         
+
         populateTabSections();
       }
     });
@@ -447,7 +442,7 @@ const outcomesReview = (function () {
   }
   // Add Review Note Popup
   //----------------------------------------------------
-  function showAddReviewNotePopup({date, result, attempts, prompts, employeeId, activityId}) {
+  function showAddReviewNotePopup({ date, result, attempts, prompts, employeeId, activityId }) {
     const saveData = {
       objectiveActivityId: activityId,
       reviewNote: '',
@@ -458,11 +453,11 @@ const outcomesReview = (function () {
 
     reviewNotePopup = POPUP.build({
       id: 'reviewNotePopup',
-      hideX: true
+      hideX: true,
     });
 
     const header = _DOM.createElement('div', { class: ['reviewNoteHeader'] });
-    header.innerHTML = `<p>Service Review Note - ${selectedConsumerName}</p>`
+    header.innerHTML = `<p>Service Review Note - ${selectedConsumerName}</p>`;
     const topInfo = _DOM.createElement('div', { class: ['reviewNoteInfo'] });
     topInfo.innerHTML = `
       <p>Date: ${date}</p>
@@ -477,13 +472,13 @@ const outcomesReview = (function () {
       type: 'textarea',
       callback: e => {
         saveData.reviewNote = e.target.value;
-      }
+      },
     });
     const notifyEmployeeCheckbox = input.buildCheckbox({
       text: 'Notify Employee',
       callback: e => {
         saveData.notifyEmployee = e.target.checked ? 'Y' : 'N';
-      }
+      },
     });
     const savebtn = button.build({
       text: 'Save',
@@ -492,7 +487,7 @@ const outcomesReview = (function () {
       callback: async () => {
         await outcomesAjax.addReviewNote({
           token: $.session.Token,
-          ...saveData
+          ...saveData,
         });
 
         POPUP.hide(reviewNotePopup);
@@ -741,6 +736,15 @@ const outcomesReview = (function () {
 
     if (editData) {
       locationID = editData.Location_ID;
+      tmpData.primaryLoc = editData.Location_ID;
+      tmpData.secLoc = editData.Locations_Secondary_ID;
+      tmpData.result = editData.objective_success_description;
+      tmpData.prompt = editData.Prompt_Type;
+      tmpData.attempt = editData.Prompt_Number;
+      tmpData.ci = editData.community_integration_level;
+      tmpData.startTime = editData.start_time;
+      tmpData.endTime = editData.end_time;
+      tmpData.note = editData.Objective_Activity_Note;
     } else {
       // TODO: defaultObjLocationId, defaultGoalLocationId, useConsumerLocation||defaultPrimaryLocation
       // TODO: outcomes.js line 1021 ^^^^^
@@ -765,19 +769,19 @@ const outcomesReview = (function () {
       const showPrompts = successDetails?.Show_Prompts;
       const showTime = successDetails?.Show_Time;
       const showCI = successDetails?.Show_Community_Integration;
-  
+
       const attemptsRequired = successDetails?.Attempts_Required;
       const promptsRequired = successDetails?.Prompt_Required;
       const timeRequired = successDetails?.Times_Required;
       const ciRequired = successDetails?.Community_Integration_Required;
       const noteRequired = successDetails?.Notes_Required;
-  
+
       // attempts
       if (showAttempts === 'Y') {
         attemptsDropdown.classList.remove('hidden');
         attemptsDropdown.classList.remove('disabled');
         if (attemptsRequired === 'Y') {
-          if (!currAttempts || currAttempts === '') {
+          if (!tmpData.attempt || tmpData.attempt === '') {
             attemptsDropdown.classList.add('error');
           } else {
             attemptsDropdown.classList.remove('error');
@@ -794,7 +798,7 @@ const outcomesReview = (function () {
         promptsDropdown.classList.remove('hidden');
         promptsDropdown.classList.remove('disabled');
         if (promptsRequired === 'Y') {
-          if (!currPrompt || currPrompt === '') {
+          if (!tmpData.prompt || tmpData.prompt === '') {
             promptsDropdown.classList.add('error');
           } else {
             promptsDropdown.classList.remove('error');
@@ -811,7 +815,7 @@ const outcomesReview = (function () {
         cIDropdown.classList.remove('hidden');
         cIDropdown.classList.remove('disabled');
         if (ciRequired === 'Y') {
-          if (!currCI || currCI === '') {
+          if (!tmpData.ci || tmpData.ci === '') {
             cIDropdown.classList.add('error');
           } else {
             cIDropdown.classList.remove('error');
@@ -828,12 +832,12 @@ const outcomesReview = (function () {
         timeInputs.start.classList.remove('disabled');
         timeInputs.end.classList.remove('disabled');
         if (timeRequired === 'Y') {
-          if (currStartTime === '') {
+          if (tmpData.startTime === '') {
             timeInputs.start.classList.add('error');
           } else {
             timeInputs.start.classList.remove('error');
           }
-          if (currEndTime === '') {
+          if (tmpData.endTime === '') {
             timeInputs.end.classList.add('error');
           } else {
             timeInputs.end.classList.remove('error');
@@ -848,7 +852,7 @@ const outcomesReview = (function () {
       }
       // note
       if (noteRequired === 'Y') {
-        if (!currNote || currNote === '') {
+        if (!tmpData.note || tmpData.note === '') {
           noteInput.classList.add('error');
         } else {
           noteInput.classList.remove('error');
@@ -863,8 +867,8 @@ const outcomesReview = (function () {
       } else {
         saveBtn.classList.add('disabled');
       }
-    }
-    
+    };
+
     primaryLocationDropdown.addEventListener('change', e => {
       tmpData.primaryLoc = e.target.value;
     });
@@ -913,7 +917,7 @@ const outcomesReview = (function () {
         attempts: outcomeData.attempt,
         prompts: editData.Prompt_Number,
         employeeId: outcomeData.employeeId,
-        activityId: outcomeData.activityId
+        activityId: outcomeData.activityId,
       });
     });
     saveBtn.addEventListener('click', e => {
@@ -1104,38 +1108,40 @@ const outcomesReview = (function () {
           }
         });
 
-        const detailsHeading = _DOM.createElement('div', { class: ['heading', 'heading-details'] });
-        detailsHeading.innerHTML = `
-          <div>Employee</div>
-          <div>Result</div>
-          <div>Attempts</div>
-          <div>Prompts</div>  
-          <div>Note</div>
-        `;
-        detailsTable.appendChild(detailsHeading);
-
-        for (const staffId in data[objId].reviewDates[date]) {
-          const details = data[objId].reviewDates[date][staffId];
-          const detailRow = _DOM.createElement('div', { class: ['row', 'row-details'] });
-          detailRow.innerHTML = `
-            <div>${details.employee}</div>
-            <div>${details.result}</div>
-            <div>${details.attempts}</div>
-            <div>${details.prompts}</div>
-            <div>${details.note}</div>
+        if (Object.keys(data[objId].reviewDates[date]).length > 0) {
+          const detailsHeading = _DOM.createElement('div', { class: ['heading', 'heading-details'] });
+          detailsHeading.innerHTML = `
+            <div>Employee</div>
+            <div>Result</div>
+            <div>Attempts</div>
+            <div>Prompts</div>  
+            <div>Note</div>
           `;
-          detailsTable.appendChild(detailRow);
+          detailsTable.appendChild(detailsHeading);
 
-          detailRow.addEventListener('click', () => {
-            onDetailRowClick({ 
-              goalTypeID: objId, 
-              activityId: details.activityId, 
-              date: date, 
-              result: details.result,
-              attempt: details.attempts,
-              employeeId: staffId
+          for (const staffId in data[objId].reviewDates[date]) {
+            const details = data[objId].reviewDates[date][staffId];
+            const detailRow = _DOM.createElement('div', { class: ['row', 'row-details'] });
+            detailRow.innerHTML = `
+              <div>${details.employee}</div>
+              <div>${details.result}</div>
+              <div>${details.attempts}</div>
+              <div>${details.prompts}</div>
+              <div>${details.note}</div>
+            `;
+            detailsTable.appendChild(detailRow);
+
+            detailRow.addEventListener('click', () => {
+              onDetailRowClick({
+                goalTypeID: objId,
+                activityId: details.activityId,
+                date: date,
+                result: details.result,
+                attempt: details.attempts,
+                employeeId: staffId,
+              });
             });
-          });
+          }
         }
       }
     }
@@ -1157,18 +1163,29 @@ const outcomesReview = (function () {
         Object.keys(outcomesData).forEach(a => {
           Object.keys(outcomesData[a]).forEach(b => {
             delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].reviewDates = {};
+            //outcomesData[a][b].reviewDates = {};
             outcomesData[a][b].timesDoc = 0;
           });
         });
         await getReviewTableDataSecondary();
-         
+
         populateTabSections();
       },
     });
   }
   function populateTabSections(data) {
     if (!data) data = outcomesData;
+
+    const key = FREQ_MAP[activeTab];
+    const sectionID = tabSections[key].toLowerCase();
+    const section = document.getElementById(sectionID);
+    section.innerHTML = '';
+
+    const sectionTable = buildTable(data[key]);
+
+    section.appendChild(sectionTable);
+
+    return;
 
     for (const key in data) {
       const sectionID = tabSections[key].toLowerCase();
@@ -1183,6 +1200,75 @@ const outcomesReview = (function () {
 
   // Main
   //----------------------------------------------------
+  function getPercentForSuccessRate(topNumb, bottomNum) {
+    if (!topNumb || !bottomNum || bottomNum === '0') {
+      return '';
+    }
+
+    const percent = ((parseInt(topNumb) / parseInt(bottomNum)) * 100).toString().slice(0, 5);
+
+    return `${percent}%`;
+  }
+  function setDatesForMiddleTier() {
+    Object.keys(outcomesData).forEach(occ => {
+      if (occ === 'NF') return;
+
+      Object.keys(outcomesData[occ]).forEach(objId => {
+        const dObj = {
+          0: new Date(`${selectedDateSpan.to} 00:00:00`),
+        };
+
+        for (let index = 0; index < spanLength - 1; index++) {
+          switch (occ) {
+            case 'H': {
+              const nextDate = dates.subHours(dObj[index], 1);
+              dObj[index + 1] = nextDate;
+              break;
+            }
+            case 'D': {
+              const nextDate = dates.subDays(dObj[index], 1);
+              dObj[index + 1] = nextDate;
+              break;
+            }
+            case 'W': {
+              const nextDate = dates.subWeeks(dObj[index], 1);
+              dObj[index + 1] = nextDate;
+              break;
+            }
+            case 'M': {
+              const nextDate = dates.subMonths(dObj[index], 1);
+              dObj[index + 1] = nextDate;
+              break;
+            }
+            case 'Y': {
+              const nextDate = dates.subYears(dObj[index], 1);
+              dObj[index + 1] = nextDate;
+              break;
+            }
+          }
+        }
+
+        Object.keys(dObj).forEach(key => {
+          if (!outcomesData[occ][objId].reviewDates) {
+            outcomesData[occ][objId].reviewDates = {};
+          }
+
+          if (occ === 'H') {
+            //const isoDate = dates.formatISO(dObj[key]);
+            const isoDate = dates.formatISO(dObj[key]).split('T')[0];
+            const stDate = dates.formateToStandard(isoDate);
+            outcomesData[occ][objId].reviewDates[stDate] = {};
+          } else {
+            const isoDate = dates.formatISO(dObj[key]).split('T')[0];
+            const stDate = dates.formateToStandard(isoDate);
+            outcomesData[occ][objId].reviewDates[stDate] = {};
+          }
+        });
+
+        console.log(occ, Object.keys(outcomesData[occ][objId].reviewDates));
+      });
+    });
+  }
   function setUnitType() {
     selectedDateSpan.to = selectedDate;
 
@@ -1247,7 +1333,7 @@ const outcomesReview = (function () {
 
     activeTab = Object.values(tabSections)[0];
   }
-  function sortReviewTableData(data) {
+  function sortReviewTableData(dirtyData) {
     const FREQUENCY = {
       OBJFMAL: 'At least',
       OBJFMAN: 'As needed',
@@ -1265,12 +1351,12 @@ const outcomesReview = (function () {
 
     objIdSet = new Set();
 
-    return data.reduce((a, d) => {
+    return dirtyData.reduce((a, d) => {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
 
       if (!occurrence || !objID) return a;
-      
+
       objIdSet.add(objID);
 
       if (!a[occurrence]) {
@@ -1278,14 +1364,11 @@ const outcomesReview = (function () {
       }
 
       if (!a[occurrence][objID]) {
-        a[occurrence][objID] = {
-          reviewDates: {},
-        };
+        a[occurrence][objID] = {};
       }
 
       const freq = FREQUENCY[d.frequencyModifier] || '';
       const recurr = RECURRANCE[d.objectiveRecurrance] || '';
-      //const percent = getPercentForSuccessRate(d.percentData);
 
       a[occurrence][objID].showExclamation = false;
       a[occurrence][objID].individual = d.consumerName;
@@ -1298,14 +1381,6 @@ const outcomesReview = (function () {
     }, {});
   }
   function sortReviewTableDataSecondary(data, outcomeOjb, filterBy) {
-    const getPercentForSuccessRate = (topNumb, bottomNum) => {
-      if (!topNumb || !bottomNum || bottomNum === '0') {
-        return '';
-      }
-  
-      return `${(parseInt(topNumb)/parseInt(bottomNum)) * 100}%`;
-    }
-
     data.forEach(d => {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
@@ -1320,23 +1395,53 @@ const outcomesReview = (function () {
 
       if (outcomeOjb[occurrence]) {
         if (outcomeOjb[occurrence][objID]) {
-          outcomeOjb[occurrence][objID].timesDoc++
+          outcomeOjb[occurrence][objID].timesDoc++;
           outcomeOjb[occurrence][objID].successRate = percent;
 
-          if (!outcomeOjb[occurrence][objID].reviewDates[date]) {
-            outcomeOjb[occurrence][objID].reviewDates[date] = {};
+          const prompt = dropdownData.prompts.find(p => p.Code === d.promptType)
+
+          if (occurrence === 'NF') {
+            if (!outcomeOjb[occurrence][objID].reviewDates) {
+              outcomeOjb[occurrence][objID].reviewDates = {};
+            }
+
+            if (!outcomeOjb[occurrence][objID].reviewDates['nf']) {
+              outcomeOjb[occurrence][objID].reviewDates['nf'] = {};
+            }
+
+            if (!outcomeOjb[occurrence][objID].reviewDates['nf'][staffId]) {
+              outcomeOjb[occurrence][objID].reviewDates['nf'][staffId] = {};
+            }
+
+            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].employee = d.employee;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][
+              staffId
+            ].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].attempts = d.promptNumber;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].prompts = `${prompt.Code} ${prompt.Caption}`;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].note = d.objectiveActivityNote;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].activityId = d.objectiveActivityId;
+
+            return;
           }
+
+          // if (!outcomeOjb[occurrence][objID].reviewDates[date]) {
+          //   outcomeOjb[occurrence][objID].reviewDates[date] = {};
+          // }
+
+          if (!outcomeOjb[occurrence][objID].reviewDates[date]) return;
 
           if (!outcomeOjb[occurrence][objID].reviewDates[date][staffId]) {
             outcomeOjb[occurrence][objID].reviewDates[date][staffId] = {};
           }
 
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
-          outcomeOjb[occurrence][objID].reviewDates[date][staffId].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
+          outcomeOjb[occurrence][objID].reviewDates[date][
+            staffId
+          ].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
-          outcomeOjb[occurrence][objID].reviewDates[date][staffId].prompts = d.promptType;
+          outcomeOjb[occurrence][objID].reviewDates[date][staffId].prompts = `${prompt.Code} ${prompt.Caption}`;
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].note = d.objectiveActivityNote;
-
           outcomeOjb[occurrence][objID].reviewDates[date][staffId].activityId = d.objectiveActivityId;
         }
       }
@@ -1355,13 +1460,15 @@ const outcomesReview = (function () {
     setUnitType();
   }
   async function getReviewTableDataSecondary() {
+    setDatesForMiddleTier();
+
     const frequency = FREQ_MAP[activeTab];
     const data = await outcomesAjax.getReviewTableDataSecondary({
       consumerId: selectedConsumerId,
       startDate: selectedDateSpan.from,
       endDate: selectedDateSpan.to,
       objectiveIdList: Array.from(objIdSet).join(','),
-      frequency
+      frequency,
     });
 
     outcomesDataSecondaryRaw = data.gridSecondary;
@@ -1408,7 +1515,7 @@ const outcomesReview = (function () {
     }
   }
   // consumer, date, allowedConsumerIds
-  async function init({consumer, consumerName, date, allowedConsumerIds}) {
+  async function init({ consumer, consumerName, date, allowedConsumerIds }) {
     console.clear();
 
     selectedConsumerId = consumer.id;

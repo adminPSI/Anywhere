@@ -735,7 +735,7 @@ div.textarea {
       width: 100%;
 
       &-main {
-        border-bottom: 1px solid black;
+        border-bottom: 3px solid black;
       }
 
       &-main-sub {
@@ -801,25 +801,25 @@ div.textarea {
 
     .heading-details,
     .row-details {
-      > div:nth-child(2) {
+      > div:nth-child(1) {
         flex-basis: 100px;
-        // max-width: 100px;
+      }
+      > div:nth-child(2) {
+        flex-basis: 80px;
+        max-width: 200px;
       }
       > div:nth-child(3) {
         flex-basis: 80px;
-        // max-width: 80px;
+        max-width: 120px;
+        text-align: center;
       }
       > div:nth-child(4) {
         flex-basis: 80px;
-        // max-width: 80px;
+        max-width: 200px;
       }
       > div:nth-child(5) {
         flex-basis: 80px;
-        // max-width: 80px;
-      }
-      > div:nth-child(6) {
-        flex-basis: 80px;
-        // max-width: 80px;
+        flex-grow: 2;
       }
     }
   }
