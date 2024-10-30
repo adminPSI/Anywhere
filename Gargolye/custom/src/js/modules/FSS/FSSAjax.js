@@ -199,6 +199,56 @@ var FSSAjax = (function () {
         }
     }
 
+    async function getFunding() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getFunding/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function insertAuthorization(retrieveData) {
+        // token
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertAuthorization/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.insertAuthorizationResult;
+        } catch (error) {
+            console.log(error.responseText);
+        }
+    }
+
 
     return {
         getFSSPageData,
@@ -208,6 +258,8 @@ var FSSAjax = (function () {
         getFamilyMembers,
         getMembers,
         insertMemberInfo,
-        deleteMemberInfo
+        deleteMemberInfo,
+        getFunding,
+        insertAuthorization
     };
 })();

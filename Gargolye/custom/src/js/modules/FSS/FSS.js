@@ -19,7 +19,13 @@ const FSS = (() => {
     let familyNameBtnWrap;
     let primaryPhoneBtnWrap;
     let addressBtnWrap;
-
+    let coPayVal;
+    let allocationVal;
+    let fundingSourceVal;
+    let startDateVal;
+    let endDateVal;
+    let authorizationPopup;
+    //--
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
@@ -57,7 +63,6 @@ const FSS = (() => {
         backBtn = backButton();
         addInsertServicesBtnWrap.appendChild(editFamily);
 
-
         backbtnWrap.appendChild(backBtn);
 
         pageWrap.appendChild(consumerCard);
@@ -88,15 +93,12 @@ const FSS = (() => {
 
     function buildConsumerCard() {
         selectedConsumer.card.classList.remove('highlighted');
-
         const wrap = document.createElement('div');
         wrap.classList.add('planConsumerCard');
-
         wrap.appendChild(selectedConsumer.card);
-
         return wrap;
-
     }
+
     function initFilterValues() {
         filterValues = {
             familyName: '%',
@@ -321,7 +323,7 @@ const FSS = (() => {
             newFilterValues.address = event.target.value;
         });
 
-        applyFilterBtn.addEventListener('click', async e => {           
+        applyFilterBtn.addEventListener('click', async e => {
             if (!applyFilterBtn.classList.contains('disabled')) {
                 applyFilter();
                 POPUP.hide(filterPopup);
@@ -372,7 +374,7 @@ const FSS = (() => {
             style: 'secondary',
             type: 'outlined',
             callback: async () => {
-                roster2.clearSelectedConsumers(); 
+                roster2.clearSelectedConsumers();
                 roster2.clearActiveConsumers();
                 FSS.init()
             },
@@ -385,10 +387,10 @@ const FSS = (() => {
         groupSubChildData();
 
         overviewTable = document.createElement('div');
-        overviewTable.classList.add('outcomeTable');
+        overviewTable.classList.add('fssTable');
 
         const mainHeading = document.createElement('div');
-        mainHeading.classList.add('outcomeTable__header');
+        mainHeading.classList.add('fssTable__header');
         mainHeading.innerHTML = `
       <div></div>
       <div>Family Name</div>
@@ -404,19 +406,19 @@ const FSS = (() => {
             var eventName;
             const notes = parent.notes == null ? '' : parent.notes;
             const rowWrap = document.createElement('div');
-            rowWrap.classList.add('outcomeTable__subTableWrap');
+            rowWrap.classList.add('fssTable__subTableWrap');
 
             // TOP LEVEL ROW
             //---------------------------------
             const mainDataRow = document.createElement('div');
-            mainDataRow.classList.add('outcomeTable__mainDataRow', 'outcomeTable__dataRow');
+            mainDataRow.classList.add('fssTable__mainDataRow', 'fssTable__dataRow');
             mainDataRow.value = parent.familyId;
             const endIcon = document.createElement('div');
-            endIcon.classList.add('outcomeTable__endIcon');
+            endIcon.classList.add('fssTable__endIcon');
 
             const toggleIcon = document.createElement('div');
             toggleIcon.id = 'authToggle';
-            toggleIcon.classList.add('outcomeTable__endIcon');
+            toggleIcon.classList.add('fssTable__endIcon');
             toggleIcon.innerHTML = icons['keyArrowRight'];
             mainDataRow.innerHTML = `       
         <div>${parent.familyName}</div>
@@ -425,7 +427,7 @@ const FSS = (() => {
         <div>${notes}</div>               
       `;
             mainDataRow.prepend(toggleIcon);
-            if ($.session.InsertServices == true) {
+            if ($.session.FSSUpdate == true) {
                 endIcon.innerHTML = icons['add'];
             } else {
                 endIcon.innerHTML = `<div></div>`;
@@ -436,10 +438,10 @@ const FSS = (() => {
             // SUB ROWS
             //---------------------------------
             const subRowWrap = document.createElement('div');
-            subRowWrap.classList.add('outcomeTable__subRowWrap');
+            subRowWrap.classList.add('fssTable__subRowWrap');
 
             const subHeading = document.createElement('div');
-            subHeading.classList.add('outcomeTable__subHeader');
+            subHeading.classList.add('fssTable__subHeader');
             subHeading.innerHTML = `
         <div></div>
         <div>Start Date</div>
@@ -450,6 +452,7 @@ const FSS = (() => {
         <div>Amt. Paid</div>
         <div>Balance</div>
         <div>Funding</div>
+        <div></div>
       `;
             subRowWrap.appendChild(subHeading);
 
@@ -459,6 +462,10 @@ const FSS = (() => {
                 });
 
                 fSSData.pageDataChild[familyID].forEach(child => {
+                    const fID = child.familyId;
+                    const authId = child.authId;
+                    const encumbered = child.encumbered == null ? '0.0' : child.encumbered;
+                    const amtPaid = child.amtPaid == null ? '0.0' : child.amtPaid;
                     const subDataRow = document.createElement('div');
                     var startDate =
                         child.startDate == null || ''
@@ -468,40 +475,118 @@ const FSS = (() => {
                         child.endDate == null || ''
                             ? ''
                             : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(child.endDate.split('T')[0]));
-                    //var serviceTyp = child.serviceType == null ? '' : child.serviceType;
-                    subDataRow.classList.add('outcomeTable__subDataRow', 'outcomeTable__dataRow');
+                    subDataRow.classList.add('fssTable__subDataRow', 'fssTable__dataRow');
+                    const endIconSub = document.createElement('div');
+                    endIconSub.classList.add('fssTable__endIcon');
+                    const toggleIconSub = document.createElement('div');
+                    toggleIconSub.id = 'authToggle';
+                    toggleIconSub.classList.add('fssTable__endIcon');
+                    toggleIconSub.innerHTML = icons['keyArrowRight'];
+
                     subDataRow.innerHTML = `
-            <div></div>
             <div>${startDate}</div>     
             <div>${endDate}</div>
             <div>${child.coPay}</div>
             <div>${child.allocation}</div>
-            <div>${child.encumbered}</div> 
-             <div>${child.amtPaid}</div>
+            <div>${encumbered}</div> 
+             <div>${amtPaid}</div>
             <div>${child.balance}</div>
             <div>${child.funding}</div> 
+
           `;
+                    subDataRow.prepend(toggleIconSub);
+                    if ($.session.FSSUpdate == true) {
+                        endIconSub.innerHTML = icons['add'];
+                    } else {
+                        endIconSub.innerHTML = `<div></div>`;
+                    }
+                    subDataRow.appendChild(endIconSub);
                     subRowWrap.appendChild(subDataRow);
 
                     subDataRow.addEventListener('click', e => {
-                        if ($.session.UpdateServices == true) {
-                            addServicesForm.init(selectedConsumer, child.authId, 0);
+                        addFamilyUtilization(child.familyId, child.authId);
+                    });
+                     
+                    
+
+                    // SUB CHILD ROWS
+                    //---------------------------------
+                    const subChildRowWrap = document.createElement('div');
+                    subChildRowWrap.classList.add('fssTable__subChildRowWrap');
+
+                    const subChildHeading = document.createElement('div');
+                    subChildHeading.classList.add('fssTable__subChildHeader');
+                    subChildHeading.innerHTML = `
+                     <div></div>
+                    <div>Family Member</div>
+                    <div>Service Code</div>
+                    <div>Vendor</div>
+                    <div>Encumbered</div>
+                    <div>Paid amount</div>
+                    <div>Date Paid</div>
+                    <div></div>
+                        `;
+                    subChildRowWrap.appendChild(subChildHeading);
+
+                    if (fSSData.pageDataSubChild[authId]) {
+                        fSSData.pageDataSubChild[authId].sort((a, b) => {
+                            return parseInt(a.itemnum) - parseInt(b.itemnum);
+                        });
+
+                        fSSData.pageDataSubChild[authId].forEach(subChild => {
+                            const aID = subChild.authId;
+                            const encumbered = subChild.encumbered == null ? '0.0' : subChild.encumbered;
+                            const paidAmt = subChild.paidAmt == null ? '0.0' : subChild.paidAmt;
+                            const subChildDataRow = document.createElement('div');
+                            var paidDate =
+                                subChild.paidDate == null || ''
+                                    ? ''
+                                    : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(subChild.paidDate.split('T')[0]));
+                           
+                            subChildDataRow.classList.add('fssTable__subChildDataRow', 'fssTable__dataRow');
+                            const endIconSub = document.createElement('div');
+                            endIconSub.classList.add('fssTable__endIcon');
+                           
+
+                            subChildDataRow.innerHTML = `
+                             <div></div>
+                            <div>${subChild.familyMember}</div>
+                            <div>${subChild.serviceCode}</div>
+                            <div>${subChild.Vendor}</div>
+                            <div>${encumbered}</div> 
+                            <div>${paidAmt}</div>
+                            <div>${paidDate}</div>
+                            `;                         
+                            if ($.session.FSSUpdate == true) {
+                                endIconSub.innerHTML = icons['delete'];
+                            } else {
+                                endIconSub.innerHTML = `<div></div>`;
+                            }
+                            subChildDataRow.appendChild(endIconSub);
+                            subChildRowWrap.appendChild(subChildDataRow);
+
+                            subChildDataRow.addEventListener('click', e => {
+                                //subChild.authDetailId  subChild.authId
+                            });
+                        });
+                    } 
+                    toggleIconSub.addEventListener('click', e => {
+                        const toggle = document.querySelector('#authToggle');
+                        eventName = 'toggle';
+                        if (subChildRowWrap.classList.contains('active')) {
+                            // close it
+                            subChildRowWrap.classList.remove('active');
+                            toggleIconSub.innerHTML = icons.keyArrowRight;
+                        } else {
+                            // open it
+                            subChildRowWrap.classList.add('active');
+                            toggleIconSub.innerHTML = icons.keyArrowDown;
                         }
                     });
+
+                    subRowWrap.appendChild(subChildRowWrap);
                 });
             }
-
-            // EVENT
-            //---------------------------------
-            mainDataRow.addEventListener('click', e => {
-                var goalID = e.currentTarget.value;
-                if (eventName != 'toggle' && eventName != 'add') {
-                    if ($.session.UpdateOutcomes == true) {
-                        addOutcomes.init(selectedConsumer, goalID);
-                    }
-                }
-                eventName = '';
-            });
 
             toggleIcon.addEventListener('click', e => {
                 const toggle = document.querySelector('#authToggle');
@@ -518,8 +603,7 @@ const FSS = (() => {
             });
 
             endIcon.addEventListener('click', e => {
-                eventName = 'add';
-                addServicesForm.init(selectedConsumer, 0, goalID);
+                addFamilyAuthorization(parent.familyId)
             });
 
             // ASSEMBLY
@@ -569,6 +653,222 @@ const FSS = (() => {
         fSSData.pageDataSubChild = { ...groupedChildren };
     }
 
+    function addFamilyUtilization() {
+
+    }
+    function addFamilyAuthorization(familyId) {
+
+        authorizationPopup = POPUP.build({
+            classNames: ['rosterFilterPopup'],
+            hideX: true,
+        });
+
+        const heading = document.createElement('h2');
+        heading.innerText = 'New Family Authorization';
+
+        // inputs     
+        newStartDate = input.build({
+            id: 'newStartDate',
+            type: 'date',
+            label: 'Start Date',
+            style: 'secondary',
+            value: UTIL.getTodaysDate(),
+        });
+        startDateVal = UTIL.getTodaysDate()
+
+        newEndDate = input.build({
+            id: 'newEndDate',
+            type: 'date',
+            label: 'End Date',
+            style: 'secondary',
+        });
+        coPay = input.build({
+            id: 'coPay',
+            type: 'number',
+            label: 'Copay %',
+            style: 'secondary',
+            attributes: [
+                { key: 'min', value: '0' },
+                { key: 'max', value: '99' },
+                {
+                    key: 'onkeypress',
+                    value: 'return event.charCode >= 48 && event.charCode <= 57',
+                },
+            ],
+        });
+
+        allocation = input.build({
+            id: 'allocation',
+            type: 'text',
+            label: 'Allocation',
+            style: 'secondary',
+            value: '$',
+        });
+
+        fundingSourceDropdown = dropdown.build({
+            id: 'fundingSourceDropdown',
+            label: "Payee",
+            dropdownId: "fundingSourceDropdown",
+        });
+
+        APPLY_BTN = button.build({
+            text: 'SAVE',
+            style: 'secondary',
+            type: 'contained',
+            callback: async () => {
+                if (!APPLY_BTN.classList.contains('disabled')) {
+                    await saveAuthorizationData(familyId);
+                    POPUP.hide(authorizationPopup);
+                }
+            },
+        });
+
+        CANCEL_BTN = button.build({
+            text: 'Cancel',
+            style: 'secondary',
+            type: 'outlined',
+        });
+
+        authorizationPopup.appendChild(heading);
+        authorizationPopup.appendChild(newStartDate);
+        authorizationPopup.appendChild(newEndDate);
+        authorizationPopup.appendChild(coPay);
+        authorizationPopup.appendChild(allocation);
+        authorizationPopup.appendChild(fundingSourceDropdown);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(APPLY_BTN);
+        popupbtnWrap.appendChild(CANCEL_BTN);
+        authorizationPopup.appendChild(popupbtnWrap);
+
+        POPUP.show(authorizationPopup);
+        fundingDropdownPopulate();
+        authorizationPopupEventListeners();
+        authorizationRequiredFieldsOfPopup();
+    }
+
+    function authorizationPopupEventListeners() {
+        coPay.addEventListener('input', event => {
+            coPayVal = event.target.value;
+            authorizationRequiredFieldsOfPopup();
+        });
+
+        allocation.addEventListener('input', event => {
+            allocationVal = event.target.value;
+            var reg = new RegExp('^[0-9 . $ -]+$');
+            if (!reg.test(allocationVal)) {
+                document.getElementById('allocation').value = '$';
+            }
+            else if (allocationVal.includes('.') && (allocationVal.match(/\./g).length > 1 || allocationVal.toString().split('.')[1].length > 2)) {
+                document.getElementById('allocation').value = '$';
+            }
+            if (allocationVal.includes('-') || allocationVal.includes(' ')) {
+                document.getElementById('allocation').value = '$';
+            }
+            if (allocationVal.includes('$') && allocationVal.match(/\$/g).length > 1) {
+                document.getElementById('allocation').value = '$';
+            }
+            allocationVal = allocationVal.replace('$', '');
+            authorizationRequiredFieldsOfPopup();
+        });
+
+        fundingSourceDropdown.addEventListener('change', event => {
+            fundingSourceVal = event.target.options[event.target.selectedIndex].id;
+            authorizationRequiredFieldsOfPopup();
+        });
+        newStartDate.addEventListener('input', event => {
+            startDateVal = event.target.value;
+            authorizationRequiredFieldsOfPopup();
+        });
+        newEndDate.addEventListener('input', event => {
+            endDateVal = event.target.value;
+            authorizationRequiredFieldsOfPopup();
+        });
+
+        CANCEL_BTN.addEventListener('click', () => {
+            POPUP.hide(authorizationPopup);
+        });
+    }
+
+    function authorizationRequiredFieldsOfPopup() {
+        var allocate = allocation.querySelector('#allocation');
+        var fundingSource = fundingSourceDropdown.querySelector('#fundingSourceDropdown');
+        var startDate = newStartDate.querySelector('#newStartDate');
+        var endDate = newEndDate.querySelector('#newEndDate');
+        var cPay = coPay.querySelector('#coPay');
+
+        var reg = new RegExp('^[0-9 . $ -]+$');
+
+        if (fundingSource.value === '') {
+            fundingSourceDropdown.classList.add('errorPopup');
+        } else {
+            fundingSourceDropdown.classList.remove('errorPopup');
+        }
+
+        if (cPay.value != '' && parseInt(cPay.value) > 99) {
+            coPay.classList.add('errorPopup');
+        } else {
+            coPay.classList.remove('errorPopup');
+        }
+
+        if (allocate.value === '' || allocate.value === '$' || allocate.value.includes('-') || !reg.test(allocate.value)) {
+            allocation.classList.add('errorPopup');
+        } else {
+            allocation.classList.remove('errorPopup');
+        }
+
+        if (startDate.value === '') {
+            newStartDate.classList.add('errorPopup');
+        } else {
+            newStartDate.classList.remove('errorPopup');
+        }
+
+        if (endDate.value === '') {
+            newEndDate.classList.add('errorPopup');
+        } else {
+            newEndDate.classList.remove('errorPopup');
+        }
+
+        setAuthorizationBtnStatusOfPopup();
+    }
+
+    async function fundingDropdownPopulate() {
+        const {
+            getFundingResult: Fundings,
+        } = await FSSAjax.getFunding();
+
+        let data = Fundings.map((fundings) => ({
+            id: fundings.id,
+            value: fundings.id,
+            text: fundings.name
+        }));
+        data.unshift({ id: null, value: '', text: '' });
+        dropdown.populate("fundingSourceDropdown", data, '');
+    }
+
+    function setAuthorizationBtnStatusOfPopup() {
+        var hasErrors = [].slice.call(document.querySelectorAll('.errorPopup'));
+        if (hasErrors.length !== 0) {
+            APPLY_BTN.classList.add('disabled');
+            return;
+        } else {
+            APPLY_BTN.classList.remove('disabled');
+        }
+    }
+
+    async function saveAuthorizationData(familyId) {
+        await FSSAjax.insertAuthorization({
+            token: $.session.Token,
+            coPay: coPayVal,
+            allocation: allocationVal,
+            fundingSource: fundingSourceVal,
+            startDate: startDateVal,
+            endDate: endDateVal,
+            userId: $.session.UserId,
+            familyID: familyId,
+        });
+        applyFilter();
+    }
 
     function formatDate(date) {
         if (!date) return '';

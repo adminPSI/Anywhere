@@ -5696,6 +5696,29 @@ namespace Anywhere
            UriTemplate = "/deleteMemberInfo/")]
         string deleteMemberInfo(string token, string memberId, string familyID);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/updateSalesforceIdsScriptOneTimeUse/")]
+        void updateSalesforceIdsScriptOneTimeUse();
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getFunding/")]
+        FSSWorker.dropdowns[] getFunding(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/insertAuthorization/")]
+        string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID);
     }
 
 

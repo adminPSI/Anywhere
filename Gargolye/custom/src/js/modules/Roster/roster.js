@@ -398,6 +398,19 @@ const roster2 = (function () {
         if (document.getElementById('totalConsumerCountBtn') != null)
             document.getElementById('totalConsumerCountBtn').innerHTML = 'Total Consumer Count: ' + totalConsumerCount;
 
+        if ($.session.UserId === 'PSI') {
+            const updateSalesforceIds = button.build({
+                text: 'Update Salesforce Ids',
+                style: 'secondary',
+                type: 'contained',
+                callback: async function () {
+                    const data = await _UTIL.fetchData('updateSalesforceIdsScriptOneTimeUse');
+                },
+            });
+
+            btnWrap.appendChild(updateSalesforceIds);
+        }
+
         return filteredBy;
     }
 
@@ -1176,8 +1189,8 @@ const roster2 = (function () {
         const isSelected = selectedConsumers && selectedConsumers.filter(sc => sc.id === consumerData.id);
         const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
         const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
-        const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
-        const SalesforceID = consumerData.SalesforceID ? consumerData.SalesforceID : '';
+        const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : ''; 
+        const SalesforceID = consumerData.SalesforceID ? consumerData.SalesforceID : ''; 
 
         var isInactive = false;
         if ($.session.applicationName === 'Advisor') {
@@ -1251,7 +1264,7 @@ const roster2 = (function () {
         onerror="this.src='./images/new-icons/default.jpg'"
       />`;
 
-        if ($.loadedApp === 'plan' && SalesforceID != '')
+        if ($.loadedApp === 'plan')
             details.innerHTML = `
       <div class="name">
         <p class="name_last">${lName},</p>

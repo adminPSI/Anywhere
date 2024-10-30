@@ -94,6 +94,7 @@ const outcomes = (function () {
     let viewPlanBtn;
     let viewPlanPOPUP;
     let updatePlanPopup;
+    let attachmentInput; 
 
     function getAllowedConsumerIds() {
         return allowedConsumerIds;
@@ -2133,7 +2134,7 @@ const outcomes = (function () {
 
     async function planViewPOPUP() {
         viewPlanPOPUP = POPUP.build({
-            hideX: true,
+            hideX: false, 
         });
 
         planNow = button.build({
@@ -2258,7 +2259,7 @@ const outcomes = (function () {
         newAttachmentList.appendChild(newAttachmentsHeader);
         updatePlanPOPUP.appendChild(newAttachmentList);
 
-        const attachmentInput = document.createElement('input');
+        attachmentInput = document.createElement('input');
         attachmentInput.type = 'file';
         attachmentInput.classList.add('input-field__input', 'attachmentInput');
         attachmentInput.addEventListener('change', evt => fileValidation(evt.target));
@@ -2286,6 +2287,7 @@ const outcomes = (function () {
             target.value = '';
             return false;
         }
+        checkRequiredFieldsOfPopup();
     }
 
     function PopupEventListeners() {
@@ -2366,6 +2368,13 @@ const outcomes = (function () {
     function checkRequiredFieldsOfPopup() {
         var startDate = newStartDate.querySelector('#newStartDate');
         var endDate = newEndDate.querySelector('#newEndDate');
+        const attachmentInputs = document.querySelectorAll('.attachmentInput');
+
+        if (attachmentInputs[0].value == '') {
+            attachmentInput.classList.add('errorPopup');
+        } else {
+            attachmentInput.classList.remove('errorPopup');
+        }
         if (startDate.value === '') {
             newStartDate.classList.add('errorPopup');
         } else {
@@ -2376,7 +2385,7 @@ const outcomes = (function () {
             newEndDate.classList.add('errorPopup');
         } else {
             newEndDate.classList.remove('errorPopup');
-        }
+        }      
         setBtnStatusOfPopup();
     }
 
