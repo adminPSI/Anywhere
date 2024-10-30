@@ -463,6 +463,7 @@ const FSS = (() => {
 
                 fSSData.pageDataChild[familyID].forEach(child => {
                     const fID = child.familyId;
+                    const authId = child.authId;
                     const encumbered = child.encumbered == null ? '0.0' : child.encumbered;
                     const amtPaid = child.amtPaid == null ? '0.0' : child.amtPaid;
                     const subDataRow = document.createElement('div');
@@ -503,8 +504,87 @@ const FSS = (() => {
                     subRowWrap.appendChild(subDataRow);
 
                     subDataRow.addEventListener('click', e => {
-                        addFamilyUtilization();
+                        addFamilyUtilization(child.familyId, child.authId);
                     });
+                     
+                    
+
+                    // SUB CHILD ROWS
+                    //---------------------------------
+                    const subChildRowWrap = document.createElement('div');
+                    subChildRowWrap.classList.add('fssTable__subChildRowWrap');
+
+                    const subChildHeading = document.createElement('div');
+                    subChildHeading.classList.add('fssTable__subChildHeader');
+                    subChildHeading.innerHTML = `
+                     <div></div>
+                    <div>Family Member</div>
+                    <div>Service Code</div>
+                    <div>Vendor</div>
+                    <div>Encumbered</div>
+                    <div>Paid amount</div>
+                    <div>Date Paid</div>
+                    <div></div>
+                        `;
+                    subChildRowWrap.appendChild(subChildHeading);
+
+                    if (fSSData.pageDataSubChild[authId]) {
+                        fSSData.pageDataSubChild[authId].sort((a, b) => {
+                            return parseInt(a.itemnum) - parseInt(b.itemnum);
+                        });
+
+                        fSSData.pageDataSubChild[authId].forEach(subChild => {
+                            const aID = subChild.authId;
+                            const encumbered = subChild.encumbered == null ? '0.0' : subChild.encumbered;
+                            const paidAmt = subChild.paidAmt == null ? '0.0' : subChild.paidAmt;
+                            const subChildDataRow = document.createElement('div');
+                            var paidDate =
+                                subChild.paidDate == null || ''
+                                    ? ''
+                                    : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(subChild.paidDate.split('T')[0]));
+                           
+                            subChildDataRow.classList.add('fssTable__subChildDataRow', 'fssTable__dataRow');
+                            const endIconSub = document.createElement('div');
+                            endIconSub.classList.add('fssTable__endIcon');
+                           
+
+                            subChildDataRow.innerHTML = `
+                             <div></div>
+                            <div>${subChild.familyMember}</div>
+                            <div>${subChild.serviceCode}</div>
+                            <div>${subChild.Vendor}</div>
+                            <div>${encumbered}</div> 
+                            <div>${paidAmt}</div>
+                            <div>${paidDate}</div>
+                            `;                         
+                            if ($.session.FSSUpdate == true) {
+                                endIconSub.innerHTML = icons['delete'];
+                            } else {
+                                endIconSub.innerHTML = `<div></div>`;
+                            }
+                            subChildDataRow.appendChild(endIconSub);
+                            subChildRowWrap.appendChild(subChildDataRow);
+
+                            subChildDataRow.addEventListener('click', e => {
+                                //subChild.authDetailId  subChild.authId
+                            });
+                        });
+                    } 
+                    toggleIconSub.addEventListener('click', e => {
+                        const toggle = document.querySelector('#authToggle');
+                        eventName = 'toggle';
+                        if (subChildRowWrap.classList.contains('active')) {
+                            // close it
+                            subChildRowWrap.classList.remove('active');
+                            toggleIconSub.innerHTML = icons.keyArrowRight;
+                        } else {
+                            // open it
+                            subChildRowWrap.classList.add('active');
+                            toggleIconSub.innerHTML = icons.keyArrowDown;
+                        }
+                    });
+
+                    subRowWrap.appendChild(subChildRowWrap);
                 });
             }
 
@@ -635,7 +715,7 @@ const FSS = (() => {
             text: 'SAVE',
             style: 'secondary',
             type: 'contained',
-            callback: async ()  => {
+            callback: async () => {
                 if (!APPLY_BTN.classList.contains('disabled')) {
                     await saveAuthorizationData(familyId);
                     POPUP.hide(authorizationPopup);
@@ -783,7 +863,7 @@ const FSS = (() => {
             allocation: allocationVal,
             fundingSource: fundingSourceVal,
             startDate: startDateVal,
-            endDate: endDateVal,          
+            endDate: endDateVal,
             userId: $.session.UserId,
             familyID: familyId,
         });
