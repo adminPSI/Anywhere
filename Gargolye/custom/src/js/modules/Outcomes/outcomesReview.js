@@ -1424,11 +1424,6 @@ const outcomesReview = (function () {
 
             return;
           }
-
-          // if (!outcomeOjb[occurrence][objID].reviewDates[date]) {
-          //   outcomeOjb[occurrence][objID].reviewDates[date] = {};
-          // }
-
           if (!outcomeOjb[occurrence][objID].reviewDates[date]) return;
 
           if (!outcomeOjb[occurrence][objID].reviewDates[date][staffId]) {
@@ -1479,6 +1474,12 @@ const outcomesReview = (function () {
     Object.keys(outcomesData[frequency]).forEach(objId => {
       if (exclamationIds.find(ids => ids === objId)) {
         outcomesData[frequency][objId].showExclamation = true;
+      }
+
+      if (outcomesData[frequency][objId].timesDoc > 0) {
+        if (!outcomesData[frequency][objId].successRate) {
+          outcomesData[frequency][objId].successRate = '100%'
+        }
       }
     });
   }
