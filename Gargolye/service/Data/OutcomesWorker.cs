@@ -394,7 +394,10 @@ namespace Anywhere.service.Data
 
         public class ExclamationIds
         {
-            public string exclamationIds { get; set; }            
+            //public string exclamationIds { get; set; }
+            public string Staff_ID { get; set; }
+            public string objective_id { get; set; }
+            public string Objective_Activity_ID { get; set; }
         }
 
         public class TotalSecondGridCall
