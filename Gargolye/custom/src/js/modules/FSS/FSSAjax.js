@@ -249,6 +249,108 @@ var FSSAjax = (function () {
         }
     }
 
+    async function insertUtilization(retrieveData) {
+        // token
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertUtilization/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.insertUtilizationResult;
+        } catch (error) {
+            console.log(error.responseText);
+        }
+    }
+
+    async function getFamilyMembersDropDown() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getFamilyMembersDropDown/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getServiceCodes(fundingSourceID) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getServiceCodes/',
+                data:
+                    '{"fundingSourceID":"' +
+                    fundingSourceID +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getVendors() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getVendors/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
 
     return {
         getFSSPageData,
@@ -260,6 +362,10 @@ var FSSAjax = (function () {
         insertMemberInfo,
         deleteMemberInfo,
         getFunding,
-        insertAuthorization
+        insertAuthorization,
+        insertUtilization,
+        getFamilyMembersDropDown,
+        getServiceCodes,
+        getVendors
     };
 })();

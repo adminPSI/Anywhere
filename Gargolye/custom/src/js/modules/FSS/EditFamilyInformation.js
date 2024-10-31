@@ -191,6 +191,14 @@ const EditFamilyInformation = (() => {
         familyBtnWrap.appendChild(activeChk);
         addNewCardBody.appendChild(familyBtnWrap);
 
+        const addressNameDisplay = document.createElement("p");
+        addressNameDisplay.classList.add("heading");
+        addressNameDisplay.innerHTML = `<span>${'Address Information'}</span>`;
+        addressNameDisplay.style.marginLeft = '10px';
+        addressNameDisplay.style.marginBottom = '15px';
+        addNewCardBody.appendChild(addressNameDisplay);
+        addNewCardBody.appendChild(LineBr);
+        addNewCardBody.appendChild(LineBr);
 
         var dropWrap = document.createElement('div');
         dropWrap.classList.add('familyDTWrap');

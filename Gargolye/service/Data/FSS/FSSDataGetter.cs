@@ -194,6 +194,56 @@ namespace Anywhere.service.Data.FSS
 
         }
 
+        public string getFamilyMembersDropDown(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getFamilyMembersDropDown" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_FSS_getFamilyDropDown();");
+
+            }
+            catch (Exception ex)
+            {
+                logger.error("561", ex.Message + " ANYW_FSS_getFamilyDropDown( '" + token + "')");
+                return "561: Error getting ANYW_FSS_getFamilyDropDown";
+            }
+
+        }
+
+        public string getServiceCodes(string fundingSourceID)
+        {
+            logger.debug("getServiceCodes" + fundingSourceID);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_FSS_getServiceCodes('" + fundingSourceID + "');");
+
+            }
+            catch (Exception ex)
+            {
+                logger.error("561", ex.Message + " ANYW_FSS_getServiceCodes( '" + fundingSourceID + "')");
+                return "561: Error getting getServiceCodes";
+            }
+
+        }
+
+        public string getVendors(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getVendors" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_FSS_getVendors();");
+
+            }
+            catch (Exception ex)
+            {
+                logger.error("561", ex.Message + " ANYW_FSS_getVendors( '" + token + "')");
+                return "561: Error getting getVendors";
+            }
+
+        }
+
         public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID)
         {
             if (tokenValidator(token) == false) return null;
@@ -218,6 +268,35 @@ namespace Anywhere.service.Data.FSS
                 return "677: error ANYW_FSS_insertAuthorization";
             }
         }
+
+        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID,string consumerID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertUtilization");
+            List<string> list = new List<string>();
+            list.Add(encumbered);
+            list.Add(familyMember);
+            list.Add(serviceCode);
+            list.Add(paidAmount);
+            list.Add(vendor);
+            list.Add(datePaid);
+            list.Add(userId);
+            list.Add(familyID);
+            list.Add(authID);
+            list.Add(consumerID);
+
+            string text = "CALL DBA.ANYW_FSS_insertUtilization(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("677", ex.Message + "ANYW_FSS_insertUtilization(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "677: error ANYW_FSS_insertUtilization";
+            }
+        }
+
 
         public string executeDataBaseCallJSON(string storedProdCall)
         {
