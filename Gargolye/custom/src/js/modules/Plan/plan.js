@@ -1057,7 +1057,7 @@ const plan = (function () {
         const idArray = [];
 
         for (const prop in attachments) {
-            idArray.push(attachments[prop].attachmentId);
+            idArray.push(attachments[prop].workflowstepdocId);
         }
 
         return idArray;
