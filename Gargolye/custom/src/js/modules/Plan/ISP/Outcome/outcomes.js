@@ -745,6 +745,7 @@ const planOutcomes = (() => {
       const whoResponsible = getColTextForWhoResponsible(
         saveData.responsibilities[index].responsibleContact,
         saveData.responsibilities[index].responsibleProvider,
+        saveData.responsibilities[index].isSalesforceLocation,
       );
       const whenHowOften = getColTextForWhenHowOften(
         saveData.responsibilities[index].whenHowOftenFrequency,
@@ -1000,7 +1001,7 @@ const planOutcomes = (() => {
         return filteredVendor[0].vendorName;
       }
 
-      const vendor = filteredVendor.find(vendor => vendor.isSalesforceLocation === responsibleProviderSalesforce);
+      const vendor = filteredVendor.find(vendor => vendor.isSalesforceLocation.toUpperCase() === responsibleProviderSalesforce.toString().toUpperCase());
       return vendor.vendorName;
     } else {
       if (dropdownData.relationships) {
