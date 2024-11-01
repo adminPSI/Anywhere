@@ -6,6 +6,7 @@ const outcomesReview = (function () {
   let outcomesDataRaw;
   let outcomesDataSecondaryRaw;
   let exclamationIds;
+  let exclamationSecondaryIds;
   let dropdownData;
   let promptsMap;
   let activityRes;
@@ -37,6 +38,12 @@ const outcomesReview = (function () {
   let detailsPopup;
   let reviewNotePopup;
   // Constants
+  const NO_FREQ_SPAN = 70;
+  const HOUR_SPAN = 240;
+  const DAY_SPAN = 20;
+  const WEEK_SPAN = 1;
+  const MONTH_SPAN = 2;
+  const YEAR_SPAN = 2;
   const NO_FREQ = 'No Frequency';
   const HOUR = 'Hourly';
   const DAY = 'Daily';
@@ -50,6 +57,20 @@ const outcomesReview = (function () {
     Weekly: 'W',
     Monthly: 'M',
     Yearly: 'Y',
+  };
+  const MONTHS = {
+    '01': 'January',
+    '02': 'February',
+    '03': 'March',
+    '04': 'April',
+    '05': 'May',
+    '06': 'June',
+    '07': 'July',
+    '08': 'August',
+    '09': 'September',
+    10: 'October',
+    11: 'November',
+    12: 'December',
   };
 
   // Mini Roster
@@ -1020,6 +1041,8 @@ const outcomesReview = (function () {
     return toggleIcon;
   }
   function buildTable(data) {
+    let showTabExclamation;
+
     const table = _DOM.createElement('div');
     table.classList.add('outcomesReviewTable');
 
@@ -1077,6 +1100,7 @@ const outcomesReview = (function () {
       });
 
       for (const date in data[objId].reviewDates) {
+        let alreadyAddedExclamation = false;
         const dateRowWrap = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-date'] });
         mainRowSubWrap.appendChild(dateRowWrap);
 
@@ -1084,7 +1108,7 @@ const outcomesReview = (function () {
         const dateTI = buildToggleIcon();
         dateTI.classList.add('subToggle');
         dateRow.appendChild(dateTI);
-        dateRow.innerHTML += `<div>${date}</div>`;
+        dateRow.innerHTML += `<div>${date !== 'nf' ? date : 'No Frequency'}</div>`;
         dateRowWrap.appendChild(dateRow);
 
         const detailsTable = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-date-sub', 'hidden'] });
@@ -1121,6 +1145,16 @@ const outcomesReview = (function () {
 
           for (const staffId in data[objId].reviewDates[date]) {
             const details = data[objId].reviewDates[date][staffId];
+
+            if (details.showExclamation) {
+              if (!alreadyAddedExclamation) {
+                alreadyAddedExclamation = true;
+                dateRow.innerHTML += `<div>${icons.error}</div>`;
+              }
+
+              showTabExclamation = true;
+            }
+
             const detailRow = _DOM.createElement('div', { class: ['row', 'row-details'] });
             detailRow.innerHTML = `
               <div>${details.employee}</div>
@@ -1146,7 +1180,7 @@ const outcomesReview = (function () {
       }
     }
 
-    return table;
+    return { sectionTable: table, showTabExclamation };
   }
 
   // Tabs
@@ -1181,21 +1215,34 @@ const outcomesReview = (function () {
     const section = document.getElementById(sectionID);
     section.innerHTML = '';
 
-    const sectionTable = buildTable(data[key]);
+    const { sectionTable, showTabExclamation } = buildTable(data[key]);
+
+    const tabNavItems = [...document.querySelectorAll('.tabs__nav--item')];
+    tabNavItems.forEach(item => {
+      const freq = item.getAttribute('section');
+
+      if (freq.toLowerCase() === activeTab.toLowerCase() && showTabExclamation) {
+        // add icons.error
+        item.innerHTML += icons.error;
+      } else {
+        // remove icons.error
+        item.innerHTML = item.textContent;
+      }
+    });
 
     section.appendChild(sectionTable);
 
     return;
 
-    for (const key in data) {
-      const sectionID = tabSections[key].toLowerCase();
-      const section = document.getElementById(sectionID);
-      section.innerHTML = '';
+    // for (const key in data) {
+    //   const sectionID = tabSections[key].toLowerCase();
+    //   const section = document.getElementById(sectionID);
+    //   section.innerHTML = '';
 
-      const sectionTable = buildTable(data[key]);
+    //   const sectionTable = buildTable(data[key]);
 
-      section.appendChild(sectionTable);
-    }
+    //   section.appendChild(sectionTable);
+    // }
   }
 
   // Main
@@ -1214,9 +1261,15 @@ const outcomesReview = (function () {
       if (occ === 'NF') return;
 
       Object.keys(outcomesData[occ]).forEach(objId => {
-        const dObj = {
-          0: new Date(`${selectedDateSpan.to} 00:00:00`),
-        };
+        const dObj = {};
+
+        if (occ === 'H') {
+          dObj[0] = currentDateTime;
+          dObj[0].setMinutes(0);
+          dObj[0].setSeconds(0);
+        } else {
+          dObj[0] = new Date(`${selectedDateSpan.to} 00:00:00`)
+        }
 
         for (let index = 0; index < spanLength - 1; index++) {
           switch (occ) {
@@ -1253,15 +1306,47 @@ const outcomesReview = (function () {
             outcomesData[occ][objId].reviewDates = {};
           }
 
-          if (occ === 'H') {
-            //const isoDate = dates.formatISO(dObj[key]);
-            const isoDate = dates.formatISO(dObj[key]).split('T')[0];
-            const stDate = dates.formateToStandard(isoDate);
-            outcomesData[occ][objId].reviewDates[stDate] = {};
-          } else {
-            const isoDate = dates.formatISO(dObj[key]).split('T')[0];
-            const stDate = dates.formateToStandard(isoDate);
-            outcomesData[occ][objId].reviewDates[stDate] = {};
+          switch (occ) {
+            case 'H': {
+              //2024-10-31T14:11:35-04:00
+              const militaryTime = dates.formatISO(dObj[key]).slice(11, 16);
+              outcomesData[occ][objId].reviewDates[militaryTime] = {};
+              break;
+            }
+            case 'D': {
+              const isoDate = dates.formatISO(dObj[key]).split('T')[0];
+              const stDate = dates.formateToStandard(isoDate);
+              outcomesData[occ][objId].reviewDates[stDate] = {};
+              break;
+            }
+            case 'W': {
+              const weekStart = dates.startDayOfWeek(dObj[key]);
+              const isoStartDate = dates.formatISO(weekStart).split('T')[0];
+              const stStartDate = dates.formateToStandard(isoStartDate);
+
+              const weekEnd = dates.endOfWeek(dObj[key]);
+              const isoEndDate = dates.formatISO(weekEnd).split('T')[0];
+              const stEndDate = dates.formateToStandard(isoEndDate);
+
+              const dateKey = `${stStartDate}-${stEndDate}`;
+
+              outcomesData[occ][objId].reviewDates[dateKey] = {};
+              break;
+            }
+            case 'M': {
+              const isoDate = dates.formatISO(dObj[key]).split('T')[0];
+              const stDate = dates.formateToStandard(isoDate);
+              const dateKey = MONTHS[stDate.split('/')[0]];
+              outcomesData[occ][objId].reviewDates[dateKey] = {};
+              break;
+            }
+            case 'Y': {
+              const isoDate = dates.formatISO(dObj[key]).split('T')[0];
+              const stDate = dates.formateToStandard(isoDate);
+              const dateKey = stDate.split('/')[2];
+              outcomesData[occ][objId].reviewDates[dateKey] = {};
+              break;
+            }
           }
         });
 
@@ -1274,42 +1359,42 @@ const outcomesReview = (function () {
 
     switch (activeTab) {
       case NO_FREQ: {
-        const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), 7);
+        const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), NO_FREQ_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Day(s)';
         spanLength = 7;
         break;
       }
       case HOUR: {
-        const dateObj = dates.subHours(new Date(`${selectedDate} 00:00:00`), 24);
+        const dateObj = dates.subHours(new Date(`${selectedDate} 00:00:00`), HOUR_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Hour(s)';
         spanLength = 24;
         break;
       }
       case DAY: {
-        const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), 2);
+        const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), DAY_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Day(s)';
         spanLength = 2;
         break;
       }
       case WEEK: {
-        const dateObj = dates.subWeeks(new Date(`${selectedDate} 00:00:00`), 1);
+        const dateObj = dates.subWeeks(new Date(`${selectedDate} 00:00:00`), WEEK_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Week(s)';
         spanLength = 1;
         break;
       }
       case MONTH: {
-        const dateObj = dates.subMonths(new Date(`${selectedDate} 00:00:00`), 2);
+        const dateObj = dates.subMonths(new Date(`${selectedDate} 00:00:00`), MONTH_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Month(s)';
         spanLength = 2;
         break;
       }
       case YEAR: {
-        const dateObj = dates.subYears(new Date(`${selectedDate} 00:00:00`), 2);
+        const dateObj = dates.subYears(new Date(`${selectedDate} 00:00:00`), YEAR_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Year(s)';
         spanLength = 2;
@@ -1398,7 +1483,11 @@ const outcomesReview = (function () {
           outcomeOjb[occurrence][objID].timesDoc++;
           outcomeOjb[occurrence][objID].successRate = percent;
 
-          const prompt = dropdownData.prompts.find(p => p.Code === d.promptType)
+          const prompt = dropdownData.prompts.find(p => p.Code === d.promptType);
+
+          const da = outcomeOjb[occurrence][objID].reviewDates;
+
+          let dateThisBelongsTo;
 
           if (occurrence === 'NF') {
             if (!outcomeOjb[occurrence][objID].reviewDates) {
@@ -1424,20 +1513,71 @@ const outcomesReview = (function () {
 
             return;
           }
-          if (!outcomeOjb[occurrence][objID].reviewDates[date]) return;
 
-          if (!outcomeOjb[occurrence][objID].reviewDates[date][staffId]) {
-            outcomeOjb[occurrence][objID].reviewDates[date][staffId] = {};
+          if (occurrence === 'H') {
+            if (d.startTime) {
+              Object.keys(outcomeOjb[occurrence][objID].reviewDates).forEach(key => {
+                let splitStart = d.startTime.split(':');
+                let splitKey = key.split(':');
+
+                if (splitStart[0] === splitKey[0]) {
+                  dateThisBelongsTo = key;
+                }
+              });
+            }
+          }
+          if (occurrence === 'D') {
+            dateThisBelongsTo = date;
+          }
+          if (occurrence === 'W') {
+            Object.keys(outcomeOjb[occurrence][objID].reviewDates).forEach(key => {
+              const [start, end] = key.split('-');
+              const afterDate = new Date(`${start} 00:00:00`);
+              const endDate = new Date(`${end} 00:00:00`);
+              const compareDate = new Date(`${date} 00:00:00`);
+              const isAfter = dates.isAfter(compareDate, afterDate);
+              const isBefore = dates.isBefore(compareDate, endDate);
+
+              if (isAfter && isBefore) {
+                dateThisBelongsTo = key;
+              }
+            });
+          }
+          if (occurrence === 'M') {
+            Object.keys(outcomeOjb[occurrence][objID].reviewDates).forEach(key => {
+              const [month, day, year] = date.split('/');
+              if (MONTHS[month] === key) {
+                dateThisBelongsTo = key;
+              }
+            });
+          }
+          if (occurrence === 'Y') {
+            Object.keys(outcomeOjb[occurrence][objID].reviewDates).forEach(key => {
+              const [month, day, year] = date.split('/');
+              if (year === key) {
+                dateThisBelongsTo = key;
+              }
+            });
           }
 
-          outcomeOjb[occurrence][objID].reviewDates[date][staffId].employee = d.employee;
-          outcomeOjb[occurrence][objID].reviewDates[date][
+          if (!dateThisBelongsTo) return;
+          if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo]) return;
+
+          if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId]) {
+            outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId] = {};
+          }
+
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].showExclamation = false;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].employee = d.employee;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][
             staffId
           ].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
-          outcomeOjb[occurrence][objID].reviewDates[date][staffId].attempts = d.promptNumber;
-          outcomeOjb[occurrence][objID].reviewDates[date][staffId].prompts = `${prompt.Code} ${prompt.Caption}`;
-          outcomeOjb[occurrence][objID].reviewDates[date][staffId].note = d.objectiveActivityNote;
-          outcomeOjb[occurrence][objID].reviewDates[date][staffId].activityId = d.objectiveActivityId;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].attempts = d.promptNumber;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][
+            staffId
+          ].prompts = `${prompt.Code} ${prompt.Caption}`;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].note = d.objectiveActivityNote;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].activityId = d.objectiveActivityId;
         }
       }
     });
@@ -1467,19 +1607,30 @@ const outcomesReview = (function () {
     });
 
     outcomesDataSecondaryRaw = data.gridSecondary;
-    exclamationIds = data.exIds[0].exclamationIds.split(',');
+    exclamationIds = data.exIds.map(idObj => idObj.objective_id);
+    exclamationSecondaryIds = data.exIds.map(idObj => idObj.Staff_ID);
 
     sortReviewTableDataSecondary(data.gridSecondary, outcomesData);
 
     Object.keys(outcomesData[frequency]).forEach(objId => {
-      if (exclamationIds.find(ids => ids === objId)) {
+      if (exclamationIds && exclamationIds.find(ids => ids === objId)) {
         outcomesData[frequency][objId].showExclamation = true;
       }
 
       if (outcomesData[frequency][objId].timesDoc > 0) {
         if (!outcomesData[frequency][objId].successRate) {
-          outcomesData[frequency][objId].successRate = '100%'
+          outcomesData[frequency][objId].successRate = '100%';
         }
+      }
+
+      if (outcomesData[frequency][objId].reviewDates) {
+        Object.keys(outcomesData[frequency][objId].reviewDates).forEach(rDate => {
+          Object.keys(outcomesData[frequency][objId].reviewDates[rDate]).forEach(staffid => {
+            if (exclamationSecondaryIds && exclamationSecondaryIds.find(sIds => sIds === staffid)) {
+              outcomesData[frequency][objId].reviewDates[rDate][staffid].showExclamation = true;
+            }
+          });
+        });
       }
     });
   }
@@ -1525,6 +1676,7 @@ const outcomesReview = (function () {
     selectedDate = date;
     serviceFilterVal = {};
     outcomeTypeFilterVal = {};
+    currentDateTime = new Date();
 
     setActiveModuleSectionAttribute('outcomes-review');
     PROGRESS.SPINNER.show('Loading Outcomes...');

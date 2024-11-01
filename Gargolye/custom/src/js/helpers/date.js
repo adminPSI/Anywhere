@@ -126,7 +126,7 @@ const dates = (function () {
   }
   // SUB
   function subHours(date, amount) {
-    return addHours(date, -amount)
+    return addHours(date, -amount);
   }
   function subDays(dirtyDate, dirtyAmount) {
     var amount = toInteger(dirtyAmount);
@@ -142,16 +142,8 @@ const dates = (function () {
     var amount = toInteger(dirtyAmount);
     return addYears(dirtyDate, -amount);
   }
-  // WEEKS
+  // END/START
   function endOfWeek(dirtyDate, dirtyOptions) {
-    //Get the end of the week for given date
-    /**
-     * @name endOfWeek
-     * @param {Date|Number} dirtyDate
-     * @param {Object} dirtyOptions
-     * @param {0|1|2|3|4|5|6} [weekStartsOn=0]
-     */
-
     if (arguments.length < 1) {
       throw new TypeError(`1 argument required, but only ${arguments.length} present`);
     }
@@ -174,14 +166,6 @@ const dates = (function () {
     return date;
   }
   function startDayOfWeek(dirtyDate, dirtyOptions) {
-    //Get the start date of week
-    /**
-     * @name startOfWeek
-     * @param {Date|Number} dirtyDate
-     * @param {Object} dirtyOptions
-     * @param {0|1|2|3|4|5|6} [weekStartsOn=0]
-     */
-
     if (arguments.length < 1) {
       throw new TypeError(`1 argument required, but only ${arguments.length} present`);
     }
@@ -201,6 +185,19 @@ const dates = (function () {
     date.setDate(date.getDate() - diff);
     date.setHours(0, 0, 0, 0);
     return date;
+  }
+  function endOfMonth(date) {
+    const _date = toDate(date);
+    const month = _date.getMonth();
+    _date.setFullYear(_date.getFullYear(), month + 1, 0);
+    _date.setHours(23, 59, 59, 999);
+    return _date;
+  }
+  function startOfMonth(date) {
+    const _date = toDate(date);
+    _date.setDate(1);
+    _date.setHours(0, 0, 0, 0);
+    return _date;
   }
   // COMPARE
   function isAfter(dirtyDate, dirtyDateToCompare) {
@@ -544,6 +541,8 @@ const dates = (function () {
     subYears,
     endOfWeek,
     startDayOfWeek,
+    endOfMonth,
+    startOfMonth,
     isAfter,
     isBefore,
     isEqual,

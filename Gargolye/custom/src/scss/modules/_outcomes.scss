@@ -669,6 +669,15 @@ div.textarea {
 
     &__nav--item {
       color: $font-light;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        color: $error;
+        width: 24px;
+        height: 24px;
+      }
     }
 
     &__body {
