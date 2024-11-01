@@ -771,14 +771,39 @@ namespace Anywhere.service.Data
                         List<string> guardianIds = ExtractIdsFromString(theGuardians);
 
                         // Process each guardian Id as needed
-                        foreach (string id in guardianIds)
+                        foreach (string guardianId in guardianIds)
                         {
+                            // Always update SalesForce_Guardian_ID with the new guardianId
                             sb.Clear();
                             sb.Append("UPDATE DBA.People ");
                             sb.Append("SET SalesForce_Guardian_ID = ");
-                            sb.Append($"'{id}' ");  // Ensure proper handling of quotes for string IDs
-                            //sb.Append("WHERE ID = ");
-                            //sb.Append($"{peopleId};");
+                            sb.Append($"'{guardianId}' ");
+                            sb.Append("WHERE ID = ");
+                            sb.Append($"{peopleId};");
+
+                            di.SelectRowsDS(sb.ToString());
+
+                            // Check the current value of Salesforce_ID for this person
+                            sb.Clear();
+                            sb.Append("SELECT Salesforce_ID ");
+                            sb.Append("FROM DBA.People ");
+                            sb.Append("WHERE ID = ");
+                            sb.Append($"{peopleId};");
+
+                            DataSet result = di.SelectRowsDS(sb.ToString());
+                            string currentSalesforceId = result.Tables[0].Rows[0]["Salesforce_ID"].ToString();
+
+                            // If Salesforce_ID matches the new guardianId, set it to NULL
+                            if (currentSalesforceId == guardianId)
+                            {
+                                sb.Clear();
+                                sb.Append("UPDATE DBA.People ");
+                                sb.Append("SET Salesforce_ID = NULL ");
+                                sb.Append("WHERE ID = ");
+                                sb.Append($"{peopleId};");
+
+                                di.SelectRowsDS(sb.ToString());
+                            }
                         }
                     }
                     else
@@ -788,6 +813,8 @@ namespace Anywhere.service.Data
                 }
             }
         }
+
+
 
         // Helper method to extract IDs from the returned string
         private List<string> ExtractIdsFromString(string guardiansData)

@@ -101,6 +101,8 @@ namespace Anywhere.service.Data
             public string docOrder { get; set; }
             public string description { get; set; }
             public string attachmentId { get; set; }
+            public string attachmentType { get; set; }
+            public string attachment { get; set; }
             public string wfName { get; set; }
             public string workflowId { get; set; }
             public string WFTemplateId { get; set; }
@@ -836,7 +838,7 @@ namespace Anywhere.service.Data
                     String attachmentId = wfdg.insertAttachment(attachmentType, attachment, transaction);
 
                     // insert document
-                    String documentId = wfdg.insertWorkflowStepDocument(stepId, docOrder, description, attachmentId, comments, documentEdited, transaction);
+                    String documentId = wfdg.insertWorkflowStepDocument(stepId, docOrder, description, attachmentId, attachmentType, attachment, comments, documentEdited, transaction);
 
                     DocumentAttachment documentAttachment = new DocumentAttachment();
                     documentAttachment.documentId = documentId;
@@ -2237,14 +2239,14 @@ namespace Anywhere.service.Data
                             bool isSelected = selecteddocuments.Any(sel => sel.description == d.description);
                             if (!isSelected)
                             {
-                                String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                                String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, d.attachmentType, d.attachment,null, "0", transaction_insertWFDetails);
                             }
                         }
 
                         foreach (WorkflowTemplateStepDocument d in selecteddocuments.FindAll(p => p.stepId == s.stepId))
                         {
                             // insert selected step documents
-                            String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                            String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, d.attachmentType, d.attachment, null, "0", transaction_insertWFDetails);
 
                         }
 

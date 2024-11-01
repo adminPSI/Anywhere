@@ -291,6 +291,7 @@ namespace Anywhere.service.Data
         {
             public string personID { get; set; }
             public string name { get; set; }
+            public string statusCode { get; set; }
         }
 
     }

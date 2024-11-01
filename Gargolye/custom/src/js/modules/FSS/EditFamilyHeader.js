@@ -71,14 +71,7 @@ const EditFamilyHeader = (function () {
         if (activeSection) {
             activeSection.classList.remove('active');
         }
-
-        if (sectionId > 0) {
-            BACK_BTN.classList.remove('disabled');
-        } else if (sectionId == 0 && SAVE_BTN.classList.contains('disabled')) {
-            BACK_BTN.classList.remove('disabled');
-        } else {
-            BACK_BTN.classList.add('disabled'); 
-        }        
+      
         targetSection.classList.add('active');
     }
 

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 using OneSpanSign.Sdk;
 using System;
 using System.Data;
@@ -49,6 +50,7 @@ namespace Anywhere.service.Data.FSS
             public string amtPaid { get; set; }
             public string balance { get; set; }
             public string funding { get; set; }
+            public string fundingSourceID { get; set; }
         }
 
         public class PDSubChildFSS
@@ -160,7 +162,8 @@ namespace Anywhere.service.Data.FSS
                 sb.Append("(select sum(fad.encumbered_amount) from dba.fss_authorization_detail as fad where fad.FSS_Authorization_ID = fa.FSS_Authorization_ID) as 'encumbered', ");
                 sb.Append("(select sum(fad.paid_amount) from dba.fss_authorization_detail as fad where fad.FSS_Authorization_ID = fa.FSS_Authorization_ID) as 'amtPaid' , ");
                 sb.Append("(allocation - ISNULL(encumbered, 0) - ISNULL(amtPaid, 0)) as 'balance' , ");
-                sb.Append("(select fsi.description from dba.funding_source_info as fsi where fsi.funding_source_id = fa.funding_source_id) as 'funding' ");
+                sb.Append("(select fsi.description from dba.funding_source_info as fsi where fsi.funding_source_id = fa.funding_source_id) as 'funding' , ");
+                sb.Append("(select fsi.Funding_Source_ID from dba.funding_source_info as fsi where fsi.funding_source_id = fa.funding_source_id) as 'fundingSourceID' ");
                 sb.Append("from dba.fss_authorizations fa ");
                
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
@@ -248,6 +251,27 @@ namespace Anywhere.service.Data.FSS
             return seByDateObj;
         }
 
+        public dropdowns[] getFamilyMembersDropDown(string token)
+        {
+            string objString = fdg.getFamilyMembersDropDown(token);
+            dropdowns[] seByDateObj = js.Deserialize<dropdowns[]>(objString);
+            return seByDateObj;
+        }
+
+        public dropdowns[] getServiceCodes(string fundingSourceID)
+        {
+            string objString = fdg.getServiceCodes(fundingSourceID);
+            dropdowns[] seByDateObj = js.Deserialize<dropdowns[]>(objString);
+            return seByDateObj;
+        }
+
+        public dropdowns[] getVendors(string token)
+        {
+            string objString = fdg.getVendors(token);
+            dropdowns[] seByDateObj = js.Deserialize<dropdowns[]>(objString);
+            return seByDateObj;
+        }
+
         public string DataTableToJSONWithJSONNet(DataTable table)
         {
             string JSONString = string.Empty;
@@ -258,6 +282,12 @@ namespace Anywhere.service.Data.FSS
         public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID)
         {
             string objString = fdg.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID);
+            return objString;
+        }
+
+        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID)
+        {
+            string objString = fdg.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
             return objString;
         }
 

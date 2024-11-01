@@ -4367,9 +4367,27 @@ namespace Anywhere
             return fssw.getFunding(token);
         }
 
+        public FSSWorker.dropdowns[] getFamilyMembersDropDown(string token)
+        {
+            return fssw.getFamilyMembersDropDown(token);
+        }
+        public FSSWorker.dropdowns[] getServiceCodes(string fundingSourceID)
+        {
+            return fssw.getServiceCodes(fundingSourceID);
+        }
+        public FSSWorker.dropdowns[] getVendors(string token)
+        {
+            return fssw.getVendors(token);
+        }
+
         public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID)
         {
             return fssw.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID);
+        }
+
+        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID)
+        {
+            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
         }
 
     }

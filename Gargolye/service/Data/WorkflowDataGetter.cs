@@ -918,20 +918,22 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
-        public string insertWorkflowStepDocument(string stepId, string docOrder, string description, string attachmentId, string comments, string documentEdited, DistributedTransaction transaction)
+        public string insertWorkflowStepDocument(string stepId, string docOrder, string description, string attachmentId, string attachmentType, string attachment, string comments, string documentEdited, DistributedTransaction transaction)
         {
             try
             {
                 logger.debug("insertWorkflowStepDocument ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[6];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[8];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepId", DbType.String, stepId);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@docOrder", DbType.String, docOrder);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@description", DbType.String, description);
                 args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachmentId", DbType.String, attachmentId);
-                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@comments", DbType.String, comments);
-                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@documentEdited", DbType.String, documentEdited);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachmentType", DbType.String, attachmentType);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachment", DbType.String, attachment);
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@comments", DbType.String, comments);
+                args[7] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@documentEdited", DbType.String, documentEdited);
                 // returns the documentId of the document that was just inserted
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_InsertWorkflowStepDocument(?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_InsertWorkflowStepDocument(?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {
