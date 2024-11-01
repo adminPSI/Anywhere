@@ -2044,8 +2044,8 @@ const plan = (function () {
                     finalizationResults = await assessmentAjax.finalizationActions({
                         token: $.session.Token,
                         planAttachmentIds: getAttachmentIds(selectedAttachmentsPlan),
-                        wfAttachmentIds: getAttachmentIds(selectedAttachmentsSignature),
-                        sigAttachmentIds: getAttachmentIds(selectedAttachmentsWorkflow),
+                        wfAttachmentIds: getAttachmentIds(selectedAttachmentsWorkflow),
+                        sigAttachmentIds: getAttachmentIds(selectedAttachmentsSignature), 
                         userId: $.session.UserId,
                         assessmentID: planId,
                         peopleId: selectedConsumer.id,
