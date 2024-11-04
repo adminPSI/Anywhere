@@ -714,9 +714,11 @@ div.textarea {
       padding-left: 20px;
 
       div:last-child {
+        align-self: flex-end;
         color: $error;
         width: 24px;
         height: 24px;
+        flex-grow: 0;
       }
     }
 
