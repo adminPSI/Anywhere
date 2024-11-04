@@ -1124,7 +1124,7 @@ const outcomesReview = (function () {
         dateRow.appendChild(dateTI);
         dateRow.innerHTML += `<div>${date !== 'nf' ? date : 'No Frequency'}</div>`;
         dateRowWrap.appendChild(dateRow);
-        if (exclamationDateMap[date].showExclamation) {
+        if (exclamationDateMap[date]) {
           dateRow.innerHTML += `<div>${icons.error}</div>`;
           showTabExclamation = true;
         }
@@ -1622,15 +1622,15 @@ const outcomesReview = (function () {
 
           if (freqMod === 'OBJFMAL' && timesDoc < parseInt(freqInc)) {
             //'At least'
-            exclamationDateMap[rDate].showExclamation = true;
+            exclamationDateMap[rDate] = true;
           }
           if (freqMod === 'OBJFMEX' && timesDoc !== parseInt(freqInc)) {
             //'Exactly'
-            exclamationDateMap[rDate].showExclamation = true;
+            exclamationDateMap[rDate] = true;
           }
           if (freqMod === 'OBJFMNM' && timesDoc > parseInt(freqInc)) {
             //'No more than'
-            exclamationDateMap[rDate].showExclamation = true;
+            exclamationDateMap[rDate] = true;
           }
 
           // Object.keys(outcomesData[frequency][objId].reviewDates[rDate]).forEach(staffid => {
