@@ -110,7 +110,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     if(item == "sendToDODDCheck" || item == "selectAllCheck")
                     {
                         //Send to DODD
-                        sendToDODD = new string[5] { "Volvo", "BMW", "Ford", "Mazda", "Chevy"};// dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, assessmentID, peopleId);
+                        sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, assessmentID, peopleId);
                         foreach(string item2 in sendToDODD)
                         {
                             valueForDODD = valueForDODD  + item2 + "||";
