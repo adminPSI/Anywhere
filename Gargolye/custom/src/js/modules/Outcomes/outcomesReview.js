@@ -1222,10 +1222,8 @@ const outcomesReview = (function () {
       const freq = item.getAttribute('section');
 
       if (freq.toLowerCase() === activeTab.toLowerCase() && showTabExclamation) {
-        // add icons.error
         item.innerHTML += icons.error;
       } else {
-        // remove icons.error
         item.innerHTML = item.textContent;
       }
     });
@@ -1233,16 +1231,6 @@ const outcomesReview = (function () {
     section.appendChild(sectionTable);
 
     return;
-
-    // for (const key in data) {
-    //   const sectionID = tabSections[key].toLowerCase();
-    //   const section = document.getElementById(sectionID);
-    //   section.innerHTML = '';
-
-    //   const sectionTable = buildTable(data[key]);
-
-    //   section.appendChild(sectionTable);
-    // }
   }
 
   // Main
@@ -1380,7 +1368,15 @@ const outcomesReview = (function () {
         break;
       }
       case WEEK: {
-        const dateObj = dates.subWeeks(new Date(`${selectedDate} 00:00:00`), WEEK_SPAN);
+        let dateObj;
+
+        if (WEEK_SPAN === 1) {
+          dateObj = new Date(`${selectedDate} 00:00:00`)
+        } else {
+          dateObj = dates.subWeeks(new Date(`${selectedDate} 00:00:00`), WEEK_SPAN);
+        }
+        
+        dateObj = dates.startDayOfWeek(dateObj);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Week(s)';
         spanLength = WEEK_SPAN;
