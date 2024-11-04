@@ -38,9 +38,9 @@ const outcomesReview = (function () {
   let detailsPopup;
   let reviewNotePopup;
   // Constants
-  const NO_FREQ_SPAN = 70;
-  const HOUR_SPAN = 240;
-  const DAY_SPAN = 20;
+  const NO_FREQ_SPAN = 7;
+  const HOUR_SPAN = 24;
+  const DAY_SPAN = 2;
   const WEEK_SPAN = 1;
   const MONTH_SPAN = 2;
   const YEAR_SPAN = 2;
@@ -1480,12 +1480,9 @@ const outcomesReview = (function () {
 
       if (outcomeOjb[occurrence]) {
         if (outcomeOjb[occurrence][objID]) {
-          outcomeOjb[occurrence][objID].timesDoc++;
           outcomeOjb[occurrence][objID].successRate = percent;
 
           const prompt = dropdownData.prompts.find(p => p.Code === d.promptType);
-
-          const da = outcomeOjb[occurrence][objID].reviewDates;
 
           let dateThisBelongsTo;
 
@@ -1513,7 +1510,6 @@ const outcomesReview = (function () {
 
             return;
           }
-
           if (occurrence === 'H') {
             if (d.startTime) {
               Object.keys(outcomeOjb[occurrence][objID].reviewDates).forEach(key => {
@@ -1562,6 +1558,8 @@ const outcomesReview = (function () {
 
           if (!dateThisBelongsTo) return;
           if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo]) return;
+          
+          outcomeOjb[occurrence][objID].timesDoc++;
 
           if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId]) {
             outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId] = {};
@@ -1575,7 +1573,7 @@ const outcomesReview = (function () {
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].attempts = d.promptNumber;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][
             staffId
-          ].prompts = `${prompt.Code} ${prompt.Caption}`;
+          ].prompts = `${prompt?.Code} ${prompt?.Caption}`;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].note = d.objectiveActivityNote;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].activityId = d.objectiveActivityId;
         }
