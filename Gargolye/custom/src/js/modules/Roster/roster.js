@@ -398,19 +398,6 @@ const roster2 = (function () {
         if (document.getElementById('totalConsumerCountBtn') != null)
             document.getElementById('totalConsumerCountBtn').innerHTML = 'Total Consumer Count: ' + totalConsumerCount;
 
-        if ($.session.UserId === 'PSI') {
-            const updateSalesforceIds = button.build({
-                text: 'Update Salesforce Ids',
-                style: 'secondary',
-                type: 'contained',
-                callback: async function () {
-                    const data = await _UTIL.fetchData('updateSalesforceIdsScriptOneTimeUse');
-                },
-            });
-
-            btnWrap.appendChild(updateSalesforceIds);
-        }
-
         return filteredBy;
     }
 
@@ -1157,6 +1144,19 @@ const roster2 = (function () {
             btnWrap.appendChild(wrap1);
             btnWrap.appendChild(wrap2);
             btnWrap.appendChild(wrap3);
+        }
+
+        if ($.session.isPSI) {
+            const updateSalesforceIds = button.build({
+                text: 'Update Salesforce Ids',
+                style: 'secondary',
+                type: 'contained',
+                callback: async function () {
+                    const data = await _UTIL.fetchData('updateSalesforceIdsScriptOneTimeUse');
+                },
+            });
+
+            btnWrap.appendChild(updateSalesforceIds);
         }
 
         return btnWrap;
