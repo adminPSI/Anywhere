@@ -712,6 +712,12 @@ div.textarea {
     .row-date {
       background: $gray;
       padding-left: 20px;
+
+      svg {
+        color: $error;
+        width: 24px;
+        height: 24px;
+      }
     }
 
     .heading-details,
