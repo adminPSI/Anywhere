@@ -1498,7 +1498,7 @@ const outcomesReview = (function () {
               staffId
             ].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
             outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].attempts = d.promptNumber;
-            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].prompts = `${prompt?.Code} ${prompt?.Caption}`;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
             outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].note = d.objectiveActivityNote;
             outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].activityId = d.objectiveActivityId;
 
@@ -1566,7 +1566,7 @@ const outcomesReview = (function () {
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].attempts = d.promptNumber;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][
             staffId
-          ].prompts = `${prompt?.Code} ${prompt?.Caption}`;
+          ].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].note = d.objectiveActivityNote;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].activityId = d.objectiveActivityId;
         }
