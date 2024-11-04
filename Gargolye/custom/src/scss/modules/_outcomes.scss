@@ -713,7 +713,7 @@ div.textarea {
       background: $gray;
       padding-left: 20px;
 
-      svg {
+      div:last-child {
         color: $error;
         width: 24px;
         height: 24px;
@@ -768,6 +768,7 @@ div.textarea {
 
     // columns
     .rowToggle {
+      color: $black !important;
       flex-grow: 0;
       flex-basis: 24px;
       max-width: 24px;
