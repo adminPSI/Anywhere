@@ -1362,42 +1362,42 @@ const outcomesReview = (function () {
         const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), NO_FREQ_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Day(s)';
-        spanLength = 7;
+        spanLength = NO_FREQ_SPAN;
         break;
       }
       case HOUR: {
         const dateObj = dates.subHours(new Date(`${selectedDate} 00:00:00`), HOUR_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Hour(s)';
-        spanLength = 24;
+        spanLength = HOUR_SPAN;
         break;
       }
       case DAY: {
         const dateObj = dates.subDays(new Date(`${selectedDate} 00:00:00`), DAY_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Day(s)';
-        spanLength = 2;
+        spanLength = DAY_SPAN;
         break;
       }
       case WEEK: {
         const dateObj = dates.subWeeks(new Date(`${selectedDate} 00:00:00`), WEEK_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Week(s)';
-        spanLength = 1;
+        spanLength = WEEK_SPAN;
         break;
       }
       case MONTH: {
         const dateObj = dates.subMonths(new Date(`${selectedDate} 00:00:00`), MONTH_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Month(s)';
-        spanLength = 2;
+        spanLength = MONTH_SPAN;
         break;
       }
       case YEAR: {
         const dateObj = dates.subYears(new Date(`${selectedDate} 00:00:00`), YEAR_SPAN);
         selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
         unitType = 'Year(s)';
-        spanLength = 2;
+        spanLength = YEAR_SPAN;
         break;
       }
       default: {
@@ -1558,7 +1558,7 @@ const outcomesReview = (function () {
 
           if (!dateThisBelongsTo) return;
           if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo]) return;
-          
+
           outcomeOjb[occurrence][objID].timesDoc++;
 
           if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId]) {
