@@ -7,8 +7,8 @@ const outcomesReview = (function () {
   let outcomesDataSecondaryRaw;
   let exclamationIds;
   let exclamationSecondaryIds;
+  let exclamationDateMap;
   let dropdownData;
-  let promptsMap;
   let activityRes;
   let locations;
   let successTypes;
@@ -71,6 +71,20 @@ const outcomesReview = (function () {
     10: 'October',
     11: 'November',
     12: 'December',
+  };
+  const FREQUENCY = {
+    OBJFMAL: 'At least',
+    OBJFMAN: 'As needed',
+    OBJFMAR: 'As Requested',
+    OBJFMEX: 'Exactly',
+    OBJFMNM: 'No more than',
+  };
+  const RECURRANCE = {
+    D: 'per day',
+    Y: 'per year',
+    W: 'per week',
+    M: 'per month',
+    H: 'per hour',
   };
 
   // Mini Roster
@@ -1110,6 +1124,10 @@ const outcomesReview = (function () {
         dateRow.appendChild(dateTI);
         dateRow.innerHTML += `<div>${date !== 'nf' ? date : 'No Frequency'}</div>`;
         dateRowWrap.appendChild(dateRow);
+        if (exclamationDateMap[date].showExclamation) {
+          dateRow.innerHTML += `<div>${icons.error}</div>`;
+          showTabExclamation = true;
+        }
 
         const detailsTable = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-date-sub', 'hidden'] });
         dateRowWrap.appendChild(detailsTable);
@@ -1145,15 +1163,6 @@ const outcomesReview = (function () {
 
           for (const staffId in data[objId].reviewDates[date]) {
             const details = data[objId].reviewDates[date][staffId];
-
-            if (details.showExclamation) {
-              if (!alreadyAddedExclamation) {
-                alreadyAddedExclamation = true;
-                dateRow.innerHTML += `<div>${icons.error}</div>`;
-              }
-
-              showTabExclamation = true;
-            }
 
             const detailRow = _DOM.createElement('div', { class: ['row', 'row-details'] });
             detailRow.innerHTML = `
@@ -1415,21 +1424,6 @@ const outcomesReview = (function () {
     activeTab = Object.values(tabSections)[0];
   }
   function sortReviewTableData(dirtyData) {
-    const FREQUENCY = {
-      OBJFMAL: 'At least',
-      OBJFMAN: 'As needed',
-      OBJFMAR: 'As Requested',
-      OBJFMEX: 'Exactly',
-      OBJFMNM: 'No more than',
-    };
-    const RECURRANCE = {
-      D: 'per day',
-      Y: 'per year',
-      W: 'per week',
-      M: 'per month',
-      H: 'per hour',
-    };
-
     objIdSet = new Set();
 
     return dirtyData.reduce((a, d) => {
@@ -1455,6 +1449,8 @@ const outcomesReview = (function () {
       a[occurrence][objID].individual = d.consumerName;
       a[occurrence][objID].serviceStatement = d.objectiveStatement;
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
+      a[occurrence][objID].frequencyIncrement = d.objectiveIncrement;
+      a[occurrence][objID].frequencyModifier = d.frequencyModifier;
       a[occurrence][objID].timesDoc = 0;
       a[occurrence][objID].successRate = 0;
 
@@ -1589,6 +1585,7 @@ const outcomesReview = (function () {
     setUnitType();
   }
   async function getReviewTableDataSecondary() {
+    exclamationDateMap = {};
     setDatesForMiddleTier();
 
     const frequency = FREQ_MAP[activeTab];
@@ -1607,23 +1604,40 @@ const outcomesReview = (function () {
     sortReviewTableDataSecondary(data.gridSecondary, outcomesData);
 
     Object.keys(outcomesData[frequency]).forEach(objId => {
-      if (exclamationIds && exclamationIds.find(ids => ids === objId)) {
-        outcomesData[frequency][objId].showExclamation = true;
-      }
-
       if (outcomesData[frequency][objId].timesDoc > 0) {
         if (!outcomesData[frequency][objId].successRate) {
           outcomesData[frequency][objId].successRate = '100%';
         }
       }
 
+      if (exclamationIds && exclamationIds.find(ids => ids === objId)) {
+        outcomesData[frequency][objId].showExclamation = true;
+      }
+
       if (outcomesData[frequency][objId].reviewDates) {
         Object.keys(outcomesData[frequency][objId].reviewDates).forEach(rDate => {
-          Object.keys(outcomesData[frequency][objId].reviewDates[rDate]).forEach(staffid => {
-            if (exclamationSecondaryIds && exclamationSecondaryIds.find(sIds => sIds === staffid)) {
-              outcomesData[frequency][objId].reviewDates[rDate][staffid].showExclamation = true;
-            }
-          });
+          const freqMod = outcomesData[frequency][objId].frequencyModifier;
+          const freqInc = outcomesData[frequency][objId].frequencyIncrement;
+          const timesDoc = outcomesData[frequency][objId].timesDoc;
+
+          if (freqMod === 'OBJFMAL' && timesDoc < parseInt(freqInc)) {
+            //'At least'
+            exclamationDateMap[rDate].showExclamation = true;
+          }
+          if (freqMod === 'OBJFMEX' && timesDoc !== parseInt(freqInc)) {
+            //'Exactly'
+            exclamationDateMap[rDate].showExclamation = true;
+          }
+          if (freqMod === 'OBJFMNM' && timesDoc > parseInt(freqInc)) {
+            //'No more than'
+            exclamationDateMap[rDate].showExclamation = true;
+          }
+
+          // Object.keys(outcomesData[frequency][objId].reviewDates[rDate]).forEach(staffid => {
+            // if (exclamationSecondaryIds && exclamationSecondaryIds.find(sIds => sIds === staffid)) {
+            //   outcomesData[frequency][objId].reviewDates[rDate][staffid].showExclamation = true;
+            // }
+          // });
         });
       }
     });
