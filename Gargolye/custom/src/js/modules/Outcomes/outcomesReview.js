@@ -1517,7 +1517,12 @@ const outcomesReview = (function () {
             }
           }
           if (occurrence === 'D') {
-            dateThisBelongsTo = date;
+            const splitDate = date.split('/');
+            const month = splitDate[0] < 10 ? `0${splitDate[0]}` : splitDate[0];
+            const day = splitDate[1] < 10 ? `0${splitDate[1]}` : splitDate[1];
+            const year = splitDate[2];
+            
+            dateThisBelongsTo = `${month}/${day}/${year}`;
           }
           if (occurrence === 'W') {
             Object.keys(outcomeOjb[occurrence][objID].reviewDates).forEach(key => {
@@ -1535,7 +1540,11 @@ const outcomesReview = (function () {
           }
           if (occurrence === 'M') {
             Object.keys(outcomeOjb[occurrence][objID].reviewDates).forEach(key => {
-              const [month, day, year] = date.split('/');
+              let [month, day, year] = date.split('/');
+              if (month < 10 && month.length === 1) {
+                month = `0${month}`;
+              }
+
               if (MONTHS[month] === key) {
                 dateThisBelongsTo = key;
               }
