@@ -571,6 +571,38 @@ const outcomesReview = (function () {
 
   // Detail View Popup
   //----------------------------------------------------
+  function sortLocations(results) {
+    locations = {};
+
+    results.forEach(res => {
+      if (!locations[res.type]) {
+        locations[res.type] = [];
+      }
+
+      locations[res.type].push(res);
+    });
+    locations['Primary'].sort(function (a, b) {
+      if (a.description < b.description) {
+        return -1;
+      }
+      if (a.description > b.description) {
+        return 1;
+      }
+      return 0;
+    });
+
+    if (locations.Secondary) {
+      locations['Secondary'].sort(function (a, b) {
+        if (a.description < b.description) {
+          return -1;
+        }
+        if (a.description > b.description) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+  }
   // Popup
   function buildPrimaryLocationDropdown(locId) {
     const select = dropdown.build({
@@ -1658,47 +1690,9 @@ const outcomesReview = (function () {
             //'No more than'
             exclamationDateMap[rDate] = true;
           }
-
-          // Object.keys(outcomesData[frequency][objId].reviewDates[rDate]).forEach(staffid => {
-            // if (exclamationSecondaryIds && exclamationSecondaryIds.find(sIds => sIds === staffid)) {
-            //   outcomesData[frequency][objId].reviewDates[rDate][staffid].showExclamation = true;
-            // }
-          // });
         });
       }
     });
-  }
-  function sortLocations(results) {
-    locations = {};
-
-    results.forEach(res => {
-      if (!locations[res.type]) {
-        locations[res.type] = [];
-      }
-
-      locations[res.type].push(res);
-    });
-    locations['Primary'].sort(function (a, b) {
-      if (a.description < b.description) {
-        return -1;
-      }
-      if (a.description > b.description) {
-        return 1;
-      }
-      return 0;
-    });
-
-    if (locations.Secondary) {
-      locations['Secondary'].sort(function (a, b) {
-        if (a.description < b.description) {
-          return -1;
-        }
-        if (a.description > b.description) {
-          return 1;
-        }
-        return 0;
-      });
-    }
   }
   // consumer, date, allowedConsumerIds
   async function init({ consumer, consumerName, date, allowedConsumerIds }) {
