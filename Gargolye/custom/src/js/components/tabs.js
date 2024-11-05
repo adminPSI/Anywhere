@@ -37,7 +37,7 @@ var tabs = (function () {
 
       var activeTab = tabNav.querySelector('.active');
       var activeSection = tabBody.querySelector('.active');
-      var targetSection = `.${event.target.innerHTML.toLowerCase().replace(/ /g, '')}-section`;
+      var targetSection = `.${event.target.textContent.toLowerCase().replace(/ /g, '')}-section`;
       targetSection = tabBody.querySelector(targetSection);
 
       activeTab.classList.remove('active');
@@ -47,7 +47,7 @@ var tabs = (function () {
 
       if (options.tabNavCallback)
         options.tabNavCallback({
-          activeSection: event.target.innerHTML,
+          activeSection: event.target.textContent,
         });
     });
 

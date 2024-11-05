@@ -45,19 +45,19 @@ const outcomesReview = (function () {
   const WEEK_SPAN = 1;
   const MONTH_SPAN = 2;
   const YEAR_SPAN = 2;
-  const NO_FREQ = 'No Frequency';
-  const HOUR = 'Hourly';
-  const DAY = 'Daily';
-  const WEEK = 'Weekly';
-  const MONTH = 'Monthly';
-  const YEAR = 'Yearly';
+  const NO_FREQ = 'no frequency';
+  const HOUR = 'hourly';
+  const DAY = 'daily';
+  const WEEK = 'weekly';
+  const MONTH = 'monthly';
+  const YEAR = 'yearly';
   const FREQ_MAP = {
-    'No Frequency': 'NF',
-    Hourly: 'H',
-    Daily: 'D',
-    Weekly: 'W',
-    Monthly: 'M',
-    Yearly: 'Y',
+    'no frequency': 'NF',
+    hourly: 'H',
+    daily: 'D',
+    weekly: 'W',
+    monthly: 'M',
+    yearly: 'Y',
   };
   const MONTHS = {
     '01': 'January',
@@ -1281,7 +1281,7 @@ const outcomesReview = (function () {
       if (freq.toLowerCase() === activeTab.toLowerCase() && showTabExclamation) {
         item.innerHTML += icons.error;
       } else {
-        item.innerHTML = item.textContent;
+        item.innerHTML = freq;
       }
     });
 
