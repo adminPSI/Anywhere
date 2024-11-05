@@ -847,11 +847,11 @@ const consumerInfo = (function () {
             });
 
             hasADropdownN[i].addEventListener('change', async event => {
-                isValueChanged = true;              
+                isValueChanged = true;
                 if ($.session.applicationName === 'Gatekeeper') {
                     var selectedDropdownId = event.target.id.replace('hasADropdownN', '');
                     var selectedValue = event.target.value;
-                    await rePopulateEditRelationshipDropdown(selectedDropdownId, selectedValue, ''); 
+                    await rePopulateEditRelationshipDropdown(selectedDropdownId, selectedValue, '');
                 }
                 checkRequiredFieldsEditConsumerRelationships();
             });
@@ -910,7 +910,8 @@ const consumerInfo = (function () {
         dataName = RelationshipsName.map((relationshipsName) => ({
             id: relationshipsName.personID,
             value: relationshipsName.personID,
-            text: relationshipsName.name
+            text: relationshipsName.name,
+            style: relationshipsName.statusCode != 'A' && relationshipsName.statusCode != null ? 'italic' : ''
         }));
         dataName.unshift({ id: null, value: '', text: '' });
 
@@ -920,7 +921,7 @@ const consumerInfo = (function () {
         dataType = RelationshipsType.map((relationshipsType) => ({
             id: relationshipsType.typeID,
             value: relationshipsType.typeID,
-            text: relationshipsType.description
+            text: relationshipsType.description          
         }));
         dataType.unshift({ id: null, value: '', text: '' });
         for (let i = 0; i < numberOfRows; i++) {
@@ -929,8 +930,8 @@ const consumerInfo = (function () {
             if ($.session.applicationName === 'Gatekeeper' && consumerRelationships[i] != undefined && consumerRelationships[i].typeID != '') {
                 await rePopulateEditRelationshipDropdown(i, consumerRelationships[i].typeID, consumerRelationships[i] != undefined ? consumerRelationships[i].personID : '')
             } else {
-                dropdown.populate("whoIsDropdownN" + i, dataName, consumerRelationships[i] != undefined ? consumerRelationships[i].personID : '');
-            }             
+                dropdown.populateStyle("whoIsDropdownN" + i, dataName, consumerRelationships[i] != undefined ? consumerRelationships[i].personID : '');
+            }
         }
     }
 
@@ -942,10 +943,11 @@ const consumerInfo = (function () {
         dataName = RelationshipsName.map((relationshipsName) => ({
             id: relationshipsName.personID,
             value: relationshipsName.personID,
-            text: relationshipsName.name
+            text: relationshipsName.name,
+            style: relationshipsName.statusCode != 'A' && relationshipsName.statusCode != null ? 'italic' : ''
         }));
         dataName.unshift({ id: null, value: '', text: '' });
-        dropdown.populate("whoIsDropdownN" + selectedDropdownId, dataName, personId); 
+        dropdown.populateStyle("whoIsDropdownN" + selectedDropdownId, dataName, personId);
     }
 
     async function editRelationshipSaveData() {
