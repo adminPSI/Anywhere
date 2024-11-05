@@ -47,7 +47,7 @@ const addEditOutcomeServices = (() => {
     backBtn = backButton();
     addInsertServicesBtnWrap.appendChild(addOutCome);
 
-    if ($.session.InsertServices === true) {
+    if ($.session.InsertServices === true && $.session.applicationName === 'Advisor') {
       importServicesBtn = button.build({
         text: 'IMPORT SERVICES',
         style: 'secondary',
