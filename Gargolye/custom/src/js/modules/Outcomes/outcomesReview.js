@@ -1,6 +1,7 @@
 const outcomesReview = (function () {
   // Data
   let selectedConsumerId;
+  let selectedConsumerCard;
   let selectedDate;
   let outcomesData;
   let outcomesDataRaw;
@@ -87,6 +88,17 @@ const outcomesReview = (function () {
     H: 'per hour',
   };
 
+  function buildConsumerCard() {
+    selectedConsumerCard.classList.remove('highlighted');
+
+    const wrap = document.createElement('div');
+    wrap.classList.add('planConsumerCard');
+
+    wrap.appendChild(selectedConsumerCard);
+
+    return wrap;
+  }
+
   // Mini Roster
   //----------------------------------------------------
   async function handleActionNavEvent(target) {
@@ -106,6 +118,10 @@ const outcomesReview = (function () {
       await getReviewTableData();
       await getReviewTableDataSecondary();
 
+      // replace consumer header
+      const newConsumerCardHeader = buildConsumerCard();
+      outcomesReviewDiv.replaceChild(newConsumerCardHeader, consumerCardHeader);
+      consumerCardHeader = newConsumerCardHeader;
       // rebuild & populate tabs/tables
       const newOutcomeTabs = buildTabs();
       outcomesReviewDiv.replaceChild(newOutcomeTabs, outcomeTabs);
@@ -1710,9 +1726,12 @@ const outcomesReview = (function () {
     outcomesReviewDiv = _DOM.createElement('div');
     outcomesReviewDiv.classList.add('outcomesReview');
 
+    consumerCardHeader = buildConsumerCard();
+
     const filterDisplay = buildCurrentFilterdisplay();
     outcomeTabs = buildTabs();
 
+    outcomesReviewDiv.appendChild(consumerCardHeader);
     outcomesReviewDiv.appendChild(filterDisplay);
     outcomesReviewDiv.appendChild(outcomeTabs);
     DOM.ACTIONCENTER.appendChild(outcomesReviewDiv);

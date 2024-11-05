@@ -19,12 +19,24 @@ const addOutcomes = (() => {
     }
 
     // Build New Outcomes Page 
+    function buildConsumerCard() {
+        selectedConsumers.card.classList.remove('highlighted');
+    
+        const wrap = document.createElement('div');
+        wrap.classList.add('planConsumerCard');
+    
+        wrap.appendChild(selectedConsumers.card);
+    
+        return wrap;
+      }
     async function buildNewOutcomes() {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
         landingPage = document.createElement('div');
         selectedConsumerId = selectedConsumers.id;
         const importantOutcomeForm = await buildOutComeForm();
+        const consumerCard = buildConsumerCard();
+        landingPage.appendChild(consumerCard);
         landingPage.appendChild(importantOutcomeForm);
         DOM.ACTIONCENTER.appendChild(landingPage);
     }

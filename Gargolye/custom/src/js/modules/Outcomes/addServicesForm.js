@@ -29,13 +29,25 @@ const addServicesForm = (() => {
         SAVE_BTN.classList.add('disabled');   
     }
 
-    // Build New Outcomes Page 
+    // Build New Outcomes Page
+    function buildConsumerCard() {
+        selectedConsumers.card.classList.remove('highlighted');
+    
+        const wrap = document.createElement('div');
+        wrap.classList.add('planConsumerCard');
+    
+        wrap.appendChild(selectedConsumers.card);
+    
+        return wrap;
+      }
     async function buildNewServicesForm() {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
         landingPage = document.createElement('div');
         selectedConsumerId = selectedConsumers.id;
         const importantOutcomeForm = await buildServicesForm();
+        const consumerCard = buildConsumerCard();
+        landingPage.appendChild(consumerCard);
         landingPage.appendChild(importantOutcomeForm);
         DOM.ACTIONCENTER.appendChild(landingPage);
     }
