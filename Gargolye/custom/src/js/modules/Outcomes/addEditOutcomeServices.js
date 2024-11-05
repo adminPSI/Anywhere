@@ -11,6 +11,7 @@ const addEditOutcomeServices = (() => {
   // DOM
   let pageWrap;
   let overviewTable;
+  let fileInput;
   //--
   let filterPopup;
   let outcomeTypeDropdown;
@@ -139,7 +140,7 @@ const addEditOutcomeServices = (() => {
     });
 
     // Create the file input element
-    const fileInput = document.createElement('input');
+    fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.id = 'file-input';
     fileInput.className = 'file-input';
@@ -276,6 +277,7 @@ const addEditOutcomeServices = (() => {
     // Function to remove a file from the list
     function removeFile(index) {
       filesList.splice(index, 1);
+      fileInput.value = '';
       displayFileNames(filesList);
       
       toggleButtonsDisabled(filesList);
