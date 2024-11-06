@@ -1172,7 +1172,7 @@ const outcomesReview = (function () {
         dateRow.appendChild(dateTI);
         dateRow.innerHTML += `<div>${date !== 'nf' ? date : 'No Frequency'}</div>`;
         dateRowWrap.appendChild(dateRow);
-        if (exclamationDateMap[date]) {
+        if (exclamationDateMap[objId][date]) {
           dateRow.innerHTML += `<div>${icons.error}</div>`;
           showTabExclamation = true;
         }
@@ -1247,14 +1247,13 @@ const outcomesReview = (function () {
       sections: Object.values(tabSections),
       active: 0,
       tabNavCallback: async function (data) {
-        activeTab = data.activeSection;
+        activeTab = data.activeSection.toLowerCase();
         setUnitType();
         updateFilterDates();
 
         Object.keys(outcomesData).forEach(a => {
           Object.keys(outcomesData[a]).forEach(b => {
             delete outcomesData[a][b].reviewDates;
-            //outcomesData[a][b].reviewDates = {};
             outcomesData[a][b].timesDoc = 0;
           });
         });
@@ -1273,6 +1272,8 @@ const outcomesReview = (function () {
     section.innerHTML = '';
 
     const { sectionTable, showTabExclamation } = buildTable(data[key]);
+
+    console.table(data[key]);
 
     const tabNavItems = [...document.querySelectorAll('.tabs__nav--item')];
     tabNavItems.forEach(item => {
@@ -1394,8 +1395,6 @@ const outcomesReview = (function () {
             }
           }
         });
-
-        console.log(occ, Object.keys(outcomesData[occ][objId].reviewDates));
       });
     });
   }
@@ -1678,17 +1677,19 @@ const outcomesReview = (function () {
           const freqInc = outcomesData[frequency][objId].frequencyIncrement;
           const timesDoc = outcomesData[frequency][objId].timesDoc;
 
+          if (!exclamationDateMap[objId]) exclamationDateMap[objId] = {};
+
           if (freqMod === 'OBJFMAL' && timesDoc < parseInt(freqInc)) {
             //'At least'
-            exclamationDateMap[rDate] = true;
+            exclamationDateMap[objId][rDate] = true;
           }
           if (freqMod === 'OBJFMEX' && timesDoc !== parseInt(freqInc)) {
             //'Exactly'
-            exclamationDateMap[rDate] = true;
+            exclamationDateMap[objId][rDate] = true;
           }
           if (freqMod === 'OBJFMNM' && timesDoc > parseInt(freqInc)) {
             //'No more than'
-            exclamationDateMap[rDate] = true;
+            exclamationDateMap[objId][rDate] = true;
           }
         });
       }
