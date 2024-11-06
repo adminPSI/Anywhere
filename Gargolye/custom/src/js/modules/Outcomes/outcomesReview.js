@@ -1280,7 +1280,7 @@ const outcomesReview = (function () {
       const freq = item.getAttribute('section');
 
       if (freq.toLowerCase() === activeTab.toLowerCase() && showTabExclamation) {
-        item.innerHTML += icons.error;
+        item.innerHTML = `${freq} ${icons.error}`;
       } else {
         item.innerHTML = freq;
       }
