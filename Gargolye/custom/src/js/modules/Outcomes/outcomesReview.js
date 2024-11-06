@@ -1510,6 +1510,7 @@ const outcomesReview = (function () {
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
       const staffId = d.staffId;
+      const activityId = d.objectiveActivityId;
       const percent = getPercentForSuccessRate(d.top_number, d.bottom_number);
 
       if (filterBy) {
