@@ -1688,7 +1688,7 @@ const outcomesReview = (function () {
           const freqMod = outcomesData[frequency][objId].frequencyModifier;
           const freqInc = outcomesData[frequency][objId].frequencyIncrement;
           const timesDoc = outcomesData[frequency][objId].timesDoc;
-          const timesDocDate = timesDocByDate[objID][rDate].timesDoc;
+          const timesDocDate = timesDocByDate[objId][rDate].timesDoc;
 
           if (!exclamationDateMap[objId]) exclamationDateMap[objId] = {};
 
