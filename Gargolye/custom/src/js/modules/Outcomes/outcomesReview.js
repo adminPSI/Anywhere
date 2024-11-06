@@ -9,6 +9,7 @@ const outcomesReview = (function () {
   let exclamationIds;
   let exclamationSecondaryIds;
   let exclamationDateMap;
+  let timesDocByDate;
   let dropdownData;
   let activityRes;
   let locations;
@@ -1102,7 +1103,7 @@ const outcomesReview = (function () {
     toggleIcon.innerHTML = icons['keyArrowRight'];
     return toggleIcon;
   }
-  function buildTable(data) {
+  function buildTable(data, key) {
     let showTabExclamation;
 
     const table = _DOM.createElement('div');
@@ -1162,7 +1163,6 @@ const outcomesReview = (function () {
       });
 
       for (const date in data[objId].reviewDates) {
-        let alreadyAddedExclamation = false;
         const dateRowWrap = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-date'] });
         mainRowSubWrap.appendChild(dateRowWrap);
 
@@ -1172,7 +1172,7 @@ const outcomesReview = (function () {
         dateRow.appendChild(dateTI);
         dateRow.innerHTML += `<div>${date !== 'nf' ? date : 'No Frequency'}</div>`;
         dateRowWrap.appendChild(dateRow);
-        if (exclamationDateMap[date]) {
+        if (exclamationDateMap[objId] && exclamationDateMap[objId][date]) {
           dateRow.innerHTML += `<div>${icons.error}</div>`;
           showTabExclamation = true;
         }
@@ -1209,8 +1209,8 @@ const outcomesReview = (function () {
           `;
           detailsTable.appendChild(detailsHeading);
 
-          for (const staffId in data[objId].reviewDates[date]) {
-            const details = data[objId].reviewDates[date][staffId];
+          for (const activityId in data[objId].reviewDates[date]) {
+            const details = data[objId].reviewDates[date][activityId];
 
             const detailRow = _DOM.createElement('div', { class: ['row', 'row-details'] });
             detailRow.innerHTML = `
@@ -1229,7 +1229,7 @@ const outcomesReview = (function () {
                 date: date,
                 result: details.result,
                 attempt: details.attempts,
-                employeeId: staffId,
+                employeeId: details.staffId,
               });
             });
           }
@@ -1247,14 +1247,13 @@ const outcomesReview = (function () {
       sections: Object.values(tabSections),
       active: 0,
       tabNavCallback: async function (data) {
-        activeTab = data.activeSection;
+        activeTab = data.activeSection.toLowerCase();
         setUnitType();
         updateFilterDates();
 
         Object.keys(outcomesData).forEach(a => {
           Object.keys(outcomesData[a]).forEach(b => {
             delete outcomesData[a][b].reviewDates;
-            //outcomesData[a][b].reviewDates = {};
             outcomesData[a][b].timesDoc = 0;
           });
         });
@@ -1272,7 +1271,9 @@ const outcomesReview = (function () {
     const section = document.getElementById(sectionID);
     section.innerHTML = '';
 
-    const { sectionTable, showTabExclamation } = buildTable(data[key]);
+    const { sectionTable, showTabExclamation } = buildTable(data[key], key);
+
+    console.table(data[key]);
 
     const tabNavItems = [...document.querySelectorAll('.tabs__nav--item')];
     tabNavItems.forEach(item => {
@@ -1394,8 +1395,6 @@ const outcomesReview = (function () {
             }
           }
         });
-
-        console.log(occ, Object.keys(outcomesData[occ][objId].reviewDates));
       });
     });
   }
@@ -1506,11 +1505,14 @@ const outcomesReview = (function () {
     }, {});
   }
   function sortReviewTableDataSecondary(data, outcomeOjb, filterBy) {
+    timesDocByDate = {};
+
     data.forEach(d => {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
       const date = d.objective_date.split(' ')[0];
       const staffId = d.staffId;
+      const activityId = d.objectiveActivityId;
       const percent = getPercentForSuccessRate(d.top_number, d.bottom_number);
 
       if (filterBy) {
@@ -1537,18 +1539,19 @@ const outcomesReview = (function () {
               outcomeOjb[occurrence][objID].reviewDates['nf'] = {};
             }
 
-            if (!outcomeOjb[occurrence][objID].reviewDates['nf'][staffId]) {
-              outcomeOjb[occurrence][objID].reviewDates['nf'][staffId] = {};
+            if (!outcomeOjb[occurrence][objID].reviewDates['nf'][activityId]) {
+              outcomeOjb[occurrence][objID].reviewDates['nf'][activityId] = {};
             }
 
-            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].employee = d.employee;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].employee = d.employee;
             outcomeOjb[occurrence][objID].reviewDates['nf'][
-              staffId
+              activityId
             ].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
-            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].attempts = d.promptNumber;
-            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
-            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].note = d.objectiveActivityNote;
-            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].activityId = d.objectiveActivityId;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].attempts = d.promptNumber;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].note = d.objectiveActivityNote;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].activityId = d.objectiveActivityId;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].staffId = staffId;
 
             return;
           }
@@ -1612,20 +1615,29 @@ const outcomesReview = (function () {
 
           outcomeOjb[occurrence][objID].timesDoc++;
 
-          if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId]) {
-            outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId] = {};
+          if (!timesDocByDate[occurrence]) timesDocByDate[occurrence] = {};
+          if (!timesDocByDate[occurrence][objID]) timesDocByDate[occurrence][objID] = {};
+          if (!timesDocByDate[occurrence][objID][dateThisBelongsTo]) timesDocByDate[occurrence][objID][dateThisBelongsTo] = {};
+          if (!timesDocByDate[occurrence][objID][dateThisBelongsTo].timesDoc) {
+            timesDocByDate[occurrence][objID][dateThisBelongsTo].timesDoc = 1;
+          } else {
+            timesDocByDate[occurrence][objID][dateThisBelongsTo].timesDoc++;
+          }
+          
+          if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId]) {
+            outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId] = {};
           }
 
-          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].employee = d.employee;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].employee = d.employee;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][
-            staffId
+            activityId
           ].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
-          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].attempts = d.promptNumber;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].attempts = d.promptNumber;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][
-            staffId
+            activityId
           ].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
-          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].note = d.objectiveActivityNote;
-          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].activityId = d.objectiveActivityId;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].note = d.objectiveActivityNote;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].activityId = d.objectiveActivityId;
         }
       }
     });
@@ -1678,17 +1690,23 @@ const outcomesReview = (function () {
           const freqInc = outcomesData[frequency][objId].frequencyIncrement;
           const timesDoc = outcomesData[frequency][objId].timesDoc;
 
-          if (freqMod === 'OBJFMAL' && timesDoc < parseInt(freqInc)) {
-            //'At least'
-            exclamationDateMap[rDate] = true;
-          }
-          if (freqMod === 'OBJFMEX' && timesDoc !== parseInt(freqInc)) {
-            //'Exactly'
-            exclamationDateMap[rDate] = true;
-          }
-          if (freqMod === 'OBJFMNM' && timesDoc > parseInt(freqInc)) {
-            //'No more than'
-            exclamationDateMap[rDate] = true;
+          if (timesDocByDate[frequency] && timesDocByDate[frequency][objId] && timesDocByDate[frequency][objId][rDate]) {
+            const timesDocDate = timesDocByDate[frequency][objId][rDate]?.timesDoc;
+
+            if (!exclamationDateMap[objId]) exclamationDateMap[objId] = {};
+
+            if (freqMod === 'OBJFMAL' && timesDocDate < parseInt(freqInc)) {
+              //'At least'
+              exclamationDateMap[objId][rDate] = true;
+            }
+            if (freqMod === 'OBJFMEX' && timesDocDate !== parseInt(freqInc)) {
+              //'Exactly'
+              exclamationDateMap[objId][rDate] = true;
+            }
+            if (freqMod === 'OBJFMNM' && timesDocDate > parseInt(freqInc)) {
+              //'No more than'
+              exclamationDateMap[objId][rDate] = true;
+            }
           }
         });
       }

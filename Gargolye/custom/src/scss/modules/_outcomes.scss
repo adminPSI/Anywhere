@@ -713,7 +713,7 @@ div.textarea {
       background: $gray;
       padding-left: 20px;
 
-      div:last-child {
+      div:nth-child(3) {
         align-self: flex-end;
         color: $error;
         width: 24px;

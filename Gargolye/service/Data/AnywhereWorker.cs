@@ -750,7 +750,7 @@ namespace Anywhere.service.Data
             sb.Clear();
             sb.Append("SELECT DBA.People.ID ");
             sb.Append("FROM DBA.People ");
-
+            sb.Append("WHERE DBA.People.Salesforce_ID IS NOT NULL");
             DataSet dataSet = di.SelectRowsDS(sb.ToString());
 
             // Check if there are any tables and rows in the returned data
@@ -773,36 +773,31 @@ namespace Anywhere.service.Data
                         // Process each guardian Id as needed
                         foreach (string guardianId in guardianIds)
                         {
-                            // Always update SalesForce_Guardian_ID with the new guardianId
                             sb.Clear();
-                            sb.Append("UPDATE DBA.People ");
-                            sb.Append("SET SalesForce_Guardian_ID = ");
-                            sb.Append($"'{guardianId}' ");
-                            sb.Append("WHERE ID = ");
-                            sb.Append($"{peopleId};");
-
-                            di.SelectRowsDS(sb.ToString());
-
-                            // Check the current value of Salesforce_ID for this person
-                            sb.Clear();
-                            sb.Append("SELECT Salesforce_ID ");
+                            sb.Append("SELECT DBA.People.ID ");
                             sb.Append("FROM DBA.People ");
-                            sb.Append("WHERE ID = ");
-                            sb.Append($"{peopleId};");
+                            sb.AppendFormat("WHERE DBA.People.Salesforce_ID = {}", guardianId);
+                            DataSet dataSet1 = di.SelectRowsDS(sb.ToString());
 
-                            DataSet result = di.SelectRowsDS(sb.ToString());
-                            string currentSalesforceId = result.Tables[0].Rows[0]["Salesforce_ID"].ToString();
-
-                            // If Salesforce_ID matches the new guardianId, set it to NULL
-                            if (currentSalesforceId == guardianId)
+                            if (dataSet1 != null && dataSet1.Tables.Count > 0 && dataSet1.Tables[0].Rows.Count > 0)
                             {
-                                sb.Clear();
-                                sb.Append("UPDATE DBA.People ");
-                                sb.Append("SET Salesforce_ID = NULL ");
-                                sb.Append("WHERE ID = ");
-                                sb.Append($"{peopleId};");
+                                // Get the value of the ID field
+                                var value = dataSet1.Tables[0].Rows[0]["ID"];
 
-                                di.SelectRowsDS(sb.ToString());
+                                // Check if the value is not null or DBNull
+                                if (value != null && value != DBNull.Value)
+                                {
+                                    // If the Salesforce_ID exists in our DB then we are setting the Salesforce_ID to NULL and updating the Salesforce_Guardian_ID column with that ID
+                                    sb.Clear();
+                                    sb.Append("UPDATE DBA.People ");
+                                    sb.Append("SET SalesForce_Guardian_ID = ");
+                                    sb.Append($"'{guardianId}', ");
+                                    sb.Append("Salesforce_ID = NULL ");
+                                    sb.Append("WHERE ID = ");
+                                    sb.Append($"{value};");
+                                    di.SelectRowsDS(sb.ToString());
+
+                                }
                             }
                         }
                     }
