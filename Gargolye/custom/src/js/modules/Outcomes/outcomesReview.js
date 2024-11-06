@@ -1172,7 +1172,7 @@ const outcomesReview = (function () {
         dateRow.appendChild(dateTI);
         dateRow.innerHTML += `<div>${date !== 'nf' ? date : 'No Frequency'}</div>`;
         dateRowWrap.appendChild(dateRow);
-        if (exclamationDateMap[key] && exclamationDateMap[key][objId] && exclamationDateMap[key][objId][date]) {
+        if (exclamationDateMap[objId] && exclamationDateMap[objId][date]) {
           dateRow.innerHTML += `<div>${icons.error}</div>`;
           showTabExclamation = true;
         }
@@ -1619,7 +1619,7 @@ const outcomesReview = (function () {
           if (!timesDocByDate[occurrence][objID]) timesDocByDate[occurrence][objID] = {};
           if (!timesDocByDate[occurrence][objID][dateThisBelongsTo]) timesDocByDate[occurrence][objID][dateThisBelongsTo] = {};
           if (!timesDocByDate[occurrence][objID][dateThisBelongsTo].timesDoc) {
-            timesDocByDate[occurrence][objID][dateThisBelongsTo].timesDoc = 0;
+            timesDocByDate[occurrence][objID][dateThisBelongsTo].timesDoc = 1;
           } else {
             timesDocByDate[occurrence][objID][dateThisBelongsTo].timesDoc++;
           }
@@ -1689,9 +1689,10 @@ const outcomesReview = (function () {
           const freqMod = outcomesData[frequency][objId].frequencyModifier;
           const freqInc = outcomesData[frequency][objId].frequencyIncrement;
           const timesDoc = outcomesData[frequency][objId].timesDoc;
-          const timesDocDate = timesDocByDate[frequency][objId][rDate]?.timesDoc;
 
-          if (timesDocDate) {
+          if (timesDocByDate[frequency] && timesDocByDate[frequency][objId] && timesDocByDate[frequency][objId][rDate]) {
+            const timesDocDate = timesDocByDate[frequency][objId][rDate]?.timesDoc;
+
             if (!exclamationDateMap[objId]) exclamationDateMap[objId] = {};
 
             if (freqMod === 'OBJFMAL' && timesDocDate < parseInt(freqInc)) {
