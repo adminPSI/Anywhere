@@ -1103,7 +1103,7 @@ const outcomesReview = (function () {
     toggleIcon.innerHTML = icons['keyArrowRight'];
     return toggleIcon;
   }
-  function buildTable(data) {
+  function buildTable(data, key) {
     let showTabExclamation;
 
     const table = _DOM.createElement('div');
@@ -1172,7 +1172,7 @@ const outcomesReview = (function () {
         dateRow.appendChild(dateTI);
         dateRow.innerHTML += `<div>${date !== 'nf' ? date : 'No Frequency'}</div>`;
         dateRowWrap.appendChild(dateRow);
-        if (exclamationDateMap[objId][date]) {
+        if (exclamationDateMap[key] && exclamationDateMap[key][objId] && exclamationDateMap[key][objId][date]) {
           dateRow.innerHTML += `<div>${icons.error}</div>`;
           showTabExclamation = true;
         }
@@ -1271,7 +1271,7 @@ const outcomesReview = (function () {
     const section = document.getElementById(sectionID);
     section.innerHTML = '';
 
-    const { sectionTable, showTabExclamation } = buildTable(data[key]);
+    const { sectionTable, showTabExclamation } = buildTable(data[key], key);
 
     console.table(data[key]);
 
