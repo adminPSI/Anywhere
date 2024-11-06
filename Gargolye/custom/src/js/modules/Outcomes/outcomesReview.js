@@ -1615,12 +1615,13 @@ const outcomesReview = (function () {
 
           outcomeOjb[occurrence][objID].timesDoc++;
 
-          if (!timesDocByDate[objID]) timesDocByDate[objID] = {};
-          if (!timesDocByDate[objID][dateThisBelongsTo]) timesDocByDate[objID][dateThisBelongsTo] = {};
-          if (!timesDocByDate[objID][dateThisBelongsTo].timesDoc) {
-            timesDocByDate[objID][dateThisBelongsTo].timesDoc = 0;
+          if (!timesDocByDate[occurrence]) timesDocByDate[occurrence] = {};
+          if (!timesDocByDate[occurrence][objID]) timesDocByDate[occurrence][objID] = {};
+          if (!timesDocByDate[occurrence][objID][dateThisBelongsTo]) timesDocByDate[occurrence][objID][dateThisBelongsTo] = {};
+          if (!timesDocByDate[occurrence][objID][dateThisBelongsTo].timesDoc) {
+            timesDocByDate[occurrence][objID][dateThisBelongsTo].timesDoc = 0;
           } else {
-            timesDocByDate[objID][dateThisBelongsTo].timesDoc++;
+            timesDocByDate[occurrence][objID][dateThisBelongsTo].timesDoc++;
           }
           
           if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId]) {
@@ -1688,21 +1689,23 @@ const outcomesReview = (function () {
           const freqMod = outcomesData[frequency][objId].frequencyModifier;
           const freqInc = outcomesData[frequency][objId].frequencyIncrement;
           const timesDoc = outcomesData[frequency][objId].timesDoc;
-          const timesDocDate = timesDocByDate[objId][rDate].timesDoc;
+          const timesDocDate = timesDocByDate[frequency][objId][rDate]?.timesDoc;
 
-          if (!exclamationDateMap[objId]) exclamationDateMap[objId] = {};
+          if (timesDocDate) {
+            if (!exclamationDateMap[objId]) exclamationDateMap[objId] = {};
 
-          if (freqMod === 'OBJFMAL' && timesDocDate < parseInt(freqInc)) {
-            //'At least'
-            exclamationDateMap[objId][rDate] = true;
-          }
-          if (freqMod === 'OBJFMEX' && timesDocDate !== parseInt(freqInc)) {
-            //'Exactly'
-            exclamationDateMap[objId][rDate] = true;
-          }
-          if (freqMod === 'OBJFMNM' && timesDocDate > parseInt(freqInc)) {
-            //'No more than'
-            exclamationDateMap[objId][rDate] = true;
+            if (freqMod === 'OBJFMAL' && timesDocDate < parseInt(freqInc)) {
+              //'At least'
+              exclamationDateMap[objId][rDate] = true;
+            }
+            if (freqMod === 'OBJFMEX' && timesDocDate !== parseInt(freqInc)) {
+              //'Exactly'
+              exclamationDateMap[objId][rDate] = true;
+            }
+            if (freqMod === 'OBJFMNM' && timesDocDate > parseInt(freqInc)) {
+              //'No more than'
+              exclamationDateMap[objId][rDate] = true;
+            }
           }
         });
       }
