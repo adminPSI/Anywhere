@@ -1689,24 +1689,25 @@ const outcomesReview = (function () {
           const freqMod = outcomesData[frequency][objId].frequencyModifier;
           const freqInc = outcomesData[frequency][objId].frequencyIncrement;
           const timesDoc = outcomesData[frequency][objId].timesDoc;
+          let timesDocDate = 0;
 
           if (timesDocByDate[frequency] && timesDocByDate[frequency][objId] && timesDocByDate[frequency][objId][rDate]) {
-            const timesDocDate = timesDocByDate[frequency][objId][rDate]?.timesDoc;
+            timesDocDate = timesDocByDate[frequency][objId][rDate].timesDoc ?? 0;
+          }
 
-            if (!exclamationDateMap[objId]) exclamationDateMap[objId] = {};
+          if (!exclamationDateMap[objId]) exclamationDateMap[objId] = {};
 
-            if (freqMod === 'OBJFMAL' && timesDocDate < parseInt(freqInc)) {
-              //'At least'
-              exclamationDateMap[objId][rDate] = true;
-            }
-            if (freqMod === 'OBJFMEX' && timesDocDate !== parseInt(freqInc)) {
-              //'Exactly'
-              exclamationDateMap[objId][rDate] = true;
-            }
-            if (freqMod === 'OBJFMNM' && timesDocDate > parseInt(freqInc)) {
-              //'No more than'
-              exclamationDateMap[objId][rDate] = true;
-            }
+          if (freqMod === 'OBJFMAL' && timesDocDate < parseInt(freqInc)) {
+            //'At least'
+            exclamationDateMap[objId][rDate] = true;
+          }
+          if (freqMod === 'OBJFMEX' && timesDocDate !== parseInt(freqInc)) {
+            //'Exactly'
+            exclamationDateMap[objId][rDate] = true;
+          }
+          if (freqMod === 'OBJFMNM' && timesDocDate > parseInt(freqInc)) {
+            //'No more than'
+            exclamationDateMap[objId][rDate] = true;
           }
         });
       }
