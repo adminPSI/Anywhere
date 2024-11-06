@@ -9,6 +9,7 @@ const outcomesReview = (function () {
   let exclamationIds;
   let exclamationSecondaryIds;
   let exclamationDateMap;
+  let timesDocByDate;
   let dropdownData;
   let activityRes;
   let locations;
@@ -1162,7 +1163,6 @@ const outcomesReview = (function () {
       });
 
       for (const date in data[objId].reviewDates) {
-        let alreadyAddedExclamation = false;
         const dateRowWrap = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-date'] });
         mainRowSubWrap.appendChild(dateRowWrap);
 
@@ -1505,6 +1505,8 @@ const outcomesReview = (function () {
     }, {});
   }
   function sortReviewTableDataSecondary(data, outcomeOjb, filterBy) {
+    timesDocByDate = {};
+
     data.forEach(d => {
       const occurrence = d.objectiveRecurrance || 'NF';
       const objID = d.objectiveId;
@@ -1613,6 +1615,14 @@ const outcomesReview = (function () {
 
           outcomeOjb[occurrence][objID].timesDoc++;
 
+          if (!timesDocByDate[objID]) timesDocByDate[objID] = {};
+          if (!timesDocByDate[objID][dateThisBelongsTo]) timesDocByDate[objID][dateThisBelongsTo] = {};
+          if (!timesDocByDate[objID][dateThisBelongsTo].timesDoc) {
+            timesDocByDate[objID][dateThisBelongsTo].timesDoc = 0;
+          } else {
+            timesDocByDate[objID][dateThisBelongsTo].timesDoc++;
+          }
+          
           if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId]) {
             outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId] = {};
           }
@@ -1678,18 +1688,19 @@ const outcomesReview = (function () {
           const freqMod = outcomesData[frequency][objId].frequencyModifier;
           const freqInc = outcomesData[frequency][objId].frequencyIncrement;
           const timesDoc = outcomesData[frequency][objId].timesDoc;
+          const timesDocDate = timesDocByDate[objID][rDate].timesDoc;
 
           if (!exclamationDateMap[objId]) exclamationDateMap[objId] = {};
 
-          if (freqMod === 'OBJFMAL' && timesDoc < parseInt(freqInc)) {
+          if (freqMod === 'OBJFMAL' && timesDocDate < parseInt(freqInc)) {
             //'At least'
             exclamationDateMap[objId][rDate] = true;
           }
-          if (freqMod === 'OBJFMEX' && timesDoc !== parseInt(freqInc)) {
+          if (freqMod === 'OBJFMEX' && timesDocDate !== parseInt(freqInc)) {
             //'Exactly'
             exclamationDateMap[objId][rDate] = true;
           }
-          if (freqMod === 'OBJFMNM' && timesDoc > parseInt(freqInc)) {
+          if (freqMod === 'OBJFMNM' && timesDocDate > parseInt(freqInc)) {
             //'No more than'
             exclamationDateMap[objId][rDate] = true;
           }
