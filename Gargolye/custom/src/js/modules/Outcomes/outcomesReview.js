@@ -1209,8 +1209,8 @@ const outcomesReview = (function () {
           `;
           detailsTable.appendChild(detailsHeading);
 
-          for (const staffId in data[objId].reviewDates[date]) {
-            const details = data[objId].reviewDates[date][staffId];
+          for (const activityId in data[objId].reviewDates[date]) {
+            const details = data[objId].reviewDates[date][activityId];
 
             const detailRow = _DOM.createElement('div', { class: ['row', 'row-details'] });
             detailRow.innerHTML = `
@@ -1229,7 +1229,7 @@ const outcomesReview = (function () {
                 date: date,
                 result: details.result,
                 attempt: details.attempts,
-                employeeId: staffId,
+                employeeId: details.staffId,
               });
             });
           }
@@ -1536,18 +1536,19 @@ const outcomesReview = (function () {
               outcomeOjb[occurrence][objID].reviewDates['nf'] = {};
             }
 
-            if (!outcomeOjb[occurrence][objID].reviewDates['nf'][staffId]) {
-              outcomeOjb[occurrence][objID].reviewDates['nf'][staffId] = {};
+            if (!outcomeOjb[occurrence][objID].reviewDates['nf'][activityId]) {
+              outcomeOjb[occurrence][objID].reviewDates['nf'][activityId] = {};
             }
 
-            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].employee = d.employee;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].employee = d.employee;
             outcomeOjb[occurrence][objID].reviewDates['nf'][
-              staffId
+              activityId
             ].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
-            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].attempts = d.promptNumber;
-            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
-            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].note = d.objectiveActivityNote;
-            outcomeOjb[occurrence][objID].reviewDates['nf'][staffId].activityId = d.objectiveActivityId;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].attempts = d.promptNumber;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].note = d.objectiveActivityNote;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].activityId = d.objectiveActivityId;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].staffId = staffId;
 
             return;
           }
@@ -1611,20 +1612,20 @@ const outcomesReview = (function () {
 
           outcomeOjb[occurrence][objID].timesDoc++;
 
-          if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId]) {
-            outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId] = {};
+          if (!outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId]) {
+            outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId] = {};
           }
 
-          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].employee = d.employee;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].employee = d.employee;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][
-            staffId
+            activityId
           ].result = `${d.objectiveSuccessSymbol} ${d.objectiveSuccessDescription}`;
-          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].attempts = d.promptNumber;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].attempts = d.promptNumber;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][
-            staffId
+            activityId
           ].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
-          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].note = d.objectiveActivityNote;
-          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][staffId].activityId = d.objectiveActivityId;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].note = d.objectiveActivityNote;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].activityId = d.objectiveActivityId;
         }
       }
     });
