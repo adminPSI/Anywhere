@@ -750,7 +750,8 @@ namespace Anywhere.service.Data
             sb.Clear();
             sb.Append("SELECT DBA.People.ID ");
             sb.Append("FROM DBA.People ");
-            sb.Append("WHERE DBA.People.Salesforce_ID IS NOT NULL");
+            sb.Append("WHERE DBA.People.Salesforce_ID IS NOT NULL ");
+            sb.Append("AND DBA.People.Salesforce_ID <> '' ");
             DataSet dataSet = di.SelectRowsDS(sb.ToString());
 
             // Check if there are any tables and rows in the returned data
