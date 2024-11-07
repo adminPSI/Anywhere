@@ -1,4 +1,5 @@
-﻿using iTextSharp.text;
+﻿using DocumentFormat.OpenXml.Office2016.Drawing;
+using iTextSharp.text;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -846,10 +847,10 @@ namespace Anywhere.service.Data
 
                     // insert document
                     string wfsdString = wfdg.insertWorkflowStepDocument(stepId, docOrder, description, "", attachmentType, attachment, comments, documentEdited, transaction);
-
-                    WFSDInfo[] wfsdbj = js.Deserialize<WFSDInfo[]>(wfsdString);
-                    String attachmentId = wfsdbj[0].attachmentId;
-                    String documentId = wfsdbj[0].documentId;
+                   
+                    string[] words = wfsdString.Split(' ');
+                    String attachmentId = words[0].ToString();
+                    String documentId = words[1].ToString();
                     DocumentAttachment documentAttachment = new DocumentAttachment();
                     documentAttachment.documentId = documentId;
                     documentAttachment.attachmentId = attachmentId;
@@ -2251,14 +2252,18 @@ namespace Anywhere.service.Data
                             bool isSelected = selecteddocuments.Any(sel => sel.description == d.description);
                             if (!isSelected)
                             {                                
-                                String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId,  d.attachmentType, null, null, "0", transaction_insertWFDetails);
+                                string wfsdString = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId,  d.attachmentType, null, null, "0", transaction_insertWFDetails);
+                                string[] words = wfsdString.Split(' ');
+                                String documentId = words[1].ToString();
                             }
                         }
 
                         foreach (WorkflowTemplateStepDocument d in selecteddocuments.FindAll(p => p.stepId == s.stepId))
-                        {                            
+                        {
                             // insert selected step documents
-                            String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, d.attachmentType, null, null, "0", transaction_insertWFDetails);
+                            string wfsdString = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, d.attachmentType, null, null, "0", transaction_insertWFDetails);
+                            string[] words = wfsdString.Split(' ');
+                            String documentId = words[1].ToString();
 
                         }
 
