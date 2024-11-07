@@ -849,8 +849,8 @@ namespace Anywhere.service.Data
                     string wfsdString = wfdg.insertWorkflowStepDocument(stepId, docOrder, description, "", attachmentType, attachment, comments, documentEdited, transaction);
                    
                     string[] words = wfsdString.Split(' ');
-                    String attachmentId = words[0].ToString();
-                    String documentId = words[1].ToString();
+                    String attachmentId = words[1].ToString();
+                    String documentId = words[0].ToString();
                     DocumentAttachment documentAttachment = new DocumentAttachment();
                     documentAttachment.documentId = documentId;
                     documentAttachment.attachmentId = attachmentId;
@@ -2254,7 +2254,7 @@ namespace Anywhere.service.Data
                             {                                
                                 string wfsdString = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId,  d.attachmentType, null, null, "0", transaction_insertWFDetails);
                                 string[] words = wfsdString.Split(' ');
-                                String documentId = words[1].ToString();
+                                String documentId = words[0].ToString();
                             }
                         }
 
@@ -2263,7 +2263,7 @@ namespace Anywhere.service.Data
                             // insert selected step documents
                             string wfsdString = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, d.attachmentType, null, null, "0", transaction_insertWFDetails);
                             string[] words = wfsdString.Split(' ');
-                            String documentId = words[1].ToString();
+                            String documentId = words[0].ToString();
 
                         }
 
