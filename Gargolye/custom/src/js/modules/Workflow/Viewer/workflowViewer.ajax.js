@@ -70,7 +70,7 @@ const WorkflowViewerAjax = (() => {
 
   async function downloadAttachment(attachmentid, filename) {
     try {
-      var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/getAttachment/`;
+      var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/getAttachmentWF/`;
       var successFunction = function (resp) {
         var res = JSON.stringify(response);
       };

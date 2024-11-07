@@ -2108,6 +2108,19 @@ namespace Anywhere
             anywhereAttachmentWorker.getAttachment(token, attachmentId, filename);
         }
 
+        public void getAttachmentWF(System.IO.Stream testInput)
+        {
+            string token;
+            string attachmentId;
+            string filename;
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            attachmentId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            filename = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            anywhereAttachmentWorker.getAttachmentWF(token, attachmentId, filename);
+        }
+
         public void viewCaseNoteAttachment(System.IO.Stream testInput)
         {
             string token;

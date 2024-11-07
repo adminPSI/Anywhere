@@ -1791,6 +1791,12 @@ namespace Anywhere
         void getAttachment(System.IO.Stream testInput);
 
         [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Bare,
+             UriTemplate = "/getAttachmentWF/")]
+        void getAttachmentWF(System.IO.Stream testInput);
+
+        [OperationContract]
         [WebInvoke(Method = "GET",
              BodyStyle = WebMessageBodyStyle.Bare,
              ResponseFormat = WebMessageFormat.Xml,

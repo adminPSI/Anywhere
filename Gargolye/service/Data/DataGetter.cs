@@ -3825,6 +3825,43 @@ namespace Anywhere.Data
             }
         }
 
+        public MemoryStream GetAttachmentDataWF(string attachmentId)
+        {
+            logger.debug("GetAttachmentData " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_WF_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                //MemoryStream temp = new MemoryStream();
+                //temp = executeSQLReturnMemoryStream("SELECT Attachment from Attachments where Attachment_ID = " + attachmentId);
+                //temp = executeSQLReturnMemoryStream(text);
+                return executeSQLReturnMemoryStream(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("640", ex.Message + "ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return null;
+            }
+        }
+
+        public string GetAttachmentExtensionWF(string attachmentId)
+        {
+            logger.debug("GetAttachmentExtension " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_WF_GetAttachmentExtension(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallRaw(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("657", ex.Message + "GetAttachmentExtension(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "657: error GetAttachmentExtension";
+            }
+        }
+
         public string UpdateWorkshopQuantity(string token, string quantity, string jobActivityId)
         {
             if (tokenValidator(token) == false) return null;

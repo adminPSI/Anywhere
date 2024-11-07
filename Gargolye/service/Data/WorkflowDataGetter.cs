@@ -942,17 +942,19 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string updateWorkflowStepDocument(string docId, string attachmentId, string documentEdited, DistributedTransaction transaction)
+        public string updateWorkflowStepDocument(string docId, string attachmentId, string attachmentType, string attachment, string documentEdited, DistributedTransaction transaction)
         {
             try
             {
                 logger.debug("updateWorkflowStepDocument ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[3];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[5];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepDocumentId", DbType.String, docId);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachmentId", DbType.String, attachmentId);
-                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@documentEdited", DbType.String, documentEdited);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachmentType", DbType.String, attachmentType);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachment", DbType.String, attachment);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@documentEdited", DbType.String, documentEdited);
                 // returns the documentId of the document that was just inserted
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_UpdateWorkflowStepDocument(?, ?, ?)", args, ref transaction).ToString();
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_UpdateWorkflowStepDocument(?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {

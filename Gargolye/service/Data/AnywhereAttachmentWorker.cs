@@ -47,6 +47,30 @@ namespace Anywhere.service.Data
             displayAttachment(attachment);
         }
 
+        public void getAttachmentWF(String token, String attachmentId, String filename)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = filename;
+            attachment.data = null;
+            bool isTokenValid = anywhereWorker.ValidateToken(token);
+            if (isTokenValid)
+            {
+                try
+                {
+                    // use the filename parameter if it exists, otherwise create one from a guid 
+                    attachment.filename = (filename == null || (filename.Trim()) == "") ? Guid.NewGuid().ToString() : attachment.filename + "." + dg.GetWFAttachmentFileName(attachmentId);
+                    attachment.data = dg.GetWfAttachmentData(attachmentId);//reused
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+            //logger.debug("Made it this far in attachment");
+            // return attachment;
+            displayAttachment(attachment);
+        }
+
         //public Attachment getIndividualAttachment(String token, String attachmentId)
         public void getIndividualAttachment(String token, String attachmentId)
         {
