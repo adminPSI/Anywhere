@@ -2021,6 +2021,7 @@ const outcomes = (function () {
             planViewPOPUP(); 
         }
         else {
+           planViewPOPUP(); 
             topFilterDateWrap.appendChild(viewPlanBtn);
         }
             
@@ -2180,11 +2181,19 @@ const outcomes = (function () {
         const result = await outcomesAjax.getPlanHistorybyConsumer(selectedConsumerId);
         const { getPlanHistorybyConsumerResult } = result;
 
-        if (getPlanHistorybyConsumerResult[0].isPlanAvailable == 'true') {
+       // if (getPlanHistorybyConsumerResult[0].isPlanAvailable == 'true') {
             viewPlanPOPUP.appendChild(planLater);
-            if (getPlanHistorybyConsumerResult[0].isPlanLaterDisable == 'true') planLater.classList.add('disabled');
-            else planLater.classList.remove('disabled');
+            if (getPlanHistorybyConsumerResult[0].isPlanLaterDisable == 'true') {
+                planLater.classList.add('disabled'); 
+
+                } else  {
+                    planLater.classList.remove('disabled');
+                 //viewPlanPOPUP.appendChild(planLater);
         }
+       // } else {
+
+
+       // }
 
         if ($.session.UpdatePlan) viewPlanPOPUP.appendChild(planUpdate);
 
