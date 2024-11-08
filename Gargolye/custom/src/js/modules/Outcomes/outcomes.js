@@ -2021,7 +2021,7 @@ const outcomes = (function () {
             planViewPOPUP(); 
         }
         else {
-           planViewPOPUP(); 
+           //planViewPOPUP(); 
             topFilterDateWrap.appendChild(viewPlanBtn);
         }
             
@@ -2135,7 +2135,7 @@ const outcomes = (function () {
 
     async function planViewPOPUP() {
         viewPlanPOPUP = POPUP.build({
-            hideX: false, 
+            hideX: true, 
         });
 
         planNow = button.build({
