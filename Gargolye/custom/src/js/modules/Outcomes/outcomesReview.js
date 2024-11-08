@@ -394,16 +394,13 @@ const outcomesReview = (function () {
   function applyFilter() {
     updateCurrentFilterDisplay(serviceFilterVal.text, outcomeTypeFilterVal.text);
 
-    const tableData = sortReviewTableData(outcomesDataRaw, {
-      service: serviceFilterVal.value,
-      type: outcomeTypeFilterVal.value,
-    });
-    sortReviewTableDataSecondary(outcomesDataSecondaryRaw, tableData, {
-      service: serviceFilterVal.value,
-      type: outcomeTypeFilterVal.value,
-    });
+    // const tableData = sortReviewTableData(outcomesDataRaw, {
+    //   service: serviceFilterVal.value,
+    //   type: outcomeTypeFilterVal.value,
+    // });
+    // sortReviewTableDataSecondary(outcomesDataSecondaryRaw, tableData);
 
-    populateTabSections(tableData);
+    populateTabSections();
   }
   async function buildTypesDropdown() {
     const typesDrop = dropdown.build({
@@ -1103,7 +1100,7 @@ const outcomesReview = (function () {
     toggleIcon.innerHTML = icons['keyArrowRight'];
     return toggleIcon;
   }
-  function buildTable(data, key) {
+  function buildTable(data) {
     let showTabExclamation;
 
     const table = _DOM.createElement('div');
@@ -1128,6 +1125,9 @@ const outcomesReview = (function () {
       table.appendChild(mainRowWrap);
 
       const mainRow = _DOM.createElement('div', { class: ['row', 'row-main'] });
+      mainRow.setAttribute('data-outcomeType', d.outcomeType)
+      mainRow.setAttribute('data-outcomeTypeId', d.outcomeTypeId)
+      mainRow.setAttribute('data-showExclamation', d.showExclamation)
       const mainTI = buildToggleIcon();
       mainTI.classList.add('mainToggle');
       mainRow.appendChild(mainTI);
@@ -1140,6 +1140,7 @@ const outcomesReview = (function () {
         <div>${d.showExclamation ? icons.error : ''}</div>
       `;
       mainRowWrap.appendChild(mainRow);
+      
 
       const mainRowSubWrap = _DOM.createElement('div', { class: ['rowWrap', 'rowWrap-main-sub', 'hidden'] });
       mainRowWrap.appendChild(mainRowSubWrap);
@@ -1273,7 +1274,29 @@ const outcomesReview = (function () {
 
     const { sectionTable, showTabExclamation } = buildTable(data[key], key);
 
-    console.table(data[key]);
+    const rows = [...sectionTable.querySelectorAll('.row.row-main')];
+    rows.forEach(row => {
+      const outcomeType = row.dataset.outcometype;
+      const outcomeTypeId = row.dataset.outcometypeid;
+      const showExclamation = row.dataset.showexclamation;
+
+      if (outcomeTypeFilterVal.text !== 'All' && outcomeTypeFilterVal.text !== outcomeType) {
+        row.parentNode.style.display = 'none';
+        return;
+      }
+
+      if (serviceFilterVal.text === 'Complete' && showExclamation === 'true') {
+        row.parentNode.style.display = 'none';
+        return;
+      }
+
+      if (serviceFilterVal.text === 'Incomplete' && showExclamation === 'false') {
+        row.parentNode.style.display = 'none';
+        return;
+      }
+
+      row.parentNode.style.display = 'flex';
+    });
 
     const tabNavItems = [...document.querySelectorAll('.tabs__nav--item')];
     tabNavItems.forEach(item => {
@@ -1500,11 +1523,13 @@ const outcomesReview = (function () {
       a[occurrence][objID].frequencyModifier = d.frequencyModifier;
       a[occurrence][objID].timesDoc = 0;
       a[occurrence][objID].successRate = 0;
+      a[occurrence][objID].outcomeType = d.goalTypeDescription;
+      a[occurrence][objID].outcomeTypeId = d.goalTypeId;
 
       return a;
     }, {});
   }
-  function sortReviewTableDataSecondary(data, outcomeOjb, filterBy) {
+  function sortReviewTableDataSecondary(data, outcomeOjb) {
     timesDocByDate = {};
 
     data.forEach(d => {
@@ -1514,11 +1539,6 @@ const outcomesReview = (function () {
       const staffId = d.staffId;
       const activityId = d.objectiveActivityId;
       const percent = getPercentForSuccessRate(d.top_number, d.bottom_number);
-
-      if (filterBy) {
-        if (filterBy.service && filterBy.service !== d.objectiveSuccessDescription) return;
-        if (filterBy.type && filterBy.type !== d.goalTypeId) return;
-      }
 
       if (outcomeOjb[occurrence]) {
         if (outcomeOjb[occurrence][objID]) {
@@ -1721,8 +1741,14 @@ const outcomesReview = (function () {
     selectedConsumerCard = consumer.card;
     selectedConsumerName = consumerName;
     selectedDate = date;
-    serviceFilterVal = {};
-    outcomeTypeFilterVal = {};
+    serviceFilterVal = {
+      text: 'All',
+      value: 'All'
+    };
+    outcomeTypeFilterVal = {
+      text: 'All',
+      value: '%'
+    };
     currentDateTime = new Date();
 
     setActiveModuleSectionAttribute('outcomes-review');
