@@ -15,6 +15,8 @@ using System.Text;
 using Anywhere.Log;
 using PSIOISP;
 using System.Text.RegularExpressions;
+using Anywhere.service.Data.PlanSignature;
+using System.Linq;
 
 namespace Anywhere.service.Data
 {
@@ -741,14 +743,15 @@ namespace Anywhere.service.Data
             public string deviceGUID { get; set; }
         }
 
-
         public string updateSalesforceIdsScriptOneTimeUse()
         {
             try
             {
                 StringBuilder sb = new StringBuilder();
                 Data.Sybase di = new Data.Sybase();
+                PlanSignatureWorker psw = new PlanSignatureWorker();
 
+                // Step 1: Get all people IDs with non-null, non-empty Salesforce_ID
                 sb.Clear();
                 sb.Append("SELECT DBA.People.ID ");
                 sb.Append("FROM DBA.People ");
@@ -756,49 +759,30 @@ namespace Anywhere.service.Data
                 sb.Append("AND DBA.People.Salesforce_ID <> '' ");
                 DataSet dataSet = di.SelectRowsDS(sb.ToString());
 
-                // Check if there are any tables and rows in the returned data
-                if (dataSet.Tables.Count > 0)
+                // Initialize a list to accumulate unique Salesforce IDs for guardians
+                HashSet<string> guardianIds = new HashSet<string>();
+
+                // Step 2: Collect guardian Salesforce IDs from the API calls
+                if (dataSet != null && dataSet.Tables.Count > 0)
                 {
                     DataTable table = dataSet.Tables[0];
 
-                    // Loop through each row in the DataTable
+                    // Loop through each row to call the API and collect Guardian IDs
                     foreach (DataRow row in table.Rows)
                     {
                         if (long.TryParse(row["ID"].ToString(), out long peopleId))
                         {
-                            // Make the API call to check for Guardians
-                            ISPDTData ispDT = new ISPDTData();
-                            string theGuardians = ispDT.IndividualGuardians(peopleId);
+                            // API call to retrieve team members
+                            TeamMemberFromState[] individualContacts = psw.getTeamMemberListFromState(peopleId);
 
-                            // Extract IDs from the returned string
-                            List<string> guardianIds = ExtractIdsFromString(theGuardians);
-
-                            // Process each guardian Id as needed
-                            foreach (string guardianId in guardianIds)
+                            if (individualContacts != null)
                             {
-                                sb.Clear();
-                                sb.Append("SELECT DBA.People.ID ");
-                                sb.Append("FROM DBA.People ");
-                                sb.AppendFormat("WHERE DBA.People.Salesforce_ID = '{0}'", guardianId);
-                                DataSet dataSet1 = di.SelectRowsDS(sb.ToString());
-
-                                if (dataSet1 != null && dataSet1.Tables.Count > 0 && dataSet1.Tables[0].Rows.Count > 0)
+                                // Add guardian IDs from API response to the set
+                                foreach (TeamMemberFromState member in individualContacts)
                                 {
-                                    // Get the value of the ID field
-                                    var value = dataSet1.Tables[0].Rows[0]["ID"];
-
-                                    // Check if the value is not null or DBNull
-                                    if (value != null && value != DBNull.Value)
+                                    if (member != null && member.Role == "Guardian")
                                     {
-                                        // If the Salesforce_ID exists in our DB then we are setting the Salesforce_ID to NULL and updating the Salesforce_Guardian_ID column with that ID
-                                        sb.Clear();
-                                        sb.Append("UPDATE DBA.People ");
-                                        sb.Append("SET SalesForce_Guardian_ID = ");
-                                        sb.Append($"'{guardianId}', ");
-                                        sb.Append("Salesforce_ID = NULL ");
-                                        sb.Append("WHERE ID = ");
-                                        sb.Append($"{value};");
-                                        di.SelectRowsDS(sb.ToString());
+                                        guardianIds.Add(member.Id);
                                     }
                                 }
                             }
@@ -809,15 +793,56 @@ namespace Anywhere.service.Data
                         }
                     }
                 }
-                return "success";
+
+                // Step 3: Retrieve unique people IDs for the accumulated guardian Salesforce IDs
+                HashSet<long> uniquePersonIds = new HashSet<long>();
+
+                if (guardianIds.Count > 0)
+                {
+                    sb.Clear();
+                    sb.Append("SELECT DBA.People.ID, DBA.People.Salesforce_ID ");
+                    sb.Append("FROM DBA.People ");
+                    sb.Append("WHERE DBA.People.Salesforce_ID IN (");
+                    sb.Append(string.Join(", ", guardianIds.Select(id => $"'{id}'")));
+                    sb.Append(")");
+
+                    DataSet guardianDataSet = di.SelectRowsDS(sb.ToString());
+
+                    // Collect unique People IDs
+                    if (guardianDataSet != null && guardianDataSet.Tables.Count > 0)
+                    {
+                        DataTable guardianTable = guardianDataSet.Tables[0];
+                        foreach (DataRow row in guardianTable.Rows)
+                        {
+                            if (long.TryParse(row["ID"].ToString(), out long personId))
+                            {
+                                uniquePersonIds.Add(personId);
+                            }
+                        }
+                    }
+
+                    // Step 4: Perform the update operation on unique People IDs
+                    foreach (var personId in uniquePersonIds)
+                    {
+                        sb.Clear();
+                        sb.Append("UPDATE DBA.People ");
+                        sb.Append("SET SalesForce_Guardian_ID = Salesforce_ID, ");
+                        sb.Append("Salesforce_ID = NULL ");
+                        sb.AppendFormat("WHERE ID = {0};", personId);
+                        sb.Append("Commit Work;");
+
+                        di.SelectRowsDS(sb.ToString());
+                    }
+                }
+
+                // Return the unique person IDs as a comma-separated string
+                return string.Join(", ", uniquePersonIds);
             }
             catch (Exception ex)
             {
                 return $"Error: {ex.Message}";
             }
         }
-
-
 
         // Helper method to extract IDs from the returned string
         private List<string> ExtractIdsFromString(string guardiansData)

@@ -23,9 +23,16 @@ const addEditOutcomeServices = (() => {
   let outcomeTypeBtnWrap;
   let effectiveDateBtnWrap;
   let importDateBtnWrap;
+  let fromImportedServicesPage = false;
 
-  async function init(selectedConsume) {
+  async function init(selectedConsume, navigatedFromImport) {
     selectedConsumer = selectedConsume;
+
+    if (navigatedFromImport) {
+      fromImportedServicesPage = navigatedFromImport;
+    } else {
+      fromImportedServicesPage = false;
+    }
     buildNewOutcomeServices();
   }
 
@@ -355,7 +362,11 @@ const addEditOutcomeServices = (() => {
     var currentFilterDisplay = document.querySelector('.filteredByData');
 
     effectiveDateEnd = `${formatDate(filterValues.effectiveDateEnd)}`;
-    importDate = `${formatDate(filterValues.effectiveDateEnd)}`;
+    importDate = '';
+
+    if (fromImportedServicesPage) {
+      importDate = `${formatDate(filterValues.effectiveDateEnd)}`;
+    }
 
     if (!currentFilterDisplay) {
       currentFilterDisplay = document.createElement('div');
@@ -383,7 +394,6 @@ const addEditOutcomeServices = (() => {
     }
 
     if (importDate == '') {
-      btnWrap.appendChild(importDateBtnWrap);
       btnWrap.removeChild(importDateBtnWrap);
     } else {
       btnWrap.appendChild(importDateBtnWrap);
