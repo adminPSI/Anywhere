@@ -1713,7 +1713,7 @@ const outcomesReview = (function () {
       }
     });
   }
-  // consumer, date, allowedConsumerIds
+  
   async function init({ consumer, consumerName, date, allowedConsumerIds }) {
     console.clear();
 
