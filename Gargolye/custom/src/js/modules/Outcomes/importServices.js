@@ -427,7 +427,7 @@ const importServices = (() => {
             classNames: 'cancelBtn',
             callback: () => {
                 selectedOutcomes = [];
-                addEditOutcomeServices.init(currentlySelectedConsumer);
+                addEditOutcomeServices.init(currentlySelectedConsumer, true);
             },
         });
 
@@ -522,7 +522,7 @@ const importServices = (() => {
                 callback: () => {
                     selectedOutcomes = [];
                     POPUP.hide(importSelectedServicesPopup)
-                    addEditOutcomeServices.init(currentlySelectedConsumer);
+                    addEditOutcomeServices.init(currentlySelectedConsumer, true);
                 },
             });
 
