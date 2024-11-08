@@ -1094,7 +1094,7 @@ const outcomesReview = (function () {
     toggleIcon.innerHTML = icons['keyArrowRight'];
     return toggleIcon;
   }
-  function buildTable(data) {
+  function buildTable(data, frequency) {
     let showTabExclamation;
 
     const table = _DOM.createElement('div');
@@ -1165,7 +1165,8 @@ const outcomesReview = (function () {
         const dateTI = buildToggleIcon();
         dateTI.classList.add('subToggle');
         dateRow.appendChild(dateTI);
-        dateRow.innerHTML += `<div>${date !== 'nf' ? date : 'No Frequency'}</div>`;
+        const dateForRow = frequency === 'H' ? dates.convertFromMilitary(date) : date;
+        dateRow.innerHTML += `<div>${dateForRow !== 'nf' ? dateForRow : 'No Frequency'}</div>`;
         dateRowWrap.appendChild(dateRow);
         if (exclamationDateMap[objId] && exclamationDateMap[objId][date]) {
           dateRow.innerHTML += `<div>${icons.error}</div>`;
@@ -1338,7 +1339,7 @@ const outcomesReview = (function () {
           dObj[0] = new Date(`${selectedDateSpan.to} 00:00:00`)
         }
 
-        for (let index = 0; index < spanLength - 1; index++) {
+        for (let index = 0; index < spanLength; index++) {
           switch (occ) {
             case 'H': {
               const nextDate = dates.subHours(dObj[index], 1);
@@ -1692,7 +1693,15 @@ const outcomesReview = (function () {
     sortReviewTableDataSecondary(data.gridSecondary, outcomesData);
 
     Object.keys(outcomesData[frequency]).forEach(objId => {
-      if (outcomesData[frequency][objId].successRate !== 'N') {
+      if (outcomesData[frequency][objId].successRate === 'N') {
+        if (outcomesData[frequency][objId].timesDoc > 0) {
+          outcomesData[frequency][objId].successRate = '0%';
+        }
+
+        if (outcomesData[frequency][objId].timesDoc === 0) {
+          outcomesData[frequency][objId].successRate = '';
+        }
+      } else {
         if (outcomesData[frequency][objId].timesDoc > 0) {
           if (!outcomesData[frequency][objId].successRate) {
             outcomesData[frequency][objId].successRate = '100%';
@@ -1700,8 +1709,6 @@ const outcomesReview = (function () {
         } else if (outcomesData[frequency][objId].timesDoc === 0) {
           outcomesData[frequency][objId].successRate = '0%';
         }
-      } else {
-        outcomesData[frequency][objId].successRate = '';
       }
       
       if (frequency !== 'NF') {
