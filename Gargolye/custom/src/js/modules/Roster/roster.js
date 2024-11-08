@@ -1152,7 +1152,13 @@ const roster2 = (function () {
                 style: 'secondary',
                 type: 'contained',
                 callback: async function () {
+                    pendingSave.show('Updating Database...');
                     const data = await _UTIL.fetchData('updateSalesforceIdsScriptOneTimeUse');
+                    pendingSave.fulfill('Update Complete')
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    const successfulSavePopup = document.querySelector('.successfulSavePopup');
+                    successfulSavePopup.style.display = 'none';
+                    pendingSave.hide();
                 },
             });
 
