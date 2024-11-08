@@ -350,6 +350,7 @@ namespace Anywhere.service.Data
             public string signatureId { get; set; }
             public string teamMember { get; set; }
             public string generation { get; set; }
+            public string guardianSalesforceId { get; set; }
         }
     }
 }

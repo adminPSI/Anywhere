@@ -324,6 +324,8 @@ namespace Anywhere.service.Data
             public string staffId { get; set; }
             public string employee { get; set; }
             public string objectiveSuccess { get; set; }
+            public string goalTypeDescription { get; set; }
+            public string goalTypeId { get; set; }
             public string promptType { get; set; }
             public string promptNumber { get; set; }
             public string objectiveSuccessSymbol { get; set; }

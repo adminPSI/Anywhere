@@ -426,10 +426,10 @@ const csTeamMember = (() => {
 
         // 1 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, BUT there is a SalesforceID in the People table that matches the selected State Guardian.
         if (
-            selectedMemberData.salesForceId &&
-            selectedMemberData.salesForceId !== '' &&
+            selectedMemberData.guardianSalesforceId &&
+            selectedMemberData.guardianSalesforceId !== '' &&
             selectedStateGuardianSalesForceId !== '' &&
-            selectedMemberData.salesForceId !== selectedStateGuardianSalesForceId &&
+            selectedMemberData.guardianSalesforceId !== selectedStateGuardianSalesForceId &&
             DBteamMemberswithStateSalesForceId &&
             DBteamMemberswithStateSalesForceId.length === 1 &&
             $.session.areInSalesForce === true
@@ -466,10 +466,10 @@ const csTeamMember = (() => {
 
         // 2 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, AND there is NO SalesforceID in the People table that matches the selected State Guardian.
         if (
-            selectedMemberData.salesForceId &&
-            selectedMemberData.salesForceId !== '' &&
+            selectedMemberData.guardianSalesforceId &&
+            selectedMemberData.guardianSalesforceId !== '' &&
             selectedStateGuardianSalesForceId !== '' &&
-            selectedMemberData.salesForceId !== selectedStateGuardianSalesForceId &&
+            selectedMemberData.guardianSalesforceId !== selectedStateGuardianSalesForceId &&
             (!DBteamMemberswithStateSalesForceId ||
                 (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0))
         ) {
@@ -496,7 +496,7 @@ const csTeamMember = (() => {
 
         // 3 -- Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, BUT there is a SalesforceID in the People table that matches the selected State Guardian.
         if (
-            (selectedMemberData.salesForceId === '' || !selectedMemberData.salesForceId) &&
+            (selectedMemberData.guardianSalesforceId === '' || !selectedMemberData.guardianSalesforceId) &&
             selectedStateGuardianSalesForceId !== '' &&
             DBteamMemberswithStateSalesForceId &&
             DBteamMemberswithStateSalesForceId.length === 1
@@ -533,7 +533,7 @@ const csTeamMember = (() => {
 
         // 4 --Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, AND there is NO SalesforceID in the People table that matches the selected State Guardian.
         if (
-            (selectedMemberData.salesForceId === '' || !selectedMemberData.salesForceId) &&
+            (selectedMemberData.guardianSalesforceId === '' || !selectedMemberData.guardianSalesforceId) &&
             selectedStateGuardianSalesForceId !== '' &&
             (!DBteamMemberswithStateSalesForceId ||
                 (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0))

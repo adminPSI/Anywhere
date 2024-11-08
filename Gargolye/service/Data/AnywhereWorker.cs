@@ -742,70 +742,78 @@ namespace Anywhere.service.Data
         }
 
 
-        public void updateSalesforceIdsScriptOneTimeUse()
+        public string updateSalesforceIdsScriptOneTimeUse()
         {
-            StringBuilder sb = new StringBuilder();
-            Data.Sybase di = new Data.Sybase();
-
-            sb.Clear();
-            sb.Append("SELECT DBA.People.ID ");
-            sb.Append("FROM DBA.People ");
-            sb.Append("WHERE DBA.People.Salesforce_ID IS NOT NULL");
-            DataSet dataSet = di.SelectRowsDS(sb.ToString());
-
-            // Check if there are any tables and rows in the returned data
-            if (dataSet.Tables.Count > 0)
+            try
             {
-                DataTable table = dataSet.Tables[0];
+                StringBuilder sb = new StringBuilder();
+                Data.Sybase di = new Data.Sybase();
 
-                // Loop through each row in the DataTable
-                foreach (DataRow row in table.Rows)
+                sb.Clear();
+                sb.Append("SELECT DBA.People.ID ");
+                sb.Append("FROM DBA.People ");
+                sb.Append("WHERE DBA.People.Salesforce_ID IS NOT NULL ");
+                sb.Append("AND DBA.People.Salesforce_ID <> '' ");
+                DataSet dataSet = di.SelectRowsDS(sb.ToString());
+
+                // Check if there are any tables and rows in the returned data
+                if (dataSet.Tables.Count > 0)
                 {
-                    if (long.TryParse(row["ID"].ToString(), out long peopleId))
+                    DataTable table = dataSet.Tables[0];
+
+                    // Loop through each row in the DataTable
+                    foreach (DataRow row in table.Rows)
                     {
-                        // Make the API call to check for Guardians
-                        ISPDTData ispDT = new ISPDTData();
-                        string theGuardians = ispDT.IndividualGuardians(peopleId);
-
-                        // Extract IDs from the returned string
-                        List<string> guardianIds = ExtractIdsFromString(theGuardians);
-
-                        // Process each guardian Id as needed
-                        foreach (string guardianId in guardianIds)
+                        if (long.TryParse(row["ID"].ToString(), out long peopleId))
                         {
-                            sb.Clear();
-                            sb.Append("SELECT DBA.People.ID ");
-                            sb.Append("FROM DBA.People ");
-                            sb.AppendFormat("WHERE DBA.People.Salesforce_ID = {}", guardianId);
-                            DataSet dataSet1 = di.SelectRowsDS(sb.ToString());
+                            // Make the API call to check for Guardians
+                            ISPDTData ispDT = new ISPDTData();
+                            string theGuardians = ispDT.IndividualGuardians(peopleId);
 
-                            if (dataSet1 != null && dataSet1.Tables.Count > 0 && dataSet1.Tables[0].Rows.Count > 0)
+                            // Extract IDs from the returned string
+                            List<string> guardianIds = ExtractIdsFromString(theGuardians);
+
+                            // Process each guardian Id as needed
+                            foreach (string guardianId in guardianIds)
                             {
-                                // Get the value of the ID field
-                                var value = dataSet1.Tables[0].Rows[0]["ID"];
+                                sb.Clear();
+                                sb.Append("SELECT DBA.People.ID ");
+                                sb.Append("FROM DBA.People ");
+                                sb.AppendFormat("WHERE DBA.People.Salesforce_ID = '{0}'", guardianId);
+                                DataSet dataSet1 = di.SelectRowsDS(sb.ToString());
 
-                                // Check if the value is not null or DBNull
-                                if (value != null && value != DBNull.Value)
+                                if (dataSet1 != null && dataSet1.Tables.Count > 0 && dataSet1.Tables[0].Rows.Count > 0)
                                 {
-                                    // If the Salesforce_ID exists in our DB then we are setting the Salesforce_ID to NULL and updating the Salesforce_Guardian_ID column with that ID
-                                    sb.Clear();
-                                    sb.Append("UPDATE DBA.People ");
-                                    sb.Append("SET SalesForce_Guardian_ID = ");
-                                    sb.Append($"'{guardianId}', ");
-                                    sb.Append("Salesforce_ID = NULL ");
-                                    sb.Append("WHERE ID = ");
-                                    sb.Append($"{value};");
-                                    di.SelectRowsDS(sb.ToString());
+                                    // Get the value of the ID field
+                                    var value = dataSet1.Tables[0].Rows[0]["ID"];
 
+                                    // Check if the value is not null or DBNull
+                                    if (value != null && value != DBNull.Value)
+                                    {
+                                        // If the Salesforce_ID exists in our DB then we are setting the Salesforce_ID to NULL and updating the Salesforce_Guardian_ID column with that ID
+                                        sb.Clear();
+                                        sb.Append("UPDATE DBA.People ");
+                                        sb.Append("SET SalesForce_Guardian_ID = ");
+                                        sb.Append($"'{guardianId}', ");
+                                        sb.Append("Salesforce_ID = NULL ");
+                                        sb.Append("WHERE ID = ");
+                                        sb.Append($"{value};");
+                                        di.SelectRowsDS(sb.ToString());
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Failed to parse People ID to a long.");
+                        else
+                        {
+                            return "Failed to parse People ID to a long.";
+                        }
                     }
                 }
+                return "success";
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
             }
         }
 
