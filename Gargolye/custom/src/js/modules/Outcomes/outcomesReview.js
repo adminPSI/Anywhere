@@ -394,12 +394,6 @@ const outcomesReview = (function () {
   function applyFilter() {
     updateCurrentFilterDisplay(serviceFilterVal.text, outcomeTypeFilterVal.text);
 
-    // const tableData = sortReviewTableData(outcomesDataRaw, {
-    //   service: serviceFilterVal.value,
-    //   type: outcomeTypeFilterVal.value,
-    // });
-    // sortReviewTableDataSecondary(outcomesDataSecondaryRaw, tableData);
-
     populateTabSections();
   }
   async function buildTypesDropdown() {
@@ -1317,7 +1311,11 @@ const outcomesReview = (function () {
   // Main
   //----------------------------------------------------
   function getPercentForSuccessRate(topNumb, bottomNum) {
-    if (!topNumb || !bottomNum || bottomNum === '0') {
+    if (bottomNum === '0' && topNumb === '0') {
+      return 'N';
+    }
+
+    if (bottomNum === '0' && topNumb !== '0') {
       return '';
     }
 
@@ -1694,18 +1692,28 @@ const outcomesReview = (function () {
     sortReviewTableDataSecondary(data.gridSecondary, outcomesData);
 
     Object.keys(outcomesData[frequency]).forEach(objId => {
-      if (outcomesData[frequency][objId].timesDoc > 0) {
-        if (!outcomesData[frequency][objId].successRate) {
-          outcomesData[frequency][objId].successRate = '100%';
+      if (outcomesData[frequency][objId].successRate !== 'N') {
+        if (outcomesData[frequency][objId].timesDoc > 0) {
+          if (!outcomesData[frequency][objId].successRate) {
+            outcomesData[frequency][objId].successRate = '100%';
+          }
+        } else if (outcomesData[frequency][objId].timesDoc === 0) {
+          outcomesData[frequency][objId].successRate = '0%';
+        }
+      } else {
+        outcomesData[frequency][objId].successRate = '';
+      }
+      
+      if (frequency !== 'NF') {
+        if (exclamationIds && exclamationIds.find(ids => ids === objId)) {
+          outcomesData[frequency][objId].showExclamation = true;
         }
       }
-
-      if (exclamationIds && exclamationIds.find(ids => ids === objId)) {
-        outcomesData[frequency][objId].showExclamation = true;
-      }
-
+      
       if (outcomesData[frequency][objId].reviewDates) {
         Object.keys(outcomesData[frequency][objId].reviewDates).forEach(rDate => {
+          if (frequency === 'NF') return;
+
           const freqMod = outcomesData[frequency][objId].frequencyModifier;
           const freqInc = outcomesData[frequency][objId].frequencyIncrement;
           const timesDoc = outcomesData[frequency][objId].timesDoc;
