@@ -2204,6 +2204,7 @@ const outcomes = (function () {
             message.style.display = 'none';
             planNow.style.display = 'none';
             planLater.style.display = 'none';
+            viewPlanPOPUP.hideX = 'false';
         }
         POPUP.show(viewPlanPOPUP);
     }
