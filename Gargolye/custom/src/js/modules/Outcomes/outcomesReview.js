@@ -142,348 +142,7 @@ const outcomesReview = (function () {
     }
   }
 
-  // Filtering
-  //----------------------------------------------------
-  // date span filter
-  function updateFilterDates() {
-    daysBackToggleBtn.textContent = `${unitType} Back`;
-    daysBackLabel.textContent = `${unitType} Back`;
-    daysBackInput.value = spanLength;
-    fromDateInput.value = selectedDateSpan.from;
-    toDateInput.value = selectedDateSpan.to;
-  }
-  function buildFilterDates() {
-    const toggleButtonWrap = _DOM.createElement('div', { class: 'dateFilterToggle' });
-    daysBackToggleBtn = _DOM.createElement('button', {
-      class: 'active',
-      id: 'days-back-btn',
-      text: `${unitType} Back`,
-    });
-    const dateRangeToggleBtn = _DOM.createElement('button', { id: 'date-range-btn', text: 'Date Range' });
-    toggleButtonWrap.appendChild(daysBackToggleBtn);
-    toggleButtonWrap.appendChild(dateRangeToggleBtn);
-
-    const daysBackInputWrap = _DOM.createElement('div', { class: ['daysBack', 'active'] });
-    daysBackLabel = _DOM.createElement('label', { for: 'daysBack', text: `${unitType} Back` });
-    daysBackInput = _DOM.createElement('input', {
-      id: 'daysBack',
-      type: 'number',
-      name: 'daysBack',
-      value: spanLength,
-    });
-    daysBackInputWrap.appendChild(daysBackLabel);
-    daysBackInputWrap.appendChild(daysBackInput);
-
-    const dateRangeInputWrap = _DOM.createElement('div', { class: ['dateRange'] });
-    const dateRangeInnerWrap1 = _DOM.createElement('div');
-    const dateRangeInnerWrap2 = _DOM.createElement('div');
-    dateRangeInputWrap.appendChild(dateRangeInnerWrap1);
-    dateRangeInputWrap.appendChild(dateRangeInnerWrap2);
-
-    const fromDateLabel = _DOM.createElement('label', { for: 'fromDate', text: `From:` });
-    fromDateInput = _DOM.createElement('input', {
-      id: 'fromDate',
-      type: 'date',
-      name: 'fromDate',
-      value: selectedDateSpan.from,
-    });
-    dateRangeInnerWrap1.appendChild(fromDateLabel);
-    dateRangeInnerWrap1.appendChild(fromDateInput);
-
-    const toDateLabel = _DOM.createElement('label', { for: 'toDate', text: `To:` });
-    toDateInput = _DOM.createElement('input', {
-      id: 'toDate',
-      type: 'date',
-      name: 'toDate',
-      value: selectedDateSpan.to,
-    });
-    dateRangeInnerWrap2.appendChild(toDateLabel);
-    dateRangeInnerWrap2.appendChild(toDateInput);
-
-    const dateWrap = _DOM.createElement('div', { class: 'dateFilter' });
-    dateWrap.appendChild(toggleButtonWrap);
-    dateWrap.appendChild(daysBackInputWrap);
-    dateWrap.appendChild(dateRangeInputWrap);
-
-    toggleButtonWrap.addEventListener('click', e => {
-      if (e.target.classList.contains('active')) {
-        return;
-      }
-
-      const daysBack = dateWrap.querySelector('.daysBack');
-      const dateRange = dateWrap.querySelector('.dateRange');
-
-      if (e.target === daysBackToggleBtn) {
-        daysBack.classList.add('active');
-        daysBackToggleBtn.classList.add('active');
-        dateRange.classList.remove('active');
-        dateRangeToggleBtn.classList.remove('active');
-        return;
-      }
-
-      daysBack.classList.remove('active');
-      daysBackToggleBtn.classList.remove('active');
-      dateRange.classList.add('active');
-      dateRangeToggleBtn.classList.add('active');
-    });
-
-    dateWrap.addEventListener('change', async e => {
-      if (e.target.id === 'daysBack') {
-        spanLength = e.target.value;
-        selectedDateSpan.to = selectedDate;
-
-        switch (activeTab) {
-          case NO_FREQ: {
-            const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
-            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
-          }
-          case HOUR: {
-            const dateObj = dates.subHours(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
-            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
-          }
-          case DAY: {
-            const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
-            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
-          }
-          case WEEK: {
-            const dateObj = dates.subWeeks(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
-            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
-          }
-          case MONTH: {
-            const dateObj = dates.subMonths(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
-            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
-          }
-          case YEAR: {
-            const dateObj = dates.subYears(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
-            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
-          }
-        }
-
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
-        await getReviewTableDataSecondary();
-
-        populateTabSections();
-      }
-      if (e.target.id === 'fromDate') {
-        selectedDateSpan.from = e.target.value;
-
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
-        await getReviewTableDataSecondary();
-
-        populateTabSections();
-      }
-      if (e.target.id === 'toDate') {
-        selectedDateSpan.to = e.target.value;
-
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
-        await getReviewTableDataSecondary();
-
-        populateTabSections();
-      }
-    });
-
-    return dateWrap;
-  }
-  // current filter display
-  function buildCurrentFilterdisplay() {
-    const currentFilterDisplay = _DOM.createElement('div', { class: 'filteredByData' });
-    const dateFilter = buildFilterDates();
-    const filteredByWrap = _DOM.createElement('div', { class: 'filteredByWrap' });
-    const btnWrap = _DOM.createElement('div', { class: 'filterBtnWrap' });
-    servBtnWrap = _DOM.createElement('div', { class: 'filterSelectionBtnWrap' });
-    typeBtnWrap = _DOM.createElement('div', { class: 'filterSelectionBtnWrap' });
-
-    filterBtn = button.build({
-      text: 'Filter',
-      icon: 'filter',
-      style: 'secondary',
-      type: 'contained',
-      classNames: 'filterBtnNew',
-      callback: () => {
-        showFilterPopup('ALL');
-      },
-    });
-
-    serviceBtn = button.build({
-      id: 'serviceBtn',
-      text: 'Service:',
-      style: 'secondary',
-      type: 'text',
-      classNames: 'filterSelectionBtn',
-      callback: () => {
-        showFilterPopup('serviceBtn');
-      },
-    });
-    serviceCloseBtn = button.build({
-      icon: 'Delete',
-      style: 'secondary',
-      type: 'text',
-      classNames: 'filterCloseBtn',
-      callback: () => {
-        closeFilter('serviceBtn');
-      },
-    });
-
-    outcomeTypeBtn = button.build({
-      id: 'outcomeTypeBtn',
-      text: 'Outcome Type:',
-      style: 'secondary',
-      type: 'text',
-      classNames: 'filterSelectionBtn',
-      callback: () => {
-        showFilterPopup('outcomeTypeBtn');
-      },
-    });
-    outcomeTypeCloseBtn = button.build({
-      icon: 'Delete',
-      style: 'secondary',
-      type: 'text',
-      classNames: 'filterCloseBtn',
-      callback: () => {
-        closeFilter('outcomeTypeBtn');
-      },
-    });
-
-    btnWrap.appendChild(filterBtn);
-
-    servBtnWrap.appendChild(serviceBtn);
-    servBtnWrap.appendChild(serviceCloseBtn);
-
-    typeBtnWrap.appendChild(outcomeTypeBtn);
-    typeBtnWrap.appendChild(outcomeTypeCloseBtn);
-
-    filteredByWrap.appendChild(btnWrap);
-    filteredByWrap.appendChild(servBtnWrap);
-    filteredByWrap.appendChild(typeBtnWrap);
-    currentFilterDisplay.appendChild(filteredByWrap);
-    currentFilterDisplay.appendChild(dateFilter);
-
-    return currentFilterDisplay;
-  }
-  function updateCurrentFilterDisplay(service = '%', outcomeType = '%') {
-    if (service === '%' || service === 'All') {
-      servBtnWrap.classList.add('hidden');
-    } else {
-      servBtnWrap.classList.remove('hidden');
-      serviceBtn.textContent = `Service: ${service}`;
-    }
-
-    if (outcomeType === '%' || outcomeType === 'All') {
-      typeBtnWrap.classList.add('hidden');
-    } else {
-      typeBtnWrap.classList.remove('hidden');
-      outcomeTypeBtn.textContent = `Outcome Type: ${outcomeType}`;
-    }
-  }
-  // filter popup
-  function applyFilter() {
-    updateCurrentFilterDisplay(serviceFilterVal.text, outcomeTypeFilterVal.text);
-
-    populateTabSections();
-  }
-  async function buildTypesDropdown() {
-    const typesDrop = dropdown.build({
-      dropdownId: 'outcomeDropdown',
-      label: 'Outcome Type',
-      style: 'secondary',
-      readonly: false,
-    });
-
-    const data = goalTypes.map(type => {
-      return {
-        value: type.goalTypeId,
-        text: type.goalTypeDescription,
-      };
-    });
-    data.unshift({ value: '%', text: 'All' });
-
-    const defaultValue = outcomeTypeFilterVal?.value ?? '%';
-    dropdown.populate(typesDrop, data, defaultValue);
-
-    return typesDrop;
-  }
-  function buildServiceDropdown() {
-    const servDrop = dropdown.build({
-      label: 'Service',
-      style: 'secondary',
-      readonly: false,
-    });
-
-    const data = [
-      { value: 'All', text: 'All' },
-      { value: 'Complete', text: 'Complete' },
-      { value: 'Incomplete', text: 'Incomplete' },
-    ];
-
-    const defaultValue = serviceFilterVal?.value ?? 'All';
-    dropdown.populate(servDrop, data, defaultValue);
-
-    return servDrop;
-  }
-  function closeFilter(closefilter) {
-    if (closefilter == 'serviceBtn') {
-      serviceFilterVal.text = 'All';
-      serviceFilterVal.value = 'All';
-    }
-    if (closefilter == 'outcomeTypeBtn') {
-      outcomeTypeFilterVal.text = 'All';
-      outcomeTypeFilterVal.value = '%';
-    }
-    applyFilter();
-  }
-  async function showFilterPopup(IsShow) {
-    let tempServiceVal, tempTypeVal;
-
-    filterPopup = POPUP.build({
-      closeCallback: () => {},
-    });
-
-    const serviceDropdown = buildServiceDropdown();
-    const typesDropdown = await buildTypesDropdown();
-    const applyButton = button.build({
-      text: 'Apply',
-      style: 'secondary',
-      type: 'contained',
-    });
-    applyButton.classList.add('singleBtn');
-
-    serviceDropdown.addEventListener('change', event => {
-      const selectedOption = event.target.options[event.target.selectedIndex];
-      tempServiceVal = selectedOption;
-    });
-    typesDropdown.addEventListener('change', event => {
-      const selectedOption = event.target.options[event.target.selectedIndex];
-      tempTypeVal = selectedOption;
-    });
-    applyButton.addEventListener('click', () => {
-      serviceFilterVal = tempServiceVal ?? serviceFilterVal;
-      outcomeTypeFilterVal = tempTypeVal ?? outcomeTypeFilterVal;
-      applyFilter();
-      POPUP.hide(filterPopup);
-    });
-
-    if (IsShow == 'ALL' || IsShow == 'serviceBtn') filterPopup.appendChild(serviceDropdown);
-    if (IsShow == 'ALL' || IsShow == 'outcomeTypeBtn') filterPopup.appendChild(typesDropdown);
-    filterPopup.appendChild(applyButton);
-
-    POPUP.show(filterPopup);
-  }
-  // Add Review Note Popup
+  // Detail View Popup
   //----------------------------------------------------
   function showAddReviewNotePopup({ date, result, attempts, prompts, employeeId, activityId }) {
     const saveData = {
@@ -560,9 +219,6 @@ const outcomesReview = (function () {
 
     POPUP.show(reviewNotePopup);
   }
-
-  // Detail View Popup
-  //----------------------------------------------------
   function sortLocations(results) {
     locations = {};
 
@@ -1085,6 +741,386 @@ const outcomesReview = (function () {
     Promise.all([getSuccessTypes, getActivity]).then(function () {
       showDetailViewPopup(activityRes[0], outcome);
     });
+  }
+
+  // Filtering
+  //----------------------------------------------------
+  // date span filter
+  function calculateSpanFromDateRange() {
+    const toDate = new Date(selectedDateSpan.to);
+    const fromDate = new Date(selectedDateSpan.from);
+
+    const toWeekStart = dates.startDayOfWeek(toDate);
+    const fromWeekStart = dates.startDayOfWeek(fromDate);
+    const isoToDate = dates.formatISO(toWeekStart).split('T')[0];
+    const isoFromDate = dates.formatISO(fromWeekStart).split('T')[0];
+
+    switch (activeTab) {
+      case HOUR: {
+       
+        break;
+      }
+      case DAY: {
+        console.log(isoToDate, isoFromDate);
+        break;
+      }
+      case WEEK: {
+        console.log(isoToDate, isoFromDate);
+        break;
+      }
+      case MONTH: {
+        const monthTo = isoToDate.split('-')[0];
+        const monthFrom = isoFromDate.split('-')[0];
+        console.log(monthTo, monthFrom);
+        break;
+      }
+      case YEAR: {
+        const yearTo = isoToDate.split('-')[0];
+        const yearFrom = isoFromDate.split('-')[0];
+        console.log(yearTo, yearFrom);
+        break;
+      }
+    }
+  }
+  function updateFilterDates() {
+    daysBackToggleBtn.textContent = `${unitType} Back`;
+    daysBackLabel.textContent = `${unitType} Back`;
+    daysBackInput.value = spanLength;
+    fromDateInput.value = selectedDateSpan.from;
+    toDateInput.value = selectedDateSpan.to;
+  }
+  function buildFilterDates() {
+    const toggleButtonWrap = _DOM.createElement('div', { class: 'dateFilterToggle' });
+    daysBackToggleBtn = _DOM.createElement('button', {
+      class: 'active',
+      id: 'days-back-btn',
+      text: `${unitType} Back`,
+    });
+    const dateRangeToggleBtn = _DOM.createElement('button', { id: 'date-range-btn', text: 'Date Range' });
+    toggleButtonWrap.appendChild(daysBackToggleBtn);
+    toggleButtonWrap.appendChild(dateRangeToggleBtn);
+
+    const daysBackInputWrap = _DOM.createElement('div', { class: ['daysBack', 'active'] });
+    daysBackLabel = _DOM.createElement('label', { for: 'daysBack', text: `${unitType} Back` });
+    daysBackInput = _DOM.createElement('input', {
+      id: 'daysBack',
+      type: 'number',
+      name: 'daysBack',
+      value: spanLength,
+    });
+    daysBackInputWrap.appendChild(daysBackLabel);
+    daysBackInputWrap.appendChild(daysBackInput);
+
+    const dateRangeInputWrap = _DOM.createElement('div', { class: ['dateRange'] });
+    const dateRangeInnerWrap1 = _DOM.createElement('div');
+    const dateRangeInnerWrap2 = _DOM.createElement('div');
+    dateRangeInputWrap.appendChild(dateRangeInnerWrap1);
+    dateRangeInputWrap.appendChild(dateRangeInnerWrap2);
+
+    const fromDateLabel = _DOM.createElement('label', { for: 'fromDate', text: `From:` });
+    fromDateInput = _DOM.createElement('input', {
+      id: 'fromDate',
+      type: 'date',
+      name: 'fromDate',
+      value: selectedDateSpan.from,
+    });
+    dateRangeInnerWrap1.appendChild(fromDateLabel);
+    dateRangeInnerWrap1.appendChild(fromDateInput);
+
+    const toDateLabel = _DOM.createElement('label', { for: 'toDate', text: `To:` });
+    toDateInput = _DOM.createElement('input', {
+      id: 'toDate',
+      type: 'date',
+      name: 'toDate',
+      value: selectedDateSpan.to,
+    });
+    dateRangeInnerWrap2.appendChild(toDateLabel);
+    dateRangeInnerWrap2.appendChild(toDateInput);
+
+    const dateWrap = _DOM.createElement('div', { class: 'dateFilter' });
+    dateWrap.appendChild(toggleButtonWrap);
+    dateWrap.appendChild(daysBackInputWrap);
+    dateWrap.appendChild(dateRangeInputWrap);
+
+    toggleButtonWrap.addEventListener('click', e => {
+      if (e.target.classList.contains('active')) {
+        return;
+      }
+
+      const daysBack = dateWrap.querySelector('.daysBack');
+      const dateRange = dateWrap.querySelector('.dateRange');
+
+      if (e.target === daysBackToggleBtn) {
+        daysBack.classList.add('active');
+        daysBackToggleBtn.classList.add('active');
+        dateRange.classList.remove('active');
+        dateRangeToggleBtn.classList.remove('active');
+        return;
+      }
+
+      daysBack.classList.remove('active');
+      daysBackToggleBtn.classList.remove('active');
+      dateRange.classList.add('active');
+      dateRangeToggleBtn.classList.add('active');
+    });
+
+    dateWrap.addEventListener('blur', async e => {
+      if (e.target.id === 'daysBack') {
+        spanLength = e.target.value;
+        selectedDateSpan.to = selectedDate;
+
+        switch (activeTab) {
+          case NO_FREQ: {
+            const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+          case HOUR: {
+            const dateObj = dates.subHours(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+          case DAY: {
+            const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+          case WEEK: {
+            const dateObj = dates.subWeeks(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+          case MONTH: {
+            const dateObj = dates.subMonths(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+          case YEAR: {
+            const dateObj = dates.subYears(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
+            selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+          }
+        }
+
+        Object.keys(outcomesData).forEach(a => {
+          Object.keys(outcomesData[a]).forEach(b => {
+            delete outcomesData[a][b].reviewDates;
+            outcomesData[a][b].timesDoc = 0;
+          });
+        });
+        await getReviewTableDataSecondary();
+
+        populateTabSections();
+      }
+      if (e.target.id === 'fromDate') {
+        selectedDateSpan.from = e.target.value;
+        calculateSpanFromDateRange();
+
+        Object.keys(outcomesData).forEach(a => {
+          Object.keys(outcomesData[a]).forEach(b => {
+            delete outcomesData[a][b].reviewDates;
+            outcomesData[a][b].timesDoc = 0;
+          });
+        });
+        await getReviewTableDataSecondary();
+
+        populateTabSections();
+      }
+      if (e.target.id === 'toDate') {
+        selectedDateSpan.to = e.target.value;
+        calculateSpanFromDateRange();
+
+        Object.keys(outcomesData).forEach(a => {
+          Object.keys(outcomesData[a]).forEach(b => {
+            delete outcomesData[a][b].reviewDates;
+            outcomesData[a][b].timesDoc = 0;
+          });
+        });
+        await getReviewTableDataSecondary();
+
+        populateTabSections();
+      }
+    });
+
+    return dateWrap;
+  }
+  // current filter display
+  function buildCurrentFilterdisplay() {
+    const currentFilterDisplay = _DOM.createElement('div', { class: 'filteredByData' });
+    const dateFilter = buildFilterDates();
+    const filteredByWrap = _DOM.createElement('div', { class: 'filteredByWrap' });
+    const btnWrap = _DOM.createElement('div', { class: 'filterBtnWrap' });
+    servBtnWrap = _DOM.createElement('div', { class: 'filterSelectionBtnWrap' });
+    typeBtnWrap = _DOM.createElement('div', { class: 'filterSelectionBtnWrap' });
+
+    filterBtn = button.build({
+      text: 'Filter',
+      icon: 'filter',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'filterBtnNew',
+      callback: () => {
+        showFilterPopup('ALL');
+      },
+    });
+
+    serviceBtn = button.build({
+      id: 'serviceBtn',
+      text: 'Service:',
+      style: 'secondary',
+      type: 'text',
+      classNames: 'filterSelectionBtn',
+      callback: () => {
+        showFilterPopup('serviceBtn');
+      },
+    });
+    serviceCloseBtn = button.build({
+      icon: 'Delete',
+      style: 'secondary',
+      type: 'text',
+      classNames: 'filterCloseBtn',
+      callback: () => {
+        closeFilter('serviceBtn');
+      },
+    });
+
+    outcomeTypeBtn = button.build({
+      id: 'outcomeTypeBtn',
+      text: 'Outcome Type:',
+      style: 'secondary',
+      type: 'text',
+      classNames: 'filterSelectionBtn',
+      callback: () => {
+        showFilterPopup('outcomeTypeBtn');
+      },
+    });
+    outcomeTypeCloseBtn = button.build({
+      icon: 'Delete',
+      style: 'secondary',
+      type: 'text',
+      classNames: 'filterCloseBtn',
+      callback: () => {
+        closeFilter('outcomeTypeBtn');
+      },
+    });
+
+    btnWrap.appendChild(filterBtn);
+
+    servBtnWrap.appendChild(serviceBtn);
+    servBtnWrap.appendChild(serviceCloseBtn);
+
+    typeBtnWrap.appendChild(outcomeTypeBtn);
+    typeBtnWrap.appendChild(outcomeTypeCloseBtn);
+
+    filteredByWrap.appendChild(btnWrap);
+    filteredByWrap.appendChild(servBtnWrap);
+    filteredByWrap.appendChild(typeBtnWrap);
+    currentFilterDisplay.appendChild(filteredByWrap);
+    currentFilterDisplay.appendChild(dateFilter);
+
+    return currentFilterDisplay;
+  }
+  function updateCurrentFilterDisplay(service = '%', outcomeType = '%') {
+    if (service === '%' || service === 'All') {
+      servBtnWrap.classList.add('hidden');
+    } else {
+      servBtnWrap.classList.remove('hidden');
+      serviceBtn.textContent = `Service: ${service}`;
+    }
+
+    if (outcomeType === '%' || outcomeType === 'All') {
+      typeBtnWrap.classList.add('hidden');
+    } else {
+      typeBtnWrap.classList.remove('hidden');
+      outcomeTypeBtn.textContent = `Outcome Type: ${outcomeType}`;
+    }
+  }
+  // filter popup
+  function applyFilter() {
+    updateCurrentFilterDisplay(serviceFilterVal.text, outcomeTypeFilterVal.text);
+
+    populateTabSections();
+  }
+  async function buildTypesDropdown() {
+    const typesDrop = dropdown.build({
+      dropdownId: 'outcomeDropdown',
+      label: 'Outcome Type',
+      style: 'secondary',
+      readonly: false,
+    });
+
+    const data = goalTypes.map(type => {
+      return {
+        value: type.goalTypeId,
+        text: type.goalTypeDescription,
+      };
+    });
+    data.unshift({ value: '%', text: 'All' });
+
+    const defaultValue = outcomeTypeFilterVal?.value ?? '%';
+    dropdown.populate(typesDrop, data, defaultValue);
+
+    return typesDrop;
+  }
+  function buildServiceDropdown() {
+    const servDrop = dropdown.build({
+      label: 'Service',
+      style: 'secondary',
+      readonly: false,
+    });
+
+    const data = [
+      { value: 'All', text: 'All' },
+      { value: 'Complete', text: 'Complete' },
+      { value: 'Incomplete', text: 'Incomplete' },
+    ];
+
+    const defaultValue = serviceFilterVal?.value ?? 'All';
+    dropdown.populate(servDrop, data, defaultValue);
+
+    return servDrop;
+  }
+  function closeFilter(closefilter) {
+    if (closefilter == 'serviceBtn') {
+      serviceFilterVal.text = 'All';
+      serviceFilterVal.value = 'All';
+    }
+    if (closefilter == 'outcomeTypeBtn') {
+      outcomeTypeFilterVal.text = 'All';
+      outcomeTypeFilterVal.value = '%';
+    }
+    applyFilter();
+  }
+  async function showFilterPopup(IsShow) {
+    let tempServiceVal, tempTypeVal;
+
+    filterPopup = POPUP.build({
+      closeCallback: () => {},
+    });
+
+    const serviceDropdown = buildServiceDropdown();
+    const typesDropdown = await buildTypesDropdown();
+    const applyButton = button.build({
+      text: 'Apply',
+      style: 'secondary',
+      type: 'contained',
+    });
+    applyButton.classList.add('singleBtn');
+
+    serviceDropdown.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+      tempServiceVal = selectedOption;
+    });
+    typesDropdown.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+      tempTypeVal = selectedOption;
+    });
+    applyButton.addEventListener('click', () => {
+      serviceFilterVal = tempServiceVal ?? serviceFilterVal;
+      outcomeTypeFilterVal = tempTypeVal ?? outcomeTypeFilterVal;
+      applyFilter();
+      POPUP.hide(filterPopup);
+    });
+
+    if (IsShow == 'ALL' || IsShow == 'serviceBtn') filterPopup.appendChild(serviceDropdown);
+    if (IsShow == 'ALL' || IsShow == 'outcomeTypeBtn') filterPopup.appendChild(typesDropdown);
+    filterPopup.appendChild(applyButton);
+
+    POPUP.show(filterPopup);
   }
 
   // Table
