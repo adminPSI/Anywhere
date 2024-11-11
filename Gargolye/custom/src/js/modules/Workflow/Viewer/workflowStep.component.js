@@ -42,7 +42,7 @@ class WorkflowStepComponent {
 
         const attPromise = new Promise(resolve => {
             const attachmentFile = inputElement.files.item(0);
-            const attachmentName = attachmentFile.name;
+            const attachmentName = attachmentFile.name.split(".").shift();
             const attachmentType = attachmentFile.name.split(".").pop();
             attachmentObj.description = attachmentName;
             attachmentObj.type = attachmentType;
