@@ -1,5 +1,7 @@
 const dates = (function () {
-  const millisecondsInHour = 3600000;
+  const MILLISECONDS_IN_HOUR = 3600000;
+  const MILLISECONDS_IN_DAY = 86400000;
+  const MILLISECONDS_IN_WEEK = 604800000;
 
   // PRIVATE
   //------------------------------------
@@ -55,6 +57,21 @@ const dates = (function () {
       return new Date(NaN);
     }
   }
+  function getTimezoneOffsetInMilliseconds(date) {
+    const utcDate = new Date(
+      Date.UTC(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds(),
+        date.getMilliseconds()
+      )
+    )
+    utcDate.setUTCFullYear(date.getFullYear())
+    return date.getTime() - utcDate.getTime()
+  }
 
   function isValid(dirtyDate) {
     var date = cloneDate(dirtyDate);
@@ -94,7 +111,7 @@ const dates = (function () {
   }
   // ADD
   function addHours(date, amount) {
-    const newDateValue = +toDate(date) + amount * millisecondsInHour; // Add hours converted to milliseconds
+    const newDateValue = +toDate(date) + amount * MILLISECONDS_IN_HOUR; // Add hours converted to milliseconds
     return new Date(newDateValue);
   }
   function addDays(dirtyDate, dirtyAmount) {
@@ -186,6 +203,11 @@ const dates = (function () {
     date.setHours(0, 0, 0, 0);
     return date;
   }
+  function startOfDay(dirtyDate) {
+    const date = toDate(dirtyDate);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
   function endOfMonth(date) {
     const _date = toDate(date);
     const month = _date.getMonth();
@@ -198,6 +220,71 @@ const dates = (function () {
     _date.setDate(1);
     _date.setHours(0, 0, 0, 0);
     return _date;
+  }
+  function startOfWeek(dirtyDate, options) {
+    requiredArgs(1, arguments);
+
+    const defaultOptions = getDefaultOptions();
+    const weekStartsOn = toInteger(
+      options?.weekStartsOn ??
+        options?.locale?.options?.weekStartsOn ??
+        defaultOptions.weekStartsOn ??
+        defaultOptions.locale?.options?.weekStartsOn ??
+        0,
+    );
+
+    // Test if weekStartsOn is between 0 and 6 _and_ is not NaN
+    if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) {
+      throw new RangeError('weekStartsOn must be between 0 and 6 inclusively');
+    }
+
+    const date = toDate(dirtyDate);
+    const day = date.getDay();
+    const diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn;
+
+    date.setDate(date.getDate() - diff);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+  // DIFFERENCE
+  function differenceInDays(dirtyDateLeft, dirtyDateRight) {
+    const startOfDayLeft = startOfDay(dirtyDateLeft);
+    const startOfDayRight = startOfDay(dirtyDateRight);
+
+    const timestampLeftTime = startOfDayLeft.getTime();
+    const timestampRightTime = startOfDayRight.getTime();
+
+    const timestampLeft = timestampLeftTime - startOfDayLeft;
+    const timestampRight = timestampRightTime - startOfDayRight;
+
+    return Math.round((timestampLeftTime - timestampRightTime) / MILLISECONDS_IN_DAY);
+  }
+  function differenceInWeeks(dirtyDateLeft, dirtyDateRight) {
+    const startOfWeekLeft = startOfWeek(dirtyDateLeft, {});
+    const startOfWeekRight = startOfWeek(dirtyDateRight, {});
+
+    const timestampLeftTime = startOfWeekLeft.getTime();
+    const timestampRightTime = startOfWeekRight.getTime();
+
+    const timestampLeft = timestampLeftTime - startOfWeekLeft;
+    const timestampRight = timestampRightTime - startOfWeekRight;
+
+    return Math.round((timestampLeft - timestampRight) / MILLISECONDS_IN_WEEK);
+  }
+  function differenceInMonths(dirtyDateLeft, dirtyDateRight) {
+    const dateLeft = toDate(dirtyDateLeft);
+    const dateRight = toDate(dirtyDateRight);
+
+    const yearDiff = dateLeft.getFullYear() - dateRight.getFullYear();
+    const monthDiff = dateLeft.getMonth() - dateRight.getMonth();
+
+    return yearDiff * 12 + monthDiff;
+  }
+  function differenceInYears(dirtyDateLeft, dirtyDateRight) {
+    const dateLeft = toDate(dirtyDateLeft);
+    const dateRight = toDate(dirtyDateRight);
+
+    return dateLeft.getFullYear() - dateRight.getFullYear();
   }
   // COMPARE
   function isAfter(dirtyDate, dirtyDateToCompare) {
@@ -553,6 +640,10 @@ const dates = (function () {
     formateToISO,
     formateToStandard,
     eachDayOfInterval,
+    differenceInDays,
+    differenceInWeeks,
+    differenceInMonths,
+    differenceInYears,
     // TIME
     convertFromMilitary,
     convertToMilitary,

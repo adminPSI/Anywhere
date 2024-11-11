@@ -34,6 +34,7 @@ const outcomesReview = (function () {
   let daysBackInput;
   let toDateInput;
   let fromDateInput;
+  let isDaysBackFilter = true;
   // DOM
   let outcomesReviewDiv;
   let outcomeTabs;
@@ -747,8 +748,8 @@ const outcomesReview = (function () {
   //----------------------------------------------------
   // date span filter
   function calculateSpanFromDateRange() {
-    const toDate = new Date(selectedDateSpan.to);
-    const fromDate = new Date(selectedDateSpan.from);
+    const toDate = new Date(`${selectedDateSpan.to} 00:00:00`);
+    const fromDate = new Date(`${selectedDateSpan.from} 00:00:00`);
 
     const toWeekStart = dates.startDayOfWeek(toDate);
     const fromWeekStart = dates.startDayOfWeek(fromDate);
@@ -756,38 +757,45 @@ const outcomesReview = (function () {
     const isoFromDate = dates.formatISO(fromWeekStart).split('T')[0];
 
     switch (activeTab) {
+      case NO_FREQ: {
+        spanLength = dates.differenceInDays(toDate, fromDate);
+        break;
+      }
       case HOUR: {
-       
+        spanLength = dates.differenceInDays(toDate, fromDate);
+        spanLength = spanLength * 24;
         break;
       }
       case DAY: {
-        console.log(isoToDate, isoFromDate);
+        spanLength = dates.differenceInDays(toDate, fromDate);
         break;
       }
       case WEEK: {
-        console.log(isoToDate, isoFromDate);
+        spanLength = dates.differenceInWeeks(toDate, fromDate);
         break;
       }
       case MONTH: {
-        const monthTo = isoToDate.split('-')[0];
-        const monthFrom = isoFromDate.split('-')[0];
-        console.log(monthTo, monthFrom);
+        spanLength = dates.differenceInMonths(toDate, fromDate);
         break;
       }
       case YEAR: {
-        const yearTo = isoToDate.split('-')[0];
-        const yearFrom = isoFromDate.split('-')[0];
-        console.log(yearTo, yearFrom);
+        spanLength = dates.differenceInYears(toDate, fromDate);
         break;
       }
     }
+
+    console.log(spanLength);
+    updateSpanInput();
+  }
+  function updateSpanInput() {
+    daysBackInput.value = spanLength;
   }
   function updateFilterDates() {
     daysBackToggleBtn.textContent = `${unitType} Back`;
     daysBackLabel.textContent = `${unitType} Back`;
-    daysBackInput.value = spanLength;
     fromDateInput.value = selectedDateSpan.from;
     toDateInput.value = selectedDateSpan.to;
+    updateSpanInput();
   }
   function buildFilterDates() {
     const toggleButtonWrap = _DOM.createElement('div', { class: 'dateFilterToggle' });
@@ -851,6 +859,7 @@ const outcomesReview = (function () {
       const dateRange = dateWrap.querySelector('.dateRange');
 
       if (e.target === daysBackToggleBtn) {
+        isDaysBackFilter = true;
         daysBack.classList.add('active');
         daysBackToggleBtn.classList.add('active');
         dateRange.classList.remove('active');
@@ -858,13 +867,14 @@ const outcomesReview = (function () {
         return;
       }
 
+      isDaysBackFilter = false;
       daysBack.classList.remove('active');
       daysBackToggleBtn.classList.remove('active');
       dateRange.classList.add('active');
       dateRangeToggleBtn.classList.add('active');
     });
 
-    dateWrap.addEventListener('blur', async e => {
+    dateWrap.addEventListener('change', async e => {
       if (e.target.id === 'daysBack') {
         spanLength = e.target.value;
         selectedDateSpan.to = selectedDate;
@@ -1282,13 +1292,7 @@ const outcomesReview = (function () {
         activeTab = data.activeSection.toLowerCase();
         setUnitType();
         updateFilterDates();
-
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
+        
         await getReviewTableDataSecondary();
 
         populateTabSections();
@@ -1365,6 +1369,8 @@ const outcomesReview = (function () {
       if (occ === 'NF') return;
 
       Object.keys(outcomesData[occ]).forEach(objId => {
+        outcomesData[occ][objId].reviewDates = {};
+        
         const dObj = {};
 
         if (occ === 'H') {
@@ -1375,7 +1381,8 @@ const outcomesReview = (function () {
           dObj[0] = new Date(`${selectedDateSpan.to} 00:00:00`)
         }
 
-        for (let index = 0; index < spanLength; index++) {
+        const loopLength = isDaysBackFilter ? spanLength - 1 : spanLength;
+        for (let index = 0; index < loopLength; index++) {
           switch (occ) {
             case 'H': {
               const nextDate = dates.subHours(dObj[index], 1);
@@ -1406,10 +1413,6 @@ const outcomesReview = (function () {
         }
 
         Object.keys(dObj).forEach(key => {
-          if (!outcomesData[occ][objId].reviewDates) {
-            outcomesData[occ][objId].reviewDates = {};
-          }
-
           switch (occ) {
             case 'H': {
               //2024-10-31T14:11:35-04:00
@@ -1556,8 +1559,8 @@ const outcomesReview = (function () {
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
       a[occurrence][objID].frequencyIncrement = d.objectiveIncrement;
       a[occurrence][objID].frequencyModifier = d.frequencyModifier;
-      a[occurrence][objID].timesDoc = 0;
-      a[occurrence][objID].successRate = 0;
+      //a[occurrence][objID].timesDoc = 0;
+      //a[occurrence][objID].successRate = null;
       a[occurrence][objID].outcomeType = d.goalTypeDescription;
       a[occurrence][objID].outcomeTypeId = d.goalTypeId;
 
@@ -1725,6 +1728,13 @@ const outcomesReview = (function () {
     outcomesDataSecondaryRaw = data.gridSecondary;
     exclamationIds = data.exIds.map(idObj => idObj.objective_id);
     exclamationSecondaryIds = data.exIds.map(idObj => idObj.Staff_ID);
+
+    Object.keys(outcomesData).forEach(a => {
+      Object.keys(outcomesData[a]).forEach(b => {
+        outcomesData[a][b].timesDoc = 0;
+        outcomesData[a][b].successRate = 0;
+      });
+    });
 
     sortReviewTableDataSecondary(data.gridSecondary, outcomesData);
 
