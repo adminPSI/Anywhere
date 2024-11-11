@@ -58,7 +58,8 @@ namespace Anywhere.service.Data
                 try
                 {
                     // use the filename parameter if it exists, otherwise create one from a guid 
-                    attachment.filename = (filename == null || (filename.Trim()) == "") ? Guid.NewGuid().ToString() : attachment.filename + "." + dg.GetWFAttachmentFileName(attachmentId);
+                    //attachment.filename = (filename == null || (filename.Trim()) == "") ? Guid.NewGuid().ToString() : attachment.filename + "." + dg.GetWFAttachmentFileName(attachmentId);
+                    attachment.filename = dg.GetWFAttachmentFileName(attachmentId);
                     attachment.data = dg.GetWfAttachmentData(attachmentId);//reused
                 }
                 catch (Exception ex)
