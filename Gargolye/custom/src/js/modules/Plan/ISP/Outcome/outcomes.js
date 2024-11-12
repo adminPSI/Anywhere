@@ -357,11 +357,11 @@ const planOutcomes = (() => {
     let vendor = dropdownData.serviceVendors.filter(vendor => vendor.vendorId === value);
     if (!vendor.length) return false;
     if (vendor.length === 1) {
-      return vendor[0] ? vendor[0].isSalesforceLocation === 'True' : false;
+      return vendor[0] ? vendor[0].isSalesforceLocation === 'true' : 'false';
     }
 
     vendor = vendor.filter(vendor => vendor.vendorName === name);
-    return vendor[0] ? vendor[0].isSalesforceLocation === 'True' : false;
+    return vendor[0] ? vendor[0].isSalesforceLocation === 'true' : 'false';
   }
 
   //*------------------------------------------------------
@@ -718,9 +718,10 @@ const planOutcomes = (() => {
       } else {
         respData.responsibleContact.push(parseInt(resp.responsibleContact));
       }
+
       if (resp.responsibleProvider === '%') {
         respData.responsibleProvider.push(0);
-        respData.isSalesforceLocation.push(false);
+        respData.isSalesforceLocation.push('false');
       } else {
         if ($.session.applicationName === 'Advisor') {
           resp.isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider, resp.responsibleProviderName);
@@ -729,7 +730,7 @@ const planOutcomes = (() => {
           respData.responsibleProvider.push(resp.responsibleProvider);
         } else {
           respData.responsibleProvider.push(resp.responsibleProvider);
-          respData.isSalesforceLocation.push(false);
+          respData.isSalesforceLocation.push('false');
         }
       }
 
