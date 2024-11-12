@@ -783,18 +783,18 @@ const outcomesReview = (function () {
         break;
       }
     }
-
-    console.log(spanLength);
-    updateSpanInput();
   }
   function updateSpanInput() {
     daysBackInput.value = spanLength;
   }
+  function updateDateRangeInputs() {
+    fromDateInput.value = selectedDateSpan.from;
+    toDateInput.value = selectedDateSpan.to;
+  }
   function updateFilterDates() {
     daysBackToggleBtn.textContent = `${unitType} Back`;
     daysBackLabel.textContent = `${unitType} Back`;
-    fromDateInput.value = selectedDateSpan.from;
-    toDateInput.value = selectedDateSpan.to;
+    updateDateRangeInputs();
     updateSpanInput();
   }
   function buildFilterDates() {
@@ -883,65 +883,51 @@ const outcomesReview = (function () {
           case NO_FREQ: {
             const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case HOUR: {
             const dateObj = dates.subHours(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case DAY: {
             const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case WEEK: {
             const dateObj = dates.subWeeks(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case MONTH: {
             const dateObj = dates.subMonths(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case YEAR: {
             const dateObj = dates.subYears(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
         }
 
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
+        updateDateRangeInputs();
         await getReviewTableDataSecondary();
-
         populateTabSections();
       }
       if (e.target.id === 'fromDate') {
         selectedDateSpan.from = e.target.value;
         calculateSpanFromDateRange();
-
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
+        updateSpanInput();
         await getReviewTableDataSecondary();
-
         populateTabSections();
       }
       if (e.target.id === 'toDate') {
         selectedDateSpan.to = e.target.value;
         calculateSpanFromDateRange();
-
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
+        updateSpanInput();
         await getReviewTableDataSecondary();
-
         populateTabSections();
       }
     });
@@ -1559,8 +1545,6 @@ const outcomesReview = (function () {
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
       a[occurrence][objID].frequencyIncrement = d.objectiveIncrement;
       a[occurrence][objID].frequencyModifier = d.frequencyModifier;
-      //a[occurrence][objID].timesDoc = 0;
-      //a[occurrence][objID].successRate = null;
       a[occurrence][objID].outcomeType = d.goalTypeDescription;
       a[occurrence][objID].outcomeTypeId = d.goalTypeId;
 
