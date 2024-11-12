@@ -492,7 +492,7 @@ const outcomesAjax = (function () {
                     '/getOutcomeTypeDropDown/',
                 data: JSON.stringify({
                     token: $.session.Token,
-                    consumerId: selectedConsumer,
+                    consumerId: selectedConsumer.id,
                     effectiveDateStart,
                 }),
                 contentType: 'application/json; charset=utf-8',
