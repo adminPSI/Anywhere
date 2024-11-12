@@ -2429,7 +2429,7 @@ namespace Anywhere
             return poW.insertPlanOutcomesExperience(outcomeId, howHappened, whatHappened, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, experienceOrder);
         }
 
-        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
+        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, string[] isSalesforceLocation)
         {
             return poW.insertPlanOutcomeExperienceResponsibility(experienceId, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, isSalesforceLocation);
         }

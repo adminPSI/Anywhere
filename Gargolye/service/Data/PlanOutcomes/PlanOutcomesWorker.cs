@@ -114,7 +114,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             //return allIds;
         }
 
-        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
+        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, string[] isSalesforceLocation)
         {
             var j = 0;
             List<string> resposibilityIds = new List<string>();
@@ -346,7 +346,7 @@ namespace Anywhere.service.Data.PlanOutcomes
                                     pdg.insertPlanOutcomeExperienceResponsibility(experienceIdObj[0].experienceId.ToString(), respContact, respProvider,
                                                                                   outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].whenValue, whenFreq,
                                                                                   outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].whenOther,
-                                                                                  bool.Parse(outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].isSalesforceLocation));
+                                                                                  outcomes.planOutcomeExperiences[j].planExperienceResponsibilities[k].isSalesforceLocation);
                                 }
                             }
                         }
