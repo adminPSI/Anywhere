@@ -783,18 +783,18 @@ const outcomesReview = (function () {
         break;
       }
     }
-
-    console.log(spanLength);
-    updateSpanInput();
   }
   function updateSpanInput() {
     daysBackInput.value = spanLength;
   }
+  function updateDateRangeInputs() {
+    fromDateInput.value = selectedDateSpan.from;
+    toDateInput.value = selectedDateSpan.to;
+  }
   function updateFilterDates() {
     daysBackToggleBtn.textContent = `${unitType} Back`;
     daysBackLabel.textContent = `${unitType} Back`;
-    fromDateInput.value = selectedDateSpan.from;
-    toDateInput.value = selectedDateSpan.to;
+    updateDateRangeInputs();
     updateSpanInput();
   }
   function buildFilterDates() {
@@ -906,42 +906,22 @@ const outcomesReview = (function () {
           }
         }
 
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
+        updateDateRangeInputs();
         await getReviewTableDataSecondary();
-
         populateTabSections();
       }
       if (e.target.id === 'fromDate') {
         selectedDateSpan.from = e.target.value;
         calculateSpanFromDateRange();
-
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
+        updateSpanInput();
         await getReviewTableDataSecondary();
-
         populateTabSections();
       }
       if (e.target.id === 'toDate') {
         selectedDateSpan.to = e.target.value;
         calculateSpanFromDateRange();
-
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
+        updateSpanInput();
         await getReviewTableDataSecondary();
-
         populateTabSections();
       }
     });
@@ -1559,8 +1539,6 @@ const outcomesReview = (function () {
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
       a[occurrence][objID].frequencyIncrement = d.objectiveIncrement;
       a[occurrence][objID].frequencyModifier = d.frequencyModifier;
-      //a[occurrence][objID].timesDoc = 0;
-      //a[occurrence][objID].successRate = null;
       a[occurrence][objID].outcomeType = d.goalTypeDescription;
       a[occurrence][objID].outcomeTypeId = d.goalTypeId;
 
