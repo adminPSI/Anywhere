@@ -2135,7 +2135,7 @@ const outcomes = (function () {
 
     async function planViewPOPUP() {
         viewPlanPOPUP = POPUP.build({
-            hideX: true, 
+            hideX: false, 
         });
 
         planNow = button.build({
@@ -2172,11 +2172,14 @@ const outcomes = (function () {
         planLater.style.width = '100%';
         planUpdate.style.width = '100%';
         message.innerText =
-            "A new ISP is available for viewing for this individual. You are required to acknowledge that you've read this plan before documenting for services.Would you like to read the plan now or later ? ";
+            "A new ISP is available for viewing for this individual. You are required to acknowledge that you've read this plan before documenting for services. Would you like to read the plan now or later? ";
         message.style.textAlign = 'center';
         message.style.marginBottom = '15px';
         viewPlanPOPUP.appendChild(message);
         viewPlanPOPUP.appendChild(planNow);
+
+       // const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
+      //     closePopupBtn.style = 'none';
 
         const result = await outcomesAjax.getPlanHistorybyConsumer(selectedConsumerId);
         const { getPlanHistorybyConsumerResult } = result;
@@ -2204,7 +2207,14 @@ const outcomes = (function () {
             message.style.display = 'none';
             planNow.style.display = 'none';
             planLater.style.display = 'none';
-            viewPlanPOPUP.hideX = 'false';
+           // viewPlanPOPUP.closePopupBtn.display = 'none'
+           const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
+           closePopupBtn.style.display = 'inline';
+
+        } else {
+            const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
+            closePopupBtn.style.display = 'none';
+
         }
         POPUP.show(viewPlanPOPUP);
     }
