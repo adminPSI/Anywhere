@@ -883,26 +883,32 @@ const outcomesReview = (function () {
           case NO_FREQ: {
             const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case HOUR: {
             const dateObj = dates.subHours(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case DAY: {
             const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case WEEK: {
             const dateObj = dates.subWeeks(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case MONTH: {
             const dateObj = dates.subMonths(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case YEAR: {
             const dateObj = dates.subYears(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
         }
 
