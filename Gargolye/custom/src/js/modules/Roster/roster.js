@@ -1146,14 +1146,14 @@ const roster2 = (function () {
             btnWrap.appendChild(wrap3);
         }
 
-        if ($.session.isPSI) {
+        if ($.session.isPSI && $.session.activeModule === 'plan') {
             const updateSalesforceIds = button.build({
                 text: 'Update Salesforce Ids',
                 style: 'secondary',
                 type: 'contained',
                 callback: async function () {
                     pendingSave.show('Updating Database...');
-                    const data = await _UTIL.fetchData('updateSalesforceIdsScriptOneTimeUse');
+                    const data = await _UTIL.fetchData('updateSalesforceIdsScriptOneTimeUse', $.session.applicationName);
                     pendingSave.fulfill('Update Complete')
                     await new Promise(resolve => setTimeout(resolve, 2000));
                     const successfulSavePopup = document.querySelector('.successfulSavePopup');
