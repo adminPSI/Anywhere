@@ -559,6 +559,7 @@ const csTeamMember = (() => {
                 try {
                     await consentAndSignAjax.setSalesForceIdForTeamMemberUpdate({
                         peopleId: selectedMemberData.contactId,
+                        teamMemberType: 'Guardian',
                         salesForceId: selectedStateGuardianSalesForceId,
                     });
                     updatesuccess = true;
