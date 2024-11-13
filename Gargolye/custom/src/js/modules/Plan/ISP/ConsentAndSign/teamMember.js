@@ -143,6 +143,7 @@ const csTeamMember = (() => {
         selectedMemberData.lastName = relData.lastName.split('|')[0];
         selectedMemberData.relationship = relData.relationship;
         selectedMemberData.email = relData.email;
+        selectedMemberData.guardianSalesforceId = relData.guardianSalesforceId;
 
         // update inputs with selected data
         nameInput.childNodes[0].value = selectedMemberData.name;
@@ -418,7 +419,7 @@ const csTeamMember = (() => {
         // B -- Imported Guardian and Selected State Guardian have matching SaleForceIDs
         if (
             selectedStateGuardianSalesForceId &&
-            selectedMemberData.salesForceId === selectedStateGuardianSalesForceId &&
+            (selectedMemberData.salesForceId === selectedStateGuardianSalesForceId || selectedMemberData.guardianSalesforceId === selectedStateGuardianSalesForceId) &&
             $.session.areInSalesForce === true
         ) {
             return true;

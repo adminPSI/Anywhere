@@ -4370,9 +4370,9 @@ namespace Anywhere
             return fssw.deleteMemberInfo(token, memberId, familyID);
         }
 
-        public string updateSalesforceIdsScriptOneTimeUse()
+        public string updateSalesforceIdsScriptOneTimeUse(string applicationName)
         {
-            return anywhereWorker.updateSalesforceIdsScriptOneTimeUse();
+            return anywhereWorker.updateSalesforceIdsScriptOneTimeUse(applicationName);
         }
 
         public FSSWorker.dropdowns[] getFunding(string token)

@@ -5708,7 +5708,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/updateSalesforceIdsScriptOneTimeUse/")]
-        string updateSalesforceIdsScriptOneTimeUse();
+        string updateSalesforceIdsScriptOneTimeUse(string applicationName);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
