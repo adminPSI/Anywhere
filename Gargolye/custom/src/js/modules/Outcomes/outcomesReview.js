@@ -850,7 +850,7 @@ const outcomesReview = (function () {
     dateWrap.appendChild(daysBackInputWrap);
     dateWrap.appendChild(dateRangeInputWrap);
 
-    toggleButtonWrap.addEventListener('click', e => {
+    toggleButtonWrap.addEventListener('click', async e => {
       if (e.target.classList.contains('active')) {
         return;
       }
@@ -864,14 +864,24 @@ const outcomesReview = (function () {
         daysBackToggleBtn.classList.add('active');
         dateRange.classList.remove('active');
         dateRangeToggleBtn.classList.remove('active');
+
+        if (selectedDateSpan.to !== selectedDate) {
+          setUnitType();
+          updateFilterDates();
+          
+          await getReviewTableDataSecondary();
+  
+          populateTabSections();
+        }
+
         return;
       }
 
       isDaysBackFilter = false;
-      daysBack.classList.remove('active');
-      daysBackToggleBtn.classList.remove('active');
       dateRange.classList.add('active');
       dateRangeToggleBtn.classList.add('active');
+      daysBack.classList.remove('active');
+      daysBackToggleBtn.classList.remove('active');
     });
 
     dateWrap.addEventListener('change', async e => {
