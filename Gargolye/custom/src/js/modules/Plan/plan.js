@@ -2044,8 +2044,11 @@ const plan = (function () {
                     finalizationResults = await assessmentAjax.finalizationActions({
                         token: $.session.Token,
                         planAttachmentIds: getAttachmentIds(selectedAttachmentsPlan),
-                        wfAttachmentIds: getwfstepdocIds(selectedAttachmentsWorkflow),
+                        wfAttachmentIds: getAttachmentIds(selectedAttachmentsWorkflow),
                         sigAttachmentIds: getAttachmentIds(selectedAttachmentsSignature), 
+                        planAttachmentStepIds: getwfstepdocIds(selectedAttachmentsPlan),
+                        wfAttachmentStepIds: getwfstepdocIds(selectedAttachmentsWorkflow),
+                        sigAttachmentStepIds: getwfstepdocIds(selectedAttachmentsSignature),
                         userId: $.session.UserId,
                         assessmentID: planId,
                         peopleId: selectedConsumer.id,

@@ -68,7 +68,7 @@ namespace Anywhere.service.Data.DocumentConversion
 
             return rtObj[0].reportTitle.ToString();
         }
-        public ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
+        public ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes, string[] planAttachmentStepIds, string[] wfAttachmentStepIds, string[] sigAttachmentStepIds)
         {
             //selectAllCheck: true,
             //sendToDODDCheck: true,
@@ -110,7 +110,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     if(item == "sendToDODDCheck" || item == "selectAllCheck")
                     {
                         //Send to DODD
-                        sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, assessmentID, peopleId);
+                        sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentStepIds, wfAttachmentStepIds, sigAttachmentStepIds, assessmentID, peopleId);
                         foreach(string item2 in sendToDODD)
                         {
                             valueForDODD = valueForDODD  + item2 + "||";
