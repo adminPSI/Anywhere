@@ -743,7 +743,7 @@ namespace Anywhere.service.Data
             public string deviceGUID { get; set; }
         }
 
-        public string updateSalesforceIdsScriptOneTimeUse()
+        public string updateSalesforceIdsScriptOneTimeUse(string applicationName)
         {
             try
             {
@@ -822,16 +822,34 @@ namespace Anywhere.service.Data
                     }
 
                     // Step 4: Perform the update operation on unique People IDs
-                    foreach (var personId in uniquePersonIds)
+                    if (applicationName == "Advisor")
                     {
-                        sb.Clear();
-                        sb.Append("UPDATE DBA.People ");
-                        sb.Append("SET SalesForce_Guardian_ID = Salesforce_ID, ");
-                        sb.Append("Salesforce_ID = NULL ");
-                        sb.AppendFormat("WHERE ID = {0};", personId);
-                        sb.Append("Commit Work;");
+                        foreach (var personId in uniquePersonIds)
+                        {
+                            sb.Clear();
+                            sb.Append("UPDATE DBA.Persons ");
+                            sb.Append("SET SalesForce_Guardian_ID = Salesforce_ID, ");
+                            sb.Append("Salesforce_ID = NULL ");
+                            sb.Append("FROM DBA.Persons p ");
+                            sb.Append("JOIN DBA.People pe ON p.Person_ID = pe.Person_ID ");
+                            sb.AppendFormat("WHERE pe.Person_ID = {0};", personId);
+                            sb.Append("Commit Work;");
 
-                        di.SelectRowsDS(sb.ToString());
+                            di.SelectRowsDS(sb.ToString());
+                        }
+                    } else
+                    {
+                        foreach (var personId in uniquePersonIds)
+                        {
+                            sb.Clear();
+                            sb.Append("UPDATE DBA.People ");
+                            sb.Append("SET SalesForce_Guardian_ID = Salesforce_ID, ");
+                            sb.Append("Salesforce_ID = NULL ");
+                            sb.AppendFormat("WHERE ID = {0};", personId);
+                            sb.Append("Commit Work;");
+
+                            di.SelectRowsDS(sb.ToString());
+                        }
                     }
                 }
 
