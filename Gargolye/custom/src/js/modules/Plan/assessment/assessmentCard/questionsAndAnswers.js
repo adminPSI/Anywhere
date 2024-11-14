@@ -325,11 +325,8 @@
     hideOrShowStatus = hideOrShow;
 
     const awnseredQuestions = [...document.querySelectorAll('.question:not(.unawnsered)')];
-    const awnseredTables = [...document.querySelectorAll('.grid:not(.unawnsered)')];
-
-    awnseredQuestions.forEach(q => {
-      if (!q.classList.contains('intentionallyDisabled')) return;
-
+    const leftBlankQuestions = [...document.querySelectorAll('.question.intentionallyDisabled')];
+    [...awnseredQuestions, ...leftBlankQuestions].forEach(q => {
       if (hideOrShow === 'hide') {
         q.style.display = 'none';
       } else {
@@ -337,9 +334,8 @@
       }
     });
 
+    const awnseredTables = [...document.querySelectorAll('.grid.awnsered')];
     awnseredTables.forEach(t => {
-      if (t.classList.contains('unawnsered') && !t.classList.contains('intentionallyDisabled')) return;
-
       if (hideOrShow === 'hide') {
         t.style.display = 'none';
       } else {
