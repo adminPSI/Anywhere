@@ -303,7 +303,7 @@ var linksAndMessages = (function () {
         C_SEARCH_WRAP = document.createElement('div');
         C_SEARCH_WRAP.classList.add('consumerSearch');
         C_SEARCH_INPUT = document.createElement('input');
-        C_SEARCH_INPUT.setAttribute('placeholder', 'Search employees');
+        C_SEARCH_INPUT.setAttribute('placeholder', 'Search Employees');
         C_SEARCH_WRAP.appendChild(C_SEARCH_BTN);
         C_SEARCH_WRAP.appendChild(C_SEARCH_INPUT);
         C_filterBtn = button.build({
