@@ -17,6 +17,8 @@ using PSIOISP;
 using System.Text.RegularExpressions;
 using Anywhere.service.Data.PlanSignature;
 using System.Linq;
+using System.Data.Odbc;
+using System.Configuration;
 
 namespace Anywhere.service.Data
 {
@@ -750,6 +752,7 @@ namespace Anywhere.service.Data
                 StringBuilder sb = new StringBuilder();
                 Data.Sybase di = new Data.Sybase();
                 PlanSignatureWorker psw = new PlanSignatureWorker();
+                string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
 
                 // Step 1: Get all people IDs with non-null, non-empty Salesforce_ID
                 sb.Clear();
@@ -796,6 +799,7 @@ namespace Anywhere.service.Data
 
                 // Step 3: Retrieve unique people IDs for the accumulated guardian Salesforce IDs
                 HashSet<long> uniquePersonIds = new HashSet<long>();
+                List<string> sqlQueries = new List<string>();
 
                 if (guardianIds.Count > 0)
                 {
@@ -821,46 +825,45 @@ namespace Anywhere.service.Data
                         }
                     }
 
-                    // Step 4: Perform the update operation on unique People IDs
-                    if (applicationName == "Advisor")
+                    // Step 4: Generate the update SQL queries for unique People IDs
+                    foreach (var personId in uniquePersonIds)
                     {
-                        foreach (var personId in uniquePersonIds)
+                        sb.Clear();
+
+                        if (applicationName == "Advisor")
                         {
-                            sb.Clear();
                             sb.Append("UPDATE DBA.Persons ");
                             sb.Append("SET SalesForce_Guardian_ID = Salesforce_ID, ");
                             sb.Append("Salesforce_ID = NULL ");
                             sb.Append("FROM DBA.Persons p ");
                             sb.Append("JOIN DBA.People pe ON p.Person_ID = pe.Person_ID ");
                             sb.AppendFormat("WHERE pe.Person_ID = {0};", personId);
-                            sb.Append("Commit Work;");
-
-                            di.SelectRowsDS(sb.ToString());
+                            sb.Append(" Commit Work;");
+                            SAUpdateRecord(connectString, sb.ToString());
                         }
-                    } else
-                    {
-                        foreach (var personId in uniquePersonIds)
+                        else
                         {
-                            sb.Clear();
                             sb.Append("UPDATE DBA.People ");
                             sb.Append("SET SalesForce_Guardian_ID = Salesforce_ID, ");
                             sb.Append("Salesforce_ID = NULL ");
                             sb.AppendFormat("WHERE ID = {0};", personId);
-                            sb.Append("Commit Work;");
-
-                            di.SelectRowsDS(sb.ToString());
+                            sb.Append(" Commit Work;");
+                            SAUpdateRecord(connectString, sb.ToString());
                         }
+
+                        sqlQueries.Add(sb.ToString());
                     }
                 }
 
-                // Return the unique person IDs as a comma-separated string
-                return string.Join(", ", uniquePersonIds);
+                // Return all SQL queries as a single concatenated string
+                return string.Join("\n", sqlQueries);
             }
             catch (Exception ex)
             {
                 return $"Error: {ex.Message}";
             }
         }
+
 
         // Helper method to extract IDs from the returned string
         private List<string> ExtractIdsFromString(string guardiansData)
@@ -878,7 +881,31 @@ namespace Anywhere.service.Data
             return ids;
         }
 
-
+        public long SAUpdateRecord(string ConnString, string QueryString)
+        {
+            long num1;
+            try
+            {
+                num1 = 0L;
+                using (OdbcConnection connection = new OdbcConnection(ConnString))
+                {
+                    OdbcCommand odbcCommand = new OdbcCommand(QueryString, connection);
+                    odbcCommand.CommandTimeout = 0;
+                    connection.Open();
+                    num1 = (long)odbcCommand.ExecuteNonQuery();
+                    if (odbcCommand.Connection.State == ConnectionState.Open)
+                        odbcCommand.Connection.Close();
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                    num1 = num1;
+                }
+            }
+            catch (Exception ex)
+            {
+                num1 = -999L;
+            }
+            return num1;
+        }
 
 
 
