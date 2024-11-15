@@ -407,6 +407,7 @@ const WorkSchedule = (() => {
         var weekDay = dayOfWeekDropdown.querySelector('#dayOfWeekDropdown');
         var timeEnd = NewEndTime.querySelector('#NewEndTime');
         var timeStart = NewStartTime.querySelector('#NewStartTime');
+        messagetext = document.getElementById('confirmMessage'); 
         messagetext.innerHTML = ``; 
         if (nameOfEvent == 'Add') {
             var sundaychk = sundaychkBox.querySelector('#sundaychkBox');
