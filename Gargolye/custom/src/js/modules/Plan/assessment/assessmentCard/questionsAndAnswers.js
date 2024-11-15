@@ -335,7 +335,8 @@
     });
 
     const awnseredTables = [...document.querySelectorAll('.grid.awnsered')];
-    awnseredTables.forEach(t => {
+    const leftBlankTables = [...document.querySelectorAll('.grid.intentionallyDisabled')];
+    [...awnseredTables, ...leftBlankTables].forEach(t => {
       if (hideOrShow === 'hide') {
         t.style.display = 'none';
       } else {
