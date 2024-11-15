@@ -2032,9 +2032,9 @@ const outcomes = (function () {
         const result = await outcomesAjax.isViewPlabBtnDisabled(selectedConsumerId);
         const { isViewPlabBtnDisabledResult } = result;
 
-        if (isViewPlabBtnDisabledResult[0].isPlanAvailable == 'false' && !$.session.UpdatePlan) {
-            viewPlanBtn.classList.add('disabled');
-        }
+       // if (isViewPlabBtnDisabledResult[0].isPlanAvailable == 'false' && !$.session.UpdatePlan) {
+        //    viewPlanBtn.classList.add('disabled');
+       // }
 
         if (!document.querySelector('.topOutcomeWrap')) {
             DOM.ACTIONCENTER.appendChild(topFilterDateWrap);
@@ -2206,6 +2206,9 @@ const outcomes = (function () {
              const planNowBtn = viewPlanPOPUP.getElementsByClassName('planNowBtn')[0];
              planNowBtn.innerHTML = 'READ CURRENT PLAN';
              isViewedAvailableOSPlan = 'true';
+             message.style.display = 'none';
+             const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
+            closePopupBtn.style.display = 'inline';
 
         } else {
 
@@ -2237,6 +2240,9 @@ const outcomes = (function () {
                 const planNowBtn = viewPlanPOPUP.getElementsByClassName('planNowBtn')[0];
                 planNowBtn.innerHTML = 'READ CURRENT PLAN';
                 isViewedAvailableOSPlan = 'true';
+                message.style.display = 'none';
+                const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
+                closePopupBtn.style.display = 'inline';
    
            } else {
             
