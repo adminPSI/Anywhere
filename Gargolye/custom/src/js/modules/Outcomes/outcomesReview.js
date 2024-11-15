@@ -178,7 +178,7 @@ const outcomesReview = (function () {
       },
     });
     const notifyEmployeeCheckbox = input.buildCheckbox({
-      text: 'Notify Employee',
+      text: 'Notify Employee via System Message',
       callback: e => {
         saveData.notifyEmployee = e.target.checked ? 'Y' : 'N';
       },
