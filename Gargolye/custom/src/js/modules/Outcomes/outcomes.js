@@ -96,6 +96,8 @@ const outcomes = (function () {
     let updatePlanPopup;
     let attachmentInput; 
 
+    let isViewedAvailableOSPlan = 'false';
+
     function getAllowedConsumerIds() {
         return allowedConsumerIds;
     }
@@ -1981,6 +1983,7 @@ const outcomes = (function () {
                 });
             },
         });
+
         let buttonName = 'VIEW PLAN';
         if ($.session.UpdatePlan) buttonName = 'VIEW/UPDATE PLAN';
 
@@ -2019,6 +2022,7 @@ const outcomes = (function () {
 
         if (getPlanbyConsumerHistoryResult[0].isPlanAvailable == 'true') {
             planViewPOPUP(); 
+            topFilterDateWrap.appendChild(viewPlanBtn);
         }
         else {
            //planViewPOPUP(); 
@@ -2142,9 +2146,10 @@ const outcomes = (function () {
             text: 'READ AND ACKNOWLEDGE PLAN NOW',
             style: 'secondary',
             type: 'contained',
+            classNames: 'planNowBtn',
             callback: async () => {
-                await savePlanNow();
-                POPUP.hide(viewPlanPOPUP);
+                    await savePlanNow(isViewedAvailableOSPlan);
+                    POPUP.hide(viewPlanPOPUP);
             },
         });
 
@@ -2178,13 +2183,11 @@ const outcomes = (function () {
         viewPlanPOPUP.appendChild(message);
         viewPlanPOPUP.appendChild(planNow);
 
-       // const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
-      //     closePopupBtn.style = 'none';
-
         const result = await outcomesAjax.getPlanHistorybyConsumer(selectedConsumerId);
         const { getPlanHistorybyConsumerResult } = result;
 
-       // if (getPlanHistorybyConsumerResult[0].isPlanAvailable == 'true') {
+        // if isPlanAvailable = TRUE -- then either history table doesnt have this attachment or history table has attachment and it hasn't been viewed 
+        if (getPlanHistorybyConsumerResult[0].isPlanAvailable == 'true' ) {
             viewPlanPOPUP.appendChild(planLater);
             if (getPlanHistorybyConsumerResult[0].isPlanLaterDisable == 'true') {
                 planLater.classList.add('disabled'); 
@@ -2193,10 +2196,21 @@ const outcomes = (function () {
                     planLater.classList.remove('disabled');
                  //viewPlanPOPUP.appendChild(planLater);
         }
-       // } else {
+             } else {
 
+        }
 
-       // }
+        // if isViewedAvailableOSPlan = TRUE -- history table has attachment and it has been viewed
+        if (getPlanHistorybyConsumerResult[0].isViewedAvailableOSPlan == 'true' ) {
+
+             const planNowBtn = viewPlanPOPUP.getElementsByClassName('planNowBtn')[0];
+             planNowBtn.innerHTML = 'READ CURRENT PLAN';
+             isViewedAvailableOSPlan = 'true';
+
+        } else {
+
+            isViewedAvailableOSPlan = 'false';
+        }
 
         if ($.session.UpdatePlan) viewPlanPOPUP.appendChild(planUpdate);
 
@@ -2211,10 +2225,25 @@ const outcomes = (function () {
            const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
            closePopupBtn.style.display = 'inline';
 
+          
+
+
         } else {
             const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
             closePopupBtn.style.display = 'none';
 
+            if (getPlanHistorybyConsumerResult[0].isViewedAvailableOSPlan == 'true' ) {
+
+                const planNowBtn = viewPlanPOPUP.getElementsByClassName('planNowBtn')[0];
+                planNowBtn.innerHTML = 'READ CURRENT PLAN';
+                isViewedAvailableOSPlan = 'true';
+   
+           } else {
+            
+            const planNowBtn = viewPlanPOPUP.getElementsByClassName('planNowBtn')[0];
+            planNowBtn.innerHTML = 'READ AND ACKNOWLEDGE PLAN NOW';
+            isViewedAvailableOSPlan = 'false';
+           }
         }
         POPUP.show(viewPlanPOPUP);
     }
@@ -2227,8 +2256,8 @@ const outcomes = (function () {
         outcomesAjax.addOutcomePlanLater(saveData);
     }
 
-    async function savePlanNow() {
-        outcomesAjax.addOutcomePlanNow(selectedConsumerId);
+    async function savePlanNow(isViewedAvailableOSPlan) {
+        outcomesAjax.addOutcomePlanNow(selectedConsumerId, isViewedAvailableOSPlan);
     }
 
     function planUpdatePOPUP() {

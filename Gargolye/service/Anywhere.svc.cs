@@ -4307,13 +4307,23 @@ namespace Anywhere
         {
             string token;
             string consumerId;
+            string isViewedAvailableOSPlan;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
             token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
             consumerId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
-            dg.addOutcomePlanNow(token, consumerId);
-            anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            isViewedAvailableOSPlan = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            if (isViewedAvailableOSPlan == "true")
+            {
+                anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            } else
+            {
+                dg.addOutcomePlanNow(token, consumerId);
+                anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            }
+            
+            
 
         }
 

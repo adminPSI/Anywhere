@@ -934,10 +934,11 @@ const outcomesAjax = (function () {
         }
     }
 
-    function addOutcomePlanNow(selectedConsumerId) {
+    function addOutcomePlanNow(selectedConsumerId, isViewedAvailableOSPlan) {
         data = {
             token: $.session.Token,
             consumerId: selectedConsumerId,
+            isViewedAvailableOSPlan: isViewedAvailableOSPlan,
         };
         var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/addOutcomePlanNow/`;
         var successFunction = function (resp) {
@@ -958,9 +959,14 @@ const outcomesAjax = (function () {
         attachmentInput.setAttribute('name', 'consumerId');
         attachmentInput.setAttribute('value', selectedConsumerId);
         attachmentInput.id = 'consumerId';
+        var isViewedAvailableOSPlanInput = document.createElement('input');
+        isViewedAvailableOSPlanInput.setAttribute('name', 'isViewedAvailableOSPlan');
+        isViewedAvailableOSPlanInput.setAttribute('value', isViewedAvailableOSPlan);
+        isViewedAvailableOSPlanInput.id = 'isViewedAvailableOSPlan';
 
         form.appendChild(tokenInput);
         form.appendChild(attachmentInput);
+        form.appendChild(isViewedAvailableOSPlanInput);
         form.style.position = 'absolute';
         form.style.opacity = '0';
         document.body.appendChild(form);

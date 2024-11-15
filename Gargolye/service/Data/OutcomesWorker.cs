@@ -392,6 +392,8 @@ namespace Anywhere.service.Data
             public string acknowledgeDatetime { get; set; }
             public string PlanId { get; set; }
             public string isNewDisabled { get; set; }
+            public string isViewedAvailableOSPlan { get; set; }
+
         }
 
         public class ExclamationIds
