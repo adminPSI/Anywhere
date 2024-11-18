@@ -1261,6 +1261,7 @@ const outcomesReview = (function () {
             detailsTable.appendChild(detailRow);
 
             detailRow.addEventListener('click', () => {
+              console.log(data);
               onDetailRowClick({
                 goalTypeID: objId,
                 activityId: details.activityId,
@@ -1820,11 +1821,21 @@ const outcomesReview = (function () {
     outcomesReviewDiv = _DOM.createElement('div');
     outcomesReviewDiv.classList.add('outcomesReview');
 
+    const backbtn = button.build({
+      text: 'Back',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        outcomes.init();
+      }
+    });
+
     consumerCardHeader = buildConsumerCard();
 
     const filterDisplay = buildCurrentFilterdisplay();
     outcomeTabs = buildTabs();
 
+    outcomesReviewDiv.appendChild(backbtn);
     outcomesReviewDiv.appendChild(consumerCardHeader);
     outcomesReviewDiv.appendChild(filterDisplay);
     outcomesReviewDiv.appendChild(outcomeTabs);
