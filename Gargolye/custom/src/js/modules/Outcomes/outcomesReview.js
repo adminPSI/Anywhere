@@ -658,7 +658,7 @@ const outcomesReview = (function () {
       });
     });
     deleteBtn.addEventListener('click', e => {
-      outcomesAjax.deleteGoal(activityId, selectedConsumerId, selectedDate, async () => {
+      outcomesAjax.deleteGoal(outcomeData.activityId, selectedConsumerId, selectedDate, async () => {
         POPUP.hide(detailsPopup);
       });
     });
@@ -670,7 +670,7 @@ const outcomesReview = (function () {
     btnWrap.appendChild(addReviewNoteBtn);
 
     detailsPopup.appendChild(primaryLocationDropdown);
-    detailsPopup.appendChild(secondaryLocationDropdown);
+    if (locations.Secondary) detailsPopup.appendChild(secondaryLocationDropdown);
     detailsPopup.appendChild(resultsDropdown);
     detailsPopup.appendChild(promptsDropdown);
     detailsPopup.appendChild(attemptsDropdown);
@@ -1826,7 +1826,7 @@ const outcomesReview = (function () {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        outcomes.init();
+        outcomes.backToOutcomeLoad(consumer);
       }
     });
 
