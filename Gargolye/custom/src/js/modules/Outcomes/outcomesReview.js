@@ -467,20 +467,16 @@ const outcomesReview = (function () {
     const tmpData = {};
 
     if (editData) {
-      locationID = editData.Location_ID;
-      tmpData.primaryLoc = editData.Location_ID;
-      tmpData.secLoc = editData.Locations_Secondary_ID;
-      tmpData.result = editData.objective_success_description;
-      tmpData.prompt = editData.Prompt_Type;
-      tmpData.attempt = editData.Prompt_Number;
-      tmpData.ci = editData.community_integration_level;
-      tmpData.startTime = editData.start_time;
-      tmpData.endTime = editData.end_time;
-      tmpData.note = editData.Objective_Activity_Note;
-    } else {
-      // TODO: defaultObjLocationId, defaultGoalLocationId, useConsumerLocation||defaultPrimaryLocation
-      // TODO: outcomes.js line 1021 ^^^^^
-      locationID = '';
+      locationID = editData.Location_ID || '';
+      tmpData.primaryLoc = editData.Location_ID || '';
+      tmpData.secLoc = editData.Locations_Secondary_ID || '';
+      tmpData.result = editData.objective_success_description || '';
+      tmpData.prompt = editData.Prompt_Type || '';
+      tmpData.attempt = editData.Prompt_Number || '';
+      tmpData.ci = editData.community_integration_level || '';
+      tmpData.startTime = editData.start_time || '';
+      tmpData.endTime = editData.end_time || '';
+      tmpData.note = editData.Objective_Activity_Note || '';
     }
 
     const primaryLocationDropdown = buildPrimaryLocationDropdown(editData.Location_ID);
@@ -653,7 +649,22 @@ const outcomesReview = (function () {
       });
     });
     saveBtn.addEventListener('click', e => {
-      outcomesAjax.saveGoals(data, () => {
+      const updateData = {
+        personId: selectedConsumerId,
+        objectiveId: editData.Objective_ID,
+        activityId: outcomeData.activityId,
+        objdate: selectedDate,
+        success: outcomeData.Objective_Success,
+        goalnote: UTIL.removeUnsavableNoteText(tmpData.note),
+        promptType: tmpData.prompt,
+        promptNumber: tmpData.attempt,
+        locationId: tmpData.primaryLoc,
+        locationSecondaryId: tmpData.secLoc,
+        goalStartTime: tmpData.startTime,
+        goalEndTime: tmpData.endTime,
+        goalCILevel: tmpData.ci,
+      }
+      outcomesAjax.saveGoals(updateData, () => {
         POPUP.hide(detailsPopup);
       });
     });
