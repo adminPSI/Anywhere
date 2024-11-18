@@ -869,7 +869,7 @@ const planOutcomes = (() => {
     });
     Object.entries(updateData.responsibilities).map(async ([key, resp], index) => {
       const responsibleContact = resp.responsibleContact === '%' ? 0 : parseInt(resp.responsibleContact);
-      const isSalesforceLocation = isSalesforceLocationTrue(resp.responsibleProvider, resp.responsibleProviderName);
+      const isSalesforceLocation = resp.responsibleProviderSalesforce;
       delete resp.responsibleProviderName;
       const responsibleProvider = resp.responsibleProvider === '%' ? 0 : resp.responsibleProvider;
       const whenHowOftenFrequency = parseInt(resp.whenHowOftenFrequency);
@@ -877,7 +877,7 @@ const planOutcomes = (() => {
       const whenHowOftenText = resp.whenHowOftenText;
 
       //* push to new table data
-      const whoResponsible = getColTextForWhoResponsible(`${responsibleContact}`, `${responsibleProvider}`);
+      const whoResponsible = getColTextForWhoResponsible(`${responsibleContact}`, `${responsibleProvider}`, isSalesforceLocation);
       const whenHowOften = getColTextForWhenHowOften(`${whenHowOftenFrequency}`, whenHowOftenValue, whenHowOftenText);
 
       const vendorID = resp.responsibleContact === '%' ? resp.responsibleProvider : resp.responsibleContact;
