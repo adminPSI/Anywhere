@@ -1263,7 +1263,7 @@ const outcomesReview = (function () {
             detailRow.addEventListener('click', () => {
               console.log(data);
               onDetailRowClick({
-                goalTypeID: objId,
+                goalTypeID: d.outcomeTypeId,
                 activityId: details.activityId,
                 date: date,
                 result: details.result,
