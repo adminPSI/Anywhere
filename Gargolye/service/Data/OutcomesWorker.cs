@@ -356,6 +356,7 @@ namespace Anywhere.service.Data
             public string exclamationIds { get; set; }
             public string top_number { get; set; }
             public string bottom_number { get; set; }
+            public string reviewNote { get; set; }
         }
 
         public class OutComePageData
