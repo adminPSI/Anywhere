@@ -2023,18 +2023,20 @@ const outcomes = (function () {
         if (getPlanbyConsumerHistoryResult[0].isPlanAvailable == 'true') {
             planViewPOPUP(); 
             topFilterDateWrap.appendChild(viewPlanBtn);
+            //viewPlanBtn.classList.remove('disabled');
         }
         else {
            //planViewPOPUP(); 
             topFilterDateWrap.appendChild(viewPlanBtn);
+          //  viewPlanBtn.classList.add('disabled');
         }
             
         const result = await outcomesAjax.isViewPlabBtnDisabled(selectedConsumerId);
         const { isViewPlabBtnDisabledResult } = result;
 
-       // if (isViewPlabBtnDisabledResult[0].isPlanAvailable == 'false' && !$.session.UpdatePlan) {
-        //    viewPlanBtn.classList.add('disabled');
-       // }
+        if (isViewPlabBtnDisabledResult[0].isPlanAvailable == 'false' && !$.session.UpdatePlan) {
+            viewPlanBtn.classList.add('disabled');
+        }
 
         if (!document.querySelector('.topOutcomeWrap')) {
             DOM.ACTIONCENTER.appendChild(topFilterDateWrap);
