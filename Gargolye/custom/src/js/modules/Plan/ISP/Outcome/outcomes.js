@@ -1149,6 +1149,7 @@ const planOutcomes = (() => {
         style: 'secondary',
         callback: (e, selectedOption) => {
           saveUpdateDataRef.responsibleProvider = selectedOption.value.split('|')[0];
+          saveUpdateDataRef.responsibleProviderSalesforce = selectedOption.value.split('|')[1] || '';
           saveUpdateDataRef.responsibleProviderName = selectedOption.text;
 
           if (saveUpdateDataRef.responsibleProvider !== '%') {

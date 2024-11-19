@@ -419,11 +419,12 @@ const outcomesReview = (function () {
 
     return noteInput;
   }
-  function buildReviewNoteInput() {
+  function buildReviewNoteInput(note) {
     const noteInput = input.build({
       label: 'Review Note',
       style: 'secondary',
       type: 'textarea',
+      value: note,
     });
 
     return noteInput;
@@ -504,7 +505,7 @@ const outcomesReview = (function () {
     const cIDropdown = buildCommunityIntegrationDropdown(editData.community_integration_level);
     const timeInputs = buildTimeInputs(editData.start_time, editData.end_time);
     const noteInput = buildNoteInput(editData.Objective_Activity_Note);
-    const reviewNoteInput = buildReviewNoteInput();
+    const reviewNoteInput = buildReviewNoteInput(outcomeData.reviewNote);
     const notifyCheckbox = buildNotifyCheckbox();
     const saveBtn = buildSaveButton(true);
     const deleteBtn = buildDeleteButton();
@@ -1315,7 +1316,6 @@ const outcomesReview = (function () {
             detailsTable.appendChild(detailRow);
 
             detailRow.addEventListener('click', () => {
-              console.log(data);
               onDetailRowClick({
                 goalTypeID: d.outcomeTypeId,
                 activityId: details.activityId,
@@ -1323,6 +1323,7 @@ const outcomesReview = (function () {
                 result: details.result,
                 attempt: details.attempts,
                 employeeId: details.staffId,
+                reviewNote: details.reviewNote
               });
             });
           }
@@ -1745,6 +1746,7 @@ const outcomesReview = (function () {
           ].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].note = d.objectiveActivityNote;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].activityId = d.objectiveActivityId;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].reviewNote = d.reviewNote;
         }
       }
     });
