@@ -488,7 +488,7 @@ const outcomesReview = (function () {
       locationID = editData.Location_ID || '';
       tmpData.primaryLoc = editData.Location_ID || '';
       tmpData.secLoc = editData.Locations_Secondary_ID || '';
-      tmpData.result = editData.objective_success_description || '';
+      tmpData.success = editData.objective_success_description || '';
       tmpData.prompt = editData.Prompt_Type || '';
       tmpData.attempt = editData.Prompt_Number || '';
       tmpData.ci = editData.community_integration_level || '';
@@ -509,7 +509,6 @@ const outcomesReview = (function () {
     const notifyCheckbox = buildNotifyCheckbox();
     const saveBtn = buildSaveButton(true);
     const deleteBtn = buildDeleteButton();
-    //const addReviewNoteBtn = buildAddNoteButton();
     const lastEditBy = buildCardEnteredByDetails(editData.submitted_by_user_id, editData.Last_Update);
     
 
@@ -625,7 +624,7 @@ const outcomesReview = (function () {
       tmpData.secLoc = e.target.value;
     });
     resultsDropdown.addEventListener('change', e => {
-      tmpData.result = e.target.value;
+      tmpData.success = e.target.value;
       checkRequiredFields();
     });
     promptsDropdown.addEventListener('change', e => {
@@ -664,18 +663,6 @@ const outcomesReview = (function () {
       tmpData.notifyEmployee = e.target.checked ? 'Y' : 'N';
     });
 
-    // addReviewNoteBtn.addEventListener('click', e => {
-    //   POPUP.hide(detailsPopup);
-    //   showAddReviewNotePopup({
-    //     date: editData.Objective_Date,
-    //     result: outcomeData.result,
-    //     attempts: outcomeData.attempt,
-    //     prompts: editData.Prompt_Number,
-    //     employeeId: outcomeData.employeeId,
-    //     activityId: outcomeData.activityId,
-    //   });
-    // });
-
     saveBtn.addEventListener('click', async e => {
       // main outcome
       const updateData = {
@@ -683,7 +670,7 @@ const outcomesReview = (function () {
         objectiveId: editData.Objective_ID,
         activityId: outcomeData.activityId,
         objdate: selectedDate,
-        success: outcomeData.Objective_Success,
+        success: tmpData.success,
         goalnote: UTIL.removeUnsavableNoteText(tmpData.note),
         promptType: tmpData.prompt,
         promptNumber: tmpData.attempt,
