@@ -419,6 +419,23 @@ const outcomesReview = (function () {
 
     return noteInput;
   }
+  function buildReviewNoteInput(note) {
+    const noteInput = input.build({
+      label: 'Review Note',
+      style: 'secondary',
+      type: 'textarea',
+      value: note,
+    });
+
+    return noteInput;
+  }
+  function buildNotifyCheckbox() {
+    const notifyEmployeeCheckbox = input.buildCheckbox({
+      text: 'Notify Employee via System Message',
+    });
+
+    return notifyEmployeeCheckbox;
+  }
   function buildSaveButton(isEdit) {
     const text = isEdit ? 'Update' : 'Save';
     const btn = button.build({
@@ -462,9 +479,10 @@ const outcomesReview = (function () {
     return txtArea;
   }
   function showDetailViewPopup(editData, outcomeData) {
-    console.table(editData);
     detailsPopup = POPUP.build({});
-    const tmpData = {};
+    const tmpData = {
+      notifyEmployee: 'N'
+    };
 
     if (editData) {
       locationID = editData.Location_ID || '';
@@ -487,10 +505,13 @@ const outcomesReview = (function () {
     const cIDropdown = buildCommunityIntegrationDropdown(editData.community_integration_level);
     const timeInputs = buildTimeInputs(editData.start_time, editData.end_time);
     const noteInput = buildNoteInput(editData.Objective_Activity_Note);
+    const reviewNoteInput = buildReviewNoteInput(outcomeData.reviewNote);
+    const notifyCheckbox = buildNotifyCheckbox();
     const saveBtn = buildSaveButton(true);
     const deleteBtn = buildDeleteButton();
-    const addReviewNoteBtn = buildAddNoteButton();
+    //const addReviewNoteBtn = buildAddNoteButton();
     const lastEditBy = buildCardEnteredByDetails(editData.submitted_by_user_id, editData.Last_Update);
+    
 
     const checkRequiredFields = () => {
       const showAttempts = successDetails?.Show_Attempts;
@@ -636,19 +657,27 @@ const outcomesReview = (function () {
       tmpData.note = e.target.value;
       checkRequiredFields();
     });
-
-    addReviewNoteBtn.addEventListener('click', e => {
-      POPUP.hide(detailsPopup);
-      showAddReviewNotePopup({
-        date: editData.Objective_Date,
-        result: outcomeData.result,
-        attempts: outcomeData.attempt,
-        prompts: editData.Prompt_Number,
-        employeeId: outcomeData.employeeId,
-        activityId: outcomeData.activityId,
-      });
+    reviewNoteInput.addEventListener('change', e => {
+      tmpData.reviewNote = e.target.value;
     });
-    saveBtn.addEventListener('click', e => {
+    notifyCheckbox.addEventListener('change', e => {
+      tmpData.notifyEmployee = e.target.checked ? 'Y' : 'N';
+    });
+
+    // addReviewNoteBtn.addEventListener('click', e => {
+    //   POPUP.hide(detailsPopup);
+    //   showAddReviewNotePopup({
+    //     date: editData.Objective_Date,
+    //     result: outcomeData.result,
+    //     attempts: outcomeData.attempt,
+    //     prompts: editData.Prompt_Number,
+    //     employeeId: outcomeData.employeeId,
+    //     activityId: outcomeData.activityId,
+    //   });
+    // });
+
+    saveBtn.addEventListener('click', async e => {
+      // main outcome
       const updateData = {
         personId: selectedConsumerId,
         objectiveId: editData.Objective_ID,
@@ -664,8 +693,21 @@ const outcomesReview = (function () {
         goalEndTime: tmpData.endTime,
         goalCILevel: tmpData.ci,
       }
-      outcomesAjax.saveGoals(updateData, () => {
+      await outcomesAjax.saveGoals(updateData, () => {
         POPUP.hide(detailsPopup);
+      });
+
+      // review note
+      const rnUpdateData = {
+        objectiveActivityId: outcomeData.activityId,
+        reviewNote: tmpData.reviewNote,
+        consumerId: selectedConsumerId,
+        objectiveActivityDate: editData.Objective_Date.split(' ')[0],
+        notifyEmployee: tmpData.notifyEmployee,
+      }
+      await outcomesAjax.addReviewNote({
+        token: $.session.Token,
+        ...rnUpdateData,
       });
     });
     deleteBtn.addEventListener('click', e => {
@@ -678,7 +720,7 @@ const outcomesReview = (function () {
     btnWrap.classList.add('btnWrap');
     btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(deleteBtn);
-    btnWrap.appendChild(addReviewNoteBtn);
+    //btnWrap.appendChild(addReviewNoteBtn);
 
     detailsPopup.appendChild(primaryLocationDropdown);
     if (locations.Secondary) detailsPopup.appendChild(secondaryLocationDropdown);
@@ -692,6 +734,8 @@ const outcomesReview = (function () {
     }
 
     detailsPopup.appendChild(noteInput);
+    detailsPopup.appendChild(reviewNoteInput);
+    detailsPopup.appendChild(notifyCheckbox);
     detailsPopup.appendChild(btnWrap);
     detailsPopup.appendChild(lastEditBy);
 
@@ -1272,7 +1316,6 @@ const outcomesReview = (function () {
             detailsTable.appendChild(detailRow);
 
             detailRow.addEventListener('click', () => {
-              console.log(data);
               onDetailRowClick({
                 goalTypeID: d.outcomeTypeId,
                 activityId: details.activityId,
@@ -1280,6 +1323,7 @@ const outcomesReview = (function () {
                 result: details.result,
                 attempt: details.attempts,
                 employeeId: details.staffId,
+                reviewNote: details.reviewNote
               });
             });
           }
@@ -1702,6 +1746,7 @@ const outcomesReview = (function () {
           ].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].note = d.objectiveActivityNote;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].activityId = d.objectiveActivityId;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].reviewNote = d.reviewNote;
         }
       }
     });
