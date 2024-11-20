@@ -1007,7 +1007,7 @@ namespace OODForms
         
         sb.Clear();
                 sb.Append("Select p.first_name + ' ' + p.last_name as VR_CounselorContractor from DBA.consumer_services_master cs ");
-                sb.Append("left outer join persons p on cs.Person_ID = p.Person_ID ");
+                sb.Append("left outer join DBA.persons p on cs.Person_ID = p.Person_ID ");
                 sb.AppendFormat("where cs.Consumer_ID = {0} and cs.reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
                
                // DataSet ds = di.SelectRowsDS(sb.ToString());
@@ -1032,7 +1032,7 @@ namespace OODForms
 
                 sb.Clear();
                 sb.Append("Select eg.service_goals as IPEGoal from DBA.em_employee_general eg ");
-                sb.Append("left outer join people p on p.ID = eg.People_ID ");
+                sb.Append("left outer join DBA.people p on p.ID = eg.People_ID ");
                 sb.AppendFormat("where p.Consumer_Id = '{0}' ", strConsumerId);
 
                 // DataSet ds = di.SelectRowsDS(sb.ToString());
@@ -1054,8 +1054,8 @@ namespace OODForms
 
                 sb.Clear();
                 sb.Append("Select s.name as service from DBA.consumer_services_master cs ");
-                sb.Append("left outer join emp_ood eo on eo.reference_number = cs.service_Id ");
-                sb.Append("left outer join services s on s.Service_ID = cs.service_ID ");
+                sb.Append("left outer join DBA.emp_ood eo on eo.reference_number = cs.service_Id ");
+                sb.Append("left outer join DBA.services s on s.Service_ID = cs.service_ID ");
                 sb.AppendFormat("where cs.Consumer_ID = {0} and cs.reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
 
                 // DataSet ds = di.SelectRowsDS(sb.ToString());
@@ -1077,8 +1077,8 @@ namespace OODForms
 
                 sb.Clear();
                 sb.Append("select cn.Case_note_ID as casenoteId, emp.Position_ID as positionID, cn.Service_Area_Modifier as SAMLevel, em.Bilingual_Supplement as bilingualSupplement from DBA.Case_Notes as cn ");
-                sb.Append("left outer join EM_Contacts as em on cn.case_Note_ID = em.case_Note_ID ");
-                sb.Append("left outer join consumer_services_master as csm on cn.Reference_Number = csm.Reference_Number ");
+                sb.Append("left outer join DBA.EM_Contacts as em on cn.case_Note_ID = em.case_Note_ID ");
+                sb.Append("left outer join DBA.consumer_services_master as csm on cn.Reference_Number = csm.Reference_Number ");
                 sb.Append("LEFT OUTER JOIN dba.EMP_OOD as emp ON cn.Case_Note_ID = emp.Case_Note_ID ");
                 sb.AppendFormat("where csm.Consumer_ID = {0} and csm.reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
                 sb.AppendFormat("AND cn.Service_Date BETWEEN '{0}' AND '{1}' and  cn.Original_User_ID LIKE '{2}' ", StartDate, EndDate, userID);
@@ -1101,7 +1101,7 @@ namespace OODForms
             sb.Clear();
             sb.Append("Select DISTINCT dba.Case_Notes.Case_Note_ID, dba.Case_Notes.Service_Date, emp_ood.service_area_modifier, emp_ood.narrative, code_table.caption from DBA.emp_ood ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
-            sb.Append("LEFT OUTER JOIN code_table ON emp_ood.contact_method = code_table.code ");
+            sb.Append("LEFT OUTER JOIN DBA.code_table ON emp_ood.contact_method = code_table.code ");
             sb.AppendFormat("WHERE dba.Case_Notes.Reference_Number = '{0}' ", AuthorizationNumber);
             sb.AppendFormat("AND dba.Case_Notes.Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
             sb.Append("AND code_table.field_id = 'ContactMethod' ");
