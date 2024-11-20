@@ -696,9 +696,14 @@ const outcomesReview = (function () {
         token: $.session.Token,
         ...rnUpdateData,
       });
+      
+      await getReviewTableDataSecondary();
+      populateTabSections();
     });
     deleteBtn.addEventListener('click', e => {
       outcomesAjax.deleteGoal(outcomeData.activityId, selectedConsumerId, selectedDate, async () => {
+        await getReviewTableDataSecondary();
+        populateTabSections();
         POPUP.hide(detailsPopup);
       });
     });
@@ -707,7 +712,6 @@ const outcomesReview = (function () {
     btnWrap.classList.add('btnWrap');
     btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(deleteBtn);
-    //btnWrap.appendChild(addReviewNoteBtn);
 
     detailsPopup.appendChild(primaryLocationDropdown);
     if (locations.Secondary) detailsPopup.appendChild(secondaryLocationDropdown);
