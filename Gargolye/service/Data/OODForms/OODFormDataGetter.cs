@@ -699,7 +699,7 @@ namespace OODForms
                 sb.Append("(SELECT SUBSTRING(p.First_Name, 1, 1) + CASE WHEN p.Middle_Name IS NOT NULL THEN SUBSTRING(p.Middle_Name, 1, 1) ELSE '' END + SUBSTRING(p.Last_Name, 1, 1)) AS Initials ");
                 sb.Append("from DBA.Persons as p ");
                // sb.Append("left outer join people pe on p.Person_ID = pe.Person_ID ");
-                sb.Append("left outer join consumer_services_master as csm on p.Person_ID = csm.Person_ID ");
+                sb.Append("left outer join DBA.consumer_services_master as csm on p.Person_ID = csm.Person_ID ");
                 sb.AppendFormat("where csm.consumer_id = {0} and Reference_Number = '{1}' ", strConsumerId, AuthorizationNumber);
                 DataSet ds = di.SelectRowsDS(sb.ToString());
                 ds = di.SelectRowsDS(sb.ToString());
