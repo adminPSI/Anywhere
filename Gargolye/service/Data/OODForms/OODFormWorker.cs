@@ -438,8 +438,8 @@ namespace OODForms
                 string VRCounselor = "";
                 DataSet dsVR = oodfdg.OODForm6GetVRCounselor(referenceNumber, consumerIdString, startDate, endDate);
                 // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
-
-                if (dsVR.Tables[0].Rows.Count > 0)
+                
+                    if (dsVR.Tables.Count > 0 && dsVR.Tables[0].Rows.Count > 0)
                 {
                     if (!string.IsNullOrEmpty(dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString()))
                     {
@@ -455,7 +455,7 @@ namespace OODForms
                 DataSet dsIPE = oodfdg.OODForm6GetIPEGoal(referenceNumber, consumerIdString, startDate, endDate);
                 // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
 
-                if (dsIPE.Tables[0].Rows.Count > 0)
+                if (dsIPE.Tables.Count > 0 && dsIPE.Tables[0].Rows.Count > 0)
                 { 
                     if (!string.IsNullOrEmpty(dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString()))        
                     {
@@ -470,7 +470,7 @@ namespace OODForms
                 DataSet dsService = oodfdg.OODForm6GetService(referenceNumber, consumerIdString, startDate, endDate);
                 // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
 
-                if (dsService.Tables[0].Rows.Count > 0)
+                if (dsService.Tables.Count > 0 && dsService.Tables[0].Rows.Count > 0)
                 {
                     if (!string.IsNullOrEmpty(dsService.Tables[0].Rows[0]["service"].ToString()))
                     {
@@ -486,7 +486,7 @@ namespace OODForms
                 string SAMLevel = "";  // bilingualSupplement
                 DataSet dsSAMandBilingual = oodfdg.OODForm6GetSAMandBilingual(referenceNumber, consumerIdString, startDate, endDate, userId);
 
-                if (dsSAMandBilingual.Tables[0].Rows.Count > 0)
+                if (dsSAMandBilingual.Tables.Count > 0 && dsSAMandBilingual.Tables[0].Rows.Count > 0)
                 {
                     if (!string.IsNullOrEmpty(dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString()))
                     {
@@ -1243,7 +1243,7 @@ namespace OODForms
                 // get data from DB for the weekly entries
                 DataSet dstest = obj.OODForm16GetNotes(AuthorizationNumber, StartDate, EndDate, userID);
                 
-                if (dstest.Tables[0].Rows.Count > 0)
+                if (dstest.Tables.Count > 0 && dstest.Tables[0].Rows.Count > 0)
                 {
                     // fill in the weekly entries on the EXCEL Spreadsheet
                     foreach (WeekRangeDates week in weekDates)
@@ -1444,7 +1444,7 @@ namespace OODForms
 
                 DataSet dsScheduleWorkTimes = obj.OODForm16GetScheduledWorkTimes(AuthorizationNumber, StartDate, EndDate, userID);
 
-                if (dsScheduleWorkTimes.Tables[0].Rows.Count > 0)
+                if (dsScheduleWorkTimes.Tables.Count > 0 && dsScheduleWorkTimes.Tables[0].Rows.Count > 0)
                 {
                     // fill in the weekly entries on the EXCEL Spreadsheet
                     foreach (WeekRangeDates week in weekDates)
@@ -1577,7 +1577,7 @@ namespace OODForms
               
                     DataSet dsGroupNumber = obj.OODForm16GetGroupNumber(AuthorizationNumber, strStartDate, strEndDate);
 
-                    if (dsGroupNumber.Tables[0].Rows.Count > 0)
+                    if (dsGroupNumber.Tables.Count > 0 && dsGroupNumber.Tables[0].Rows.Count > 0)
                     {
                        
                         foreach (DataRow row3 in dsGroupNumber.Tables[0].Rows)
