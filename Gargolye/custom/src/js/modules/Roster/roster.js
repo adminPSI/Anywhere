@@ -1153,7 +1153,7 @@ const roster2 = (function () {
                 type: 'contained',
                 callback: async function () {
                     pendingSave.show('Updating Database...');
-                    const data = await _UTIL.fetchData('updateSalesforceIdsScriptOneTimeUse', $.session.applicationName);
+                    const data = await _UTIL.fetchData('updateSalesforceIdsScriptOneTimeUse', {applicationName: $.session.applicationName});
                     pendingSave.fulfill('Update Complete')
                     await new Promise(resolve => setTimeout(resolve, 2000));
                     const successfulSavePopup = document.querySelector('.successfulSavePopup');
