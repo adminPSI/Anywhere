@@ -626,7 +626,7 @@ function setSessionVariables() {
                 $.session.DemographicsUpdate = true;
             }
 
-            if (tmpPerm == 'View Relationships' || $.session.isPSI == true {
+            if (tmpPerm == 'View Relationships' || $.session.isPSI == true) {
                 $.session.DemographicsRelationshipsView = true;
             }
 
@@ -679,13 +679,8 @@ function setSessionVariables() {
         }
 
         //Incident Tracking Permissons
-<<<<<<< HEAD
         if (tmpWindow == 'Anywhere Incident Tracking' || $.session.isPSI == true) {
             if (tmpPerm == 'View Case Load' || $.session.isPSI == true) {
-=======
-        if (tmpWindow == 'Anywhere Incident Tracking') {
-            if ($.session.isPSI == false && tmpPerm == 'View Case Load') {
->>>>>>> b0cda41eca33bcbbd7a4cc0ada13dec484530d0c
                 $.session.incidentTrackingViewCaseLoad = true;
             } else if (tmpPerm == 'Delete') {
                 $.session.incidentTrackingDelete = true;
