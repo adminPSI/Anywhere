@@ -298,7 +298,7 @@ const outcomes = (function () {
             locationSecondaryId = 0;
             setTimeout(async () => {
                 successfulSave.hide();
-                await loadCardView(selectedConsumerObj);
+                await loadCardView(selectedConsumerObj, 'false');
                 applyOutComeFilter();
             }, 1000);
         });
@@ -1924,7 +1924,7 @@ const outcomes = (function () {
         loadCardView(myval);
     }
 
-    async function loadCardView(selectedConsumer) {
+    async function loadCardView(selectedConsumer, displayPlanViewPopup) {
         // DOM.scrollToTopOfPage();
         selectedConsume = selectedConsumer;
         DOM.clearActionCenter();
@@ -2021,7 +2021,7 @@ const outcomes = (function () {
         const { getPlanbyConsumerHistoryResult } = showPopup;
 
         if (getPlanbyConsumerHistoryResult[0].isPlanAvailable == 'true') {
-            planViewPOPUP(); 
+             if (displayPlanViewPopup !== 'false') planViewPOPUP(); 
             topFilterDateWrap.appendChild(viewPlanBtn);
             //viewPlanBtn.classList.remove('disabled');
         }
