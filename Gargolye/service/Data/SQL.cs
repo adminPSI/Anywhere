@@ -1,6 +1,9 @@
 ﻿using Anywhere.Log;
+using System.Collections.Generic;
+using System;
 using System.Data;
 using System.Text;
+using System.Linq;
 
 namespace Anywhere.service.Data
 {
@@ -9,6 +12,7 @@ namespace Anywhere.service.Data
         private static Loger logger = new Loger();
         StringBuilder sb = new StringBuilder();
         Data.Sybase di = new Data.Sybase();
+        WorkflowDataGetter wfdg = new WorkflowDataGetter();
         public DataSet TimeDetail(string UserName, string StartDate, string EndDate)
         {
 
@@ -38,9 +42,9 @@ namespace Anywhere.service.Data
             sb.Append("se.end_time AS endtime, ");
             sb.Append("se.check_hours AS hours, ");
             sb.Append("(SELECT COUNT(*) FROM AA_Consumers_Present WHERE AA_Single_entry_ID = se.Single_entry_ID) AS consumers, ");
-            sb.Append("se.transportation_units AS miles ");
+            sb.Append("COALESCE(se.transportation_units, 0) AS miles "); // Use COALESCE for miles
             sb.Append("FROM dba.aa_single_entry AS se ");
-            sb.Append("LEFT OUTER JOIN persons AS p ON se.person_id = p.person_id ");
+            sb.Append("LEFT OUTER JOIN Persons AS p ON se.person_id = p.person_id ");
             sb.Append("LEFT OUTER JOIN Locations AS loc ON loc.location_id = se.location_id ");
             sb.Append("LEFT OUTER JOIN work_codes AS wc ON wc.work_code_id = se.work_code_id ");
             sb.Append("LEFT OUTER JOIN AA_Single_Entry_Transportation AS trans ON se.Single_Entry_ID = trans.Single_Entry_ID ");
@@ -75,13 +79,43 @@ namespace Anywhere.service.Data
             sb.Append("    AND (p.term_date >= NOW() OR p.term_date IS NULL)) ");
             sb.AppendFormat("AND se.date_of_service BETWEEN '{0}' AND '{1}' ", startDate, endDate);
             sb.AppendFormat("AND se.Location_ID LIKE '{0}' ", locationId);
-            sb.AppendFormat("AND se.Person_ID LIKE '{0}' ", personId); 
+            sb.AppendFormat("AND se.Person_ID LIKE '{0}' ", personId);
             sb.Append("AND se.person_ID <> 0 ");
             sb.AppendFormat("AND se.Anywhere_Status LIKE '{0}' ", status);
             sb.AppendFormat("AND se.Work_Code_ID LIKE '{0}' ", workCodeId);
             sb.Append("ORDER BY se.date_of_service DESC, se.start_time ASC;");
 
+
             return di.SelectRowsDS(sb.ToString());
+        }
+
+        public string timeDetailSupervisor(
+            string supervisorId, string startDate, string endDate, string locationId, string personId, string status, string workCodeId, DistributedTransaction transaction)
+        {
+            logger.debug("TimeDetailSupervisor");
+
+            //existingOutcomeGoalId = null;
+
+            var parameters = new Dictionary<string, string>
+            {
+                { "@supervisorId", supervisorId },
+                { "@startDate", startDate },
+                { "@endDate", endDate },
+                { "@locationId", locationId },
+                { "@personId", personId },
+                { "@status", status },
+                { "@workCodeId", workCodeId }
+            };
+
+            try
+            {
+                return CallStoredProcedure("DBA.ANYW_SingleEntry_TimeDetailSupervisor", parameters, transaction);
+            }
+            catch (Exception ex)
+            {
+                logger.error("501-IOAS", ex.Message + " ANYW_SingleEntry_TimeDetailSupervisor");
+                return "501-IOAS: error ANYW_SingleEntry_TimeDetailSupervisor";
+            }
         }
 
 
@@ -125,6 +159,35 @@ namespace Anywhere.service.Data
             sb.AppendFormat("AND s.user_ID = '{0}' ", UserID);//just added to keep from getting other times
             return di.SelectRowsDS(sb.ToString());
 
+        }
+
+        public string CallStoredProcedure(
+            string procedureName,
+            Dictionary<string, string> parameters,
+            DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("CallStoredProcedure");
+                int paramCount = parameters.Count;
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[paramCount];
+
+                int index = 0;
+                foreach (var param in parameters)
+                {
+                    args[index] = (System.Data.Common.DbParameter)DbHelper.CreateParameter(param.Key, DbType.String, param.Value);
+                    index++;
+                }
+
+                string commandText = $"CALL {procedureName}({string.Join(",", new string[paramCount].Select((s, i) => "?"))})";
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, commandText, args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("CallStoredProcedure", ex.Message + $" {procedureName}()");
+                throw ex;
+            }
         }
 
     }

@@ -512,6 +512,35 @@ const outcomesReview = (function () {
     const lastEditBy = buildCardEnteredByDetails(editData.submitted_by_user_id, editData.Last_Update);
     
 
+    const checkShowFields = () => {
+      const showAttempts = successDetails?.Show_Attempts;
+      const showPrompts = successDetails?.Show_Prompts;
+      const showTime = successDetails?.Show_Time;
+      const showCI = successDetails?.Show_Community_Integration;
+
+      if (showAttempts === 'Y') {
+        attemptsDropdown.classList.remove('hidden');
+      } else {
+        attemptsDropdown.classList.add('hidden');
+      }
+      if (showPrompts === 'Y') {
+        promptsDropdown.classList.remove('hidden');
+      } else {
+        promptsDropdown.classList.add('hidden');
+      }
+      if (showTime === 'Y') {
+        timeInputs.start.classList.remove('hidden');
+        timeInputs.end.classList.remove('hidden');
+      } else {
+        timeInputs.start.classList.add('hidden');
+        timeInputs.end.classList.add('hidden');
+      }
+      if (showCI === 'Y') {
+        cIDropdown.classList.remove('hidden');
+      } else {
+        cIDropdown.classList.add('hidden');
+      }
+    };
     const checkRequiredFields = () => {
       const showAttempts = successDetails?.Show_Attempts;
       const showPrompts = successDetails?.Show_Prompts;
@@ -616,6 +645,14 @@ const outcomesReview = (function () {
         saveBtn.classList.add('disabled');
       }
     };
+    const checkErrors = () => {
+      const errors = document.querySelectorAll('.error');
+      if (errors.length === 0) {
+        saveBtn.classList.remove('disabled');
+      } else {
+        saveBtn.classList.add('disabled');
+      }
+    };
 
     primaryLocationDropdown.addEventListener('change', e => {
       tmpData.primaryLoc = e.target.value;
@@ -624,7 +661,17 @@ const outcomesReview = (function () {
       tmpData.secLoc = e.target.value;
     });
     resultsDropdown.addEventListener('change', e => {
-      tmpData.success = e.target.value;
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      tmpData.success = selectedOption.dataset.success;
+      successDetails = successTypes[selectedOption.value];
+
+      if (selectedOption.value === '') {
+        resultsDropdown.classList.add('error');
+      } else {
+        resultsDropdown.classList.remove('error');
+      }
+
+      checkErrors();
       checkRequiredFields();
     });
     promptsDropdown.addEventListener('change', e => {
@@ -669,7 +716,7 @@ const outcomesReview = (function () {
         personId: selectedConsumerId,
         objectiveId: editData.Objective_ID,
         activityId: outcomeData.activityId,
-        objdate: selectedDate,
+        objdate: editData.Objective_Date,
         success: tmpData.success,
         goalnote: UTIL.removeUnsavableNoteText(tmpData.note),
         promptType: tmpData.prompt,
@@ -732,7 +779,7 @@ const outcomesReview = (function () {
 
     POPUP.show(detailsPopup);
 
-    checkRequiredFields();
+    checkShowFields();
 
     return;
 
