@@ -959,6 +959,7 @@ const incidentOverview = (function () {
                 selectedRelation = selectedRelation.filter(n => n);
                 emailString = selectedRelation.toString().replaceAll(",", ";");  
                 document.getElementById('toAddress').value = emailString;
+                incidentTrackingEmailData.toAddresses = emailString; 
                 if (emailString == '')
                     emailSendBtn.classList.add('disabled');
                 else

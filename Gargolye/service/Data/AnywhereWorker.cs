@@ -17,6 +17,8 @@ using PSIOISP;
 using System.Text.RegularExpressions;
 using Anywhere.service.Data.PlanSignature;
 using System.Linq;
+using System.Data.Odbc;
+using System.Configuration;
 
 namespace Anywhere.service.Data
 {
@@ -743,13 +745,14 @@ namespace Anywhere.service.Data
             public string deviceGUID { get; set; }
         }
 
-        public string updateSalesforceIdsScriptOneTimeUse()
+        public string updateSalesforceIdsScriptOneTimeUse(string applicationName)
         {
             try
             {
                 StringBuilder sb = new StringBuilder();
                 Data.Sybase di = new Data.Sybase();
                 PlanSignatureWorker psw = new PlanSignatureWorker();
+                string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
 
                 // Step 1: Get all people IDs with non-null, non-empty Salesforce_ID
                 sb.Clear();
@@ -761,6 +764,7 @@ namespace Anywhere.service.Data
 
                 // Initialize a list to accumulate unique Salesforce IDs for guardians
                 HashSet<string> guardianIds = new HashSet<string>();
+                List<string> executedSQLQueries = new List<string>(); // Collect all SQL queries
 
                 // Step 2: Collect guardian Salesforce IDs from the API calls
                 if (dataSet != null && dataSet.Tables.Count > 0)
@@ -780,7 +784,7 @@ namespace Anywhere.service.Data
                                 // Add guardian IDs from API response to the set
                                 foreach (TeamMemberFromState member in individualContacts)
                                 {
-                                    if (member != null && member.Role == "Guardian")
+                                    if (member != null && member.Role.Contains("Guardian"))
                                     {
                                         guardianIds.Add(member.Id);
                                     }
@@ -794,55 +798,100 @@ namespace Anywhere.service.Data
                     }
                 }
 
-                // Step 3: Retrieve unique people IDs for the accumulated guardian Salesforce IDs
+                // Step 3: Retrieve unique IDs for the accumulated guardian Salesforce IDs
                 HashSet<long> uniquePersonIds = new HashSet<long>();
 
                 if (guardianIds.Count > 0)
                 {
                     sb.Clear();
-                    sb.Append("SELECT DBA.People.ID, DBA.People.Salesforce_ID ");
-                    sb.Append("FROM DBA.People ");
-                    sb.Append("WHERE DBA.People.Salesforce_ID IN (");
-                    sb.Append(string.Join(", ", guardianIds.Select(id => $"'{id}'")));
-                    sb.Append(")");
+
+                    // Adjust the query logic based on applicationName
+                    if (applicationName == "Advisor")
+                    {
+                        // Retrieve from Persons table
+                        sb.Append("SELECT DBA.Persons.Person_ID, DBA.Persons.Salesforce_ID ");
+                        sb.Append("FROM DBA.Persons ");
+                        sb.Append("WHERE DBA.Persons.Salesforce_ID IN (");
+                        sb.Append(string.Join(", ", guardianIds.Select(id => $"'{id}'")));
+                        sb.Append(")");
+                    }
+                    else
+                    {
+                        // Default retrieval from People table
+                        sb.Append("SELECT DBA.People.ID, DBA.People.Salesforce_ID ");
+                        sb.Append("FROM DBA.People ");
+                        sb.Append("WHERE DBA.People.Salesforce_ID IN (");
+                        sb.Append(string.Join(", ", guardianIds.Select(id => $"'{id}'")));
+                        sb.Append(")");
+                    }
 
                     DataSet guardianDataSet = di.SelectRowsDS(sb.ToString());
+                    executedSQLQueries.Add(sb.ToString()); // Log this SQL query
 
-                    // Collect unique People IDs
+                    // Collect unique IDs
                     if (guardianDataSet != null && guardianDataSet.Tables.Count > 0)
                     {
                         DataTable guardianTable = guardianDataSet.Tables[0];
                         foreach (DataRow row in guardianTable.Rows)
                         {
-                            if (long.TryParse(row["ID"].ToString(), out long personId))
+                            if (applicationName == "Advisor")
                             {
-                                uniquePersonIds.Add(personId);
+                                if (long.TryParse(row["Person_ID"].ToString(), out long personId))
+                                {
+                                    uniquePersonIds.Add(personId);
+                                }
+                            }
+                            else
+                            {
+                                if (long.TryParse(row["ID"].ToString(), out long personId))
+                                {
+                                    uniquePersonIds.Add(personId);
+                                }
                             }
                         }
                     }
 
-                    // Step 4: Perform the update operation on unique People IDs
+                    // Step 4: Generate the update SQL queries for unique IDs
                     foreach (var personId in uniquePersonIds)
                     {
                         sb.Clear();
-                        sb.Append("UPDATE DBA.People ");
-                        sb.Append("SET SalesForce_Guardian_ID = Salesforce_ID, ");
-                        sb.Append("Salesforce_ID = NULL ");
-                        sb.AppendFormat("WHERE ID = {0};", personId);
-                        sb.Append("Commit Work;");
 
-                        di.SelectRowsDS(sb.ToString());
+                        if (applicationName == "Advisor")
+                        {
+                            // Update for Advisor logic using Persons table
+                            sb.Append("UPDATE DBA.Persons ");
+                            sb.Append("SET p.SalesForce_Guardian_ID = p.Salesforce_ID, ");
+                            sb.Append("p.Salesforce_ID = NULL ");
+                            sb.Append("FROM DBA.Persons p ");
+                            sb.Append("JOIN DBA.People pe ON p.Person_ID = pe.Person_ID ");
+                            sb.AppendFormat("WHERE p.Person_ID = {0};", personId);
+                            sb.Append(" Commit Work;");
+                        }
+                        else
+                        {
+                            // Default update logic using People table
+                            sb.Append("UPDATE DBA.People ");
+                            sb.Append("SET SalesForce_Guardian_ID = Salesforce_ID, ");
+                            sb.Append("Salesforce_ID = NULL ");
+                            sb.AppendFormat("WHERE ID = {0};", personId);
+                            sb.Append(" Commit Work;");
+                        }
+
+                        // Collect the query and execute it
+                        executedSQLQueries.Add(sb.ToString());
+                        SAUpdateRecord(connectString, sb.ToString());
                     }
                 }
 
-                // Return the unique person IDs as a comma-separated string
-                return string.Join(", ", uniquePersonIds);
+                // Return all executed SQL queries as a single concatenated string
+                return string.Join("\n", executedSQLQueries);
             }
             catch (Exception ex)
             {
                 return $"Error: {ex.Message}";
             }
         }
+
 
         // Helper method to extract IDs from the returned string
         private List<string> ExtractIdsFromString(string guardiansData)
@@ -860,7 +909,31 @@ namespace Anywhere.service.Data
             return ids;
         }
 
-
+        public long SAUpdateRecord(string ConnString, string QueryString)
+        {
+            long num1;
+            try
+            {
+                num1 = 0L;
+                using (OdbcConnection connection = new OdbcConnection(ConnString))
+                {
+                    OdbcCommand odbcCommand = new OdbcCommand(QueryString, connection);
+                    odbcCommand.CommandTimeout = 0;
+                    connection.Open();
+                    num1 = (long)odbcCommand.ExecuteNonQuery();
+                    if (odbcCommand.Connection.State == ConnectionState.Open)
+                        odbcCommand.Connection.Close();
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                    num1 = num1;
+                }
+            }
+            catch (Exception ex)
+            {
+                num1 = -999L;
+            }
+            return num1;
+        }
 
 
 

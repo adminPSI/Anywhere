@@ -112,8 +112,8 @@ namespace Anywhere.service.Data.PlanSignature
                 if (consumerId != peopleId)
                 {
                     ISPDTData isp = new ISPDTData();
-                    string sFS = isp.AddFamilyMemberToIndividal(consumerId, peopleId, teamMemberType);
-                    //long sFId = oispW.AddFamilyMemberToIndividal(consumerId, peopleId);
+                    string sFS = isp.AddFamilyMemberToIndividual(consumerId, peopleId, teamMemberType);
+                    //long sFId = oispW.AddFamilyMemberToIndividual(consumerId, peopleId);
                     //AddTeamMember[] sfObj = js.Deserialize<AddTeamMember[]>(sFS);
                     //return sfObj[0].id;
                     return sFS;

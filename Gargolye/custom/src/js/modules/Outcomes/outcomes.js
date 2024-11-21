@@ -96,6 +96,8 @@ const outcomes = (function () {
     let updatePlanPopup;
     let attachmentInput; 
 
+    let isViewedAvailableOSPlan = 'false';
+
     function getAllowedConsumerIds() {
         return allowedConsumerIds;
     }
@@ -1981,6 +1983,7 @@ const outcomes = (function () {
                 });
             },
         });
+
         let buttonName = 'VIEW PLAN';
         if ($.session.UpdatePlan) buttonName = 'VIEW/UPDATE PLAN';
 
@@ -2019,10 +2022,13 @@ const outcomes = (function () {
 
         if (getPlanbyConsumerHistoryResult[0].isPlanAvailable == 'true') {
             planViewPOPUP(); 
+            topFilterDateWrap.appendChild(viewPlanBtn);
+            //viewPlanBtn.classList.remove('disabled');
         }
         else {
            //planViewPOPUP(); 
             topFilterDateWrap.appendChild(viewPlanBtn);
+          //  viewPlanBtn.classList.add('disabled');
         }
             
         const result = await outcomesAjax.isViewPlabBtnDisabled(selectedConsumerId);
@@ -2135,16 +2141,17 @@ const outcomes = (function () {
 
     async function planViewPOPUP() {
         viewPlanPOPUP = POPUP.build({
-            hideX: true, 
+            hideX: false, 
         });
 
         planNow = button.build({
             text: 'READ AND ACKNOWLEDGE PLAN NOW',
             style: 'secondary',
             type: 'contained',
+            classNames: 'planNowBtn',
             callback: async () => {
-                await savePlanNow();
-                POPUP.hide(viewPlanPOPUP);
+                    await savePlanNow(isViewedAvailableOSPlan);
+                    POPUP.hide(viewPlanPOPUP);
             },
         });
 
@@ -2172,7 +2179,7 @@ const outcomes = (function () {
         planLater.style.width = '100%';
         planUpdate.style.width = '100%';
         message.innerText =
-            "A new ISP is available for viewing for this individual. You are required to acknowledge that you've read this plan before documenting for services.Would you like to read the plan now or later ? ";
+            "A new ISP is available for viewing for this individual. You are required to acknowledge that you've read this plan before documenting for services. Would you like to read the plan now or later? ";
         message.style.textAlign = 'center';
         message.style.marginBottom = '15px';
         viewPlanPOPUP.appendChild(message);
@@ -2181,7 +2188,8 @@ const outcomes = (function () {
         const result = await outcomesAjax.getPlanHistorybyConsumer(selectedConsumerId);
         const { getPlanHistorybyConsumerResult } = result;
 
-       // if (getPlanHistorybyConsumerResult[0].isPlanAvailable == 'true') {
+        // if isPlanAvailable = TRUE -- then either history table doesnt have this attachment or history table has attachment and it hasn't been viewed 
+        if (getPlanHistorybyConsumerResult[0].isPlanAvailable == 'true' ) {
             viewPlanPOPUP.appendChild(planLater);
             if (getPlanHistorybyConsumerResult[0].isPlanLaterDisable == 'true') {
                 planLater.classList.add('disabled'); 
@@ -2190,10 +2198,24 @@ const outcomes = (function () {
                     planLater.classList.remove('disabled');
                  //viewPlanPOPUP.appendChild(planLater);
         }
-       // } else {
+             } else {
 
+        }
 
-       // }
+        // if isViewedAvailableOSPlan = TRUE -- history table has attachment and it has been viewed
+        if (getPlanHistorybyConsumerResult[0].isViewedAvailableOSPlan == 'true' ) {
+
+             const planNowBtn = viewPlanPOPUP.getElementsByClassName('planNowBtn')[0];
+             planNowBtn.innerHTML = 'READ CURRENT PLAN';
+             isViewedAvailableOSPlan = 'true';
+             message.style.display = 'none';
+             const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
+            closePopupBtn.style.display = 'inline';
+
+        } else {
+
+            isViewedAvailableOSPlan = 'false';
+        }
 
         if ($.session.UpdatePlan) viewPlanPOPUP.appendChild(planUpdate);
 
@@ -2204,7 +2226,32 @@ const outcomes = (function () {
             message.style.display = 'none';
             planNow.style.display = 'none';
             planLater.style.display = 'none';
-            viewPlanPOPUP.hideX = 'false';
+           // viewPlanPOPUP.closePopupBtn.display = 'none'
+           const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
+           closePopupBtn.style.display = 'inline';
+
+          
+
+
+        } else {
+            const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
+            closePopupBtn.style.display = 'none';
+
+            if (getPlanHistorybyConsumerResult[0].isViewedAvailableOSPlan == 'true' ) {
+
+                const planNowBtn = viewPlanPOPUP.getElementsByClassName('planNowBtn')[0];
+                planNowBtn.innerHTML = 'READ CURRENT PLAN';
+                isViewedAvailableOSPlan = 'true';
+                message.style.display = 'none';
+                const closePopupBtn = viewPlanPOPUP.getElementsByClassName('closePopupBtn')[0];
+                closePopupBtn.style.display = 'inline';
+   
+           } else {
+            
+            const planNowBtn = viewPlanPOPUP.getElementsByClassName('planNowBtn')[0];
+            planNowBtn.innerHTML = 'READ AND ACKNOWLEDGE PLAN NOW';
+            isViewedAvailableOSPlan = 'false';
+           }
         }
         POPUP.show(viewPlanPOPUP);
     }
@@ -2217,8 +2264,8 @@ const outcomes = (function () {
         outcomesAjax.addOutcomePlanLater(saveData);
     }
 
-    async function savePlanNow() {
-        outcomesAjax.addOutcomePlanNow(selectedConsumerId);
+    async function savePlanNow(isViewedAvailableOSPlan) {
+        outcomesAjax.addOutcomePlanNow(selectedConsumerId, isViewedAvailableOSPlan);
     }
 
     function planUpdatePOPUP() {

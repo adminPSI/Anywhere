@@ -178,7 +178,7 @@ const outcomesReview = (function () {
       },
     });
     const notifyEmployeeCheckbox = input.buildCheckbox({
-      text: 'Notify Employee',
+      text: 'Notify Employee via System Message',
       callback: e => {
         saveData.notifyEmployee = e.target.checked ? 'Y' : 'N';
       },
@@ -419,6 +419,23 @@ const outcomesReview = (function () {
 
     return noteInput;
   }
+  function buildReviewNoteInput(note) {
+    const noteInput = input.build({
+      label: 'Review Note',
+      style: 'secondary',
+      type: 'textarea',
+      value: note,
+    });
+
+    return noteInput;
+  }
+  function buildNotifyCheckbox() {
+    const notifyEmployeeCheckbox = input.buildCheckbox({
+      text: 'Notify Employee via System Message',
+    });
+
+    return notifyEmployeeCheckbox;
+  }
   function buildSaveButton(isEdit) {
     const text = isEdit ? 'Update' : 'Save';
     const btn = button.build({
@@ -462,25 +479,22 @@ const outcomesReview = (function () {
     return txtArea;
   }
   function showDetailViewPopup(editData, outcomeData) {
-    console.table(editData);
     detailsPopup = POPUP.build({});
-    const tmpData = {};
+    const tmpData = {
+      notifyEmployee: 'N'
+    };
 
     if (editData) {
-      locationID = editData.Location_ID;
-      tmpData.primaryLoc = editData.Location_ID;
-      tmpData.secLoc = editData.Locations_Secondary_ID;
-      tmpData.result = editData.objective_success_description;
-      tmpData.prompt = editData.Prompt_Type;
-      tmpData.attempt = editData.Prompt_Number;
-      tmpData.ci = editData.community_integration_level;
-      tmpData.startTime = editData.start_time;
-      tmpData.endTime = editData.end_time;
-      tmpData.note = editData.Objective_Activity_Note;
-    } else {
-      // TODO: defaultObjLocationId, defaultGoalLocationId, useConsumerLocation||defaultPrimaryLocation
-      // TODO: outcomes.js line 1021 ^^^^^
-      locationID = '';
+      locationID = editData.Location_ID || '';
+      tmpData.primaryLoc = editData.Location_ID || '';
+      tmpData.secLoc = editData.Locations_Secondary_ID || '';
+      tmpData.success = editData.objective_success_description || '';
+      tmpData.prompt = editData.Prompt_Type || '';
+      tmpData.attempt = editData.Prompt_Number || '';
+      tmpData.ci = editData.community_integration_level || '';
+      tmpData.startTime = editData.start_time || '';
+      tmpData.endTime = editData.end_time || '';
+      tmpData.note = editData.Objective_Activity_Note || '';
     }
 
     const primaryLocationDropdown = buildPrimaryLocationDropdown(editData.Location_ID);
@@ -491,10 +505,12 @@ const outcomesReview = (function () {
     const cIDropdown = buildCommunityIntegrationDropdown(editData.community_integration_level);
     const timeInputs = buildTimeInputs(editData.start_time, editData.end_time);
     const noteInput = buildNoteInput(editData.Objective_Activity_Note);
+    const reviewNoteInput = buildReviewNoteInput(outcomeData.reviewNote);
+    const notifyCheckbox = buildNotifyCheckbox();
     const saveBtn = buildSaveButton(true);
     const deleteBtn = buildDeleteButton();
-    const addReviewNoteBtn = buildAddNoteButton();
     const lastEditBy = buildCardEnteredByDetails(editData.submitted_by_user_id, editData.Last_Update);
+    
 
     const checkRequiredFields = () => {
       const showAttempts = successDetails?.Show_Attempts;
@@ -608,7 +624,7 @@ const outcomesReview = (function () {
       tmpData.secLoc = e.target.value;
     });
     resultsDropdown.addEventListener('change', e => {
-      tmpData.result = e.target.value;
+      tmpData.success = e.target.value;
       checkRequiredFields();
     });
     promptsDropdown.addEventListener('change', e => {
@@ -640,25 +656,54 @@ const outcomesReview = (function () {
       tmpData.note = e.target.value;
       checkRequiredFields();
     });
-
-    addReviewNoteBtn.addEventListener('click', e => {
-      POPUP.hide(detailsPopup);
-      showAddReviewNotePopup({
-        date: editData.Objective_Date,
-        result: outcomeData.result,
-        attempts: outcomeData.attempt,
-        prompts: editData.Prompt_Number,
-        employeeId: outcomeData.employeeId,
-        activityId: outcomeData.activityId,
-      });
+    reviewNoteInput.addEventListener('change', e => {
+      tmpData.reviewNote = e.target.value;
     });
-    saveBtn.addEventListener('click', e => {
-      outcomesAjax.saveGoals(data, () => {
+    notifyCheckbox.addEventListener('change', e => {
+      tmpData.notifyEmployee = e.target.checked ? 'Y' : 'N';
+    });
+
+    saveBtn.addEventListener('click', async e => {
+      // main outcome
+      const updateData = {
+        personId: selectedConsumerId,
+        objectiveId: editData.Objective_ID,
+        activityId: outcomeData.activityId,
+        objdate: selectedDate,
+        success: tmpData.success,
+        goalnote: UTIL.removeUnsavableNoteText(tmpData.note),
+        promptType: tmpData.prompt,
+        promptNumber: tmpData.attempt,
+        locationId: tmpData.primaryLoc,
+        locationSecondaryId: tmpData.secLoc,
+        goalStartTime: tmpData.startTime,
+        goalEndTime: tmpData.endTime,
+        goalCILevel: tmpData.ci,
+      }
+      await outcomesAjax.saveGoals(updateData, () => {
         POPUP.hide(detailsPopup);
       });
+
+      // review note
+      const rnUpdateData = {
+        objectiveActivityId: outcomeData.activityId,
+        reviewNote: tmpData.reviewNote,
+        consumerId: selectedConsumerId,
+        objectiveActivityDate: editData.Objective_Date.split(' ')[0],
+        notifyEmployee: tmpData.notifyEmployee,
+      }
+      await outcomesAjax.addReviewNote({
+        token: $.session.Token,
+        ...rnUpdateData,
+      });
+      
+      await getReviewTableDataSecondary();
+      populateTabSections();
     });
     deleteBtn.addEventListener('click', e => {
-      outcomesAjax.deleteGoal(activityId, selectedConsumerId, selectedDate, async () => {
+      outcomesAjax.deleteGoal(outcomeData.activityId, selectedConsumerId, selectedDate, async () => {
+        await getReviewTableDataSecondary();
+        populateTabSections();
         POPUP.hide(detailsPopup);
       });
     });
@@ -667,10 +712,9 @@ const outcomesReview = (function () {
     btnWrap.classList.add('btnWrap');
     btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(deleteBtn);
-    btnWrap.appendChild(addReviewNoteBtn);
 
     detailsPopup.appendChild(primaryLocationDropdown);
-    detailsPopup.appendChild(secondaryLocationDropdown);
+    if (locations.Secondary) detailsPopup.appendChild(secondaryLocationDropdown);
     detailsPopup.appendChild(resultsDropdown);
     detailsPopup.appendChild(promptsDropdown);
     detailsPopup.appendChild(attemptsDropdown);
@@ -681,6 +725,8 @@ const outcomesReview = (function () {
     }
 
     detailsPopup.appendChild(noteInput);
+    detailsPopup.appendChild(reviewNoteInput);
+    detailsPopup.appendChild(notifyCheckbox);
     detailsPopup.appendChild(btnWrap);
     detailsPopup.appendChild(lastEditBy);
 
@@ -783,18 +829,18 @@ const outcomesReview = (function () {
         break;
       }
     }
-
-    console.log(spanLength);
-    updateSpanInput();
   }
   function updateSpanInput() {
     daysBackInput.value = spanLength;
   }
+  function updateDateRangeInputs() {
+    fromDateInput.value = selectedDateSpan.from;
+    toDateInput.value = selectedDateSpan.to;
+  }
   function updateFilterDates() {
     daysBackToggleBtn.textContent = `${unitType} Back`;
     daysBackLabel.textContent = `${unitType} Back`;
-    fromDateInput.value = selectedDateSpan.from;
-    toDateInput.value = selectedDateSpan.to;
+    updateDateRangeInputs();
     updateSpanInput();
   }
   function buildFilterDates() {
@@ -850,7 +896,7 @@ const outcomesReview = (function () {
     dateWrap.appendChild(daysBackInputWrap);
     dateWrap.appendChild(dateRangeInputWrap);
 
-    toggleButtonWrap.addEventListener('click', e => {
+    toggleButtonWrap.addEventListener('click', async e => {
       if (e.target.classList.contains('active')) {
         return;
       }
@@ -864,14 +910,24 @@ const outcomesReview = (function () {
         daysBackToggleBtn.classList.add('active');
         dateRange.classList.remove('active');
         dateRangeToggleBtn.classList.remove('active');
+
+        if (selectedDateSpan.to !== selectedDate) {
+          setUnitType();
+          updateFilterDates();
+          
+          await getReviewTableDataSecondary();
+  
+          populateTabSections();
+        }
+
         return;
       }
 
       isDaysBackFilter = false;
-      daysBack.classList.remove('active');
-      daysBackToggleBtn.classList.remove('active');
       dateRange.classList.add('active');
       dateRangeToggleBtn.classList.add('active');
+      daysBack.classList.remove('active');
+      daysBackToggleBtn.classList.remove('active');
     });
 
     dateWrap.addEventListener('change', async e => {
@@ -883,65 +939,51 @@ const outcomesReview = (function () {
           case NO_FREQ: {
             const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case HOUR: {
             const dateObj = dates.subHours(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case DAY: {
             const dateObj = dates.subDays(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case WEEK: {
             const dateObj = dates.subWeeks(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case MONTH: {
             const dateObj = dates.subMonths(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
           case YEAR: {
             const dateObj = dates.subYears(new Date(`${selectedDateSpan.to} 00:00:00`), spanLength);
             selectedDateSpan.from = dates.formatISO(dateObj).split('T')[0];
+            break;
           }
         }
 
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
+        updateDateRangeInputs();
         await getReviewTableDataSecondary();
-
         populateTabSections();
       }
       if (e.target.id === 'fromDate') {
         selectedDateSpan.from = e.target.value;
         calculateSpanFromDateRange();
-
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
+        updateSpanInput();
         await getReviewTableDataSecondary();
-
         populateTabSections();
       }
       if (e.target.id === 'toDate') {
         selectedDateSpan.to = e.target.value;
         calculateSpanFromDateRange();
-
-        Object.keys(outcomesData).forEach(a => {
-          Object.keys(outcomesData[a]).forEach(b => {
-            delete outcomesData[a][b].reviewDates;
-            outcomesData[a][b].timesDoc = 0;
-          });
-        });
+        updateSpanInput();
         await getReviewTableDataSecondary();
-
         populateTabSections();
       }
     });
@@ -1266,12 +1308,13 @@ const outcomesReview = (function () {
 
             detailRow.addEventListener('click', () => {
               onDetailRowClick({
-                goalTypeID: objId,
+                goalTypeID: d.outcomeTypeId,
                 activityId: details.activityId,
                 date: date,
                 result: details.result,
                 attempt: details.attempts,
                 employeeId: details.staffId,
+                reviewNote: details.reviewNote
               });
             });
           }
@@ -1559,8 +1602,6 @@ const outcomesReview = (function () {
       a[occurrence][objID].frequency = `${freq} ${d.objectiveIncrement} ${recurr}`;
       a[occurrence][objID].frequencyIncrement = d.objectiveIncrement;
       a[occurrence][objID].frequencyModifier = d.frequencyModifier;
-      //a[occurrence][objID].timesDoc = 0;
-      //a[occurrence][objID].successRate = null;
       a[occurrence][objID].outcomeType = d.goalTypeDescription;
       a[occurrence][objID].outcomeTypeId = d.goalTypeId;
 
@@ -1696,6 +1737,7 @@ const outcomesReview = (function () {
           ].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].note = d.objectiveActivityNote;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].activityId = d.objectiveActivityId;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].reviewNote = d.reviewNote;
         }
       }
     });
@@ -1826,11 +1868,21 @@ const outcomesReview = (function () {
     outcomesReviewDiv = _DOM.createElement('div');
     outcomesReviewDiv.classList.add('outcomesReview');
 
+    const backbtn = button.build({
+      text: 'Back',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        outcomes.backToOutcomeLoad(consumer);
+      }
+    });
+
     consumerCardHeader = buildConsumerCard();
 
     const filterDisplay = buildCurrentFilterdisplay();
     outcomeTabs = buildTabs();
 
+    outcomesReviewDiv.appendChild(backbtn);
     outcomesReviewDiv.appendChild(consumerCardHeader);
     outcomesReviewDiv.appendChild(filterDisplay);
     outcomesReviewDiv.appendChild(outcomeTabs);

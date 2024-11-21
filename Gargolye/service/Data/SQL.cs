@@ -75,11 +75,11 @@ namespace Anywhere.service.Data
             sb.Append("    AND (p.term_date >= NOW() OR p.term_date IS NULL)) ");
             sb.AppendFormat("AND se.date_of_service BETWEEN '{0}' AND '{1}' ", startDate, endDate);
             sb.AppendFormat("AND se.Location_ID LIKE '{0}' ", locationId);
-            sb.AppendFormat("AND se.Person_ID LIKE '{0}' ", personId);
+            sb.AppendFormat("AND se.Person_ID LIKE '{0}' ", personId); 
             sb.Append("AND se.person_ID <> 0 ");
             sb.AppendFormat("AND se.Anywhere_Status LIKE '{0}' ", status);
             sb.AppendFormat("AND se.Work_Code_ID LIKE '{0}' ", workCodeId);
-            sb.Append("ORDER BY se.date_of_service DESC, start_time ASC;");
+            sb.Append("ORDER BY se.date_of_service DESC, se.start_time ASC;");
 
             return di.SelectRowsDS(sb.ToString());
         }

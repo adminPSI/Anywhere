@@ -2397,11 +2397,11 @@ namespace Anywhere
             return fbw.getDefaultEmailsForFinalization(token);
         }
 
-        public FinalizationButtonWorker.ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
+        public FinalizationButtonWorker.ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes, string[] wfAttachmentStepIds)
         //public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
 
         {
-            return fbw.finalizationActions(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, peopleId, emailAddresses, checkBoxes);
+            return fbw.finalizationActions(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, peopleId, emailAddresses, checkBoxes, wfAttachmentStepIds);
         }
 
         public string updatePlanOutcomeProgressSummary(string token, long progressSummaryId, string progressSummary)
@@ -2434,7 +2434,7 @@ namespace Anywhere
             return poW.insertPlanOutcomeExperienceResponsibility(experienceId, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, isSalesforceLocation);
         }
 
-        public string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
+        public string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, string[] isSalesforceLocation)
         {
             return poW.updatePlanOutcomeExperienceResponsibility(responsibilityIds, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, isSalesforceLocation);
         }
@@ -2449,7 +2449,7 @@ namespace Anywhere
             return poW.updatePlanOutcome(token, assessmentId, outcomeId, outcome, details, history, sectionId, summaryOfProgress, status, carryOverReason);
         }
 
-        public string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
+        public string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, string[] isSalesforceLocation)
         {
             return poW.updatePlanOutcomesExperience(outcomeId, experienceIds, howHappened, whatHappened, responsibilityIds, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, isSalesforceLocation);
         }
@@ -4307,13 +4307,23 @@ namespace Anywhere
         {
             string token;
             string consumerId;
+            string isViewedAvailableOSPlan;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
             token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
             consumerId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
-            dg.addOutcomePlanNow(token, consumerId);
-            anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            isViewedAvailableOSPlan = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            if (isViewedAvailableOSPlan == "true")
+            {
+                anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            } else
+            {
+                dg.addOutcomePlanNow(token, consumerId);
+                anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            }
+            
+            
 
         }
 
@@ -4370,9 +4380,9 @@ namespace Anywhere
             return fssw.deleteMemberInfo(token, memberId, familyID);
         }
 
-        public string updateSalesforceIdsScriptOneTimeUse()
+        public string updateSalesforceIdsScriptOneTimeUse(string applicationName)
         {
-            return anywhereWorker.updateSalesforceIdsScriptOneTimeUse();
+            return anywhereWorker.updateSalesforceIdsScriptOneTimeUse(applicationName);
         }
 
         public FSSWorker.dropdowns[] getFunding(string token)

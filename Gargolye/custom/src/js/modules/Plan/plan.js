@@ -2046,6 +2046,7 @@ const plan = (function () {
                         planAttachmentIds: getAttachmentIds(selectedAttachmentsPlan),
                         wfAttachmentIds: getAttachmentIds(selectedAttachmentsWorkflow),
                         sigAttachmentIds: getAttachmentIds(selectedAttachmentsSignature), 
+                        wfAttachmentStepIds: getwfstepdocIds(selectedAttachmentsWorkflow),
                         userId: $.session.UserId,
                         assessmentID: planId,
                         peopleId: selectedConsumer.id,

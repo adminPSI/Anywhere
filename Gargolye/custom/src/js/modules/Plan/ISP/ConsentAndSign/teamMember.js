@@ -143,6 +143,7 @@ const csTeamMember = (() => {
         selectedMemberData.lastName = relData.lastName.split('|')[0];
         selectedMemberData.relationship = relData.relationship;
         selectedMemberData.email = relData.email;
+        selectedMemberData.guardianSalesforceId = relData.guardianSalesforceId;
 
         // update inputs with selected data
         nameInput.childNodes[0].value = selectedMemberData.name;
@@ -418,7 +419,7 @@ const csTeamMember = (() => {
         // B -- Imported Guardian and Selected State Guardian have matching SaleForceIDs
         if (
             selectedStateGuardianSalesForceId &&
-            selectedMemberData.salesForceId === selectedStateGuardianSalesForceId &&
+            (selectedMemberData.salesForceId === selectedStateGuardianSalesForceId || selectedMemberData.guardianSalesforceId === selectedStateGuardianSalesForceId) &&
             $.session.areInSalesForce === true
         ) {
             return true;
@@ -426,14 +427,14 @@ const csTeamMember = (() => {
 
         // 1 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, BUT there is a SalesforceID in the People table that matches the selected State Guardian.
         if (
-            selectedMemberData.guardianSalesforceId &&
-            selectedMemberData.guardianSalesforceId !== '' &&
+            (selectedMemberData.salesForceId || selectedMemberData.guardianSalesforceId) &&
+            (selectedMemberData.salesForceId !== selectedStateGuardianSalesForceId &&
+             selectedMemberData.guardianSalesforceId !== selectedStateGuardianSalesForceId) &&
             selectedStateGuardianSalesForceId !== '' &&
-            selectedMemberData.guardianSalesforceId !== selectedStateGuardianSalesForceId &&
             DBteamMemberswithStateSalesForceId &&
             DBteamMemberswithStateSalesForceId.length === 1 &&
             $.session.areInSalesForce === true
-        ) {
+        ) {       
             // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
             if (hasSalesForceIdBeenUsed(DBteamMemberswithStateSalesForceId[0].salesForceId)) {
                 alert(
@@ -496,11 +497,12 @@ const csTeamMember = (() => {
 
         // 3 -- Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, BUT there is a SalesforceID in the People table that matches the selected State Guardian.
         if (
-            (selectedMemberData.guardianSalesforceId === '' || !selectedMemberData.guardianSalesforceId) &&
+            ((selectedMemberData.guardianSalesforceId === '' || !selectedMemberData.guardianSalesforceId) ||
+             (selectedMemberData.salesForceId === '' || !selectedMemberData.salesForceId)) &&
             selectedStateGuardianSalesForceId !== '' &&
             DBteamMemberswithStateSalesForceId &&
             DBteamMemberswithStateSalesForceId.length === 1
-        ) {
+        ) {        
             // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
             if (hasSalesForceIdBeenUsed(DBteamMemberswithStateSalesForceId[0].salesForceId)) {
                 alert(
@@ -558,6 +560,7 @@ const csTeamMember = (() => {
                 try {
                     await consentAndSignAjax.setSalesForceIdForTeamMemberUpdate({
                         peopleId: selectedMemberData.contactId,
+                        teamMemberType: 'Guardian',
                         salesForceId: selectedStateGuardianSalesForceId,
                     });
                     updatesuccess = true;
