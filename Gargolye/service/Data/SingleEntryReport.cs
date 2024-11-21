@@ -1,9 +1,13 @@
 ﻿using Anywhere.Data;
 using Anywhere.Log;
 using CrystalDecisions.CrystalReports.Engine;
+using Microsoft.VisualBasic.ApplicationServices;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using static Anywhere.service.Data.ESign.ESignWorker;
 
 
 namespace Anywhere.service.Data
@@ -130,8 +134,42 @@ namespace Anywhere.service.Data
                 WriteExceptionDetails(ex, builder, 0);
                 logger.debug(builder.ToString());
             }
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                string result = obj.timeDetailSupervisor(supervisorId, startDate, endDate, locationId, personId, status, workCodeId, transaction);
+                List<SupervisorTimeDetail> supervisorTimeDetails = JsonConvert.DeserializeObject<List<SupervisorTimeDetail>>(result);
+                if (supervisorTimeDetails.Count > 0)
+                {
+                    // Set the data source if data exists
+                    cr.SetDataSource(supervisorTimeDetails);
+                }
+                else
+                {
+                    // Handle empty data (you can set an empty list or take other actions)
+                    DataSet ds = new DataSet();
 
-            cr.SetDataSource(obj.TimeDetailSupervisor(supervisorId, startDate, endDate, locationId, personId, status, workCodeId));
+                    // Create a DataTable
+                    DataTable dt1 = new DataTable("SETimeDetail");
+
+                    // Add columns to the DataTable based on your SQL structure
+                    dt1.Columns.Add("dateofservice", typeof(string));  // Adjust to match your SQL types
+                    dt1.Columns.Add("submitted", typeof(string));
+                    dt1.Columns.Add("location", typeof(string));
+                    dt1.Columns.Add("workcode", typeof(string));
+                    dt1.Columns.Add("starttime", typeof(string));
+                    dt1.Columns.Add("endtime", typeof(string));
+                    dt1.Columns.Add("hours", typeof(decimal));
+                    dt1.Columns.Add("consumers", typeof(int));
+                    dt1.Columns.Add("miles", typeof(decimal));
+
+                    // Add the DataTable to the DataSet
+                    ds.Tables.Add(dt1);
+                    cr.SetDataSource(ds);
+                }
+            }
+            //DataSet ds = obj.TimeDetailSupervisor(supervisorId, startDate, endDate, locationId, personId, status, workCodeId);
+
+            // cr.SetDataSource(super);
             string Region = string.Empty;
             string Name = string.Empty;
             DataTable dt = obj.TimeHeader(userId).Tables[0];
@@ -206,6 +244,46 @@ namespace Anywhere.service.Data
             return ms;
 
         }
+
+        private List<SupervisorTimeDetail> ParseToSupervisorTimeDetailList(DataTable table)
+        {
+            var details = new List<SupervisorTimeDetail>();
+
+            foreach (DataRow row in table.Rows)
+            {
+                var detail = new SupervisorTimeDetail
+                {
+                    DateOfService = row.Field<string>("dateofservice"),
+                    Submitted = row.Field<string>("submitted"),
+                    Location = row.Field<string>("location"),
+                    WorkCode = row.Field<string>("workcode"),
+                    StartTime = row.Field<string>("starttime"),
+                    EndTime = row.Field<string>("endtime"),
+                    Hours = row.Field<int>("hours"),
+                    Consumers = row.Field<int>("consumers"),
+                    Miles = row.Field<decimal>("miles")
+                };
+                details.Add(detail);
+            }
+
+            return details;
+        }
+
+        public class SupervisorTimeDetail
+        {
+            public string DateOfService { get; set; }
+            public string Submitted { get; set; }
+            public string Location { get; set; }
+            public string WorkCode { get; set; }
+            public string StartTime { get; set; }
+            public string EndTime { get; set; }
+            public decimal Hours { get; set; } = 0;
+            public int Consumers { get; set; } = 0;
+            public decimal Miles { get; set; } = 0;
+        }
+
+
+
 
     }
 }
