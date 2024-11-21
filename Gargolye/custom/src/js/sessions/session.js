@@ -489,8 +489,8 @@ function setSessionVariables() {
             }
         }
 
-        if (tmpWindow == 'Anywhere Day Services') {
-            if (tmpPerm == 'View') {
+        if (tmpWindow == 'Anywhere Day Services' || $.session.isPSI == true) {
+            if (tmpPerm == 'View' || $.session.isPSI == true) {
                 $.session.DayServiceView = true;
                 $.session.Roster = true;
                 $('#dayservicesettingsbutton').removeClass('disabledModule');
@@ -521,8 +521,8 @@ function setSessionVariables() {
         }
 
         //Goals Permissions
-        if (tmpWindow == 'Anywhere Service Activity') {
-            if (tmpPerm == 'View') {
+        if (tmpWindow == 'Anywhere Service Activity' || $.session.isPSI == true) {
+            if (tmpPerm == 'View' || $.session.isPSI == true) {
                 $.session.GoalsView = true;
                 $('#goalssettingsbutton').removeClass('disabledModule');
             }
@@ -553,8 +553,8 @@ function setSessionVariables() {
         }
 
         //Single Entry Permissions
-        if (tmpWindow == 'Anywhere Single Entry') {
-            if (tmpPerm == 'View') {
+        if (tmpWindow == 'Anywhere Single Entry' || $.session.isPSI == true) {
+            if (tmpPerm == 'View' || $.session.isPSI == true) {
                 $.session.SingleEntryView = true;
                 $('#singleentrybutton').removeClass('disabledModule');
             }
@@ -570,8 +570,8 @@ function setSessionVariables() {
         }
 
         //Workshop Module
-        if (tmpWindow == 'Anywhere Workshop') {
-            if (tmpPerm == 'View') {
+        if (tmpWindow == 'Anywhere Workshop' || $.session.isPSI == true) {
+            if (tmpPerm == 'View' || $.session.isPSI == true) {
                 $.session.WorkshopView = true;
                 $('#workshopbutton').removeClass('disabledModule');
             }
@@ -583,15 +583,15 @@ function setSessionVariables() {
             }
         }
 
-        if (tmpWindow == 'Anywhere Case Notes') {
-            if (tmpPerm == 'View') {
+        if (tmpWindow == 'Anywhere Case Notes' || $.session.isPSI == true) {
+            if (tmpPerm == 'View' || $.session.isPSI == true) {
                 $('#casenotessettingsdiv').removeClass('disabledModule');
                 $.session.CaseNotesView = true;
             }
-            if (tmpPerm == 'View Entered') {
+            if (tmpPerm == 'View Entered' || $.session.isPSI == true) {
                 $.session.CaseNotesViewEntered = true;
             }
-            if (tmpPerm == 'Update Entered') {
+            if (tmpPerm == 'Update Entered' || $.session.isPSI == true) {
                 $.session.CaseNotesUpdateEntered = true;
             }
             if (tmpPerm == 'Update') {
@@ -606,7 +606,7 @@ function setSessionVariables() {
         }
 
         //Absent and progress notes/
-        if (tmpWindow == 'Anywhere Roster') {
+        if (tmpWindow == 'Anywhere Roster' || $.session.isPSI == true) {
             if (tmpPerm == 'Delete Absent') {
                 $.session.RosterDeleteAbsent = true;
             }
@@ -618,19 +618,19 @@ function setSessionVariables() {
             }
         }
         //Demographics
-        if (tmpWindow == 'Anywhere Demographics') {
-            if (tmpPerm == 'View') {
+        if (tmpWindow == 'Anywhere Demographics' || $.session.isPSI == true) {
+            if (tmpPerm == 'View' || $.session.isPSI == true) {
                 $.session.DemographicsView = true;
             }
             if (tmpPerm == 'Update') {
                 $.session.DemographicsUpdate = true;
             }
 
-            if (tmpPerm == 'View Relationships') {
+            if (tmpPerm == 'View Relationships' || $.session.isPSI == true {
                 $.session.DemographicsRelationshipsView = true;
             }
 
-            if (tmpPerm == 'View General') {
+            if (tmpPerm == 'View General' || $.session.isPSI == true) {
                 $.session.DemographicsBasicDataView = true;
             }
 
@@ -641,36 +641,36 @@ function setSessionVariables() {
                 $.session.DemographicsPictureDelete = true;
             }
 
-            if (tmpPerm == 'View Notes') {
+            if (tmpPerm == 'View Notes' || $.session.isPSI == true) {
                 $.session.DemographicsNotesView = true;
             }
 
-            if (tmpPerm == 'View Attachments') {
+            if (tmpPerm == 'View Attachments' || $.session.isPSI == true) {
                 $.session.DemographicsViewAttachments = true;
             }
 
-            if (tmpPerm == 'View Location Schedule') {
+            if (tmpPerm == 'View Location Schedule' || $.session.isPSI == true) {
                 $.session.viewLocationSchedulesKey = true;
             }
-            if (tmpPerm == 'View DOB') {
+            if (tmpPerm == 'View DOB' || $.session.isPSI == true) {
                 $.session.DemographicsViewDOB = true;
             }
-            if (tmpPerm == 'View Medicaid Number') {
+            if (tmpPerm == 'View Medicaid Number' || $.session.isPSI == true) {
                 $.session.DemographicsViewMedicaid = true;
             }
-            if (tmpPerm == 'View Medicare Number') {
+            if (tmpPerm == 'View Medicare Number' || $.session.isPSI == true) {
                 $.session.DemographicsViewMedicare = true;
             }
-            if (tmpPerm == 'View Resident Number') {
+            if (tmpPerm == 'View Resident Number' || $.session.isPSI == true) {
                 $.session.DemographicsViewResident = true;
             }
-            if (tmpPerm == 'View SSN') {
+            if (tmpPerm == 'View SSN' || $.session.isPSI == true) {
                 $.session.DemographicsViewSSN = true;
             }
-            if (tmpPerm == 'View Consumer Number') {
+            if (tmpPerm == 'View Consumer Number' || $.session.isPSI == true) {
                 $.session.DemographicsViewConsumerNumber = true;
             }
-            if (tmpPerm == 'View Local ID') {
+            if (tmpPerm == 'View Local ID' || $.session.isPSI == true) {
                 $.session.DemographicsViewLocalId = true;
             }
             if (tmpPerm == 'Update Relationships') {
@@ -679,8 +679,8 @@ function setSessionVariables() {
         }
 
         //Incident Tracking Permissons
-        if (tmpWindow == 'Anywhere Incident Tracking') {
-            if (tmpPerm == 'View Case Load') {
+        if (tmpWindow == 'Anywhere Incident Tracking' || $.session.isPSI == true) {
+            if (tmpPerm == 'View Case Load' || $.session.isPSI == true) {
                 $.session.incidentTrackingViewCaseLoad = true;
             } else if (tmpPerm == 'Delete') {
                 $.session.incidentTrackingDelete = true;
@@ -688,7 +688,7 @@ function setSessionVariables() {
                 $.session.incidentTrackingInsert = true;
             } else if (tmpPerm == 'Update') {
                 $.session.incidentTrackingUpdate = true;
-            } else if (tmpPerm == 'View') {
+            } else if (tmpPerm == 'View' || $.session.isPSI == true) {
                 $.session.incidentTrackingView = true;
             } else if (tmpPerm == 'Reviewed By User') {
                 $.session.incidentTrackingReviewedBy = true;
@@ -989,11 +989,11 @@ function setSessionVariables() {
             }
         }
 
-        if (tmpWindow == 'Anywhere User Home') {
+        if (tmpWindow == 'Anywhere User Home' || $.session.isPSI == true) {
             if (tmpPerm == 'Deny Staff TimeClock Change') {
                 $.session.DenyStaffClockUpdate = true;
             }
-            if (tmpPerm == 'View My Information') {
+            if (tmpPerm == 'View My Information' || $.session.isPSI == true) {
                 $.session.ViewMyInformation = true;
             }
             if (tmpPerm == 'Update My Information') {
@@ -1001,7 +1001,7 @@ function setSessionVariables() {
             }
         }
 
-        if (tmpWindow == 'admin') {
+        if (tmpWindow == 'admin' || $.session.isPSI == true) {
             $.session.DayServiceView = true;
             $.session.DayServiceInsert = true;
             $.session.DayServiceUpdate = true;
