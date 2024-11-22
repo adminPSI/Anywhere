@@ -2021,7 +2021,7 @@ const outcomes = (function () {
         const { getPlanbyConsumerHistoryResult } = showPopup;
 
         if (getPlanbyConsumerHistoryResult[0].isPlanAvailable == 'true') {
-             if (displayPlanViewPopup !== 'false') planViewPOPUP(); 
+             if (displayPlanViewPopup !== 'false' && $.session.RequireViewPlan) planViewPOPUP(); 
             topFilterDateWrap.appendChild(viewPlanBtn);
             //viewPlanBtn.classList.remove('disabled');
         }
