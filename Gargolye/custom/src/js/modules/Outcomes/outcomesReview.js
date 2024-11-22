@@ -481,14 +481,15 @@ const outcomesReview = (function () {
   function showDetailViewPopup(editData, outcomeData) {
     detailsPopup = POPUP.build({});
     const tmpData = {
-      notifyEmployee: 'N'
+      notifyEmployee: 'N',
+      reviewNote: outcomeData.reviewNote || ''
     };
 
     if (editData) {
       locationID = editData.Location_ID || '';
       tmpData.primaryLoc = editData.Location_ID || '';
       tmpData.secLoc = editData.Locations_Secondary_ID || '';
-      tmpData.success = editData.objective_success_description || '';
+      tmpData.success = editData.Objective_Success || '';
       tmpData.prompt = editData.Prompt_Type || '';
       tmpData.attempt = editData.Prompt_Number || '';
       tmpData.ci = editData.community_integration_level || '';
@@ -716,18 +717,18 @@ const outcomesReview = (function () {
         personId: selectedConsumerId,
         objectiveId: editData.Objective_ID,
         activityId: outcomeData.activityId,
-        objdate: editData.Objective_Date,
+        objdate: dates.formateToISO(editData.Objective_Date.split(' ')[0]),
         success: tmpData.success,
         goalnote: UTIL.removeUnsavableNoteText(tmpData.note),
-        promptType: tmpData.prompt,
-        promptNumber: tmpData.attempt,
+        promptType: tmpData.prompt === '' ? '0' : tmpData.prompt,
+        promptNumber: tmpData.attempt === '' ? '0' : tmpData.attempt,
         locationId: tmpData.primaryLoc,
-        locationSecondaryId: tmpData.secLoc,
+        locationSecondaryId: tmpData.secLoc === '' ? 0 : tmpData.secLoc,
         goalStartTime: tmpData.startTime,
         goalEndTime: tmpData.endTime,
         goalCILevel: tmpData.ci,
       }
-      await outcomesAjax.saveGoals(updateData, () => {
+      outcomesAjax.saveGoals(updateData, () => {
         POPUP.hide(detailsPopup);
       });
 
