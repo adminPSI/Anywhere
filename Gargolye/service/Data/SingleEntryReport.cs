@@ -253,7 +253,7 @@ namespace Anywhere.service.Data
             {
                 var detail = new SupervisorTimeDetail
                 {
-                    DateOfService = row.Field<string>("dateofservice"),
+                    DateOfServiceRaw = row.Field<DateTime>("dateofserviceraw"),
                     Submitted = row.Field<string>("submitted"),
                     Location = row.Field<string>("location"),
                     WorkCode = row.Field<string>("workcode"),
@@ -271,19 +271,16 @@ namespace Anywhere.service.Data
 
         public class SupervisorTimeDetail
         {
-            public string DateOfService { get; set; }
+            public DateTime DateOfServiceRaw { get; set; } // Bind to JSON directly
+            public string DateOfService => DateOfServiceRaw.ToString("MM/dd/yyyy"); // Format the date as desired
             public string Submitted { get; set; }
             public string Location { get; set; }
             public string WorkCode { get; set; }
             public string StartTime { get; set; }
             public string EndTime { get; set; }
-            public decimal Hours { get; set; } = 0;
-            public int Consumers { get; set; } = 0;
-            public decimal Miles { get; set; } = 0;
+            public decimal Hours { get; set; }
+            public int Consumers { get; set; }
+            public decimal Miles { get; set; }
         }
-
-
-
-
     }
 }
