@@ -2022,12 +2022,12 @@ const outcomes = (function () {
 
         if (getPlanbyConsumerHistoryResult[0].isPlanAvailable == 'true') {
              if (displayPlanViewPopup !== 'false' && $.session.RequireViewPlan) planViewPOPUP(); 
-            topFilterDateWrap.appendChild(viewPlanBtn);
+             if ($.session.RequireViewPlan) topFilterDateWrap.appendChild(viewPlanBtn);
             //viewPlanBtn.classList.remove('disabled');
         }
         else {
            //planViewPOPUP(); 
-            topFilterDateWrap.appendChild(viewPlanBtn);
+           if ($.session.RequireViewPlan) topFilterDateWrap.appendChild(viewPlanBtn);
           //  viewPlanBtn.classList.add('disabled');
         }
             
