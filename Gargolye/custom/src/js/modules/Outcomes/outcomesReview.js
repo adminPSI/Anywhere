@@ -1699,6 +1699,7 @@ const outcomesReview = (function () {
             outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].note = d.objectiveActivityNote;
             outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].activityId = d.objectiveActivityId;
             outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].staffId = staffId;
+            outcomeOjb[occurrence][objID].reviewDates['nf'][activityId].reviewNote = d.reviewNote;
 
             return;
           }
@@ -1784,6 +1785,7 @@ const outcomesReview = (function () {
             activityId
           ].prompts = `${prompt ? prompt.Code : ''} ${prompt ? prompt.Caption : ''}`;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].note = d.objectiveActivityNote;
+          outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].staffId = staffId;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].activityId = d.objectiveActivityId;
           outcomeOjb[occurrence][objID].reviewDates[dateThisBelongsTo][activityId].reviewNote = d.reviewNote;
         }
