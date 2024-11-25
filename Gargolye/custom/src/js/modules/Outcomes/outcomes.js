@@ -292,13 +292,6 @@ const outcomes = (function () {
             goalEndTime: !goalEndTime ? '' : goalEndTime,
             goalCILevel: !goalCILevel ? '' : goalCILevel,
         };
-        const rnUpdateData = {
-          objectiveActivityId: activityId,
-          reviewNote: reviewNote,
-          consumerId: selectedConsumerId,
-          objectiveActivityDate: objdate,
-          notifyEmployee: notifyEmployee,
-        };
         var section = document.querySelector('.tabs__nav--item.active');
         currentSection = section.innerHTML;
         POPUP.hide(detailsPopup);
@@ -308,9 +301,13 @@ const outcomes = (function () {
             getConsumersWithRemainingGoals();
             locationSecondaryId = 0;
             await outcomesAjax.addReviewNote({
-                token: $.session.Token,
-                ...rnUpdateData,
-              });
+              token: $.session.Token,
+              objectiveActivityId: activityId,
+              reviewNote: reviewNote,
+              consumerId: selectedConsumerId,
+              objectiveActivityDate: objdate,
+              notifyEmployee: notifyEmployee,
+            });
             setTimeout(async () => {
                 successfulSave.hide();
                 await loadCardView(selectedConsumerObj, 'false');
