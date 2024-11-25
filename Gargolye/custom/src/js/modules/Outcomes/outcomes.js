@@ -1492,7 +1492,7 @@ const outcomes = (function () {
         }
 
         
-        if ($.session.OutcomesReview) {
+        if (!$.session.OutcomesReview) {
             reviewNoteInput.classList.add('disabled');
             notifyEmployeeCheckbox.classList.add('disabled');
         }
