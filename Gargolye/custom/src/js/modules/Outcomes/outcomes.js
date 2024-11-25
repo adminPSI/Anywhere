@@ -59,6 +59,8 @@ const outcomes = (function () {
     let objdate;
     let success;
     let goalnote;
+    let reviewNote;
+    let notifyEmployee = 'N';
     let promptType;
     let promptNumber;
     let locationId;
@@ -271,9 +273,11 @@ const outcomes = (function () {
         objdate = currDate;
     }
     function saveNewOutcome() {
+        // let reviewNote;
+        // let notifyEmployee;
         getInputValues();
         goalnote = UTIL.removeUnsavableNoteText(goalnote); //fix note with bad text
-        var newOutcomeData = {
+        const newOutcomeData = {
             personId,
             objectiveId,
             activityId,
@@ -288,14 +292,25 @@ const outcomes = (function () {
             goalEndTime: !goalEndTime ? '' : goalEndTime,
             goalCILevel: !goalCILevel ? '' : goalCILevel,
         };
+        const rnUpdateData = {
+          objectiveActivityId: activityId,
+          reviewNote: reviewNote,
+          consumerId: selectedConsumerId,
+          objectiveActivityDate: objdate,
+          notifyEmployee: notifyEmployee,
+        };
         var section = document.querySelector('.tabs__nav--item.active');
         currentSection = section.innerHTML;
         POPUP.hide(detailsPopup);
         successfulSave.show();
-        outcomesAjax.saveGoals(newOutcomeData, function () {
+        outcomesAjax.saveGoals(newOutcomeData, async function () {
             resetOutcomeSaveData();
             getConsumersWithRemainingGoals();
             locationSecondaryId = 0;
+            await outcomesAjax.addReviewNote({
+                token: $.session.Token,
+                ...rnUpdateData,
+              });
             setTimeout(async () => {
                 successfulSave.hide();
                 await loadCardView(selectedConsumerObj, 'false');
@@ -1321,13 +1336,37 @@ const outcomes = (function () {
         if (note !== undefined && enteredByUser && enteredByUser.toUpperCase() !== $.session.UserId.toUpperCase()) {
             return noteInput;
         }
-        noteInput.addEventListener('keyup', () => {
+        noteInput.addEventListener('keyup', (event) => {
             currNote = event.target.value;
             goalnote = currNote;
             checkRequiredFields();
         });
 
         return noteInput;
+    }
+    function buildReviewNoteInput(note) {
+      const noteInput = input.build({
+        label: 'Review Note',
+        style: 'secondary',
+        type: 'textarea',
+        value: note,
+      });
+      noteInput.addEventListener('keyup', (event) => {
+        reviewNote = event.target.value;
+      });
+  
+      return noteInput;
+    }
+    function buildNotifyCheckbox() {
+      const notifyEmployeeCheckbox = input.buildCheckbox({
+        text: 'Notify Employee via System Message',
+      });
+      
+      notifyEmployeeCheckbox.addEventListener('change', e => {
+        notifyEmployee = e.target.checked ? 'Y' : 'N';
+      });
+  
+      return notifyEmployeeCheckbox;
     }
     function buildSaveButton(isEdit) {
         var text = isEdit ? 'Update' : 'Save';
@@ -1430,6 +1469,8 @@ const outcomes = (function () {
             cIDropdown = buildCommunityIntegrationDropdown(editData.community_integration_level);
             timeInputs = buildTimeInputs(editData.start_time, editData.end_time);
             noteInput = buildNoteInput(editData.Objective_Activity_Note);
+            reviewNoteInput = buildReviewNoteInput();
+            notifyEmployeeCheckbox = buildNotifyCheckbox();
             saveBtn = buildSaveButton(true);
             deleteBtn = buildDeleteButton();
             enteredByUser = editData.submitted_by_user_id;
@@ -1443,6 +1484,8 @@ const outcomes = (function () {
             cIDropdown = buildCommunityIntegrationDropdown();
             timeInputs = buildTimeInputs();
             noteInput = buildNoteInput();
+            reviewNoteInput = buildReviewNoteInput();
+            notifyEmployeeCheckbox = buildNotifyCheckbox();
             saveBtn = buildSaveButton(false);
             deleteBtn = undefined;
         }
@@ -1470,6 +1513,10 @@ const outcomes = (function () {
         }
 
         detailsPopup.appendChild(noteInput);
+        if ($.session.OutcomesReview) {
+            detailsPopup.appendChild(reviewNoteInput);
+            detailsPopup.appendChild(notifyEmployeeCheckbox);
+        }
         detailsPopup.appendChild(btnWrap);
 
         if (editData) checkRequiredFields();
