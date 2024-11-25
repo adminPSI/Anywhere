@@ -1491,6 +1491,12 @@ const outcomes = (function () {
             deleteBtn = undefined;
         }
 
+        
+        if ($.session.OutcomesReview) {
+            reviewNoteInput.classList.add('disabled');
+            notifyEmployeeCheckbox.classList.add('disabled');
+        }
+
         checkShowFields();
 
         var btnWrap = document.createElement('div');
@@ -1514,10 +1520,8 @@ const outcomes = (function () {
         }
 
         detailsPopup.appendChild(noteInput);
-        if ($.session.OutcomesReview) {
-            detailsPopup.appendChild(reviewNoteInput);
-            detailsPopup.appendChild(notifyEmployeeCheckbox);
-        }
+        detailsPopup.appendChild(reviewNoteInput);
+        detailsPopup.appendChild(notifyEmployeeCheckbox);
         detailsPopup.appendChild(btnWrap);
 
         if (editData) checkRequiredFields();
