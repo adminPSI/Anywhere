@@ -2068,13 +2068,13 @@ const outcomes = (function () {
         const { getPlanbyConsumerHistoryResult } = showPopup;
 
         if (getPlanbyConsumerHistoryResult[0].isPlanAvailable == 'true') {
-             if (displayPlanViewPopup !== 'false') planViewPOPUP(); 
-            topFilterDateWrap.appendChild(viewPlanBtn);
+             if (displayPlanViewPopup !== 'false' && $.session.RequireViewPlan) planViewPOPUP(); 
+             if ($.session.RequireViewPlan) topFilterDateWrap.appendChild(viewPlanBtn);
             //viewPlanBtn.classList.remove('disabled');
         }
         else {
            //planViewPOPUP(); 
-            topFilterDateWrap.appendChild(viewPlanBtn);
+           if ($.session.RequireViewPlan) topFilterDateWrap.appendChild(viewPlanBtn);
           //  viewPlanBtn.classList.add('disabled');
         }
             
