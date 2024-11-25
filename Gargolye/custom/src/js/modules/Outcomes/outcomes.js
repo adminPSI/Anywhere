@@ -273,8 +273,6 @@ const outcomes = (function () {
         objdate = currDate;
     }
     function saveNewOutcome() {
-        // let reviewNote;
-        // let notifyEmployee;
         getInputValues();
         goalnote = UTIL.removeUnsavableNoteText(goalnote); //fix note with bad text
         const newOutcomeData = {
@@ -297,9 +295,6 @@ const outcomes = (function () {
         POPUP.hide(detailsPopup);
         successfulSave.show();
         outcomesAjax.saveGoals(newOutcomeData, async function () {
-            resetOutcomeSaveData();
-            getConsumersWithRemainingGoals();
-            locationSecondaryId = 0;
             await outcomesAjax.addReviewNote({
               token: $.session.Token,
               objectiveActivityId: activityId,
@@ -308,6 +303,10 @@ const outcomes = (function () {
               objectiveActivityDate: objdate,
               notifyEmployee: notifyEmployee,
             });
+
+            resetOutcomeSaveData();
+            getConsumersWithRemainingGoals();
+            locationSecondaryId = 0;
             setTimeout(async () => {
                 successfulSave.hide();
                 await loadCardView(selectedConsumerObj, 'false');
@@ -324,6 +323,8 @@ const outcomes = (function () {
         goalEndTime = '';
         goalCILevel = '';
         locationSecondaryId = 0;
+        notifyEmployee = 'N';
+        reviewNote = '';
     }
     function getInputValues() {
         var promptTypeInput = promptsDropdown.querySelector('.dropdown__select');
@@ -1348,6 +1349,9 @@ const outcomes = (function () {
         type: 'textarea',
         value: note,
       });
+
+      reviewNote = note;
+
       noteInput.addEventListener('keyup', (event) => {
         reviewNote = event.target.value;
       });
@@ -1466,7 +1470,7 @@ const outcomes = (function () {
             cIDropdown = buildCommunityIntegrationDropdown(editData.community_integration_level);
             timeInputs = buildTimeInputs(editData.start_time, editData.end_time);
             noteInput = buildNoteInput(editData.Objective_Activity_Note);
-            reviewNoteInput = buildReviewNoteInput();
+            reviewNoteInput = buildReviewNoteInput(editData.reviewNote);
             notifyEmployeeCheckbox = buildNotifyCheckbox();
             saveBtn = buildSaveButton(true);
             deleteBtn = buildDeleteButton();

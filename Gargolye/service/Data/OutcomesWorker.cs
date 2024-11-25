@@ -159,6 +159,7 @@ namespace Anywhere.service.Data
             public string Last_Update { get; set; }
             public string show_time { get; set; }
             public string Show_Community_Integration { get; set; }
+            public string reviewNote { get; set; }
         }
 
         //New
