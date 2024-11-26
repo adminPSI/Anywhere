@@ -1255,9 +1255,10 @@ const outcomesReview = (function () {
       table.appendChild(mainRowWrap);
 
       const mainRow = _DOM.createElement('div', { class: ['row', 'row-main'] });
-      mainRow.setAttribute('data-outcomeType', d.outcomeType)
-      mainRow.setAttribute('data-outcomeTypeId', d.outcomeTypeId)
-      mainRow.setAttribute('data-showExclamation', d.showExclamation)
+      mainRow.setAttribute('data-objid', objId);
+      mainRow.setAttribute('data-outcomeType', d.outcomeType);
+      mainRow.setAttribute('data-outcomeTypeId', d.outcomeTypeId);
+      mainRow.setAttribute('data-showExclamation', d.showExclamation);
       const mainTI = buildToggleIcon();
       mainTI.classList.add('mainToggle');
       mainRow.appendChild(mainTI);
@@ -1818,8 +1819,6 @@ const outcomesReview = (function () {
     });
 
     outcomesDataSecondaryRaw = data.gridSecondary;
-    exclamationIds = data.exIds.map(idObj => idObj.objective_id);
-    exclamationSecondaryIds = data.exIds.map(idObj => idObj.Staff_ID);
 
     Object.keys(outcomesData).forEach(a => {
       Object.keys(outcomesData[a]).forEach(b => {
@@ -1849,12 +1848,6 @@ const outcomesReview = (function () {
         }
       }
       
-      if (frequency !== 'NF') {
-        if (exclamationIds && exclamationIds.find(ids => ids === objId)) {
-          outcomesData[frequency][objId].showExclamation = true;
-        }
-      }
-      
       if (outcomesData[frequency][objId].reviewDates) {
         Object.keys(outcomesData[frequency][objId].reviewDates).forEach(rDate => {
           if (frequency === 'NF') return;
@@ -1872,14 +1865,17 @@ const outcomesReview = (function () {
 
           if (freqMod === 'OBJFMAL' && timesDocDate < parseInt(freqInc)) {
             //'At least'
+            outcomesData[frequency][objId].showExclamation = true
             exclamationDateMap[objId][rDate] = true;
           }
           if (freqMod === 'OBJFMEX' && timesDocDate !== parseInt(freqInc)) {
             //'Exactly'
+            outcomesData[frequency][objId].showExclamation = true
             exclamationDateMap[objId][rDate] = true;
           }
           if (freqMod === 'OBJFMNM' && timesDocDate > parseInt(freqInc)) {
             //'No more than'
+            outcomesData[frequency][objId].showExclamation = true
             exclamationDateMap[objId][rDate] = true;
           }
         });
