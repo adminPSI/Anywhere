@@ -833,21 +833,21 @@ namespace Anywhere.service.Data.DocumentConversion
                         allAttachments.Add(new_byte_output);
                         new_byte_output = null;
                     }
-                    else if (attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
+                    else if (attachment.filename.ToUpper().Contains(".DOCX") || attachment.filename.ToUpper().Contains(".XLS") || attachment.filename.ToUpper().Contains(".XLSX") || attachment.filename.ToUpper().Contains(".DOC"))
                     {
-                        if (attachment.filename.ToUpper().Contains("XLSX"))
+                        if (attachment.filename.ToUpper().Contains(".XLSX"))
                         {
                             attachment.filename = attachment.filename.Replace("xlsx", "pdf");
                         }
-                        if (attachment.filename.ToUpper().Contains("DOCX"))
+                        if (attachment.filename.ToUpper().Contains(".DOCX"))
                         {
                             attachment.filename = attachment.filename.Replace("docx", "pdf");
                         }
-                        if (attachment.filename.ToUpper().Contains("XLS"))
+                        if (attachment.filename.ToUpper().Contains(".XLS"))
                         {
                             attachment.filename = attachment.filename.Replace("xls", "pdf");
                         }
-                        if (attachment.filename.ToUpper().Contains("DOC"))
+                        if (attachment.filename.ToUpper().Contains(".DOC"))
                         {
                             attachment.filename = attachment.filename.Replace("doc", "pdf");
                         }
