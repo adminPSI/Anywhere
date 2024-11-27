@@ -1819,9 +1819,9 @@ const outcomes = (function () {
         );
         const { isNewBtnDisabledByPlanHistoryResult } = result;
 
-        if (dailyAbsent || isNewBtnDisabledByPlanHistoryResult[0].isNewDisabled == 'true') {
-            newBtn.classList.add('disabled');
-        }
+       // if (dailyAbsent || isNewBtnDisabledByPlanHistoryResult[0].isNewDisabled == 'true') {
+       //     newBtn.classList.add('disabled');
+       // }
 
         var successMethodWrap = document.createElement('div');
         successMethodWrap.classList.add('btnWrap');
