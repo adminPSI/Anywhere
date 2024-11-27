@@ -255,7 +255,7 @@ const dates = (function () {
     const timestampLeft = timestampLeftTime - startOfWeekLeft;
     const timestampRight = timestampRightTime - startOfWeekRight;
 
-    return Math.round((timestampLeft - timestampRight) / MILLISECONDS_IN_WEEK);
+    return Math.round((timestampLeftTime - timestampRightTime) / MILLISECONDS_IN_WEEK);
   }
   function differenceInMonths(dirtyDateLeft, dirtyDateRight) {
     const dateLeft = toDate(dirtyDateLeft);
