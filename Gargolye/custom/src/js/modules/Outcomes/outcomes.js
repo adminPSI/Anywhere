@@ -1812,12 +1812,12 @@ const outcomes = (function () {
         dailyAbsent = false;
         var objectiveActivities = buildObjectiveActivities(outcome);
 
-        const result = await outcomesAjax.isNewBtnDisabledByPlanHistory(
-            selectedConsumerId,
-            outcome.goal_id,
-            outcome.Objective_id,
-        );
-        const { isNewBtnDisabledByPlanHistoryResult } = result;
+        //const result = await outcomesAjax.isNewBtnDisabledByPlanHistory(
+       //     selectedConsumerId,
+        //    outcome.goal_id,
+        //    outcome.Objective_id,
+      //  );
+       // const { isNewBtnDisabledByPlanHistoryResult } = result;
 
        // if (dailyAbsent || isNewBtnDisabledByPlanHistoryResult[0].isNewDisabled == 'true') {
        //     newBtn.classList.add('disabled');
