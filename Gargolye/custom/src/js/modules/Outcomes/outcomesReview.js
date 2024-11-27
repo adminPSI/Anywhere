@@ -756,6 +756,11 @@ const outcomesReview = (function () {
       });
     });
 
+    if (!$.session.OutcomesReview) {
+      reviewNoteInput.classList.add('disabled');
+      notifyCheckbox.classList.add('disabled');
+    }
+
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     btnWrap.appendChild(saveBtn);
