@@ -1824,6 +1824,7 @@ const outcomesReview = (function () {
       Object.keys(outcomesData[a]).forEach(b => {
         outcomesData[a][b].timesDoc = 0;
         outcomesData[a][b].successRate = 0;
+        outcomesData[a][b].showExclamation = false;
       });
     });
 
