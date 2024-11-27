@@ -756,6 +756,11 @@ const outcomesReview = (function () {
       });
     });
 
+    if (!$.session.OutcomesReview) {
+      reviewNoteInput.classList.add('disabled');
+      notifyCheckbox.classList.add('disabled');
+    }
+
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     btnWrap.appendChild(saveBtn);
@@ -1824,6 +1829,7 @@ const outcomesReview = (function () {
       Object.keys(outcomesData[a]).forEach(b => {
         outcomesData[a][b].timesDoc = 0;
         outcomesData[a][b].successRate = 0;
+        outcomesData[a][b].showExclamation = false;
       });
     });
 
