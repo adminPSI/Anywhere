@@ -20,6 +20,7 @@ namespace Anywhere.service.Data.ResetPassword
         public string getActiveInactiveUserDateJSON(string token, string isInactiveUser)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(isInactiveUser) == false) return null;
             logger.debug("getActiveInactiveUserDateJSON" + token);
             try
             {
@@ -51,6 +52,22 @@ namespace Anywhere.service.Data.ResetPassword
             {
                 logger.error("561", ex.Message + " ANYW_updateUserStatus( '" + isInactiveUser + "')");
                 return "561: Error getting single entry by id";
+            }
+
+        }
+
+        public bool stringInjectionValidator(string uncheckedString)
+        {
+            string waitFor = "WAITFOR DELAY";
+            string dropTable = "DROP TABLE";
+            string deleteFrom = "DELETE FROM";
+            if (!string.IsNullOrWhiteSpace(uncheckedString) && (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(deleteFrom)))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
             }
 
         }

@@ -23,9 +23,18 @@ const resetPassword = (function () {
         DOM.clearActionCenter();
         const topNav = buildRosterTopNav();
         userTable = buildTable();
-        
+
+        // Set the data type for each header, for sorting purposes
+        const headers = userTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // User Name
+        headers[1].setAttribute('data-type', 'string'); // Last Name
+        headers[2].setAttribute('data-type', 'string'); // First Name 
+       
         DOM.ACTIONCENTER.appendChild(topNav);          
         DOM.ACTIONCENTER.appendChild(userTable);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(userTable);
        
         SEARCH_BTN.addEventListener('click', event => {
             SEARCH_WRAP.classList.toggle('searchOpen');

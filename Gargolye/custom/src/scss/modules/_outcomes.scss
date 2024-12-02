@@ -1,486 +1,867 @@
 .outcomes {
+  &__consumer {
+    border-radius: $r-sm;
+    box-shadow: $shadow-m1;
+    margin: 0 0 20px;
+    overflow: hidden;
 
+    .consumerCard {
+      border-radius: 0;
+      box-shadow: none;
+      flex-flow: row nowrap;
 
-    &__consumer {
-        border-radius: $r-sm;
-        box-shadow: $shadow-m1;
-        margin: 0 0 20px;
-        overflow: hidden;
+      .portrait {
+        padding: 0;
+        width: 60px;
 
-        .consumerCard {
-            border-radius: 0;
-            box-shadow: none;
-            flex-flow: row nowrap;
-
-            .portrait {
-                padding: 0;
-                width: 60px;
-
-                img {
-                    position: relative;
-                }
-            }
-
-            .details {
-                flex-grow: 1;
-                padding: 10px;
-            }
+        img {
+          position: relative;
         }
+      }
+
+      .details {
+        flex-grow: 1;
+        padding: 10px;
+      }
+    }
+  }
+
+  .tabs {
+    .tabs__nav--item {
+      font-size: 3vw;
     }
 
-    .tabs {
-        .tabs__nav--item {
-            font-size: 3vw;
-        }
-
-        @media screen and (min-width: 560px) {
-            .tabs__nav--item {
-                font-size: inherit;
-            }
-        }
-
-        background: $primary;
-
-        &__nav--item {
-            color: $font-light;
-        }
-
-        &__body--section {
-
-            &.active {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-                grid-gap: 1rem;
-            }
-        }
+    @media screen and (min-width: 560px) {
+      .tabs__nav--item {
+        font-size: inherit;
+      }
     }
 
-    .hidden {
-        display: none;
+    background: $primary;
+
+    &__nav--item {
+      color: $font-light;
     }
 
-    .progressCircle__text {
-        font-size: 18px;
+    &__body--section {
+      &.active {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+        grid-gap: 1rem;
+      }
     }
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .progressCircle__text {
+    font-size: 18px;
+  }
 }
 
-.actioncenter[data-active-module="outcomes"] {
-    .filteredByData {
-        margin-top: 25px;
+.actioncenter[data-active-module='outcomes'] {
+  .filteredByData {
+    margin-top: 25px;
+  }
+
+  .currConsumerDisp {
+    font-weight: 500;
+
+    span {
+      color: $primary;
     }
 
-    .currConsumerDisp {
-        font-weight: 500;
-
-        span {
-            color: $primary;
-        }
-
-        margin-bottom: 10px;
-    }
+    margin-bottom: 10px;
+  }
 }
-
-// .currentFilterDisplayOC {
-//   p {
-//     font-weight: 500;
-//     span {
-//       color: $primary;
-//     }
-//   }
-//   margin-bottom: 10px;
-// }
 
 .popup {
-    .singleBtn {
-        width: 100%;
-    }
+  .singleBtn {
+    width: 100%;
+  }
 }
 
 .topOutcomeWrap {
-    display: flex;
-    flex-flow: row wrap;
-    margin: 0 0 10px;
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 0 10px;
 
-    button {
-        flex-grow: 1;
-        margin: 0 1% 0 0;
-        max-width: 260px;
-    }
+  button {
+    flex-grow: 1;
+    margin: 0 1% 0 0;
+    max-width: 260px;
+    white-space: nowrap;
+  }
 
-    .input-field {
-        margin: 0 1% 0 0;
-    }
+  .input-field {
+    margin: 0 1% 0 0;
+  }
 }
-
 
 .dayBackDateSpanWrap {
-    display: flex;
-    flex-flow: row wrap;
-    margin: 0 0 10px;
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 0 10px;
 
-    div {
-        margin: 0 10px 0 0;
+  div {
+    margin: 0 10px 0 0;
 
-        &:last-child {
-            margin: 0;
-        }
+    &:last-child {
+      margin: 0;
     }
+  }
 
-    p {
-        font-weight: 500;
+  p {
+    font-weight: 500;
 
-        span {
-            color: $primary;
-        }
+    span {
+      color: $primary;
     }
+  }
 }
-
 
 .card {
+  &.objectiveOverview {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.45), 0 3px 6px rgba(0, 0, 0, 0.7);
+    // margin: 0 0 20px;
+    padding: 10px 8px;
 
-    &.objectiveOverview {
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.45), 0 3px 6px rgba(0, 0, 0, 0.7);
-        // margin: 0 0 20px;
-        padding: 10px 8px;
-
-        > * {
-            margin: 0 0 16px;
-        }
-
-        .row {
-            display: flex;
-
-            &.progressAndNew {
-                align-items: center;
-                justify-content: space-around;
-
-                .btn-icon {
-                    flex-flow: column;
-                    margin: 0;
-                    padding: 16px 32px;
-                    box-shadow: $shadow-m1;
-
-                    svg {
-                        margin: 0;
-                        width: 40px;
-                    }
-
-                    span {
-                        font-size: 1.125rem;
-                    }
-                }
-
-                .progressCircle .path2 {
-                    stroke-linecap: round;
-                }
-            }
-        }
-
-        .statement {
-            border-radius: $r-sm;
-            border: $w-xs solid $black;
-            margin: 0 0 10px;
-            padding: 10px;
-        }
-
-        .activities {
-            border-radius: $r-sm;
-            border: $w-xs solid $black;
-            display: flex;
-            flex-flow: row wrap;
-            margin: 0 0 10px;
-            padding: 10px;
-
-            .activity {
-                background: $primary;
-                border-radius: $r-xl;
-                color: $font-light;
-                display: block;
-                padding: 5px 8px;
-                text-align: center;
-            }
-        }
+    > * {
+      margin: 0 0 16px;
     }
+
+    .row {
+      display: flex;
+
+      &.progressAndNew {
+        align-items: center;
+        justify-content: space-around;
+
+        .btn-icon {
+          flex-flow: column;
+          margin: 0;
+          padding: 16px 32px;
+          box-shadow: $shadow-m1;
+
+          svg {
+            margin: 0;
+            width: 40px;
+          }
+
+          span {
+            font-size: 1.125rem;
+          }
+        }
+
+        .progressCircle .path2 {
+          stroke-linecap: round;
+        }
+      }
+    }
+
+    .statement {
+      border-radius: $r-sm;
+      border: $w-xs solid $black;
+      margin: 0 0 10px;
+      padding: 10px;
+    }
+
+    .activities {
+      border-radius: $r-sm;
+      border: $w-xs solid $black;
+      display: flex;
+      flex-flow: row wrap;
+      margin: 0 0 10px;
+      padding: 10px;
+
+      .activity {
+        background: $primary;
+        border-radius: $r-xl;
+        color: $font-light;
+        display: block;
+        padding: 5px 8px;
+        text-align: center;
+      }
+    }
+  }
 }
 
-[data-mainrow="false"] {
-    .dragHandle {
-        visibility: hidden;
-    }
+[data-mainrow='false'] {
+  .dragHandle {
+    visibility: hidden;
+  }
 }
 
 .reportsBtnWrap {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    .reportPopupBtn {
-        width: auto;
-    }
+  .reportPopupBtn {
+    width: auto;
+  }
 }
 
 .addOutcomeBtnWrap {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .addOutcomedateWrap {
-    display: flex;
+  display: flex;
 }
 
 .endIcon {
+  flex-grow: 0;
+  width: 24px;
+  max-width: 40px;
+  margin: 0;
+  pointer-events: all;
+  padding: 0;
+
+  svg {
+    width: 24px;
+  }
+}
+
+.frequencyDTWrap {
+  display: flow;
+
+  .width32Per {
+    width: 97%;
+  }
+
+  .width30Per {
+    margin-left: 0.2%;
+    width: 97%;
+  }
+
+  @media screen and (min-width: 560px) {
+    display: flex;
+    justify-content: space-between;
+
+    .checkbox-mtd > span:after {
+      top: 24px !important;
+    }
+
+    .width30Per {
+      width: 30%;
+    }
+
+    .width32Per {
+      width: 32%;
+    }
+  }
+}
+
+div.textarea {
+  height: auto;
+  min-height: 100px;
+
+  textarea.autosize {
+    height: auto;
+    min-height: 100px;
+  }
+}
+
+.outcomeTable {
+  border-radius: $r-sm;
+  overflow: hidden;
+  font-size: 16px;
+
+  &__endIcon {
     flex-grow: 0;
     width: 24px;
     max-width: 40px;
     margin: 0;
     pointer-events: all;
     padding: 0;
+    cursor: pointer;
 
     svg {
-        width: 24px;
+      width: 24px;
+      cursor: pointer;
     }
-}
+  }
 
+  &__subTableWrap {
+    font-size: 14px;
+  }
 
-.frequencyDTWrap {
-    display: flow;
+  &__header,
+  &__subHeader {
+    background: $bg-dark;
+    color: $font-light;
+    padding: 12px 6px;
+  }
 
-    .width32Per {
-        width: 97%;
-    }
+  &__header,
+  &__subHeader,
+  &__dataRow {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
 
-    .width30Per {
-        margin-left: 0.2%;
-        width: 97%;
-    }
-
-
-    @media screen and (min-width: 560px) {
-        display: flex;
-        justify-content: space-between;
-
-        .checkbox-mtd > span:after {
-            top: 24px !important;
-        }
-
-
-        .width30Per {
-            width: 30%;
-        }
-
-        .width32Per {
-            width: 32%;
-        }
-    }
-}
-
-div.textarea {
-    height: auto;
-    min-height: 100px;
-
-    textarea.autosize {
-        height: auto;
-        min-height: 100px;
-    }
-}  
-
-.outcomeTable {
-    border-radius: $r-sm;
-    overflow: hidden;
-    font-size: 16px;
-
-    &__endIcon {
-        flex-grow: 0;
-        width: 24px;
-        max-width: 40px;
-        margin: 0;
-        pointer-events: all;
-        padding: 0;
-        cursor: pointer;
-
-        svg {
-            width: 24px;
-            cursor: pointer;
-        }
+    > div {
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+      padding: 0 5px;
     }
 
-    &__subTableWrap {
-        font-size: 14px;
+    div:first-child {
+      padding-left: 0;
+    }
+  }
+
+  // &__mainDataRow,
+  // &__subDataRow {
+  //   * {
+  //   }
+  // }
+
+  &__mainDataRow {
+    cursor: pointer;
+    padding: 10px 6px;
+    border: $w-sm solid rgba($black, 0.12);
+    border-top: none;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  &__subDataRow {
+    padding: 8px 6px;
+    border: $w-sm solid rgba($black, 0.12);
+    border-top: none;
+  }
+
+  &__subRowWrap {
+    display: none;
+
+    &.active {
+      display: block;
+    }
+  }
+  // COLUMN WIDTHS
+  &__header,
+  &__mainDataRow {
+    div:nth-child(1) {
+      // TOGGLE ICON
+      flex-grow: 0;
+      width: 32px;
+      max-width: 32px;
+      pointer-events: all;
     }
 
-    &__header,
-    &__subHeader {
-        background: $bg-dark;
-        color: $font-light;
-        padding: 12px 6px;
+    div:nth-child(2) {
+      // OUTECOME TYPE
+      width: 150px;
+      max-width: 300px;
+      pointer-events: none;
     }
 
-    &__header,
-    &__subHeader,
-    &__dataRow {
-        display: flex;
-        flex-flow: row nowrap;
-        justify-content: space-between;
-        align-items: center;
-
-        > div {
-            flex-grow: 1;
-            margin: 0 5px 0 0;
-            padding: 0 5px;
-        }
-
-        div:first-child {
-            padding-left: 0;
-        }
+    div:nth-child(3) {
+      // OUTCOME STATEMENT
+      display: none;
+      pointer-events: none;
     }
 
-    &__mainDataRow,
-    &__subDataRow {
-        * {
-        }
+    div:nth-child(4) {
+      // START DATE
+      width: 80px;
+      max-width: 150px;
+      pointer-events: none;
     }
 
-    &__mainDataRow {
-        cursor: pointer;
-        padding: 10px 6px;
-        border: $w-sm solid rgba($black, 0.12);
-        border-top: none;
-        background: rgba(0, 0, 0, 0.1);
+    div:nth-child(5) {
+      // END DATE
+      width: 80px;
+      max-width: 150px;
+      pointer-events: none;
     }
 
-    &__subDataRow {
-        padding: 8px 6px;
-        border: $w-sm solid rgba($black, 0.12);
-        border-top: none;
+    div:nth-child(6) {
+      // ADD ICON
+      flex-grow: 0;
+      width: 32px;
+      max-width: 32px;
+      pointer-events: all;
     }
 
-    &__subRowWrap {
-        display: none;
-
-        &.active {
-            display: block;
-        }
+    @media screen and (min-width: 600px) {
+      div:nth-child(3) {
+        // OUTCOME STATEMENT
+        display: block;
+        width: 150px;
+        max-width: 300px;
+        word-wrap: break-word;
+        text-overflow: ellipsis;
+      }
     }
-    // COLUMN WIDTHS
-    &__header,
-    &__mainDataRow {
-        div:nth-child(1) {
-            // TOGGLE ICON
-            flex-grow: 0;
-            width: 32px;
-            max-width: 32px;
-            pointer-events: all;
-        }
+  }
 
-        div:nth-child(2) {
-            // OUTECOME TYPE
-            width: 150px;
-            max-width: 300px;
-            pointer-events: none;
-        }
-
-        div:nth-child(3) {
-            // OUTCOME STATEMENT
-            display: none;
-            pointer-events: none;
-        }
-
-        div:nth-child(4) {
-            // START DATE
-            width: 80px;
-            max-width: 150px;
-            pointer-events: none;
-        }
-
-        div:nth-child(5) {
-            // END DATE
-            width: 80px;
-            max-width: 150px;
-            pointer-events: none;
-        }
-
-        div:nth-child(6) {
-            // ADD ICON
-            flex-grow: 0;
-            width: 32px;
-            max-width: 32px;
-            pointer-events: all;
-        }
-
-        @media screen and (min-width: 600px) {
-            div:nth-child(3) {
-                // OUTCOME STATEMENT
-                display: block;
-                width: 150px;
-                max-width: 300px;
-                word-wrap: break-word;
-                text-overflow: ellipsis;
-            }
-        }
+  &__subHeader,
+  &__subDataRow {
+    div:nth-child(1) {
+      // ITEM NUM
+      width: 30px;
+      flex-grow: 0;
     }
 
-    &__subHeader,
-    &__subDataRow {
-        div:nth-child(1) {
-            // ITEM NUM
-            width: 30px;
-            flex-grow: 0;
-        }
-
-        div:nth-child(2) {
-            // SERVICE TYPE
-            word-wrap: break-word;
-            width: 150px;
-            max-width: 300px;
-            text-overflow: ellipsis;
-        }
-
-        div:nth-child(3) {
-            // SERVICE STATEMENT
-            display: none;
-        }
-
-        div:nth-child(4) {
-            // FREQUENCY
-            display: none;
-        }
-
-        div:nth-child(5) {
-            // START DATE
-            width: 80px;
-            max-width: 150px;
-        }
-
-        div:nth-child(6) {
-            // END DATE
-            width: 80px;
-            max-width: 150px;
-        }
-
-        @media screen and (min-width: 600Px) {
-            div:nth-child(3) {
-                // SERVICE STATEMENT
-                display: block;
-                width: 180px;
-                max-width: 300px;
-                word-wrap: break-word;
-                text-overflow: ellipsis;
-            }
-
-            div:nth-child(4) {
-                // FREQUENCY
-                display: block;
-                width: 100px;
-                max-width: 200px;
-                word-wrap: break-word;
-                text-overflow: ellipsis;
-            }
-        }
+    div:nth-child(2) {
+      // SERVICE TYPE
+      word-wrap: break-word;
+      width: 150px;
+      max-width: 300px;
+      text-overflow: ellipsis;
     }
+
+    div:nth-child(3) {
+      // SERVICE STATEMENT
+      display: none;
+    }
+
+    div:nth-child(4) {
+      // FREQUENCY
+      display: none;
+    }
+
+    div:nth-child(5) {
+      // START DATE
+      width: 80px;
+      max-width: 150px;
+    }
+
+    div:nth-child(6) {
+      // END DATE
+      width: 80px;
+      max-width: 150px;
+    }
+
+    @media screen and (min-width: 600px) {
+      div:nth-child(3) {
+        // SERVICE STATEMENT
+        display: block;
+        width: 180px;
+        max-width: 300px;
+        word-wrap: break-word;
+        text-overflow: ellipsis;
+      }
+
+      div:nth-child(4) {
+        // FREQUENCY
+        display: block;
+        width: 100px;
+        max-width: 200px;
+        word-wrap: break-word;
+        text-overflow: ellipsis;
+      }
+    }
+  }
 }
 
 .editBtnWrap {
-    align-items: center;
-    display: flex;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  min-height: 52px;
+}
+
+.addInsertServicesBtnWrap {
+  display: flex;
+  gap: 8px;
+}
+
+.hiddenPopup {
+  display: none;
+}
+
+.upload-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upload-popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.drop-area {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.btn {
+  padding: 10px 20px;
+  //margin: 10px;
+  cursor: pointer;
+}
+
+.uploadBtnsWrap {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.table {
+  margin-bottom: 10px;
+  .table__row {
+    cursor: pointer;
+
+    > div {
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+      overflow-wrap: break-word;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+  }
+
+  &:not(.sortableTable) .table__row {
+    // Column Widths
+    > div:nth-child(1) {
+      display: block;
+      width: 115px;
+      flex-grow: 2;
+    }
+    > div:nth-child(2) {
+      display: block;
+      width: 80px;
+      max-width: 150px;
+    }
+    > div:nth-child(3) {
+      display: block;
+      width: 80px;
+      max-width: 150px;
+    }
+  }
+
+  &.sortableTable {
+    .table__row {
+      // Column Widths
+      > div:nth-child(2) {
+        display: block;
+        width: 115px;
+        flex-grow: 2;
+      }
+      > div:nth-child(3) {
+        display: block;
+        width: 80px;
+        max-width: 150px;
+      }
+      > div:nth-child(4) {
+        display: block;
+        width: 80px;
+        max-width: 150px;
+      }
+    }
+  }
+}
+
+.addToExistingOutcomesRowContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 10px;
+  margin-top: 10px;
+
+  .dropdown {
+    min-width: 400px;
+  }
+}
+
+// OUTCOMES REVIEW PAGE
+.outcomesReview {
+  .filteredByData {
     justify-content: space-between;
-    min-height: 52px;
+
+    .filteredByWrap {
+      display: flex;
+    }
+
+    .dateFilter {
+      display: flex;
+      column-gap: 10px;
+  
+      .dateFilterToggle {
+        display: flex;
+  
+        button {
+          background: rgba(54, 106, 152, 0.5);
+          color: $white;
+          cursor: pointer;
+          padding: 10px;
+  
+          &.active {
+            background: $primary;
+          }
+        }
+
+        button:first-child {
+          border-top-left-radius: 6px;
+          border-bottom-left-radius: 6px;
+        }
+        button:last-child {
+          border-top-right-radius: 6px;
+          border-bottom-right-radius: 6px;
+        }
+      }
+
+      input {
+        border: 1px solid black;
+        border-radius: 10%;
+      }
+  
+      .daysBack,
+      .dateRange {
+        display: none;
+        width: 200px;
+
+        &.active {
+          display: flex;
+          align-items: center;
+          flex-flow: row wrap;
+          column-gap: 10px;
+        }
+      }
+
+      .daysBack {
+        input {
+          width: 60px;
+        }
+      }
+
+      .dateRange {
+        > div {
+          display: flex;
+          align-items: center;
+          column-gap: 10px;
+          width: 100%;
+        }
+      }
+    }
+  }
+  
+
+  .tabs {
+    .tabs__nav--item {
+      font-size: 3vw;
+    }
+
+    @media screen and (min-width: 560px) {
+      .tabs__nav--item {
+        font-size: inherit;
+      }
+    }
+
+    background: $primary;
+
+    &__nav--item {
+      color: $font-light;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        color: $error;
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    &__body {
+      background: $bg-light;
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+
+    &__body--section {
+      &.active {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+        grid-gap: 1rem;
+      }
+    }
+  }
+
+  .outcomesReviewTable {
+    display: flex;
+    flex-flow: row wrap;
+
+    .heading {
+      color: $white;
+      background: $primary;
+      padding: 6px 10px;
+    }
+
+    .row {
+      padding: 10px;
+    }
+
+    .row-date {
+      background: $gray;
+      padding-left: 20px;
+
+      div:nth-child(3) {
+        align-self: flex-end;
+        color: $error;
+        width: 24px;
+        height: 24px;
+        flex-grow: 0;
+      }
+    }
+
+    .heading-details,
+    .row-details {
+      padding-left: 30px;
+    }
+
+    .row-details {
+      cursor: pointer;
+    }
+
+    .heading,
+    .row {
+      align-items: center;
+      display: flex;
+      width: 100%;
+
+      > div {
+        flex-grow: 1;
+      }
+
+      > div:not(:first-child) {
+        pointer-events: none;
+      }
+    }
+
+    .rowWrap {
+      display: flex;
+      flex-flow: row wrap;
+      width: 100%;
+
+      &-main {
+        border-bottom: 3px solid black;
+      }
+
+      &-main-sub {
+        &.hidden {
+          display: none;
+        }
+      }
+
+      &-date-sub {
+        &.hidden {
+          display: none;
+        }
+      }
+    }
+
+    // columns
+    .rowToggle {
+      color: $black !important;
+      flex-grow: 0;
+      flex-basis: 24px;
+      max-width: 24px;
+
+      * {
+        pointer-events: none;
+      }
+    }
+
+    .heading-main,
+    .row-main {
+      > div:nth-child(1) {
+        flex-grow: 0;
+        flex-basis: 24px;
+        max-width: 24px;
+      }
+      > div:nth-child(2) {
+        flex-basis: 200px;
+        max-width: 300px;
+      }
+      > div:nth-child(3) {
+        flex-grow: 2;
+        flex-basis: 100px;
+      }
+      > div:nth-child(4) {
+        flex-basis: 120px;
+        max-width: 200px;
+      }
+      > div:nth-child(5) {
+        flex-basis: 80px;
+        max-width: 170px;
+        text-align: center;
+      }
+      > div:nth-child(6) {
+        flex-basis: 60px;
+        max-width: 120px;
+        text-align: center;
+      }
+      > div:last-child {
+        color: $error;
+        flex-grow: 0;
+        flex-basis: 24px;
+        max-width: 24px;
+      }
+    }
+
+    .heading-details,
+    .row-details {
+      > div:nth-child(1) {
+        flex-basis: 100px;
+      }
+      > div:nth-child(2) {
+        flex-basis: 80px;
+        max-width: 200px;
+      }
+      > div:nth-child(3) {
+        flex-basis: 80px;
+        max-width: 120px;
+        text-align: center;
+      }
+      > div:nth-child(4) {
+        flex-basis: 80px;
+        max-width: 200px;
+      }
+      > div:nth-child(5) {
+        flex-basis: 80px;
+        flex-grow: 2;
+      }
+    }
+  }
+}
+
+#reviewNotePopup {
+  .reviewNoteHeader {
+    margin-bottom: 10px;
+
+    p {
+      font-weight: $bold;
+    }
+  }
+  .reviewNoteInfo {
+    margin-bottom: 16px;
+
+    p {
+      margin-bottom: 6px;
+    }
+  }
+}
+
+.row-checkbox, .header-checkbox {
+  z-index: 29;
+  pointer-events: all;
+  position: relative;
 }

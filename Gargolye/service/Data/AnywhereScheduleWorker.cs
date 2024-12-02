@@ -228,7 +228,7 @@ namespace Anywhere.service.Data
             return dg.approveDenyCallOffRequestScheduling(token, callOffShiftId, decision);
         }
 
-        public string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision)
+        public string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision, string dateTime)
         {
             string[] dateArr = daysOffIdString.Split(',');
             string checkOverlap;
@@ -250,7 +250,6 @@ namespace Anywhere.service.Data
                     } else // run normal functionality
                     {
                         dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
-                        dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
                     }
                 }
 
@@ -258,9 +257,11 @@ namespace Anywhere.service.Data
                 else
                 {
                     dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
-                    dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
                 }
             }
+
+            //104844 - sends only one email/text per instance of a supervisor approving/denying time off 
+            dg.approveDenyDaysOffRequestSchedulingNotification(token, dateArr[0], decision, dateTime);
 
             if (returnOverlapMessage)
             {

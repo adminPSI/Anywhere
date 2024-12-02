@@ -892,7 +892,7 @@ var timeEntryReview = (function () {
             style: 'secondary',
             type: 'contained',
             callback: function () {
-                reports.init(payPeriod);
+                reports.init(payPeriod, false);
             },
         });
 
@@ -924,10 +924,23 @@ var timeEntryReview = (function () {
         var fitleredBy = buildFilteredBy();
         reviewTable = buildTable();
 
+        // Set the data type for each header, for sorting purposes
+        const headers = reviewTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Status
+        headers[1].setAttribute('data-type', 'date'); // Date
+        headers[2].setAttribute('data-type', 'date'); // Start Time
+        headers[3].setAttribute('data-type', 'date'); // End Time 
+        headers[4].setAttribute('data-type', 'number'); // Hours
+        headers[5].setAttribute('data-type', 'string'); // Location
+        headers[6].setAttribute('data-type', 'string'); // Work Code 
+
         DOM.ACTIONCENTER.appendChild(topNav);
         DOM.ACTIONCENTER.appendChild(reportBtn);
         DOM.ACTIONCENTER.appendChild(fitleredBy);
         DOM.ACTIONCENTER.appendChild(reviewTable);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(reviewTable);
 
         setupActionNav();
     }

@@ -176,7 +176,7 @@ const planAjax = (function () {
       });
       return data.insertAutomatedWorkflowsResult;
     } catch (error) {
-      console.log(error.responseText);
+      console.log(error.responseText);//
     }
   }
   async function addSelectedAttachmentsToReport(retrieveData) {
@@ -522,8 +522,8 @@ const planAjax = (function () {
 
   // OTHER
   // ----------------------------------
-  function getConsumerPeopleId(consumerId, callback) {
-    $.ajax({
+  async function getConsumerPeopleId(consumerId, callback) {
+    await $.ajax({
       type: 'POST',
       url:
         $.webServer.protocol +

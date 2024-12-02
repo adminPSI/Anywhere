@@ -67,6 +67,7 @@ var timeApproval = (function () {
     var workCodeName;
     var tmpWorkCodeId;
     var tmpWorkCodeName;
+    var totalHourDiv
     //-OTHER------------------
     var statuses = [
         { key: 'A', value: 'Awaiting Approval' },
@@ -563,7 +564,7 @@ var timeApproval = (function () {
         }
 
 
-        if (employeeName === 'All' || employeeName === '') {  
+        if (employeeName === 'All' || employeeName === '') {
             btnWrap.appendChild(employeeBtnWrap);
             btnWrap.removeChild(employeeBtnWrap);
         }
@@ -1054,7 +1055,7 @@ var timeApproval = (function () {
             tmpStartDate,
             tmpEndDate
         });
-       
+
         document.getElementById('startDateBtn').innerHTML = 'From Date: ' + moment(startDate, 'YYYY-MM-DD').format('M/D/YYYY');
         document.getElementById('endDateBtn').innerHTML = 'To Date: ' + moment(endDate, 'YYYY-MM-DD').format('M/D/YYYY');
         document.getElementById('supervisorBtn').innerHTML = 'Supervisor: ' + supervisorName;
@@ -1093,7 +1094,7 @@ var timeApproval = (function () {
         else {
             btnWrap.appendChild(workCodeBtnWrap);
             document.getElementById('workCodeBtn').innerHTML = 'Work Code: ' + workCodeName;
-        } 
+        }
 
         mulitSelectBtn.classList.remove('disabled');
         mulitSelectBtn.classList.remove('enabled');
@@ -1461,6 +1462,7 @@ var timeApproval = (function () {
         var isSelected = event.target.classList.contains('selected');
         var entryStatus = event.target.dataset.status;
         var entryId = event.target.id;
+        if (event.target.childNodes.length == 1) return; //
 
         //capture rowName, rowDate, rowStartTime, rowEndTime, rowWorkCode
         var rowName = event.target.childNodes[1].innerText;
@@ -1590,9 +1592,7 @@ var timeApproval = (function () {
     // == Build Hours Worked ==
     function buildHoursWorked(hours) {
         if (Array.from(document.querySelectorAll('.table__row')).length === 1) return; // 1st row is the headers. If there is only the first row, there are no records
-        const lastRow = Array.from(document.querySelectorAll('.table__row')).pop();
-        const lastRowHour = lastRow.childNodes[5].innerText;
-        lastRow.childNodes[5].outerHTML = `<div><p>${lastRowHour}</p><div class="totalhoursdiv">Total Hours: ${hours}</div></div>`;
+        totalHourDiv.innerHTML = `<div >Total Hours: ${hours} </div>`;
     }
 
     // Row Additional Information from ticket 66490 Submitted/Rejected/Approved User and Date
@@ -1695,6 +1695,29 @@ var timeApproval = (function () {
 
         return btnWrap;
     }
+
+    function buildReportButton() {
+        var btn = button.build({
+            text: 'Reports',
+            style: 'secondary',
+            type: 'contained',
+            callback: function () {
+                var filterData = {
+                    token: $.session.Token,
+                    endDate,
+                    startDate,
+                    supervisorId: supervisorId ? supervisorId : $.session.PeopleId,
+                    locationId: locationId ? locationId : '%',
+                    employeeId: employeeId ? employeeId : '%',
+                    status: status || status !== '%' ? status : '%',
+                    workCodeId: workCodeId ? workCodeId : '%',
+                };
+                reports.init(payPeriod, true, filterData);
+            },
+        });
+
+        return btn;
+    }
     function buildTable() {
         var tableOptions = {
             tableId: 'singleEntryAdminReviewTable',
@@ -1744,13 +1767,35 @@ var timeApproval = (function () {
 
         DOM.clearActionCenter();
         var topNav = buildTopNav();
+        var reportBtn = buildReportButton();
         var fitleredBy = buildFilteredBy();
         reviewTable = buildTable();
 
+        // Set the data type for each header, for sorting purposes
+        const headers = reviewTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Status
+        headers[1].setAttribute('data-type', 'string'); // Employee
+        headers[2].setAttribute('data-type', 'date'); // Date
+        headers[3].setAttribute('data-type', 'date'); // Start Time
+        headers[4].setAttribute('data-type', 'date'); // End Time 
+        headers[5].setAttribute('data-type', 'number'); // Hours   
+        headers[6].setAttribute('data-type', 'string'); // Location
+        headers[7].setAttribute('data-type', 'string'); // Work Code 
+
         DOM.ACTIONCENTER.appendChild(topNav);
+        DOM.ACTIONCENTER.appendChild(reportBtn);
         DOM.ACTIONCENTER.appendChild(fitleredBy);
         DOM.ACTIONCENTER.appendChild(reviewTable);
+
+        totalHourDiv = document.createElement("div");
+        totalHourDiv.classList.add("totalHour");
+        totalHourDiv.innerHTML = ``;
+        DOM.ACTIONCENTER.appendChild(totalHourDiv);  
+
         DOM.ACTIONCENTER.appendChild(mapBtn);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(reviewTable);
 
         setupActionNav();
     }
@@ -1848,7 +1893,7 @@ var timeApproval = (function () {
 
         getDropdownData(function () {
             loadReviewPage();
-        }); 
+        });
     }
 
     function showSubmitError(messageText) {

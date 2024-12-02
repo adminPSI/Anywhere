@@ -232,7 +232,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        public string insertPlanOutcomeExperienceResponsibility(string experienceId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText, bool isSalesforceLocation)
+        public string insertPlanOutcomeExperienceResponsibility(string experienceId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText, string isSalesforceLocation)
         {
 
             logger.debug("insertPlanOutcomesExperiences ");
@@ -257,7 +257,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        public string updatePlanOutcomeExperienceResponsibility(long responsibilityId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText, bool isSalesforceLocation)
+        public string updatePlanOutcomeExperienceResponsibility(long responsibilityId, long responsibleContact, long responsibleProvider, string whenHowOftenValue, long whenHowOftenFrequency, string whenHowOftenText, string isSalesforceLocation)
         {
 
             logger.debug("insertPlanOutcomesExperiences ");

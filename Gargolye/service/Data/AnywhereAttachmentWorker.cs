@@ -47,6 +47,31 @@ namespace Anywhere.service.Data
             displayAttachment(attachment);
         }
 
+        public void getAttachmentWF(String token, String attachmentId, String filename)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = filename;
+            attachment.data = null;
+            bool isTokenValid = anywhereWorker.ValidateToken(token);
+            if (isTokenValid)
+            {
+                try
+                {
+                    // use the filename parameter if it exists, otherwise create one from a guid 
+                    //attachment.filename = (filename == null || (filename.Trim()) == "") ? Guid.NewGuid().ToString() : attachment.filename + "." + dg.GetWFAttachmentFileName(attachmentId);
+                    attachment.filename = dg.GetWFAttachmentFileName(attachmentId);
+                    attachment.data = dg.GetWfAttachmentData(attachmentId);//reused
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+            //logger.debug("Made it this far in attachment");
+            // return attachment;
+            displayAttachment(attachment);
+        }
+
         //public Attachment getIndividualAttachment(String token, String attachmentId)
         public void getIndividualAttachment(String token, String attachmentId)
         {
@@ -207,7 +232,7 @@ namespace Anywhere.service.Data
             {
                 char value = '-';
                 bool guid = attachmentId.Contains(value);
-               
+
                 try
                 {
                     attachment.filename = aadg.getCFAttachmentFileName(attachmentId);
@@ -216,9 +241,26 @@ namespace Anywhere.service.Data
                 catch (Exception ex)
                 {
 
-                }               
+                }
             }
             displayAttachment(attachment);
+        }
+
+        public void viewOutcomePlanAttachment(string token, string consumerId)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = "";
+            attachment.data = null;
+            bool isTokenValid = anywhereWorker.ValidateToken(token);
+            if (isTokenValid)
+            {
+                attachment.filename = aadg.getOutcomePlanAttachmentFileName(consumerId);
+                attachment.data = aadg.GetOutcomePlanAttachmentData(consumerId);
+
+                if (attachment.data != null)
+                    displayAttachment(attachment);
+            }
+
         }
 
         public class Attachments

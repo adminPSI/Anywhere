@@ -2,6 +2,17 @@
   return `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/${endPoint}/`;
 }
 
+async function md5Hash(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+
+  const hashBuffer = await crypto.subtle.digest('MD5', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+  return hashHex;
+}
+
 function logIn() {
     const loginBtn = document.getElementById('loginBtn');
     loginBtn.classList.add('disabled');
@@ -1009,6 +1020,7 @@ function getDefaultAnywhereSettings() {
       //Hide stuff
       $.session.useAbsentFeature = res.useAbsentFeature;
       $.session.billableTransportation = res.billableTransportation;
+      $.session.requireTimeEntryTransportationTimes = res.requireTimeEntryTransportationTimes;
       $.session.ohioEVVChangeDate = res.ohioEVVChangeDate; 
       $.session.anyRequireEndTime = res.anyRequireEndTime;
       $.session.useProgressNotes = res.useProgressNotes;
@@ -1045,6 +1057,7 @@ function getDefaultAnywhereSettings() {
       $.session.anywhereResetPasswordPermission = res.anywhereResetPasswordPermission;
       $.session.anywhereConsumerFinancesPermission = res.anywhereConsumerFinancesPermission;
       $.session.anywhereEmploymentPermission = res.anywhereEmploymentPermission;
+      $.session.anywhereFSSPermission = res.anywhereFSSPermission; 
       //Default Work
       //.session.
       $.session.defaultRosterLocation = res.defaultrosterlocation;
@@ -1065,6 +1078,7 @@ function getDefaultAnywhereSettings() {
       $.session.stateAbbreviation = res.stateAbbreviation;
       //Set session peopleId for use in ADV Plan
       $.session.planPeopleId = res.planPeopleId;
+      $.session.RequireViewPlan = res.RequireViewPlan === 'Y' ? true : false;
 
       if ($.session.applicationName === 'Gatekeeper') {
         $.session.caseNotesWarningStartTime = res.warningStartTime;

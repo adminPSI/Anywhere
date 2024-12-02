@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Drawing.Imaging;
 using Newtonsoft.Json.Linq;
+using System.Web;
 
 namespace Anywhere.service.Data.ESign
 {
@@ -52,7 +53,10 @@ namespace Anywhere.service.Data.ESign
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
                 try
             {
-                esdg.generateAuthenticationCode(tempUserId, latitude, longitude, transaction);
+                    HttpContext context = HttpContext.Current;
+                    string userIPAddress = context.Request.ServerVariables["REMOTE_ADDR"];
+
+                    esdg.generateAuthenticationCode(tempUserId, latitude, longitude, userIPAddress, transaction);
                 return "success";
             }
             catch (Exception ex)
@@ -137,7 +141,7 @@ namespace Anywhere.service.Data.ESign
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
                 try
-            {
+                {
                     string signatureImageString = "";
 
                     DateTime currentDateTime = DateTime.UtcNow;
@@ -147,21 +151,21 @@ namespace Anywhere.service.Data.ESign
                     signatureImageString = Convert.ToBase64String(signatureImage);
 
                     // Update the DB with the signature data
-                    esdg.updateESignFormValues(formData.peopleId, formData.planId, formData.csChangeMind, formData.csChangeMindSSAPeopleId, formData.csContact, formData.csContactProviderVendorId, 
+                    esdg.updateESignFormValues(formData.peopleId, formData.planId, formData.csChangeMind, formData.csChangeMindSSAPeopleId, formData.csContact, formData.csContactProviderVendorId,
                     formData.csContactInput, formData.csRightsReviewed, formData.csAgreeToPlan, formData.csFCOPExplained, formData.csDueProcess, formData.csResidentialOptions, formData.csSupportsHealthNeeds,
                     formData.csTechnology, formData.dissentAreaDisagree, formData.dissentHowToAddress, dateString, signatureImageString, transaction);
 
-                // Send confirmation email to the case manager that the plan was signed
-                esdg.sendSignedConfirmationEmail(formData.planId, formData.peopleId, transaction);
+                    // Send confirmation email to the case manager that the plan was signed
+                    esdg.sendSignedConfirmationEmail(formData.planId, formData.peopleId, transaction);
 
-                return "success";
-            }
-            catch (Exception ex)
-            {
-                // Log or handle any exceptions
-                Console.WriteLine($"Error: {ex.Message}");
-                return null;
-            }
+                    return "success";
+                }
+                catch (Exception ex)
+                {
+                    // Log or handle any exceptions
+                    Console.WriteLine($"Error: {ex.Message}");
+                    return null;
+                }
         }
 
         public ESignerData getESignerData(string tempUserId)

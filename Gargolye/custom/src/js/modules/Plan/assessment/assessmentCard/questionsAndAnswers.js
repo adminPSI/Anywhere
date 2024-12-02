@@ -28,6 +28,36 @@
   let selectedRow;
   let isSortable;
   let readonly;
+  let hideOrShowStatus;
+
+  const observerCallback = entries => {
+    console.log(`Observer callback fired.`);
+    entries.forEach(entry => {
+      console.log(`Observing entry ${entry.target.id}`);
+      if (entry.isIntersecting) {
+        console.log(entry.intersectionRatio);
+
+        if (!entry.target.classList.contains('nonApplicable')) {
+          const sectionId = entry.target.id;
+          console.log(`${sectionId} is in view`);
+          tableOfContents.highlightLink(sectionId.replace('section', ''));
+        }
+        // if (entry.intersectionRatio >= 0.75) {
+          
+        // }
+      }
+    });
+  };
+
+  if (!('IntersectionObserver' in window)) {
+    alert('Intersection Observer API is not available')
+  }
+
+  const observer = new IntersectionObserver(observerCallback, {
+    root: DOM.ACTIONCENTER,
+    rootMargin: '0px 0px 0px 0px',
+    threshold: 0.08,
+  });
 
   function checkArrayConsistency(arr) {
     if (arr.length === 0) {
@@ -43,8 +73,6 @@
 
     return firstElement;
   }
-
-  //* TEMP FUNCTION FOR RE-ORDERING ROWS ON DELETE
   function updateRowOrderAfterDelete(grid, questionSetId) {
     // grab all rows inside grid after delete
     const gridBody = grid.querySelector('.grid__body');
@@ -73,7 +101,6 @@
       // if no gap do nothing
     });
   }
-  //* END TEMP FUNCTION
 
   // Utils
   //------------------------------------
@@ -295,27 +322,25 @@
     tableOfContents.showUnansweredQuestionCount();
   }
   function toggleUnansweredQuestionFilter(hideOrShow) {
-    const questions = [...document.querySelectorAll('.question')];
-    questions.forEach(q => {
-      if (!q.classList.contains('unawnsered')) {
-        if (hideOrShow === 'hide') {
-          // only show unawnsered
-          q.style.display = 'none';
-        } else {
-          q.removeAttribute('style');
-        }
+    hideOrShowStatus = hideOrShow;
+
+    const awnseredQuestions = [...document.querySelectorAll('.question:not(.unawnsered)')];
+    const leftBlankQuestions = [...document.querySelectorAll('.question.intentionallyDisabled')];
+    [...awnseredQuestions, ...leftBlankQuestions].forEach(q => {
+      if (hideOrShow === 'hide') {
+        q.style.display = 'none';
+      } else {
+        q.removeAttribute('style');
       }
     });
 
-    const tables = [...document.querySelectorAll('.grid')];
-    tables.forEach(t => {
-      if (!t.classList.contains('unawnsered')) {
-        if (hideOrShow === 'hide') {
-          // only show unawnsered
-          t.style.display = 'none';
-        } else {
-          t.removeAttribute('style');
-        }
+    const awnseredTables = [...document.querySelectorAll('.grid.awnsered')];
+    const leftBlankTables = [...document.querySelectorAll('.grid.intentionallyDisabled')];
+    [...awnseredTables, ...leftBlankTables].forEach(t => {
+      if (hideOrShow === 'hide') {
+        t.style.display = 'none';
+      } else {
+        t.removeAttribute('style');
       }
     });
   }
@@ -334,7 +359,7 @@
       const isChecked = e.target.checked;
       const skipped = isChecked ? 'Y' : 'N';
       const isForRow = e.target.dataset.isforrow;
-      // ids for associated textarea question/anwser
+      
       let answerId = e.target.dataset.answerid;
       let questionId = e.target.dataset.questionid;
       let setId = e.target.dataset.setid;
@@ -347,38 +372,45 @@
         if (isChecked) {
           textAreaInput.value = '';
           input.disableInputField(textAreaInput);
+          textAreaInput.parentNode.closest('.question').classList.add('intentionallyDisabled');
           sectionQuestionCount[sectionID][setId][questionId].leaveblank = true;
         } else {
           input.enableInputField(textAreaInput);
+          textAreaInput.parentNode.closest('.question').classList.remove('intentionallyDisabled');
           sectionQuestionCount[sectionID][setId][questionId].leaveblank = false;
         }
       } else {
         const questionSet = document.getElementById(`set${setId}`);
-        let sectionID = questionSet.parentElement.parentElement.id
-        sectionID = sectionID.replace(/\D/g, "");
+        let sectionID = questionSet.parentElement.parentElement.id;
+        sectionID = sectionID.replace(/\D/g, '');
         const questionSetGridRows = [...questionSet.querySelectorAll('.grid__row:not(.grid__rowHeader)')];
         const questionSetActionButtons = [...questionSet.querySelectorAll('.gridActionRow button')];
         let questionSetId = e.target.dataset.setid;
-       // let sectionID = e.target.dataset.sectionid;
+
+        const grid = questionSet.querySelector('.grid');
+        if (isChecked) {
+          grid.classList.add('intentionallyDisabled');
+        } else {
+          grid.classList.remove('intentionallyDisabled');
+        }
+
         questionSetGridRows.forEach(row => {
           const rowCells = row.querySelectorAll('.grid__cell');
-          
+
           rowCells.forEach(cell => {
             const cellInput = cell.querySelector('.input-field__input');
             let questionRowId = cell.id;
-          questionRowId = questionRowId.replace(/\D/g, "");
+            questionRowId = questionRowId.replace(/\D/g, '');
 
             addAnswer(cellInput.id, '', '', skipped);
 
             if (isChecked) {
               cellInput.value = '';
               input.disableInputField(cellInput);
-              //sectionQuestionCount[sectionID][setId][questionId].leaveblank = true;
-             sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = true;
+              sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = true;
             } else {
               input.enableInputField(cellInput);
-              //sectionQuestionCount[sectionID][setId][questionId].leaveblank = false;
-             sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = false;
+              sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = false;
             }
           });
         });
@@ -391,6 +423,10 @@
         });
       }
 
+      if (hideOrShowStatus === 'hide') {
+        toggleUnansweredQuestionFilter(hideOrShowStatus);
+      }
+      
       tableOfContents.showUnansweredQuestionCount();
 
       return;
@@ -466,7 +502,7 @@
         answer = e.target.value;
 
         if (answer !== '') {
-           await addAnswer(answerId, answer);
+          await addAnswer(answerId, answer);
 
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
@@ -540,7 +576,7 @@
           }
         }
       }
-      
+
       tableOfContents.showUnansweredQuestionCount();
 
       return;
@@ -584,21 +620,13 @@
         }
 
         assessment.toggleIsSectionApplicable(id, e.target.checked);
-
-        // assessment.showApplicableWarningMessage(yesOrNo => {
-        //   if (yesOrNo === 'no') {
-        //     e.target.checked = true;
-        //     return;
-        //   }
-
-        //   section.classList.add('nonApplicable');
-        //   assessment.toggleIsSectionApplicable(id, e.target.checked);
-        // });
       },
     });
+
     if (readonly || !$.session.planUpdate) {
       input.disableInputField(applicableCheckbox);
     }
+
     const sectionTitle = document.createElement('h2');
     sectionTitle.innerText = title;
 
@@ -608,15 +636,19 @@
         section.classList.add('nonApplicable');
       }
     }
+
     sectionHeadingInner.appendChild(sectionTitle);
     sectionHeading.appendChild(sectionHeadingInner);
     section.appendChild(sectionHeading);
+
     if (title === 'WORKING/ NOT WORKING') {
       const sectionPrompt = document.createElement('p');
       sectionPrompt.classList.add('sectionPrompt');
       sectionPrompt.innerText = 'Be sure to include Working/Not Working technology solutions.';
       section.appendChild(sectionPrompt);
     }
+
+    observer.observe(section);
 
     return section;
   }
@@ -824,6 +856,8 @@
         // For text areas with colName "What’s Working" and "What's Not Working"
         if (colName.trim().split(' ').pop() === 'Working') {
           textAreaCharLimit = 1000;
+        } else if (colName === 'Who Said it?') {
+          textAreaCharLimit = 250;
         }
 
         questionInput = input.build({
@@ -1219,8 +1253,12 @@
 
             switch (answerStyle) {
               case 'TEXTAREA': {
-                if (data.colName === 'What’s Working' || data.colName === 'What’s Not Working') {
+
+                // Handle text limit for the working/not working section
+                if (questionId === "605" || questionId === "606") {
                   textAreaCharLimit = 1000;
+                } else if (questionId === "607") {
+                  textAreaCharLimit = 250;
                 }
 
                 const questionInput = input.build({
@@ -1716,6 +1754,7 @@
         }
         if (skipped === 'Y') {
           input.disableInputField(questionInputMarkup);
+          question.classList.add('intentionallyDisabled');
         }
         break;
       }
@@ -1976,7 +2015,6 @@
     addQuestionSet,
     build,
     clearData,
-    //getAnswers,
     getSectionQuestionCount,
     markUnansweredQuestions,
     toggleUnansweredQuestionFilter,

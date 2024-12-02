@@ -6,9 +6,12 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereWorkshopWorkerTwo;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 
 namespace Anywhere.Data
 {
@@ -570,6 +573,24 @@ namespace Anywhere.Data
             {
                 logger.error("523", ex.Message + " ANYW_GoalsAndServices_DeleteGoal('" + token + "','" + activityId + "')", token);
                 return "523: Error deleting goal";
+            }
+        }
+
+        public string getAllGoalTypes(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getAllGoalTypes " + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_GoalsAndServices_GetAllGoalTypes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("646", ex.Message + "ANYW_GoalsAndServices_GetAllGoalTypes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "646: error ANYW_GoalsAndServices_GetAllGoalTypes";
             }
         }
 
@@ -1222,6 +1243,7 @@ namespace Anywhere.Data
         public string GetValidateEmailInformation(string token, string email)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(email) == false) return null;
             logger.debug("getDemographicsInformation" + token);
             try
             {
@@ -1289,6 +1311,114 @@ namespace Anywhere.Data
             {
                 logger.error("547", ex.Message + " ANYW_Demographics_GetConsumerRelationships('" + token + "', '" + consumerId + "')");
                 return "547: Error Getting Consumer Demographics";
+            }
+        }
+
+        public string getEditConsumerRelationshipsJSON(string token, string consumerId, string isActive)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("GetEditConsumerRelationshipsJson" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Demographics_GetEditConsumerRelationships('" + token + "', '" + consumerId + "', '" + isActive + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("547", ex.Message + " ANYW_Demographics_GetEditConsumerRelationships('" + token + "', '" + consumerId + "', '" + isActive + "')");
+                return "547: Error Getting Consumer Demographics";
+            }
+        }
+
+        public string getRelationshipsTypeJSON(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getRelationshipsTypeJSON" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Demographics_GetRelationshipsType('" + token + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("547", ex.Message + " ANYW_Demographics_GetRelationshipsType('" + token + "')");
+                return "547: Error Getting Consumer Demographics";
+            }
+        }
+
+        public string getRelationshipsNameJSON(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getRelationshipsNameJSON" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Demographics_getRelationshipsName('" + token + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("547", ex.Message + " ANYW_Demographics_getRelationshipsName('" + token + "')");
+                return "547: Error Getting person list Demographics";
+            }
+        }
+
+        public string getRelationshipsNameByIDJSON(string token, string relationType)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getRelationshipsNameByIDJSON" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Demographics_getRelationshipsNameByID('" + token + "','" + relationType + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("547", ex.Message + " ANYW_Demographics_getRelationshipsNameByID('" + token + "','" + relationType + "')");
+                return "547: Error Getting person list byId Demographics";
+            }
+        }
+
+        public string insertEditRelationship(string token, string userId, string consumerId, string startDate, string endDate, string personID, string typeID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertEditRelationship");
+
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_Demographics_insertEditRelationship('" + token + "', '" + userId + "', '" + consumerId + "', '" + startDate + "', '" + endDate + "', '" + personID + "', '" + typeID + "');", "results", "result");
+            }
+            catch (Exception ex)
+            {
+                logger.error("584", ex.Message + " ANYW_Demographics_insertEditRelationship('" + token + "', '" + userId + "', '" + consumerId + "', '" + startDate + "', '" + endDate + "', '" + personID + "', '" + typeID + "')", token);
+                return "584: Error insert Edit Relationship";
+            }
+        }
+
+        public string insertArchiveRelationship(string token, string userId, string consumerId, string startDate, string endDate, string personID, string typeID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertArchiveRelationship");
+
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_Demographics_insertArchiveRelationship('" + token + "', '" + userId + "', '" + consumerId + "', '" + startDate + "', '" + endDate + "', '" + personID + "', '" + typeID + "');", "results", "result");
+            }
+            catch (Exception ex)
+            {
+                logger.error("584", ex.Message + " ANYW_Demographics_insertArchiveRelationship('" + token + "', '" + userId + "', '" + consumerId + "', '" + startDate + "', '" + endDate + "', '" + personID + "', '" + typeID + "')", token);
+                return "584: Error insert Archive Relationship";
+            }
+        }
+
+        public string deleteRelationship(string token, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("deleteRelationship");
+
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_Demographics_deleteRelationship('" + token + "', '" + consumerId + "');", "results", "result");
+            }
+            catch (Exception ex)
+            {
+                logger.error("584", ex.Message + " ANYW_Demographics_deleteRelationship('" + token + "', '" + consumerId + "')", token);
+                return "584: Error delete Relationship";
             }
         }
 
@@ -1479,33 +1609,33 @@ namespace Anywhere.Data
         }
 
         //Single Entry
-        public string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType)
+        public string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertSingleEntry" + token);
             try
             {
-                return executeDataBaseCall("CALL DBA.ANYW_SingleEntry_InsertSingleEntry('" + token + "', '" + userId + "', '" + updaterId + "', '" + personId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + latitude + "', '" + longitude + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + evvLocationType + "');", "results", "results");
+                return executeDataBaseCall("CALL DBA.ANYW_SingleEntry_InsertSingleEntry('" + token + "', '" + userId + "', '" + updaterId + "', '" + personId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + latitude + "', '" + longitude + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + evvLocationType + "', '" + transportationStartTime + "', '" + transportationEndTime + "');", "results", "results");
             }
             catch (Exception ex)
             {
-                logger.error("558", ex.Message + " ANYW_SingleEntry_InsertSingleEntry('" + token + "', '" + userId + "', '" + updaterId + "', '" + personId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + latitude + "', '" + longitude + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + evvLocationType + "')");
+                logger.error("558", ex.Message + " ANYW_SingleEntry_InsertSingleEntry('" + token + "', '" + userId + "', '" + updaterId + "', '" + personId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + latitude + "', '" + longitude + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + evvLocationType + "', '" + transportationStartTime + "', '" + transportationEndTime + "')");
                 return "558: Error inserting single entry";
             }
 
         }
 
-        public string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason, string evvLocationType)
+        public string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason, string evvLocationType, string transportationStartTime, string transportationEndTime)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("updateSingleEntry" + token);
             try
             {
-                return executeDataBaseCall("CALL DBA.ANYW_SingleEntry_UpdateSingleEntry('" + token + "', '" + userId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + singleEntryId + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "' , '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + updateEVVReason + "', '" + evvLocationType + "');", "results", "results");
+                return executeDataBaseCall("CALL DBA.ANYW_SingleEntry_UpdateSingleEntry('" + token + "', '" + userId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + singleEntryId + "', '" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "' , '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + updateEVVReason + "', '" + evvLocationType + "', '" + transportationStartTime + "', '" + transportationEndTime + "');", "results", "results");
             }
             catch (Exception ex)
             {
-                logger.error("559", ex.Message + " ANYW_SingleEntry_UpdateSingleEntry('" + token + "', '" + userId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + singleEntryId + "','" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + updateEVVReason + "', '" + evvLocationType + "')");
+                logger.error("559", ex.Message + " ANYW_SingleEntry_UpdateSingleEntry('" + token + "', '" + userId + "', '" + dateOfService + "', '" + locationId + "', '" + workCodeID + "', '" + startTime + "', '" + endTime + "', '" + checkHours + "', '" + consumerId + "', '" + transportationUnits + "', '" + transportationReimbursable + "', '" + numberOfConsumersPresent + "', '" + singleEntryId + "','" + inComments + "', '" + odometerStart + "', '" + odometerEnd + "', '" + destination + "', '" + reason + "', '" + endLatitude + "', '" + endLongitude + "', '" + deviceType + "', '" + evvReason + "', '" + attest + "', '" + licensePlateNumber + "', '" + community + "', '" + updateEVVReason + "', '" + evvLocationType + "', '" + transportationStartTime + "', '" + transportationEndTime + "')");
                 return "559: Error updating single entry";
             }
 
@@ -1756,7 +1886,7 @@ namespace Anywhere.Data
         }
 
         public string getSingleEntryEvvEligibilityJSON(string token, string consumerId, string entryDate)
-        { 
+        {
             if (tokenValidator(token) == false) return null;
             logger.debug("getSingleEntryEvvEligibility" + token);
             try
@@ -1900,6 +2030,7 @@ namespace Anywhere.Data
         public string saveDefaultLocationValue(string token, string switchCase, string locationId)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(locationId) == false) return null;
             logger.debug("saveDefaultLocationValue");
 
             try
@@ -1916,6 +2047,7 @@ namespace Anywhere.Data
         public string saveDefaultLocationName(string token, string switchCase, string locationName)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(locationName) == false) return null;
             logger.debug("saveDefaultLocationName");
 
             try
@@ -2576,6 +2708,7 @@ namespace Anywhere.Data
         public string selectNotesByLocation(string token, string locationId, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("selectNotesByLocation" + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -2678,6 +2811,7 @@ namespace Anywhere.Data
         public string getLocationsWithUnreadNotes(string token, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("LocationsWithUnreadNotes" + token);
             try
             {
@@ -2708,6 +2842,7 @@ namespace Anywhere.Data
         public string getConsumersWithUnreadNotesByEmployeeAndLocationPermission(string token, string locationId, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("getConsumersWithUnreadNotesByEmployeeAndLocation " + token + " " + locationId);
             try
             {
@@ -2943,6 +3078,8 @@ namespace Anywhere.Data
         public string getConsumersByLocationAbsent(string token, string absenceDate, string locationId)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(locationId) == false) return null;
+            if (IsDateValidFormat(absenceDate) == false) return null;
             logger.debug("getCounsumerLocationsForAbsentSave" + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -3339,6 +3476,7 @@ namespace Anywhere.Data
         {
             if (tokenValidator(token) == false) return null;
             if (stringInjectionValidator(absentDate) == false) return null;
+            if (IsDateValidFormat(absentDate) == false) return null;
             logger.debug("getAbsentWidgetFilterData " + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -3399,6 +3537,7 @@ namespace Anywhere.Data
         public string WorkshopGetLocations(string token, string serviceDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(serviceDate) == false) return null;
             logger.debug("WorkshopGetLocations " + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -3675,6 +3814,43 @@ namespace Anywhere.Data
             List<string> list = new List<string>();
             list.Add(attachmentId);
             string text = "CALL DBA.ANYW_Roster_GetAttachmentExtension(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallRaw(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("657", ex.Message + "GetAttachmentExtension(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "657: error GetAttachmentExtension";
+            }
+        }
+
+        public MemoryStream GetAttachmentDataWF(string attachmentId)
+        {
+            logger.debug("GetAttachmentData " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_WF_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                //MemoryStream temp = new MemoryStream();
+                //temp = executeSQLReturnMemoryStream("SELECT Attachment from Attachments where Attachment_ID = " + attachmentId);
+                //temp = executeSQLReturnMemoryStream(text);
+                return executeSQLReturnMemoryStream(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("640", ex.Message + "ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return null;
+            }
+        }
+
+        public string GetAttachmentExtensionWF(string attachmentId)
+        {
+            logger.debug("GetAttachmentExtension " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_WF_GetAttachmentExtension(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
                 return executeDataBaseCallRaw(text);
@@ -4372,6 +4548,44 @@ namespace Anywhere.Data
             }
         }
 
+        public string getInjuryRiskDropdown(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getIncidentTrackingEditReviewOthersInvolved ");
+            List<string> list = new List<string>();
+            list.Add(token);
+
+            string text = "CALL DBA.ANYW_IncidentTracking_GetInjuryRiskDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("683", ex.Message + "ANYW_IncidentTracking_GetInjuryRiskDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "683: error ANYW_IncidentTracking_GetInjuryRiskDropdown";
+            }
+        }
+
+        public string getInjuryCauseDropdown(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getIncidentTrackingEditReviewOthersInvolved ");
+            List<string> list = new List<string>();
+            list.Add(token);
+
+            string text = "CALL DBA.ANYW_IncidentTracking_GetInjuryCauseDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("683", ex.Message + "ANYW_IncidentTracking_GetInjuryCauseDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "683: error ANYW_IncidentTracking_GetInjuryCauseDropdown";
+            }
+        }
+
         public string saveUpdateIncidentTrackingITDetails(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate,
                                                 string reportedTime, string subcategoryId, string locationDetailId, string summary, string note, string prevention, string contributingFactor, string updateIncidentId, string saveUpdate)
         {
@@ -5016,7 +5230,7 @@ namespace Anywhere.Data
             }
         }
 
-        public string approveDenyDaysOffRequestSchedulingNotification(string token, string dayOffId, string decision)
+        public string approveDenyDaysOffRequestSchedulingNotification(string token, string dayOffId, string decision, string dateTimes)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("approveDenyDaysOffRequestSchedulingNotification ");
@@ -5024,6 +5238,7 @@ namespace Anywhere.Data
             list.Add(token);
             list.Add(dayOffId);
             list.Add(decision);
+            list.Add(dateTimes);
             string text = "CALL DBA.ANYW_Scheduling_ApproveDenyDaysOffRequestNotification(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -5089,6 +5304,30 @@ namespace Anywhere.Data
             {
                 logger.error("707", ex.Message + "ANYW_GoalsAndServices_GetObjectivesNew(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "707: error ANYW_GoalsAndServices_GetObjectivesNew";
+            }
+        }
+
+        public string addReviewNote(string token, string objectiveActivityId, string consumerId, string employeeId, string objectiveActivityDate, string note, string result, string notifyEmployee)
+        {
+            logger.debug("getObjectivesNew ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(objectiveActivityId);
+            list.Add(consumerId);
+            list.Add(employeeId);
+            list.Add(objectiveActivityDate);
+            list.Add(note);
+            list.Add(result);
+            list.Add(notifyEmployee);
+            string text = "CALL DBA.ANYW_GoalsAndServices_AddReviewNote(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("707", ex.Message + "ANYW_GoalsAndServices_AddReviewNote(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "707: error ANYW_GoalsAndServices_AddReviewNote";
             }
         }
 
@@ -5236,6 +5475,7 @@ namespace Anywhere.Data
         public string getCustomPhrases(string token, string showAll)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(showAll) == false) return null;
             logger.debug("getCustomPhrases ");
             List<string> list = new List<string>();
             list.Add(token);
@@ -5292,6 +5532,7 @@ namespace Anywhere.Data
         public string getlocationsWithConsumersWithUnreadNotes(string token, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("getCustomPhrases" + token);
             try
             {
@@ -5367,6 +5608,7 @@ namespace Anywhere.Data
         public string selectNotesByLocationAndPermission(string token, string locationId, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("selectNotesByLocationAndPermission" + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -5388,6 +5630,7 @@ namespace Anywhere.Data
         public string getLocationsWithUnreadNotesAndPermission(string token, string daysBackDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(daysBackDate) == false) return null;
             logger.debug("getLocationsWithUnreadNotesAndPermission" + token);
             try
             {
@@ -5816,7 +6059,8 @@ namespace Anywhere.Data
         }
 
         public string saveUpdateITConsumerInjuries(string token, string checkedByNurse, string checkedDate, string details, string itConsumerInjuryId,
-                                                            string consumerInvolvedId, string itInjuryLocationId, string itInjuryTypeId, string treatment)
+                                                            string consumerInvolvedId, string itInjuryLocationId, string itInjuryTypeId, string treatment,
+                                                            string causeOfInjuryId, string riskOfInjuryId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("saveUpdateITConsumerInterventions ");
@@ -5830,6 +6074,8 @@ namespace Anywhere.Data
             list.Add(itInjuryLocationId);
             list.Add(itInjuryTypeId);
             list.Add(treatment);
+            list.Add(causeOfInjuryId);
+            list.Add(riskOfInjuryId);
             string text = "CALL DBA.ANYW_IncidentTracking_SaveUpdateITConsumerInjuries(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -6050,6 +6296,25 @@ namespace Anywhere.Data
             }
         }
 
+
+        public static bool IsDateValidFormat(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return false;
+            }
+
+            // Define a regex pattern that allows only numbers, slashes, and dashes
+            string pattern = @"^[0-9/-]+$";
+
+            // Create a Regex object with the pattern
+            Regex regex = new Regex(pattern);
+
+            // Check if the input matches the regex pattern
+            return regex.IsMatch(input);
+        }
+
+
         public string removeUnsavableNoteText(string note)
         {
             if (note == "" || note is null)
@@ -6073,7 +6338,7 @@ namespace Anywhere.Data
 
         public bool tokenValidator(string token)
         {
-            if (token.Contains(" "))
+            if (token.Contains(" ") || token.Contains("|") || token.Contains("'") || token.Contains("*"))
             {
                 return false;
             }
@@ -6555,12 +6820,98 @@ namespace Anywhere.Data
             }
         }
 
-        public string getOutcomeTypeDropDown(string token)
+        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote, string notifyEmployee, string consumerId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getOutcomeTypeDropDown" + token);
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(objectiveActivityId);
+            list.Add(reviewNote);
+            list.Add(notifyEmployee);
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_GoalsAndServices_UpdateReviewNote(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices_UpdateReviewNote(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices_UpdateReviewNote";
+            }
+        }
+
+        public string getOutcomesReviewGrid(string token, string consumerId, string objectiveDate)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getOutcomeTypeDropDown" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(objectiveDate);
+            string text = "CALL DBA.ANYW_GoalsAndServices__GetReviewPageGrid(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices__GetReviewPageGrid(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices__GetReviewPageGrid";
+            }
+        }
+
+        public string getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList, string frequency)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getOutcomeTypeDropDown" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(startDate);
+            list.Add(endDate);
+            list.Add(objectiveIdList);
+            list.Add(frequency);
+            string text = "CALL DBA.ANYW_GoalsAndServices__GetReviewPageGridSecondary(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices__GetReviewPageGridSecondary(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices__GetReviewPageGridSecondary";
+            }
+        }
+        
+        public string getExclclamationIds( string startDate, string endDate,string frequency)
+        {
+            
+            List<string> list = new List<string>();
+            list.Add(startDate);
+            list.Add(endDate);
+            list.Add(frequency);
+            string text = "CALL DBA.ANYW_GoalsAndServices_GetReviewPageRedExclamationIds(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices_GetReviewPageRedExclamationIds(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices_GetReviewPageRedExclamationIds";
+            }
+        }
+        public string getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
+        {
+            if (tokenValidator(token) == false) return null;
+            //if (IsDateValidFormat(effectiveDateStart) == false) return null;
+            logger.debug("getOutcomeTypeDropDown" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            //list.Add(effectiveDateStart);
             string text = "CALL DBA.ANYW_GoalsAndServices_getOutcomeTypeDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -6629,12 +6980,15 @@ namespace Anywhere.Data
             }
         }
 
-        public string getOutcomeServiceDropDown(string token)
+        public string getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart)
         {
             if (tokenValidator(token) == false) return null;
+            if (IsDateValidFormat(effectiveDateStart) == false) return null;
             logger.debug("getOutcomeServiceDropDown" + token);
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(consumerId);
+            list.Add(effectiveDateStart);
             string text = "CALL DBA.ANYW_GoalsAndServices_getOutcomeServiceDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -6741,7 +7095,7 @@ namespace Anywhere.Data
 
         }
 
-        public string getRosterToDoListWidgetData(string responsiblePartyId,string token)
+        public string getRosterToDoListWidgetData(string responsiblePartyId, string token)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getRosterToDoListWidgetData");
@@ -6759,6 +7113,221 @@ namespace Anywhere.Data
             }
         }
 
-    }
 
+        public string getEmployeeList(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getEmployeeList" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Dashboard_getEmployeeList('" + token + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("559", ex.Message + " ANYW_Dashboard_getEmployeeList('" + token + "')");
+                return "559: Error getting existing time entry";
+            }
+
+        }
+
+        public string insertSystemNotes(string token, string textMessage, string expiration)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertSystemNotes");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(textMessage);
+            list.Add(expiration);
+            string text = "CALL DBA.ANYW_Dashboard_insertSystemNotes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("742", ex.Message + "ANYW_Dashboard_insertSystemNotes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "742: error ANYW_Dashboard_insertSystemNotes";
+            }
+        }
+
+        public string insertSystemNoteSharing(string token, string noteId, string employeeId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertSystemNoteSharing" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Dashboard_insertSystemNoteSharing('" + token + "', '" + noteId + "', '" + employeeId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("607", ex.Message + "ANYW_Dashboard_insertSystemNoteSharing('" + token + "', '" + noteId + "', '" + employeeId + "')");
+                return "607: error inserting System Note Sharing";
+            }
+        }
+
+        public string addOutcomePlan(string token, string userId, string consumerId, string attachmentType, string attachment, string startDate, string endDate)
+        {
+            logger.debug("AddOutcomePlan");
+            List<string> list = new List<string>();
+
+            string cleanAttachmentType = Regex.Replace(attachmentType, "[@,\\';\\\\]", "");
+
+            list.Add(token);
+            list.Add(userId);
+            list.Add(consumerId);
+            list.Add(attachment);
+            list.Add(startDate);
+            list.Add(endDate);
+            list.Add(cleanAttachmentType);
+
+            string text = "CALL DBA.ANYW_GoalsAndServices_AddOutcomePlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("707", ex.Message + "ANYW_GoalsAndServices_AddOutcomePlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "707: error ANYW_GoalsAndServices_AddOutcomePlan";
+            }
+        }
+
+        public string getPlanHistorybyConsumer(string token, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getPlanHistorybyConsumer");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_GoalsAndServices_getPlanHistorybyConsumer(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("734", ex.Message + "ANYW_GoalsAndServices_getPlanHistorybyConsumer");
+                return "734: error ANYW_GoalsAndServices_getPlanHistorybyConsumer";
+            }
+        }
+
+        public string getPlanbyConsumerHistory(string token, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getPlanbyConsumerHistory");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_GoalsAndServices_getPlanbyConsumerHistory(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("734", ex.Message + "ANYW_GoalsAndServices_getPlanbyConsumerHistory");
+                return "734: error ANYW_GoalsAndServices_getPlanbyConsumerHistory";
+            }
+        }
+
+        public string addOutcomePlanLater(string token, string consumerId)
+        {
+            logger.debug("AddOutcomePlanLater");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+
+            string text = "CALL DBA.ANYW_GoalsAndServices_AddOutcomePlanLater(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("707", ex.Message + "ANYW_GoalsAndServices_AddOutcomePlanLater(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "707: error ANYW_GoalsAndServices_AddOutcomePlanLater";
+            }
+        }
+
+        public string addOutcomePlanNow(string token, string consumerId)
+        {
+            logger.debug("AddOutcomePlanNow");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+
+            string text = "CALL DBA.ANYW_GoalsAndServices_AddOutcomePlanNow(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("707", ex.Message + "ANYW_GoalsAndServices_AddOutcomePlanNow(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "707: error ANYW_GoalsAndServices_AddOutcomePlanNow";
+            }
+        }
+
+        public string isNewBtnDisabledByPlanHistory(string token, string consumerId, string goalTypeID, string ObjectiveID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("isNewBtnDisabledByPlanHistory");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(goalTypeID);
+            list.Add(ObjectiveID);
+            string text = "CALL DBA.ANYW_GoalsAndServices_isNewBtnDisabledByPlanHistory(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("734", ex.Message + "ANYW_GoalsAndServices_isNewBtnDisabledByPlanHistory");
+                return "734: error ANYW_GoalsAndServices_isNewBtnDisabledByPlanHistory";
+            }
+        }
+
+        public string isViewPlabBtnDisabled(string token, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("IsViewPlabBtnDisabled");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_GoalsAndServices_IsViewPlabBtnDisabled(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("734", ex.Message + "ANYW_GoalsAndServices_IsViewPlabBtnDisabled");
+                return "734: error ANYW_GoalsAndServices_IsViewPlabBtnDisabled";
+            }
+        }
+
+        public string getRelationshipData(string token, string supervisorId, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getRelationshipData ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(supervisorId);
+
+
+            string text = "CALL DBA.ANYW_IncidentTracking_getRelationshipData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("677", ex.Message + "ANYW_IncidentTracking_getRelationshipData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "677: error ANYW_IncidentTracking_getRelationshipData";
+            }
+        }
+    }
 }

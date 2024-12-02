@@ -95,6 +95,20 @@ const PositionTask = (() => {
             },
         }));
         const oTable = table.build(tableOptions);
+
+        // Set the data type for each header, for sorting purposes
+        const headers = oTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'number'); // Task
+        headers[1].setAttribute('data-type', 'string'); // Description
+        headers[2].setAttribute('data-type', 'date'); // Start Date
+        headers[3].setAttribute('data-type', 'date'); // End Date
+        headers[4].setAttribute('data-type', 'string'); // Initial Performance
+        headers[5].setAttribute('data-type', 'string'); // Initial Performance Notes
+        headers[6].setAttribute('data-type', 'string'); // Employer Standard
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(oTable);
+
         table.populate(oTable, tableData);
 
         return oTable;

@@ -11,7 +11,7 @@ var help = (function() {
       attributes: [{ key: "data-action", value: "back" }]
     });
     var linkButton = button.build({
-      text: "Anywhere 4.0 Training Videos",
+        text: "DOCUMENTATION LIBRARY",
       icon: "openNew",
       type: "text",
       attributes: [{ key: "data-action", value: "trainingVideos" }]

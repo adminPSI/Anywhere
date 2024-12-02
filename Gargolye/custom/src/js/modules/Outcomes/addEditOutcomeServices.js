@@ -5,22 +5,34 @@ const addEditOutcomeServices = (() => {
   let newFilterValues;
   let filterRow;
   let addOutCome;
+  let importServicesBtn;
+  let filesList = [];
   let backBtn;
   // DOM
   let pageWrap;
   let overviewTable;
+  let fileInput;
   //--
   let filterPopup;
   let outcomeTypeDropdown;
   let effectiveDateStart;
   let effectiveDateEnd;
+  let importDate;
   let applyFilterBtn;
   let btnWrap;
   let outcomeTypeBtnWrap;
   let effectiveDateBtnWrap;
+  let importDateBtnWrap;
+  let fromImportedServicesPage = false;
 
-  async function init(selectedConsume) {
+  async function init(selectedConsume, navigatedFromImport) {
     selectedConsumer = selectedConsume;
+
+    if (navigatedFromImport) {
+      fromImportedServicesPage = navigatedFromImport;
+    } else {
+      fromImportedServicesPage = false;
+    }
     buildNewOutcomeServices();
   }
 
@@ -33,11 +45,29 @@ const addEditOutcomeServices = (() => {
     const consumerCard = buildConsumerCard();
     const backbtnWrap = document.createElement('div');
     backbtnWrap.classList.add('addOutcomeBtnWrap');
+    const addInsertServicesBtnWrap = document.createElement('div');
+    addInsertServicesBtnWrap.classList.add('addInsertServicesBtnWrap');
+    backbtnWrap.appendChild(addInsertServicesBtnWrap);
 
     filteredByData = buildFilteredByData();
     addOutCome = addOutcomesButton();
     backBtn = backButton();
-    backbtnWrap.appendChild(addOutCome);
+    addInsertServicesBtnWrap.appendChild(addOutCome);
+
+    if ($.session.InsertServices === true && $.session.applicationName === 'Advisor') {
+      importServicesBtn = button.build({
+        text: 'IMPORT SERVICES',
+        style: 'secondary',
+        type: 'contained',
+        classNames: 'importServices',
+        callback: async () => {
+          createUploadPopup();
+        },
+      });
+
+      addInsertServicesBtnWrap.appendChild(importServicesBtn);
+    }
+
     backbtnWrap.appendChild(backBtn);
 
     pageWrap.appendChild(consumerCard);
@@ -65,6 +95,220 @@ const addEditOutcomeServices = (() => {
 
     pageWrap.removeChild(spinner);
     buildOverviewTable();
+  }
+
+  // Create and append the popup to the body
+  function createUploadPopup() {
+    let filesList = [];
+
+    // Create the main popup container
+    const popup = document.createElement('div');
+    popup.id = 'upload-popup';
+    popup.className = 'upload-popup hiddenPopup';
+
+    // Create the content container
+    const popupContent = document.createElement('div');
+    popupContent.className = 'upload-popup-content';
+
+    // Create the heading
+    const heading = document.createElement('h2');
+    heading.innerText = 'Upload File';
+
+    // Create the drop area
+    const dropArea = document.createElement('div');
+    dropArea.id = 'drop-area';
+    dropArea.className = 'drop-area';
+    dropArea.style.display = 'flex'; // Make the dropArea a flex container
+    dropArea.style.flexDirection = 'column';
+    dropArea.style.alignItems = 'center';
+    dropArea.style.justifyContent = 'center';
+
+    // Add text to the drop area
+    const dropText1 = document.createElement('p');
+    dropText1.innerText = 'Drag & drop a file here';
+    const dropText2 = document.createElement('p');
+    dropText2.innerText = 'or';
+
+    // Handle drag and drop
+    dropArea.addEventListener('dragover', event => {
+      event.preventDefault();
+      dropArea.classList.add('active');
+    });
+
+    dropArea.addEventListener('dragleave', () => {
+      dropArea.classList.remove('active');
+    });
+
+    dropArea.addEventListener('drop', event => {
+      event.preventDefault();
+      dropArea.classList.remove('active');
+      const files = event.dataTransfer.files;
+      handleFiles(files);
+    });
+
+    // Create the file input element
+    fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = 'file-input';
+    fileInput.className = 'file-input';
+    fileInput.multiple = true;
+    fileInput.style.display = 'none'; // Hide the input element
+
+    // Create the button for selecting files
+    const selectFilesButton = button.build({
+      text: 'Select File',
+      id: 'select-files',
+      style: 'primary',
+      type: 'contained',
+      classNames: 'btn',
+      callback: async () => {
+        fileInput.click();
+      },
+    });
+
+    // Center the button in its container
+    selectFilesButton.style.margin = '10px auto';
+
+    // Event listener to handle file selection
+    fileInput.addEventListener('change', event => {
+      const files = event.target.files;
+      handleFiles(files);
+    });
+
+    // Append text and button to drop area
+    dropArea.appendChild(dropText1);
+    dropArea.appendChild(dropText2);
+    dropArea.appendChild(selectFilesButton);
+
+    // Create the file list display area
+    const fileListDisplay = document.createElement('div');
+    fileListDisplay.id = 'file-list';
+    fileListDisplay.className = 'file-list';
+
+    // Create the close button
+    const closeButton = button.build({
+      text: 'Close',
+      id: 'upload-close',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'btn',
+      callback: async () => {
+        hidePopup();
+        filesList = [];
+      },
+    });
+
+    // Create the Import button
+    const importButton = button.build({
+      text: 'Start Import',
+      id: 'upload-import',
+      style: 'secondary',
+      type: 'contained',
+      classNames: ['btn', 'disabled'],
+      callback: async () => {
+        const attachmentsForSave = await processFilesForUpload(filesList);
+
+        hidePopup();
+        importServices.init(attachmentsForSave, outcomeServicesData, selectedConsumer);
+      },
+    });
+
+    const uploadBtnsWrap = document.createElement('div');
+    uploadBtnsWrap.className = 'uploadBtnsWrap';
+
+    // Append all elements to the content container
+    popupContent.appendChild(heading);
+    popupContent.appendChild(dropArea);
+    popupContent.appendChild(fileListDisplay);
+    uploadBtnsWrap.appendChild(importButton);
+    uploadBtnsWrap.appendChild(closeButton);
+    popupContent.appendChild(uploadBtnsWrap);
+
+    // Append the content container to the popup
+    popup.appendChild(popupContent);
+
+    // Append the popup to the body
+    document.body.appendChild(popup);
+
+    // Function to display file names
+    function displayFileNames(filesList) {
+      fileListDisplay.innerHTML = ''; // Clear previous file list
+      const list = document.createElement('ul');
+      filesList.forEach((file, index) => {
+        const listItem = document.createElement('li');
+        listItem.innerText = file.name;
+
+        // Create the remove button (X)
+        const removeButton = document.createElement('button');
+        removeButton.innerText = 'X';
+        removeButton.style.marginLeft = '10px';
+        removeButton.style.color = 'red';
+        removeButton.style.border = 'none';
+        removeButton.style.background = 'transparent';
+        removeButton.style.cursor = 'pointer';
+
+        // Event listener to remove the file from the list
+        removeButton.addEventListener('click', () => {
+          removeFile(index);
+        });
+
+        listItem.appendChild(removeButton);
+        list.appendChild(listItem);
+      });
+      fileListDisplay.appendChild(list);
+    }
+
+    // Function to handle files
+    function handleFiles(files) {
+      filesList = filesList.concat(Array.from(files));
+      displayFileNames(filesList);
+      for (const file of files) {
+        console.log('File uploaded:', file.name);
+      }
+
+      toggleButtonsDisabled('import', filesList);
+    }
+
+    function toggleButtonsDisabled(filesList) {
+      const importButton = document.getElementById('upload-import');
+
+      if (filesList.length > 0) {
+        importButton.disabled = false;
+        importButton.classList.remove('disabled');
+      } else {
+        importButton.disabled = true;
+        importButton.classList.add('disabled');
+      }
+  }
+
+    // Function to remove a file from the list
+    function removeFile(index) {
+      filesList.splice(index, 1);
+      fileInput.value = '';
+      displayFileNames(filesList);
+      
+      toggleButtonsDisabled(filesList);
+    }
+
+    // Function to process files for upload
+    async function processFilesForUpload(files) {
+      let attachments = [];
+  
+      for (const file of files) {
+          const attachmentDetails = await _DOM.getAttachmentDetails(file);
+          attachments.push(attachmentDetails.attachment);
+      }
+  
+      return attachments; // Return just the attachment data
+    }
+  }
+
+  // Hide popup function
+  function hidePopup() {
+    const popup = document.getElementById('upload-popup');
+    if (popup) {
+      popup.remove();
+    }
   }
 
   function addOutcomesButton() {
@@ -98,6 +342,7 @@ const addEditOutcomeServices = (() => {
       outcomeType: '%',
       effectiveDateStart: dates.formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 10)).slice(0, 10),
       effectiveDateEnd: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
+      importDate: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
       outcomeTypeName: '%',
     };
   }
@@ -117,6 +362,11 @@ const addEditOutcomeServices = (() => {
     var currentFilterDisplay = document.querySelector('.filteredByData');
 
     effectiveDateEnd = `${formatDate(filterValues.effectiveDateEnd)}`;
+    importDate = '';
+
+    if (fromImportedServicesPage) {
+      importDate = `${formatDate(filterValues.effectiveDateEnd)}`;
+    }
 
     if (!currentFilterDisplay) {
       currentFilterDisplay = document.createElement('div');
@@ -140,8 +390,15 @@ const addEditOutcomeServices = (() => {
     } else {
       btnWrap.appendChild(effectiveDateBtnWrap);
       if (document.getElementById('effectiveDateBtn') != null)
-        document.getElementById('effectiveDateBtn').innerHTML =
-          'Effective As Of: ' + effectiveDateEnd;
+        document.getElementById('effectiveDateBtn').innerHTML = 'Effective As Of: ' + effectiveDateEnd;
+    }
+
+    if (importDate == '') {
+      btnWrap.removeChild(importDateBtnWrap);
+    } else {
+      btnWrap.appendChild(importDateBtnWrap);
+      if (document.getElementById('importDateBtn') != null)
+        document.getElementById('importDateBtn').innerHTML = 'ImportDate: ' + importDate;
     }
 
     return currentFilterDisplay;
@@ -190,6 +447,17 @@ const addEditOutcomeServices = (() => {
       },
     });
 
+    importDateBtn = button.build({
+      id: 'importDateBtn',
+      text: 'Import Date: ' + importDate,
+      style: 'secondary',
+      type: 'text',
+      classNames: 'filterSelectionBtn',
+      callback: () => {
+        showFilterPopup('importDateBtn');
+      },
+    });
+
     btnWrap = document.createElement('div');
     btnWrap.classList.add('filterBtnWrap');
     btnWrap.appendChild(filterBtn);
@@ -204,6 +472,11 @@ const addEditOutcomeServices = (() => {
     effectiveDateBtnWrap.classList.add('filterSelectionBtnWrap');
     effectiveDateBtnWrap.appendChild(effectiveDateBtn);
     btnWrap.appendChild(effectiveDateBtnWrap);
+
+    importDateBtnWrap = document.createElement('div');
+    importDateBtnWrap.classList.add('filterSelectionBtnWrap');
+    importDateBtnWrap.appendChild(importDateBtn);
+    btnWrap.appendChild(importDateBtnWrap);
   }
 
   function closeFilter(closeFilter) {
@@ -228,7 +501,7 @@ const addEditOutcomeServices = (() => {
     });
 
     // Date Inputs
-    const dateWrap = document.createElement('div');
+    const effectiveDateWrap = document.createElement('div');
     effectiveDateEndInput = input.build({
       type: 'date',
       label: 'Effective As Of',
@@ -236,8 +509,20 @@ const addEditOutcomeServices = (() => {
       value: filterValues.effectiveDateEnd,
     });
 
-    if (IsShow == 'ALL' || IsShow == 'effectiveDateBtn') {    
-      dateWrap.appendChild(effectiveDateEndInput);
+    const importDateWrap = document.createElement('div');
+    importDateInput = input.build({
+      type: 'date',
+      label: 'Import Date',
+      style: 'secondary',
+      value: filterValues.importDate,
+    });
+
+    if (IsShow == 'ALL' || IsShow == 'effectiveDateBtn') {
+      effectiveDateWrap.appendChild(effectiveDateEndInput);
+    }
+
+    if (IsShow == 'ALL' || IsShow == 'importDateBtn') {
+      importDateWrap.appendChild(importDateInput);
     }
 
     const btnFilterWrap = document.createElement('div');
@@ -260,7 +545,8 @@ const addEditOutcomeServices = (() => {
 
     if (IsShow == 'ALL' || IsShow == 'outcomeTypeBtn') filterPopup.appendChild(outcomeTypeDropdown);
 
-    filterPopup.appendChild(dateWrap);
+    filterPopup.appendChild(effectiveDateWrap);
+    filterPopup.appendChild(importDateWrap);
     filterPopup.appendChild(btnFilterWrap);
 
     POPUP.show(filterPopup);
@@ -294,7 +580,7 @@ const addEditOutcomeServices = (() => {
   }
 
   async function populateOutcomeTypeDropdown() {
-    const { getOutcomeTypeDropDownResult: OutcomeType } = await outcomesAjax.getOutcomeTypeDropDownAsync();
+    const { getOutcomeTypeDropDownResult: OutcomeType } = await outcomesAjax.getOutcomeTypeDropDownAsync(selectedConsumer);
     let outcomeTypeData = OutcomeType.map(outcomeTypes => ({
       id: outcomeTypes.Goal_Type_ID,
       value: outcomeTypes.Goal_Type_ID,

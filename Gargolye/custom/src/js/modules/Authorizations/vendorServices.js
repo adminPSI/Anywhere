@@ -50,7 +50,17 @@ const vendorServices = (() => {
             values: [entry.fundingSource, entry.serviceCode, entry.serviceDescription],                                
         }));
         const oTable = table.build(tableOptions);
+
+        // Set the data type for each header, for sorting purposes
+        const headers = oTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Funding Source
+        headers[1].setAttribute('data-type', 'string'); // Service Code
+        headers[2].setAttribute('data-type', 'string'); // Service Description 
+
         table.populate(oTable, tableData);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(oTable); 
 
         return oTable;
     }

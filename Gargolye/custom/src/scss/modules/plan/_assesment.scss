@@ -40,7 +40,20 @@
   }
 
   &__sectionGroup {
-    margin: 0 0 10px;
+    margin: 0 0 4px;
+
+    &.inView {
+      .tableOfContents__sectionHeading {
+        background: $primary;
+        padding-bottom: 6px;
+        padding-top: 6px;
+
+        a.fullHeading,
+        a.abrvHeading {
+          color: $white;
+        }
+      }
+    }
 
     &.nonApplicable {
       .numOfQuestionsUnawnseredWrap,
@@ -573,7 +586,7 @@
     flex-flow: column;
   }
   .checkbox-mtd > input:checked + span:after {
-    left: -24px;
+    //left: -24px;
   }
 
   .emailWrap {
@@ -689,14 +702,14 @@
         }
       }
 
-      &::before {
-        display: block;
-        content: ' ';
-        margin-top: -92px;
-        height: 92px;
-        visibility: hidden;
-        pointer-events: none;
-      }
+      // &::before {
+      //   display: block;
+      //   content: ' ';
+      //   margin-top: -92px;
+      //   height: 92px;
+      //   visibility: hidden;
+      //   pointer-events: none;
+      // }
     }
 
     .sectionPrompt {
@@ -984,6 +997,9 @@
 .intentionallyBlankCheckbox {
   margin-top: 10px;
 }
+// .intentionallyDisabled {
+//   background-color: red !important;
+// }
 
 @media screen and (min-width: '1000px') {
   [data-active-section='plan-questionsAndAnswers'] {

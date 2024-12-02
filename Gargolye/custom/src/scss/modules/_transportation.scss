@@ -806,17 +806,23 @@
         margin: 0px 0px 20px;
     }
 
+    .totalHour {
+        float: right;
+        font-weight: 500;
+        margin-right: 3px;
+    }
+
     .popup {
         max-width: 420px !important;
 
         .checkbox-mtd > span::after {
-            top: -39px !important;
+            top: 2px !important;
             left: 14px !important;
         }
 
         .checkbox-mtd > input {
             top: -7px !important;
-            margin-left : 12px !important; 
+            margin-left: 12px !important;
         }
 
         .password-error {

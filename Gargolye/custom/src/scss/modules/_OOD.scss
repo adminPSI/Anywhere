@@ -221,6 +221,7 @@
             justify-content: space-between;
             flex-grow: 1;
             width: 100%;
+            
 
             button.btn {
                 flex-grow: 1;
@@ -292,6 +293,7 @@
 
 // Form 4 Monthly Plcement Form
 .ood_form4monthlyplacement_inputContainer1 {
+    
     display: flex;
     flex-flow: row wrap;
     > div {
@@ -315,7 +317,47 @@
             //
             min-width: 420px;
         }
+
     }
+    
+}
+
+// Form 8 
+.ood_form8monthlyplacement_inputContainer1 {
+    border: 2px solid $black;
+    padding: 10px 10px 5px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-flow: row wrap;
+
+    &.error {
+        border: 2px solid $red;
+      }
+      
+    > div {
+        flex-grow: 1;
+        margin-right: 10px;
+    }
+    > div:nth-child(1) {
+        //
+        min-width: 200px;
+    }
+    > div:nth-child(2) {
+        //
+        min-width: 260px;
+    }
+    > div:nth-child(3) {
+        //
+        min-width: 200px;
+    }
+    @media screen and (min-width: 560px) {
+        > div:nth-child(3) {
+            //
+            min-width: 420px;
+        }
+
+    }
+    
 }
 
 // Form 4 Monthly Plcement Form
@@ -489,4 +531,14 @@
         // justify-content: flex-end;
         float: right;
     }
+}
+
+.EmployeeGoal {
+    display: flex;
+    column-gap: 10px;
+    align-items: baseline;
+}
+.ChoosePositionEmployer {
+    width:100%;
+    margin-bottom: 10px;
 }

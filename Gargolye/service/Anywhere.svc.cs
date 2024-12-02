@@ -15,6 +15,7 @@ using Anywhere.service.Data.Employment;
 using Anywhere.service.Data.ESign;
 using Anywhere.service.Data.eSignature___OneSpan;
 using Anywhere.service.Data.PDF_Forms;
+using Anywhere.service.Data.ImportOutcomesAndServices;
 using Anywhere.service.Data.Plan;
 using Anywhere.service.Data.Plan.Assessment;
 using Anywhere.service.Data.PlanContactInformation;
@@ -50,10 +51,17 @@ using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttach
 using static Anywhere.service.Data.DocumentConversion.FinalizationButtonWorker;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
 using static Anywhere.service.Data.ESign.ESignWorker;
+using static Anywhere.service.Data.IncidentTrackingWorker;
 using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
+using static Anywhere.service.Data.DashboardWorker;
+using static Anywhere.service.Data.OutcomesWorker;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
+using System.Runtime.InteropServices.ComTypes;
+using static Anywhere.service.Data.FSS.FSSWorker;
+using Anywhere.service.Data.FSS;
 
 namespace Anywhere
 {
@@ -117,11 +125,14 @@ namespace Anywhere
         ReportBuilderWorker rbw = new ReportBuilderWorker();
         AuthorizationWorker authWorker = new AuthorizationWorker();
         OODFormWorker OODfw = new OODFormWorker();
+        OODFormDataGetter OODFDG = new OODFormDataGetter();
         PlanValidationWorker pv = new PlanValidationWorker();
         WaitingListWorker wlw = new WaitingListWorker();
         FinalizationButtonWorker fbw = new FinalizationButtonWorker();
         ESignWorker esw = new ESignWorker();
         ESignDataGetter esdg = new ESignDataGetter();
+        ImportOutcomesAndServicesWorker ioas = new ImportOutcomesAndServicesWorker();
+        FSSWorker fssw = new FSSWorker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -375,6 +386,11 @@ namespace Anywhere
             return dg.deleteGoal(token, activityId);
         }
 
+        public AllGoalTypes[] getAllGoalTypes(string token)
+        {
+            return outcomesWorker.getAllGoalTypes(token);
+        }
+
         public string getSingleEntry(string token)
         {
             return dg.getSingleEntry(token);
@@ -570,6 +586,31 @@ namespace Anywhere
             return rosterWorker.getConsumerRelationshipsJSON(token, consumerId);
         }
 
+        public RosterWorker.ConsumerEditRelationship[] getEditConsumerRelationshipsJSON(string token, string consumerId, string isActive)
+        {
+            return rosterWorker.getEditConsumerRelationshipsJSON(token, consumerId, isActive);
+        }
+
+        public RosterWorker.ConsumerRelationshipType[] getRelationshipsTypeJSON(string token)
+        {
+            return rosterWorker.getRelationshipsTypeJSON(token);
+        }
+
+        public RosterWorker.ConsumerRelationshipName[] getRelationshipsNameJSON(string token)
+        {
+            return rosterWorker.getRelationshipsNameJSON(token);
+        }
+
+        public RosterWorker.ConsumerRelationshipName[] getRelationshipsNameByIDJSON(string token, string relationType)
+        {
+            return rosterWorker.getRelationshipsNameByIDJSON(token, relationType);
+        }
+
+        public string insertEditRelationship(string token, string userId, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsNewList, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsList, string consumerId)
+        {
+            return rosterWorker.insertEditRelationship(token, userId, consumerRelationshipsNewList, consumerRelationshipsList, consumerId);
+        }
+
         public string updateDemographicInformation(string token, string addressOne, string addressTwo, string city, string state, string zipCode, string mobilePhone, string email, string carrier)
         {
             return dg.updateDemographicInformation(token, addressOne, addressTwo, city, state, zipCode, mobilePhone, email, carrier);
@@ -631,9 +672,9 @@ namespace Anywhere
         }
 
         //Single Entry Below
-        public string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType)
+        public string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime)
         {
-            return dg.insertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType);
+            return dg.insertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType, transportationStartTime, transportationEndTime);
         }
 
         public SingleEntryWorker.ConsumerAndLocation[] getSelectedConsumerLocations(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
@@ -641,14 +682,14 @@ namespace Anywhere
             return singleEntryWorker.getSelectedConsumerLocations(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community);
         }
 
-        public SingleEntryWorker.ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType)
+        public SingleEntryWorker.ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime)
         {
-            return singleEntryWorker.preInsertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType);
+            return singleEntryWorker.preInsertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType, transportationStartTime, transportationEndTime);
         }
 
-        public string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason, string evvLocationType)
+        public string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason, string evvLocationType, string transportationStartTime, string transportationEndTime)
         {
-            return dg.updateSingleEntry(token, userId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, singleEntryId, inComments, odometerStart, odometerEnd, destination, reason, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, updateEVVReason, evvLocationType);
+            return dg.updateSingleEntry(token, userId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, singleEntryId, inComments, odometerStart, odometerEnd, destination, reason, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, updateEVVReason, evvLocationType, transportationStartTime, transportationEndTime);
         }
 
         public SingleEntryWorker.SingleEntryById[] getSingleEntryByIdJSON(string token, string singleEntryId)
@@ -1376,6 +1417,11 @@ namespace Anywhere
             return iTW.GetIncidentEditReviewDataAllObjects(token, incidentId);
         }
 
+        public IncidentTrackingWorker.RiskAndCauseDropdowns GetRiskAndCauseDropdowns(string token)
+        {
+            return iTW.GetRiskAndCauseDropdowns(token);
+        }
+
         public List<string> saveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate, string incidentTypeDesc,
                                     string reportedTime, string subcategoryId, string locationDetailId, string serviceLocationId, string summary, string note, string prevention, string contributingFactor,//end of main table data
                                     string consumerIdString, string includeInCount, string involvementId, string consumerIncidentLocationIdString, string consumerInvolvedIdString, //end of consumers
@@ -1467,9 +1513,9 @@ namespace Anywhere
             return anywhereScheduleWorker.approveDenyCallOffRequestScheduling(token, callOffShiftId, decision);
         }
 
-        public string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision)
+        public string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision, string dateTime)
         {
-            return anywhereScheduleWorker.approveDenyDaysOffRequestScheduling(token, daysOffIdString, decision);
+            return anywhereScheduleWorker.approveDenyDaysOffRequestScheduling(token, daysOffIdString, decision, dateTime);
         }
 
         public AnywhereScheduleWorker.OverlapData[] requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
@@ -1524,6 +1570,11 @@ namespace Anywhere
         public SingleEntryWorker.ConsumerSignaturesAndNotes[] getConsumersSignaturesAndNotes(string token, string singleEntryId)
         {
             return singleEntryWorker.getConsumersSignaturesAndNotes(token, singleEntryId);
+        }
+
+        public string addReviewNote(string token, string objectiveActivityId, string consumerId, string employeeId, string objectiveActivityDate, string note, string result, string notifyEmployee)
+        {
+            return dg.addReviewNote( token,  objectiveActivityId,  consumerId,  employeeId,  objectiveActivityDate,  note,  result,  notifyEmployee);
         }
 
         public OutcomesWorker.SuccessSymbolLookup[] getSuccessSymbolLookup(string token)
@@ -1679,9 +1730,9 @@ namespace Anywhere
         }
 
         public string saveUpdateITConsumerInjuries(string token, List<String> checkedByNurseArray, List<String> checkedDateArray, List<String> detailsArray, List<String> itConsumerInjuryIdArray,
-                                                                    string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray)
+                                                                    string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray, List<String> causeOfInjuryIdArray, List<String> riskOfInjuryIdArray)
         {
-            return iTW.saveUpdateITConsumerInjuries(token, checkedByNurseArray, checkedDateArray, detailsArray, itConsumerInjuryIdArray, consumerInvolvedId, itInjuryLocationIdArray, itInjuryTypeIdArray, treatmentArray);
+            return iTW.saveUpdateITConsumerInjuries(token, checkedByNurseArray, checkedDateArray, detailsArray, itConsumerInjuryIdArray, consumerInvolvedId, itInjuryLocationIdArray, itInjuryTypeIdArray, treatmentArray, causeOfInjuryIdArray, riskOfInjuryIdArray);
         }
 
         public string saveUpdateITConsumerInterventions(string token, List<String> aversiveArray, List<String> itConsumerInterventionIdArray, string consumerInvolvedId, List<String> itConsumerInterventionTypeIdArray,
@@ -1903,11 +1954,15 @@ namespace Anywhere
             return fw.getFormTemplates(token);
         }
 
-        public FormWorker.FormTemplate[] getUserFormTemplates(string token, string userId, string hasAssignedFormTypes)
+        public FormWorker.FormTemplate[] getUserFormTemplates(string token, string userId, string hasAssignedFormTypes, string typeId)
         {
-            return fw.getUserFormTemplates(token, userId, hasAssignedFormTypes);
+            return fw.getUserFormTemplates(token, userId, hasAssignedFormTypes, typeId);
         }
 
+        public FormWorker.FormType[] getFormType(string token)
+        {
+            return fw.getFormType(token);
+        }
 
         public WorkflowWorker.PlanWorkflowWidgetData[] getPlanWorkflowWidgetData(string token, string responsiblePartyId)
         {
@@ -2051,6 +2106,19 @@ namespace Anywhere
             attachmentId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
             filename = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
             anywhereAttachmentWorker.getAttachment(token, attachmentId, filename);
+        }
+
+        public void getAttachmentWF(System.IO.Stream testInput)
+        {
+            string token;
+            string attachmentId;
+            string filename;
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            attachmentId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            filename = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            anywhereAttachmentWorker.getAttachmentWF(token, attachmentId, filename);
         }
 
         public void viewCaseNoteAttachment(System.IO.Stream testInput)
@@ -2329,11 +2397,11 @@ namespace Anywhere
             return fbw.getDefaultEmailsForFinalization(token);
         }
 
-        public FinalizationButtonWorker.ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
+        public FinalizationButtonWorker.ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes, string[] wfAttachmentStepIds)
         //public string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
 
         {
-            return fbw.finalizationActions(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, peopleId, emailAddresses, checkBoxes);
+            return fbw.finalizationActions(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include, peopleId, emailAddresses, checkBoxes, wfAttachmentStepIds);
         }
 
         public string updatePlanOutcomeProgressSummary(string token, long progressSummaryId, string progressSummary)
@@ -2361,12 +2429,12 @@ namespace Anywhere
             return poW.insertPlanOutcomesExperience(outcomeId, howHappened, whatHappened, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, experienceOrder);
         }
 
-        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
+        public List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, string[] isSalesforceLocation)
         {
             return poW.insertPlanOutcomeExperienceResponsibility(experienceId, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, isSalesforceLocation);
         }
 
-        public string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
+        public string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, string[] isSalesforceLocation)
         {
             return poW.updatePlanOutcomeExperienceResponsibility(responsibilityIds, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, isSalesforceLocation);
         }
@@ -2381,7 +2449,7 @@ namespace Anywhere
             return poW.updatePlanOutcome(token, assessmentId, outcomeId, outcome, details, history, sectionId, summaryOfProgress, status, carryOverReason);
         }
 
-        public string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation)
+        public string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, string[] isSalesforceLocation)
         {
             return poW.updatePlanOutcomesExperience(outcomeId, experienceIds, howHappened, whatHappened, responsibilityIds, responsibleContact, responsibleProvider, whenHowOftenValue, whenHowOftenFrequency, whenHowOftenText, isSalesforceLocation);
         }
@@ -2604,9 +2672,9 @@ namespace Anywhere
             return psw.assignStateCaseManagertoConsumers(caseManagerId, consumers);
         }
 
-        public string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId)
+        public string setSalesForceIdForTeamMemberUpdate(string peopleId, string teamMemberType, string salesForceId)
         {
-            return psw.setSalesForceIdForTeamMemberUpdate(peopleId, salesForceId);
+            return psw.setSalesForceIdForTeamMemberUpdate(peopleId, teamMemberType, salesForceId);
         }
 
         public bool validateConsumerForSalesForceId(string consumerId)
@@ -2630,9 +2698,9 @@ namespace Anywhere
             return inSalesForce;
         }
 
-        public string GetSalesForceId(long consumerId, long peopleId)
+        public string GetSalesForceId(long consumerId, long peopleId, string teamMemberType)
         {
-            return psw.GetSalesForceId(consumerId, peopleId);
+            return psw.GetSalesForceId(consumerId, peopleId, teamMemberType);
         }
 
         public string[] uploadPlanToDODD(string consumerId, string planId)
@@ -2813,6 +2881,10 @@ namespace Anywhere
             return fw.insertConsumerForm(token, userId, consumerId, formtemplateid, formdata, formCompleteDate);
         }
 
+        public Anywhere.service.Data.FormWorker.consumerForm insertSeveralConsumerForm(string token, string userId, string consumerId, string[] formtemplateid, string isTemplate, string formCompleteDate)
+        {
+            return fw.insertSeveralConsumerForm(token, userId, consumerId, formtemplateid, isTemplate, formCompleteDate);
+        }
         public Anywhere.service.Data.FormWorker.consumerForm updateConsumerForm(string token, string formId, string formdata, string documentEdited)
         {
             return fw.UpdateConsumerForm(token, formId, formdata, documentEdited);
@@ -2956,6 +3028,7 @@ namespace Anywhere
             string startDate;
             string endDate;
             string userId;
+            string loggedInUserPersonId;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
@@ -2966,8 +3039,9 @@ namespace Anywhere
             serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
 
-            return OODfw.generateForm6(token, referenceNumber, 22, peopleId, startDate, endDate, userId);
+            return OODfw.generateForm6(token, referenceNumber, 22, peopleId, startDate, endDate, userId, loggedInUserPersonId);
 
         }
 
@@ -2980,6 +3054,7 @@ namespace Anywhere
             string startDate;
             string endDate;
             string userId;
+            string loggedInUserPersonId;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
@@ -2990,6 +3065,7 @@ namespace Anywhere
             serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
 
             if (serviceCodeId == "%25")
             {
@@ -3001,7 +3077,7 @@ namespace Anywhere
                 referenceNumber = "All";
             }
 
-            return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
+            return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId, loggedInUserPersonId);
         }
 
         public string generateForm10(System.IO.Stream testInput)
@@ -3014,6 +3090,7 @@ namespace Anywhere
             string startDate;
             string endDate;
             string userId;
+            string loggedInUserPersonId;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
@@ -3024,8 +3101,9 @@ namespace Anywhere
             serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
 
-            return OODfw.generateForm10(token, referenceNumber, 22, peopleId, startDate, endDate, userId);
+            return OODfw.generateForm10(token, referenceNumber, 22, peopleId, startDate, endDate, userId, loggedInUserPersonId);
 
         }
 
@@ -3038,6 +3116,7 @@ namespace Anywhere
             string startDate;
             string endDate;
             string userId;
+            string loggedInUserPersonId;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
@@ -3048,6 +3127,7 @@ namespace Anywhere
             serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
 
             if (serviceCodeId == "%25")
             {
@@ -3059,7 +3139,7 @@ namespace Anywhere
                 referenceNumber = "All";
             }
 
-            return OODfw.generateForm16(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
+            return OODfw.generateForm16(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId, loggedInUserPersonId);
         }
 
         public Anywhere.service.Data.OODWorker.OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
@@ -3204,14 +3284,14 @@ namespace Anywhere
             return Ow.getForm8CommunityBasedAssessment(token, caseNoteId);
         }
 
-        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId)
+        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string employer, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId)
         {
-            return Odg.updateForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, position, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions, userId);
+            return Odg.updateForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, position, employer, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions, userId);
         }
 
-        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string employer, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
         {
-            return Odg.insertForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, position, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions, userId, serviceId, referenceNumber, caseManagerId);
+            return Odg.insertForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, position, employer, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions, userId, serviceId, referenceNumber, caseManagerId);
         }
 
         public OODWorker.Form8MonthlySummary[] getForm8MonthlySummary(string token, string emReviewId)
@@ -3228,6 +3308,17 @@ namespace Anywhere
         {
             return Odg.insertForm8MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId, serviceId);
         }
+
+        public string getEmploymentGoal(string peopleId)
+        {
+            return OODFDG.getEmploymentGoal(peopleId);
+        }
+
+        public string updateEmploymentGoal(string peopleId, string userId, string ServiceGoal)
+        {
+            return Odg.updateEmploymentGoal(peopleId, userId, ServiceGoal);
+        }
+
 
         public OODWorker.Form10TransportationData[] getForm10TransportationData(string token, string OODTransportationId)
         {
@@ -3293,7 +3384,7 @@ namespace Anywhere
             return cnReportWorker.generateCNTimeAnalysisReport(token, userId, billerId, consumerId, billingCode, serviceStartDate, serviceEndDate, applicationName);
         }
 
-        public ReportScheduleId[] generateReport(string token, string reportType, ReportData reportData)
+        public ReportBuilderWorker.ReportScheduleId[] generateReport(string token, string reportType, ReportData reportData)
         {
             return rbw.generateReport(token, reportType, reportData);
         }
@@ -3484,6 +3575,28 @@ namespace Anywhere
             try
             {
                 ms = ser.createRegReport(token, userId, startDate, endDate);
+            }
+            catch (Exception ex)
+            {
+                var builder = new StringBuilder();
+                WriteExceptionDetails(ex, builder, 0);
+                logger2.debug(builder.ToString());
+            }
+            if (ms != null)
+            {
+                ms.Close();
+            }
+
+            return ms;
+        }
+
+        public MemoryStream BasicSingleEntrySupervisorReport(string token, string userId, string supervisorId, string startDate, string endDate, string locationId, string personId, string status, string workCodeId)
+        {
+
+            MemoryStream ms = null;
+            try
+            {
+                ms = ser.createRegReportSupervisor(token, userId, supervisorId, startDate, endDate, locationId, personId, status, workCodeId);
             }
             catch (Exception ex)
             {
@@ -3958,9 +4071,24 @@ namespace Anywhere
             return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId, appName);
         }
 
-        public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)
+        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote, string notifyEmployee, string consumerId)
         {
-            return outcomesWorker.getOutcomeTypeDropDown(token);
+            return outcomesWorker.updateReviewNote( token,  objectiveActivityId,  reviewNote,  notifyEmployee,  consumerId);
+        }
+
+        public OutcomesWorker.OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string objectiveDate)
+        {
+            return outcomesWorker.getOutcomesReviewGrid(token, consumerId, objectiveDate);
+        }
+
+        public OutcomesWorker.TotalSecondGridCall getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList, string frequency)
+        {
+            return outcomesWorker.getOutcomesReviewGridSecondary(token, consumerId, startDate, endDate, objectiveIdList, frequency);
+        }
+
+        public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
+        {
+            return outcomesWorker.getOutcomeTypeDropDown(token, consumerId, effectiveDateStart);
         }
 
         public OutcomesWorker.LocationType[] getLocationDropDown(string token)
@@ -3978,9 +4106,9 @@ namespace Anywhere
             return outcomesWorker.getObjectiveEntriesById(token, objectiveId);
         }
 
-        public OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token)
+        public OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart)
         {
-            return outcomesWorker.getOutcomeServiceDropDown(token);
+            return outcomesWorker.getOutcomeServiceDropDown(token, consumerId, effectiveDateStart);
         }
 
         public OutcomesWorker.ServiceFrequencyType[] getServiceFrequencyTypeDropDown(string token, string type)
@@ -4133,6 +4261,156 @@ namespace Anywhere
         public RosterWorker.RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId)
         {
             return rosterWorker.getRosterToDoListWidgetData(token, responsiblePartyId);
+        }
+
+        public ExtractedTables importedOutcomesPDFData(string token, string[] files)
+        {
+            return ioas.importedOutcomesPDFData(token, files);
+        }
+
+        public List<ImportedTables> importSelectedServices(string token, ImportedTables[] importedTables)
+        {
+            return ioas.importSelectedServices(token, importedTables);
+        }
+
+        public Employer[] getEmployeeList(string token)
+        {
+            return dashWork.getEmployeeList(token);
+        }
+
+        public SystemNotes[] addSystemMessage(string token, string textMessage, string timeOfExpiration, string dateOfExpiration, string[] selectedEmployee)
+        {
+            return dashWork.addSystemMessage(token, textMessage, timeOfExpiration, dateOfExpiration, selectedEmployee);
+        }
+
+        public string addOutcomePlan(string token, string userId, string consumerId, string attachmentType, string attachment, string startDate, string endDate)
+        {
+            return dg.addOutcomePlan(token, userId, consumerId, attachmentType, attachment, startDate, endDate);
+        }
+
+        public OutcomesWorker.PlanViewHistory[] getPlanHistorybyConsumer(string token, string consumerId)
+        {
+            return outcomesWorker.getPlanHistorybyConsumer(token, consumerId);
+        }
+
+        public OutcomesWorker.PlanViewHistory[] getPlanbyConsumerHistory(string token, string consumerId)
+        {
+            return outcomesWorker.getPlanbyConsumerHistory(token, consumerId);
+        }
+
+        public string addOutcomePlanLater(string token, string consumerId)
+        {
+            return dg.addOutcomePlanLater(token, consumerId);
+        }
+
+        public void addOutcomePlanNow(System.IO.Stream testInput)
+        {
+            string token;
+            string consumerId;
+            string isViewedAvailableOSPlan;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            consumerId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            isViewedAvailableOSPlan = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            if (isViewedAvailableOSPlan == "true")
+            {
+                anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            } else
+            {
+                dg.addOutcomePlanNow(token, consumerId);
+                anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            }
+            
+            
+
+        }
+
+        public OutcomesWorker.PlanViewHistory[] isNewBtnDisabledByPlanHistory(string token, string consumerId, string goalTypeID, string ObjectiveID)
+        {
+            return outcomesWorker.isNewBtnDisabledByPlanHistory(token, consumerId, goalTypeID, ObjectiveID);
+        }
+
+        public OutcomesWorker.PlanViewHistory[] isViewPlabBtnDisabled(string token, string consumerId)
+        {
+            return outcomesWorker.isViewPlabBtnDisabled(token, consumerId);
+        }
+
+        public IncidentTrackingWorker.ConsumerRelationship[] getRelationshipData(string token, string supervisorId, string consumerId)
+        {
+            return iTW.getRelationshipData(token, supervisorId, consumerId);
+        }
+
+        public FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName)
+        {
+            return fssw.getFSSPageData(token, familyName, primaryPhone, address, appName);
+        }
+
+        public FSSWorker.ActiveInactiveFamily[] getActiveInactiveFamilylist(string token, string isActive)
+        {
+            return fssw.getActiveInactiveFamilylist(token, isActive);
+        }
+
+        public FSSWorker.FamilyInformation[] getFamilyInfoByID(string token, string familyId)
+        {
+            return fssw.getFamilyInfoByID(token, familyId);
+        }
+
+        public string updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID)
+        {
+            return fssw.updateFamilyInfo(token, familyName, address1, address2, city, state, zip, primaryPhone, secondaryPhone, email, notes, active, userId, familyID);
+        }
+        public FSSWorker.Members[] getFamilyMembers(string token, string familyId)
+        {
+            return fssw.getFamilyMembers(token, familyId);
+        }
+        public FSSWorker.Members[] getMembers(string token)
+        {
+            return fssw.getMembers(token);
+        }
+
+        public string insertMemberInfo(string token, string memberId, string familyID, string active, string userId, string newMemberId)
+        {
+            return fssw.insertMemberInfo(token, memberId, familyID, active, userId, newMemberId);
+        }
+
+        public string deleteMemberInfo(string token, string memberId, string familyID)
+        {
+            return fssw.deleteMemberInfo(token, memberId, familyID);
+        }
+
+        public string updateSalesforceIdsScriptOneTimeUse(string applicationName)
+        {
+            return anywhereWorker.updateSalesforceIdsScriptOneTimeUse(applicationName);
+        }
+
+        public FSSWorker.dropdowns[] getFunding(string token)
+        {
+            return fssw.getFunding(token);
+        }
+
+        public FSSWorker.dropdowns[] getFamilyMembersDropDown(string token)
+        {
+            return fssw.getFamilyMembersDropDown(token);
+        }
+        public FSSWorker.dropdowns[] getServiceCodes(string fundingSourceID)
+        {
+            return fssw.getServiceCodes(fundingSourceID);
+        }
+        public FSSWorker.dropdowns[] getVendors(string token)
+        {
+            return fssw.getVendors(token);
+        }
+
+        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID)
+        {
+            return fssw.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID);
+        }
+
+        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID)
+        {
+            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
         }
 
     }

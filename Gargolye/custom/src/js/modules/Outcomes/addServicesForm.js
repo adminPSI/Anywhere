@@ -29,13 +29,25 @@ const addServicesForm = (() => {
         SAVE_BTN.classList.add('disabled');   
     }
 
-    // Build New Outcomes Page 
+    // Build New Outcomes Page
+    function buildConsumerCard() {
+        selectedConsumers.card.classList.remove('highlighted');
+    
+        const wrap = document.createElement('div');
+        wrap.classList.add('planConsumerCard');
+    
+        wrap.appendChild(selectedConsumers.card);
+    
+        return wrap;
+      }
     async function buildNewServicesForm() {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
         landingPage = document.createElement('div');
         selectedConsumerId = selectedConsumers.id;
         const importantOutcomeForm = await buildServicesForm();
+        const consumerCard = buildConsumerCard();
+        landingPage.appendChild(consumerCard);
         landingPage.appendChild(importantOutcomeForm);
         DOM.ACTIONCENTER.appendChild(landingPage);
     }
@@ -47,7 +59,7 @@ const addServicesForm = (() => {
             const result = await outcomesAjax.getObjectiveEntriesByIdAsync(objectiveId);
             const { getObjectiveEntriesByIdResult } = result;
 
-            startDate = getObjectiveEntriesByIdResult[0].serviceStartDate == '' ? '' : moment(getObjectiveEntriesByIdResult[0].serviceStartDate).format('YYYY-MM-DD');
+            startDate = getObjectiveEntriesByIdResult[0].serviceStartDate == '' ? UTIL.getTodaysDate() : moment(getObjectiveEntriesByIdResult[0].serviceStartDate).format('YYYY-MM-DD');
             endDate = getObjectiveEntriesByIdResult[0].serviceEndDate == '' ? '' : moment(getObjectiveEntriesByIdResult[0].serviceEndDate).format('YYYY-MM-DD');
             outcomeType = getObjectiveEntriesByIdResult[0].goal_id;
             servicesStatement = getObjectiveEntriesByIdResult[0].serviceStatement;
@@ -294,7 +306,7 @@ const addServicesForm = (() => {
     async function populateOutcomeDropdown() {
         const {
             getOutcomeServiceDropDownResult: OutcomeType,
-        } = await outcomesAjax.getOutcomeServiceDropDownAsync();
+        } = await outcomesAjax.getOutcomeServiceDropDownAsync(selectedConsumerId, startDate);
 
         let outcomeTypeData = OutcomeType.map(outcomeTypes => ({
           id: outcomeTypes.goal_id,

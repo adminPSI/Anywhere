@@ -131,6 +131,22 @@ namespace Anywhere.service.Data
             return test;
         }
 
+        public RiskAndCauseDropdowns GetRiskAndCauseDropdowns(string token)
+        {
+            //Get Risk Dropdown
+            string injuryRiskDropdownString = dg.getInjuryRiskDropdown(token);
+            InjuryRiskDropdown[] injuryRiskDropdownData = js.Deserialize<InjuryRiskDropdown[]>(injuryRiskDropdownString);
+            //Get Cause Dropdown
+            string injuryCauseDropdownString = dg.getInjuryCauseDropdown(token);
+            InjuryCauseDropdown[] injuryCauseDropdownData = js.Deserialize<InjuryCauseDropdown[]>(injuryCauseDropdownString);
+
+            RiskAndCauseDropdowns riskAndCauseDropdowns = new RiskAndCauseDropdowns();
+            riskAndCauseDropdowns.injuryRiskDropdown = injuryRiskDropdownData;
+            riskAndCauseDropdowns.injuryCauseDropdowns = injuryCauseDropdownData;
+
+            return riskAndCauseDropdowns;
+        }
+
         //Save incident
         public List<string> SaveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate, string incidentTypeDesc,
                                     string reportedTime, string subcategoryId, string locationDetailId, string serviceLocation, string summary, string note, string prevention, string contributingFactor,//end of main table data
@@ -306,7 +322,7 @@ namespace Anywhere.service.Data
             string reviewedByDropdownString = dg.getReviewedByDropdown(token);
             ReviewedByDropdown[] reviewedByDropdownData = js.Deserialize<ReviewedByDropdown[]>(reviewedByDropdownString);
             return reviewedByDropdownData;
-        }
+        }        
 
         public InjuryLocationsDropdown[] getInjuryLocationsDropdown(string token)
         {
@@ -477,13 +493,13 @@ namespace Anywhere.service.Data
         }
 
         public string saveUpdateITConsumerInjuries(string token, List<String> checkedByNurseArray, List<String> checkedDateArray, List<String> detailsArray, List<String> itConsumerInjuryIdArray,
-                                                            string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray)
+                                                            string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray, List<String> causeOfInjuryIdArray, List<String> riskOfInjuryIdArray)
         {
             int i = 0;
             foreach (string itInjuryLocationId in itInjuryLocationIdArray)
             {
                 dg.saveUpdateITConsumerInjuries(token, checkedByNurseArray[i], checkedDateArray[i], detailsArray[i], itConsumerInjuryIdArray[i], consumerInvolvedId, itInjuryLocationId,
-                                            itInjuryTypeIdArray[i], treatmentArray[i]);
+                                            itInjuryTypeIdArray[i], treatmentArray[i], causeOfInjuryIdArray[i], riskOfInjuryIdArray[i]);
                 i++;
             }
             return "success";
@@ -530,6 +546,13 @@ namespace Anywhere.service.Data
         public string sendIncidentTrackingReport(string token, string reportScheduleId, string toAddresses, string ccAddresses, string bccAddresses, string emailSubject, string emailBody)
         {
             return dg.sendIncidentTrackingReport(token, reportScheduleId, toAddresses, ccAddresses, bccAddresses, emailSubject, emailBody);
+        }
+
+        public IncidentTrackingWorker.ConsumerRelationship[] getRelationshipData(string token, string supervisorId, string consumerId)
+        {
+            string relationshipDataString = dg.getRelationshipData(token, supervisorId, consumerId);
+            ConsumerRelationship[] relationshipData = js.Deserialize<ConsumerRelationship[]>(relationshipDataString);
+            return relationshipData;
         }
 
         public class ReportingCategories
@@ -608,6 +631,10 @@ namespace Anywhere.service.Data
             public string injuryTypeId { get; set; }
             public string lastUpdatedBy { get; set; }
             public string lastUpdatedOn { get; set; }
+            public string injuryRiskId { get; set; }
+            public string injuryRiskDescription { get; set; }
+            public string injuryCauseId { get; set; }
+            public string injuryCauseDescription { get; set; }
         }
 
         public class ConsumerInterventions
@@ -733,6 +760,23 @@ namespace Anywhere.service.Data
             public IncidentEditReviewOthersInvolved[] itOthersInvolved { get; set; }
         }
 
+        public class RiskAndCauseDropdowns
+        {
+            public InjuryRiskDropdown[] injuryRiskDropdown { get; set; }
+            public InjuryCauseDropdown[] injuryCauseDropdowns { get; set; }
+        }
+
+        public class InjuryRiskDropdown
+        {
+            public string injuryRiskId { get; set; }    
+            public string injuryRiskdescription { get; set; }
+        }
+
+        public class InjuryCauseDropdown
+        {
+            public string injuryCauseId { get; set; }
+            public string injuryCauseDescription { get; set; }
+        }
 
         public class IncidentEditReviewData
         {
@@ -796,6 +840,22 @@ namespace Anywhere.service.Data
         public class ReportScheduleId
         {
             public string reportScheduleId { get; set; }
+        }
+
+        public class ConsumerRelationship
+        {
+            public string peopleId { get; set; }
+            public string firstName { get; set; }
+            public string lastName { get; set; }
+            public string middleName { get; set; }
+            public string address1 { get; set; }
+            public string address2 { get; set; }
+            public string city { get; set; }
+            public string state { get; set; }
+            public string zip { get; set; }
+            public string email { get; set; }
+            public string phone { get; set; }
+         
         }
 
     }

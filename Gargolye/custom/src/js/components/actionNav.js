@@ -84,7 +84,12 @@ var ACTION_NAV = (function () {
                 break;
             }
             case 'outcomes': {
-                outcomes.handleActionNavEvent(target);
+                if (activeSection === 'outcomes-review') {
+                    outcomesReview.handleActionNavEvent(target);
+                } else {
+                    outcomes.handleActionNavEvent(target);
+                }
+                
                 clear();
                 hide();
                 break;
@@ -219,6 +224,12 @@ var ACTION_NAV = (function () {
             }
             case 'Employment': {
                 Employment.handleActionNavEvent(target);
+                clear();
+                hide();
+                break;
+            }
+            case 'FSS': {
+                FSS.handleActionNavEvent(target); 
                 clear();
                 hide();
                 break;

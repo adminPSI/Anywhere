@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Web.Security;
 
 namespace Anywhere.service.Data
@@ -12,6 +13,8 @@ namespace Anywhere.service.Data
         private static Loger logger = new Loger();
         Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
         Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
+
+        Sybase connectSybase = new Data.Sybase();
 
         //data for OOD Entries Listing on OOD Module Landing Page
         public string getOODEntries(string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber, DistributedTransaction transaction)
@@ -159,6 +162,29 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
+
+        public string updateEmploymentGoal(string peopleId, string userId, string ServiceGoal)
+        {
+            string query = "";
+            StringBuilder sb = new StringBuilder();
+            sb.Clear();
+
+            string formattedServiceGoal = removeUnsavableNoteText(ServiceGoal);
+
+            sb.AppendFormat("Update DBA.EM_Employee_General set User_Id = {0}, Service_Goals = {1}, Last_Update = Now() where People_ID = {2}; commit; ", "'" + userId + "'", "'" + formattedServiceGoal + "'", peopleId);
+
+            long ret = connectSybase.UpdateRecord(sb.ToString());
+            if (ret.ToString() == "-999")
+            {
+                return "fail";
+            }
+            else
+            {
+                return "success";
+            }
+
+        }
+
 
         public string getEmployerJSON(string token, string employerId)
         {
@@ -656,7 +682,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId)
+        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string employer, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId)
         {
             if (tokenValidator(token) == false) return null;
             //if (stringInjectionValidator(caseNote) == false) return null;
@@ -671,6 +697,7 @@ namespace Anywhere.service.Data
             list.Add(endTime);
             list.Add(SAMLevel);
             list.Add(position);
+            list.Add(employer);
             list.Add(contactMethod);
             list.Add(behavioralIndicators);
             list.Add(jobTaskQualityIndicators);
@@ -693,7 +720,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string employer, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
         {
             if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
@@ -709,6 +736,7 @@ namespace Anywhere.service.Data
             list.Add(endTime);
             list.Add(SAMLevel);
             list.Add(position);
+            list.Add(employer);
             list.Add(contactMethod);
             list.Add(behavioralIndicators);
             list.Add(jobTaskQualityIndicators);

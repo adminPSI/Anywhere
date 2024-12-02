@@ -3,11 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel.Web;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAttachmentWorker;
+using static Anywhere.service.Data.PlanSignature.PlanSignatureWorker;
 using static Anywhere.service.Data.WorkflowWorker;
 
 namespace Anywhere.service.Data
@@ -101,6 +103,7 @@ namespace Anywhere.service.Data
             public string docOrder { get; set; }
             public string description { get; set; }
             public string attachmentId { get; set; }
+            public string attachmentType { get; set; }
             public string wfName { get; set; }
             public string workflowId { get; set; }
             public string WFTemplateId { get; set; }
@@ -306,6 +309,8 @@ namespace Anywhere.service.Data
             public WorkflowStatus[] statuses { get; set; }
             [DataMember(Order = 7)]
             public WorkflowGroup[] groups { get; set; }
+            [DataMember(Order = 8)]
+            public string addedToPlan { get; set; }
 
         }
         [DataContract]
@@ -388,6 +393,12 @@ namespace Anywhere.service.Data
 
             [DataMember(Order = 4)]
             public WorkflowEditedStepStatus workflowStatus { get; set; }
+        }
+
+        public class WFSDInfo
+        {
+            public string documentId { get; set; }
+            public string attachmentId { get; set; }
         }
 
         public class WorkflowEditedStepStatus
@@ -831,11 +842,14 @@ namespace Anywhere.service.Data
                     string comments = null;
 
                     // insert attachment binary data
-                    String attachmentId = wfdg.insertAttachment(attachmentType, attachment, transaction);
+                    //String attachmentId = wfdg.insertAttachment(attachmentType, attachment, transaction);
 
                     // insert document
-                    String documentId = wfdg.insertWorkflowStepDocument(stepId, docOrder, description, attachmentId, comments, documentEdited, transaction);
-
+                    string wfsdString = wfdg.insertWorkflowStepDocument(stepId, docOrder, description, "", attachmentType, attachment, comments, documentEdited, transaction);
+                   
+                    string[] words = wfsdString.Split(' ');
+                    String attachmentId = words[1].ToString();
+                    String documentId = words[0].ToString();
                     DocumentAttachment documentAttachment = new DocumentAttachment();
                     documentAttachment.documentId = documentId;
                     documentAttachment.attachmentId = attachmentId;
@@ -866,11 +880,13 @@ namespace Anywhere.service.Data
                     string comments = null;
 
                     // insert attachment binary data
-                    String attachmentId = wfdg.insertAttachment(attachmentType, attachment, transaction);
+                    //String attachmentId = wfdg.insertAttachment(attachmentType, attachment, transaction);
 
                     // insert document
-                    String documentId = wfdg.updateWorkflowStepDocument(docId, attachmentId, documentEdited, transaction);
-
+                    string wfsdString= wfdg.updateWorkflowStepDocument(docId, "", attachmentType, attachment, documentEdited, transaction);
+                    WFSDInfo[] wfsdbj = js.Deserialize<WFSDInfo[]>(wfsdString);
+                    String attachmentId = wfsdbj[0].attachmentId;
+                    String documentId = wfsdbj[0].documentId;
                     DocumentAttachment documentAttachment = new DocumentAttachment();
                     documentAttachment.documentId = documentId;
                     documentAttachment.attachmentId = attachmentId;
@@ -885,7 +901,7 @@ namespace Anywhere.service.Data
                 }
             }
         }
-
+        
 
         //insertWorkflowStepDocument
         public string setWorkflowStatus(string token, string workflowId, string statusId)
@@ -2133,9 +2149,9 @@ namespace Anywhere.service.Data
                     }
 
                 }
+                
 
                 List<WorkflowTemplateStepDocument> documents = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowTemplateStepDocuments(null, transaction_insertWFDetails));
-
                 // Get relationships data used for getting responsible party relationships
                 List<PeopleRelationship> relationships = js.Deserialize<List<PeopleRelationship>>(wfdg.getPeopleRelationships(peopleId, transaction_insertWFDetails));
 
@@ -2234,15 +2250,19 @@ namespace Anywhere.service.Data
                             // what if a selected doc is one of the template docs (edited) -- you don't want both versions just the edited version
                             bool isSelected = selecteddocuments.Any(sel => sel.description == d.description);
                             if (!isSelected)
-                            {
-                                String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                            {                                
+                                string wfsdString = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId,  d.attachmentType, null, null, "0", transaction_insertWFDetails);
+                                string[] words = wfsdString.Split(' ');
+                                String documentId = words[0].ToString();
                             }
                         }
 
                         foreach (WorkflowTemplateStepDocument d in selecteddocuments.FindAll(p => p.stepId == s.stepId))
                         {
                             // insert selected step documents
-                            String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                            string wfsdString = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, d.attachmentType, null, null, "0", transaction_insertWFDetails);
+                            string[] words = wfsdString.Split(' ');
+                            String documentId = words[0].ToString();
 
                         }
 

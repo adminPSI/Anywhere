@@ -242,6 +242,35 @@ var OODAjax = (function () {
       },
     });
   }
+
+  async function updateEmploymentGoal(retrieveData) {
+    //type, value, consumerId
+    try {
+        const data = await $.ajax({
+            type: 'POST',
+            url:
+                $.webServer.protocol +
+                '://' +
+                $.webServer.address +
+                ':' +
+                $.webServer.port +
+                '/' +
+                $.webServer.serviceName +
+                '/updateEmploymentGoal/',
+            data: JSON.stringify(retrieveData),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+        });
+
+        return {
+            ...data.updateEmploymentGoalResult,
+        };
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
   // OOD Main/Landing Page
   async function getActiveServiceCodesAsync(serviceCodeType) {
     try {
@@ -464,8 +493,6 @@ var OODAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-
-
   // Form 4 -- Monthly Placement
   function getForm4MonthlyPlacementEditData(caseNoteId, callback) {
     $.ajax({
@@ -795,6 +822,7 @@ var OODAjax = (function () {
           endTime: data.endTime,
           SAMLevel: data.SAMLevel,
           position: data.position,
+          employer: data.employer,
           contactMethod: data.contactMethod,
           behavioralIndicators: data.behavioralIndicators,
           jobTaskQualityIndicators: data.jobTaskQualityIndicators,
@@ -825,6 +853,7 @@ var OODAjax = (function () {
           endTime: data.endTime,
           SAMLevel: data.SAMLevel,
           position: data.position,
+          employer: data.employer,
           contactMethod: data.contactMethod,
           behavioralIndicators: data.behavioralIndicators,
           jobTaskQualityIndicators: data.jobTaskQualityIndicators,
@@ -921,6 +950,32 @@ var OODAjax = (function () {
   callback(response.insertForm8MonthlySummaryResult);
   },
   });
+  }
+
+  async function getEmploymentGoal(peopleId) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getEmploymentGoal/',
+        data: JSON.stringify({
+          peopleId: peopleId,
+          
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
   }
 
    // Form 10 -- Transportation
@@ -1285,7 +1340,8 @@ var OODAjax = (function () {
       serviceCodeId: data.serviceCodeId,
       startDate: data.startDate,
       endDate: data.endDate,
-      userId: data.userId
+      userId: data.userId,
+      loggedInUserPersonId: data.loggedInUserPersonId
     }
 
     var form = document.createElement('form');
@@ -1327,6 +1383,11 @@ var OODAjax = (function () {
     startDateInput.setAttribute('value', data.startDate);
     startDateInput.id = 'startDate';
 
+    var loggedInUserPersonIdInput = document.createElement('input');
+    loggedInUserPersonIdInput.setAttribute('name', 'loggedInUserPersonId');
+    loggedInUserPersonIdInput.setAttribute('value', data.loggedInUserPersonId);
+    loggedInUserPersonIdInput.id = 'loggedInUserPersonId';
+
     var endDateInput = document.createElement('input');
     endDateInput.setAttribute('name', 'endDate');
     endDateInput.setAttribute('value', data.endDate);
@@ -1339,6 +1400,7 @@ var OODAjax = (function () {
     form.appendChild(serviceCodeIdInput);
     form.appendChild(startDateInput);
     form.appendChild(endDateInput);
+    form.appendChild(loggedInUserPersonIdInput);
 
     form.style.position = 'absolute';
     form.style.opacity = '0';
@@ -1363,7 +1425,8 @@ var OODAjax = (function () {
       serviceCodeId: data.serviceCodeId,
       startDate: data.startDate,
       endDate: data.endDate,
-      userId: data.userId
+      userId: data.userId,
+      loggedInUserPersonId: data.loggedInUserPersonId
     }
 
   // Create an HTML form element
@@ -1414,6 +1477,11 @@ var OODAjax = (function () {
     startDateInput.setAttribute('value', data.startDate);
     startDateInput.id = 'startDate';
 
+    var loggedInUserPersonIdInput = document.createElement('input');
+    loggedInUserPersonIdInput.setAttribute('name', 'loggedInUserPersonId');
+    loggedInUserPersonIdInput.setAttribute('value', data.loggedInUserPersonId);
+    loggedInUserPersonIdInput.id = 'loggedInUserPersonId';
+
     var endDateInput = document.createElement('input');
     endDateInput.setAttribute('name', 'endDate');
     endDateInput.setAttribute('value', data.endDate);
@@ -1426,6 +1494,7 @@ var OODAjax = (function () {
     form.appendChild(serviceCodeIdInput);
     form.appendChild(startDateInput);
     form.appendChild(endDateInput);
+    form.appendChild(loggedInUserPersonIdInput);
 
     form.style.position = 'absolute';
     form.style.opacity = '0';
@@ -1449,7 +1518,8 @@ var OODAjax = (function () {
       serviceCodeId: data.serviceCodeId,
       startDate: data.startDate,
       endDate: data.endDate,
-      userId: data.userId
+      userId: data.userId,
+      loggedInUserPersonId: data.loggedInUserPersonId
     }
 
     var form = document.createElement('form');
@@ -1496,6 +1566,11 @@ var OODAjax = (function () {
     endDateInput.setAttribute('value', data.endDate);
     endDateInput.id = 'endDate';
 
+    var loggedInUserPersonIdInput = document.createElement('input');
+    loggedInUserPersonIdInput.setAttribute('name', 'loggedInUserPersonId');
+    loggedInUserPersonIdInput.setAttribute('value', data.loggedInUserPersonId);
+    loggedInUserPersonIdInput.id = 'loggedInUserPersonId';
+
     form.appendChild(tokenInput);
     form.appendChild(userIdInput);
     form.appendChild(referenceNumberInput);
@@ -1503,6 +1578,7 @@ var OODAjax = (function () {
     form.appendChild(serviceCodeIdInput);
     form.appendChild(startDateInput);
     form.appendChild(endDateInput);
+    form.appendChild(loggedInUserPersonIdInput);
 
     form.style.position = 'absolute';
     form.style.opacity = '0';
@@ -1526,7 +1602,8 @@ var OODAjax = (function () {
       serviceCodeId: data.serviceCodeId,
       startDate: data.startDate,
       endDate: data.endDate,
-      userId: data.userId
+      userId: data.userId,
+      loggedInUserPersonId: data.loggedInUserPersonId
     }
 
   // Create an HTML form element
@@ -1577,6 +1654,12 @@ var OODAjax = (function () {
     startDateInput.setAttribute('value', data.startDate);
     startDateInput.id = 'startDate';
 
+    var loggedInUserPersonIdInput = document.createElement('input');
+    loggedInUserPersonIdInput.setAttribute('name', 'loggedInUserPersonId');
+    loggedInUserPersonIdInput.setAttribute('value', data.loggedInUserPersonId);
+    loggedInUserPersonIdInput.id = 'loggedInUserPersonId';
+
+    
     var endDateInput = document.createElement('input');
     endDateInput.setAttribute('name', 'endDate');
     endDateInput.setAttribute('value', data.endDate);
@@ -1589,6 +1672,7 @@ var OODAjax = (function () {
     form.appendChild(serviceCodeIdInput);
     form.appendChild(startDateInput);
     form.appendChild(endDateInput);
+    form.appendChild(loggedInUserPersonIdInput);
 
     form.style.position = 'absolute';
     form.style.opacity = '0';
@@ -1607,6 +1691,8 @@ var OODAjax = (function () {
       updateEmployerAsync,
       insertEmployerAsync,
       getEmployer,
+      updateEmploymentGoal,
+      getEmploymentGoal,
       getActiveServiceCodesAsync,
       getConsumerReferenceNumbersAsync,
       getConsumerServiceCodesAsync,
@@ -1614,7 +1700,7 @@ var OODAjax = (function () {
       getOutcomesAsync,
       getContactMethodsAsync,
       getIndicatorsAsync,
-      getPositionsAsync,
+      getPositionsAsync,      
       getForm4MonthlyPlacementEditData,
       updateForm4MonthlyPlacementEditData,
       insertForm4MonthlyPlacementEditData,

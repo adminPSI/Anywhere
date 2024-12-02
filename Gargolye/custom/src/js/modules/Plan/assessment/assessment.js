@@ -231,8 +231,6 @@ const assessment = (function () {
 
   // Data
   //------------------------------------
-  // TODO: refactor ajax calls to return data
-  // TODO: remove below functions once ^^ is done
   async function getAssessmentData(planId) {
     try {
       const data = (
@@ -431,19 +429,6 @@ const assessment = (function () {
       console.log(error.statusText);
     }
   }
-  // async function updateAnswers(answerArray) {
-  //   try {
-  //     const success = (
-  //       await assessmentAjax.updateConsumerAssessmentAnswers({
-  //         token: $.session.Token,
-  //         answers: answerArray,
-  //       })
-  //     ).updateAssessmentAnswersResult;
-  //     return success;
-  //   } catch (error) {
-  //     console.log(error.statusText);
-  //   }
-  // }
   async function deleteGridRows(planId, questionSetId, rowsToDelete) {
     try {
       const success = (

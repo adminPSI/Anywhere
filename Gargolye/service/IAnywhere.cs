@@ -8,6 +8,8 @@ using Anywhere.service.Data.Defaults;
 using Anywhere.service.Data.DocumentConversion;
 using Anywhere.service.Data.Employment;
 using Anywhere.service.Data.eSignature___OneSpan;
+using Anywhere.service.Data.FSS;
+using Anywhere.service.Data.ImportOutcomesAndServices;
 using Anywhere.service.Data.Plan;
 using Anywhere.service.Data.Plan.Assessment;
 using Anywhere.service.Data.PlanContactInformation;
@@ -21,17 +23,23 @@ using Anywhere.service.Data.PlanValidation;
 using Anywhere.service.Data.ReportBuilder;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.Transportation;
+using OneSpanSign.Sdk;
 using PDFGenerator;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
+using System.Web.Security;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
+using static Anywhere.service.Data.DashboardWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.ESign.ESignWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
+using static System.Windows.Forms.AxHost;
 
 namespace Anywhere
 {
@@ -297,6 +305,14 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/deleteGoal/")]
         string deleteGoal(string token, string activityId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getAllGoalTypes/")]
+        OutcomesWorker.AllGoalTypes[] getAllGoalTypes(string token);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -671,6 +687,47 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getEditConsumerRelationshipsJSON/")]
+        RosterWorker.ConsumerEditRelationship[] getEditConsumerRelationshipsJSON(string token, string consumerId, string isActive);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getRelationshipsTypeJSON/")]
+        RosterWorker.ConsumerRelationshipType[] getRelationshipsTypeJSON(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getRelationshipsNameJSON/")]
+        RosterWorker.ConsumerRelationshipName[] getRelationshipsNameJSON(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/getRelationshipsNameByIDJSON/")]
+        RosterWorker.ConsumerRelationshipName[] getRelationshipsNameByIDJSON(string token, string relationType);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/insertEditRelationship/")]
+        string insertEditRelationship(string token, string userId, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsNewList, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsList, string consumerId);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
@@ -755,7 +812,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/insertSingleEntry/")]
-        string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType);
+        string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -772,7 +829,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/preInsertSingleEntry/")]
-        SingleEntryWorker.ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType);
+        SingleEntryWorker.ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -780,7 +837,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateSingleEntry/")]
-        string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason, string evvLocationType);
+        string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason, string evvLocationType, string transportationStartTime, string transportationEndTime);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -1257,6 +1314,14 @@ namespace Anywhere
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/BasicSingleEntrySupervisorReport/")]
+        System.IO.MemoryStream BasicSingleEntrySupervisorReport(string token, string userId, string supervisorId, string startDate, string endDate, string locationId, string personId, string status, string workCodeId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/SingleEntryOverLapReport/")]
         System.IO.MemoryStream SingleEntryOverLapReport(string token, string userId, string startDate, string endDate);
 
@@ -1726,6 +1791,12 @@ namespace Anywhere
         void getAttachment(System.IO.Stream testInput);
 
         [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Bare,
+             UriTemplate = "/getAttachmentWF/")]
+        void getAttachmentWF(System.IO.Stream testInput);
+
+        [OperationContract]
         [WebInvoke(Method = "GET",
              BodyStyle = WebMessageBodyStyle.Bare,
              ResponseFormat = WebMessageFormat.Xml,
@@ -2007,6 +2078,14 @@ namespace Anywhere
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getRiskAndCauseDropdowns/")]
+        IncidentTrackingWorker.RiskAndCauseDropdowns GetRiskAndCauseDropdowns(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getITReviewPageEmployeeListAndSubList/")]
         string getITReviewPageEmployeeListAndSubList(string token, string supervisorId);
 
@@ -2175,7 +2254,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/approveDenyDaysOffRequestScheduling/")]
-        string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision);
+        string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision, string dateTime);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -2217,6 +2296,14 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getConsumersSignaturesAndNotes/")]
         SingleEntryWorker.ConsumerSignaturesAndNotes[] getConsumersSignaturesAndNotes(string token, string singleEntryId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/addReviewNote/")]
+        string addReviewNote(string token, string objectiveActivityId, string consumerId, string employeeId, string objectiveActivityDate, string note, string result, string notifyEmployee);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -2468,7 +2555,7 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/saveUpdateITConsumerInjuries/")]
         string saveUpdateITConsumerInjuries(string token, List<String> checkedByNurseArray, List<String> checkedDateArray, List<String> detailsArray, List<String> itConsumerInjuryIdArray,
-                                                    string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray);
+                                                    string consumerInvolvedId, List<String> itInjuryLocationIdArray, List<String> itInjuryTypeIdArray, List<String> treatmentArray, List<String> causeOfInjuryIdArray, List<String> riskOfInjuryIdArray);
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -3292,14 +3379,14 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/insertPlanOutcomeExperienceResponsibility/")]
-        List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation);
+        List<string> insertPlanOutcomeExperienceResponsibility(string experienceId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, string[] isSalesforceLocation);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/updatePlanOutcomeExperienceResponsibility/")]
-        string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation);
+        string updatePlanOutcomeExperienceResponsibility(long[] responsibilityIds, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, string[] isSalesforceLocation);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -3320,7 +3407,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/updatePlanOutcomesExperience/")]
-        string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, bool[] isSalesforceLocation);
+        string updatePlanOutcomesExperience(string outcomeId, string[] experienceIds, string[] howHappened, string[] whatHappened, long[] responsibilityId, int[] responsibleContact, int[] responsibleProvider, string[] whenHowOftenValue, int[] whenHowOftenFrequency, string[] whenHowOftenText, string[] isSalesforceLocation);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -3369,7 +3456,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/finalizationActions/")]
-        FinalizationButtonWorker.ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes);
+        FinalizationButtonWorker.ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes, string[] wfAttachmentStepIds);
         //string[] finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes);
 
         [WebInvoke(Method = "POST",
@@ -3659,7 +3746,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/setSalesForceIdForTeamMemberUpdate/")]
-        string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId);
+        string setSalesForceIdForTeamMemberUpdate(string peopleId, string teamMemberType, string salesForceId);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -3712,7 +3799,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/GetSalesForceId/")]
-        string GetSalesForceId(long consumerId, long peopleId);
+        string GetSalesForceId(long consumerId, long peopleId, string teamMemberType);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -4031,7 +4118,15 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getUserFormTemplates/")]
-        FormWorker.FormTemplate[] getUserFormTemplates(string token, string userId, string hasAssignedFormTypes);
+        FormWorker.FormTemplate[] getUserFormTemplates(string token, string userId, string hasAssignedFormTypes, string typeId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getFormType/")]
+        FormWorker.FormType[] getFormType(string token);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4040,6 +4135,14 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/insertConsumerForm/")]
         Anywhere.service.Data.FormWorker.consumerForm insertConsumerForm(string token, string userId, string consumerId, string formtemplateid, string formdata, string formCompleteDate);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/insertSeveralConsumerForm/")]
+        Anywhere.service.Data.FormWorker.consumerForm insertSeveralConsumerForm(string token, string userId, string consumerId, string[] formtemplateid, string isTemplate, string formCompleteDate);
 
 
         [OperationContract]
@@ -4466,7 +4569,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateForm8CommunityBasedAssessment/")]
-        string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId);
+        string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string employer, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4474,7 +4577,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertForm8CommunityBasedAssessment/")]
-        string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId);
+        string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string employer, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4499,6 +4602,24 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertForm8MonthlySummary/")]
         string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId, string serviceId);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getEmploymentGoal/")]
+        string getEmploymentGoal(string peopleId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/updateEmploymentGoal/")]
+        string updateEmploymentGoal(string peopleId, string userId, string ServiceGoal);
+
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5251,8 +5372,32 @@ namespace Anywhere
         BodyStyle = WebMessageBodyStyle.Wrapped,
         ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getOutcomesReviewGrid/")]
+        OutcomesWorker.OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string objectiveDate);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/updateReviewNote/")]
+        string updateReviewNote(string token, string objectiveActivityId, string reviewNote, string notifyEmployee, string consumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getOutcomesReviewGridSecondary/")]
+        OutcomesWorker.TotalSecondGridCall getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList, string frequency);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/getOutcomeTypeDropDown/")]
-        OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token);
+        OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5284,7 +5429,7 @@ namespace Anywhere
         ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/getOutcomeServiceDropDown/")]
-        OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token);
+        OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5400,6 +5545,218 @@ namespace Anywhere
           UriTemplate = "/getRosterToDoListWidgetData/")]
         RosterWorker.RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/importedOutcomesPDFData/")]
+        ExtractedTables importedOutcomesPDFData(string token, string[] files);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/importSelectedServices/")]
+        List<ImportedTables> importSelectedServices(string token, ImportedTables[] importedTables);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/getEmployeeList/")]
+        EmploymentWorker.Employer[] getEmployeeList(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/addSystemMessage/")]
+        SystemNotes[] addSystemMessage(string token, string textMessage, string timeOfExpiration, string dateOfExpiration, string[] selectedEmployee);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/addOutcomePlan/")]
+        string addOutcomePlan(string token, string userId, string consumerId, string attachmentType, string attachment, string startDate, string endDate);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getPlanHistorybyConsumer/")]
+        OutcomesWorker.PlanViewHistory[] getPlanHistorybyConsumer(string token, string consumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getPlanbyConsumerHistory/")]
+        OutcomesWorker.PlanViewHistory[] getPlanbyConsumerHistory(string token, string consumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/addOutcomePlanLater/")]
+        string addOutcomePlanLater(string token, string consumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Bare,
+           UriTemplate = "/addOutcomePlanNow/")]
+        void addOutcomePlanNow(System.IO.Stream testInput);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/isNewBtnDisabledByPlanHistory/")]
+        OutcomesWorker.PlanViewHistory[] isNewBtnDisabledByPlanHistory(string token, string consumerId, string goalTypeID, string ObjectiveID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
+               UriTemplate = "/isViewPlabBtnDisabled/")]
+        OutcomesWorker.PlanViewHistory[] isViewPlabBtnDisabled(string token, string consumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getRelationshipData/")]
+        IncidentTrackingWorker.ConsumerRelationship[] getRelationshipData(string token, string supervisorId, string consumerId);
+
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getFSSPageData/")]
+        FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getActiveInactiveFamilylist/")]
+        FSSWorker.ActiveInactiveFamily[] getActiveInactiveFamilylist(string token, string isActive);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getFamilyInfoByID/")]
+        FSSWorker.FamilyInformation[] getFamilyInfoByID(string token, string familyId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/updateFamilyInfo/")]
+        string updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                 BodyStyle = WebMessageBodyStyle.Wrapped,
+                 ResponseFormat = WebMessageFormat.Json,
+                 RequestFormat = WebMessageFormat.Json,
+                 UriTemplate = "/getFamilyMembers/")]
+        FSSWorker.Members[] getFamilyMembers(string token, string familyID); 
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getMembers/")]
+        FSSWorker.Members[] getMembers(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/insertMemberInfo/")]
+        string insertMemberInfo(string token, string memberId, string familyID, string active, string userId, string newMemberId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/deleteMemberInfo/")]
+        string deleteMemberInfo(string token, string memberId, string familyID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/updateSalesforceIdsScriptOneTimeUse/")]
+        string updateSalesforceIdsScriptOneTimeUse(string applicationName);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getFunding/")]
+        FSSWorker.dropdowns[] getFunding(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getFamilyMembersDropDown/")]
+        FSSWorker.dropdowns[] getFamilyMembersDropDown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getServiceCodes/")]
+        FSSWorker.dropdowns[] getServiceCodes(string fundingSourceID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getVendors/")]
+        FSSWorker.dropdowns[] getVendors(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/insertAuthorization/")]
+        string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/insertUtilization/")]
+        string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID);
     }
 
 

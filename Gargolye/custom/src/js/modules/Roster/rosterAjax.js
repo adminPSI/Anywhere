@@ -20,15 +20,16 @@ const rosterAjax = (function () {
         // data = {selectedGroupCode, selectedGroupId, selectedLocationId, selectedDate}
         var groupCode = data.selectedGroupCode;
         var retrieveId =
-            groupCode === 'CST' || groupCode === 'TRA' || groupCode === 'NAT'
+            groupCode === 'CST' || groupCode === 'TRA' || groupCode === 'NAT'  
                 ? data.selectedGroupId
-                : data.selectedLocationId;
+                : data.selectedLocationId;  
+       
         var date = data.selectedDate;
         var daysBackDate = convertDaysBack($.session.defaultProgressNoteReviewDays);
 
         date = date ? date : UTIL.getTodaysDate();
-        var selectedActive = data.selectedActive == undefined ? 'No' : data.selectedActive;  
- 
+        var selectedActive = data.selectedActive == undefined ? 'No' : data.selectedActive;
+
         return $.ajax({
             type: 'POST',
             url:
@@ -344,7 +345,7 @@ const rosterAjax = (function () {
 
     async function verifyDefaultEmailClient() {
         try {
-            const data = await $.ajax({ 
+            const data = await $.ajax({
                 type: 'POST',
                 url:
                     $.webServer.protocol +
@@ -354,7 +355,7 @@ const rosterAjax = (function () {
                     $.webServer.port +
                     '/' +
                     $.webServer.serviceName +
-                    '/verifyDefaultEmailClient/', 
+                    '/verifyDefaultEmailClient/',
                 data: JSON.stringify(),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -362,6 +363,134 @@ const rosterAjax = (function () {
             return data;
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    async function getEditConsumerRelationships(consumerId, isActive) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getEditConsumerRelationshipsJSON/',
+                data: '{"token":"' + $.session.Token + '","consumerId":"' + consumerId + '","isActive":"' + isActive + '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getRelationshipsType() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getRelationshipsTypeJSON/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getRelationshipsName() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getRelationshipsNameJSON/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getRelationshipsNameByID(selectedValue) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getRelationshipsNameByIDJSON/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    relationType: selectedValue,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function insertEditRelationship(consumerRelationshipsNew, consumerRelationships, consumerId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertEditRelationship/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    userId: $.session.UserId,
+                    consumerRelationshipsNewList: consumerRelationshipsNew,
+                    consumerRelationshipsList: consumerRelationships,
+                    consumerId: consumerId
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
         }
     }
 
@@ -380,5 +509,10 @@ const rosterAjax = (function () {
         updateConsumerDemographics,
         removeConsumerPhoto,
         verifyDefaultEmailClient,
+        getEditConsumerRelationships,
+        getRelationshipsType,
+        getRelationshipsName,
+        insertEditRelationship,
+        getRelationshipsNameByID
     };
 })();

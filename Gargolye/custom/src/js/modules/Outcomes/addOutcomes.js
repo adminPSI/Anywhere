@@ -19,12 +19,24 @@ const addOutcomes = (() => {
     }
 
     // Build New Outcomes Page 
+    function buildConsumerCard() {
+        selectedConsumers.card.classList.remove('highlighted');
+    
+        const wrap = document.createElement('div');
+        wrap.classList.add('planConsumerCard');
+    
+        wrap.appendChild(selectedConsumers.card);
+    
+        return wrap;
+      }
     async function buildNewOutcomes() {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
         landingPage = document.createElement('div');
         selectedConsumerId = selectedConsumers.id;
         const importantOutcomeForm = await buildOutComeForm();
+        const consumerCard = buildConsumerCard();
+        landingPage.appendChild(consumerCard);
         landingPage.appendChild(importantOutcomeForm);
         DOM.ACTIONCENTER.appendChild(landingPage);
     }
@@ -153,18 +165,21 @@ const addOutcomes = (() => {
     async function populateOutcomeTypesDropdown() {
         const {
             getOutcomeTypeDropDownResult: OutcomeType,
-        } = await outcomesAjax.getOutcomeTypeDropDownAsync();
+        } = await outcomesAjax.getOutcomeTypeDropDownAsync(selectedConsumerId, startDate);
+
         let outcomeTypeData = OutcomeType.map((outcomeTypes) => ({
             id: outcomeTypes.Goal_Type_ID,
             value: outcomeTypes.Goal_Type_ID,
             text: outcomeTypes.goal_type_description
         }));
+
         outcomeTypeData.unshift({ id: null, value: '', text: '' });
         dropdown.populate("outcomeDropdown", outcomeTypeData, outcomeType);
 
         const {
             getLocationDropDownResult: locationDrop,
         } = await outcomesAjax.getLocationDropDownAsync();
+
         let locationData = locationDrop.map((locationDrops) => ({
             id: locationDrops.locationID,
             value: locationDrops.locationID,

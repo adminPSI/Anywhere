@@ -68,7 +68,7 @@ namespace Anywhere.service.Data.DocumentConversion
 
             return rtObj[0].reportTitle.ToString();
         }
-        public ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes)
+        public ActionResults finalizationActions(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include, string peopleId, string[] emailAddresses, string[] checkBoxes, string[] wfAttachmentStepIds)
         {
             //selectAllCheck: true,
             //sendToDODDCheck: true,
@@ -110,7 +110,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     if(item == "sendToDODDCheck" || item == "selectAllCheck")
                     {
                         //Send to DODD
-                        sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, assessmentID, peopleId);
+                        sendToDODD = dpaa.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentStepIds, sigAttachmentIds, assessmentID, peopleId);
                         foreach(string item2 in sendToDODD)
                         {
                             valueForDODD = valueForDODD  + item2 + "||";
@@ -833,21 +833,21 @@ namespace Anywhere.service.Data.DocumentConversion
                         allAttachments.Add(new_byte_output);
                         new_byte_output = null;
                     }
-                    else if (attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
+                    else if (attachment.filename.ToUpper().Contains(".DOCX") || attachment.filename.ToUpper().Contains(".XLS") || attachment.filename.ToUpper().Contains(".XLSX") || attachment.filename.ToUpper().Contains(".DOC"))
                     {
-                        if (attachment.filename.ToUpper().Contains("XLSX"))
+                        if (attachment.filename.ToUpper().Contains(".XLSX"))
                         {
                             attachment.filename = attachment.filename.Replace("xlsx", "pdf");
                         }
-                        if (attachment.filename.ToUpper().Contains("DOCX"))
+                        if (attachment.filename.ToUpper().Contains(".DOCX"))
                         {
                             attachment.filename = attachment.filename.Replace("docx", "pdf");
                         }
-                        if (attachment.filename.ToUpper().Contains("XLS"))
+                        if (attachment.filename.ToUpper().Contains(".XLS"))
                         {
                             attachment.filename = attachment.filename.Replace("xls", "pdf");
                         }
-                        if (attachment.filename.ToUpper().Contains("DOC"))
+                        if (attachment.filename.ToUpper().Contains(".DOC"))
                         {
                             attachment.filename = attachment.filename.Replace("doc", "pdf");
                         }

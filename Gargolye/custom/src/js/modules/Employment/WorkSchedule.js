@@ -13,6 +13,8 @@ const WorkSchedule = (() => {
     let weekDaysSelection = [];
     let nameOfEvent;
     let toRemoveWeekName;
+    let totalHours;
+    let messagetext;
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
@@ -23,17 +25,8 @@ const WorkSchedule = (() => {
         if (PositionId != undefined) {
             ScheduleEntries = await EmploymentAjax.getWorkScheduleEntriesAsync(PositionId);
             if (ScheduleEntries.getWorkScheduleEntriesResult.length > 0)
-                ScheduleEntries.getWorkScheduleEntriesResult.push({ dayOfWeek: '', startTime: '', endTime: '', positionId: null, WorkScheduleId: '', timeInHours: 'Total Hours - ' + ScheduleEntries.getWorkScheduleEntriesResult[0].totalHours, totalHours: '' });
+                totalHours = ScheduleEntries.getWorkScheduleEntriesResult[0].totalHours;
         }
-    }
-
-    function toHoursAndMinutes(totalMinutes) {
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        return `${padToTwoDigits(hours)}:${padToTwoDigits(minutes)}`;
-    }
-    function padToTwoDigits(num) {
-        return num.toString().padStart(2, "0");
     }
 
     function getMarkup() {
@@ -82,6 +75,11 @@ const WorkSchedule = (() => {
             addNewCardBody.appendChild(NEW_SHIFT_BTN);
         }
         addNewCardBody.appendChild(workScheduleEntriesTable);
+        const totalHourDiv = document.createElement("div");
+        totalHourDiv.classList.add("totalHour"); 
+        totalHourDiv.innerHTML = `<div>Total Hours: ${totalHours} </div>`;
+        addNewCardBody.appendChild(totalHourDiv); 
+
         workScheduleDiv.appendChild(column1);
         return workScheduleDiv;
     }
@@ -114,6 +112,17 @@ const WorkSchedule = (() => {
             },
         }));
         const oTable = table.build(tableOptions);
+
+        // Set the data type for each header, for sorting purposes
+        const headers = oTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Day Of Week
+        headers[1].setAttribute('data-type', 'date'); // Start Time
+        headers[2].setAttribute('data-type', 'date'); //End Date 
+        headers[3].setAttribute('data-type', 'number'); // Hours 
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(oTable);
+         
         table.populate(oTable, tableData);
 
         return oTable;
@@ -398,7 +407,8 @@ const WorkSchedule = (() => {
         var weekDay = dayOfWeekDropdown.querySelector('#dayOfWeekDropdown');
         var timeEnd = NewEndTime.querySelector('#NewEndTime');
         var timeStart = NewStartTime.querySelector('#NewStartTime');
-
+        messagetext = document.getElementById('confirmMessage'); 
+        messagetext.innerHTML = ``; 
         if (nameOfEvent == 'Add') {
             var sundaychk = sundaychkBox.querySelector('#sundaychkBox');
             var mondaychk = mondaychkBox.querySelector('#mondaychkBox');
@@ -496,7 +506,7 @@ const WorkSchedule = (() => {
         const result = await EmploymentAjax.insertWorkScheduleAsync(weekDaysSelection, startTime, endTime, PositionId, WorkScheduleID, $.session.UserId);
         const { insertWorkScheduleResult } = result;
 
-        var messagetext = document.getElementById('confirmMessage');
+        messagetext = document.getElementById('confirmMessage');
         messagetext.innerHTML = ``;
         if (insertWorkScheduleResult.WorkScheduleId == '-1') {
             messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot be saved.';

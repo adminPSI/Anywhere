@@ -16,7 +16,7 @@ var caseNotes = (function () {
       callback: function () {
         noteSSA.init('new');
       },
-    });
+    });//test
 
     let overviewBtn = button.build({
       text: 'Review Notes',

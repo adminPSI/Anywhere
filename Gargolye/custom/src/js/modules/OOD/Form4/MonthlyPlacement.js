@@ -16,6 +16,7 @@ const OODForm4MonthlyPlacement = (() => {
   let narrativeOutcomeInput;
 
   // buttons
+let addEmployersBtn;
 let saveNoteBtn;
 let saveAndNewNoteBtn;
 let cancelNoteBtn;
@@ -44,6 +45,27 @@ let caseManagerId;
 let userId;
 let serviceId;
 let referenceNumber;
+
+// employer data
+    // insert/update employer data
+    let employerId;
+    let employerName = '';
+    let employeraddress1 = '';
+    let employeraddress2 = '';
+    let employercity = '';
+    let employerstate = '';
+    let employerzipcode = '';
+
+    //employer inputs 
+    let employerInput;
+    let address1Input;
+    let address2Input;
+    let cityInput;
+    let stateInput;
+    let zipcodeInput;
+
+    let popupSaveBtn;
+    let popupCancelBtn;
 
 let formReadOnly = false;
 
@@ -149,6 +171,7 @@ let currentEntryUserId;
       });
     
     employerDropdown = dropdown.build({
+        id: "employerDropdown",
         label: "Employer",
         dropdownId: "employerDropdown",
         value: employer,
@@ -276,7 +299,21 @@ let currentEntryUserId;
       icon: 'close',
       classNames: ['caseNoteCancel'],
       callback: async () =>  {
+        employer = '';
         OOD.loadOODLanding();
+      },
+    });
+
+    addEmployersBtn = button.build({
+      text: 'Add Employers',
+      style : 'secondary',
+      type: 'contained',
+      icon: 'add',
+      classNames: ['caseNoteSave'],
+      callback: async () => { 
+        //if (!addNewEmployerBtn.classList.contains('disabled')) {
+          buildEmployerPopUp({}, 'insert', 'employer', null)
+     // }
       },
     });
 
@@ -308,7 +345,8 @@ let currentEntryUserId;
     inputContainer1.classList.add('ood_form4monthlyplacement_inputContainer1');
     inputContainer1.appendChild(SAMLevelDropdown);
     inputContainer1.appendChild(employerDropdown);
-    inputContainer1.appendChild(contactMethodDropdown);
+    if ($.session.OODInsertEmployers) inputContainer1.appendChild(addEmployersBtn);
+    
     
 
     const inputContainer2 = document.createElement('div');
@@ -316,6 +354,7 @@ let currentEntryUserId;
     //inputContainer2.appendChild(jobSeekerPresentDropdown); //-- REMOVED FROM FORM ON 4/8/22
     //inputContainer2.appendChild(outcomeDropdown);    //-- REMOVED FROM FORM ON 4/8/22
     //inputContainer2.appendChild(TSCNotifiedDropdown);  //-- REMOVED FROM FORM ON 4/8/22
+    inputContainer2.appendChild(contactMethodDropdown);
     inputContainer2.appendChild(applicationSubmittedDropdown);
     inputContainer2.appendChild(interviewDropdown);
     inputContainer2.appendChild(bilingualSupplementDropdown);
@@ -384,7 +423,10 @@ let currentEntryUserId;
     		const index = data.findIndex((x) => x.id == employer);
 						if (index === -1) {
 							// case note employer not in the employers DDL
-						}
+              employer = '';
+						} 
+
+            checkRequiredFields();
 
    var filtereddata = data.filter((x) => x.id != 0);
 
@@ -946,6 +988,234 @@ function validateStartEndTimes(validateTime) {
       POPUP.show(deletepopup);
     }
     
+
+    // build Employer pop-up used for adding/editing Employer information
+    async function buildEmployerPopUp(employerdata, postType, openpageName, redirectInfo) {
+      if (openpageName == 'employmentInfo') {
+          openedPage = 'employmentInfo';
+          redirectInformation = redirectInfo
+      }
+      else
+          openedPage = 'employer';
+
+      var headingEmployer;
+      if (employerdata && Object.keys(employerdata).length !== 0) {
+          employerId = employerdata[0].employerId;
+          employerName = employerdata[0].employerName;
+          employeraddress1 = employerdata[0].address1;
+          employeraddress2 = employerdata[0].address2;
+          employercity = employerdata[0].city;
+          employerstate = employerdata[0].state;
+          employerzipcode = employerdata[0].zipcode;
+          headingEmployer = 'Edit this Employer';
+          BtnEventType = 'Update';
+      } else {
+          employerId = '';
+          employerName = '';
+          employeraddress1 = '';
+          employeraddress2 = '';
+          employercity = '';
+          employerstate = '';
+          employerzipcode = '';
+          headingEmployer = 'Add Employer';
+          BtnEventType = 'Add';
+      }
+
+      let editEmployerPopup = POPUP.build({
+          header: headingEmployer,
+          hideX: true,
+          id: "editEmployerPopup"
+      });
+
+      employerInput = input.build({
+          id: 'employerInput',
+          label: 'Employer',
+          value: (employerName) ? employerName : '',
+      });
+
+      address1Input = input.build({
+          label: 'Address',
+          value: (employeraddress1) ? employeraddress1 : '',
+      });
+
+      address2Input = input.build({
+          label: 'Address 2',
+          value: (employeraddress2) ? employeraddress2 : '',
+      });
+
+      cityInput = input.build({
+          label: 'City',
+          value: (employercity) ? employercity : '',
+      });
+
+      stateInput = input.build({
+          label: 'State',
+          value: (employerstate) ? employerstate : '',
+      });
+
+      zipcodeInput = input.build({
+          label: 'Zip Code',
+          value: (employerzipcode) ? employerzipcode : '',
+      });
+
+      popupSaveBtn = button.build({
+          id: "addEmployerSaveBtn",
+          text: "save",
+          type: "contained",
+          style: "secondary",
+          classNames: 'disabled',
+          callback: () => {
+              if (!popupSaveBtn.classList.contains('disabled')) {
+                editEmployerPopupDoneBtn(postType)
+              }
+          }
+      });
+
+      popupCancelBtn = button.build({
+          id: "addEmployerCancelBtn",
+          text: "cancel",
+          type: "outlined",
+          style: "secondary",
+          callback: () => POPUP.hide(editEmployerPopup)
+      });
+
+      let btnWrap = document.createElement("div");
+      btnWrap.classList.add("btnWrap");
+      btnWrap.appendChild(popupSaveBtn);
+      btnWrap.appendChild(popupCancelBtn);
+      editEmployerPopup.appendChild(employerInput);
+      editEmployerPopup.appendChild(address1Input);
+      editEmployerPopup.appendChild(address2Input);
+      editEmployerPopup.appendChild(cityInput);
+      editEmployerPopup.appendChild(stateInput);
+      editEmployerPopup.appendChild(zipcodeInput);
+      editEmployerPopup.appendChild(btnWrap);
+
+      popUpEventHandlers();
+      POPUP.show(editEmployerPopup);
+      checkPopupRequiredFields();
+  }
+
+  function popUpEventHandlers() {
+    employerInput.addEventListener('input', event => {
+        employerName = event.target.value.trim();
+        checkPopupRequiredFields();
+    });
+
+    address1Input.addEventListener('input', event => {
+        employeraddress1 = event.target.value;
+    });
+
+    address2Input.addEventListener('input', event => {
+        employeraddress2 = event.target.value;
+    });
+
+    cityInput.addEventListener('input', event => {
+        employercity = event.target.value;
+    });
+
+    stateInput.addEventListener('input', event => {
+        employerstate = event.target.value;
+    });
+
+    zipcodeInput.addEventListener('input', event => {
+        employerzipcode = event.target.value;
+    });
+}
+
+function checkPopupRequiredFields() {
+    var employrInput = employerInput.querySelector('#employerInput');
+    if (employrInput.value.trim() === '') { 
+        employerInput.classList.add('error');
+        popupSaveBtn.classList.add('disabled'); 
+        return;
+    } else {
+        employerInput.classList.remove('error');
+        popupSaveBtn.classList.remove('disabled');
+    }
+
+   // if (($.session.UpdateEmployers && BtnEventType == 'Update') || ($.session.InsertEmployers && BtnEventType == 'Add')) {
+   //     popupSaveBtn.classList.remove('disabled');
+   // } else {
+    //  popupSaveBtn.classList.add('disabled');
+   // }
+}
+
+    // Event for Done BTN on the Edit Employer Popup Window
+    async function editEmployerPopupDoneBtn(postType) {
+
+      if (postType == 'insert') {
+
+          const result = await OODAjax.insertEmployerAsync(employerName, employeraddress1, employeraddress2, employercity, employerstate, employerzipcode);
+          const { insertEmployerResult } = result;
+          employer = insertEmployerResult.employerId;
+
+          if (employer == '0') {
+              warningPopup();
+          } else {
+              
+              populateConsumerEmployersDropdown(consumerId);
+             // const dropdown = document.querySelector('#employerDropdown');
+              //    const selectedValue = dropdown.value;
+             //     var selectedOption = dropdown.options[dropdown.selectedIndex];
+
+               //   if (selectedOption.value == "SELECT") {
+              //      employer = '';
+                //  } else {
+                //    employer = selectedOption.value;
+                //  }
+              //    checkRequiredFields();
+
+                  POPUP.hide(editEmployerPopup)
+                successfulSave.show();
+
+              setTimeout(function () {
+                  successfulSave.hide();
+                  
+                  
+                 // if (openedPage == 'employmentInfo')
+                 //     NewEmployment.refreshEmployment(redirectInformation.positionId, redirectInformation.empName, redirectInformation.posName, redirectInformation.consumersName, redirectInformation.consumersId, tabPositionIndex = 0);
+                 // else
+                 //     addEditEmployers.init();
+              }, 2000);
+          }
+
+      } else {  //'update'
+          POPUP.hide(editEmployerPopup)
+          const result = await OODAjax.updateEmployerAsync(employerId, employerName, employeraddress1, employeraddress2, employercity, employerstate, employerzipcode);
+          const { updateEmployerResult: { employerID } } = result;
+          successfulSave.show();
+          setTimeout(function () {
+              successfulSave.hide();
+            //  addEditEmployers.init();
+          }, 2000);
+      }
+    }
+
+    function warningPopup() {
+      var popup = POPUP.build({
+          id: 'warningPopup',
+          classNames: 'warning',
+      });
+      var OKBtn = button.build({
+          text: 'OK',
+          style: 'secondary',
+          type: 'contained',
+          callback: function () {
+              POPUP.hide(popup);
+              overlay.show();
+          },
+      });
+      var btnWrap = document.createElement('div');
+      btnWrap.classList.add('btnWrap');
+      btnWrap.appendChild(OKBtn);
+
+      var warningMessage = document.createElement('p');
+      warningMessage.innerHTML = "This employer already exists.";
+      popup.appendChild(warningMessage);
+      popup.appendChild(btnWrap);
+      POPUP.show(popup);
+  }
 
      return {
     init,

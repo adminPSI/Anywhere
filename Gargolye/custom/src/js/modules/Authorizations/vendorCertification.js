@@ -24,6 +24,11 @@ const vendorCertification = (() => {
 
         certificationEntriesTable = buildCertificationEntriesTable();
 
+        const headers = certificationEntriesTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Certification
+        headers[1].setAttribute('data-type', 'date'); // Start Date
+        headers[2].setAttribute('data-type', 'date'); // End Date 
+
         const column1 = document.createElement('div')
         column1.classList.add('col-1')
         const addNewCard = document.createElement("div");
@@ -36,6 +41,10 @@ const vendorCertification = (() => {
 
         addNewCardBody.appendChild(certificationEntriesTable);
         vendorCertificationDiv.appendChild(column1);
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(certificationEntriesTable); 
+
         return vendorCertificationDiv;
     }
 

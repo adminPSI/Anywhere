@@ -5,10 +5,12 @@ using Newtonsoft.Json;
 using System;
 using System.Configuration;
 using System.Data;
+using System.Management.Automation.Language;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAbsentWorker;
 using static Anywhere.service.Data.Authorization.AuthorizationWorker;
+using static Anywhere.service.Data.IncidentTrackingWorker;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Anywhere.service.Data
@@ -157,6 +159,7 @@ namespace Anywhere.service.Data
             public string Last_Update { get; set; }
             public string show_time { get; set; }
             public string Show_Community_Integration { get; set; }
+            public string reviewNote { get; set; }
         }
 
         //New
@@ -175,6 +178,19 @@ namespace Anywhere.service.Data
             public string primaryLocId { get; set; }
         }
 
+        public class AllGoalTypes
+        {
+            public string goalTypeId { get; set; }
+            public string goalTypeDescription { get; set; }
+        }
+
+        public AllGoalTypes[] getAllGoalTypes(string token)
+        {
+            string allGoalsString = dg.getAllGoalTypes(token);
+            AllGoalTypes[] allGoalsObj = js.Deserialize<AllGoalTypes[]>(allGoalsString);
+            return allGoalsObj;
+        }
+         
         //New
         public PromptsData[] getOutcomesPrompts()
         {
@@ -294,6 +310,56 @@ namespace Anywhere.service.Data
             public string duration { get; set; }
         }
 
+        public class OutcomesReviewGrid
+        {
+            public string consumerName { get; set; }
+            public string consumerId { get; set; }
+            public string objectiveStatement { get; set; }
+            public string frequencyModifier { get; set; }
+            public string objectiveIncrement { get; set; }
+            public string objectiveRecurrance { get; set; }
+            public string objectiveActivityId { get; set; }
+            public string objectiveId { get; set; }
+            public string timesDocumented { get; set; }
+            public string objective_date { get; set; }
+            public string staffId { get; set; }
+            public string employee { get; set; }
+            public string objectiveSuccess { get; set; }
+            public string goalTypeDescription { get; set; }
+            public string goalTypeId { get; set; }
+            public string promptType { get; set; }
+            public string promptNumber { get; set; }
+            public string objectiveSuccessSymbol { get; set; }
+            public string objectiveSuccessDescription { get; set; }
+            public string objectiveActivityNote { get; set; }
+            public string startTime { get; set; }
+            public string endTime { get; set; }
+            public string percentData { get; set; }
+            public string frequency_occurance { get; set; }
+        }
+
+        public class OutcomesReviewGridSecondary
+        {
+            public string objectiveActivityId { get; set; }
+            public string objectiveId { get; set; }
+            public string objective_date { get; set; }
+            public string staffId { get; set; }
+            public string employee { get; set; }
+            public string promptType { get; set; }
+            public string promptNumber { get; set; }
+            public string objectiveSuccessSymbol { get; set; }
+            public string objectiveSuccessDescription { get; set; }
+            public string objectiveActivityNote { get; set; }
+            public string goalTypeId { get; set; }
+            public string startTime { get; set; }
+            public string endTime { get; set; }
+            public string objectiveRecurrance { get; set; }
+            public string exclamationIds { get; set; }
+            public string top_number { get; set; }
+            public string bottom_number { get; set; }
+            public string reviewNote { get; set; }
+        }
+
         public class OutComePageData
         {
             public PDParentOutcome[] pageDataParent { get; set; }
@@ -316,6 +382,39 @@ namespace Anywhere.service.Data
         {
             public string locationDescription { get; set; }
             public string locationID { get; set; }
+        }
+
+        public class PlanViewHistory
+        {
+            public string isPlanAvailable { get; set; }
+            public string isPlanLaterDisable { get; set; }          
+            public string attachmentId { get; set; }
+            public string denyCount { get; set; }
+            public string peopleId { get; set; }
+            public string acknowledgeDatetime { get; set; }
+            public string PlanId { get; set; }
+            public string isNewDisabled { get; set; }
+            public string isViewedAvailableOSPlan { get; set; }
+
+        }
+
+        public class ExclamationIds
+        {
+            //public string exclamationIds { get; set; }
+            public string Staff_ID { get; set; }
+            public string objective_id { get; set; }
+            public string Objective_Activity_ID { get; set; }
+        }
+
+        public class TotalSecondGridCall
+        {
+            public OutcomesReviewGridSecondary[] gridSecondary { get; set; }
+            public ExclamationIds[] exIds { get; set; }
+        }
+
+        public string updateReviewNote(string token, string objectiveActivityId, string reviewNote, string notifyEmployee, string consumerId)
+        {
+            return dg.updateReviewNote( token,  objectiveActivityId,  reviewNote,  notifyEmployee,  consumerId);
         }
 
         public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)
@@ -403,12 +502,33 @@ namespace Anywhere.service.Data
             return JSONString;
         }
 
-        public OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)
+        public OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string objectiveDate)
         {
-            string outcomeTypeString = dg.getOutcomeTypeDropDown(token);
+            string reviewGrid = dg.getOutcomesReviewGrid(token, consumerId, objectiveDate);
+            OutcomesReviewGrid[] reviewGridObj = js.Deserialize<OutcomesReviewGrid[]>(reviewGrid);
+            return reviewGridObj;
+        }
+
+        public TotalSecondGridCall getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList, string frequency)
+        {
+            string reviewGrid = dg.getOutcomesReviewGridSecondary(token, consumerId, startDate, endDate, objectiveIdList, frequency);
+            OutcomesReviewGridSecondary[] reviewGridObj = js.Deserialize<OutcomesReviewGridSecondary[]>(reviewGrid);
+            string exclationPointIds = dg.getExclclamationIds(startDate, endDate, frequency);
+            ExclamationIds[] exIdObj = js.Deserialize<ExclamationIds[]>(exclationPointIds);
+
+            TotalSecondGridCall test = new TotalSecondGridCall();
+            test.gridSecondary = reviewGridObj;
+            test.exIds = exIdObj;
+            return test;
+        }
+
+        public OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token, string consumerId, string effectiveDateStart)
+        {
+            string outcomeTypeString = dg.getOutcomeTypeDropDown(token, consumerId, effectiveDateStart);
             OutcomeTypeForFilter[] outcomeTypeObj = js.Deserialize<OutcomeTypeForFilter[]>(outcomeTypeString);
             return outcomeTypeObj;
         }
+        
 
         public OutcomesWorker.LocationType[] getLocationDropDown(string token)
         {
@@ -431,9 +551,10 @@ namespace Anywhere.service.Data
             return objectiveObj;
         }
 
-        public OutcomeService[] getOutcomeServiceDropDown(string token)
+        public OutcomeService[] getOutcomeServiceDropDown(string token, string consumerId, string effectiveDateStart)
         {
-            string outcomeTypeString = dg.getOutcomeServiceDropDown(token);
+            js.MaxJsonLength = Int32.MaxValue;
+            string outcomeTypeString = dg.getOutcomeServiceDropDown(token, consumerId, effectiveDateStart);
             OutcomeService[] outcomeTypeObj = js.Deserialize<OutcomeService[]>(outcomeTypeString);
             return outcomeTypeObj;
         }
@@ -457,6 +578,34 @@ namespace Anywhere.service.Data
             string insertOutcomeServiceString = dg.insertOutcomeServiceInfo(token, startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId, location, duration);
             OutcomesWorker.PDChildOutcome[] insertOutcomeServiceObj = js.Deserialize<OutcomesWorker.PDChildOutcome[]>(insertOutcomeServiceString);
             return insertOutcomeServiceObj;
+        }
+
+        public PlanViewHistory[] getPlanHistorybyConsumer(string token, string consumerId)
+        {
+            string planHistoryString = dg.getPlanHistorybyConsumer(token, consumerId);
+            PlanViewHistory[] planHistoryObj = js.Deserialize<PlanViewHistory[]>(planHistoryString);
+            return planHistoryObj;
+        }
+
+        public PlanViewHistory[] getPlanbyConsumerHistory(string token, string consumerId)
+        {
+            string planHistoryString = dg.getPlanbyConsumerHistory(token, consumerId);
+            PlanViewHistory[] planHistoryObj = js.Deserialize<PlanViewHistory[]>(planHistoryString);
+            return planHistoryObj;
+        }
+
+        public PlanViewHistory[] isNewBtnDisabledByPlanHistory(string token, string consumerId, string goalTypeID, string ObjectiveID)
+        {
+            string planHistoryString = dg.isNewBtnDisabledByPlanHistory(token, consumerId, goalTypeID, ObjectiveID);
+            PlanViewHistory[] planHistoryObj = js.Deserialize<PlanViewHistory[]>(planHistoryString);
+            return planHistoryObj;
+        }
+
+        public PlanViewHistory[] isViewPlabBtnDisabled(string token, string consumerId)
+        {
+            string planHistoryString = dg.isViewPlabBtnDisabled(token, consumerId);
+            PlanViewHistory[] planHistoryObj = js.Deserialize<PlanViewHistory[]>(planHistoryString);
+            return planHistoryObj;
         }
 
     }

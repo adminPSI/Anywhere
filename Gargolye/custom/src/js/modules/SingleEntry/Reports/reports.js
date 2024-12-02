@@ -2,6 +2,8 @@ var reports = (function(){
   var reportCurrentlyProcessing = false;
   var startDate;
   var endDate;
+  var filterValues;
+  var isTimeApproval = false;
   // DOM elements
   var actioncenter;
   var reportPopup;
@@ -16,8 +18,13 @@ var reports = (function(){
     reportCurrentlyProcessing = true;
     var userId = $.session.UserId;
 
-    reportsAjax.getEmpSingleEntryDetailReportAjax(userId, startDate, endDate);
+    if (!isTimeApproval) {
+      reportsAjax.getEmpSingleEntryDetailReportAjax(userId, startDate, endDate);
+    } else {
+      reportsAjax.getEmpSingleEntrySupervisorDetailReportAjax(userId, filterValues);
+    }
   }
+
 
   function showOverlapReport() {
     if (!startDate || !endDate) return
@@ -74,12 +81,20 @@ var reports = (function(){
     actioncenter.appendChild(popup);
   }
 
-  function init(payPeriod) {
+  //optional paramters used to show it is a supervisor running report with different values needed
+  function init(payPeriod, timeApproval, filterData) {
     actioncenter = document.getElementById('actioncenter');
     startDate = payPeriod.start;
     endDate = payPeriod.end;
 
+    isTimeApproval = timeApproval;
+
+    if (filterData && timeApproval) {
+      filterValues = filterData;
+    }
+
     showReportsPopup();
+    
   }
 
   return {

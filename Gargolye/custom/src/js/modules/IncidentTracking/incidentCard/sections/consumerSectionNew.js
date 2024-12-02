@@ -134,9 +134,7 @@ var itConsumerSection = (function () {
     }
   }
   function removeConsumerFromConsumersInvolved(selectedConsumerId) {
-    var consumerCard = document.querySelector(
-      `[data-consumer-id="${selectedConsumerId}"]`,
-    ).parentElement;
+    var consumerCard = document.querySelector(`[data-consumer-id="${selectedConsumerId}"]`).parentElement;
     consumersWrap.removeChild(consumerCard);
 
     consumerSections.classList.remove('visible');
@@ -200,9 +198,7 @@ var itConsumerSection = (function () {
   //-----------------------------------------------
   function buildConsumer(consumerCard) {
     function checkInvolvedRequirements() {
-      const locationId = consumerInvolvement.involvementDataLookup(
-        consumerCard.dataset.consumerId,
-      ).locationId;
+      const locationId = consumerInvolvement.involvementDataLookup(consumerCard.dataset.consumerId).locationId;
 
       const involvementSec = document.querySelector("[data-sectionid='5']");
 
@@ -787,25 +783,16 @@ var consumerFollowUp = (function () {
           };
         }
 
-        if (
-          tmpCompletedDate ||
-          tmpDueDate ||
-          tmpFollowUpTypeId ||
-          tmpNote ||
-          tmpPersonResponsible
-        ) {
+        if (tmpCompletedDate || tmpDueDate || tmpFollowUpTypeId || tmpNote || tmpPersonResponsible) {
           followUpsData[selectedConsumerId][selectedFollowUpId].updated = true;
         }
 
-        if (tmpCompletedDate)
-          followUpsData[selectedConsumerId][selectedFollowUpId].dateCompleted = tmpCompletedDate;
+        if (tmpCompletedDate) followUpsData[selectedConsumerId][selectedFollowUpId].dateCompleted = tmpCompletedDate;
         if (tmpDueDate) followUpsData[selectedConsumerId][selectedFollowUpId].dueDate = tmpDueDate;
-        if (tmpFollowUpTypeId)
-          followUpsData[selectedConsumerId][selectedFollowUpId].followUpTypeId = tmpFollowUpTypeId;
+        if (tmpFollowUpTypeId) followUpsData[selectedConsumerId][selectedFollowUpId].followUpTypeId = tmpFollowUpTypeId;
         if (tmpNote) followUpsData[selectedConsumerId][selectedFollowUpId].notes = tmpNote;
         if (tmpPersonResponsible)
-          followUpsData[selectedConsumerId][selectedFollowUpId].personResponsible =
-            tmpPersonResponsible;
+          followUpsData[selectedConsumerId][selectedFollowUpId].personResponsible = tmpPersonResponsible;
 
         selectedFollowUpId = undefined;
 
@@ -938,8 +925,7 @@ var consumerFollowUp = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -1010,9 +996,7 @@ var consumerFollowUp = (function () {
     keys.forEach(key => {
       var followUpData = followUpsData[selectedConsumerId][key];
 
-      var filterFollowUpTypes = followUpTypes.filter(
-        type => type.itFollowUpTypeId === followUpData.followUpTypeId,
-      );
+      var filterFollowUpTypes = followUpTypes.filter(type => type.itFollowUpTypeId === followUpData.followUpTypeId);
       var followUpType = filterFollowUpTypes[0] ? filterFollowUpTypes[0].followUpTypeName : '';
       var personResponsible = followUpData.personResponsible;
       var dueDate = followUpData.dueDate ? followUpData.dueDate.split(' ')[0] : '';
@@ -1033,10 +1017,7 @@ var consumerFollowUp = (function () {
     });
 
     reviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
         selectedFollowUpId = event.target.id;
         setFormDataDefaults(followUpsData[selectedConsumerId][selectedFollowUpId]);
         showForm(true);
@@ -1100,8 +1081,7 @@ var consumerFollowUp = (function () {
           followUpsData[selectedConsumerId][d.itConsumerFollowUpId].updated = false;
 
           // format dates
-          var dateTimeCompleted =
-            followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dateCompleted;
+          var dateTimeCompleted = followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dateCompleted;
           var dueDateTime = followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dueDate;
           dateCompleted = dateTimeCompleted ? dateTimeCompleted.split(' ')[0] : null;
           dueDate = dueDateTime ? dueDateTime.split(' ')[0] : null;
@@ -1111,8 +1091,7 @@ var consumerFollowUp = (function () {
               UTIL.formatDateToIso(dateCompleted);
           }
           if (dueDate) {
-            followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dueDate =
-              UTIL.formatDateToIso(dueDate);
+            followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dueDate = UTIL.formatDateToIso(dueDate);
           }
         }
       });
@@ -1142,6 +1121,8 @@ var consumerInjuries = (function () {
   //*form
   var injuryLocationDropdown;
   var injuryTypeDropdown;
+  var injuryCauseDropdown;
+  var riskOfInjuryDropdown;
   var checkedByNurseCheckbox;
   var detailsInput;
   var treatmentInput;
@@ -1156,6 +1137,8 @@ var consumerInjuries = (function () {
   var injuryDeleteData;
   var injuryLocations;
   var injuryTypes;
+  var injuryRisks;
+  var injuryCauses;
   // Values
   //---------------------
   var selectedConsumerId;
@@ -1163,6 +1146,8 @@ var consumerInjuries = (function () {
   //*form values
   var injuryLocationId;
   var injuryTypeId;
+  var injuryCauseId;
+  var injuryRiskId;
   var checkedByNurse;
   var details;
   var treatment;
@@ -1222,6 +1207,11 @@ var consumerInjuries = (function () {
 
       incidentTrackingAjax.getInjuryTypesDropdown(function (types) {
         injuryTypes = types;
+
+        incidentTrackingAjax.getRiskAndCauseDropdown(function (riskAndCause) {
+          injuryRisks = riskAndCause.injuryRiskDropdown;
+          injuryCauses = riskAndCause.injuryCauseDropdowns;
+        });
       });
     });
   }
@@ -1292,6 +1282,8 @@ var consumerInjuries = (function () {
   function clearFormDataDefaults() {
     injuryLocationId = undefined;
     injuryTypeId = undefined;
+    injuryCauseId = undefined;
+    injuryRiskId = undefined;
     checkedByNurse = undefined;
     details = undefined;
     treatment = undefined;
@@ -1303,6 +1295,8 @@ var consumerInjuries = (function () {
     if (formData) {
       injuryLocationId = formData.injuryLocationId;
       injuryTypeId = formData.injuryTypeId;
+      injuryCauseId = formData.injuryCauseId;
+      injuryRiskId = formData.injuryRiskId;
       checkedByNurse = formData.checkedByNurse;
       details = formData.injuryDetails;
       treatment = formData.injuryTreatment;
@@ -1311,12 +1305,14 @@ var consumerInjuries = (function () {
   }
   // events
   function setupFormEvents() {
-    var tmpInjuryLocation;
-    var tmpInjuryType;
-    var tmpCheckedBy;
-    var tmpDetails;
-    var tmpTreatment;
-    var tmpDateChecked;
+    let tmpInjuryLocation;
+    let tmpInjuryType;
+    let tmpInjuryCause;
+    let tmpInjuryRisk;
+    let tmpCheckedBy;
+    let tmpDetails;
+    let tmpTreatment;
+    let tmpDateChecked;
 
     injuryLocationDropdown.addEventListener('change', e => {
       tmpInjuryLocation = e.target.value;
@@ -1325,6 +1321,12 @@ var consumerInjuries = (function () {
     injuryTypeDropdown.addEventListener('change', e => {
       tmpInjuryType = e.target.value;
       checkRequiredFields();
+    });
+    injuryCauseDropdown.addEventListener('change', e => {
+      tmpInjuryCause = e.target.value;
+    });
+    riskOfInjuryDropdown.addEventListener('change', e => {
+      tmpInjuryRisk = e.target.value;
     });
     checkedByNurseCheckbox.addEventListener('change', e => {
       tmpCheckedBy = e.target.checked ? 'Y' : 'N';
@@ -1367,27 +1369,26 @@ var consumerInjuries = (function () {
         }
 
         if (
-          tmpInjuryLocation ||
-          tmpInjuryType ||
-          tmpCheckedBy ||
-          tmpDetails ||
-          tmpTreatment ||
-          tmpDateChecked
+          tmpInjuryLocation !== undefined ||
+          tmpInjuryType !== undefined ||
+          tmpInjuryCause !== undefined ||
+          tmpInjuryRisk !== undefined ||
+          tmpCheckedBy !== undefined ||
+          tmpDetails !== undefined ||
+          tmpTreatment !== undefined ||
+          tmpDateChecked !== undefined
         ) {
           injuryData[selectedConsumerId][selectedInjuryId].updated = true;
         }
 
-        if (tmpInjuryLocation)
-          injuryData[selectedConsumerId][selectedInjuryId].injuryLocationId = tmpInjuryLocation;
-        if (tmpInjuryType)
-          injuryData[selectedConsumerId][selectedInjuryId].injuryTypeId = tmpInjuryType;
-        if (tmpCheckedBy)
-          injuryData[selectedConsumerId][selectedInjuryId].checkedByNurse = tmpCheckedBy;
-        if (tmpDetails) injuryData[selectedConsumerId][selectedInjuryId].injuryDetails = tmpDetails;
-        if (tmpTreatment)
-          injuryData[selectedConsumerId][selectedInjuryId].injuryTreatment = tmpTreatment;
-        if (tmpDateChecked)
-          injuryData[selectedConsumerId][selectedInjuryId].checkedDate = tmpDateChecked;
+        if (tmpInjuryLocation !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryLocationId = tmpInjuryLocation;
+        if (tmpInjuryType !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryTypeId = tmpInjuryType;
+        if (tmpInjuryCause !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryCauseId = tmpInjuryCause;
+        if (tmpInjuryRisk !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryRiskId = tmpInjuryRisk;
+        if (tmpCheckedBy !== undefined) injuryData[selectedConsumerId][selectedInjuryId].checkedByNurse = tmpCheckedBy;
+        if (tmpDetails !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryDetails = tmpDetails;
+        if (tmpTreatment !== undefined) injuryData[selectedConsumerId][selectedInjuryId].injuryTreatment = tmpTreatment;
+        if (tmpDateChecked !== undefined) injuryData[selectedConsumerId][selectedInjuryId].checkedDate = tmpDateChecked;
 
         selectedInjuryId = undefined;
 
@@ -1462,6 +1463,66 @@ var consumerInjuries = (function () {
     dropdown.populate(iTypeDrop, data, injuryTypeId);
 
     return iTypeDrop;
+  }
+  function buildInjuryCauseDropdown() {
+    var opts = {
+      label: 'Cause of Injury',
+      style: 'secondary',
+    };
+
+    if (isEdit && formReadOnly) {
+      opts.readonly = true;
+    }
+
+    var iCauseDrop = dropdown.build(opts);
+
+    var data = injuryCauses.map(type => {
+      return {
+        value: type.injuryCauseId,
+        text: type.injuryCauseDescription,
+      };
+    });
+
+    data.sort((a, b) => {
+      if (a.text.toLowerCase() < b.text.toLowerCase()) return -1;
+      if (a.text.toLowerCase() > b.text.toLowerCase()) return 1;
+      return 0;
+    });
+
+    data.unshift({ value: '', text: '' });
+    dropdown.populate(iCauseDrop, data, injuryCauseId);
+
+    return iCauseDrop;
+  }
+  function buildRiskOfInjuryDropdown() {
+    var opts = {
+      label: 'Risk of Serious Injury',
+      style: 'secondary',
+    };
+
+    if (isEdit && formReadOnly) {
+      opts.readonly = true;
+    }
+
+    var iRiskDrop = dropdown.build(opts);
+
+    var data = injuryRisks.map(type => {
+      return {
+        value: type.injuryRiskId,
+        text: type.injuryRiskdescription,
+      };
+    });
+
+    data.sort((a, b) => {
+      if (a.text.toLowerCase() < b.text.toLowerCase()) return -1;
+      if (a.text.toLowerCase() > b.text.toLowerCase()) return 1;
+      return 0;
+    });
+
+    data.unshift({ value: '', text: '' });
+    dropdown.populate(iRiskDrop, data, injuryRiskId);
+
+    return iRiskDrop;
   }
   function buildCheckedByCheckbox() {
     var opts = {
@@ -1540,8 +1601,7 @@ var consumerInjuries = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -1562,6 +1622,8 @@ var consumerInjuries = (function () {
 
     injuryLocationDropdown = buildInjuryLocationDropdown();
     injuryTypeDropdown = buildInjuryTypeDropdown();
+    injuryCauseDropdown = buildInjuryCauseDropdown();
+    riskOfInjuryDropdown = buildRiskOfInjuryDropdown();
     checkedByNurseCheckbox = buildCheckedByCheckbox();
     detailsInput = buildDetailsInput();
     treatmentInput = buildTreatmentInput();
@@ -1575,6 +1637,8 @@ var consumerInjuries = (function () {
 
     form.appendChild(injuryLocationDropdown);
     form.appendChild(injuryTypeDropdown);
+    form.appendChild(injuryCauseDropdown);
+    form.appendChild(riskOfInjuryDropdown);
     form.appendChild(checkedByNurseCheckbox);
     form.appendChild(detailsInput);
     form.appendChild(treatmentInput);
@@ -1615,9 +1679,7 @@ var consumerInjuries = (function () {
     var keys = Object.keys(injuryData[selectedConsumerId]);
     keys.forEach(key => {
       var data = injuryData[selectedConsumerId][key];
-      var filteredLocations = injuryLocations.filter(
-        iLoc => iLoc.injuryLocationId === data.injuryLocationId,
-      );
+      var filteredLocations = injuryLocations.filter(iLoc => iLoc.injuryLocationId === data.injuryLocationId);
       var filteredTypes = injuryTypes.filter(iType => iType.injuryTypeId === data.injuryTypeId);
       var injuryLocation = filteredLocations[0].injuryLocation;
       var injuryType = filteredTypes[0].injuryType;
@@ -1638,10 +1700,7 @@ var consumerInjuries = (function () {
     });
 
     reviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
         selectedInjuryId = event.target.id;
         setFormDataDefaults(injuryData[selectedConsumerId][selectedInjuryId]);
         showForm(true);
@@ -1710,8 +1769,7 @@ var consumerInjuries = (function () {
           dateChecked = dateChecked ? dateChecked.split(' ')[0] : null;
 
           if (dateChecked) {
-            injuryData[selectedConsumerId][d.itConsumerInjuryId].checkedDate =
-              UTIL.formatDateToIso(dateChecked);
+            injuryData[selectedConsumerId][d.itConsumerInjuryId].checkedDate = UTIL.formatDateToIso(dateChecked);
           }
         }
       });
@@ -1858,8 +1916,7 @@ var consumerIntervention = (function () {
   function deleteConsumerInterventionData() {
     if (!selectedInterventionId.includes('new')) {
       var deletedIntervention = interventionData[selectedConsumerId][selectedInterventionId];
-      if (!interventionDeleteData[selectedConsumerId])
-        interventionDeleteData[selectedConsumerId] = {};
+      if (!interventionDeleteData[selectedConsumerId]) interventionDeleteData[selectedConsumerId] = {};
       interventionDeleteData[selectedConsumerId][selectedInterventionId] = deletedIntervention;
     }
 
@@ -2003,8 +2060,7 @@ var consumerIntervention = (function () {
 
         if (!interventionData[selectedConsumerId][selectedInterventionId]) {
           var keys = Object.keys(interventionData[selectedConsumerId]);
-          selectedInterventionId =
-            keys.length === 0 ? `new${keys.length}` : `new${keys.length + 1}`;
+          selectedInterventionId = keys.length === 0 ? `new${keys.length}` : `new${keys.length + 1}`;
 
           interventionData[selectedConsumerId][selectedInterventionId] = {
             interventionType: '',
@@ -2017,30 +2073,17 @@ var consumerIntervention = (function () {
           };
         }
 
-        if (
-          tmpInterventionType ||
-          tmpStartTime ||
-          tmpEndTime ||
-          tmpTimeLength ||
-          tmpAversive ||
-          tmpNote
-        ) {
+        if (tmpInterventionType || tmpStartTime || tmpEndTime || tmpTimeLength || tmpAversive || tmpNote) {
           interventionData[selectedConsumerId][selectedInterventionId].updated = true;
         }
 
         if (tmpInterventionType)
-          interventionData[selectedConsumerId][selectedInterventionId].interventionType =
-            tmpInterventionType;
-        if (tmpStartTime)
-          interventionData[selectedConsumerId][selectedInterventionId].startTime = tmpStartTime;
-        if (tmpEndTime)
-          interventionData[selectedConsumerId][selectedInterventionId].stopTime = tmpEndTime;
-        if (tmpTimeLength)
-          interventionData[selectedConsumerId][selectedInterventionId].timeLength = tmpTimeLength;
-        if (tmpAversive)
-          interventionData[selectedConsumerId][selectedInterventionId].aversive = tmpAversive;
-        if (tmpNote)
-          interventionData[selectedConsumerId][selectedInterventionId].interventionNotes = tmpNote;
+          interventionData[selectedConsumerId][selectedInterventionId].interventionType = tmpInterventionType;
+        if (tmpStartTime) interventionData[selectedConsumerId][selectedInterventionId].startTime = tmpStartTime;
+        if (tmpEndTime) interventionData[selectedConsumerId][selectedInterventionId].stopTime = tmpEndTime;
+        if (tmpTimeLength) interventionData[selectedConsumerId][selectedInterventionId].timeLength = tmpTimeLength;
+        if (tmpAversive) interventionData[selectedConsumerId][selectedInterventionId].aversive = tmpAversive;
+        if (tmpNote) interventionData[selectedConsumerId][selectedInterventionId].interventionNotes = tmpNote;
 
         selectedInterventionId = undefined;
 
@@ -2185,8 +2228,7 @@ var consumerIntervention = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -2260,9 +2302,7 @@ var consumerIntervention = (function () {
     var keys = Object.keys(interventionData[selectedConsumerId]);
     keys.forEach(key => {
       var data = interventionData[selectedConsumerId][key];
-      var filteredInterventionTypes = interventionTypes.filter(
-        it => it.interventionTypeId === data.interventionType,
-      );
+      var filteredInterventionTypes = interventionTypes.filter(it => it.interventionTypeId === data.interventionType);
       var interventionType = filteredInterventionTypes[0].description;
       var timeLength = data.timeLength.split(':');
       timeLength = `${timeLength[0]}:${timeLength[1]}`;
@@ -2283,10 +2323,7 @@ var consumerIntervention = (function () {
     });
 
     reviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
         selectedInterventionId = event.target.id;
         setFormDataDefaults(interventionData[selectedConsumerId][selectedInterventionId]);
         showForm(true);
@@ -2433,9 +2470,7 @@ var consumerInvolvement = (function () {
           var includeInCount = 'Y';
           var involvementId = involvementTypes[0].involvementId;
           var locationId =
-            consumerLocationData[consumerId].length === 1
-              ? consumerLocationData[consumerId][0].value
-              : '';
+            consumerLocationData[consumerId].length === 1 ? consumerLocationData[consumerId][0].value : '';
 
           involvementsData[consumerId] = {
             includeInCount,
@@ -2707,8 +2742,7 @@ var consumerInvolvement = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -3011,18 +3045,12 @@ var consumerReporting = (function () {
         }
 
         if (tmpReportingCategoryId)
-          reportingData[selectedConsumerId][selectedReportId].reportingCategoryID =
-            tmpReportingCategoryId;
-        if (tmpReportedBy)
-          reportingData[selectedConsumerId][selectedReportId].reportBy = tmpReportedBy;
-        if (tmpReportedTo)
-          reportingData[selectedConsumerId][selectedReportId].reportTo = tmpReportedTo;
-        if (tmpReportMethod)
-          reportingData[selectedConsumerId][selectedReportId].reportMethod = tmpReportMethod;
-        if (tmpReportDate)
-          reportingData[selectedConsumerId][selectedReportId].dateReported = tmpReportDate;
-        if (tmpReportTime)
-          reportingData[selectedConsumerId][selectedReportId].timeReported = tmpReportTime;
+          reportingData[selectedConsumerId][selectedReportId].reportingCategoryID = tmpReportingCategoryId;
+        if (tmpReportedBy) reportingData[selectedConsumerId][selectedReportId].reportBy = tmpReportedBy;
+        if (tmpReportedTo) reportingData[selectedConsumerId][selectedReportId].reportTo = tmpReportedTo;
+        if (tmpReportMethod) reportingData[selectedConsumerId][selectedReportId].reportMethod = tmpReportMethod;
+        if (tmpReportDate) reportingData[selectedConsumerId][selectedReportId].dateReported = tmpReportDate;
+        if (tmpReportTime) reportingData[selectedConsumerId][selectedReportId].timeReported = tmpReportTime;
         if (tmpNote) reportingData[selectedConsumerId][selectedReportId].notes = tmpNote;
 
         selectedReportId = undefined;
@@ -3185,8 +3213,7 @@ var consumerReporting = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -3285,10 +3312,7 @@ var consumerReporting = (function () {
     });
 
     reviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
         selectedReportId = event.target.id;
         setFormDataDefaults(reportingData[selectedConsumerId][selectedReportId]);
         showForm(true);
@@ -3354,10 +3378,8 @@ var consumerReporting = (function () {
 
           // format dates
           if (reportingData[selectedConsumerId][d.itConsumerReportId].dateReported) {
-            var dateReported =
-              reportingData[selectedConsumerId][d.itConsumerReportId].dateReported.split(' ')[0];
-            reportingData[selectedConsumerId][d.itConsumerReportId].dateReported =
-              UTIL.formatDateToIso(dateReported);
+            var dateReported = reportingData[selectedConsumerId][d.itConsumerReportId].dateReported.split(' ')[0];
+            reportingData[selectedConsumerId][d.itConsumerReportId].dateReported = UTIL.formatDateToIso(dateReported);
           }
         }
       });
@@ -3580,10 +3602,7 @@ var consumerReview = (function () {
           reviewData[selectedConsumerId][selectedReviewId].reviewedBy = tmpReviewedBy;
         }
         const currentReviewedBy = reviewData[selectedConsumerId][selectedReviewId].reviewedBy;
-        if (
-          $.session.incidentTrackingReviewedBy &&
-          (!currentReviewedBy || currentReviewedBy === '')
-        ) {
+        if ($.session.incidentTrackingReviewedBy && (!currentReviewedBy || currentReviewedBy === '')) {
           reviewData[selectedConsumerId][selectedReviewId].reviewedBy = $.session.PeopleId;
         }
 
@@ -3698,8 +3717,7 @@ var consumerReview = (function () {
       style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
-      btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -3787,10 +3805,7 @@ var consumerReview = (function () {
     });
 
     reviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
         selectedReviewId = event.target.id;
         setFormDataDefaults(reviewData[selectedConsumerId][selectedReviewId]);
         showForm(true);
@@ -3856,11 +3871,558 @@ var consumerReview = (function () {
 
           // format dates
           if (reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate) {
-            var reviewDate =
-              reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate.split(' ')[0];
-            reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate =
-              UTIL.formatDateToIso(reviewDate);
+            var reviewDate = reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate.split(' ')[0];
+            reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate = UTIL.formatDateToIso(reviewDate);
           }
+        }
+      });
+    }
+
+    clearReviewTable();
+    populateReviewTable();
+  }
+
+  return {
+    build,
+    populate,
+    clearData,
+    deleteConsumerData,
+    getData: getDataForSave,
+    getDeleteData: getDataForDelete,
+  };
+})();
+const consumerBehavior = (function () {
+  // DOM
+  //---------------------
+  let section;
+  let behaviorHome;
+  let newBehaviorBtn;
+  let behaviorReviewTable;
+  //*form
+  let behaviorTypeDropdown;
+  let startTimeInput;
+  let endTimeInput;
+  let occurrencesInput;
+  let formButtons;
+  let deleteBtn;
+  let saveBtn;
+  let cancelBtn;
+  // DATA
+  //---------------------
+  let behaviorData; // save/update data
+  let behaviorDeleteData;
+  let behaviorTypes; // dropdown data
+  // Values
+  //---------------------
+  let selectedConsumerId;
+  let selectedBehaviorId;
+  //*form default values
+  let behaviorType;
+  let behaviorTypeId;
+  let startTime;
+  let endTime;
+  let occurrences;
+
+  let isEdit;
+  let formReadOnly;
+
+  function getDataForSave() {
+    return behaviorData;
+  }
+  function getDataForDelete() {
+    return behaviorDeleteData;
+  }
+  function clearData() {
+    behaviorData = undefined;
+    behaviorDeleteData = undefined;
+    selectedConsumerId = undefined;
+    selectedBehaviorId = undefined;
+
+    clearFormDataDefaults();
+    clearReviewTable();
+  }
+  function deleteConsumerData(consumerId) {
+    // deletes all follow ups
+    if (behaviorData[consumerId]) {
+      var { [consumerId]: removedConsumerData, ...newBehaviorData } = behaviorData;
+      behaviorData = newBehaviorData;
+
+      if (!behaviorDeleteData[consumerId]) {
+        behaviorDeleteData[consumerId] = removedConsumerData;
+      }
+    }
+  }
+  function deleteConsumerBehaviorData() {
+    if (!selectedBehaviorId.includes('new')) {
+      var deletedBehavior = behaviorData[selectedConsumerId][selectedBehaviorId];
+      if (!behaviorDeleteData[selectedConsumerId]) behaviorDeleteData[selectedConsumerId] = {};
+      behaviorDeleteData[selectedConsumerId][selectedBehaviorId] = deletedBehavior;
+    }
+
+    delete behaviorData[selectedConsumerId][selectedBehaviorId];
+
+    selectedBehaviorId = undefined;
+    var form = section.querySelector('.behaviorForm');
+    section.removeChild(form);
+    behaviorHome.classList.remove('hidden');
+    consumerSubSections.showBackBtn();
+    clearFormDataDefaults();
+    populateReviewTable();
+  }
+  function formatTime(dirtyTime) {
+    dirtyTime.replace('-', '');
+    const splitTime = dirtyTime.split(':');
+    const hours = splitTime[0].length === 1 ? `0${splitTime[0]}` : splitTime[0];
+    const minutes = splitTime[1].length === 1 ? `0${splitTime[1]}` : splitTime[1];
+    return `${hours}:${minutes}`;
+  }
+  function getTimeLength(start, end) {
+    if (!start || !end) return '';
+    if (start.includes('/')) {
+      start = start.split(' ')[1];
+    }
+    let totalTime = UTIL.calculateTotalHours(start, end, 'hh:mm');
+    totalTime = formatTime(totalTime);
+    return totalTime;
+  }
+  function parseStartTime(dirtyStart) {
+    const splittime = dirtyStart.split(' ');
+    const time = `${splittime[1]} ${splittime[2]}`;
+    return UTIL.convertToMilitary(time);
+  }
+
+  function getDropdownData() {
+    incidentTrackingAjax.getitConsumerBehaviorTypes(function (res) {
+      behaviorTypes = res;
+    });
+  }
+
+  // Form
+  //-----------------------------------------------
+  function showDeleteWarning() {
+    var deleteWarningPopup = POPUP.build({});
+
+    var message = document.createElement('p');
+    message.innerHTML = 'Are you sure you want to delete?';
+
+    var btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    var yesBtn = button.build({
+      text: 'Yes',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
+        deleteConsumerBehaviorData();
+        POPUP.hide(deleteWarningPopup);
+        incidentCard.checkEntireIncidentCardforErrors();
+      },
+    });
+    var noBtn = button.build({
+      text: 'No',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
+        POPUP.hide(deleteWarningPopup);
+      },
+    });
+
+    btnWrap.appendChild(yesBtn);
+    btnWrap.appendChild(noBtn);
+
+    deleteWarningPopup.appendChild(message);
+    deleteWarningPopup.appendChild(btnWrap);
+
+    POPUP.show(deleteWarningPopup);
+  }
+  function checkRequiredFields() {
+    var hasErrors = [].slice.call(section.querySelectorAll('.error:not(button)'));
+
+    if (hasErrors.length === 0) {
+      saveBtn.classList.remove('disabled');
+    } else {
+      saveBtn.classList.add('disabled');
+    }
+  }
+  function clearFormDataDefaults() {
+    behaviorType = undefined;
+    behaviorTypeId = undefined;
+    startTime = undefined;
+    endTime = undefined;
+    occurrences = undefined;
+  }
+  function setFormDataDefaults(formData) {
+    if (formData) {
+      behaviorType = formData.behaviorType;
+      behaviorTypeId = formData.behaviorTypeId;
+      startTime = formData.startTime;
+      endTime = formData.endTime;
+      occurrences = formData.occurrences;
+    }
+  }
+  // events
+  function setupFormEvents() {
+    let tmpBehaviorTypeId = null;
+    let tmpStartTime = null;
+    let tmpEndTime = null;
+    let tmpOccurrences = null;
+
+    behaviorTypeDropdown.addEventListener('change', e => {
+      if (!e.target.value || e.target.value === '%') {
+        behaviorTypeDropdown.classList.add('error');
+      } else {
+        behaviorTypeDropdown.classList.remove('error');
+      }
+
+      tmpBehaviorTypeId = e.target.value;
+      checkRequiredFields();
+    });
+    startTimeInput.addEventListener('change', e => {
+      tmpStartTime = e.target.value;
+    });
+    endTimeInput.addEventListener('change', e => {
+      tmpEndTime = e.target.value;
+    });
+    occurrencesInput.addEventListener('keyup', e => {
+      if (e.target.value < 0 || e.target.value.includes('-')) {
+        occurrencesInput.classList.add('error');
+      } else {
+        occurrencesInput.classList.remove('error');
+      }
+      checkRequiredFields();
+    });
+    occurrencesInput.addEventListener('change', e => {
+      tmpOccurrences = e.target.value;
+    });
+
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', e => {
+        showDeleteWarning();
+      });
+    }
+
+    formButtons.addEventListener('click', e => {
+      if (e.target === saveBtn) {
+        if (e.target.classList.contains('disabled')) return;
+
+        if (!behaviorData[selectedConsumerId]) {
+          behaviorData[selectedConsumerId] = {};
+        }
+
+        if (!behaviorData[selectedConsumerId][selectedBehaviorId]) {
+          var keys = Object.keys(behaviorData[selectedConsumerId]);
+          selectedBehaviorId = keys.length === 0 ? `new${keys.length}` : `new${keys.length + 1}`;
+
+          behaviorData[selectedConsumerId][selectedBehaviorId] = {
+            behaviorTypeId: '',
+            startTime: '',
+            endTime: '',
+            occurrences: '',
+            updated: '',
+          };
+        }
+
+        if (tmpBehaviorTypeId !== null || tmpStartTime !== null || tmpEndTime !== null || tmpOccurrences !== null) {
+          behaviorData[selectedConsumerId][selectedBehaviorId].updated = true;
+        }
+
+        if (tmpBehaviorTypeId !== null) {
+          behaviorData[selectedConsumerId][selectedBehaviorId].behaviorTypeId = tmpBehaviorTypeId;
+        }
+        if (tmpStartTime !== null) {
+          behaviorData[selectedConsumerId][selectedBehaviorId].startTime = tmpStartTime;
+        }
+        if (tmpEndTime !== null) {
+          behaviorData[selectedConsumerId][selectedBehaviorId].endTime = tmpEndTime;
+        }
+        if (tmpOccurrences !== null) {
+          behaviorData[selectedConsumerId][selectedBehaviorId].occurrences = tmpOccurrences;
+        }
+
+        selectedBehaviorId = undefined;
+
+        var form = section.querySelector('.behaviorForm');
+        section.removeChild(form);
+        behaviorHome.classList.remove('hidden');
+        consumerSubSections.showBackBtn();
+        clearFormDataDefaults();
+        populateReviewTable();
+        incidentCard.checkEntireIncidentCardforErrors();
+        return;
+      }
+
+      if (e.target === cancelBtn) {
+        selectedBehaviorId = undefined;
+        var form = section.querySelector('.behaviorForm');
+        section.removeChild(form);
+        behaviorHome.classList.remove('hidden');
+        consumerSubSections.showBackBtn();
+        clearFormDataDefaults();
+        return;
+      }
+    });
+  }
+  // build
+  function buildBehaviorTypeDropdown() {
+    var opts = {
+      label: 'Behavior Type',
+      style: 'secondary',
+    };
+
+    if (isEdit && formReadOnly) {
+      opts.readonly = true;
+    }
+
+    var behaviortypeDrop = dropdown.build(opts);
+
+    var data = behaviorTypes.map(fu => {
+      return {
+        value: fu.itBehaviorTypeId,
+        text: fu.behaviorTypeName,
+      };
+    });
+
+    data.sort((a, b) => {
+      return a.text.toLowerCase() < b.text.toLowerCase() ? -1 : 1;
+    });
+
+    data.unshift({ value: '%', text: '' });
+
+    dropdown.populate(behaviortypeDrop, data, behaviorTypeId);
+
+    if (!behaviorTypeId || behaviorTypeId === '%') {
+      behaviortypeDrop.classList.add('error');
+    } else {
+      behaviortypeDrop.classList.remove('error');
+    }
+
+    return behaviortypeDrop;
+  }
+  function buildStartTimeInput() {
+    var opts = {
+      label: 'Start Time',
+      type: 'time',
+      style: 'secondary',
+      value: startTime,
+    };
+
+    if (isEdit && formReadOnly) {
+      opts.readonly = true;
+    }
+
+    var startTimeInput = input.build(opts);
+
+    return startTimeInput;
+  }
+  function buildEndTimeInput() {
+    var opts = {
+      label: 'End Time',
+      type: 'time',
+      style: 'secondary',
+      value: endTime,
+    };
+
+    if (isEdit && formReadOnly) {
+      opts.readonly = true;
+    }
+
+    var endTimeInput = input.build(opts);
+
+    return endTimeInput;
+  }
+  function buildOccurrencesInput() {
+    var opts = {
+      label: 'No. of Occurrences',
+      type: 'number',
+      style: 'secondary',
+      value: occurrences,
+      attributes: [
+        {
+          key: 'min',
+          value: 1,
+        },
+        {
+          key: 'step',
+          value: 1,
+        },
+      ],
+    };
+
+    if (isEdit && formReadOnly) {
+      opts.readonly = true;
+    }
+
+    var occurrencesInput = input.build(opts);
+
+    return occurrencesInput;
+  }
+
+  function buildFormBtns() {
+    var btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+
+    saveBtn = button.build({
+      text: 'Done',
+      type: 'contained',
+      style: 'secondary',
+      classNames: 'disabled',
+    });
+    cancelBtn = button.build({
+      text: 'Cancel',
+      type: 'outlined',
+      style: 'secondary',
+    });
+
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
+    btnWrap.appendChild(cancelBtn);
+
+    return btnWrap;
+  }
+  function buildDeleteBtn() {
+    var btn = button.build({
+      text: 'Delete',
+      type: 'contained',
+      style: 'secondary',
+      classNames: 'error',
+    });
+
+    return btn;
+  }
+  function buildNewBehaviorForm() {
+    let form = document.createElement('div');
+    form.classList.add('behaviorForm');
+
+    behaviorTypeDropdown = buildBehaviorTypeDropdown();
+    startTimeInput = buildStartTimeInput();
+    endTimeInput = buildEndTimeInput();
+    occurrencesInput = buildOccurrencesInput();
+    formButtons = buildFormBtns();
+
+    if (isEdit && $.session.incidentTrackingUpdate && $.session.incidentTrackingDelete) {
+      deleteBtn = buildDeleteBtn();
+      form.appendChild(deleteBtn);
+    }
+
+    form.appendChild(behaviorTypeDropdown);
+    form.appendChild(startTimeInput);
+    form.appendChild(endTimeInput);
+    form.appendChild(occurrencesInput);
+    form.appendChild(formButtons);
+
+    return form;
+  }
+  // show
+  function showForm(isedit) {
+    isEdit = isedit;
+
+    consumerSubSections.hideBackBtn();
+
+    behaviorHome.classList.add('hidden');
+
+    behaviorForm = buildNewBehaviorForm();
+    section.appendChild(behaviorForm);
+
+    setupFormEvents();
+    checkRequiredFields();
+  }
+
+  // Review Table
+  //-----------------------------------------------
+  function clearReviewTable() {
+    var tableBody = behaviorReviewTable.querySelector('.table__body');
+    tableBody.innerHTML = '';
+  }
+  function populateReviewTable() {
+    if (!behaviorData) return;
+    if (!behaviorData[selectedConsumerId]) return;
+
+    let tableData = [];
+
+    let keys = Object.keys(behaviorData[selectedConsumerId]);
+    keys.forEach(key => {
+      let behaviorDATA = behaviorData[selectedConsumerId][key];
+
+      let filterBehaviorTypes = behaviorTypes.filter(type => type.itBehaviorTypeId === behaviorDATA.behaviorTypeId);
+      let behaviorType = filterBehaviorTypes[0] ? filterBehaviorTypes[0].behaviorTypeName : '';
+      let timeLength = getTimeLength(behaviorDATA.startTime, behaviorDATA.endTime);
+      let occurrencesNum = behaviorDATA.occurrences;
+
+      tableData.push({
+        id: key,
+        values: [behaviorType, timeLength, occurrencesNum],
+      });
+    });
+
+    table.populate(behaviorReviewTable, tableData);
+  }
+  function buildReviewTable() {
+    var reviewTable = table.build({
+      tableId: 'consumerBehaviorTable',
+      columnHeadings: ['Behavior Type', 'Time Length', 'Occurrences'],
+    });
+
+    reviewTable.addEventListener('click', event => {
+      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
+        selectedBehaviorId = event.target.id;
+        setFormDataDefaults(behaviorData[selectedConsumerId][selectedBehaviorId]);
+        showForm(true);
+      }
+    });
+
+    return reviewTable;
+  }
+
+  // Home Page
+  //-----------------------------------------------
+  function init() {
+    formReadOnly = $.session.incidentTrackingUpdate === true ? false : true;
+
+    behaviorData = {};
+    behaviorDeleteData = {};
+    getDropdownData();
+  }
+  function buildAddNewBehaviorBtn() {
+    var btn = button.build({
+      text: 'Add New Behavior Detail',
+      type: 'contained',
+      style: 'secondary',
+    });
+    btn.addEventListener('click', () => {
+      showForm(false);
+    });
+
+    return btn;
+  }
+  function build() {
+    init();
+
+    section = document.createElement('div');
+    section.classList.add('consumerSections__section', 'behaviorSection');
+
+    behaviorHome = document.createElement('div');
+    behaviorHome.classList.add('consumerSections__section__home');
+
+    newBehaviorBtn = buildAddNewBehaviorBtn();
+    behaviorReviewTable = buildReviewTable();
+
+    if ($.session.incidentTrackingUpdate) behaviorHome.appendChild(newBehaviorBtn);
+    behaviorHome.appendChild(behaviorReviewTable);
+
+    section.appendChild(behaviorHome);
+
+    return section;
+  }
+  function populate(data, selectedConsumerID) {
+    selectedConsumerId = selectedConsumerID;
+
+    if (data) {
+      data.forEach(d => {
+        if (!behaviorData[selectedConsumerId]) {
+          behaviorData[selectedConsumerId] = {};
+        }
+
+        if (!behaviorData[selectedConsumerId][d.itConsumerBehaviorId]) {
+          behaviorData[selectedConsumerId][d.itConsumerBehaviorId] = d;
+          behaviorData[selectedConsumerId][d.itConsumerBehaviorId].updated = false;
         }
       });
     }

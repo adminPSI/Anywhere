@@ -51,9 +51,20 @@ const TRANS_inspectionReview = (function () {
             columnHeadings: ["Vehicle Number", "Date", "Time", "Last Update", "Route"],
         })
 
+        // Set the data type for each header, for sorting purposes
+        const headers = inspectionTable.querySelectorAll('.header div');
+        headers[0].setAttribute('data-type', 'string'); // Vehicle Number
+        headers[1].setAttribute('data-type', 'date'); // Date
+        headers[2].setAttribute('data-type', 'date'); //Time
+        headers[3].setAttribute('data-type', 'string'); // Last Update 
+        headers[4].setAttribute('data-type', 'string'); // Route
+
         DOM.ACTIONCENTER.appendChild(backButton)
         DOM.ACTIONCENTER.appendChild(filteredByDisplay)
         DOM.ACTIONCENTER.appendChild(inspectionTable)
+
+        // Call function to allow table sorting by clicking on a header.
+        table.sortTableByHeader(inspectionTable);
 
         getData(filterOpts)
     }

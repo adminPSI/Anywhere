@@ -140,6 +140,7 @@ const MODULE_MENU = (function () {
         document.getElementById('resetButton').removeAttribute("title");
         document.getElementById('accountButton').removeAttribute("title");
         document.getElementById('editaccountButton').removeAttribute("title");
+        document.getElementById('fSSButton').removeAttribute("title");
     }
 
     function addAttr() {
@@ -165,6 +166,7 @@ const MODULE_MENU = (function () {
         document.getElementById('resetButton').setAttribute("title", "Reset Passwords");
         document.getElementById('accountButton').setAttribute("title", "Account Register");
         document.getElementById('editaccountButton').setAttribute("title", "Edit Account");
+        document.getElementById('fSSButton').setAttribute("title", "FSS");
     }
 
     return { init };

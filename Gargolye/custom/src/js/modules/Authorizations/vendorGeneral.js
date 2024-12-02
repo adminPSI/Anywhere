@@ -30,6 +30,14 @@ const vendorGeneral = (() => {
             readonly: true,
             value: vendorEntriesById.getVendorEntriesByIdResult[0].name,
         });
+        dbaInput = input.build({
+            id: 'dbaInput',
+            type: 'text',
+            label: 'Doing Business As',
+            style: 'secondary',
+            readonly: true,
+            value: vendorEntriesById.getVendorEntriesByIdResult[0].DBA,
+        });
         contactNameInput = input.build({
             id: 'contactNameInput',
             type: 'text',
@@ -277,6 +285,8 @@ const vendorGeneral = (() => {
 
         nameInput.classList.add('marginTop2Per');
         addNewCardBody.appendChild(nameInput);
+        dbaInput.classList.add('marginTop2Per');
+        addNewCardBody.appendChild(dbaInput);
 
         var dropWrap = document.createElement('div');
         dropWrap.classList.add('vendorDTWrap');

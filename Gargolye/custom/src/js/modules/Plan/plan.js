@@ -136,14 +136,13 @@ const plan = (function () {
     //---------------------------------------------
     async function handleActionNavEvent(target) {
         const targetAction = target.dataset.actionNav;
-        
+
         switch (targetAction) {
-            case 'miniRosterDone': {                                
+            case 'miniRosterDone': {
                 DOM.scrollToTopOfPage();
                 DOM.clearActionCenter();
                 PROGRESS.init();
                 PROGRESS.SPINNER.show('Gathering Plans...');
-                await planAjax.checkForSalesForce();  
                 selectedConsumer = roster2.getActiveConsumers()[0];
                 if ($.session.applicationName === 'Advisor') {
                     planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
@@ -2045,8 +2044,9 @@ const plan = (function () {
                     finalizationResults = await assessmentAjax.finalizationActions({
                         token: $.session.Token,
                         planAttachmentIds: getAttachmentIds(selectedAttachmentsPlan),
-                        wfAttachmentIds: getAttachmentIds(selectedAttachmentsSignature),
-                        sigAttachmentIds: getAttachmentIds(selectedAttachmentsWorkflow),
+                        wfAttachmentIds: getAttachmentIds(selectedAttachmentsWorkflow),
+                        sigAttachmentIds: getAttachmentIds(selectedAttachmentsSignature), 
+                        wfAttachmentStepIds: getwfstepdocIds(selectedAttachmentsWorkflow),
                         userId: $.session.UserId,
                         assessmentID: planId,
                         peopleId: selectedConsumer.id,
@@ -2060,7 +2060,7 @@ const plan = (function () {
                         include: includeInAssessment,
                         versionID: '1',
                     });
-                    
+
                     spinner.remove();
                     actionBtn.style.display = 'block';
 
@@ -3245,8 +3245,10 @@ const plan = (function () {
             style: 'secondary',
             type: 'contained',
             classNames: !$.session.planUpdate ? ['disabled'] : ['newPlanBtn'],
-            callback: () => {
-                csAssignCaseload.showAssignCaseLoadPopup();
+            callback: async () => {
+                PROGRESS__BTN.SPINNER.show(assignCaseLoadBtn);
+                await csAssignCaseload.showAssignCaseLoadPopup();
+                PROGRESS__BTN.SPINNER.hide(assignCaseLoadBtn);
             },
         });
     }
@@ -3301,6 +3303,10 @@ const plan = (function () {
 
     function buildConsumerCard() {
         selectedConsumer.card.classList.remove('highlighted');
+
+        const saleforceIdClass = selectedConsumer.card.querySelector('.saleforce_Id');
+        if (saleforceIdClass != null)
+            saleforceIdClass.style.display = 'block';
 
         const wrap = document.createElement('div');
         wrap.classList.add('planConsumerCard');
@@ -3433,12 +3439,13 @@ const plan = (function () {
         landingPage.appendChild(overviewTable);
     }
 
-    function init() {
+    async function init() {
         setActiveModuleAttribute('plan');
         DOM.clearActionCenter();
         roster2.showMiniRoster();
+        await planAjax.checkForSalesForce();
         PROGRESS.init();
-        PROGRESS.SPINNER.show('Gathering Plans...');        
+        PROGRESS.SPINNER.show('Gathering Plans...');
     }
 
     return {

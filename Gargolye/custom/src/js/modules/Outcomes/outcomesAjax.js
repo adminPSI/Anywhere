@@ -1,4 +1,4 @@
-var outcomesAjax = (function () {
+const outcomesAjax = (function () {
     function deleteGoal(activityId, consumerId, goalDate, callback) {
         $.ajax({
             type: 'POST',
@@ -16,13 +16,9 @@ var outcomesAjax = (function () {
             dataType: 'json',
             success: function (response, status, xhr) {
                 var res = JSON.stringify(response);
-                //getGoals($.userId, goalId + '-' + objectiveId);
                 callback();
-                // getGoals(consumerId, goalDate);
-                // var list = $.pages.rosterconsumerlist.split('</consumer>');
-                // getRemainingDailyGoals(list);
             },
-            error: function (xhr, status, error) { },
+      error: function (xhr, status, error) {},
         });
     }
     function getGoals(consumerId, goalDate, callback) {
@@ -37,14 +33,7 @@ var outcomesAjax = (function () {
                 '/' +
                 $.webServer.serviceName +
                 '/getGoalsByDateNew/',
-            data:
-                '{"token":"' +
-                $.session.Token +
-                '", "consumerId":"' +
-                consumerId +
-                '", "goalDate":"' +
-                goalDate +
-                '"}',
+            data: '{"token":"' + $.session.Token + '", "consumerId":"' + consumerId + '", "goalDate":"' + goalDate + '"}',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (response, status, xhr) {
@@ -52,6 +41,33 @@ var outcomesAjax = (function () {
                 callback(res);
             },
         });
+    }
+    async function getGoalsAsync(consumerId, goalDate) {
+        const retrieveData = {
+            consumerId,
+            goalDate,
+            token: $.session.Token,
+        };
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getGoalsByDateNew/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.getGoalsByDateNewResult;
+        } catch (error) {
+            console.log(error.responseText);
+        }
     }
     function getGoalSpecificLocationInfo(activityId, goalId, objId, callback) {
         $.ajax({
@@ -317,9 +333,7 @@ var outcomesAjax = (function () {
                 if (!response.saveGoalResult.match('Error')) {
                     callback(res);
                 } else {
-                    alert(
-                        'Outcome could not be saved. Please verify your start time, end time, and all other data.',
-                    );
+                    alert('Outcome could not be saved. Please verify your start time, end time, and all other data.');
                 }
             },
         });
@@ -463,7 +477,7 @@ var outcomesAjax = (function () {
         }
     }
 
-    async function getOutcomeTypeDropDownAsync() {
+    async function getOutcomeTypeDropDownAsync(selectedConsumer, effectiveDateStart) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -478,7 +492,8 @@ var outcomesAjax = (function () {
                     '/getOutcomeTypeDropDown/',
                 data: JSON.stringify({
                     token: $.session.Token,
-
+                    consumerId: selectedConsumer.id,
+                    effectiveDateStart,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -489,7 +504,7 @@ var outcomesAjax = (function () {
         }
     }
 
-    async function getOutcomeServiceDropDownAsync() {
+    async function getOutcomeServiceDropDownAsync(selectedConsumerId, startDate) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -504,7 +519,8 @@ var outcomesAjax = (function () {
                     '/getOutcomeServiceDropDown/',
                 data: JSON.stringify({
                     token: $.session.Token,
-
+                    consumerId: selectedConsumerId,
+                    effectiveDateStart: startDate,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -528,12 +544,7 @@ var outcomesAjax = (function () {
                     '/' +
                     $.webServer.serviceName +
                     '/getGoalEntriesById/',
-                data:
-                    '{"token":"' +
-                    $.session.Token +
-                    '", "goalId":"' +
-                    goalId +
-                    '"}',
+                data: '{"token":"' + $.session.Token + '", "goalId":"' + goalId + '"}',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
@@ -556,12 +567,7 @@ var outcomesAjax = (function () {
                     '/' +
                     $.webServer.serviceName +
                     '/getObjectiveEntriesById/',
-                data:
-                    '{"token":"' +
-                    $.session.Token +
-                    '", "objectiveId":"' +
-                    objectiveId +
-                    '"}',
+                data: '{"token":"' + $.session.Token + '", "objectiveId":"' + objectiveId + '"}',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
@@ -598,7 +604,14 @@ var outcomesAjax = (function () {
     }
 
     async function insertOutcomeInfoAsync(
-        startDate, endDate, outcomeType, outcomeStatement, userID, goalId, consumerId, location
+        startDate,
+        endDate,
+        outcomeType,
+        outcomeStatement,
+        userID,
+        goalId,
+        consumerId,
+        location,
     ) {
         try {
             const result = await $.ajax({
@@ -621,7 +634,7 @@ var outcomesAjax = (function () {
                     userID: userID,
                     goalId: goalId,
                     consumerId: consumerId,
-                    location: location
+                    location: location,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -633,7 +646,21 @@ var outcomesAjax = (function () {
     }
 
     async function insertOutcomeServiceInfoAsync(
-        startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId, location, duration
+        startDate,
+        endDate,
+        outcomeType,
+        servicesStatement,
+        ServiceType,
+        method,
+        success,
+        frequencyModifier,
+        frequency,
+        frequencyPeriod,
+        userID,
+        objectiveId,
+        consumerId,
+        location,
+        duration,
     ) {
         try {
             const result = await $.ajax({
@@ -663,7 +690,7 @@ var outcomesAjax = (function () {
                     objectiveId: objectiveId,
                     consumerId: consumerId,
                     location: location,
-                    duration: duration
+                    duration: duration,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -689,8 +716,311 @@ var outcomesAjax = (function () {
                     '/getLocationDropDown/',
                 data: JSON.stringify({
                     token: $.session.Token,
-
                 }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    // Review
+    async function getReviewTableData(retrieveData) {
+        //consumerId, objectiveDate
+        //4365, '2024/07/01'
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getOutcomesReviewGrid/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    ...retrieveData,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+
+            return result.getOutcomesReviewGridResult;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+    async function getReviewTableDataSecondary(retrieveData) {
+        //consumerId, startDate, endDate, objectiveIdList
+        //4365, '2024/07/01', '2024/10/01',
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getOutcomesReviewGridSecondary/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    ...retrieveData,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+
+            return result.getOutcomesReviewGridSecondaryResult;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+    async function getAllGoalTypes() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getAllGoalTypes/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+
+            return result.getAllGoalTypesResult;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+    async function addReviewNote(data) {
+        // @token
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/updateReviewNote/',
+                data: JSON.stringify({token: $.session.Token, ...data}),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+
+            return result.updateReviewNoteResult;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+    //
+
+    async function addOutcomePlan(retrieveData) {
+        try {
+            var binary = '';
+            var bytes = new Uint8Array(retrieveData.attachment);
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            let abString = window.btoa(binary);
+            retrieveData.attachment = abString;
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/addOutcomePlan/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.addOutcomePlanResult;
+        } catch (error) {
+            console.log(error.responseText);
+        }
+    }
+
+    async function getPlanHistorybyConsumer(selectedConsumerId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getPlanHistorybyConsumer/',
+                data: '{"token":"' + $.session.Token + '", "consumerId":"' + selectedConsumerId + '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getPlanbyConsumerHistory(selectedConsumerId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getPlanbyConsumerHistory/',
+                data: '{"token":"' + $.session.Token + '", "consumerId":"' + selectedConsumerId + '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function addOutcomePlanLater(retrieveData) {
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/addOutcomePlanLater/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.addOutcomePlanLaterResult;
+        } catch (error) {
+            console.log(error.responseText);
+        }
+    }
+
+    function addOutcomePlanNow(selectedConsumerId, isViewedAvailableOSPlan) {
+        data = {
+            token: $.session.Token,
+            consumerId: selectedConsumerId,
+            isViewedAvailableOSPlan: isViewedAvailableOSPlan,
+        };
+        var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/addOutcomePlanNow/`;
+        var successFunction = function (resp) {
+            var res = JSON.stringify(response);
+        };
+
+        var form = document.createElement('form');
+        form.setAttribute('action', action);
+        form.setAttribute('method', 'POST');
+        form.setAttribute('target', '_blank');
+        form.setAttribute('enctype', 'application/json');
+        form.setAttribute('success', successFunction);
+        var tokenInput = document.createElement('input');
+        tokenInput.setAttribute('name', 'token');
+        tokenInput.setAttribute('value', $.session.Token);
+        tokenInput.id = 'token';
+        var attachmentInput = document.createElement('input');
+        attachmentInput.setAttribute('name', 'consumerId');
+        attachmentInput.setAttribute('value', selectedConsumerId);
+        attachmentInput.id = 'consumerId';
+        var isViewedAvailableOSPlanInput = document.createElement('input');
+        isViewedAvailableOSPlanInput.setAttribute('name', 'isViewedAvailableOSPlan');
+        isViewedAvailableOSPlanInput.setAttribute('value', isViewedAvailableOSPlan);
+        isViewedAvailableOSPlanInput.id = 'isViewedAvailableOSPlan';
+
+        form.appendChild(tokenInput);
+        form.appendChild(attachmentInput);
+        form.appendChild(isViewedAvailableOSPlanInput);
+        form.style.position = 'absolute';
+        form.style.opacity = '0';
+        document.body.appendChild(form);
+
+        form.submit();
+        form.remove();
+    }
+
+    async function isNewBtnDisabledByPlanHistory(selectedConsumerId, goalTypeID, ObjectiveID) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/isNewBtnDisabledByPlanHistory/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "consumerId":"' +
+                    selectedConsumerId +
+                    '", "goalTypeID":"' +
+                    goalTypeID +
+                    '", "ObjectiveID":"' +
+                    ObjectiveID +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function isViewPlabBtnDisabled(selectedConsumerId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/isViewPlabBtnDisabled/',
+                data: '{"token":"' + $.session.Token + '", "consumerId":"' + selectedConsumerId + '"}',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
@@ -703,6 +1033,7 @@ var outcomesAjax = (function () {
     return {
         deleteGoal,
         getGoals,
+        getGoalsAsync,
         getGoalSpecificLocationInfo,
         getIdsWithGoals,
         getUserIdsWithGoalsByDate,
@@ -728,5 +1059,18 @@ var outcomesAjax = (function () {
         insertOutcomeInfoAsync,
         insertOutcomeServiceInfoAsync,
         getLocationDropDownAsync,
+        // Review
+        getReviewTableData,
+        getReviewTableDataSecondary,
+        getAllGoalTypes,
+        addReviewNote,
+        //
+        addOutcomePlan,
+        getPlanHistorybyConsumer,
+        addOutcomePlanLater,
+        addOutcomePlanNow,
+        isNewBtnDisabledByPlanHistory,
+        isViewPlabBtnDisabled,
+        getPlanbyConsumerHistory,
     };
 })();
