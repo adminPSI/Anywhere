@@ -862,6 +862,8 @@ const OOD = (() => {
 
     async function generateAndTrackFormProgress(formNumber) {
         // Prepare data for form generation
+        if (formNumber == '3') createFilterValues.referenceNumber = 'OOD Form 6';
+        
         let data = {
             referenceNumber: createFilterValues.referenceNumber,
             peopleId: selectedConsumerIds[0],
@@ -874,6 +876,9 @@ const OOD = (() => {
     
         try {
             switch (formNumber) {
+                case 3:
+                    sentStatus = await OODAjax.generateForm6(data);
+                    break;
                 case 4:
                     sentStatus = await OODAjax.generateForm4(data);
                     break;
@@ -1004,12 +1009,14 @@ const OOD = (() => {
         popup.setAttribute('data-popup', 'true');
         popup.setAttribute('overflow-y', 'unset: !importatnt;');
 
+        const form3Btn = buildIndividualFormBtn('Form 3 - Intake Acknowledgement', 3);
         const form4Btn = buildIndividualFormBtn('Form 4 - Monthly Job & Site Development', 4);
         const form6Btn = buildIndividualFormBtn('Form 6 - Tier1 and JD Plan', 6);
         const form8Btn = buildIndividualFormBtn('Form 8 - Work Activities and Assessment', 8);
         const form10Btn = buildIndividualFormBtn('Form 10 - Transportation', 10);
         const form16Btn = buildIndividualFormBtn('Form 16 - Summer Youth Experience', 16);
 
+        popup.appendChild(form3Btn);
         popup.appendChild(form4Btn);
         popup.appendChild(form6Btn);
         popup.appendChild(form8Btn);
@@ -1344,7 +1351,7 @@ const OOD = (() => {
        } else {
         dropdown.populate('createreferenceNumbersDropdown', data, filterValues.referenceNumber);
         createFilterValues.referenceNumber = filterValues.referenceNumber
-        checkCreatePopupRequiredFields();
+        checkCreatePopupRequiredFields(formNumber);
        }
         
     }
@@ -1525,7 +1532,7 @@ const OOD = (() => {
 
         // build popup
   
-            createfilterPopup.appendChild(employeeDropdown);
+           if (formNumber != '3') createfilterPopup.appendChild(employeeDropdown);
    
             createfilterPopup.appendChild(createServiceDateStartInput);
      
@@ -1547,7 +1554,7 @@ const OOD = (() => {
             formsPopup.remove();
 
         POPUP.show(createfilterPopup);
-        checkCreatePopupRequiredFields();
+        checkCreatePopupRequiredFields(formNumber);
 
     }
 
@@ -1587,13 +1594,14 @@ const OOD = (() => {
      
         createreferenceNumbersDropdown.addEventListener('change', event => {
             createFilterValues.referenceNumber = event.target.value;
-            checkCreatePopupRequiredFields();
+            checkCreatePopupRequiredFields(formNumber);
         });
         
     }
 
-    function checkCreatePopupRequiredFields() {
+    function checkCreatePopupRequiredFields(formNumber) {
        // var createreferenceNumbersDropdown = document.querySelector('#createreferenceNumbersDropdown');
+    if (formNumber != '3') {
        let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
         if (createreferenceNumbersDropDown.value === '' || createreferenceNumbersDropDown.value === '%') { 
             createreferenceNumbersDropDown.parentElement.classList.add('error');
@@ -1603,7 +1611,7 @@ const OOD = (() => {
             createreferenceNumbersDropDown.parentElement.classList.remove('error');
             createfilterPopupCreateBTN.classList.remove('disabled');
         }
-
+     }
     }
 
     function buildEmploymentGoalPopUp() {
