@@ -2594,6 +2594,21 @@ namespace Anywhere.Data
             }
         }
 
+        public string updateConnectWithPerson(string token, string connectType)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateConnectWithPerson" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Settings_updateConnectWithPerson('" + token + "', '" + connectType + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("604", ex.Message + "ANYW_Settings_updateConnectWithPerson('" + token + "', '" + connectType + "')");
+                return "604: error updateConnectWithPerson";
+            }
+        }
+
         public string updateConsumerNotesChecklistDaysBack(string token, string updatedChecklistDays)
         {
             if (tokenValidator(token) == false) return null;

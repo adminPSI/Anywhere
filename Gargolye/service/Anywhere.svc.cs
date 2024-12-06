@@ -1067,6 +1067,11 @@ namespace Anywhere
             return dg.updateConsumerNotesDaysBack(token, updatedReviewDays);
         }
 
+        public string updateConnectWithPerson(string token, string connectType)
+        {
+            return dg.updateConnectWithPerson(token, connectType);
+        }
+
         public string updateConsumerNotesChecklistDaysBack(string token, string updatedChecklistDays)
         {
             return dg.updateConsumerNotesChecklistDaysBack(token, updatedChecklistDays);
@@ -4319,8 +4324,8 @@ namespace Anywhere
                 anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             } else
             {
-                dg.addOutcomePlanNow(token, consumerId);
-                anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            dg.addOutcomePlanNow(token, consumerId);
+            anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             }
             
             
@@ -4411,6 +4416,11 @@ namespace Anywhere
         public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID)
         {
             return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
+        }
+
+        public void deleteAuthorization(string token, string authDetailId)
+        {
+            fssw.deleteAuthorization(token, authDetailId);
         }
 
     }

@@ -1475,6 +1475,14 @@ namespace Anywhere
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/updateConnectWithPerson/")]
+        string updateConnectWithPerson(string token, string connectType);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateConsumerNotesChecklistDaysBack/")]
         string updateConsumerNotesChecklistDaysBack(string token, string updatedChecklistDays);
 
@@ -5265,9 +5273,9 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-               BodyStyle = WebMessageBodyStyle.Wrapped,
-               ResponseFormat = WebMessageFormat.Json,
-               RequestFormat = WebMessageFormat.Json,
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
                UriTemplate = "/getEditAccountInfoById/")]
         ConsumerFinancesWorker.EditAccountInfo[] getEditAccountInfoById(string token, string accountId);
 
@@ -5757,6 +5765,15 @@ namespace Anywhere
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/insertUtilization/")]
         string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/deleteAuthorization/")]
+        void deleteAuthorization(string token, string authDetailId);
+
     }
 
 

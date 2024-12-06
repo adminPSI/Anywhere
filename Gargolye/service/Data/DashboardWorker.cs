@@ -244,6 +244,7 @@ namespace Anywhere.service.Data
             public string lastName { get; set; }
             public string locationId { get; set; }
             public string activeStatus { get; set; }
+            public string groupId { get; set; }
         }
 
         public class SingleEntryLocationObj

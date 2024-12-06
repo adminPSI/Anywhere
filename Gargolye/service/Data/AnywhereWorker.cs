@@ -599,6 +599,12 @@ namespace Anywhere.service.Data
             public string requireTimeEntryTransportationTimes { get; set; }
             public string anywhereFSSPermission { get; set; }
             public string RequireViewPlan { get; set; }
+
+            public string defaultplanlocation { get; set; }
+            public string defaultplanlocationname { get; set; }
+            public string defaultplangroup { get; set; }
+            public string defaultplangroupname { get; set; }
+            public string defaultcontact { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)

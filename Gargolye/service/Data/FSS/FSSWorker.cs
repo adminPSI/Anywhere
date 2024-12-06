@@ -291,5 +291,10 @@ namespace Anywhere.service.Data.FSS
             return objString;
         }
 
+        public void deleteAuthorization(string token, string authDetailId)
+        {
+            fdg.deleteAuthorization(token, authDetailId);
+        }
+
     }
 }

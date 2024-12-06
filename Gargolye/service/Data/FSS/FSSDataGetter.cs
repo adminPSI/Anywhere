@@ -269,7 +269,7 @@ namespace Anywhere.service.Data.FSS
             }
         }
 
-        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID,string consumerID)
+        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertUtilization");
@@ -296,6 +296,25 @@ namespace Anywhere.service.Data.FSS
                 return "677: error ANYW_FSS_insertUtilization";
             }
         }
+
+        public void deleteAuthorization(string token, string authDetailId)
+        {          
+            logger.debug("deleteAuthorization");
+            List<string> list = new List<string>();
+            list.Add(authDetailId);
+
+
+            string text = "CALL DBA.ANYW_FSS_deleteAuthorization(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("677", ex.Message + "ANYW_FSS_deleteAuthorization(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+            }
+        }
+
 
 
         public string executeDataBaseCallJSON(string storedProdCall)
