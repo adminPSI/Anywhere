@@ -206,7 +206,7 @@ namespace Anywhere.service.Data
                 else
                 {
                     byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
-                    response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
+                    response.AddHeader("content-disposition", "attachment;filename=\"" + attachment.filename + "\";");
                     response.ContentType = "application/octet-stream";
                     response.AddHeader("Transfer-Encoding", "identity");
                     response.BinaryWrite(bytes);
