@@ -525,7 +525,7 @@ var defaults = (function () {
         });
     }
 
-    function repopulatePlanGroupDropdown(loc) {
+    function repopulatePlanGroupDropdown(loc) { 
         planGroupDropdown.classList.add('disabled');
         planGroupDropdownData = null;
         defaultsAjax.getConsumerGroups(loc, res => {
@@ -539,7 +539,7 @@ var defaults = (function () {
                     text,
                 };
             });
-            setLocation('planGroup', `ALL-${loc}`);
+            setLocation('planGroup', `CAS-${loc}`, 'Caseload');      
             dropdown.populate(planGroupDropdown, planGroupDropdownData, `CAS-${loc}`);
             planGroupDropdown.classList.remove('disabled');
         });
