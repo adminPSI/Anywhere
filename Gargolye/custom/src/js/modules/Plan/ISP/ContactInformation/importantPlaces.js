@@ -94,7 +94,7 @@ const isp_ci_importantPlaces = (() => {
         async function saveData() {
             popup.style.display = 'none';
             pendingSave.show('Saving...');
-            debugger;
+
             const typeDD = document.getElementById('isp-ciip-typeDropdown');
             const typeVal = typeDD.options[typeDD.selectedIndex].value;
             const nameVal = document.getElementById('isp-ciip-nameInput').value;

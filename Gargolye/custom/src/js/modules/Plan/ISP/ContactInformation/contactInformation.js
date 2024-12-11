@@ -215,10 +215,10 @@ const contactInformation = (() => {
         bestWayToConnectBtnAlertDiv.appendChild(bestWayToConnectDropdown);
 
         let contactsValidation = planValidation.getContactValidation();
-
-        if (contactsValidation.bestWayToConnect === false) {
+        // #110673 - SH - ANY - PL: Add default settings in SET DEFAULTS for plan
+        if (contactsValidation.bestWayToConnect === false && ($.session.defaultContact == '' || $.session.defaultContact == undefined)) {
             bestWaytoConnectAlertDiv.style.display = 'flex';
-        }
+        } 
 
         inputSection.appendChild(nameInput);
         inputSection.appendChild(prefNameInput);
