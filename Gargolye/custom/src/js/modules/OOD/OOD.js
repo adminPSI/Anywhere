@@ -862,7 +862,7 @@ const OOD = (() => {
 
     async function generateAndTrackFormProgress(formNumber) {
         // Prepare data for form generation
-        if (formNumber == '3') createFilterValues.referenceNumber = 'OOD Form 6';
+        if (formNumber == '3' && (createFilterValues.referenceNumber == '' || createFilterValues.referenceNumber == undefined)) createFilterValues.referenceNumber = 'INTForm3';
         
         let data = {
             referenceNumber: createFilterValues.referenceNumber,
@@ -877,7 +877,7 @@ const OOD = (() => {
         try {
             switch (formNumber) {
                 case 3:
-                    sentStatus = await OODAjax.generateForm6(data);
+                    sentStatus = await OODAjax.generateForm3(data);
                     break;
                 case 4:
                     sentStatus = await OODAjax.generateForm4(data);
