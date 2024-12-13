@@ -192,19 +192,19 @@ namespace OODForms
 
                 var fieldData = new List<(string fieldName, string value)>
                 {
-                    ("Provider Name", ProviderName),
-                    ("Individuals Name", ConsumerName),
-                    ("IPE_Goal", IPEGoal),         // em_employee_general.ipe for given individual
-                    ("Direct Service Staff Nam(s) and Initials", ""), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
-                    ("Person Completing Report", personCompletingReport),
-                    ("VR CounselorCoordinator", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
+                    ("ProviderName", ProviderName),
+                    ("IndividualName", ConsumerName),
+                    // ("IPE_Goal", IPEGoal),         // em_employee_general.ipe for given individual
+                    ("StaffNames", ""), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
+                    ("PersonCompletingReport", personCompletingReport),
+                    ("OODRepresentative", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
 
-                    ("Authorization", referenceNumber),
-                    ("Provider_Invoice_Number", invoiceNumber),
-                    ("Service", service),      // Select Service = services.procedure_code for selected service (match on emp_ood.reference_number and consumer_services_master.service_id)
-                    ("Invoice Date", invoiceDate),
-                    ("Service_Start_Date_af_date", strStartDate),
-                    ("Service_End_Date_af_date", strEndDate),
+                    ("AuthorizationNumber", referenceNumber),
+                    ("ProviderInvoiceNumber", invoiceNumber),
+                    //("Service", service),      // Select Service = services.procedure_code for selected service (match on emp_ood.reference_number and consumer_services_master.service_id)
+                    ("InvoiceDate", invoiceDate),
+                    ("ServiceStartDate", strStartDate),
+                    ("ServiceEndDate", strEndDate),
                 };
 
                 // Iterate through the field data and set values
