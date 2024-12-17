@@ -64,103 +64,116 @@ namespace OODForms
 
                 DataTable dt;
                 DataRow row;
+                
+                string ProviderName = "";
+                string ConsumerName = "";
 
-                referenceNumber = referenceNumber.Replace("+", " ");
-                dt = oodfdg.OODDevelopment(referenceNumber).Tables[0];
-                row = dt.Rows[0];
-
-                string ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
-                string ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
-
-                string Staff = string.Empty;
-                string StaffWithInitals = string.Empty;
-                string OODStaff = string.Empty;
-                string MiddleName = string.Empty;
-
-                DataSet ds = oodfdg.OODForm8GetDirectStaff(referenceNumber, startDate, endDate);
-
-                if (ds.Tables.Count > 0)
+                if (referenceNumber != "" && referenceNumber != null)
                 {
-                    DataTable dt2 = ds.Tables[0];
-                    foreach (DataRow row2 in dt2.Rows)
-                    {
-                        if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
-                        {
-                            Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
-                            MiddleName = row2["Middle_Name"].ToString();
-                            OODStaff += String.Format("{0}, ", Staff.Trim());
-                        }
+                    referenceNumber = referenceNumber.Replace("+", " ");
+                    dt = oodfdg.OODDevelopment(referenceNumber).Tables[0];
+                    row = dt.Rows[0];
 
-                        if (Staff.ToString().Trim().Length > 0)
-                        {
-                            StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
-                        }
-                    }
+                    ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
+                    ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
+
                 }
+
+                //string Staff = string.Empty;
+                //string StaffWithInitals = string.Empty;
+                //string OODStaff = string.Empty;
+                //string MiddleName = string.Empty;
+
+                //DataSet ds = oodfdg.OODForm8GetDirectStaff(referenceNumber, startDate, endDate);
+
+                //if (ds.Tables.Count > 0)
+                //{
+                //    DataTable dt2 = ds.Tables[0];
+                //    foreach (DataRow row2 in dt2.Rows)
+                //    {
+                //        if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
+                //        {
+                //            Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
+                //            MiddleName = row2["Middle_Name"].ToString();
+                //            OODStaff += String.Format("{0}, ", Staff.Trim());
+                //        }
+
+                //        if (Staff.ToString().Trim().Length > 0)
+                //        {
+                //            StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
+                //        }
+                //    }
+                //}
 
                 string VRCounselor = "";
-                DataSet dsVR = oodfdg.OODForm6GetVRCounselor(referenceNumber, consumerIdString, startDate, endDate);
-                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
 
-                if (dsVR.Tables.Count > 0 && dsVR.Tables[0].Rows.Count > 0)
+                if (referenceNumber != "" && referenceNumber != null)
                 {
-                    if (!string.IsNullOrEmpty(dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString()))
+                    DataSet dsVR = oodfdg.OODForm6GetVRCounselor(referenceNumber, consumerIdString, startDate, endDate);
+                    // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+
+                    if (dsVR.Tables.Count > 0 && dsVR.Tables[0].Rows.Count > 0)
                     {
-                        VRCounselor = dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString();
+                        if (!string.IsNullOrEmpty(dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString()))
+                        {
+                            VRCounselor = dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString();
+                        }
+                        else
+                        {
+                            VRCounselor = "";
+                        }
                     }
-                    else
-                    {
-                        VRCounselor = "";
-                    }
+
                 }
+                   
 
-                string IPEGoal = "";
-                DataSet dsIPE = oodfdg.OODForm6GetIPEGoal(referenceNumber, consumerIdString, startDate, endDate);
-                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+                //string IPEGoal = "";
+                //DataSet dsIPE = oodfdg.OODForm6GetIPEGoal(referenceNumber, consumerIdString, startDate, endDate);
+                //// List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
 
-                if (dsIPE.Tables.Count > 0 && dsIPE.Tables[0].Rows.Count > 0)
-                {
-                    if (!string.IsNullOrEmpty(dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString()))
-                    {
-                        IPEGoal = dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString();
-                    }
-                    else
-                    {
-                        IPEGoal = "";
-                    }
-                }
+                //if (dsIPE.Tables.Count > 0 && dsIPE.Tables[0].Rows.Count > 0)
+                //{
+                //    if (!string.IsNullOrEmpty(dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString()))
+                //    {
+                //        IPEGoal = dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString();
+                //    }
+                //    else
+                //    {
+                //        IPEGoal = "";
+                //    }
+                //}
 
-                string service = "";
-                DataSet dsService = oodfdg.OODForm6GetService(referenceNumber, consumerIdString, startDate, endDate);
-                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+                //string service = "";
+                //DataSet dsService = oodfdg.OODForm6GetService(referenceNumber, consumerIdString, startDate, endDate);
+                //// List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
 
-                if (dsService.Tables.Count > 0 && dsService.Tables[0].Rows.Count > 0)
-                {
-                    if (!string.IsNullOrEmpty(dsService.Tables[0].Rows[0]["service"].ToString()))
-                    {
-                        service = dsService.Tables[0].Rows[0]["service"].ToString();
-                    }
-                    else
-                    {
-                        service = "PBJD Tier I";
-                    }
-                }
+                //if (dsService.Tables.Count > 0 && dsService.Tables[0].Rows.Count > 0)
+                //{
+                //    if (!string.IsNullOrEmpty(dsService.Tables[0].Rows[0]["service"].ToString()))
+                //    {
+                //        service = dsService.Tables[0].Rows[0]["service"].ToString();
+                //    }
+                //    else
+                //    {
+                //        service = "PBJD Tier I";
+                //    }
+                //}
 
-                string bilingual = "";  // SAMLevel
-                string SAMLevel = "";  // bilingualSupplement
-                DataSet dsSAMandBilingual = oodfdg.OODForm6GetSAMandBilingual(referenceNumber, consumerIdString, startDate, endDate, userId);
+                //string bilingual = "";  // SAMLevel
+                //string SAMLevel = "";  // bilingualSupplement
+                //DataSet dsSAMandBilingual = oodfdg.OODForm6GetSAMandBilingual(referenceNumber, consumerIdString, startDate, endDate, userId);
 
-                if (dsSAMandBilingual.Tables.Count > 0 && dsSAMandBilingual.Tables[0].Rows.Count > 0)
-                {
-                    if (!string.IsNullOrEmpty(dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString()))
-                    {
-                        SAMLevel = dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString();
-                    }
-                    else
-                    {
-                        SAMLevel = "";
-                    }
-                }
+                //if (dsSAMandBilingual.Tables.Count > 0 && dsSAMandBilingual.Tables[0].Rows.Count > 0)
+                //{
+                //    if (!string.IsNullOrEmpty(dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString()))
+                //    {
+                //        SAMLevel = dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString();
+                //    }
+                //    else
+                //    {
+                //        SAMLevel = "";
+                //    }
+                //}
 
                 DataSet ds3 = new DataSet();
                 //string personCompletingReport;
@@ -195,7 +208,7 @@ namespace OODForms
                     ("ProviderName", ProviderName),
                     ("IndividualName", ConsumerName),
                     // ("IPE_Goal", IPEGoal),         // em_employee_general.ipe for given individual
-                    ("StaffNames", ""), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
+                    ("StaffNames", VRCounselor), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
                     ("PersonCompletingReport", personCompletingReport),
                     ("OODRepresentative", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
 
@@ -205,7 +218,10 @@ namespace OODForms
                     ("InvoiceDate", invoiceDate),
                     ("ServiceStartDate", strStartDate),
                     ("ServiceEndDate", strEndDate),
-                };
+                    ("InvoiceTotal", ""),
+                    ("ETATotal", ""),
+                    ("BilingualRate", ""),
+                }; 
 
                 // Iterate through the field data and set values
                 foreach (var (fieldName, value) in fieldData)

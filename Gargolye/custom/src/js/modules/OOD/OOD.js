@@ -862,7 +862,7 @@ const OOD = (() => {
 
     async function generateAndTrackFormProgress(formNumber) {
         // Prepare data for form generation
-        if (formNumber == '3' && (createFilterValues.referenceNumber == '' || createFilterValues.referenceNumber == undefined)) createFilterValues.referenceNumber = 'INTForm3';
+        if (createFilterValues.referenceNumber == undefined) createFilterValues.referenceNumber = '';
         
         let data = {
             referenceNumber: createFilterValues.referenceNumber,
