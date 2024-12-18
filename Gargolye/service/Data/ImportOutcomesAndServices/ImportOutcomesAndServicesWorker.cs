@@ -180,7 +180,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             doc.InitSecurityHandler();
 
                             string combinedText = "";
-                            string test = "";
+                            string combinedTextWithPostitions = "";
                             // Store line positions with line text as the key
                             Dictionary<string, Rect> linePositions = new Dictionary<string, Rect>();
                             for (int i = 1; i <= doc.GetPageCount(); i++)
@@ -192,7 +192,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 {
                                     textExtractor.Begin(page, null, TextExtractor.ProcessingFlags.e_extract_using_zorder);
                                     combinedText += ProcessTextExtractor(textExtractor, page, ref linePositions) + "\n\n";
-                                    test += ProcessTextExtractorWithPositions(textExtractor, page, ref linePositions) + "\n\n";
+                                    combinedTextWithPostitions += ProcessTextExtractorWithPositions(textExtractor, page, ref linePositions) + "\n\n";
                                 }
                                 else
                                 {
@@ -206,13 +206,13 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             combinedText = combinedText.Replace("\r\n", "\n");  // Normalize line breaks
                             combinedText = combinedText.Replace("\n\n", "\n");  // Remove extra newlines
 
-                            test = test.Replace("\r\n", "\n");
-                            test = test.Replace("\n\n", "\n");
+                            combinedTextWithPostitions = combinedTextWithPostitions.Replace("\r\n", "\n");
+                            combinedTextWithPostitions = combinedTextWithPostitions.Replace("\n\n", "\n");
 
                             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                            string[] testingagain = test.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                            string[] linesWithPostions = combinedTextWithPostitions.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-                            List<KeyValuePair<string, Rect>> linePositionsList = ConvertToList(testingagain);
+                            List<KeyValuePair<string, Rect>> linePositionsList = ConvertToList(linesWithPostions);
 
                             // Regular expression pattern to match the two dates
                             string pattern = @"ISP Span Dates:\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})\s*-\s*([A-Za-z]+\s+\d{1,2},\s+\d{4})";
@@ -251,7 +251,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             Console.WriteLine(combinedText);
 
                             // Process the combined text for risk assessments
-                            var riskAssessments = ProcessCombinedTextForRiskAssessment(combinedText, firstTwoLines, linePositions);
+                            var riskAssessments = ProcessCombinedTextForRiskAssessment(combinedText, firstTwoLines, linePositionsList);
                             var paidSupports = ProcessCombinedTextForPaidSupports(combinedText, firstTwoLines);
                             var additionalSupports = ProcessCombinedTextForAdditionalSupports(combinedText, firstTwoLines);
                             var professionalReferrals = ProcessCombinedTextForProfessionalReferrals(combinedText, firstTwoLines);
@@ -638,26 +638,25 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         List<RiskAssessment> ProcessCombinedTextForRiskAssessment(
             string combinedText,
             string firstTwoLines,
-            Dictionary<string, Rect> linePositions)
+            List<KeyValuePair<string, Rect>> linePositions)
         {
             var riskAssessmentsList = new List<RiskAssessment>();
             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             string[] firstTwoLinesArray = firstTwoLines.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            List<KeyValuePair<string, Rect>> linePositionList = linePositions.ToList();
 
             var headerColumnBBoxes = new List<Rect>
         {
-            new Rect(41.64, 198, 0, 0),   // Column 1: AssessmentArea
-            new Rect(198, 335, 0, 0), // Column 2: WhatIsRisk
-            new Rect(335, 495, 0, 0), // Column 3: WhatSupportMustLookLike
-            new Rect(495, 594, 0, 0), // Column 4: RiskRequiresSupervision
-            new Rect(594, 657, 0, 0),  // Column 5: WhoIsResponsible
+            new Rect(41, 0, 198, 0),   // Column 1: AssessmentArea
+            new Rect(198, 0, 336, 0), // Column 2: WhatIsRisk
+            new Rect(335, 0, 496, 0), // Column 3: WhatSupportMustLookLike
+            new Rect(495, 0, 595, 0), // Column 4: RiskRequiresSupervision
+            new Rect(594, 0, 658, 0),  // Column 5: WhoIsResponsible
         };
 
             for (int i = 0; i < lines.Length; i++)
             {
                 // Get the current line's bbox
-                var currentBBox = linePositionList[i].Value;
+                var currentBBox = linePositions[i].Value;
 
                 // Check for the start of the table (first header and bbox validation)
                 if (lines[i].Contains(riskAssessmentHeaders[0]) &&
@@ -669,7 +668,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                     {
                         if (i + j >= lines.Length ||
                             !lines[i + j].Contains(riskAssessmentHeaders[j]) ||
-                            !IsWithinBBox(linePositionList[i + j].Value, headerColumnBBoxes[j]))
+                            !IsWithinBBox(linePositions[i + j].Value, headerColumnBBoxes[j]))
                         {
                             headersFound = false;
                             break;
@@ -686,15 +685,46 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                             // Check if the current line contains an assessment area within the first column bbox
                             if (!assessmentAreas.Contains(assessmentArea) ||
-                                !IsWithinBBox(linePositionList[i].Value, headerColumnBBoxes[0]))
+                                !IsWithinBBox(linePositions[i].Value, headerColumnBBoxes[0]))
                             {
+                                // Before looking ahead for a valid assessment area,
+                                // check if the current line fits in one of the header columns
+                                if (riskAssessmentsList.Any())
+                                {
+                                    var lastRiskAssessment = riskAssessmentsList.Last();
+
+                                    for (int columnIndex = 1; columnIndex < headerColumnBBoxes.Count; columnIndex++)
+                                    {
+                                        if (IsWithinBBox(linePositions[i].Value, headerColumnBBoxes[columnIndex]))
+                                        {
+                                            // Append the current line to the corresponding property
+                                            switch (columnIndex)
+                                            {
+                                                case 1:
+                                                    lastRiskAssessment.WhatIsRisk += " " + lines[i].Trim();
+                                                    break;
+                                                case 2:
+                                                    lastRiskAssessment.WhatSupportMustLookLike += " " + lines[i].Trim();
+                                                    break;
+                                                case 3:
+                                                    lastRiskAssessment.RiskRequiresSupervision += " " + lines[i].Trim();
+                                                    break;
+                                                case 4:
+                                                    lastRiskAssessment.WhoIsResponsible += " " + lines[i].Trim();
+                                                    break;
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+
                                 // Look ahead to the next 5 lines for a valid assessment area
                                 bool foundNextAssessmentArea = false;
                                 for (int j = 1; j <= 5 && i + j < lines.Length; j++)
                                 {
                                     var nextLine = lines[i + j].Trim();
                                     if (assessmentAreas.Contains(nextLine) &&
-                                        IsWithinBBox(linePositionList[i + j].Value, headerColumnBBoxes[0]))
+                                        IsWithinBBox(linePositions[i + j].Value, headerColumnBBoxes[0]))
                                     {
                                         // Found a valid assessment area; adjust index and continue
                                         i += j;
@@ -715,34 +745,37 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             var riskAssessment = new RiskAssessment
                             {
                                 AssessmentArea = assessmentArea,
-                                WhatIsRisk = GetNextLineIfInColumn(lines, linePositionList, ref i, headerColumnBBoxes[1]),
-                                WhatSupportMustLookLike = GetNextLineIfInColumn(lines, linePositionList, ref i, headerColumnBBoxes[2]),
-                                RiskRequiresSupervision = GetNextLineIfInColumn(lines, linePositionList, ref i, headerColumnBBoxes[3]),
-                                WhoIsResponsible = GetNextLineIfInColumn(lines, linePositionList, ref i, headerColumnBBoxes[4])
+                                WhatIsRisk = GetNextLineIfInColumn(lines, linePositions, ref i, headerColumnBBoxes[1]),
+                                WhatSupportMustLookLike = GetNextLineIfInColumn(lines, linePositions, ref i, headerColumnBBoxes[2]),
+                                RiskRequiresSupervision = GetNextLineIfInColumn(lines, linePositions, ref i, headerColumnBBoxes[3]),
+                                WhoIsResponsible = GetNextLineIfInColumn(lines, linePositions, ref i, headerColumnBBoxes[4])
                             };
 
-                            // Check if the next line should be appended to the current RiskAssessment
-                            while (i + 1 < lines.Length &&
-                                   !assessmentAreas.Contains(lines[i + 1].Trim()) &&
-                                   IsWithinBBox(linePositionList[i + 1].Value, headerColumnBBoxes[1]))
-                            {
-                                i++;
-                                riskAssessment.WhatIsRisk += " " + lines[i].Trim();
-                            }
-
                             riskAssessmentsList.Add(riskAssessment);
+
+                            // Check if the last values of the risk assessment are null, empty strings, or " " values
+                            if (string.IsNullOrWhiteSpace(riskAssessment.WhatIsRisk) ||
+                                string.IsNullOrWhiteSpace(riskAssessment.WhatSupportMustLookLike) ||
+                                string.IsNullOrWhiteSpace(riskAssessment.RiskRequiresSupervision) ||
+                                string.IsNullOrWhiteSpace(riskAssessment.WhoIsResponsible))
+                            {
+                                // Set i to the last value that was gathered
+                                i--;
+                                continue;
+                            }
 
                             // Move to the next line to check if it's the start of a new assessment area
                             i++;
                             if (i >= lines.Length ||
                                 !assessmentAreas.Contains(lines[i].Trim()) ||
-                                !IsWithinBBox(linePositionList[i].Value, headerColumnBBoxes[0]))
+                                !IsWithinBBox(linePositions[i].Value, headerColumnBBoxes[0]))
                             {
                                 i--; // Step back as the current line doesn't start a new assessment area
                                 break;
                             }
                         }
                     }
+
                 }
             }
 
@@ -752,8 +785,12 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         // Helper: Check if a line's bbox is within the expected column bbox
         bool IsWithinBBox(Rect lineBBox, Rect columnBBox)
         {
-            return lineBBox.x1 >= columnBBox.x1 &&
-                   lineBBox.x2 <= columnBBox.x2;
+            if (lineBBox.x1 >= columnBBox.x1 &&
+                   lineBBox.x2 <= columnBBox.x2)
+            {
+                return true;
+            }
+            else { return false; }
         }
 
         // Helper: Get the next line's text only if it falls within the specified column bbox
