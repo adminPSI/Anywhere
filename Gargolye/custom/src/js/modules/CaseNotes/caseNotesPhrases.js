@@ -93,10 +93,11 @@
             const success = data.insertCustomPhraseResult;
 
             this.close();
-
+            
             // update phrases list for inserting
             await this.PhrasesInstance.InsertPhrases.fetchData();
             this.PhrasesInstance.InsertPhrases.populate();
+            this.addPhraseForm.clear();   
         });
         this.addPhraseForm.onChange(event => {
             const value = event.target.value;
