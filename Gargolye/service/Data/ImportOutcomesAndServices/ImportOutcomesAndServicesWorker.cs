@@ -179,7 +179,6 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                         {
                             doc.InitSecurityHandler();
 
-                            string combinedText = "";
                             string combinedTextWithPostitions = "";
                             // Store line positions with line text as the key
                             Dictionary<string, Rect> linePositions = new Dictionary<string, Rect>();
@@ -191,7 +190,6 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 if (page != null)
                                 {
                                     textExtractor.Begin(page, null, TextExtractor.ProcessingFlags.e_extract_using_zorder);
-                                    combinedText += ProcessTextExtractor(textExtractor, page, ref linePositions) + "\n\n";
                                     combinedTextWithPostitions += ProcessTextExtractorWithPositions(textExtractor, page, ref linePositions) + "\n\n";
                                 }
                                 else
@@ -200,19 +198,15 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 }
                             }
 
-                            // Store the results in variables for further inspection
-                            var debugPageText = combinedText;
-
-                            combinedText = combinedText.Replace("\r\n", "\n");  // Normalize line breaks
-                            combinedText = combinedText.Replace("\n\n", "\n");  // Remove extra newlines
-
-                            combinedTextWithPostitions = combinedTextWithPostitions.Replace("\r\n", "\n");
-                            combinedTextWithPostitions = combinedTextWithPostitions.Replace("\n\n", "\n");
+                            // Process combinedTextWithPositions for further usage
+                            string combinedText = string.Join("\n", combinedTextWithPostitions
+                                .Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                                .Select(line => line.Contains(":") ? line.Substring(0, line.LastIndexOf(":")) : line));
 
                             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                            string[] linesWithPostions = combinedTextWithPostitions.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                            string[] linesWithPositions = combinedTextWithPostitions.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-                            List<KeyValuePair<string, Rect>> linePositionsList = ConvertToList(linesWithPostions);
+                            List<KeyValuePair<string, Rect>> linePositionsList = ConvertToList(linesWithPositions);
 
                             // Regular expression pattern to match the two dates
                             string pattern = @"ISP Span Dates:\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})\s*-\s*([A-Za-z]+\s+\d{1,2},\s+\d{4})";
@@ -277,137 +271,6 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             pdftron.PDFNet.Terminate();
 
             return extractedTables;
-        }
-
-
-        string ProcessTextExtractor(TextExtractor textExtractor, Page page, ref Dictionary<string, Rect> linePositions)
-        {
-            List<string> combinedLines = new List<string>();
-            string currentLineText = "";
-            Rect currentLineBBox = new Rect();
-
-            // Detect lines using ElementReader
-            ElementReader reader = new ElementReader();
-            reader.Begin(page);
-
-            List<Rect> verticalLines = new List<Rect>();
-            Element element;
-
-            while ((element = reader.Next()) != null)
-            {
-                if (element.GetType() == Element.Type.e_path)
-                {
-                    Rect bbox = new Rect();
-                    if (element.GetBBox(bbox))
-                    {
-                        if (IsVerticalLine(bbox))
-                        {
-                            verticalLines.Add(bbox);
-                        }
-                    }
-                }
-            }
-            reader.End();
-
-            TextExtractor.Line previousLine = null;
-            double gapBetweenLines = 250; // Default value
-            bool foundKnownAndLikelyRisks = false; // Flag for "Known and Likely Risks" line
-
-            for (TextExtractor.Line line = textExtractor.GetFirstLine(); line.IsValid(); line = line.GetNextLine())
-            {
-                Rect lineBBox = line.GetBBox();
-
-                if (currentLineBBox.x1 != 0 && currentLineBBox.x1 != lineBBox.x1)
-                {
-                    string trimmedText = currentLineText.Trim();
-                    combinedLines.Add(trimmedText);
-                    linePositions[trimmedText] = currentLineBBox; // Add the current line's BBox to the dictionary
-
-                    currentLineText = "";
-                    currentLineBBox = new Rect();
-                }
-
-                TextExtractor.Word previousWord = null;
-
-                for (TextExtractor.Word word = line.GetFirstWord(); word.IsValid(); word = word.GetNextWord())
-                {
-                    if (previousWord != null && IsVerticalLineBetweenWords(previousWord, word, verticalLines))
-                    {
-                        string trimmedText = currentLineText.Trim();
-                        combinedLines.Add(trimmedText);
-                        linePositions[trimmedText] = currentLineBBox; // Add the current line's BBox to the dictionary
-
-                        currentLineText = "";
-                        currentLineBBox = new Rect();
-                    }
-
-                    currentLineText += " " + word.GetString();
-                    previousWord = word;
-
-                    // Update current line BBox
-                    if (currentLineBBox.x1 == 0)
-                    {
-                        currentLineBBox = word.GetBBox();
-                    }
-                    else
-                    {
-                        currentLineBBox.x2 = word.GetBBox().x2;
-                        currentLineBBox.y2 = Math.Min(currentLineBBox.y2, word.GetBBox().y2);
-                    }
-                }
-
-                if (currentLineBBox.x1 == 0)
-                {
-                    currentLineBBox = lineBBox;
-                }
-                else
-                {
-                    currentLineBBox.x2 = Math.Max(currentLineBBox.x2, lineBBox.x2);
-                    currentLineBBox.y2 = Math.Min(currentLineBBox.y2, lineBBox.y2);
-                }
-
-                // Check if the current line contains "Known and Likely Risks"
-                if (currentLineText.Contains("Known and Likely Risks --include any MUI trends and preventative measures"))
-                {
-                    foundKnownAndLikelyRisks = true; // Set flag to true but don't change gap yet
-                }
-
-                // Check if the current line contains "Who is responsible:"
-                if (foundKnownAndLikelyRisks && currentLineText.Contains("Who is responsible:"))
-                {
-                    gapBetweenLines = 200; // Set the gap to 150 when "Who is responsible:" is found
-                    foundKnownAndLikelyRisks = false; // Reset the flag
-                }
-
-                // Check if the current line contains "Service and Supports"
-                if (currentLineText.Contains("Service and Supports"))
-                {
-                    gapBetweenLines = 250; // Reset the gap to the default
-                }
-
-                if (previousLine != null)
-                {
-                    // Check if the gap between the starting `x` values of two lines exceeds the current gap threshold
-                    double gapBetweenLinesValue = lineBBox.x1 - previousLine.GetBBox().x1;
-                    if (gapBetweenLinesValue > gapBetweenLines)
-                    {
-                        combinedLines.Add(" "); // Insert "BLANK CELL" when the gap is too large
-                        linePositions[" "] = new Rect(); // Add a blank BBox for the "BLANK CELL"
-                    }
-                }
-
-                previousLine = line;
-            }
-
-            // Add the last line if any
-            if (!string.IsNullOrEmpty(currentLineText))
-            {
-                string trimmedText = currentLineText.Trim();
-                combinedLines.Add(trimmedText);
-                linePositions[trimmedText] = currentLineBBox; // Add the last line's BBox to the dictionary
-            }
-
-            return string.Join("\n", combinedLines);
         }
 
         string ProcessTextExtractorWithPositions(TextExtractor textExtractor, Page page, ref Dictionary<string, Rect> linePositions)
