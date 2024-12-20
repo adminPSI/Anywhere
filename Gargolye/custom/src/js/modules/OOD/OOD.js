@@ -1496,12 +1496,14 @@ const OOD = (() => {
             type: 'date',
             label: 'Service Date Start',
             style: 'secondary',
+            id: 'createServiceDateStartInput',
             value: createFilterValues.serviceDateStart,
         });
         createServiceDateEndInput = input.build({
             type: 'date',
             label: 'Service Date End',
             style: 'secondary',
+            id: 'createServiceDateEndInput',
             value: createFilterValues.serviceDateEnd,
         });
 
@@ -1517,6 +1519,7 @@ const OOD = (() => {
             text: `Create Form ${formNumber}`,
             style: 'secondary',
             type: 'contained',
+            id: 'createfilterPopupCreateBTN',
             callback: async () => createfilterPopupDoneBtn(formNumber),
         });
         CANCEL_BTN = button.build({
@@ -1577,6 +1580,15 @@ const OOD = (() => {
                 event.target.value = createFilterValues.serviceDateStart;
                 
             } 
+
+            if (isServiceDateIncorrect()) {
+                createServiceDateStartInput.classList.add('error'); 
+            } else {
+                createServiceDateStartInput.classList.remove('error'); 
+                createServiceDateEndInput.classList.remove('error'); 
+            }
+
+            createfilterPopupCreateBTNStatus();
         });
         createServiceDateEndInput.addEventListener('input', event => {          
             if (event.target.value !== '') { 
@@ -1586,23 +1598,50 @@ const OOD = (() => {
                 event.target.value = createFilterValues.serviceDateEnd;
                 
             }
+            if (isServiceDateIncorrect()) {
+                createServiceDateEndInput.classList.add('error'); 
+            } else {
+                createServiceDateStartInput.classList.remove('error'); 
+                createServiceDateEndInput.classList.remove('error'); 
+            }
+            createfilterPopupCreateBTNStatus();
         });
         employeeDropdown.addEventListener('change', event => {
             createFilterValues.userId = event.target.value;
             createFilterValues.userName = event.target.options[event.target.selectedIndex].text;
+            
         });
      
         createreferenceNumbersDropdown.addEventListener('change', event => {
             createFilterValues.referenceNumber = event.target.value;
             checkCreatePopupRequiredFields(formNumber);
+            createfilterPopupCreateBTNStatus();
         });
         
     }
 
+    function isServiceDateIncorrect() {
+
+        let createServiceDateStartinput = document.getElementById("createServiceDateStartInput");
+        let createServiceDateEndinput = document.getElementById("createServiceDateEndInput");
+        let createFilterPopupCreateBTN = document.getElementById("createfilterPopupCreateBTN");
+        // let createServiceDateStartInput = document.getElementById("createServiceDateStartInput");
+ 
+        var startDate = new Date(createServiceDateStartinput.value.split('-').join('/')); 
+        var endDate = new Date(createServiceDateEndinput.value.split('-').join('/')); 
+ 
+        var isDateAfter = dates.isAfter(startDate, endDate);
+ 
+        return isDateAfter;
+
+    } 
+
     function checkCreatePopupRequiredFields(formNumber) {
        // var createreferenceNumbersDropdown = document.querySelector('#createreferenceNumbersDropdown');
+       
     if (formNumber != '3') {
        let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
+
         if (createreferenceNumbersDropDown.value === '' || createreferenceNumbersDropDown.value === '%') { 
             createreferenceNumbersDropDown.parentElement.classList.add('error');
             createfilterPopupCreateBTN.classList.add('disabled'); 
@@ -1611,8 +1650,18 @@ const OOD = (() => {
             createreferenceNumbersDropDown.parentElement.classList.remove('error');
             createfilterPopupCreateBTN.classList.remove('disabled');
         }
-     }
+     } 
     }
+
+    function createfilterPopupCreateBTNStatus() {
+        var hasErrors = [].slice.call(createfilterPopup.querySelectorAll('.error'));
+        if ((hasErrors.length !== 0)) {
+            createfilterPopupCreateBTN.classList.add('disabled');
+          } else {
+            createfilterPopupCreateBTN.classList.remove('disabled');
+          }
+    
+      }
 
     function buildEmploymentGoalPopUp() {
         // popup
