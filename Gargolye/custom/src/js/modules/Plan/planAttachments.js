@@ -360,14 +360,14 @@ const planAttachment = (() => {
       const attachmentBtn = document.getElementById(`attach-${this.questionId}`);
       attachmentBtn.innerText = `ATTACHMENTS (${this.attachmentsForQuestion.length})`;
 
-      const relativeCheckbox = attachmentBtn.closest('.input-field__input');
+      const relativeCheckbox = attachmentBtn.parentElement.querySelector('.input-field__input');
 
       if (this.attachmentsForQuestion.length > 0) {
         attachmentBtn.classList.add('hasAttachments');
         attachmentBtn.classList.remove('error');
       } else {
         attachmentBtn.classList.remove('hasAttachments');
-        if (!relativeCheckbox.checked) {
+        if (relativeCheckbox.checked) {
           attachmentBtn.classList.add('error');
         } else {
           attachmentBtn.classList.remove('error');
