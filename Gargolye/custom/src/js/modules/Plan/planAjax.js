@@ -590,31 +590,7 @@ const planAjax = (function () {
     }
   }
   async function checkForSalesForce() {
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/checkForSalesForce/',
-      data: '{}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        if (response.checkForSalesForceResult === 'true') {
-          $.session.areInSalesForce = true;
-        } else {
-          $.session.areInSalesForce = false;
-        }
-      },
-      error: function (xhr, status, error) {
-        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-      },
-    });
+      $.session.areInSalesForce = true;
   }
   async function runReOrderSQL() {
     try {

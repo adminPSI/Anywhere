@@ -149,7 +149,7 @@ $.session.defaultMoneyManagementLocation;
 $.session.defaultMoneyManagementLocationValue;
 
 //////////
-$.session.areInSalesForce = false;
+$.session.areInSalesForce = true;
 $.session.RosterDeleteAbsent = false;
 $.session.defaultStaffLocationName = 0;
 $.session.selectedLocation = ['0', 'defaultlocation'];
