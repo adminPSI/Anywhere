@@ -286,7 +286,7 @@
             };
         });
 
-    if (!defaultValue) {
+        if (!defaultValue && data.length > 0) {
             selectedWeek = data[0].text;
             selectedStart = results[0].start;
             selectedEnd = results[0].end;
