@@ -4324,11 +4324,11 @@ namespace Anywhere
                 anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             } else
             {
-            dg.addOutcomePlanNow(token, consumerId);
-            anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+                dg.addOutcomePlanNow(token, consumerId);
+                anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             }
-            
-            
+
+
 
         }
 
@@ -4421,6 +4421,16 @@ namespace Anywhere
         public void deleteAuthorization(string token, string authDetailId)
         {
             fssw.deleteAuthorization(token, authDetailId);
+        }
+
+        public void setWidgetFilter(string token, string widgetId, string filterKey, string filterValue)
+        {
+            dashWork.setWidgetFilter(token, widgetId, filterKey, filterValue);
+        }
+
+        public string getWidgetFilter(string token, string widgetId, string filterKey)
+        {
+            return dashWork.getWidgetFilter(token, widgetId, filterKey);
         }
 
     }

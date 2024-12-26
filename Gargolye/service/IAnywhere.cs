@@ -5774,6 +5774,22 @@ namespace Anywhere
             UriTemplate = "/deleteAuthorization/")]
         void deleteAuthorization(string token, string authDetailId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/setWidgetFilter/")]
+        void setWidgetFilter(string token, string widgetId, string filterKey, string filterValue);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getWidgetFilter/")]
+        string getWidgetFilter(string token, string widgetId, string filterKey);
+
     }
 
 
