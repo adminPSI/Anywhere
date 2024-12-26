@@ -264,11 +264,11 @@ const planAttachment = (() => {
                 attachments.set(attachment.questionId, attArray);
               });
               // build new button
-              const newAttachmentBtn = this.buildAttachmentButton();
-              const oldAttachmentBtn = document.getElementById(`attach-${this.questionId}`);
-              const attachmentParent = oldAttachmentBtn.parentElement;
-              attachmentParent.removeChild(oldAttachmentBtn);
-              attachmentParent.appendChild(newAttachmentBtn);
+              // const newAttachmentBtn = this.buildAttachmentButton();
+              // const oldAttachmentBtn = document.getElementById(`attach-${this.questionId}`);
+              // const attachmentParent = oldAttachmentBtn.parentElement;
+              // attachmentParent.removeChild(oldAttachmentBtn);
+              // attachmentParent.appendChild(newAttachmentBtn);
             }, 2000);
           } catch (error) {
             pendingSave.reject('Error saving attachment changes');
