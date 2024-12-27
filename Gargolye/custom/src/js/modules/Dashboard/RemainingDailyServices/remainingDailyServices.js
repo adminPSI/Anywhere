@@ -270,6 +270,7 @@
             $.session.outcomeWidgetLocationName = selectedOption.text;
             $.session.outcomesWidgetGroupId = '%';
             $.session.outcomesWidgetGroupName = 'Everyone';
+            filter.group = '%';
         });
         groupDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
@@ -368,7 +369,7 @@
 
         remainingDailyServicesWidgetAjax.populateOutcomeTypesFilter(function (outcomes) {
             remainingDailyServicesWidgetAjax.populateLocationsFilter(function (locations) {
-                remainingDailyServicesWidgetAjax.populateGroupsFilter(filter.location, function (groups) {         
+                remainingDailyServicesWidgetAjax.populateGroupsFilter(filter.location, function (groups) {
                     remainingDailyServicesWidgetAjax.populateFilteredList(
                         filter.outcomeType,
                         filter.location,
