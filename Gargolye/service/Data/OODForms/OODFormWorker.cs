@@ -208,7 +208,7 @@ namespace OODForms
                     ("ProviderName", ProviderName),
                     ("IndividualName", ConsumerName),
                     // ("IPE_Goal", IPEGoal),         // em_employee_general.ipe for given individual
-                    ("StaffNames", VRCounselor), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
+                   // ("StaffNames", VRCounselor), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
                     ("PersonCompletingReport", personCompletingReport),
                     ("OODRepresentative", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
 
