@@ -152,7 +152,8 @@ namespace Anywhere.service.Data
                     DataTable dt1 = new DataTable("SETimeDetail");
 
                     // Add columns to the DataTable based on your SQL structure
-                    dt1.Columns.Add("dateofservice", typeof(string));  // Adjust to match your SQL types
+                    dt1.Columns.Add("dateofservice", typeof(string));
+                    dt1.Columns.Add("employee", typeof(string));
                     dt1.Columns.Add("submitted", typeof(string));
                     dt1.Columns.Add("location", typeof(string));
                     dt1.Columns.Add("workcode", typeof(string));

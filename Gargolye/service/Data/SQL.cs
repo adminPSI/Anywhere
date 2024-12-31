@@ -17,15 +17,28 @@ namespace Anywhere.service.Data
         {
 
             sb.Clear();
-            sb.Append("select s.date_of_service as dateofservice, s.anywhere_status as submitted, l.description as location, ");
-            sb.Append("w.work_code + ' - '+ w.description as workcode, ");
-            sb.Append("s.start_time as starttime, s.end_time as endtime, s.check_hours as hours, ");
-            sb.Append("s.number_consumers_present as consumers, s.transportation_units as miles ");
-            sb.Append("FROM dba.aa_single_entry as s ");
-            sb.Append("left outer join dba.locations as l on l.Location_ID = s.Location_ID ");
-            sb.Append("left outer join dba.work_codes as w on w.Work_Code_ID = s.Work_Code_ID ");
-            sb.AppendFormat("where s.user_id = '{0}' ", UserName);
-            sb.AppendFormat("and s.date_of_service between '{0}' and '{1}'", StartDate, EndDate);
+            sb.Append("SELECT s.date_of_service AS dateofservice, ");
+            sb.Append("s.anywhere_status AS submitted, ");
+            sb.Append("l.description AS location, ");
+            sb.Append("w.work_code + ' - ' + w.description AS workcode, ");
+            sb.Append("s.start_time AS starttime, ");
+            sb.Append("s.end_time AS endtime, ");
+            sb.Append("s.check_hours AS hours, ");
+            sb.Append("s.number_consumers_present AS consumers, ");
+            sb.Append("s.transportation_units AS miles, ");
+            sb.Append("pe.Last_Name + ', ' + pe.First_Name + ");
+            sb.Append("CASE ");
+            sb.Append("WHEN pe.Middle_Name IS NOT NULL AND pe.Middle_Name != '' THEN ' ' + UPPER(LEFT(pe.Middle_Name, 1)) + '.' ");
+            sb.Append("ELSE '' ");
+            sb.Append("END AS employee ");
+            sb.Append("FROM dba.aa_single_entry AS s ");
+            sb.Append("LEFT OUTER JOIN dba.locations AS l ON l.Location_ID = s.Location_ID ");
+            sb.Append("LEFT OUTER JOIN dba.work_codes AS w ON w.Work_Code_ID = s.Work_Code_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Users_Groups AS ug ON ug.User_ID = s.user_id ");
+            sb.Append("LEFT OUTER JOIN dba.People AS pe ON pe.Person_ID = ug.People_ID ");
+            sb.AppendFormat("WHERE s.user_id = '{0}' ", UserName);
+            sb.AppendFormat("AND s.date_of_service BETWEEN '{0}' AND '{1}'", StartDate, EndDate);
+
             return di.SelectRowsDS(sb.ToString());
 
         }
