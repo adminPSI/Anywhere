@@ -622,9 +622,14 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 string.IsNullOrWhiteSpace(riskAssessment.RiskRequiresSupervision) ||
                                 string.IsNullOrWhiteSpace(riskAssessment.WhoIsResponsible))
                             {
-                                // Set i to the last value that was gathered
-                                i--;
-                                continue;
+                                // If last cell was blank dont go to the next line and start next loop from current position
+                                if (i >= lines.Length ||
+                                !assessmentAreas.Contains(lines[i].Trim()) ||
+                                !IsWithinBBox(linePositions[i].Value, headerColumnBBoxes[0]))
+                                {
+                                    break;
+                                }
+                                    continue;
                             }
 
                             // Move to the next line to check if it's the start of a new assessment area
