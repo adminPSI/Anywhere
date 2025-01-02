@@ -249,7 +249,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             var paidSupports = ProcessCombinedTextForPaidSupports(combinedText, firstTwoLines);
                             var additionalSupports = ProcessCombinedTextForAdditionalSupports(combinedText, firstTwoLines);
                             var professionalReferrals = ProcessCombinedTextForProfessionalReferrals(combinedText, firstTwoLines);
-                            var experiences = ProcessCombinedTextForExperiences(combinedText);
+                            var experiences = ProcessCombinedTextForExperiences(combinedText, firstTwoLines, linePositionsList);
 
                             // Combine the extracted tables from the current file with the overall extracted tables
                             extractedTables.riskAssessments.AddRange(riskAssessments);
@@ -674,10 +674,19 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         }
 
 
-        List<Experiences> ProcessCombinedTextForExperiences(string combinedText)
+        List<Experiences> ProcessCombinedTextForExperiences(string combinedText, string firstTwoLines, List<KeyValuePair<string, Rect>> linePositions)
         {
             var experiencesList = new List<Experiences>();
             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] firstTwoLinesArray = firstTwoLines.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var headerColumnBBoxes = new List<Rect>
+            {
+                new Rect(41, 0, 228, 0),   // Column 1: WhatNeedsToHappen
+                new Rect(227, 0, 419, 0),  // Column 2: HowItShouldHappen
+                new Rect(418, 0, 557, 0),  // Column 3: WhoIsResponsible
+                new Rect(556, 0, 647, 0),  // Column 4: WhenHowOften
+            };
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -710,11 +719,60 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                             experiencesList.Add(experience);
 
-                            // Move to the next line to check if it's the start of a new assessment area
-                            i++;
-                            if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
+                            // Check for `firstTwoLinesArray`
+                            bool firstTwoLinesMatch = true;
+                            for (int j = 0; j < firstTwoLinesArray.Length; j++)
                             {
-                                i--; // Step back one line as the current line doesn't start a new assessment area
+                                if (i + j >= lines.Length || lines[i + j].Trim() != firstTwoLinesArray[j].Trim())
+                                {
+                                    firstTwoLinesMatch = false;
+                                    break;
+                                }
+                            }
+
+                            if (firstTwoLinesMatch)
+                            {
+                                i += firstTwoLinesArray.Length; // Move past the matched lines
+
+                                // Check the next 4 lines for values fitting in the header column bounding boxes
+                                for (int j = 0; j < 4; j++)
+                                {
+                                    int nextIndex = i + j;
+                                    if (nextIndex < lines.Length)
+                                    {
+                                        var currentBBox = linePositions[nextIndex].Value;
+                                        for (int columnIndex = 0; columnIndex < headerColumnBBoxes.Count; columnIndex++)
+                                        {
+                                            if (IsWithinBBox(currentBBox, headerColumnBBoxes[columnIndex]))
+                                            {
+                                                switch (columnIndex)
+                                                {
+                                                    case 0:
+                                                        experience.WhatNeedsToHappen += " " + lines[nextIndex].Trim();
+                                                        break;
+                                                    case 1:
+                                                        experience.HowItShouldHappen += " " + lines[nextIndex].Trim();
+                                                        break;
+                                                    case 2:
+                                                        experience.WhoIsResponsible += " " + lines[nextIndex].Trim();
+                                                        break;
+                                                    case 3:
+                                                        experience.WhenHowOften += " " + lines[nextIndex].Trim();
+                                                        break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                i += 3; // Adjust index to account for processed lines
+                            }
+
+                            // Move to the next line and continue
+                            i++;
+                            if (i >= lines.Length || !lines[i].Trim().Contains(experienceHeaders[0]))
+                            {
+                                i--; // Step back as the current line doesn't start a new experience
                                 break;
                             }
                         }
