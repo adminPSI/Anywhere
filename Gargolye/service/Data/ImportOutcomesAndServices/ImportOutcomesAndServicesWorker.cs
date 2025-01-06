@@ -246,8 +246,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                             // Process the combined text for risk assessments
                             var riskAssessments = ProcessCombinedTextForRiskAssessment(combinedText, firstTwoLines, linePositionsList);
-                            var paidSupports = ProcessCombinedTextForPaidSupports(combinedText, firstTwoLines);
-                            var additionalSupports = ProcessCombinedTextForAdditionalSupports(combinedText, firstTwoLines);
+                            var paidSupports = ProcessCombinedTextForPaidSupports(combinedText, firstTwoLines, linePositionsList);
+                            var additionalSupports = ProcessCombinedTextForAdditionalSupports(combinedText, firstTwoLines, linePositionsList);
                             var professionalReferrals = ProcessCombinedTextForProfessionalReferrals(combinedText, firstTwoLines);
                             var experiences = ProcessCombinedTextForExperiences(combinedText, firstTwoLines, linePositionsList);
 
@@ -396,7 +396,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                 // Check if the current line contains "Service and Supports"
                 if (currentLineText.Contains("Service and Supports"))
                 {
-                    gapBetweenLines = 250; // Reset the gap to the default
+                    gapBetweenLines = 225; // Reset the gap to the default
+
                 }
 
                 if (previousLine != null)
@@ -723,7 +724,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             bool firstTwoLinesMatch = true;
                             for (int j = 0; j < firstTwoLinesArray.Length; j++)
                             {
-                                if (i + j >= lines.Length || lines[i + j].Trim() != firstTwoLinesArray[j].Trim())
+                                if ((i + 1) + j >= lines.Length || lines[(i + 1) + j].Trim() != firstTwoLinesArray[j].Trim())
                                 {
                                     firstTwoLinesMatch = false;
                                     break;
@@ -735,7 +736,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 i += firstTwoLinesArray.Length; // Move past the matched lines
 
                                 // Check the next 4 lines for values fitting in the header column bounding boxes
-                                for (int j = 0; j < 4; j++)
+                                for (int j = 2; j < 5; j++)
                                 {
                                     int nextIndex = i + j;
                                     if (nextIndex < lines.Length)
@@ -783,19 +784,31 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             return experiencesList;
         }
 
-        List<PaidSupports> ProcessCombinedTextForPaidSupports(string combinedText, string firstTwoLines)
+        List<PaidSupports> ProcessCombinedTextForPaidSupports(
+    string combinedText,
+    string firstTwoLines,
+    List<KeyValuePair<string, Rect>> linePositions)
         {
             var paidSupportsList = new List<PaidSupports>();
             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             string[] firstTwoLinesArray = firstTwoLines.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            string providerName = string.Empty; // Variable to store provider name
+            string providerName = string.Empty;
+
+            var headerColumnBBoxes = new List<Rect>
+    {
+        new Rect(41, 0, 126, 0),   // Column 1: AssessmentArea
+        new Rect(125, 0, 269, 0),  // Column 2: ServiceName
+        new Rect(268, 0, 427, 0),  // Column 3: ScopeOfService
+        new Rect(426, 0, 521, 0),  // Column 4: HowOftenHowMuch
+        new Rect(520, 0, 598, 0),  // Column 5: BeginDateEndDate
+        new Rect(597, 0, 700, 0)   // Column 6: FundingSource
+    };
 
             for (int i = 0; i < lines.Length; i++)
             {
-                // Check if the line contains the first header
                 if (lines[i].Contains(paidSupportsHeaders[0]))
                 {
-                    // Check for the presence of subsequent headers in the next lines
+                    // Check for all headers
                     bool headersFound = true;
                     for (int j = 1; j < paidSupportsHeaders.Count; j++)
                     {
@@ -809,7 +822,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                     if (headersFound)
                     {
                         // Reverse search for "Who is Responsible:" and capture the next line
-                        for (int k = i - 1; k >= 0; k--)
+                        for (int k = i - 1; k >= (i - 20); k--)
                         {
                             if (lines[k].Contains("Who is responsible:"))
                             {
@@ -822,58 +835,96 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             }
                         }
 
-                        i += paidSupportsHeaders.Count; // Move past the headers
+                        i += paidSupportsHeaders.Count; // Move past headers
+
+                        // Check for `firstTwoLinesArray`
+                        bool firstTwoLinesMatch = true;
+                        for (int j = 0; j < firstTwoLinesArray.Length; j++)
+                        {
+                            if (i + j >= lines.Length || lines[i + j].Trim() != firstTwoLinesArray[j].Trim())
+                            {
+                                firstTwoLinesMatch = false;
+                                break;
+                            }
+                        }
+
+                        if (firstTwoLinesMatch)
+                        {
+                            i += firstTwoLinesArray.Length + 2; // Skip over the matched lines
+                        }
+
+                        // Check for a valid assessment area if `firstTwoLinesArray` doesn't match
+                        if (i < lines.Length && !assessmentAreas.Contains(lines[i].Trim()))
+                        {
+                            continue; // Skip if the next line isn't a valid assessment area
+                        }
+
                         while (i < lines.Length)
                         {
-                            // Check for first two lines
-                            bool skipNextTwoLines = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i +1].Contains(firstTwoLinesArray[1]));
-
-                            if (skipNextTwoLines)
-                            {
-                                i += 4; // Skip the next four lines
-                                continue;
-                            }
-
                             var assessmentArea = lines[i].Trim();
-
                             if (!assessmentAreas.Contains(assessmentArea))
                             {
-                                if (skipNextTwoLines)
-                                {
-                                    i += 4; // Skip the next four lines
-                                    continue;
-                                }
-
                                 break;
                             }
 
                             var paidSupport = new PaidSupports
                             {
-                                ProviderName = providerName, // Assign providerName to each row
+                                ProviderName = providerName,
                                 AssessmentArea = assessmentArea,
-                                ServiceName = GetNextLine(lines, ref i),
-                                ScopeOfService = GetNextLine(lines, ref i),
-                                HowOftenHowMuch = GetNextLine(lines, ref i),
-                                BeginDateEndDate = GetNextLine(lines, ref i),
-                                FundingSource = GetNextLine(lines, ref i),
+                                ServiceName = string.Empty,
+                                ScopeOfService = string.Empty,
+                                HowOftenHowMuch = string.Empty,
+                                BeginDateEndDate = string.Empty,
+                                FundingSource = string.Empty
                             };
 
+                            int processedLinesCount = 0;
+                            for (int j = 0; j < 6; j++)
+                            {
+                                int nextIndex = i + j;
+                                if (nextIndex < lines.Length)
+                                {
+                                    var currentBBox = linePositions[nextIndex].Value;
+                                    for (int columnIndex = 0; columnIndex < headerColumnBBoxes.Count; columnIndex++)
+                                    {
+                                        if (IsWithinBBox(currentBBox, headerColumnBBoxes[columnIndex]))
+                                        {
+                                            switch (columnIndex)
+                                            {
+                                                case 0:
+                                                    paidSupport.AssessmentArea += " " + lines[nextIndex].Trim();
+                                                    break;
+                                                case 1:
+                                                    paidSupport.ServiceName += " " + lines[nextIndex].Trim();
+                                                    break;
+                                                case 2:
+                                                    paidSupport.ScopeOfService += " " + lines[nextIndex].Trim();
+                                                    break;
+                                                case 3:
+                                                    paidSupport.HowOftenHowMuch += " " + lines[nextIndex].Trim();
+                                                    break;
+                                                case 4:
+                                                    paidSupport.BeginDateEndDate += " " + lines[nextIndex].Trim();
+                                                    break;
+                                                case 5:
+                                                    paidSupport.FundingSource += " " + lines[nextIndex].Trim();
+                                                    break;
+                                            }
+                                            processedLinesCount++;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            i += processedLinesCount;
                             paidSupportsList.Add(paidSupport);
 
-                            // Move to the next line to check if it's the start of a new assessment area
+                            // Check for new assessment area
                             i++;
                             if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
                             {
-                                // Check for first two lines
-                                bool skipNextTwoLines2 = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
-
-                                if (skipNextTwoLines2)
-                                {
-                                    i += 4; // Skip the next four lines
-                                    continue;
-                                }
-
-                                i--; // Step back one line as the current line doesn't start a new assessment area
+                                i--;
                                 break;
                             }
                         }
@@ -884,90 +935,124 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             return paidSupportsList;
         }
 
-        List<AdditionalSupports> ProcessCombinedTextForAdditionalSupports(string combinedText, string firstTwoLines)
+        List<AdditionalSupports> ProcessCombinedTextForAdditionalSupports(
+            string combinedText,
+            string firstTwoLines,
+            List<KeyValuePair<string, Rect>> linePositions)
         {
-            var additionalSupportsList = new List<AdditionalSupports>();
-            string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            string[] firstTwoLinesArray = firstTwoLines.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                var additionalSupportsList = new List<AdditionalSupports>();
+                string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] firstTwoLinesArray = firstTwoLines.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            for (int i = 0; i < lines.Length; i++)
-            {
-                // Check if the line contains the first header
-                if (lines[i].Contains(additionalSupportsHeaders[0]))
+                var headerColumnBBoxes = new List<Rect>
+                    {
+                        new Rect(41, 0, 257, 0),   // Column 1: AssessmentArea
+                        new Rect(258, 0, 393, 0),  // Column 2: WhoSupports
+                        new Rect(392, 0, 620, 0),  // Column 3: WhatSupportLooksLike
+                        new Rect(619, 0, 715, 0),  // Column 4: WhenHowOften
+                    };
+
+                for (int i = 0; i < lines.Length; i++)
                 {
-                    // Check for the presence of subsequent headers in the next lines
-                    bool headersFound = true;
-                    for (int j = 1; j < additionalSupportsHeaders.Count; j++)
+                    // Check if the line contains the first header
+                    if (lines[i].Contains(additionalSupportsHeaders[0]))
                     {
-                        if (i + j >= lines.Length || !lines[i + j].Contains(additionalSupportsHeaders[j]))
+                        // Check for the presence of subsequent headers in the next lines
+                        bool headersFound = true;
+                        for (int j = 1; j < additionalSupportsHeaders.Count; j++)
                         {
-                            headersFound = false;
-                            break;
+                            if (i + j >= lines.Length || !lines[i + j].Contains(additionalSupportsHeaders[j]))
+                            {
+                                headersFound = false;
+                                break;
+                            }
                         }
-                    }
 
-                    if (headersFound)
-                    {
-                        i += additionalSupportsHeaders.Count; // Move past the headers
-                        while (i < lines.Length)
+                        if (headersFound)
                         {
-                            // Check for first two lines
-                            bool skipNextTwoLines = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
-
-                            if (skipNextTwoLines)
+                            i += additionalSupportsHeaders.Count; // Move past the headers
+                            while (i < lines.Length)
                             {
-                                i += 4; // Skip the next four lines
-                                continue;
-                            }
-
-                            var assessmentArea = lines[i].Trim();
-                            if (!assessmentAreas.Contains(assessmentArea))
-                            {
-                                // Check for first two lines and skip if found
-                                bool skipNextTwoLines2 = (i + 1 < lines.Length && lines[i + 1].Contains(firstTwoLinesArray[0]) && lines[i + 2].Contains(firstTwoLinesArray[1]));
-
-                                if (skipNextTwoLines2)
+                                var assessmentArea = lines[i].Trim();
+                                if (!assessmentAreas.Contains(assessmentArea))
                                 {
-                                    i += 4; // Skip the next four lines
-                                    continue;
+                                    break;
                                 }
 
-                                break;
-                            }
-
-                            var additionalSupport = new AdditionalSupports
-                            {
-                                AssessmentArea = assessmentArea,
-                                WhoSupports = GetNextLine(lines, ref i),
-                                WhatSupportLooksLike = GetNextLine(lines, ref i),
-                                WhenHowOften = GetNextLine(lines, ref i),
-                            };
-
-                            additionalSupportsList.Add(additionalSupport);
-
-                            // Move to the next line to check if it's the start of a new assessment area
-                            i++;
-                            if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
-                            {
-                                // Check for first two lines and skip if found
-                                bool skipNextTwoLines3 = (i + 1 < lines.Length && lines[i].Contains(firstTwoLinesArray[0]) && lines[i + 1].Contains(firstTwoLinesArray[1]));
-
-                                if (skipNextTwoLines3)
+                                var additionalSupport = new AdditionalSupports
                                 {
-                                    i += 4; // Skip the next four lines
-                                    continue;
+                                    AssessmentArea = assessmentArea,
+                                    WhoSupports = GetNextLine(lines, ref i),
+                                    WhatSupportLooksLike = GetNextLine(lines, ref i),
+                                    WhenHowOften = GetNextLine(lines, ref i),
+                                };
+
+                                // Check for `firstTwoLinesArray`
+                                bool firstTwoLinesMatch = true;
+                                for (int j = 0; j < firstTwoLinesArray.Length; j++)
+                                {
+                                    if ((i + 1) + j >= lines.Length || lines[(i + 1) + j].Trim() != firstTwoLinesArray[j].Trim())
+                                    {
+                                        firstTwoLinesMatch = false;
+                                        break;
+                                    }
                                 }
 
-                                i--; // Step back one line as the current line doesn't start a new assessment area
-                                break;
+                                if (firstTwoLinesMatch)
+                                {
+                                    i += firstTwoLinesArray.Length; // Move past the matched lines
+
+                                    // Check the next 4 lines for values fitting in the header column bounding boxes
+                                    for (int j =2; j < 4; j++)
+                                    {
+                                        int nextIndex = i + j;
+                                        if (nextIndex < lines.Length)
+                                        {
+                                            var currentBBox = linePositions[nextIndex].Value;
+                                            for (int columnIndex = 0; columnIndex < headerColumnBBoxes.Count; columnIndex++)
+                                            {
+                                                if (IsWithinBBox(currentBBox, headerColumnBBoxes[columnIndex]))
+                                                {
+                                                    switch (columnIndex)
+                                                    {
+                                                        case 0:
+                                                            additionalSupport.AssessmentArea += " " + lines[nextIndex].Trim();
+                                                            break;
+                                                        case 1:
+                                                            additionalSupport.WhoSupports += " " + lines[nextIndex].Trim();
+                                                            break;
+                                                        case 2:
+                                                            additionalSupport.WhatSupportLooksLike += " " + lines[nextIndex].Trim();
+                                                            break;
+                                                        case 3:
+                                                            additionalSupport.WhenHowOften += " " + lines[nextIndex].Trim();
+                                                            break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Adjust `i` to the last processed line
+                                    i += 3; // Move past the lines appended to the additional support
+                                }
+
+                                additionalSupportsList.Add(additionalSupport);
+
+                                // Move to the next line to check if it's the start of a new assessment area
+                                i++;
+                                if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
+                                {
+                                    i--; // Step back one line as the current line doesn't start a new assessment area
+                                    break;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            return additionalSupportsList;
-        }
+                return additionalSupportsList;
+            }
 
         List<ProfessionalReferrals> ProcessCombinedTextForProfessionalReferrals(string combinedText, string firstTwoLines)
         {
