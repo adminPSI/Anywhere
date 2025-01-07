@@ -733,10 +733,10 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                             if (firstTwoLinesMatch)
                             {
-                                i += firstTwoLinesArray.Length; // Move past the matched lines
+                                i += firstTwoLinesArray.Length + 3; // Move past the matched lines
 
                                 // Check the next 4 lines for values fitting in the header column bounding boxes
-                                for (int j = 2; j < 5; j++)
+                                for (int j = 0; j <= 4; j++)
                                 {
                                     int nextIndex = i + j;
                                     if (nextIndex < lines.Length)
@@ -744,7 +744,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                         var currentBBox = linePositions[nextIndex].Value;
                                         for (int columnIndex = 0; columnIndex < headerColumnBBoxes.Count; columnIndex++)
                                         {
-                                            if (IsWithinBBox(currentBBox, headerColumnBBoxes[columnIndex]))
+                                            if (IsWithinBBox(currentBBox, headerColumnBBoxes[columnIndex]) && currentBBox.y1 > 537)
                                             {
                                                 switch (columnIndex)
                                                 {
@@ -891,9 +891,6 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                         {
                                             switch (columnIndex)
                                             {
-                                                case 0:
-                                                    paidSupport.AssessmentArea += " " + lines[nextIndex].Trim();
-                                                    break;
                                                 case 1:
                                                     paidSupport.ServiceName += " " + lines[nextIndex].Trim();
                                                     break;
