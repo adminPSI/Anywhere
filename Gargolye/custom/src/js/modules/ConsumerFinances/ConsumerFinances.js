@@ -1013,24 +1013,3 @@ const ConsumerFinances = (() => {
     backFromConsumerFinanceEditAccount,
   };
 })();
-
-// $.session.CFUpdate = true;
-// $.session.CFDelete = true;
-// $.session.CFView = true;
-// $.session.CFInsert = true;
-// $.session.CFADDPayee = true;
-// $.session.CFEditAccountEntries = true;
-// $.session.CFInsertAccounts = true;
-// $.session.CFUpdateEditAccounts = true;
-// $.session.CFViewEditAccounts = true;
-// $.session.CFViewChecking = true;
-// $.session.CFViewCraditCard = true;
-// $.session.CFViewFoodStamp = true;
-// $.session.CFViewPettyCash = true;
-// $.session.CFViewShaving = true;
-// $.session.CFViewChristmasClub = true;
-// $.session.CFViewSystem20183A = true;
-// $.session.CFViewSystem20183 = true;
-// $.session.CFViewOhioEBT = true;
-// $.session.CFViewViewFoodStampDebitCardEBT = true;
-// $.session.ConsumerFinanceCaseLoad = true;
