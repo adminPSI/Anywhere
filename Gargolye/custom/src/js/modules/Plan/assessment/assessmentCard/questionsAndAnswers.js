@@ -553,7 +553,7 @@
         }
 
         if (sectionId === '41') {
-          await planValidation.updateAnswerWorkingSection(assessmentId);
+          //await planValidation.updateAnswerWorkingSection(assessmentId);
           tableOfContents.showUnansweredQuestionCount();
         }
       }
