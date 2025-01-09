@@ -1639,7 +1639,7 @@ const OOD = (() => {
     function checkCreatePopupRequiredFields(formNumber) {
        // var createreferenceNumbersDropdown = document.querySelector('#createreferenceNumbersDropdown');
        
-    if (formNumber != '3') {
+   // if (formNumber != '3') {
        let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
 
         if (createreferenceNumbersDropDown.value === '' || createreferenceNumbersDropDown.value === '%') { 
@@ -1650,7 +1650,7 @@ const OOD = (() => {
             createreferenceNumbersDropDown.parentElement.classList.remove('error');
             createfilterPopupCreateBTN.classList.remove('disabled');
         }
-     } 
+   //  } 
     }
 
     function createfilterPopupCreateBTNStatus() {
