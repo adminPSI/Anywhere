@@ -707,9 +707,10 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                     if (headersFound)
                     {
-                        i += experienceHeaders.Count; // Move past the headers
                         while (i < lines.Length)
                         {
+                            i += experienceHeaders.Count; // Move past the headers
+
                             var experience = new Experiences
                             {
                                 WhatNeedsToHappen = lines[i],
@@ -766,7 +767,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                     }
                                 }
 
-                                i += 3; // Adjust index to account for processed lines
+                                i += 2; // Adjust index to account for processed lins
                             }
 
                             // Move to the next line and continue
@@ -879,7 +880,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             };
 
                             int processedLinesCount = 0;
-                            for (int j = 0; j < 6; j++)
+                            for (int j = 0; j <= 6 ; j++)
                             {
                                 int nextIndex = i + j;
                                 if (nextIndex < lines.Length)
