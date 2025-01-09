@@ -798,6 +798,11 @@ namespace Anywhere
             return singleEntryWorker.getSingleEntryEvvEligibilityJSON(token, consumerId, entryDate);
         }
 
+        public SingleEntryWorker.SingleEntryConsumersPresent[] getUndocumentedServicesForWarning(string entryDate, string token)
+        {
+            return singleEntryWorker.getUndocumentedServicesForWarning(entryDate, token);
+        }
+
         public string getClockedInDayServicesAtLocationCounts(string token, string locationId)
         {
             return dg.getClockedInDayServicesAtLocationCounts(token, locationId);

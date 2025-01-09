@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereWorkshopWorkerTwo;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
+using static Anywhere.service.Data.SingleEntryWorker;
 
 namespace Anywhere.Data
 {
@@ -1899,6 +1900,20 @@ namespace Anywhere.Data
                 return "570: Error getting single entry reason codes";
             }
 
+        }
+        public string getUndocumentedServicesForWarning(string entryDate, string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getUndocumentedServicesForWarning" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_SingleEntry_GetUndocumentedServicesForWarning('" + entryDate + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("570", ex.Message + " ANYW_SingleEntry_GetUndocumentedServicesForWarning('" + entryDate + "')");
+                return "570: Error getting getUndocumentedServicesForWarning";
+            }
         }
 
         public string getRemainingGoalsCountForDashboard(string token)

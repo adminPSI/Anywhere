@@ -940,6 +940,15 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getUndocumentedServicesForWarning/")]
+        SingleEntryWorker.SingleEntryConsumersPresent[] getUndocumentedServicesForWarning(string entryDate, string token);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,

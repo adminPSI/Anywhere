@@ -605,6 +605,7 @@ namespace Anywhere.service.Data
             public string defaultplangroup { get; set; }
             public string defaultplangroupname { get; set; }
             public string defaultcontact { get; set; }
+            public string anyUndocumentedServices { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)

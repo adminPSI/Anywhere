@@ -344,6 +344,12 @@ namespace Anywhere.service.Data
             SingleEntryEvvEligibility[] evvEligibilityObj = js.Deserialize<SingleEntryEvvEligibility[]>(evvEligibilityString);
             return evvEligibilityObj;
         }
+        public SingleEntryConsumersPresent[] getUndocumentedServicesForWarning(string entryDate, string token)
+        {
+            string getUndocumentedString = dg.getUndocumentedServicesForWarning(entryDate, token);
+            SingleEntryConsumersPresent[] getUndocumentedObj = js.Deserialize<SingleEntryConsumersPresent[]>(getUndocumentedString);
+            return getUndocumentedObj;
+        }
 
         public class SingleEntryEvvEligibility
         {

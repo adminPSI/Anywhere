@@ -389,6 +389,7 @@ $.session.billableTransportation = 'N';
 $.session.requireTimeEntryTransportationTimes = 'N';
 $.session.ohioEVVChangeDate = '';
 $.session.anyRequireEndTime = '';
+$.session.anyUndocumentedServices = '';
 $(window).resize(function () {
     //resizeActionCenter();
 });

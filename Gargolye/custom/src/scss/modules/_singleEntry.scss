@@ -672,3 +672,14 @@ button.evv-highlight {
 .totalhoursdiv{
     padding-top: 6px;
 }
+
+.consumerNameList {
+    font-weight: $bold;
+    color: $primary;
+    margin-bottom: 15px;
+
+    span {
+        font-weight: $bold;
+        color: $font-dark;
+    }
+}
