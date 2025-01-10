@@ -1814,16 +1814,16 @@ var timeEntryCard = (function () {
         });
         saveBtn.addEventListener('click', async event => {
             const undocumentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate);
-            if ($.session.anyUndocumentedServices === 'Y' && endTime != '' && undocumentedServicesList.length > 0) {
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && undocumentedServicesList.length > 0) {
                 undocumentedServicesPopup(event, undocumentedServicesList,'SAVE');
             }
             else {
                 await saveEvent(event);
             }
         });
-        saveAndSumbitBtn.addEventListener('click', async event => {
+        saveAndSumbitBtn.addEventListener('click', async event => { 
             const undocumentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate); 
-            if ($.session.anyUndocumentedServices === 'Y' && endTime != '' && undocumentedServicesList.length > 0) {
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && undocumentedServicesList.length > 0) {
                 undocumentedServicesPopup(event, undocumentedServicesList, 'SAVESUBMIT');
             }
             else {
@@ -1854,6 +1854,7 @@ var timeEntryCard = (function () {
             style: 'secondary',
             type: 'contained',
             callback: async () => {
+                POPUP.hide(confirmPopup); 
                 if (NameOfEvent ==='SAVESUBMIT')
                     await saveAndSubmitEvent(event);
                 else
