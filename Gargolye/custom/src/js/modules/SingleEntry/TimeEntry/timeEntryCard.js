@@ -1814,7 +1814,7 @@ var timeEntryCard = (function () {
         });
         saveBtn.addEventListener('click', async event => {
             const undocumentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate);
-            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && undocumentedServicesList.length > 0) {
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedServicesList.length > 0) {
                 undocumentedServicesPopup(event, undocumentedServicesList,'SAVE');
             }
             else {
@@ -1823,7 +1823,7 @@ var timeEntryCard = (function () {
         });
         saveAndSumbitBtn.addEventListener('click', async event => { 
             const undocumentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate); 
-            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && undocumentedServicesList.length > 0) {
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedServicesList.length > 0) {
                 undocumentedServicesPopup(event, undocumentedServicesList, 'SAVESUBMIT');
             }
             else {
