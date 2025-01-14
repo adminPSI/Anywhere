@@ -1348,6 +1348,8 @@ const OOD = (() => {
        
        if (filterValues.referenceNumber === '%' || filterValues.referenceNumber === 'ALL') {
         dropdown.populate('createreferenceNumbersDropdown', data, createFilterValues.referenceNumber);
+        createFilterValues.referenceNumber = filterValues.referenceNumber
+        checkCreatePopupRequiredFields(formNumber);
        } else {
         dropdown.populate('createreferenceNumbersDropdown', data, filterValues.referenceNumber);
         createFilterValues.referenceNumber = filterValues.referenceNumber
@@ -1526,7 +1528,10 @@ const OOD = (() => {
             text: 'Cancel',
             style: 'secondary',
             type: 'outlined',
-            callback: () => POPUP.hide(createfilterPopup),
+            callback: () => {
+                createFilterValues.referenceNumber = '';
+                POPUP.hide(createfilterPopup)
+            },
         });
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
@@ -1587,7 +1592,7 @@ const OOD = (() => {
                 createServiceDateStartInput.classList.remove('error'); 
                 createServiceDateEndInput.classList.remove('error'); 
             }
-
+            checkCreatePopupRequiredFields(formNumber);
             createfilterPopupCreateBTNStatus();
         });
         createServiceDateEndInput.addEventListener('input', event => {          
@@ -1604,6 +1609,7 @@ const OOD = (() => {
                 createServiceDateStartInput.classList.remove('error'); 
                 createServiceDateEndInput.classList.remove('error'); 
             }
+            checkCreatePopupRequiredFields(formNumber);
             createfilterPopupCreateBTNStatus();
         });
         employeeDropdown.addEventListener('change', event => {
@@ -1614,6 +1620,7 @@ const OOD = (() => {
      
         createreferenceNumbersDropdown.addEventListener('change', event => {
             createFilterValues.referenceNumber = event.target.value;
+            filterValues.referenceNumber = event.target.value;
             checkCreatePopupRequiredFields(formNumber);
             createfilterPopupCreateBTNStatus();
         });
