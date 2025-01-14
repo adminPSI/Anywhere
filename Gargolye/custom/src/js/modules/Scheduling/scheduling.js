@@ -46,13 +46,14 @@ var scheduling = (function () {
   }
 
   function init() {
+    //NEW
     //PERMISSION = SCHEDULE VIEW ONLY
-    if (!$.session.schedulingUpdate) {
-      setActiveModuleSectionAttribute('scheduling-calendar');
-      schedulingCalendar.init();
-    } else {
-      loadSchedulingLanding();
-    }
+    // if (!$.session.schedulingUpdate) {
+    //   setActiveModuleSectionAttribute('scheduling-calendar');
+    //   schedulingCalendar.init();
+    // } else {
+    //   loadSchedulingLanding();
+    // }
   }
 
   return {
