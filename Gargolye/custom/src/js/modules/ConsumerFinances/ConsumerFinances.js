@@ -183,20 +183,22 @@ const ConsumerFinances = (() => {
     let tableData = ConsumerFinancesEntries.getAccountTransectionEntriesResult.map(entry => {
       let checkNo = entry.checkno;
       let category = entry.category;
+      let payee = entry.payee;
 
       if (entry.categoryCode !== 'C') {
         category = '';
+        payee = entry.payee2;
 
         if (entry.categoryCode === 'T') {
           checkNo = 'Transfer';
         }
       }
-      
+
       return {
         values: [
           entry.activityDate,
           entry.account,
-          entry.payee,
+          payee,
           category,
           '$' + entry.amount,
           checkNo,
