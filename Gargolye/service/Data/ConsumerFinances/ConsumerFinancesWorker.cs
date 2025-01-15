@@ -62,7 +62,8 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string expance { get; set; }
             [DataMember(Order = 20)]
             public string isExpance { get; set; }
-
+            [DataMember(Order = 21)]
+            public string payee2 { get; set; }
         }
 
         [DataContract]
