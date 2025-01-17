@@ -268,7 +268,7 @@ const planData = (() => {
       ],
       newOrExisting: [
         { value: '%', text: '' },
-        { value: '1', text: 'New' },
+        { value: '1', text: 'New' },//
         { value: '2', text: 'Existing' },
       ],
       howOftenHowMuchFrequency: [
