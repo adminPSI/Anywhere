@@ -371,7 +371,7 @@ $.session.sendWaitingListEmail = false;
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
 
 //Needs updated for every release.
-$.session.version = '2024.3';
+$.session.version = '2024.3.1';
 //State Abbreviation
 $.session.stateAbbreviation = '';
 // temp holder for the device GUID when logging in
