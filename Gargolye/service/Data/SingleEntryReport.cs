@@ -282,6 +282,7 @@ namespace Anywhere.service.Data
             public decimal Hours { get; set; }
             public int Consumers { get; set; }
             public decimal Miles { get; set; }
+            public string Employee { get; set; }
         }
     }
 }
