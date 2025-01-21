@@ -258,6 +258,26 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             extractedTables.additionalSupports.AddRange(additionalSupports);
                             extractedTables.professionalReferrals.AddRange(professionalReferrals);
                             extractedTables.experiences.AddRange(experiences);
+
+                            foreach (var risk in extractedTables.riskAssessments)
+                            {
+                                risk.AssessmentArea = ValidateAndTrimAssessmentArea(risk.AssessmentArea);
+                            }
+
+                            foreach (var support in extractedTables.paidSupports)
+                            {
+                                support.AssessmentArea = ValidateAndTrimAssessmentArea(support.AssessmentArea);
+                            }
+
+                            foreach (var support in extractedTables.additionalSupports)
+                            {
+                                support.AssessmentArea = ValidateAndTrimAssessmentArea(support.AssessmentArea);
+                            }
+
+                            foreach (var referral in extractedTables.professionalReferrals)
+                            {
+                                referral.AssessmentArea = ValidateAndTrimAssessmentArea(referral.AssessmentArea);
+                            }
                         }
                     }
                 }
@@ -901,7 +921,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             };
 
                             int processedLinesCount = 0;
-                            for (int j = 0; j <= 6 ; j++)
+                            for (int j = 0; j <= 6 && processedLinesCount < 6; j++)
                             {
                                 int nextIndex = i + j;
                                 if (nextIndex < lines.Length)
@@ -1264,6 +1284,18 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             }
 
             return failedImports; // Return the list of failed imports (or an empty list if all succeeded)
+        }
+
+        private string ValidateAndTrimAssessmentArea(string input)
+        {
+            foreach (string area in assessmentAreas)
+            {
+                if (input.Contains(area))
+                {
+                    return area; // Return the matched value from the list
+                }
+            }
+            return null; // Return null if no match is found
         }
 
 
