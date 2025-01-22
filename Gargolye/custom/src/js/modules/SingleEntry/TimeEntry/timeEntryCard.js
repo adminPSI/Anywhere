@@ -1813,19 +1813,35 @@ var timeEntryCard = (function () {
             buildTransportationPopup();
         });
         saveBtn.addEventListener('click', async event => {
+            //118744 - ADV-ANY-SE: Add warning to users if services are not documented for
+            let documentNameList = [];
             const undocumentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate);
-            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedServicesList.length > 0) {
-                undocumentedServicesPopup(event, undocumentedServicesList,'SAVE');
+            consumerIds.forEach(async id => {
+                if (undocumentedServicesList.find(x => x.consumerid == id)) {
+                    documentNameList.push(undocumentedServicesList.find(x => x.consumerid == id).consumername)
+                }
+            }); 
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && documentNameList.length > 0) {
+                undocumentedServicesPopup(event, documentNameList,'SAVE');
             }
+            ////
             else {
                 await saveEvent(event);
             }
         });
         saveAndSumbitBtn.addEventListener('click', async event => { 
+            //118744 - ADV - ANY - SE: Add warning to users if services are not documented for
+            let documentNameList = [];
             const undocumentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate); 
-            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedServicesList.length > 0) {
-                undocumentedServicesPopup(event, undocumentedServicesList, 'SAVESUBMIT');
+            consumerIds.forEach(async id => {
+                if (undocumentedServicesList.find(x => x.consumerid == id)){
+                    documentNameList.push(undocumentedServicesList.find(x => x.consumerid == id).consumername)
+                }
+            }); 
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && documentNameList.length > 0) {
+                undocumentedServicesPopup(event, documentNameList, 'SAVESUBMIT');
             }
+            ////
             else {
                 // Save entry first
                 await saveAndSubmitEvent(event);
@@ -1843,7 +1859,8 @@ var timeEntryCard = (function () {
             clearAllGlobalVariables();
         });
     }
-    function undocumentedServicesPopup(event, undocumentedServicesList, NameOfEvent) {
+    //118744 - ADV-ANY-SE: Add warning to users if services are not documented for
+    function undocumentedServicesPopup(event, documentNameList, NameOfEvent) {
         const confirmPopup = POPUP.build({
             hideX: false,
             classNames: 'warning',
@@ -1875,9 +1892,9 @@ var timeEntryCard = (function () {
         const messageConfirm = document.createElement('p');
         const vendorSection = document.createElement('div');
 
-        undocumentedServicesList.forEach(rel => {
+        documentNameList.forEach(rel => {
             const vendorDisp = document.createElement('div');
-            vendorDisp.innerHTML = `<span>${rel.consumername}</span>`;
+            vendorDisp.innerHTML = `<span>${rel}</span>`;
             vendorDisp.classList.add('consumerNameList');
             vendorSection.appendChild(vendorDisp);
         });
