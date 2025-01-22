@@ -121,7 +121,7 @@ namespace Anywhere.service.Data
             var endPath = crPath.IndexOf("</path>");
             crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
 
-            crName = "SingleEntry.rpt";
+            crName = "SingleEntrySupervisor.rpt";
             //string test = string.Format(crPath, crName);
             try
             {
