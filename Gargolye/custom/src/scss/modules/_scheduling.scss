@@ -1,5 +1,115 @@
+//* NEW
+//*=====================================
+// Scheduling
+.scheduleWrap {
+  padding: 10px;
+}
+.scheduleNav{
+  display: flex;
+  justify-content: space-between;
+}
+#locationDropdown {
+  min-width: 200px;
+}
 // Calendar
-//=====================
+.calendarWrap {
+  padding: 10px;
+}
+.calendarHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.calendarTitleEle {
+  font-size: 32px;
+}
+.calendarNav{
+  display: flex;
+  align-items: center;
+
+  .viewToggle {
+    background: $black;
+    border-radius: 2px;
+    padding: 2px;
+    order: 1;
+    
+    button {
+      cursor: pointer;
+      background: $gray;
+      color: $black;
+      padding: 4px 12px;
+      margin-right: 2px;
+
+      &.active {
+        background: $primary;
+        color: $white;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .dateNav {
+    display: flex;
+    justify-content: space-between;
+    margin-right: 20px;
+    order: 0;
+
+    button {
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+  }
+}
+.calendar {
+  background: $primary;
+  border-radius: $r-sm;
+
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: 40px;
+  grid-auto-rows: minmax(80px, auto);
+  grid-gap: 2px;
+  padding: 6px;
+
+  .month-view,
+  .week-view,
+  .day-view {
+    display: contents;
+  }
+
+  .dayNameHeader {
+    display: contents;
+
+    > div {
+      background: $white;
+      font-weight: $_bold;
+      font-size: 18px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .week {
+    display: contents;
+
+    .day {
+      background: $white;
+    }
+  }
+}
+.calendar .month-view {
+  .day {
+    &.notSameMonth  {
+      background: $gray;
+    }
+  }
+}
 
 //* OLD
 //*==================================================================

@@ -1,62 +1,57 @@
-$.session.schedulingUpdate = true;
-$.session.schedulingView = true;
-$.session.schedAllowCallOffRequests = 'Y';
-$.session.schedRequestOpenShifts = 'Y';
-$.session.hideAllScheduleButton = false;
-
-const scheduleArray = [
-  {
-    name: 'My Shifts',
-    groupId: 1,
-    events: [],
-    groups: null,
-  },
-  {
-    name: 'All Shifts',
-    groupId: 2,
-    events: [],
-    groups: null,
-  },
-  {
-    name: 'Open Shifts',
-    groupId: 3,
-    events: [],
-    groups: null,
-  },
-  {
-    name: 'Pending Request Open Shifts',
-    groupId: 4,
-    events: [],
-    groups: null,
-  },
-  {
-    name: 'Pending Call Off Shifts',
-    groupId: 5,
-    events: [],
-    groups: null,
-  },
-  {
-    name: 'Appointments',
-    groupId: 6,
-    events: [],
-    groups: null,
-  },
-];
-
 const Calendar = (function () {
   const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const MONTH_NAMES = {
+    0: 'January',
+    1: 'February',
+    2: 'March',
+    3: 'April',
+    4: 'May',
+    5: 'June',
+    6: 'July',
+    7: 'August',
+    8: 'September',
+    9: 'October',
+    10: 'November',
+    11: 'December',
+  };
   // DOM
   const wrapperEle = document.createElement('div');
   const calendarEle = document.createElement('div');
+  const calendarHeaderEle = document.createElement('div');
+  const calendarTitleEle = document.createElement('div');
   const calendarNavEle = document.createElement('div');
-  // Dates
+
+  const viewBtnEle = {
+    month: document.createElement('button'),
+    week: document.createElement('button'),
+    day: document.createElement('button'),
+  };
+
+  const navBtnEle = {
+    next: document.createElement('button'),
+    prev: document.createElement('button'),
+    today: document.createElement('button'),
+  };
+  const monthDOMCache = {};
+
+  // Date
   let currentView = 'month';
   let currentDate = dates.getTodaysDateObj();
   const todaysDate = dates.getTodaysDateObj();
 
+  function renderEvents(events = []) {
+    // sort events by date/time
+    events
+      .sort((a, b) => {})
+      .forEach(e => {
+        const eventEle = document.createElement('div');
+        eventEle.addEventListener('click', () => {});
+      });
+  }
+
   function renderMonthView() {
     const containerEle = document.createElement('div');
-    containerEle.className = 'calendar-grid month-view';
+    containerEle.className = 'month-view';
 
     const firstDayOfMonth = dates.startOfMonth(currentDate);
     const lastDayOfMonth = dates.endOfMonth(currentDate);
@@ -71,8 +66,12 @@ const Calendar = (function () {
       end: endWeekLastDay,
     });
 
+    // cal header
+    calendarTitleEle.textContent = `${MONTH_NAMES[currentDate.getMonth()]} - ${currentDate.getFullYear()}`;
+
     // day header row
     const dayHeaderRowEle = document.createElement('div');
+    dayHeaderRowEle.className = 'dayNameHeader';
     containerEle.appendChild(dayHeaderRowEle);
     DAY_NAMES.forEach(dayName => {
       const nameCellEle = document.createElement('div');
@@ -81,30 +80,32 @@ const Calendar = (function () {
     });
 
     let weekWrapEle;
-    daysToRender.forEach(day => {
+    daysToRender.forEach((day, index) => {
       if (index % 7 === 0) {
         weekWrapEle = document.createElement('div');
+        weekWrapEle.className = 'week';
         containerEle.appendChild(weekWrapEle);
       }
 
       const dayCellEle = document.createElement('div');
+      dayCellEle.textContent = day.getDate();
+      dayCellEle.className = 'day';
       weekWrapEle.appendChild(dayCellEle);
 
-      // TODO: add the 'day number' to the cell
+      monthDOMCache[day] = dayCellEle;
 
-      // TODO: check if day is in same month (get isSameMonth from datefns)
-      if (dates.isSameMonth(day, currentDate)) {
-        dayCellEle.classList.add('TODO');
+      containerEle.appendChild(weekWrapEle);
+
+      if (!dates.isSameMonth(day, currentDate)) {
+        dayCellEle.classList.add('notSameMonth');
       }
-
-      // TODO: add events to day
     });
 
     calendarEle.appendChild(containerEle);
   }
   function renderWeekView() {
     const containerEle = document.createElement('div');
-    containerEle.className = 'calendar-grid week-view';
+    containerEle.className = 'week-view';
 
     const firstDayOfWeek = dates.startOfWeek(currentDate);
     const lastDayOfWeek = dates.endOfWeek(currentDate);
@@ -128,9 +129,9 @@ const Calendar = (function () {
       weekWrapEle.appendChild(dayCellEle);
 
       // TODO: check if day is in same month (get isSameMonth from datefns)
-      if (dates.isSameMonth(day, currentDate)) {
-        dayCellEle.classList.add('TODO');
-      }
+      // if (dates.isSameMonth(day, currentDate)) {
+      //   dayCellEle.classList.add('TODO');
+      // }
 
       // TODO: add events to day
     });
@@ -139,7 +140,7 @@ const Calendar = (function () {
   }
   function renderDayView() {
     const containerEle = document.createElement('div');
-    containerEle.className = 'calendar-grid day-view';
+    containerEle.className = 'day-view';
 
     // TODO: add events to day
 
@@ -147,6 +148,8 @@ const Calendar = (function () {
   }
 
   function renderCalendar() {
+    calendarEle.innerHTML = '';
+
     if (currentView === 'month') {
       renderMonthView();
     }
@@ -162,6 +165,9 @@ const Calendar = (function () {
     if (newView === currentView) return;
 
     calendarEle.innerHTML = '';
+
+    viewBtnEle[currentView].classList.remove('active');
+    viewBtnEle[newView].classList.add('active');
     currentView = newView;
 
     renderCalendar();
@@ -197,18 +203,50 @@ const Calendar = (function () {
   }
 
   function build() {
-    calendarNavEle.innerHTML = `
-      <div class="viewToggle">
-        <button data-view="month">Month</button>
-        <button data-view="week">Week</button>
-        <button data-view="day">Day</button>
-      </div>
-      <div class="">
-        <button data-nav="prev">&lt; Prev</button>
-        <button data-nav="today">Today</button>
-        <button data-nav="next">Next &gt;</button>
-      </div>
-    `;
+    // main
+    wrapperEle.classList.add('calendarWrap');
+    calendarHeaderEle.classList.add('calendarHeader');
+    calendarTitleEle.classList.add('calendarTitleEle');
+    calendarNavEle.classList.add('calendarNav');
+    calendarEle.classList.add('calendar');
+
+    // view buttons
+    viewBtnEle['month'].setAttribute('data-view', 'month');
+    viewBtnEle['week'].setAttribute('data-view', 'week');
+    viewBtnEle['day'].setAttribute('data-view', 'day');
+    viewBtnEle['month'].textContent = 'Month';
+    viewBtnEle['week'].textContent = 'Week';
+    viewBtnEle['day'].textContent = 'Day';
+
+    // nav buttons
+    navBtnEle['next'].setAttribute('data-nav', 'next');
+    navBtnEle['prev'].setAttribute('data-nav', 'prev');
+    navBtnEle['today'].setAttribute('data-nav', 'today');
+    navBtnEle['next'].textContent = 'Next >>';
+    navBtnEle['prev'].textContent = '<< Prev';
+    navBtnEle['today'].textContent = 'Today';
+
+    const viewToggleWrap = document.createElement('div');
+    const dateNavWrap = document.createElement('div');
+    viewToggleWrap.classList.add('viewToggle');
+    dateNavWrap.classList.add('dateNav');
+
+    viewToggleWrap.appendChild(viewBtnEle['month']);
+    viewToggleWrap.appendChild(viewBtnEle['week']);
+    viewToggleWrap.appendChild(viewBtnEle['day']);
+
+    dateNavWrap.appendChild(navBtnEle['prev']);
+    dateNavWrap.appendChild(navBtnEle['today']);
+    dateNavWrap.appendChild(navBtnEle['next']);
+
+    calendarNavEle.appendChild(dateNavWrap);
+    calendarNavEle.appendChild(viewToggleWrap);
+
+    calendarHeaderEle.appendChild(calendarTitleEle);
+    calendarHeaderEle.appendChild(calendarNavEle);
+
+    wrapperEle.appendChild(calendarHeaderEle);
+    wrapperEle.appendChild(calendarEle);
 
     calendarNavEle.addEventListener('click', e => {
       if (e.target.dataset.view) {
@@ -219,13 +257,17 @@ const Calendar = (function () {
         handleNavigation(e.target.dataset.nav);
       }
     });
-
-    wrapperEle.appendChild(calendarNavEle);
-    wrapperEle.appendChild(calendarEle);
   }
 
   function init() {
     build();
+
+    // set default view
+    viewBtnEle['month'].classList.add('active');
+
+    renderCalendar();
+
+    return wrapperEle;
   }
 
   return {
