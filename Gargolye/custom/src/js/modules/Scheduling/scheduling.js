@@ -796,6 +796,7 @@ const SchedulingCalendar = (function () {
   let locationDropdownEle;
   let employeeDropdownEle;
   let shiftTypeDropdownEle;
+  let shiftTypeNote;
 
   let schedules;
   let appointments;
@@ -966,6 +967,15 @@ const SchedulingCalendar = (function () {
 
     dropdown.populate(employeeDropdownEle, dropdownData, selectedEmployeeId);
   }
+  function updateShiftTypeNote(shiftCount) {
+    shiftTypeNote.textContent = `Un-Publishsed Shifts: ${shiftCount}`;
+
+    if (shiftCount === 0) {
+      shiftTypeNote.classList.add('error');
+    } else {
+      shiftTypeNote.classList.remove('error');
+    }
+  }
   function buildLocationDropdown() {
     const dropdownEle = dropdown.build({
       dropdownId: 'locationDropdown',
@@ -999,7 +1009,8 @@ const SchedulingCalendar = (function () {
   function buildShiftTypeDropdown() {
     const shiftTypeWrap = document.createElement('div');
     shiftTypeWrap.classList.add('shiftTypeWrap');
-    const shiftTypeNote = document.createElement('p');
+    shiftTypeNote = document.createElement('p');
+    shiftTypeNote.textContent = 'Un-Publishsed Shifts: 0';
     const dropdownEle = dropdown.build({
       dropdownId: 'shiftTypeDropdown',
       label: 'Show:',

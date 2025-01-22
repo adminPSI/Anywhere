@@ -61,4 +61,4 @@
     * [x] Default to All Shifts.
     * [ ] When updated, update calendar to only show shifts based on this selection. Use location_schedules.publish_date to determine if a shift is published or not.
     * [x] This dropdown should only be visible if the user has the Scheduler security key for the Anywhere Scheduling window.
-    * [ ] Below this dropdown, show a count of Un-Published Shifts displayed on the page. IF the count is 0, show green ELSE show red. This should only show if the user has the Scheduler security key.
+    * [x] Below this dropdown, show a count of Un-Published Shifts displayed on the page. IF the count is 0, show green ELSE show red. This should only show if the user has the Scheduler security key.
