@@ -794,69 +794,21 @@ const SchedulingCalendar = (function () {
 
   let scheduleCalEle;
   let locationDropdownEle;
+  let employeeDropdownEle;
+  let shiftTypeDropdownEle;
 
   let schedules;
   let appointments;
   let calendarEvents;
   let calendarAppointments;
   let locations;
+  let employees;
   let selectedLocationId;
+  let selectedEmployeeId;
+  let selectedShiftType;
 
   //TODO: put this somewhere => if (currentView === 'mine' && $.session.isPSI) return;
-
-  // Header
-  function populateLocationDropdown() {
-    const dropdownData = locations.map(d => ({
-      id: d.locationId,
-      value: d.locationName,
-      text: d.locationName,
-    }));
-
-    selectedLocationId = dropdownData[0].id;
-
-    dropdown.populate(locationDropdownEle, dropdownData);
-  }
-  function buildLocationDropdown() {
-    const locationDropdown = dropdown.build({
-      dropdownId: 'locationDropdown',
-      label: 'Locations:',
-      style: 'secondary',
-    });
-
-    locationDropdown.addEventListener('change', event => {
-      selectedLocationId = event.target.options[event.target.selectedIndex].id;
-    });
-
-    return locationDropdown;
-  }
-  function buildViewButton() {
-    $.session.hideAllScheduleButton;
-    return button.build({
-      id: 'scheduleViewBtn',
-      text: 'My Schedule',
-      style: 'secondary',
-      type: 'contained',
-      toggle: true,
-      toggleText: 'All Schedules',
-      callback: async e => {
-        console.log(e);
-
-        if (currentView === 'mine') {
-          currentView === 'all';
-          await getCalendarEvents(selectedLocationId, '%');
-          locationDropdownEle.classList.remove('disabled');
-          return;
-        }
-
-        if (currentView === 'all') {
-          currentView === 'mine';
-          await getCalendarEvents('%', $.session.PeopleId);
-          locationDropdownEle.classList.add('disabled');
-          return;
-        }
-      },
-    });
-  }
+  //TODO: ? should we combine calendarAppointments into calendarEvents? im thinking yes
 
   // Calendar Events
   function getEventGroup(personID, callOffStatus, requestShiftStatus) {
@@ -966,7 +918,154 @@ const SchedulingCalendar = (function () {
       };
     });
   }
+  function filterCalendarEventsByEmployee() {
+    return schedules.filter(sch => {});
+  }
 
+  // DOM
+  function populateLocationDropdown() {
+    const dropdownData = locations
+      .map(d => ({
+        value: d.locationId,
+        text: d.locationName,
+      }))
+      .filter(l => !l.id);
+
+    dropdownData.unshift({
+      value: '%',
+      text: 'All',
+    });
+
+    selectedLocationId = dropdownData[0].id;
+
+    dropdown.populate(locationDropdownEle, dropdownData, selectedLocationId);
+  }
+  function populateEmployeeDropdown() {
+    let dropdownData = [
+      {
+        value: '%',
+        text: 'All',
+      },
+      {
+        value: $.session.UserId,
+        text: `${$.session.Name}, ${$.session.LName}`,
+      },
+    ];
+
+    if ($.session.schedulingView) {
+      employees.forEach(d =>
+        dropdownData.push({
+          id: 'todo',
+          value: 'todo',
+          text: 'todo',
+        }),
+      );
+    }
+
+    selectedEmployeeId = $.session.UserId;
+
+    dropdown.populate(employeeDropdownEle, dropdownData, selectedEmployeeId);
+  }
+  function populateShiftTypeDropdown() {
+    //Values for this dropdown should be All Shifts, Published Shifts Only, and Un-Publishsed Shifts Only
+    let dropdownData = [
+      {
+        value: '0',
+        text: 'All Shifts',
+      },
+      {
+        value: '1',
+        text: 'Published Shifts',
+      },
+      {
+        value: '2',
+        text: 'Un-Publishsed Shifts',
+      },
+    ];
+
+    selectedShiftType = '0';
+
+    dropdown.populate(shiftTypeDropdownEle, dropdownData, selectedShiftType);
+  }
+  function buildLocationDropdown() {
+    const dropdownEle = dropdown.build({
+      dropdownId: 'locationDropdown',
+      label: 'Location:',
+      style: 'secondary',
+    });
+
+    dropdownEle.addEventListener('change', event => {
+      selectedLocationId = event.target.options[event.target.selectedIndex].id;
+    });
+
+    return dropdownEle;
+  }
+  function buildEmployeeDropdown() {
+    const dropdownEle = dropdown.build({
+      dropdownId: 'employeeDropdown',
+      label: 'Employee:',
+      style: 'secondary',
+    });
+
+    if ($.session.schedulingView) {
+      dropdownEle.addEventListener('change', event => {
+        selectedEmployeeId = event.target.options[event.target.selectedIndex].id;
+      });
+    } else {
+      dropdownEle.classList.add('disabled');
+    }
+
+    return dropdownEle;
+  }
+  function buildShiftTypeDropdown() {
+    const shiftTypeWrap = document.createElement('div');
+    shiftTypeWrap.classList.add('shiftTypeWrap');
+    const shiftTypeNote = document.createElement('p');
+    const dropdownEle = dropdown.build({
+      dropdownId: 'shiftTypeDropdown',
+      label: 'Show:',
+      style: 'secondary',
+    });
+
+    dropdownEle.addEventListener('change', event => {
+      selectedShiftType = event.target.options[event.target.selectedIndex].id;
+    });
+
+    populateShiftTypeDropdown();
+
+    shiftTypeWrap.appendChild(dropdownEle);
+    shiftTypeWrap.appendChild(shiftTypeNote);
+
+    return shiftTypeWrap;
+  }
+  function buildViewButton() {
+    $.session.hideAllScheduleButton;
+    return button.build({
+      id: 'scheduleViewBtn',
+      text: 'My Schedule',
+      style: 'secondary',
+      type: 'contained',
+      toggle: true,
+      toggleText: 'All Schedules',
+      callback: async e => {
+        console.log(e);
+
+        if (currentView === 'mine') {
+          currentView === 'all';
+          await getCalendarEvents(selectedLocationId, '%');
+          locationDropdownEle.classList.remove('disabled');
+          return;
+        }
+
+        if (currentView === 'all') {
+          currentView === 'mine';
+          await getCalendarEvents('%', $.session.PeopleId);
+          locationDropdownEle.classList.add('disabled');
+          return;
+        }
+      },
+    });
+  }
   function build() {
     const scheduleWrap = document.createElement('div');
     scheduleWrap.classList.add('scheduleWrap');
@@ -975,10 +1074,14 @@ const SchedulingCalendar = (function () {
     scheduleNav.classList.add('scheduleNav');
 
     locationDropdownEle = buildLocationDropdown();
-    const viewButton = buildViewButton();
+    employeeDropdownEle = buildEmployeeDropdown();
 
-    scheduleNav.appendChild(viewButton);
     scheduleNav.appendChild(locationDropdownEle);
+    scheduleNav.appendChild(employeeDropdownEle);
+    if ($.session.schedulingView) {
+      shiftTypeDropdownEle = buildShiftTypeDropdown();
+      scheduleNav.appendChild(shiftTypeDropdownEle);
+    }
 
     scheduleWrap.appendChild(scheduleNav);
     scheduleWrap.appendChild(scheduleCalEle);
@@ -993,6 +1096,9 @@ const SchedulingCalendar = (function () {
 
     locations = await schedulingAjax.getLocationDropdownForSchedulingAjax();
     populateLocationDropdown();
+
+    employees = [];
+    populateEmployeeDropdown();
 
     calendarEvents = await getCalendarEvents('%', $.session.PeopleId);
     calendarAppointments = await getCalendarAppointments();
