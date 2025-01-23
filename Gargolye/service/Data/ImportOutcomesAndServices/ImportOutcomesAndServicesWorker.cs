@@ -967,6 +967,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             i++;
 
                             // New check for `firstTwoLinesArray` before proceeding
+                            // New check for `firstTwoLinesArray` before proceeding
                             bool firstTwoLinesMatch2 = true;
                             for (int j = 0; j < firstTwoLinesArray.Length; j++)
                             {
@@ -982,11 +983,75 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 i += firstTwoLinesArray.Length + 2; // Skip over the matched lines
                             }
 
+                            // Check for a valid assessment area or process subsequent lines if not found
                             if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
                             {
-                                i--;
-                                break;
+                                // Look ahead at the next 7 lines to find a valid assessment area within the bbox
+                                bool foundAssessmentArea = false;
+                                int nextAssessmentAreaIndex = -1;
+
+                                for (int j = 1; j <= 7 && (i + j) < lines.Length; j++)
+                                {
+                                    if (assessmentAreas.Contains(lines[i + j].Trim()) &&
+                                        IsWithinBBox(linePositions[i + j].Value, headerColumnBBoxes[0]))
+                                    {
+                                        foundAssessmentArea = true;
+                                        nextAssessmentAreaIndex = i + j; // Capture the index of the valid assessment area
+                                        break;
+                                    }
+                                }
+
+                                if (foundAssessmentArea && nextAssessmentAreaIndex != -1)
+                                {
+                                    // Process all lines from the current position (`i`) to the assessment area
+                                    for (int k = i; k < nextAssessmentAreaIndex; k++)
+                                    {
+                                        //string processedLine = GetNextLineIfInColumn(lines, linePositions, ref k, headerColumnBBoxes[0]);
+
+                                        // Append the processed line to the corresponding column of the previous paid support
+                                        if (paidSupportsList.Count > 0)
+                                        {
+                                            var lastPaidSupport = paidSupportsList.Last();
+                                            for (int colIndex = 1; colIndex < headerColumnBBoxes.Count; colIndex++)
+                                            {
+                                                if (IsWithinBBox(linePositions[k].Value, headerColumnBBoxes[colIndex]))
+                                                {
+                                                    switch (colIndex)
+                                                    {
+                                                        case 1:
+                                                            lastPaidSupport.ServiceName += " " + lines[k].Trim();
+                                                            break;
+                                                        case 2:
+                                                            lastPaidSupport.ScopeOfService += " " + lines[k].Trim();
+                                                            break;
+                                                        case 3:
+                                                            lastPaidSupport.HowOftenHowMuch += " " + lines[k].Trim();
+                                                            break;
+                                                        case 4:
+                                                            lastPaidSupport.BeginDateEndDate += " " + lines[k].Trim();
+                                                            break;
+                                                        case 5:
+                                                            lastPaidSupport.FundingSource += " " + lines[k].Trim();
+                                                            break;
+                                                    }
+                                                    break; // Stop further checks for this line
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Set `i` to the line containing the next assessment area and restart the loop
+                                    i = nextAssessmentAreaIndex;
+                                    continue; // Restart the loop from the updated position
+                                }
+                                else
+                                {
+                                    // If no valid assessment area is found, exit this loop
+                                    i--;
+                                    break;
+                                }
                             }
+
                         }
                     }
                 }
