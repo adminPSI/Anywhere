@@ -127,9 +127,10 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
         private readonly List<string> additionalSupportsHeaders = new List<string>
         {
-            "Assessment Area:",
+            "Services and Supports Additional Supports: Family, friends, community resources, technology, etc. Assessment Area:",
             "Who supports:",
             "What support looks like:",
+            //"",
             "When/How often:"
         };
 
@@ -257,6 +258,26 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             extractedTables.additionalSupports.AddRange(additionalSupports);
                             extractedTables.professionalReferrals.AddRange(professionalReferrals);
                             extractedTables.experiences.AddRange(experiences);
+
+                            foreach (var risk in extractedTables.riskAssessments)
+                            {
+                                risk.AssessmentArea = ValidateAndTrimAssessmentArea(risk.AssessmentArea);
+                            }
+
+                            foreach (var support in extractedTables.paidSupports)
+                            {
+                                support.AssessmentArea = ValidateAndTrimAssessmentArea(support.AssessmentArea);
+                            }
+
+                            foreach (var support in extractedTables.additionalSupports)
+                            {
+                                support.AssessmentArea = ValidateAndTrimAssessmentArea(support.AssessmentArea);
+                            }
+
+                            foreach (var referral in extractedTables.professionalReferrals)
+                            {
+                                referral.AssessmentArea = ValidateAndTrimAssessmentArea(referral.AssessmentArea);
+                            }
                         }
                     }
                 }
@@ -396,7 +417,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                 // Check if the current line contains "Service and Supports"
                 if (currentLineText.Contains("Service and Supports"))
                 {
-                    gapBetweenLines = 225; // Reset the gap to the default
+                    gapBetweenLines = 250; // Reset the gap to the default
 
                 }
 
@@ -691,6 +712,12 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
             for (int i = 0; i < lines.Length; i++)
             {
+                // Check if we reached the end of the section
+                if (lines[i].Trim() == "Outcome/Experiences Review: What will progress look like/How will we know it is happening?")
+                {
+                    break;
+                }
+
                 // Check if the line contains the first header
                 if (lines[i].Contains(experienceHeaders[0]))
                 {
@@ -710,6 +737,12 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                         while (i < lines.Length)
                         {
                             i += experienceHeaders.Count; // Move past the headers
+
+                            // Check if we reached the end of the section
+                            if (lines[i].Trim() == "Outcome/Experiences Review: What will progress look like/How will we know it is happening?")
+                            {
+                                break;
+                            }
 
                             var experience = new Experiences
                             {
@@ -734,7 +767,15 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                             if (firstTwoLinesMatch)
                             {
-                                i += firstTwoLinesArray.Length + 3; // Move past the matched lines
+                                i += firstTwoLinesArray.Length; // Move past the matched lines
+
+                                //// Check if the next line indicates starting from the beginning
+                                //if (i < lines.Length && lines[i].Trim().Contains("Experiences: In order to accomplish the outcome, what experiences does the person need to have? What needs to happen"))
+                                //{
+                                //    // Restart the outer loop from the next line
+                                //    i--;
+                                //    break;
+                                //}
 
                                 // Check the next 4 lines for values fitting in the header column bounding boxes
                                 for (int j = 0; j <= 4; j++)
@@ -767,7 +808,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                     }
                                 }
 
-                                i += 2; // Adjust index to account for processed lins
+                                i += 2; // Adjust index to account for processed lines
                             }
 
                             // Move to the next line and continue
@@ -786,9 +827,9 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
         }
 
         List<PaidSupports> ProcessCombinedTextForPaidSupports(
-    string combinedText,
-    string firstTwoLines,
-    List<KeyValuePair<string, Rect>> linePositions)
+            string combinedText,
+            string firstTwoLines,
+            List<KeyValuePair<string, Rect>> linePositions)
         {
             var paidSupportsList = new List<PaidSupports>();
             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -796,14 +837,14 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             string providerName = string.Empty;
 
             var headerColumnBBoxes = new List<Rect>
-    {
-        new Rect(41, 0, 126, 0),   // Column 1: AssessmentArea
-        new Rect(125, 0, 269, 0),  // Column 2: ServiceName
-        new Rect(268, 0, 427, 0),  // Column 3: ScopeOfService
-        new Rect(426, 0, 521, 0),  // Column 4: HowOftenHowMuch
-        new Rect(520, 0, 598, 0),  // Column 5: BeginDateEndDate
-        new Rect(597, 0, 700, 0)   // Column 6: FundingSource
-    };
+            {
+                new Rect(41, 0, 126, 0),   // Column 1: AssessmentArea
+                new Rect(125, 0, 269, 0),  // Column 2: ServiceName
+                new Rect(268, 0, 427, 0),  // Column 3: ScopeOfService
+                new Rect(426, 0, 521, 0),  // Column 4: HowOftenHowMuch
+                new Rect(520, 0, 598, 0),  // Column 5: BeginDateEndDate
+                new Rect(597, 0, 700, 0)   // Column 6: FundingSource
+            };
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -880,7 +921,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             };
 
                             int processedLinesCount = 0;
-                            for (int j = 0; j <= 6 ; j++)
+                            for (int j = 0; j <= 6 && processedLinesCount < 6; j++)
                             {
                                 int nextIndex = i + j;
                                 if (nextIndex < lines.Length)
@@ -914,12 +955,33 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                     }
                                 }
                             }
+                            if (processedLinesCount == 6)
+                            {
+                                processedLinesCount--;
+                            }
 
                             i += processedLinesCount;
                             paidSupportsList.Add(paidSupport);
 
                             // Check for new assessment area
                             i++;
+
+                            // New check for `firstTwoLinesArray` before proceeding
+                            bool firstTwoLinesMatch2 = true;
+                            for (int j = 0; j < firstTwoLinesArray.Length; j++)
+                            {
+                                if (i + j >= lines.Length || lines[i + j].Trim() != firstTwoLinesArray[j].Trim())
+                                {
+                                    firstTwoLinesMatch2 = false;
+                                    break;
+                                }
+                            }
+
+                            if (firstTwoLinesMatch2)
+                            {
+                                i += firstTwoLinesArray.Length + 2; // Skip over the matched lines
+                            }
+
                             if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
                             {
                                 i--;
@@ -1222,6 +1284,18 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             }
 
             return failedImports; // Return the list of failed imports (or an empty list if all succeeded)
+        }
+
+        private string ValidateAndTrimAssessmentArea(string input)
+        {
+            foreach (string area in assessmentAreas)
+            {
+                if (input.Contains(area))
+                {
+                    return area; // Return the matched value from the list
+                }
+            }
+            return null; // Return null if no match is found
         }
 
 
