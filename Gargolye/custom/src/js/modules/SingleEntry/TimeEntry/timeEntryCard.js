@@ -1814,38 +1814,38 @@ var timeEntryCard = (function () {
         });
         saveBtn.addEventListener('click', async event => {
             //118744 - ADV-ANY-SE: Add warning to users if services are not documented for
-            let documentNameList = [];
-            const undocumentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate);
+            let undocumentedConsumerIDs = consumerIds;
+            const documentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate);
             consumerIds.forEach(async id => {
-                if (undocumentedServicesList.find(x => x.consumerid == id)) {
-                    documentNameList.push(undocumentedServicesList.find(x => x.consumerid == id).consumername)
+                if (documentedServicesList.find(x => x.consumerid == id)) {
+                    undocumentedConsumerIDs = undocumentedConsumerIDs.filter(ids => ids !== id);
                 }
-            }); 
-            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && documentNameList.length > 0) {
-                undocumentedServicesPopup(event, documentNameList,'SAVE');
+            });
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedConsumerIDs.length > 0) {
+                await undocumentedServicesPopup(event, undocumentedConsumerIDs, 'SAVE');
             }
-            ////
+            ////////
             else {
                 await saveEvent(event);
             }
         });
-        saveAndSumbitBtn.addEventListener('click', async event => { 
+        saveAndSumbitBtn.addEventListener('click', async event => {
             //118744 - ADV - ANY - SE: Add warning to users if services are not documented for
-            let documentNameList = [];
-            const undocumentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate); 
+            let undocumentedConsumerIDs = consumerIds;
+            const documentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate);
             consumerIds.forEach(async id => {
-                if (undocumentedServicesList.find(x => x.consumerid == id)){
-                    documentNameList.push(undocumentedServicesList.find(x => x.consumerid == id).consumername)
+                if (documentedServicesList.find(x => x.consumerid == id)) {
+                    undocumentedConsumerIDs = undocumentedConsumerIDs.filter(ids => ids !== id);
                 }
-            }); 
-            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && documentNameList.length > 0) {
-                undocumentedServicesPopup(event, documentNameList, 'SAVESUBMIT');
+            });
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedConsumerIDs.length > 0) {
+                undocumentedServicesPopup(event, undocumentedConsumerIDs, 'SAVESUBMIT');
             }
-            ////
+            ////////
             else {
                 // Save entry first
                 await saveAndSubmitEvent(event);
-            } 
+            }
             // TODO, make global so access from timeentry.js
             // event.target.classList.remove('disabled');
             // saveBtn.classList.remove('disabled');
@@ -1860,7 +1860,7 @@ var timeEntryCard = (function () {
         });
     }
     //118744 - ADV-ANY-SE: Add warning to users if services are not documented for
-    function undocumentedServicesPopup(event, documentNameList, NameOfEvent) {
+    async function undocumentedServicesPopup(event, undocumentedConsumerIDs, NameOfEvent) {
         const confirmPopup = POPUP.build({
             hideX: false,
             classNames: 'warning',
@@ -1871,8 +1871,8 @@ var timeEntryCard = (function () {
             style: 'secondary',
             type: 'contained',
             callback: async () => {
-                POPUP.hide(confirmPopup); 
-                if (NameOfEvent ==='SAVESUBMIT')
+                POPUP.hide(confirmPopup);
+                if (NameOfEvent === 'SAVESUBMIT')
                     await saveAndSubmitEvent(event);
                 else
                     await saveEvent(event);
@@ -1891,10 +1891,10 @@ var timeEntryCard = (function () {
         const message = document.createElement('p');
         const messageConfirm = document.createElement('p');
         const vendorSection = document.createElement('div');
-
-        documentNameList.forEach(rel => {
+        var rosterConsumers = await roster2.getAllRosterConsumers();
+        undocumentedConsumerIDs.forEach(id => {
             const vendorDisp = document.createElement('div');
-            vendorDisp.innerHTML = `<span>${rel}</span>`;
+            vendorDisp.innerHTML = `<span>${rosterConsumers.find(i => i.id == id).LN}, ${rosterConsumers.find(i => i.id == id).FN}</span>`;
             vendorDisp.classList.add('consumerNameList');
             vendorSection.appendChild(vendorDisp);
         });
@@ -1989,7 +1989,7 @@ var timeEntryCard = (function () {
         } else {
             // roster.setAllowedConsumers([]);
             var allowedConsumers = await getAllowedConsumersBasedOffServiceLocations();
-            roster2.setAllowedConsumers(allowedConsumers);            
+            roster2.setAllowedConsumers(allowedConsumers);
         }
 
         var miniRosterBtn = document.querySelector('.consumerListBtn');
@@ -1998,11 +1998,11 @@ var timeEntryCard = (function () {
                 miniRosterBtn.classList.remove('disabled');
             } else {
                 miniRosterBtn.classList.add('disabled');
-                clearConsumerSection();   
+                clearConsumerSection();
             }
         }
 
-        clearCard(); 
+        clearCard();
         // Set start time after card gets cleared
         if (keyStartStop === 'Y') {
             startTimeInput.getElementsByTagName('input')[0].value = `${nowHour}:${nowMinutes}`;
