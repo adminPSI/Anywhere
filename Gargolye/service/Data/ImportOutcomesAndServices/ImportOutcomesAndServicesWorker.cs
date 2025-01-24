@@ -813,6 +813,13 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                             // Move to the next line and continue
                             i++;
+
+                            // Check if we reached the end of the section
+                            if (i >= lines.Length || lines[i].Trim() == "Outcome/Experiences Review: What will progress look like/How will we know it is happening?")
+                            {
+                                return experiencesList;
+                            }
+
                             if (i >= lines.Length || !lines[i].Trim().Contains(experienceHeaders[0]))
                             {
                                 i--; // Step back as the current line doesn't start a new experience
