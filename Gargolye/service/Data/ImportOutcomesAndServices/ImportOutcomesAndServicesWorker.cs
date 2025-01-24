@@ -701,6 +701,8 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
             var experiencesList = new List<Experiences>();
             string[] lines = combinedText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             string[] firstTwoLinesArray = firstTwoLines.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            bool headersFound = false;
+            var stopSearchLine = -1;
 
             var headerColumnBBoxes = new List<Rect>
             {
@@ -712,17 +714,25 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
             for (int i = 0; i < lines.Length; i++)
             {
-                // Check if we reached the end of the section
                 if (lines[i].Trim() == "Outcome/Experiences Review: What will progress look like/How will we know it is happening?")
                 {
-                    break;
+                    stopSearchLine = i;
+                }
+            }
+
+                for (int i = 0; i < stopSearchLine; i++)
+            {
+                // Check if we reached the end of the section
+                if (i >= lines.Length || lines[i].Trim() == "Outcome/Experiences Review: What will progress look like/How will we know it is happening?")
+                {
+                    return experiencesList;
                 }
 
                 // Check if the line contains the first header
                 if (lines[i].Contains(experienceHeaders[0]))
                 {
                     // Check for the presence of subsequent headers in the next lines
-                    bool headersFound = true;
+                    headersFound = true;
                     for (int j = 1; j < experienceHeaders.Count; j++)
                     {
                         if (i + j >= lines.Length || !lines[i + j].Contains(experienceHeaders[j]))
@@ -731,17 +741,21 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             break;
                         }
                     }
+                }
 
                     if (headersFound)
                     {
-                        while (i < lines.Length)
-                        {
-                            i += experienceHeaders.Count; // Move past the headers
+                        i += experienceHeaders.Count; // Move past the headers
 
-                            // Check if we reached the end of the section
-                            if (lines[i].Trim() == "Outcome/Experiences Review: What will progress look like/How will we know it is happening?")
-                            {
-                                break;
+                        while (i < stopSearchLine)
+                        {
+
+                            for (int j = i; j < stopSearchLine && j < 5; j++) {
+                                // Check if we reached the end of the section
+                                if (j >= stopSearchLine || lines[i].Trim() == "Outcome/Experiences Review: What will progress look like/How will we know it is happening?")
+                                {
+                                    return experiencesList;
+                                }
                             }
 
                             var experience = new Experiences
@@ -767,21 +781,21 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
 
                             if (firstTwoLinesMatch)
                             {
-                                i += firstTwoLinesArray.Length; // Move past the matched lines
+                                i += firstTwoLinesArray.Length + 2; // Move past the matched lines
 
-                                //// Check if the next line indicates starting from the beginning
-                                //if (i < lines.Length && lines[i].Trim().Contains("Experiences: In order to accomplish the outcome, what experiences does the person need to have? What needs to happen"))
-                                //{
-                                //    // Restart the outer loop from the next line
-                                //    i--;
-                                //    break;
-                                //}
+                                if (i >= lines.Length || lines[i + 1].Trim().Contains(experienceHeaders[0]))
+                                {
+                                    i += 4;
+                                    continue;
+                                }
+
+                                var processedLines = 0;
 
                                 // Check the next 4 lines for values fitting in the header column bounding boxes
                                 for (int j = 0; j <= 4; j++)
                                 {
                                     int nextIndex = i + j;
-                                    if (nextIndex < lines.Length)
+                                    if (nextIndex < stopSearchLine)
                                     {
                                         var currentBBox = linePositions[nextIndex].Value;
                                         for (int columnIndex = 0; columnIndex < headerColumnBBoxes.Count; columnIndex++)
@@ -803,24 +817,37 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                                         experience.WhenHowOften += " " + lines[nextIndex].Trim();
                                                         break;
                                                 }
+                                                processedLines++;
                                             }
                                         }
                                     }
                                 }
 
-                                i += 2; // Adjust index to account for processed lines
+                                i += processedLines; // Adjust index to account for processed lines
                             }
 
                             // Move to the next line and continue
                             i++;
-                            if (i >= lines.Length || !lines[i].Trim().Contains(experienceHeaders[0]))
+
+                            // Check if we reached the end of the section
+                            if (i >= lines.Length || lines[i].Trim() == "Outcome/Experiences Review: What will progress look like/How will we know it is happening?")
                             {
-                                i--; // Step back as the current line doesn't start a new experience
-                                break;
+                                return experiencesList;
                             }
+
+                            if (i >= stopSearchLine || lines[i+1].Trim().Contains(experienceHeaders[0]))
+                            {
+                                i += 4;
+                                continue;
+                            }
+
+                        if (i >= stopSearchLine || lines[i].Trim().Contains(experienceHeaders[0]))
+                        {
+                            i += 3;
+                            continue;
                         }
                     }
-                }
+                    }
             }
 
             return experiencesList;
@@ -967,6 +994,7 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                             i++;
 
                             // New check for `firstTwoLinesArray` before proceeding
+                            // New check for `firstTwoLinesArray` before proceeding
                             bool firstTwoLinesMatch2 = true;
                             for (int j = 0; j < firstTwoLinesArray.Length; j++)
                             {
@@ -982,11 +1010,75 @@ namespace Anywhere.service.Data.ImportOutcomesAndServices
                                 i += firstTwoLinesArray.Length + 2; // Skip over the matched lines
                             }
 
+                            // Check for a valid assessment area or process subsequent lines if not found
                             if (i >= lines.Length || !assessmentAreas.Contains(lines[i].Trim()))
                             {
-                                i--;
-                                break;
+                                // Look ahead at the next 7 lines to find a valid assessment area within the bbox
+                                bool foundAssessmentArea = false;
+                                int nextAssessmentAreaIndex = -1;
+
+                                for (int j = 1; j <= 7 && (i + j) < lines.Length; j++)
+                                {
+                                    if (assessmentAreas.Contains(lines[i + j].Trim()) &&
+                                        IsWithinBBox(linePositions[i + j].Value, headerColumnBBoxes[0]))
+                                    {
+                                        foundAssessmentArea = true;
+                                        nextAssessmentAreaIndex = i + j; // Capture the index of the valid assessment area
+                                        break;
+                                    }
+                                }
+
+                                if (foundAssessmentArea && nextAssessmentAreaIndex != -1)
+                                {
+                                    // Process all lines from the current position (`i`) to the assessment area
+                                    for (int k = i; k < nextAssessmentAreaIndex; k++)
+                                    {
+                                        //string processedLine = GetNextLineIfInColumn(lines, linePositions, ref k, headerColumnBBoxes[0]);
+
+                                        // Append the processed line to the corresponding column of the previous paid support
+                                        if (paidSupportsList.Count > 0)
+                                        {
+                                            var lastPaidSupport = paidSupportsList.Last();
+                                            for (int colIndex = 1; colIndex < headerColumnBBoxes.Count; colIndex++)
+                                            {
+                                                if (IsWithinBBox(linePositions[k].Value, headerColumnBBoxes[colIndex]))
+                                                {
+                                                    switch (colIndex)
+                                                    {
+                                                        case 1:
+                                                            lastPaidSupport.ServiceName += " " + lines[k].Trim();
+                                                            break;
+                                                        case 2:
+                                                            lastPaidSupport.ScopeOfService += " " + lines[k].Trim();
+                                                            break;
+                                                        case 3:
+                                                            lastPaidSupport.HowOftenHowMuch += " " + lines[k].Trim();
+                                                            break;
+                                                        case 4:
+                                                            lastPaidSupport.BeginDateEndDate += " " + lines[k].Trim();
+                                                            break;
+                                                        case 5:
+                                                            lastPaidSupport.FundingSource += " " + lines[k].Trim();
+                                                            break;
+                                                    }
+                                                    break; // Stop further checks for this line
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Set `i` to the line containing the next assessment area and restart the loop
+                                    i = nextAssessmentAreaIndex;
+                                    continue; // Restart the loop from the updated position
+                                }
+                                else
+                                {
+                                    // If no valid assessment area is found, exit this loop
+                                    i--;
+                                    break;
+                                }
                             }
+
                         }
                     }
                 }
