@@ -117,7 +117,6 @@
         numOfQuestionsUnawnseredWrapDiv.classList.add('hidden');
       }
 
-      const isWorkingSectionComplete = planValidation.returnAssessmentValidationData();
       if (sectionKey === '41') {
         numOfQuestionsUnawnsered = 0;
         numOfQuestionsUnawnseredWrapDiv.classList.add('hidden');
@@ -276,8 +275,6 @@
 
     toc.appendChild(tocHeader);
     toc.appendChild(tocMain);
-
-    // planValidation.tocAssessmentCheck(assessmentValidationCheck);
   }
 
   return {

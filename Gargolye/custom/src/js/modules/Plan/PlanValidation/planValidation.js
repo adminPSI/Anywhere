@@ -327,18 +327,14 @@ const planValidation = (function () {
   
       // check if all sections are complete
       allAssessmentAreasComplete(assessmentValidationCheck);
-  
-      return assessmentValidationCheck;
     }
   
-    function allAssessmentAreasComplete(assessmentValidationCheck) {
+    function allAssessmentAreasComplete() {
       if (assessmentValidationCheck.hasASectionApplicable === true && assessmentValidationCheck.servicesAndSupportsError === false) {
           assessmentValidationCheck.complete = true;
       } else {
           assessmentValidationCheck.complete = false;
       }
-  
-      return assessmentValidationCheck;
     }
   
     // ASSESSMENT DATA UPDATE CHECK
@@ -385,12 +381,10 @@ const planValidation = (function () {
           navAlertDiv.style.display = 'none';
         }
       }
-  
-      return assessmentValidationCheck;
     }
   
     // ASSESSMENT TABLE OF CONTENTS
-    function tocAssessmentCheck(assessmentValidationCheck) {
+    function tocAssessmentCheck() {
       const hasASectionApplicable = assessmentValidationCheck.sectionsApplicable.some(
         obj => obj.applicable === 'Y',
       );
@@ -400,11 +394,9 @@ const planValidation = (function () {
       } else {
         assessmentValidationCheck.hasASectionApplicable = false;
       }
-  
-      return assessmentValidationCheck;
     }
 
-    function updateTocSectionHeaders(assessmentValidationCheck) {
+    function updateTocSectionHeaders() {
         for (let id = 34; id <= 40; id++) {
           let tocSectionHeader = document.getElementById(`${id}alert`);
           let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
@@ -427,8 +419,6 @@ const planValidation = (function () {
             }
           }
         }
-      
-        return assessmentValidationCheck;
     }
   
     // ASSESSMENT SERVICES AND SUPPORTS
@@ -503,10 +493,10 @@ const planValidation = (function () {
         assessmentValidationCheck.complete = false;
       }
 
-      return assessmentValidationCheck;
+      updatedAssessmenteValidation();
     }
 
-    function servicesAndSupportsAllVisibleSectionsCheck(assessmentValidationCheck) {
+    function servicesAndSupportsAllVisibleSectionsCheck() {
         const allSections = document.getElementsByClassName('assessment__section');
 
         // Get only the sections that are selected on the assessment
@@ -524,8 +514,6 @@ const planValidation = (function () {
           // No buttons with the class "error" found
           assessmentValidationCheck.servicesAndSupportsError = false;
         }
-
-        return assessmentValidationCheck;
     }
 
     function findQuestionIdCategory(questionId) {
@@ -586,7 +574,7 @@ const planValidation = (function () {
       }
   
       // checks entire assessments for validation errors
-      planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+      updatedAssessmenteValidation();
     }
 
     function updateAssessmentValidationSection(key, value) {

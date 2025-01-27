@@ -488,9 +488,6 @@
 
         // checks the status of the buttons and adds/removes error class if needed for specific section
         planValidation.servicesAndSupportsBtnCheck(sectionId);
-
-        // checks entire assessments for validation errors
-        planValidation.updatedAssessmenteValidation();
       }
       if (type === 'radio') {
         const radioLabelText = e.target.nextSibling.innerHTML;
