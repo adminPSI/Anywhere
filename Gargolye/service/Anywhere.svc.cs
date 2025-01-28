@@ -798,9 +798,9 @@ namespace Anywhere
             return singleEntryWorker.getSingleEntryEvvEligibilityJSON(token, consumerId, entryDate);
         }
 
-        public SingleEntryWorker.SingleEntryConsumersPresent[] getUndocumentedServicesForWarning(string entryDate, string token)
+        public string[] getUndocumentedServicesForWarning(string entryDate,string[] consumerId, string token)
         {
-            return singleEntryWorker.getUndocumentedServicesForWarning(entryDate, token);
+            return singleEntryWorker.getUndocumentedServicesForWarning(entryDate, consumerId, token);
         }
 
         public string getClockedInDayServicesAtLocationCounts(string token, string locationId)

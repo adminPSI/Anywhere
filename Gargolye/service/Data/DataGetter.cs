@@ -1901,17 +1901,17 @@ namespace Anywhere.Data
             }
 
         }
-        public string getUndocumentedServicesForWarning(string entryDate, string token)
+        public string getUndocumentedServicesForWarning(string entryDate,string consumerId, string token)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getUndocumentedServicesForWarning" + token);
             try
             {
-                return executeDataBaseCallJSON("CALL DBA.ANYW_SingleEntry_GetUndocumentedServicesForWarning('" + entryDate + "');");
+                return executeDataBaseCallJSON("CALL DBA.ANYW_SingleEntry_GetUndocumentedServicesForWarning('" + entryDate + "','" + consumerId + "');");
             }
             catch (Exception ex)
             {
-                logger.error("570", ex.Message + " ANYW_SingleEntry_GetUndocumentedServicesForWarning('" + entryDate + "')");
+                logger.error("570", ex.Message + " ANYW_SingleEntry_GetUndocumentedServicesForWarning('" + entryDate + "','" + consumerId + "')");
                 return "570: Error getting getUndocumentedServicesForWarning";
             }
         }

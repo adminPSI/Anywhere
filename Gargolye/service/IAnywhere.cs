@@ -944,7 +944,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getUndocumentedServicesForWarning/")]
-        SingleEntryWorker.SingleEntryConsumersPresent[] getUndocumentedServicesForWarning(string entryDate, string token);
+        string[] getUndocumentedServicesForWarning(string entryDate,string[] consumerId, string token);
 
 
         [OperationContract]

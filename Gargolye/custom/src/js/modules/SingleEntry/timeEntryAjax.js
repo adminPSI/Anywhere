@@ -891,9 +891,10 @@ var singleEntryAjax = (function () {
         }
     }
 
-    async function getUndocumentedServicesForWarning(entryDate) {
+    async function getUndocumentedServicesForWarning(entryDate, consumerId) {
         const retrieveData = {
             entryDate,
+            consumerId,
             token: $.session.Token,
         };
         try {

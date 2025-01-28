@@ -1813,14 +1813,8 @@ var timeEntryCard = (function () {
             buildTransportationPopup();
         });
         saveBtn.addEventListener('click', async event => {
-            //118744 - ADV-ANY-SE: Add warning to users if services are not documented for
-            let undocumentedConsumerIDs = consumerIds;
-            const documentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate);
-            consumerIds.forEach(async id => {
-                if (documentedServicesList.find(x => x.consumerid == id)) {
-                    undocumentedConsumerIDs = undocumentedConsumerIDs.filter(ids => ids !== id);
-                }
-            });
+            //118744 - ADV-ANY-SE: Add warning to users if services are not documented for 
+            const undocumentedConsumerIDs = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate, consumerIds);
             if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedConsumerIDs.length > 0) {
                 await undocumentedServicesPopup(event, undocumentedConsumerIDs, 'SAVE');
             }
@@ -1831,13 +1825,7 @@ var timeEntryCard = (function () {
         });
         saveAndSumbitBtn.addEventListener('click', async event => {
             //118744 - ADV - ANY - SE: Add warning to users if services are not documented for
-            let undocumentedConsumerIDs = consumerIds;
-            const documentedServicesList = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate);
-            consumerIds.forEach(async id => {
-                if (documentedServicesList.find(x => x.consumerid == id)) {
-                    undocumentedConsumerIDs = undocumentedConsumerIDs.filter(ids => ids !== id);
-                }
-            });
+            const undocumentedConsumerIDs = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate, consumerIds);          
             if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedConsumerIDs.length > 0) {
                 undocumentedServicesPopup(event, undocumentedConsumerIDs, 'SAVESUBMIT');
             }
