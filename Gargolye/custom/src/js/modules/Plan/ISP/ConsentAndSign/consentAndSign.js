@@ -892,7 +892,7 @@ const planConsentAndSign = (() => {
         const tableWrap = document.createElement('div');
         tableWrap.id = 'ispSignature_tableWrap';
         teamMemberTable = buildTeamMemberTable();
-
+        
         const addMemberBtn = button.build({
             id: 'sig_addMember',
             text: 'ADD TEAM MEMBER',
@@ -988,6 +988,28 @@ const planConsentAndSign = (() => {
                 });
             },
         });
+
+        const summaryofChanges = document.createElement('div');
+        const summaryofChangesTxt = document.createElement('p');
+        summaryofChangesTxt.style.marginBottom = '7px';
+        summaryofChangesTxt.innerText = 'Summary of Changes';
+
+        const summaryofChangesTxtBx = input.build({
+            type: 'textarea',
+            value: '',
+            // readonly: readOnly,
+            charLimit: 10000,
+            forceCharLimit: true,
+            classNames: 'autosize',
+        }); 
+        summaryofChanges.appendChild(summaryofChangesTxt);
+        summaryofChanges.appendChild(summaryofChangesTxtBx);
+
+        summaryofChanges.addEventListener('focusout', event => {
+            alert("I am an alert box!");
+            //sectionData.rmKeepSelfSafe = event.target.value;
+           // updateRMResponse(sectionData);
+          });
 
         function buildReportsScreen() {
             const screen = document.createElement('div');
@@ -1286,6 +1308,7 @@ const planConsentAndSign = (() => {
 
         tableWrap.appendChild(btnWrap);
         tableWrap.appendChild(teamMemberTable);
+        //tableWrap.appendChild(teamMemberTable);
 
         if (readOnly) {
             teamMemberTable.classList.add('disableDrag');
@@ -1300,6 +1323,7 @@ const planConsentAndSign = (() => {
         // build it
         section.appendChild(heading);
         section.appendChild(tableWrap);
+        section.appendChild(summaryofChanges);
 
         return section;
     }
