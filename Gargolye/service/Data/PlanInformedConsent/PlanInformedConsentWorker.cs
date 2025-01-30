@@ -90,6 +90,11 @@ namespace Anywhere.service.Data.PlanInformedConsent
             return picdg.updatePlanConsentStatements(token, signatureId, csChangeMind, csChangeMindSSAPeopleId, csContact, csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess, csResidentialOptions, csSupportsHealthNeeds, csTechnology);
         }
 
+        public string updateConsentSummaryofChanges(string planID, string summaryofChangesText)
+        {
+            return picdg.updateConsentSummaryofChanges(planID, summaryofChangesText);
+        }
+
         public void carryOverInformedConsentToNewPlan(string consumerPlanId, string priorConsumerPlanId, string token, string revision)
         {
             long priorPlanId = long.Parse(priorConsumerPlanId);

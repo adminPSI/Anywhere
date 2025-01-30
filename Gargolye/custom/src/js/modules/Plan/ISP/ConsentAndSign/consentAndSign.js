@@ -10,6 +10,7 @@ const planConsentAndSign = (() => {
     let paidSupportProviders;
     let providerDropdownData;
     let ssaDropdownData;
+    //let summaryofChangesText;
     // for important ppl popup
     let names;
     // GLOBALS
@@ -1006,10 +1007,20 @@ const planConsentAndSign = (() => {
         summaryofChanges.appendChild(summaryofChangesTxtBx);
 
         summaryofChanges.addEventListener('focusout', event => {
-            alert("I am an alert box!");
+            // alert("I am an alert box!");
+           // summaryofChangesText = event.target.value;
+            const summaryofChangesData = {
+                planID: planId,
+                summaryofChangesText: event.target.value,
+            };
             //sectionData.rmKeepSelfSafe = event.target.value;
-           // updateRMResponse(sectionData);
+            updateConsentSummaryofChanges(summaryofChangesData);
           });
+
+          async function updateConsentSummaryofChanges(summaryofChangesData) {
+            const res = await consentAndSignAjax.updateConsentSummaryofChanges(summaryofChangesData);
+           // alert(planId + '--' + summaryofChangesText);
+          }
 
         function buildReportsScreen() {
             const screen = document.createElement('div');

@@ -576,6 +576,35 @@ const consentAndSignAjax = (() => {
     }
   }
 
+  async function updateConsentSummaryofChanges(summaryofChangesData) {
+    /*  string token, string informedConsentId, string rmIdentified, 
+        string rmHRCDate, string rmKeepSelfSafe, string rmFadeRestriction, 
+        string rmOtherWayHelpGood, string rmOtherWayHelpBad, 
+        string rmWhatCouldHappenGood, string rmWhatCouldHappenBad
+    */
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/updateConsentSummaryofChanges/',
+          data: JSON.stringify(summaryofChangesData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.updateSummaryofChangesResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return {
     getConsentAndSignData,
     getPlanInformedConsentSSAs,
@@ -598,5 +627,6 @@ const consentAndSignAjax = (() => {
     getStateCaseManagerforConsumer,
     assignStateCaseManagertoConsumers,
     getAllActiveVendors,
+    updateConsentSummaryofChanges,
   };
 })();

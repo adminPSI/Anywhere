@@ -164,6 +164,25 @@ namespace Anywhere.service.Data.PlanInformedConsent
             }
         }
 
+        public string updateConsentSummaryofChanges(string planID, string summaryofChangesText)
+        {
+           
+            logger.debug("updateConsentSummaryofChanges ");
+            List<string> list = new List<string>();
+            list.Add(planID);
+            list.Add(summaryofChangesText);
+            string text = "CALL DBA.ANYW_ISP_UpdateConsentSummaryofChanges(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("3APICDG", ex.Message + "ANYW_ISP_UpdateConsentStatements(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3APICDG: error ANYW_ISP_UpdateConsentStatements";
+            }
+        }
+
         public string insertForCarryOverInformedConsent(string token, long planId, string rmIdentified, string rmHRCDate, string rmKeepSelfSafe, string rmFadeRestriction, string rmOtherWayHelpGood, string rmOtherWayHelpBad, string rmWhatCouldHappenGood, string rmWhatCouldHappenBad, string revision)
         {
             if (tokenValidator(token) == false) return null;

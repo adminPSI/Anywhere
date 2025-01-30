@@ -2632,7 +2632,11 @@ namespace Anywhere
             return picw.updatePlanConsentStatements(token, signatureId, csChangeMind, csChangeMindSSAPeopleId, csContact, csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess, csResidentialOptions, csSupportsHealthNeeds, csTechnology);
         }
 
-
+        public string updateConsentSummaryofChanges(string planID, string summaryofChangesText)
+        {
+            return picw.updateConsentSummaryofChanges(planID, summaryofChangesText);
+          // return "this";
+        }
 
         //Plan Signatures
         public PlanSignatureWorker.PlanSignatures[] getSignatures(string token, long assessmentId)
