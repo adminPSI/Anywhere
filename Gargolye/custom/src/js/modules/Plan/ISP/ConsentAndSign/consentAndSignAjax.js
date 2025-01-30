@@ -604,6 +604,32 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
+  //async function getPlanRestrictiveMeasures(retrieveData)
+  async function getPlanConsentSummaryofChanges(planId) {
+    // string token, string assessmentId
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getPlanConsentSummaryofChanges/',
+        //data: planId,
+        data: JSON.stringify({ planId: planId }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getPlanConsentSummaryofChangesResult[0].summaryofChanges;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return {
     getConsentAndSignData,
@@ -628,5 +654,6 @@ const consentAndSignAjax = (() => {
     assignStateCaseManagertoConsumers,
     getAllActiveVendors,
     updateConsentSummaryofChanges,
+    getPlanConsentSummaryofChanges,
   };
 })();

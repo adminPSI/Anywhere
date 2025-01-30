@@ -10,7 +10,7 @@ const planConsentAndSign = (() => {
     let paidSupportProviders;
     let providerDropdownData;
     let ssaDropdownData;
-    //let summaryofChangesText;
+    let thisPlanSummaryofChanges;
     // for important ppl popup
     let names;
     // GLOBALS
@@ -997,7 +997,7 @@ const planConsentAndSign = (() => {
 
         const summaryofChangesTxtBx = input.build({
             type: 'textarea',
-            value: '',
+            value: thisPlanSummaryofChanges,
             // readonly: readOnly,
             charLimit: 10000,
             forceCharLimit: true,
@@ -1018,10 +1018,10 @@ const planConsentAndSign = (() => {
           });
 
           async function updateConsentSummaryofChanges(summaryofChangesData) {
-            const res = await consentAndSignAjax.updateConsentSummaryofChanges(summaryofChangesData);
+            const res = await consentAndSignAjax.updateConsentSummaryofChanges(summaryofChangesData);            
            // alert(planId + '--' + summaryofChangesText);
           }
-
+ 
         function buildReportsScreen() {
             const screen = document.createElement('div');
             screen.id = 'reportsScreen';
@@ -1383,6 +1383,8 @@ const planConsentAndSign = (() => {
         effStartDate = planDates.getEffectiveStartDate();
         effEndDate = planDates.getEffectiveEndDate();
         selectedConsumer = plan.getSelectedConsumer();
+
+        thisPlanSummaryofChanges = await consentAndSignAjax.getPlanConsentSummaryofChanges(planId);
 
         await checkOneSpan();
 

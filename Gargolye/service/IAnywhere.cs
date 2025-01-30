@@ -36,6 +36,7 @@ using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DashboardWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.ESign.ESignWorker;
+using static Anywhere.service.Data.PlanInformedConsent.PlanInformedConsentWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
@@ -3694,6 +3695,13 @@ namespace Anywhere
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/updateConsentSummaryofChanges/")]
         string updateConsentSummaryofChanges(string planID, string summaryofChangesText);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getPlanConsentSummaryofChanges/")]
+        ConsentSummaryofChanges[] getPlanConsentSummaryofChanges(string planId);
 
         //Plan Signature
         [WebInvoke(Method = "POST",

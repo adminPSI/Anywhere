@@ -62,6 +62,7 @@ using static Anywhere.service.Data.SimpleMar.SignInUser;
 using System.Runtime.InteropServices.ComTypes;
 using static Anywhere.service.Data.FSS.FSSWorker;
 using Anywhere.service.Data.FSS;
+using static Anywhere.service.Data.PlanInformedConsent.PlanInformedConsentWorker;
 
 namespace Anywhere
 {
@@ -2636,6 +2637,11 @@ namespace Anywhere
         {
             return picw.updateConsentSummaryofChanges(planID, summaryofChangesText);
           // return "this";
+        }
+
+        public ConsentSummaryofChanges[] getPlanConsentSummaryofChanges(string planId)
+        {
+            return picw.getPlanConsentSummaryofChanges(planId);
         }
 
         //Plan Signatures
