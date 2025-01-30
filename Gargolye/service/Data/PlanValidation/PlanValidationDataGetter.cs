@@ -53,6 +53,84 @@ namespace Anywhere.service.Data.PlanValidation
             }
         }
 
+        public string getPlanOutcomes(string token, string assessmentId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getPlanSpecificOutcomes ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(assessmentId);
+            list.Add(0.ToString());
+            string text = "CALL DBA.ANYW_ISP_GetPlanOutcomes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1PODG", ex.Message + "ANYW_ISP_GetPlanOutcomes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1APODG: error ANYW_ISP_GetPlanOutcomes";
+            }
+        }
+
+        public string getPlanExperiences(string token, string assessmentId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getPlanSpecificOutcomes ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(assessmentId);
+            string text = "CALL DBA.ANYW_ISP_GetPlanExperiences(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2PODG", ex.Message + "ANYW_ISP_GetPlanExperiences(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2APODG: error ANYW_ISP_GetPlanExperiences";
+            }
+        }
+
+        public string getPaidSupports(string token, long anywAssessmentId, int targetAssessmentVersionId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("deletePaidSupports ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(anywAssessmentId.ToString());
+            list.Add(targetAssessmentVersionId.ToString());
+            string text = "CALL DBA.ANYW_ISP_GetPaidSupports(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4SSDG", ex.Message + "ANYW_ISP_GetPaidSupports(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4SSDG: error ANYW_ISP_GetPaidSupports";
+            }
+        }
+
+        public string getPlanReviews(string token, string assessmentId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getPlanSpecificReviews ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(assessmentId);
+            string text = "CALL DBA.ANYW_ISP_GetPlanReviews(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("3PODG", ex.Message + "ANYW_ISP_GetPlanReviews(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3APODG: error ANYW_ISP_GetPlanReviews";
+            }
+        }
+
 
         public bool tokenValidator(string token)
         {

@@ -615,7 +615,7 @@ const planOutcomes = (() => {
 
         validationCheck = await planValidation.ISPValidation(planId);
         assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
-        planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck);
+        planValidation.z(assessmentValidationCheck);
         planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
 
         const ISPAlertDiv = document.getElementById('navAlertISP');

@@ -1693,7 +1693,11 @@ const servicesSupports = (() => {
             value: saveUpdateData.beginDate,
             callback: e => {
                 saveUpdateData.beginDate = e.target.value;
-                if (saveUpdateData.beginDate === '') {
+
+                // Run validation and determine if the input has an error
+                const isValid = planValidation.validatePaidSupportsDates(saveUpdateData.beginDate, saveUpdateData.endDate);
+
+                if (saveUpdateData.beginDate === '' || !isValid) {
                     beginDateInput.classList.add('error');
                 } else {
                     beginDateInput.classList.remove('error');
@@ -1710,15 +1714,21 @@ const servicesSupports = (() => {
             value: saveUpdateData.endDate,
             callback: e => {
                 saveUpdateData.endDate = e.target.value;
-                if (saveUpdateData.endDate === '') {
+        
+                // Run validation and determine if the input has an error
+                const isValid = planValidation.validatePaidSupportsDates(saveUpdateData.beginDate, saveUpdateData.endDate);
+        
+                // Add or remove error class based on validation result
+                if (saveUpdateData.endDate === '' || !isValid) {
                     endDateInput.classList.add('error');
                 } else {
                     endDateInput.classList.remove('error');
                 }
-
+        
                 togglePaidSupportDoneBtn();
             },
         });
+        
         // Buttons
         const doneBtn = button.build({
             text: isCopy ? 'Save Copy' : isNew ? 'Save' : 'Update',
@@ -2045,9 +2055,12 @@ const servicesSupports = (() => {
                     const { tableValues, psData } = mapPaidSupportDataForTable(ps);
                     const rowId = `ps${psData.paidSupportsId}`;
 
+                    const isValid = planValidation.validatePaidSupportsDates(psData.beginDate, psData.endDate);
+
                     return {
                         id: rowId,
                         values: tableValues,
+                        hasError: !isValid,
                         attributes: [{ key: 'sectionId', value: psData.assessmentAreaId }],
                         onClick: event => {
                             if (!enableMultiEdit) {

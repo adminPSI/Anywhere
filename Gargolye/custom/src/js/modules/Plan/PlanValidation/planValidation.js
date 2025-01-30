@@ -83,6 +83,7 @@ const planValidation = (function () {
       outcome: [],
       selectedProviders: [],
       paidSupportsProviders: [],
+      paidSupportsValidDates: true,
       invalidProviders: [],
       contactSectionComplete: true,
       summaryRisksValidation: true
@@ -604,12 +605,14 @@ const planValidation = (function () {
         invalidProviders: []
       };
 
-      outcomesData = await planOutcomesAjax.getPlanSpecificOutcomes({
+      outcomesData = await planValidationAjax.getISPValidationData({
         token: $.session.Token,
         assessmentId: planId,
       });
   
       IspValidationCheck.outcomesData = outcomesData;
+
+      validatePaidSupportsALlRows(outcomesData.paidSupports)
 
       for (const item of outcomesData.planOutcomeExperiences) {
         for (const responsibility of item.planExperienceResponsibilities) {
@@ -728,18 +731,13 @@ const planValidation = (function () {
     }
   
     // Checks if all fields on the ISP outcomes are completed
-    function checkAllOutcomesComplete(validationCheck) {
-      // if (validationCheck.outcomesData.planOutcome.length > 0) {
-      //   validationCheck.planProgressSummary = true;
-      // }
- 
+    function checkAllOutcomesComplete(validationCheck) { 
       validationCheck.complete =
         validationCheck.details.length === 0 &&
         validationCheck.missingExperiences.length === 0 &&
         validationCheck.missingReviews.length === 0 &&
         validationCheck.planProgressSummary &&
         validationCheck.outcome.length === 0 &&
-        //outcomesData.planOutcome.length > 0 &&
         validationCheck.invalidProviders.length === 0;
 
       return validationCheck;
@@ -824,7 +822,69 @@ const planValidation = (function () {
 
       checkContactsValidation();
     }
+ 
+    // PAID SUPPORTS DATES
+    function validatePaidSupportsALlRows(paidSupports) {
+      const planStartDate = UTIL.formatDateFromDateObj(planDates.getPlanYearStartDate());
+      const planEndDate = UTIL.formatDateFromDateObj(planDates.getPlanYearEndDate());
+  
+      // Helper function to extract only the date
+      function extractDate(dateString) {
+          return dateString.split(' ')[0]; // Gets only the date portion
+      }
+  
+      // Start assuming all rows are valid
+      let allRowsValid = true;
+  
+      for (const support of paidSupports) {
+          const beginDate = UTIL.formatDateFromDateObj(extractDate(support.beginDate));
+          const endDate = UTIL.formatDateFromDateObj(extractDate(support.endDate));
+  
+          // Validate each row
+          if (!validatePaidSupportsDates(beginDate, endDate, planStartDate, planEndDate)) {
+              allRowsValid = false; // If any row is invalid, set the flag to false
+              break;
+          }
+      }
+  
+      // Update global state based on the final validation result
+      IspValidationCheck.paidSupportsValidDates = allRowsValid;
+    }
+  
+  
+    function validatePaidSupportsDates(beginDate, endDate) {
+        const planStartDate = UTIL.formatDateFromDateObj(planDates.getPlanYearStartDate());
+        const planEndDate = UTIL.formatDateFromDateObj(planDates.getPlanYearEndDate());
 
+        // Ensure Begin Date and End Date are provided
+        if (!beginDate || isNaN(new Date(beginDate)) || !endDate || isNaN(new Date(endDate))) {
+            return false; // Invalid if either date is missing or not valid
+        }
+    
+        const begin = new Date(beginDate);
+        const end = new Date(endDate);
+        const planStart = new Date(planStartDate);
+        const planEnd = new Date(planEndDate);
+    
+        // Begin Date must be within the Plan Span
+        if (begin < planStart || begin > planEnd) {
+            return false;
+        }
+    
+        // End Date cannot be before Begin Date
+        if (end < begin) {
+            return false;
+        }
+    
+        // End Date must be within the Plan Span
+        if (end > planEnd) {
+            return false;
+        }
+    
+        // All validations passed for this row
+        return true;
+    }
+  
     function checkImportantPeople(importantPeopleData) {
       // Loop through each item in the array
       for (const contact of importantPeopleData) {
@@ -1004,8 +1064,6 @@ const planValidation = (function () {
     async function init(newPlanId) {
       planId = newPlanId;
 
-      //await summaryRisksValidationCheck(planId);
-
       await contactsValidationCheck(planId);
       
       await ISPValidation(planId);
@@ -1042,6 +1100,8 @@ const planValidation = (function () {
       setSummaryRiskValidation,
       alertCheckSummaryRisksValidation,
       summaryRisksValidationCheck,
+      validatePaidSupportsDates,
+      
       init,
     };
   })();

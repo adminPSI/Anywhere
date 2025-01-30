@@ -74,10 +74,35 @@ const planValidationAjax = (function () {
             console.log(error);
           }
     }
+
+    async function getISPValidationData(retrieveData) {
+      try {
+        const data = await $.ajax({
+          type: 'POST',
+          url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/getISPValidationData/',
+          data: JSON.stringify(retrieveData),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json',
+        });
+
+        return data.getISPValidationDataResult;
+      } catch (error) {
+        console.log(error);
+      }
+    }
       
     return {
       getAssessmentValidationData,
       getContactValidationData,
-      getSummaryRiskValidationData
+      getSummaryRiskValidationData,
+      getISPValidationData
     };
   })();
