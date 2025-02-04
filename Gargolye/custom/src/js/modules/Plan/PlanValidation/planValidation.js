@@ -1,9 +1,7 @@
 const planValidation = (function () {
   let planId;
-  let workingSectionCase = 0;
 
     let assessmentValidationCheck = {
-      //workingNotWorking: [],
       sectionsApplicable: [],
       servicesAndSupports: {},
       servicesAndSupportsChecked: {
@@ -72,7 +70,6 @@ const planValidation = (function () {
         },
       },
       hasASectionApplicable: true,
-      //workingSectionComplete: false,
       servicesAndSupportsError: false,
       complete: false
     };
@@ -86,6 +83,7 @@ const planValidation = (function () {
       outcome: [],
       selectedProviders: [],
       paidSupportsProviders: [],
+      paidSupportsValidDates: true,
       invalidProviders: [],
       contactSectionComplete: true,
       summaryRisksValidation: true
@@ -230,7 +228,6 @@ const planValidation = (function () {
     async function getAssessmentValidation(planId) {
       // reset the values of the validation for each consumer
       assessmentValidationCheck = {
-        //workingNotWorking: [],
         sectionsApplicable: [],
         servicesAndSupports: {},
         servicesAndSupportsChecked: {
@@ -299,16 +296,11 @@ const planValidation = (function () {
           },
         },
         hasASectionApplicable: true,
-        //workingSectionComplete: false,
         servicesAndSupportsError: false,
         complete: false
       };
       // Gathers the data from the database
       servicesAndSupportsData = await planValidationAjax.getAssessmentValidationData(planId);
-  
-      // WORKING/NOT WORKING
-      // assessmentValidationCheck.workingNotWorking = servicesAndSupportsData.workingNotWorking;
-      // workingSectionCheck(assessmentValidationCheck);
   
       // SECTIONS APPLICABLE
       // check each section fo rthe plan and see if any are selected, if at least one is selected, return true
@@ -336,30 +328,21 @@ const planValidation = (function () {
   
       // check if all sections are complete
       allAssessmentAreasComplete(assessmentValidationCheck);
-  
-      return assessmentValidationCheck;
     }
   
-    function allAssessmentAreasComplete(assessmentValidationCheck) {
+    function allAssessmentAreasComplete() {
       if (assessmentValidationCheck.hasASectionApplicable === true && assessmentValidationCheck.servicesAndSupportsError === false) {
           assessmentValidationCheck.complete = true;
       } else {
           assessmentValidationCheck.complete = false;
       }
-  
-      return assessmentValidationCheck;
     }
   
     // ASSESSMENT DATA UPDATE CHECK
     function updatedAssessmenteValidation() {
-     // const workingAlertDivCase1 = document.getElementById('workingAlert1');
-     //const workingAlertDivCase2 = document.getElementById('workingAlert2');
       const tocAlertDiv = document.getElementById('tocAlert');
       const tocMobileAlertDiv = document.getElementById('tocAlertMobile');
       const navAlertDiv = document.getElementById('navAlertAssessment');
-  
-      //Check working/ not working section
-      //workingSectionCheck(assessmentValidationCheck);
   
       //check sections applicable
       tocAssessmentCheck(assessmentValidationCheck);
@@ -389,29 +372,6 @@ const planValidation = (function () {
         }
       }
   
-      // If the working/not working section does not have a completed row, show the alert
-      // if (!assessmentValidationCheck.workingSectionComplete) {
-      //   if (workingSectionCase === 1) {
-      //     if (workingAlertDivCase1) {
-      //       workingAlertDivCase1.style.display = 'inline-block';
-      //       workingAlertDivCase2.style.display = 'none';
-      //     }
-      //   }
-      //   else if (workingSectionCase === 2) {
-      //     if (workingAlertDivCase2) {
-      //       workingAlertDivCase2.style.display = 'inline-block';
-      //       workingAlertDivCase1.style.display = 'none';
-      //     }
-      //   }
-      // } else {
-      //   if (workingAlertDivCase1) {
-      //     workingAlertDivCase1.style.display = 'none';
-      //   }
-      //   if (workingAlertDivCase2) {
-      //     workingAlertDivCase2.style.display = 'none';
-      //   }
-      // }
-  
       // If the assessment page has an error, show the nav alert
       if (assessmentValidationCheck.complete === false) {
         if (navAlertDiv) {
@@ -422,90 +382,10 @@ const planValidation = (function () {
           navAlertDiv.style.display = 'none';
         }
       }
-  
-      return assessmentValidationCheck;
-    }
-  
-    // ASSESSMENT WORKING/NOT WORKING
-    // function workingSectionCheck(assessmentValidationCheck) {
-    //     const groupedByRow = {};
-    //     const hasValue605Array = [];
-    //     const hasValue606Array = [];
-
-    //     // Group objects by row
-    //     assessmentValidationCheck.workingNotWorking.forEach(obj => {
-    //         if (!groupedByRow[obj.answerRow]) {
-    //             groupedByRow[obj.answerRow] = [];
-    //         }
-    //         groupedByRow[obj.answerRow].push(obj);
-    //     });
-
-    //     // Check for Question 607 within each row having values for 605 or 606
-    //     for (const row in groupedByRow) {
-    //         let hasValue605 = false;
-    //         let hasValue606 = false;
-    //         let hasValue607 = false;
-
-    //         groupedByRow[row].forEach(obj => {
-    //             if (obj.questionNumber === "Question 605" && obj.answer) {
-    //                 hasValue605 = true;
-    //             }
-    //             if (obj.questionNumber === "Question 606" && obj.answer) {
-    //                 hasValue606 = true;
-    //             }
-    //             if (obj.questionNumber === "Question 607" && obj.answer) {
-    //                 hasValue607 = true;
-    //             }
-    //         });
-
-    //         // If either 605 or 606 has value, then 607 must also have a value
-    //         if ((hasValue605 || hasValue606) && !hasValue607) {
-    //             assessmentValidationCheck.workingSectionComplete = false;
-    //             workingSectionCase = 2; 
-    //             return assessmentValidationCheck;
-    //         }
-
-    //         // Check if all three questions are blank
-    //         if (!hasValue605 && !hasValue606) {
-    //             assessmentValidationCheck.workingSectionComplete = false;
-    //             workingSectionCase = 2;
-    //             return assessmentValidationCheck;
-    //         }
-
-    //         hasValue605Array.push(hasValue605);
-    //         hasValue606Array.push(hasValue606);
-    //     }
-
-    //     // Check if there's at least one row with both 605 and 606 having values
-    //     const hasValue605 = hasValue605Array.some(val => val);
-    //     const hasValue606 = hasValue606Array.some(val => val);
-    //     if (!hasValue605 || !hasValue606) {
-    //         assessmentValidationCheck.workingSectionComplete = false;
-    //         workingSectionCase = 1;
-    //         return assessmentValidationCheck;
-    //     }
-
-    //     assessmentValidationCheck.workingSectionComplete = true;
-    //     workingSectionCase = 0; // Set workingSectionCase to 0 if all conditions pass
-    //     return assessmentValidationCheck;
-    //   }
-
-      function returnWorkingSectionCaseValue() {
-        return workingSectionCase;
-      }
-
-    async function updateAnswerWorkingSection(planId) {
-      const check = await getAssessmentValidation(planId);
-
-      //workingSectionCheck(check);
-  
-      // checks entire assessments for validation errors
-      planValidation.updatedAssessmenteValidation();
-      //return assessmentValidationCheck;
     }
   
     // ASSESSMENT TABLE OF CONTENTS
-    function tocAssessmentCheck(assessmentValidationCheck) {
+    function tocAssessmentCheck() {
       const hasASectionApplicable = assessmentValidationCheck.sectionsApplicable.some(
         obj => obj.applicable === 'Y',
       );
@@ -515,11 +395,9 @@ const planValidation = (function () {
       } else {
         assessmentValidationCheck.hasASectionApplicable = false;
       }
-  
-      return assessmentValidationCheck;
     }
 
-    function updateTocSectionHeaders(assessmentValidationCheck) {
+    function updateTocSectionHeaders() {
         for (let id = 34; id <= 40; id++) {
           let tocSectionHeader = document.getElementById(`${id}alert`);
           let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
@@ -542,8 +420,6 @@ const planValidation = (function () {
             }
           }
         }
-      
-        return assessmentValidationCheck;
     }
   
     // ASSESSMENT SERVICES AND SUPPORTS
@@ -618,10 +494,10 @@ const planValidation = (function () {
         assessmentValidationCheck.complete = false;
       }
 
-      return assessmentValidationCheck;
+      updatedAssessmenteValidation();
     }
 
-    function servicesAndSupportsAllVisibleSectionsCheck(assessmentValidationCheck) {
+    function servicesAndSupportsAllVisibleSectionsCheck() {
         const allSections = document.getElementsByClassName('assessment__section');
 
         // Get only the sections that are selected on the assessment
@@ -639,8 +515,6 @@ const planValidation = (function () {
           // No buttons with the class "error" found
           assessmentValidationCheck.servicesAndSupportsError = false;
         }
-
-        return assessmentValidationCheck;
     }
 
     function findQuestionIdCategory(questionId) {
@@ -701,7 +575,7 @@ const planValidation = (function () {
       }
   
       // checks entire assessments for validation errors
-      planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+      updatedAssessmenteValidation();
     }
 
     function updateAssessmentValidationSection(key, value) {
@@ -731,12 +605,13 @@ const planValidation = (function () {
         invalidProviders: []
       };
 
-      outcomesData = await planOutcomesAjax.getPlanSpecificOutcomes({
+      outcomesData = await planValidationAjax.getISPValidationData({
         token: $.session.Token,
         assessmentId: planId,
       });
   
       IspValidationCheck.outcomesData = outcomesData;
+
 
       for (const item of outcomesData.planOutcomeExperiences) {
         for (const responsibility of item.planExperienceResponsibilities) {
@@ -825,6 +700,8 @@ const planValidation = (function () {
       
       await summaryRisksValidationCheck();
 
+      validatePaidSupportsALlRows(outcomesData.paidSupports)
+
       //IspValidationCheck = validationCheck;
       return IspValidationCheck;
     }
@@ -855,18 +732,13 @@ const planValidation = (function () {
     }
   
     // Checks if all fields on the ISP outcomes are completed
-    function checkAllOutcomesComplete(validationCheck) {
-      // if (validationCheck.outcomesData.planOutcome.length > 0) {
-      //   validationCheck.planProgressSummary = true;
-      // }
- 
+    function checkAllOutcomesComplete(validationCheck) { 
       validationCheck.complete =
         validationCheck.details.length === 0 &&
         validationCheck.missingExperiences.length === 0 &&
         validationCheck.missingReviews.length === 0 &&
         validationCheck.planProgressSummary &&
         validationCheck.outcome.length === 0 &&
-        //outcomesData.planOutcome.length > 0 &&
         validationCheck.invalidProviders.length === 0;
 
       return validationCheck;
@@ -951,7 +823,70 @@ const planValidation = (function () {
 
       checkContactsValidation();
     }
+ 
+    // PAID SUPPORTS DATES
+    function validatePaidSupportsALlRows(paidSupports) {
+      const planStartDate = UTIL.formatDateFromDateObj(planDates.getPlanYearStartDate());
+      const planEndDate = UTIL.formatDateFromDateObj(planDates.getPlanYearEndDate());
+  
+      // Helper function to extract only the date
+      function extractDate(dateString) {
+          return dateString.split(' ')[0]; // Gets only the date portion
+      }
+  
+      // Start assuming all rows are valid
+      let allRowsValid = true;
+  
+      for (const support of paidSupports) {
+          const beginDate = UTIL.formatDateFromDateObj(extractDate(support.beginDate));
+          const endDate = UTIL.formatDateFromDateObj(extractDate(support.endDate));
+  
+          // Validate each row
+          if (!validatePaidSupportsDates(beginDate, endDate, planStartDate, planEndDate)) {
+              allRowsValid = false; // If any row is invalid, set the flag to false
+              IspValidationCheck.complete = false;
+              break;
+          }
+      }
+  
+      // Update global state based on the final validation result
+      IspValidationCheck.paidSupportsValidDates = allRowsValid;
+    }
+  
+  
+    function validatePaidSupportsDates(beginDate, endDate) {
+        const planStartDate = UTIL.formatDateFromDateObj(planDates.getPlanYearStartDate());
+        const planEndDate = UTIL.formatDateFromDateObj(planDates.getPlanYearEndDate());
 
+        // Ensure Begin Date and End Date are provided
+        if (!beginDate || isNaN(new Date(beginDate)) || !endDate || isNaN(new Date(endDate))) {
+            return false; // Invalid if either date is missing or not valid
+        }
+    
+        const begin = new Date(beginDate);
+        const end = new Date(endDate);
+        const planStart = new Date(planStartDate);
+        const planEnd = new Date(planEndDate);
+    
+        // Begin Date must be within the Plan Span
+        if (begin < planStart || begin > planEnd) {
+            return false;
+        }
+    
+        // End Date cannot be before Begin Date
+        if (end < begin) {
+            return false;
+        }
+    
+        // End Date must be within the Plan Span
+        if (end > planEnd) {
+            return false;
+        }
+    
+        // All validations passed for this row
+        return true;
+    }
+  
     function checkImportantPeople(importantPeopleData) {
       // Loop through each item in the array
       for (const contact of importantPeopleData) {
@@ -1131,8 +1066,6 @@ const planValidation = (function () {
     async function init(newPlanId) {
       planId = newPlanId;
 
-      //await summaryRisksValidationCheck(planId);
-
       await contactsValidationCheck(planId);
       
       await ISPValidation(planId);
@@ -1150,15 +1083,12 @@ const planValidation = (function () {
       updateSectionApplicability,
       updateAssessmentValidationSection,
       updateAssessmentValidationProperty,
-      returnWorkingSectionCaseValue,
       ISPValidation,
       returnIspValidation,
       checkAllOutcomesComplete,
       updatedIspOutcomesSetAlerts,
       reviewsValidationCheck,
       experiencesValidationCheck,
-      //workingSectionCheck,
-      updateAnswerWorkingSection,
       tocAssessmentCheck,
       findQuestionIdCategory,
       servicesAndSupportsBtnCheck,
@@ -1172,6 +1102,8 @@ const planValidation = (function () {
       setSummaryRiskValidation,
       alertCheckSummaryRisksValidation,
       summaryRisksValidationCheck,
+      validatePaidSupportsDates,
+      
       init,
     };
   })();

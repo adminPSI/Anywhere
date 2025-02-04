@@ -58,8 +58,8 @@ const assessmentCard = (function () {
     mainAssessment.markUnansweredQuestions();
     tableOfContents.showUnansweredQuestionCount();
 
-    let assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
-    planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+    await planValidation.getAssessmentValidation(planId);
+    planValidation.updatedAssessmenteValidation();
   }
 
   // Navigation Bar
@@ -114,16 +114,6 @@ const assessmentCard = (function () {
       'At least one section of the Assessment must be selected',
       tocAlertDiv,
     );
-
-    // creates and shows a tip when hovering over the visible alert div
-    // planValidation.createTooltip(
-    //   'At least one section of the Assessment must be selected',
-    //   tocAlertDiv,
-    // );
-
-    // if (assessmentValidationCheck.hasASectionApplicable === true) {
-    //   tocAlertDiv.style.display = 'none';
-    // }
 
     const navBar = document.createElement('div');
     navBar.classList.add('assessmentNavigation');
