@@ -1350,10 +1350,12 @@ const OOD = (() => {
         dropdown.populate('createreferenceNumbersDropdown', data, createFilterValues.referenceNumber);
         createFilterValues.referenceNumber = filterValues.referenceNumber
         checkCreatePopupRequiredFields(formNumber);
+        createfilterPopupCreateBTNStatus(formNumber);
        } else {
         dropdown.populate('createreferenceNumbersDropdown', data, filterValues.referenceNumber);
         createFilterValues.referenceNumber = filterValues.referenceNumber
         checkCreatePopupRequiredFields(formNumber);
+        createfilterPopupCreateBTNStatus(formNumber);
        }
         
     }
@@ -1563,6 +1565,8 @@ const OOD = (() => {
 
         POPUP.show(createfilterPopup);
         checkCreatePopupRequiredFields(formNumber);
+        createfilterPopupCreateBTNStatus(formNumber);
+        
 
     }
 
@@ -1593,7 +1597,7 @@ const OOD = (() => {
                 createServiceDateEndInput.classList.remove('error'); 
             }
             checkCreatePopupRequiredFields(formNumber);
-            createfilterPopupCreateBTNStatus();
+            createfilterPopupCreateBTNStatus(formNumber);
         });
         createServiceDateEndInput.addEventListener('input', event => {          
             if (event.target.value !== '') { 
@@ -1610,7 +1614,7 @@ const OOD = (() => {
                 createServiceDateEndInput.classList.remove('error'); 
             }
             checkCreatePopupRequiredFields(formNumber);
-            createfilterPopupCreateBTNStatus();
+            createfilterPopupCreateBTNStatus(formNumber);
         });
         employeeDropdown.addEventListener('change', event => {
             createFilterValues.userId = event.target.value;
@@ -1622,7 +1626,7 @@ const OOD = (() => {
             createFilterValues.referenceNumber = event.target.value;
             filterValues.referenceNumber = event.target.value;
             checkCreatePopupRequiredFields(formNumber);
-            createfilterPopupCreateBTNStatus();
+            createfilterPopupCreateBTNStatus(formNumber);
         });
         
     }
@@ -1646,7 +1650,7 @@ const OOD = (() => {
     function checkCreatePopupRequiredFields(formNumber) {
        // var createreferenceNumbersDropdown = document.querySelector('#createreferenceNumbersDropdown');
        
-   // if (formNumber != '3') {
+    if (formNumber != '3') {
        let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
 
         if (createreferenceNumbersDropDown.value === '' || createreferenceNumbersDropDown.value === '%') { 
@@ -1657,17 +1661,27 @@ const OOD = (() => {
             createreferenceNumbersDropDown.parentElement.classList.remove('error');
             createfilterPopupCreateBTN.classList.remove('disabled');
         }
-   //  } 
+     } 
     }
 
-    function createfilterPopupCreateBTNStatus() {
-        var hasErrors = [].slice.call(createfilterPopup.querySelectorAll('.error'));
-        if ((hasErrors.length !== 0)) {
-            createfilterPopupCreateBTN.classList.add('disabled');
-          } else {
-            createfilterPopupCreateBTN.classList.remove('disabled');
-          }
-    
+    function createfilterPopupCreateBTNStatus(formNumber) {
+         if (formNumber != '3') {
+            var hasErrors = [].slice.call(createfilterPopup.querySelectorAll('.error'));
+            if ((hasErrors.length !== 0)) {
+                createfilterPopupCreateBTN.classList.add('disabled');
+            } else {
+                createfilterPopupCreateBTN.classList.remove('disabled');
+            }
+        } else {
+            let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
+
+                if (createreferenceNumbersDropDown.value === '' || createreferenceNumbersDropDown.value === '%') { 
+               // if (createFilterValues.referenceNumber != '' && createFilterValues.referenceNumber != '%') {
+                    createfilterPopupCreateBTN.classList.add('disabled');
+                } else {
+                    createfilterPopupCreateBTN.classList.remove('disabled');
+                }
+        }
       }
 
     function buildEmploymentGoalPopUp() {
