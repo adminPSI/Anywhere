@@ -612,7 +612,6 @@ const planValidation = (function () {
   
       IspValidationCheck.outcomesData = outcomesData;
 
-      validatePaidSupportsALlRows(outcomesData.paidSupports)
 
       for (const item of outcomesData.planOutcomeExperiences) {
         for (const responsibility of item.planExperienceResponsibilities) {
@@ -700,6 +699,8 @@ const planValidation = (function () {
       ispValidationContactCheck();
       
       await summaryRisksValidationCheck();
+
+      validatePaidSupportsALlRows(outcomesData.paidSupports)
 
       //IspValidationCheck = validationCheck;
       return IspValidationCheck;
@@ -843,6 +844,7 @@ const planValidation = (function () {
           // Validate each row
           if (!validatePaidSupportsDates(beginDate, endDate, planStartDate, planEndDate)) {
               allRowsValid = false; // If any row is invalid, set the flag to false
+              IspValidationCheck.complete = false;
               break;
           }
       }

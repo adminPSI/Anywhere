@@ -1768,6 +1768,15 @@ const servicesSupports = (() => {
                 planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
                 planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
 
+                let serviceAlertDiv = document.getElementById('servicesAlert');
+
+                if (ISPValidation.paidSupportsValidDates === false)
+                    {
+                      serviceAlertDiv.style.display = 'flex';
+                    } else {
+                      serviceAlertDiv.style.display = 'none';
+                    }
+
                 let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
                 planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
                 planValidation.updatedAssessmenteValidation(assessmentPlanValidation);

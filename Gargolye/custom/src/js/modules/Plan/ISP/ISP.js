@@ -205,12 +205,31 @@ const ISP = (function () {
        } else {
           outcomesAlertDiv.style.display = 'flex';
        }
-       
-       if (validationCheck.complete === false) {
-         outcomesAlertDiv.style.display = 'flex';
-      } else {
-         outcomesAlertDiv.style.display = 'none';
       }
+
+      if (section.title === 'Services') {
+        const serviceAlertDiv = document.createElement('div');
+        serviceAlertDiv.classList.add('servicesAlertDiv');
+        serviceAlertDiv.id = 'servicesAlert';
+        serviceAlertDiv.innerHTML = `${icons.error}`;
+        navItem.appendChild(serviceAlertDiv);
+        serviceAlertDiv.style.display = 'none';
+
+        // creates and shows a tip when hovering over the visible alert div
+        planValidation.createTooltip(
+          'There is data missing on this tab that is required by DODD',
+          serviceAlertDiv,
+        );
+
+        let ISPValidation = planValidation.returnIspValidation();
+
+        // If a plan returns an error on the validation check, show the alert div
+        if (ISPValidation.paidSupportsValidDates === false)
+        {
+          serviceAlertDiv.style.display = 'flex';
+        } else {
+          serviceAlertDiv.style.display = 'none';
+        }
       }
 
       // if the section is 'Outcomes' run an initial validation check on the section
