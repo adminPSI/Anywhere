@@ -97,12 +97,20 @@ const csVendor = (() => {
       dropdownValues: [],
     };
 
+    const currentSigners = planConsentAndSign.getTeamMemberData();
+    const vendorIds = currentSigners
+      .filter(signer => signer.vendorId)
+      .map(signer => signer.vendorId);
+    
     vendorData.forEach(vendor => {
-      let isSelected = selectedVendors.includes(vendor.vendorId);
-      if (isSelected) {
-        vendorGroup.dropdownValues.push({ text: vendor.vendorName, value: vendor.vendorName });
-      } else {
-        nonVendorGroup.dropdownValues.push({ text: vendor.vendorName, value: vendor.vendorName });
+      // Exclude vendors with a vendorId in the vendorIds array
+      if (!vendorIds.includes(vendor.vendorId)) {
+        let isSelected = selectedVendors.includes(vendor.vendorId);
+        if (isSelected) {
+          vendorGroup.dropdownValues.push({ text: vendor.vendorName, value: vendor.vendorName });
+        } else {
+          nonVendorGroup.dropdownValues.push({ text: vendor.vendorName, value: vendor.vendorName });
+        }
       }
     });
 
