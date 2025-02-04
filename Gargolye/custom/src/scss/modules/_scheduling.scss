@@ -1,3 +1,147 @@
+//* NEW
+//*=====================================
+// Scheduling
+.scheduleWrap {
+  padding: 10px 0px;
+}
+.scheduleNav{
+  display: flex;
+  justify-content: space-between;
+
+  > div {
+    flex-grow: 2;
+    margin-right: 10px;
+
+    &:first-child {
+      flex-grow: 3;
+      margin-right: 10px;
+    }
+    &:last-child {
+      flex-grow: 1;
+      margin-right: 0px;
+    }
+  }
+
+  .shiftTypeWrap {
+    position: relative;
+
+    p {
+      position: absolute;
+      right: 0px;
+      bottom: 0px;
+      font-weight: $_normal;
+
+      &.error {
+        color: $error;
+      }
+    }
+  }
+}
+#locationDropdown {
+  min-width: 200px;
+}
+// Calendar
+.calendarWrap {
+  padding: 10px 0px;
+}
+.calendarHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.calendarTitleEle {
+  font-size: 32px;
+}
+.calendarNav{
+  display: flex;
+  align-items: center;
+
+  .viewToggle {
+    background: $black;
+    border-radius: 2px;
+    padding: 2px;
+    order: 1;
+    
+    button {
+      cursor: pointer;
+      background: $gray;
+      color: $black;
+      padding: 4px 12px;
+      margin-right: 2px;
+
+      &.active {
+        background: $primary;
+        color: $white;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .dateNav {
+    display: flex;
+    justify-content: space-between;
+    margin-right: 20px;
+    order: 0;
+
+    button {
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+  }
+}
+.calendar {
+  background: $primary;
+  border-radius: $r-sm;
+
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: 40px;
+  grid-auto-rows: minmax(80px, auto);
+  grid-gap: 2px;
+  padding: 6px;
+
+  .month-view,
+  .week-view,
+  .day-view {
+    display: contents;
+  }
+
+  .dayNameHeader {
+    display: contents;
+
+    > div {
+      background: $white;
+      font-weight: $_bold;
+      font-size: 18px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .week {
+    display: contents;
+
+    .day {
+      background: $white;
+    }
+  }
+}
+.calendar .month-view {
+  .day {
+    &.notSameMonth  {
+      background: $gray;
+    }
+  }
+}
+
+//* OLD
+//*==================================================================
 // Overrides
 //================================
 #inner-wrap #calendarContent {
@@ -16,28 +160,29 @@ div.leftnav-on #calendarContent {
   padding: 0 !important;
 }
 
-
 //Request Time Off Window
 //================================
 .requestOffCard {
   .card__body > div {
     margin: 0 5px 0;
   }
-  .card__body > div.input-field, .card__body > div.dropdown {
+  .card__body > div.input-field,
+  .card__body > div.dropdown {
     margin: 0 10px 20px;
   }
 
-  .requestOffCard__date, .requestOffCard__time {
+  .requestOffCard__date,
+  .requestOffCard__time {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
 
-    > div:first-child{
+    > div:first-child {
       width: 45%;
       flex-grow: 1;
       margin: 0 5px 20px;
     }
-    
+
     > div:last-child {
       width: 37%;
       flex-grow: 1;
@@ -46,76 +191,86 @@ div.leftnav-on #calendarContent {
   }
 }
 
-.requestOffBtnWrap{
+.requestOffBtnWrap {
   display: flex;
-  
+
   .btn-icon {
     flex-grow: 1;
     margin: 0 5px 0;
   }
-
 }
 // Request Approval Page
 // ===============================
 
-.actioncenter[data-active-module="schedule"] {
+.actioncenter[data-active-module='schedule'] {
   .table__row {
     &[data-approval-status='approve'] {
       background: rgba($secondary, 0.3);
     }
     &[data-approval-status='deny'] {
-      background: rgba($red, .3)
+      background: rgba($red, 0.3);
     }
   }
 
-  #daysOffTable, #openShiftTable{
+  #daysOffTable,
+  #openShiftTable {
     margin-bottom: 5px;
   }
 
-  #daysOffTable{
-  .table__header-row,
-  .table__row {
-    > div {
-      margin: 0 15px 0 0;
-    }
-    > div:last-child {
-      margin: 0;
-    }
-    > div:nth-child(1) {// Employee
-      width: 140px;
-    }
-    > div:nth-child(2) { // Start Data/Time
-      width: 80px;
-    }
-    > div:nth-child(3) { // End Date/Time
-      width: 80px;
-    }
-    > div:nth-child(4) { // Reason
-      display: none;
-      width: 80px;
-    }
-    > div:nth-child(5) { // Approve/Deny
-      display: none;
-      width: 80px;
-    }
-    @media screen and (min-width: 560px) {
-      > div:nth-child(1) {// Employee
-        width: 170px;
+  #daysOffTable {
+    .table__header-row,
+    .table__row {
+      > div {
+        margin: 0 15px 0 0;
       }
-      > div:nth-child(2) {// Start Data/Time
-        width: 160px;
+      > div:last-child {
+        margin: 0;
       }
-      > div:nth-child(3) {// // End Date/Time
-        width: 160px;
+      > div:nth-child(1) {
+        // Employee
+        width: 140px;
       }
-      > div:nth-child(4) {// Reason 
-        display: block;
+      > div:nth-child(2) {
+        // Start Data/Time
+        width: 80px;
       }
-      > div:nth-child(5) {// Approve/Deny
-        display: block;
+      > div:nth-child(3) {
+        // End Date/Time
+        width: 80px;
+      }
+      > div:nth-child(4) {
+        // Reason
+        display: none;
+        width: 80px;
+      }
+      > div:nth-child(5) {
+        // Approve/Deny
+        display: none;
+        width: 80px;
+      }
+      @media screen and (min-width: 560px) {
+        > div:nth-child(1) {
+          // Employee
+          width: 170px;
+        }
+        > div:nth-child(2) {
+          // Start Data/Time
+          width: 160px;
+        }
+        > div:nth-child(3) {
+          // // End Date/Time
+          width: 160px;
+        }
+        > div:nth-child(4) {
+          // Reason
+          display: block;
+        }
+        > div:nth-child(5) {
+          // Approve/Deny
+          display: block;
+        }
       }
     }
-  }
   }
 
   .table__header-row,
@@ -126,37 +281,47 @@ div.leftnav-on #calendarContent {
     > div:last-child {
       margin: 0;
     }
-    > div:nth-child(1) {// Employee
+    > div:nth-child(1) {
+      // Employee
       width: 140px;
     }
-    > div:nth-child(2) { //Data/Time
+    > div:nth-child(2) {
+      //Data/Time
       width: 80px;
     }
-    > div:nth-child(3) { //Location
+    > div:nth-child(3) {
+      //Location
       width: 80px;
     }
-    > div:nth-child(4) { // Reason
+    > div:nth-child(4) {
+      // Reason
       display: none;
       width: 80px;
     }
-    > div:nth-child(5) { // Approve/Deny
+    > div:nth-child(5) {
+      // Approve/Deny
       display: none;
       width: 80px;
     }
     @media screen and (min-width: 560px) {
-      > div:nth-child(1) {// Employee
+      > div:nth-child(1) {
+        // Employee
         width: 170px;
       }
-      > div:nth-child(2) {// Date/Time
+      > div:nth-child(2) {
+        // Date/Time
         width: 160px;
       }
-      > div:nth-child(3) {// location
+      > div:nth-child(3) {
+        // location
         width: 160px;
       }
-      > div:nth-child(4) {// Reason 
+      > div:nth-child(4) {
+        // Reason
         display: block;
       }
-      > div:nth-child(5) {// Approve/Deny
+      > div:nth-child(5) {
+        // Approve/Deny
         display: block;
       }
     }
@@ -181,7 +346,6 @@ div.leftnav-on #calendarContent {
     width: 60%;
     margin-left: 10px;
   }
-
 }
 
 //Calendar Popups
@@ -191,20 +355,20 @@ div.leftnav-on #calendarContent {
 }
 
 hr {
-  border-color: rgba(0,0,0,.14);
+  border-color: rgba(0, 0, 0, 0.14);
   border-width: 1px 0 0;
   margin: 0 0 10px 0;
 }
 
 .divider--right-inset {
-  border-color: rgba(0,0,0,.14);
+  border-color: rgba(0, 0, 0, 0.14);
   border-width: 1px 0 0;
   margin: 0 30% 10px 0;
 }
 
-.smallDetail{
+.smallDetail {
   padding: 4px 0 0;
-  font-size: .8em;
+  font-size: 0.8em;
 }
 
 .popupDetailsLine:first-child {
@@ -213,16 +377,16 @@ hr {
 .popupDetailsLine:last-child {
   margin: 0 0 25px;
 }
-.popupDetailsLine{
+.popupDetailsLine {
   margin: 0 0 10px;
 }
 
-.label{
-  margin: 0 0 5px
+.label {
+  margin: 0 0 5px;
 }
 
-label{
-  margin: 0 0 5px
+label {
+  margin: 0 0 5px;
 }
 
 .popupBtnWrap {
@@ -236,11 +400,10 @@ label{
 }
 //call off button in popup
 .request-off {
-  margin: 20px 0 15px 0;  
+  margin: 20px 0 15px 0;
 }
 
 .overlapRequestShiftPopup {
-
   display: flex;
   border: 1px solid;
   border-radius: 4px;
@@ -251,8 +414,6 @@ label{
   flex-direction: column;
   margin: 10px, 10px, 10px, 10px;
 
-  
- /// flex-grow: 1;
- // width: 100%;
-
+  /// flex-grow: 1;
+  // width: 100%;
 }

@@ -327,6 +327,16 @@ const dates = (function () {
 
     return false;
   }
+  function isSameMonth(dirtyDate, dirtyDateToCompare) {
+    if (arguments.length < 2) {
+      throw new TypeError('2 arguments required, but only ' + arguments.length + ' present');
+    }
+
+    var date = cloneDate(dirtyDate);
+    var dateToCompare = cloneDate(dirtyDateToCompare);
+
+    return date.getFullYear() === dateToCompare.getFullYear() && date.getMonth() === dateToCompare.getMonth();
+  }
   // FORMAT
   function checkFormat(dateString) {
     // Regex pattern for ISO date format (YYYY-MM-DD)
@@ -614,6 +624,7 @@ const dates = (function () {
     subYears,
     endOfWeek,
     startDayOfWeek,
+    startOfWeek,
     endOfMonth,
     startOfMonth,
     isAfter,
@@ -621,6 +632,7 @@ const dates = (function () {
     isEqual,
     isDateInCurrentWeek,
     isDateInFuture,
+    isSameMonth,
     checkFormat,
     formatISO,
     formateToISO,
