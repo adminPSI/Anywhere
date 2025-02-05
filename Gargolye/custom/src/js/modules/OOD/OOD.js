@@ -1665,23 +1665,23 @@ const OOD = (() => {
     }
 
     function createfilterPopupCreateBTNStatus(formNumber) {
-         if (formNumber != '3') {
+       //  if (formNumber != '3') {
             var hasErrors = [].slice.call(createfilterPopup.querySelectorAll('.error'));
             if ((hasErrors.length !== 0)) {
                 createfilterPopupCreateBTN.classList.add('disabled');
             } else {
                 createfilterPopupCreateBTN.classList.remove('disabled');
             }
-        } else {
-            let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
+        // } else {
+        //     let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
 
-                if (createreferenceNumbersDropDown.value === '' || createreferenceNumbersDropDown.value === '%') { 
-               // if (createFilterValues.referenceNumber != '' && createFilterValues.referenceNumber != '%') {
-                    createfilterPopupCreateBTN.classList.add('disabled');
-                } else {
-                    createfilterPopupCreateBTN.classList.remove('disabled');
-                }
-        }
+        //         if (createreferenceNumbersDropDown.value === '' || createreferenceNumbersDropDown.value === '%') { 
+        //        // if (createFilterValues.referenceNumber != '' && createFilterValues.referenceNumber != '%') {
+        //             createfilterPopupCreateBTN.classList.add('disabled');
+        //         } else {
+        //             createfilterPopupCreateBTN.classList.remove('disabled');
+        //         }
+        // }
       }
 
     function buildEmploymentGoalPopUp() {

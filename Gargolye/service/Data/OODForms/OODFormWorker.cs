@@ -68,7 +68,7 @@ namespace OODForms
                 string ProviderName = "";
                 string ConsumerName = "";
 
-                if (referenceNumber != "" && referenceNumber != null)
+                if (referenceNumber != "" && referenceNumber != null && referenceNumber != "%25")
                 {
                     referenceNumber = referenceNumber.Replace("+", " ");
                     dt = oodfdg.OODDevelopment(referenceNumber).Tables[0];
@@ -77,6 +77,9 @@ namespace OODForms
                     ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
                     ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
 
+                } else
+                {
+                    referenceNumber = "";
                 }
 
                 //string Staff = string.Empty;
@@ -107,7 +110,7 @@ namespace OODForms
 
                 string VRCounselor = "";
 
-                if (referenceNumber != "" && referenceNumber != null)
+                if (referenceNumber != "" && referenceNumber != null && referenceNumber != "%25")
                 {
                     DataSet dsVR = oodfdg.OODForm6GetVRCounselor(referenceNumber, consumerIdString, startDate, endDate);
                     // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
@@ -203,7 +206,7 @@ namespace OODForms
                 DateTime enddate = DateTime.ParseExact(endDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 string strEndDate = enddate.ToString("MM/dd/yyyy");
 
-                var fieldData = new List<(string fieldName, string value)>
+                    var fieldData = new List<(string fieldName, string value)>
                 {
                     ("ProviderName", ProviderName),
                     ("IndividualName", ConsumerName),
