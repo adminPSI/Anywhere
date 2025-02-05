@@ -922,8 +922,24 @@ const SchedulingCalendar = (function () {
   function filterCalendarEventsByEmployee() {
     return schedules.filter(sch => {});
   }
+  
+  function filterEmployeeList() {}
 
-  // DOM
+  // Shift/Event DOM
+  function buildShiftPopup() {
+    const dropdownEle = dropdown.build({
+      dropdownId: 'locationDropdown',
+      label: 'Location:',
+      style: 'secondary',
+    });
+    const dropdownEle2 = dropdown.build({
+      dropdownId: 'locationDropdown',
+      label: 'Location:',
+      style: 'secondary',
+    });
+  }
+
+  // MAIN DOM
   function populateLocationDropdown() {
     const dropdownData = locations
       .map(d => ({
@@ -1046,6 +1062,27 @@ const SchedulingCalendar = (function () {
     shiftTypeWrap.appendChild(shiftTypeNote);
 
     return shiftTypeWrap;
+  }
+  function buildPubSubSchedulesButton() {
+    const buttonele = button.build({
+      text: 'Publish / Un-Publish Schedules',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        // pub sub scheudles
+        // re pop calendar events
+      },
+    });
+  }
+  function buildNewShiftButton() {
+    const buttonele = button.build({
+      text: 'Add New Shift',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        // show add shift popup
+      },
+    });
   }
   function build() {
     const scheduleWrap = document.createElement('div');

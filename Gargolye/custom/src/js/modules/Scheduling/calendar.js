@@ -203,6 +203,11 @@ const Calendar = (function () {
   }
 
   function build() {
+    wrapperEle.innerHTML = '';
+    calendarElewrapperEle.innerHTML = '';
+    calendarHeaderElewrapperEle.innerHTML = '';
+    calendarTitleElewrapperEle.innerHTML = '';
+    calendarNavElewrapperEle.innerHTML = '';
     // main
     wrapperEle.classList.add('calendarWrap');
     calendarHeaderEle.classList.add('calendarHeader');
@@ -262,7 +267,6 @@ const Calendar = (function () {
   function init() {
     build();
 
-    // set default view
     viewBtnEle['month'].classList.add('active');
 
     renderCalendar();
