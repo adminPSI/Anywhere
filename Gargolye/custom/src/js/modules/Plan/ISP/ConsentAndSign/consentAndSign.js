@@ -998,13 +998,23 @@ const planConsentAndSign = (() => {
         const summaryofChangesTxtBx = input.build({
             type: 'textarea',
             value: thisPlanSummaryofChanges,
-             readonly: readOnly,
+            readonly: readOnly,
             charLimit: 10000,
             forceCharLimit: true,
             classNames: 'autosize',
         }); 
         summaryofChanges.appendChild(summaryofChangesTxt);
         summaryofChanges.appendChild(summaryofChangesTxtBx);
+
+        if (readOnly) {
+            summaryofChanges.classList.add('disabled');
+            summaryofChangesTxt.classList.add('disabled');
+            summaryofChangesTxtBx.classList.add('disabled');
+        } else {
+            summaryofChanges.classList.remove('disabled');
+            summaryofChangesTxt.classList.remove('disabled');
+            summaryofChangesTxtBx.classList.remove('disabled');
+        }
 
         summaryofChanges.addEventListener('focusout', event => {
             // alert("I am an alert box!");
