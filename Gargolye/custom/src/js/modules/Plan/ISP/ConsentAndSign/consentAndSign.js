@@ -998,7 +998,7 @@ const planConsentAndSign = (() => {
         const summaryofChangesTxtBx = input.build({
             type: 'textarea',
             value: thisPlanSummaryofChanges,
-            // readonly: readOnly,
+             readonly: readOnly,
             charLimit: 10000,
             forceCharLimit: true,
             classNames: 'autosize',
