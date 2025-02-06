@@ -140,30 +140,24 @@ var schedulingRequestTimeOff = (function() {
   }
 
   async function submitRequest() {
-    reasonId = reasonId === "%" ? null : reasonId;
-    employeeId = employeeId === "%" ? null : employeeId;
+    reasonId = reasonId === '%' ? null : reasonId;
+    employeeId = employeeId === '%' ? null : employeeId;
     if (reasonId === null || employeeId === null) {
       POPUP.show(errorPopup);
-      errorPopupText.innerHTML = "Reason and notified employee fields are required";
+      errorPopupText.innerHTML = 'Reason and notified employee fields are required';
       return;
     }
-    var startDate = document
-      .getElementById("fromDate")
-      .value.split("-")
-      .join(",");
-    var endDate = document
-      .getElementById("toDate")
-      .value.split("-")
-      .join(",");
+    var startDate = document.getElementById('fromDate').value.split('-').join(',');
+    var endDate = document.getElementById('toDate').value.split('-').join(',');
     var dateInterval = eachDateOfInterval({ start: startDate, end: endDate });
     // check date overlap:
     var areDatesValid = !dateInterval ? false : true;
     if (!areDatesValid) {
       POPUP.show(errorPopup);
-      errorPopupText.innerHTML = "From Date cannot be after To Date";
+      errorPopupText.innerHTML = 'From Date cannot be after To Date';
       return;
     } else {
-      if (typeof dateInterval === "string") {
+      if (typeof dateInterval === 'string') {
         var dateArray = dateInterval;
       } else {
         var dateArray = dateInterval
@@ -178,25 +172,25 @@ var schedulingRequestTimeOff = (function() {
       }
     }
 
-    var fromTime = document.getElementById("fromTime");
-    var toTime = document.getElementById("toTime");
-    fromTimeVal = fromTime.value === "" ? "00:00:00" : fromTime.value;
-    toTimeVal = toTime.value === "" ? "23:59:59" : toTime.value;
+    var fromTime = document.getElementById('fromTime');
+    var toTime = document.getElementById('toTime');
+    fromTimeVal = fromTime.value === '' ? '00:00:00' : fromTime.value;
+    toTimeVal = toTime.value === '' ? '23:59:59' : toTime.value;
     // check time overlap - ONLY CHECK TIME OVERLAP ON REQUEST OFF FOR 1 DAY. TO TIME CAN COME BEFORE FROM TIME
     // IF REQUESTING MULTIPLE DAYS OFF IN A ROW.
-    if (typeof dateInterval === "string") {
+    if (typeof dateInterval === 'string') {
       var areTimesValid = timeOverlapCheck(fromTimeVal, toTimeVal);
       if (!areTimesValid) {
         POPUP.show(errorPopup);
-        errorPopupText.innerHTML = "To Time cannot come before From Time"
+        errorPopupText.innerHTML = 'To Time cannot come before From Time';
         return;
       } else {
-        fromTime = fromTimeVal === "" ? "00:00:00" : fromTimeVal;
-        toTime = toTimeVal === "" ? "23:59:59" : toTimeVal;
+        fromTime = fromTimeVal === '' ? '00:00:00' : fromTimeVal;
+        toTime = toTimeVal === '' ? '23:59:59' : toTimeVal;
       }
     } else {
-      fromTime = fromTimeVal === "" ? "00:00:00" : fromTimeVal;
-      toTime = toTimeVal === "" ? "23:59:59" : toTimeVal;
+      fromTime = fromTimeVal === '' ? '00:00:00' : fromTimeVal;
+      toTime = toTimeVal === '' ? '23:59:59' : toTimeVal;
     }
 
     var data = {
@@ -207,16 +201,15 @@ var schedulingRequestTimeOff = (function() {
       toTime: toTimeVal,
       reasonId: reasonId,
       employeeNotifiedId: employeeId,
-      status: "P"
+      status: 'P',
     };
     const requestResult = await schedulingAjax.requestDaysOffSchedulingAjax(data);
-    if (requestResult.requestDaysOffSchedulingResult.length > 0)
-    {
-      overlapAlert(requestResult.requestDaysOffSchedulingResult[0])
+    if (requestResult.requestDaysOffSchedulingResult.length > 0) {
+      overlapAlert(requestResult.requestDaysOffSchedulingResult[0]);
     } else {
       // Add verification/popup that the request has been sent?
-    DOM.clearActionCenter();
-    scheduling.init();
+      DOM.clearActionCenter();
+      Scheduling.init();
     }
   }
 
@@ -226,85 +219,85 @@ var schedulingRequestTimeOff = (function() {
     var mm = UTIL.leadingZero(today.getMonth() + 1);
     var yyyy = today.getFullYear();
 
-    actioncenter = document.getElementById("actioncenter");
+    actioncenter = document.getElementById('actioncenter');
 
-    let cardHeader = document.createElement("div");
-    cardHeader.classList.add("card__header");
+    let cardHeader = document.createElement('div');
+    cardHeader.classList.add('card__header');
 
-    let cardBody = document.createElement("div");
-    cardBody.classList.add("card__body");
+    let cardBody = document.createElement('div');
+    cardBody.classList.add('card__body');
 
-    let dateWrap = document.createElement("div");
-    dateWrap.classList.add('requestOffCard__date')
+    let dateWrap = document.createElement('div');
+    dateWrap.classList.add('requestOffCard__date');
 
-    let timeWrap = document.createElement("div");
-    timeWrap.classList.add('requestOffCard__time')
+    let timeWrap = document.createElement('div');
+    timeWrap.classList.add('requestOffCard__time');
 
-    let btnWrap = document.createElement("div");
-    btnWrap.classList.add("requestOffBtnWrap");
+    let btnWrap = document.createElement('div');
+    btnWrap.classList.add('requestOffBtnWrap');
 
-    let headerText = document.createElement("h3");
-    headerText.innerHTML = "Request Time Off";
+    let headerText = document.createElement('h3');
+    headerText.innerHTML = 'Request Time Off';
 
     let card = document.createElement('div');
     card.classList.add('card', 'requestOffCard');
 
     let fromDateInput = input.build({
-      id: "fromDate",
-      label: "From Date",
-      type: "date",
-      style: "secondary"
+      id: 'fromDate',
+      label: 'From Date',
+      type: 'date',
+      style: 'secondary',
     });
     let toDateInput = input.build({
-      id: "toDate",
-      label: "To Date",
-      type: "date",
-      style: "secondary"
+      id: 'toDate',
+      label: 'To Date',
+      type: 'date',
+      style: 'secondary',
     });
     let fromTimeInput = input.build({
-      id: "fromTime",
-      label: "From Time",
-      type: "time",
-      style: "secondary"
+      id: 'fromTime',
+      label: 'From Time',
+      type: 'time',
+      style: 'secondary',
     });
     let toTimeInput = input.build({
-      id: "toTime",
-      label: "To Time",
-      type: "time",
-      style: "secondary"
+      id: 'toTime',
+      label: 'To Time',
+      type: 'time',
+      style: 'secondary',
     });
     let reasonDropdown = dropdown.build({
-      dropdownId: "reasonDropdown",
-      label: "Reason",
+      dropdownId: 'reasonDropdown',
+      label: 'Reason',
       classNames: 'error',
-      style: "secondary"
+      style: 'secondary',
     });
     let employeeDropdown = dropdown.build({
-      dropdownId: "employeeDropdown",
-      label: "Employee To Notify",
+      dropdownId: 'employeeDropdown',
+      label: 'Employee To Notify',
       classNames: 'error',
-      style: "secondary"
+      style: 'secondary',
     });
     let cancelBtn = button.build({
-      text: "Cancel",
-      style: "secondary",
-      type: "outlined",
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
       icon: 'close',
-      callback: function() {
+      callback: function () {
         DOM.clearActionCenter();
-        scheduling.init();
-      }
+        Scheduling.init();
+      },
     });
     let submitRequestBtn = button.build({
-      id: "submitRequestBtn",
-      text: "Submit Request",
-      style: "secondary",
-      type: "contained",
-      classNames: "disabled",
+      id: 'submitRequestBtn',
+      text: 'Submit Request',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'disabled',
       icon: 'send',
-      callback: function() {
+      callback: function () {
         submitRequest();
-      }
+      },
     });
 
     dateWrap.appendChild(fromDateInput);
@@ -320,79 +313,98 @@ var schedulingRequestTimeOff = (function() {
 
     btnWrap.appendChild(submitRequestBtn);
     btnWrap.appendChild(cancelBtn);
-    cardBody.appendChild(btnWrap)
+    cardBody.appendChild(btnWrap);
 
     cardHeader.appendChild(headerText);
-    
+
     card.appendChild(cardHeader);
     card.appendChild(cardBody);
 
     actioncenter.appendChild(card);
 
     //EVENT LISTENERS TO FOR REQIRED AND ENABELING SUBMIT BTN
-    fromDateInput.classList.add("error");
-    toDateInput.classList.add("error");
-    reasonDropdown.classList.add('error')
-    employeeDropdown.classList.add('error')
+    fromDateInput.classList.add('error');
+    toDateInput.classList.add('error');
+    reasonDropdown.classList.add('error');
+    employeeDropdown.classList.add('error');
 
-    var fromDateField = document.getElementById("fromDate");
-    var toDateField = document.getElementById("toDate");
-    var reasonDropdownField = document.getElementById("reasonDropdown");
-    var employeeDropdownField = document.getElementById("employeeDropdown");
+    var fromDateField = document.getElementById('fromDate');
+    var toDateField = document.getElementById('toDate');
+    var reasonDropdownField = document.getElementById('reasonDropdown');
+    var employeeDropdownField = document.getElementById('employeeDropdown');
 
-    fromDateInput.addEventListener("change", function() {
-      if (fromDateField.value === "") {
-        fromDateInput.classList.add("error");
+    fromDateInput.addEventListener('change', function () {
+      if (fromDateField.value === '') {
+        fromDateInput.classList.add('error');
       } else {
-        fromDateInput.classList.remove("error");
+        fromDateInput.classList.remove('error');
       }
-      if (fromDateField.value === "" || toDateField.value === "" || reasonDropdownField.selectedIndex === 0 || employeeDropdownField.selectedIndex === 0) {
-        submitRequestBtn.classList.add("disabled");
+      if (
+        fromDateField.value === '' ||
+        toDateField.value === '' ||
+        reasonDropdownField.selectedIndex === 0 ||
+        employeeDropdownField.selectedIndex === 0
+      ) {
+        submitRequestBtn.classList.add('disabled');
       } else {
-        submitRequestBtn.classList.remove("disabled");
+        submitRequestBtn.classList.remove('disabled');
       }
     });
-    toDateInput.addEventListener("change", function() {      
-      if (toDateField.value === "") {
-        toDateInput.classList.add("error");
+    toDateInput.addEventListener('change', function () {
+      if (toDateField.value === '') {
+        toDateInput.classList.add('error');
       } else {
-        toDateInput.classList.remove("error");
+        toDateInput.classList.remove('error');
       }
-      if (fromDateField.value === "" || toDateField.value === "" || reasonDropdownField.selectedIndex === 0 || employeeDropdownField.selectedIndex === 0) {
-        submitRequestBtn.classList.add("disabled");
+      if (
+        fromDateField.value === '' ||
+        toDateField.value === '' ||
+        reasonDropdownField.selectedIndex === 0 ||
+        employeeDropdownField.selectedIndex === 0
+      ) {
+        submitRequestBtn.classList.add('disabled');
       } else {
-        submitRequestBtn.classList.remove("disabled");
+        submitRequestBtn.classList.remove('disabled');
       }
     });
-    reasonDropdown.addEventListener("change", function() {
+    reasonDropdown.addEventListener('change', function () {
       var selectedOption = event.target.options[event.target.selectedIndex];
       reasonId = selectedOption.id;
       if (reasonDropdownField.selectedIndex === 0) {
-        reasonDropdown.classList.add("error");
+        reasonDropdown.classList.add('error');
       } else {
-        reasonDropdown.classList.remove("error");
+        reasonDropdown.classList.remove('error');
       }
-      if (fromDateField.value === "" || toDateField.value === "" || reasonDropdownField.selectedIndex === 0 || employeeDropdownField.selectedIndex === 0) {
-        submitRequestBtn.classList.add("disabled");
+      if (
+        fromDateField.value === '' ||
+        toDateField.value === '' ||
+        reasonDropdownField.selectedIndex === 0 ||
+        employeeDropdownField.selectedIndex === 0
+      ) {
+        submitRequestBtn.classList.add('disabled');
       } else {
-        submitRequestBtn.classList.remove("disabled");
+        submitRequestBtn.classList.remove('disabled');
       }
     });
-    employeeDropdown.addEventListener("change", function() {
+    employeeDropdown.addEventListener('change', function () {
       var selectedOption = event.target.options[event.target.selectedIndex];
       employeeId = selectedOption.id;
       if (employeeDropdownField.selectedIndex === 0) {
-        employeeDropdown.classList.add("error");
+        employeeDropdown.classList.add('error');
       } else {
-        employeeDropdown.classList.remove("error");
+        employeeDropdown.classList.remove('error');
       }
-      if (fromDateField.value === "" || toDateField.value === "" || reasonDropdownField.selectedIndex === 0 || employeeDropdownField.selectedIndex === 0) {
-        submitRequestBtn.classList.add("disabled");
+      if (
+        fromDateField.value === '' ||
+        toDateField.value === '' ||
+        reasonDropdownField.selectedIndex === 0 ||
+        employeeDropdownField.selectedIndex === 0
+      ) {
+        submitRequestBtn.classList.add('disabled');
       } else {
-        submitRequestBtn.classList.remove("disabled");
+        submitRequestBtn.classList.remove('disabled');
       }
     });
-
 
     schedulingAjax.getRequestTimeOffDropdownEmployees(populateEmployeesDropdown);
     schedulingAjax.getCallOffDropdownReasonsAjax(populateReasonsDropdown);

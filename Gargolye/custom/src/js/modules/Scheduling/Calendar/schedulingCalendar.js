@@ -248,7 +248,7 @@ var schedulingCalendar = (function () {
     locationDropdown.addEventListener('change', event => {
       var option = event.target.options[event.target.selectedIndex];
       var locationId = option.id;
-      schedulingAjax.getSchedulesForSchedulingModuleAjax(locationId, '%', populateSchedules);
+      schedulingAjax.getSchedulesForSchedulingModuleAjaxOLD(locationId, '%', populateSchedules);
     });
   }
 
@@ -271,7 +271,7 @@ var schedulingCalendar = (function () {
     _locationsArr = data;
     // populate schedule for default location
     defaultLocation = dropdownData[0].id;
-    // schedulingAjax.getSchedulesForSchedulingModuleAjax(defaultLocation, '%', populateSchedules);
+    // schedulingAjax.getSchedulesForSchedulingModuleAjaxOLD(defaultLocation, '%', populateSchedules);
   }
 
   //========================================================
@@ -1074,7 +1074,7 @@ var schedulingCalendar = (function () {
       _scheduleView = 'mine';
       _currentView = 'week';
       btn.setAttribute('data-view', 'mine');
-      schedulingAjax.getSchedulesForSchedulingModuleAjax('%', $.session.PeopleId, populateSchedules);
+      schedulingAjax.getSchedulesForSchedulingModuleAjaxOLD('%', $.session.PeopleId, populateSchedules);
       // remove location dropdown
       let scheduleViewWrap = document.querySelector('.scheduleViewWrap');
       var locationDropdown = document.getElementById('locationDropdown');
@@ -1091,9 +1091,9 @@ var schedulingCalendar = (function () {
       if (defaultLocation === null) {
         let option = locationDropdown.options[locationDropdown.selectedIndex];
         var locationId = option.id;
-        schedulingAjax.getSchedulesForSchedulingModuleAjax(locationId, '%', populateSchedules);
+        schedulingAjax.getSchedulesForSchedulingModuleAjaxOLD(locationId, '%', populateSchedules);
       } else {
-        schedulingAjax.getSchedulesForSchedulingModuleAjax(defaultLocation, '%', populateSchedules);
+        schedulingAjax.getSchedulesForSchedulingModuleAjaxOLD(defaultLocation, '%', populateSchedules);
         defaultLocation = null;
       }
     }
@@ -1360,7 +1360,7 @@ var schedulingCalendar = (function () {
     });
 
     if (_scheduleView === 'all') {
-      schedulingAjax.getScheduleApptInformationAjax(locationId, function (results) {
+      schedulingAjax.getScheduleApptInformationAjaxOLD(locationId, function (results) {
         populateAppointments(results);
         drawCalendar();
       });
@@ -1399,7 +1399,7 @@ var schedulingCalendar = (function () {
     if (!document.querySelector('.scheduleViewWrap')) {
       renderScheduleViewBtn();
       renderLocationDropdown();
-      schedulingAjax.getLocationDropdownForSchedulingAjax(populateLocationDropdown);
+      schedulingAjax.getLocationDropdownForSchedulingAjaxOLD(populateLocationDropdown);
     }
   }
 
@@ -1567,7 +1567,7 @@ var schedulingCalendar = (function () {
     schedulingAjax.getDayOfWeekScheduleAjax(setStartDay);
 
     // default view is my schedules
-    schedulingAjax.getSchedulesForSchedulingModuleAjax('%', $.session.PeopleId, function (results) {
+    schedulingAjax.getSchedulesForSchedulingModuleAjaxOLD('%', $.session.PeopleId, function (results) {
       // PROGRESS.SPINNER.hide();
       DOM.clearActionCenter();
       actioncenter = document.getElementById('actioncenter');
@@ -1581,7 +1581,7 @@ var schedulingCalendar = (function () {
 
       //populateSchedules does this too...
       // if (_scheduleView === 'all') {
-      //   schedulingAjax.getScheduleApptInformationAjax(locationId, function(results) {
+      //   schedulingAjax.getScheduleApptInformationAjaxOLD(locationId, function(results) {
       //     populateAppointments(results);
       //     drawCalendar();
       //   });
