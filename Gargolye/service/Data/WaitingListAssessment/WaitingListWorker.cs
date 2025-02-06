@@ -10,6 +10,7 @@ using System.Web.Script.Serialization;
 using static Anywhere.service.Data.Plan.AnywherePlanWorker;
 using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
+using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
 namespace Anywhere.service.Data.WaitingListAssessment
 {
@@ -1123,6 +1124,13 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return docObj;
         }
 
+        public EmployeeDropdown[] getEmployeeDropdown(string token, long locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
+        {
+            string empDropdown = dg.getEmployeeDropdown( token,  locationId,  region,  maxWeeklyHours,  shiftStartTime,  shiftEndTime,  minTimeBetweenShifts,  includeTrainedOnly);
+            EmployeeDropdown[] empDropdownObj = js.Deserialize<EmployeeDropdown[]>(empDropdown);
+            return empDropdownObj;
+        }
+
         public MemoryStream viewSupportingDocInBrowser(string token, string supportingDocumentId)
         {
             MemoryStream ms = null;
@@ -1183,6 +1191,12 @@ namespace Anywhere.service.Data.WaitingListAssessment
         {
             public string fundingSourceId { get; set; }
             public string description { get; set; }
+        }
+
+        public class EmployeeDropdown
+        {
+            public string Person_ID { get; set; }
+            public string EmployeeName { get; set; }
         }
 
         public class WaitingList

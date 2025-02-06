@@ -137,6 +137,31 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
+        public string getEmployeeDropdown(string token, long locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
+        {
+            if (tokenValidator(token) == false) return null;
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(locationId.ToString());
+            list.Add(region);
+            list.Add(maxWeeklyHours.ToString());
+            list.Add(shiftStartTime);
+            list.Add(shiftStartTime);
+            list.Add(shiftEndTime);
+            list.Add(minTimeBetweenShifts.ToString());
+            list.Add(includeTrainedOnly.ToString());
+            string text = "CALL DBA.ANYW_Scheduling_GetEmployeeDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4WL", ex.Message + "ANYW_WaitingList_GetSupportingDocumentList(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4WL: error ANYW_WaitingList_GetSupportingDocumentList";
+            }
+        }
+
         public string deleteFromWaitingList(string id, string tableName, string columnForId)
         {
             List<string> list = new List<string>();

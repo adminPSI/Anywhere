@@ -62,6 +62,7 @@ using static Anywhere.service.Data.SimpleMar.SignInUser;
 using System.Runtime.InteropServices.ComTypes;
 using static Anywhere.service.Data.FSS.FSSWorker;
 using Anywhere.service.Data.FSS;
+using Microsoft.Expression.Interactivity.Media;
 
 namespace Anywhere
 {
@@ -2960,6 +2961,11 @@ namespace Anywhere
         public SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId)
         {
             return wlw.getWLSupportingDocumentList(token, waitingListInformationId);
+        }
+
+        public EmployeeDropdown[] getEmployeeDropdown(string token, long locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
+        {
+            return wlw.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly);
         }
 
         public string deleteSupportingDocument(string token, string attachmentId)

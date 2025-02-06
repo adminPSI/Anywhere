@@ -4268,7 +4268,15 @@ namespace Anywhere
           UriTemplate = "/getWLSupportingDocumentList/")]
         SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId);
 
-        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getEmployeeDropdown/")]
+        EmployeeDropdown[] getEmployeeDropdown(string token, long locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly);
+
+
+       [OperationContract]
         [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
