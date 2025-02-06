@@ -1870,7 +1870,7 @@ var timeEntryCard = (function () {
         NO_BTN = button.build({
             text: 'NO',
             style: 'secondary',
-            type: 'outlined',
+            type: 'contained',
             callback: () => {
                 POPUP.hide(confirmPopup);
             },

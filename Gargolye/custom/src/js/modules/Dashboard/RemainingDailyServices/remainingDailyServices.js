@@ -382,7 +382,7 @@
                             populateFilteredList(list);
                             $.session.outcomeWidgetLocationName = locationList.find(l => l.value == filter.location).text;
                             $.session.outcomesWidgetGroupName = groupList.find(l => l.value == filter.group).text;
-                            $.session.outcomesWidgetOutcomeTypeName = outcomeList.find(l => l.value == filter.outcomeType).text;
+                            $.session.outcomesWidgetOutcomeTypeName = outcomeList.find(l => l.value == filter.outcomeType)?.text;
                             displayFilteredBy();
                         },
                     );
