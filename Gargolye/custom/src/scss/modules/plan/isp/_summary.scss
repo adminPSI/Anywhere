@@ -21,6 +21,20 @@
 }
 // tables
 .importantTablesWrap {
+
+  .table:not(.sortableTable) .table__row>div:nth-child(1) {
+    display: block;
+      width: 145px !important;
+      max-width: 156px !important;
+  }
+
+  .table:not(.sortableTable) .table__row>div:nth-child(2),
+     .table:not(.sortableTable) .table__row>div:nth-child(3) {
+        display: block;
+        width: 600px !important;
+        max-width: 600px !important;
+    }
+    
   .table__row {
     cursor: pointer;
 
@@ -41,11 +55,15 @@
     }
     > div:nth-child(3) {
       display: block;
-      width: 80px;
+      margin: auto !important;
+      width: 600px !important;
+      max-width: 600px !important;
     }
     > div:nth-child(4) {
       display: block;
-      width: 80px;
+      margin: auto !important;
+      width: 600px !important;
+      max-width: 600px !important;
     }
   }
 }
