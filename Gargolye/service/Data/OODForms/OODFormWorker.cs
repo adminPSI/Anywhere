@@ -72,13 +72,28 @@ namespace OODForms
                 {
                     referenceNumber = referenceNumber.Replace("+", " ");
                     dt = oodfdg.OODDevelopment(referenceNumber).Tables[0];
-                    row = dt.Rows[0];
 
-                    ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
-                    ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
+                    if (dt.Rows.Count > 0)
+                    {
+                        row = dt.Rows[0];
+
+                        ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
+                        ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
+                    }
 
                 } else
                 {
+
+                    dt = oodfdg.OODForm3ConsumerandVendor(consumerIdString).Tables[0];
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        row = dt.Rows[0];
+
+                        ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
+                        ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
+                    } 
+                   
                     referenceNumber = "";
                 }
 
