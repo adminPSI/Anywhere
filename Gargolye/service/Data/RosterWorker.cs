@@ -94,6 +94,7 @@ namespace Anywhere.service.Data
 
         public ConsumerRelationshipName[] getRelationshipsNameJSON(string token)
         {
+            js.MaxJsonLength = Int32.MaxValue;
             string personString = dg.getRelationshipsNameJSON(token);
             ConsumerRelationshipName[] personObj = js.Deserialize<ConsumerRelationshipName[]>(personString);
             return personObj;
