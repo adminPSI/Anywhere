@@ -804,7 +804,7 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN DBA.Locations ON DBA.Consumers.Location_ID = DBA.Locations.Location_ID ");
             sb.Append("LEFT OUTER JOIN DBA.Regions ON DBA.Locations.Region_ID = DBA.Regions.Region_ID ");
             sb.Append("LEFT OUTER JOIN DBA.Vendors ON DBA.Regions.Vendor_ID = DBA.Vendors.Vendor_ID ");
-            sb.AppendFormat("WHERE DBA.People.Consumer_ID = {0} ", consumerId);
+            sb.AppendFormat("WHERE DBA.People.Consumer_ID = {0} and DBA.Services.OOD_Form_Number = 3", consumerId);
             return di.SelectRowsDS(sb.ToString());
         }
 
