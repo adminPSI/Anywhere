@@ -717,16 +717,33 @@ const planValidation = (function () {
       // ISP Main Nav and ISP Outcomes Tab 
       const ISPAlertDiv = document.getElementById('navAlertISP');
       const outcomesNav = document.getElementById('outcomesAlert');
+      const servicesAlertDiv = document.getElementById('servicesAlert');
 
-      //if (validationCheck.complete === true) {
-    if (validationCheck.missingExperiences.length > 0 || validationCheck.missingReviews.length > 0) {
-      outcomesNav.style.display = 'block';
-      ISPAlertDiv.style.display = 'flex';
+
+      // Handle outcomesNav visibility (only the first two conditions)
+      if (validationCheck.missingExperiences.length > 0 || validationCheck.missingReviews.length > 0) {
+        outcomesNav.style.display = 'block';
       } else {
         outcomesNav.style.display = 'none';
-        ISPAlertDiv.style.display = 'none';
       }
 
+      // Handle servicesAlertDiv visibility (only the last condition)
+      if (validationCheck.paidSupportsValidDates === false) {
+        servicesAlertDiv.style.display = 'flex';
+      } else {
+        servicesAlertDiv.style.display = 'none';
+      }
+
+      // Handle ISPAlertDiv visibility (all three conditions)
+      if (
+        validationCheck.missingExperiences.length > 0 || 
+        validationCheck.missingReviews.length > 0 || 
+        validationCheck.paidSupportsValidDates === false
+      ) {
+        ISPAlertDiv.style.display = 'flex';
+      } else {
+        ISPAlertDiv.style.display = 'none';
+      }
 
       return validationCheck;
     }
