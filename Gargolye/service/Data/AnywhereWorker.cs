@@ -19,6 +19,7 @@ using Anywhere.service.Data.PlanSignature;
 using System.Linq;
 using System.Data.Odbc;
 using System.Configuration;
+using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
 namespace Anywhere.service.Data
 {
@@ -323,6 +324,19 @@ namespace Anywhere.service.Data
             string schedulePerodDataString = dg.getSchedulingPeriodsDetails(token, startDate, endDate);
             SchedulingData[] SchedulingData = js.Deserialize<SchedulingData[]>(schedulePerodDataString);
             return SchedulingData;
+        }
+
+        public EmployeeDropdown[] getEmployeeDropdown(string token, long locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
+        {
+            string empDropdown = dg.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly);
+            EmployeeDropdown[] empDropdownObj = js.Deserialize<EmployeeDropdown[]>(empDropdown);
+            return empDropdownObj;
+        }
+
+        public class EmployeeDropdown
+        {
+            public string Person_ID { get; set; }
+            public string EmployeeName { get; set; }
         }
 
         public class SchedulingPeriods

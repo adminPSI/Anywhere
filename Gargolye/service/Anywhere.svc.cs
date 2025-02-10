@@ -1238,6 +1238,11 @@ namespace Anywhere
             return anywhereWorker.GetWorkWeeks(token);
         }
 
+        public AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, long locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
+        {
+            return anywhereWorker.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly);
+        }
+
         public AnywhereWorker.SchedulingPeriods[] getSchedulingPeriods(string token)
         {
             return anywhereWorker.GetSchedulingPeriods(token);
@@ -2961,12 +2966,7 @@ namespace Anywhere
         public SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId)
         {
             return wlw.getWLSupportingDocumentList(token, waitingListInformationId);
-        }
-
-        public EmployeeDropdown[] getEmployeeDropdown(string token, long locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
-        {
-            return wlw.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly);
-        }
+        }        
 
         public string deleteSupportingDocument(string token, string attachmentId)
         {
