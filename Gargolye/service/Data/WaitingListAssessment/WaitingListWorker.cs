@@ -1122,14 +1122,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             string docList = dg.getWLSupportingDocumentList(token, waitingListInformationId);
             SupportingDocumentList[] docObj = js.Deserialize<SupportingDocumentList[]>(docList);
             return docObj;
-        }
-
-        public EmployeeDropdown[] getEmployeeDropdown(string token, long locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
-        {
-            string empDropdown = dg.getEmployeeDropdown( token,  locationId,  region,  maxWeeklyHours,  shiftStartTime,  shiftEndTime,  minTimeBetweenShifts,  includeTrainedOnly);
-            EmployeeDropdown[] empDropdownObj = js.Deserialize<EmployeeDropdown[]>(empDropdown);
-            return empDropdownObj;
-        }
+        }        
 
         public MemoryStream viewSupportingDocInBrowser(string token, string supportingDocumentId)
         {
@@ -1193,11 +1186,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string description { get; set; }
         }
 
-        public class EmployeeDropdown
-        {
-            public string Person_ID { get; set; }
-            public string EmployeeName { get; set; }
-        }
+        
 
         public class WaitingList
         {
