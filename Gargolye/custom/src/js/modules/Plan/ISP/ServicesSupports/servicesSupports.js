@@ -824,7 +824,7 @@ const servicesSupports = (() => {
         const numPaidSupports = getNumberOfPaidSupports();
         planSummary.checkForPaidSupports(numPaidSupports);
     }
-    function updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData) {
+    async function updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData) {
         selectedPaidSupportRows.forEach(row => {
             const { rowNode, ...tableData } = row;
 
@@ -848,11 +848,14 @@ const servicesSupports = (() => {
                 psData.providerName = multiSaveUpdateData.providerName;
             }
 
+            const isValid = planValidation.validatePaidSupportsDates(multiSaveUpdateData.beginDate, multiSaveUpdateData.endDate);
+
             table.updateRows(
                 paidSupportsTable,
                 [
                     {
                         id: rowId,
+                        hasError: isValid,
                         values: tableValues,
                         onClick: event => {
                             if (!enableMultiEdit) {
@@ -910,6 +913,19 @@ const servicesSupports = (() => {
                 row: psData.rowOrder,
             });
         });
+
+        let ISPValidation = await planValidation.ISPValidation(planID);
+                planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
+                planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
+
+                let serviceAlertDiv = document.getElementById('servicesAlert');
+
+                if (ISPValidation.paidSupportsValidDates === false)
+                    {
+                      serviceAlertDiv.style.display = 'flex';
+                    } else {
+                      serviceAlertDiv.style.display = 'none';
+                    }
     }
     function checkForMatchingFundingSourceAndSeriviceNames(paidSupportRows) {
         // grab the first row to set values
@@ -1033,7 +1049,7 @@ const servicesSupports = (() => {
                 var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
                 highlightedRows.forEach(row => row.classList.remove('selected'));
 
-                updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData);
+                await updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData);
                 selectedPaidSupportIds = [];
                 selectedPaidSupportRows = [];
 
