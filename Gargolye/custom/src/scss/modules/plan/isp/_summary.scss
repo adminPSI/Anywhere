@@ -90,6 +90,12 @@
 
 
 .skillsTablesWrap {
+  .table:not(.sortableTable) .table__row>div:nth-child(2) {
+    display: block;
+    max-width: 90% !important;
+    width: 90% !important
+  }
+
   .table__row {
     cursor: pointer;
 
@@ -110,8 +116,8 @@
     }
     > div:nth-child(3) {
       display: block;
-      width: 80px;
-    }
+      max-width: 90% !important;
+    }  
   }
 }
 .risksTablesWrap {
