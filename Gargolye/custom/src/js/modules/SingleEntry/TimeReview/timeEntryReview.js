@@ -651,7 +651,7 @@ var timeEntryReview = (function () {
     //118744 - ADV - ANY - SE: Add warning to users if services are not documented for
     async function undocumentedServicesPopup(undocumentedConsumerIDs, entryId, popup, isValid) {  
         const confirmPopup = POPUP.build({
-            hideX: false,
+            hideX: true, 
             classNames: 'warning',
         });
 

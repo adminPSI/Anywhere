@@ -1850,7 +1850,7 @@ var timeEntryCard = (function () {
     //118744 - ADV-ANY-SE: Add warning to users if services are not documented for
     async function undocumentedServicesPopup(event, undocumentedConsumerIDs, NameOfEvent) {
         const confirmPopup = POPUP.build({
-            hideX: false,
+            hideX: true,
             classNames: 'warning',
         });
 
