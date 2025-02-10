@@ -1,4 +1,4 @@
-var schedulingAjax = (function () {
+const schedulingAjax = (function () {
   async function getSchedulesForSchedulingModuleAjax(locationId, personId) {
     try {
       const result = await $.ajax({
@@ -66,6 +66,36 @@ var schedulingAjax = (function () {
           '/getLocationDropdownForScheduling/',
         data: JSON.stringify({
           token: $.session.Token,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.getLocationDropdownForSchedulingResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+  async function getEmployeesForSchedulingAjax(retrieveData) {
+    //locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly
+    // retrieveData.maxWeeklyHours = parseInt(retrieveData.maxWeeklyHours);
+    // retrieveData.minTimeBetweenShifts = parseInt(retrieveData.minTimeBetweenShifts);
+    // retrieveData.includeTrainedOnly = parseInt(retrieveData.includeTrainedOnly);
+
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getEmployeeDropdown/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          ...retrieveData,
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
@@ -511,6 +541,7 @@ var schedulingAjax = (function () {
     getSchedulesForSchedulingModuleAjax: getSchedulesForSchedulingModuleAjax,
     getLocationDropdownForSchedulingAjax: getLocationDropdownForSchedulingAjax,
     getScheduleApptInformationAjax: getScheduleApptInformationAjax,
+    getEmployeesForSchedulingAjax: getEmployeesForSchedulingAjax,
     requestDaysOffSchedulingAjax: requestDaysOffSchedulingAjax,
     getCallOffDropdownReasonsAjax: getCallOffDropdownReasonsAjax,
     getCallOffDropdownEmployeesAjax: getCallOffDropdownEmployeesAjax,

@@ -922,21 +922,220 @@ const SchedulingCalendar = (function () {
   function filterCalendarEventsByEmployee() {
     return schedules.filter(sch => {});
   }
-  
-  function filterEmployeeList() {}
 
-  // Shift/Event DOM
-  function buildShiftPopup() {
-    const dropdownEle = dropdown.build({
-      dropdownId: 'locationDropdown',
-      label: 'Location:',
+  // Shift/Event Popup
+  async function filterEmployeeList() {
+    const data = await schedulingAjax.getEmployeesForSchedulingAjax({});
+    return data;
+  }
+  function showFilterEmployeePopup(onSaveCallbackFunc) {
+    const opts = {
+      1: false,
+      2: false,
+      3: false,
+      4: false,
+      5: false,
+    };
+
+    const employeePopup = POPUP.build({
+      id: 'filterEmployeePopup',
+    });
+
+    const regionDropdown = dropdown.build({
+      dropdownId: 'regionDropdown',
+      label: 'Region',
       style: 'secondary',
     });
-    const dropdownEle2 = dropdown.build({
+
+    const savebtn = button.build({
+      text: 'Update Employee List',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        POPUP.hide(popup);
+        const employeeList = await filterEmployeeList();
+        onSaveCallbackFunc(employeeList);
+      },
+    });
+
+    const employeeOptionsWrap = document.createElement('div');
+    employeeOptionsWrap = `
+      <p>Select employee options</p>
+
+      <div class="employeeOptionsContainer">
+
+        <div class="employeeOption">
+          <input type="checkbox" name="location" />
+          <div class="label">
+            <p>Only include employees trained at the location</p>
+          </div>
+        </div>
+
+        <div class="employeeOption">
+          <input type="checkbox" name="hour" />
+          <div class="label">
+            <p>Exclude employees that would have more than</p>
+            <input type="number" name="hours" />
+            <p> hours for the work week</p>
+          </div>
+        </div>
+
+        <div class="employeeOption">
+          <input type="checkbox" name="minute" />
+          <div class="label">
+            <p>Exclude employees that have a shift less than</p>
+            <input type="number" name="minutes" />
+            <p>minutes before this one</p>
+          </div>
+        </div>
+
+        <div class="employeeOption">
+          <input type="checkbox" name="overlap" />
+          <div class="label">
+            <p>Exclude employees who have a day off that overlaps with this shift</p>
+          </div>
+        </div>
+
+        <div class="employeeOption">
+          <input type="checkbox" name="region" />
+          <div class="label">
+            <p>Only show employees from this region:</p>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    employeeOptionsWrap.addEventListener('change', e => {
+      console.log(e.target);
+    });
+
+    employeePopup.appendChild(employeeOptionsWrap);
+    employeePopup.appendChild(regionDropdown);
+    employeePopup.appendChild(savebtn);
+
+    POPUP.show(employeePopup);
+  }
+  function showShiftPopup(data) {
+    const updateEmployeeDropdownData = newEmployeeData => {
+      console.log(newEmployeeData);
+    };
+
+    const shiftData = data ? data : {};
+
+    const shiftPopup = POPUP.build({
+      id: 'shiftDetailPopup',
+      hideX: hide_X,
+    });
+
+    const filterEmployeesBtn = button.build({
+      text: 'Filter Employee List',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        showFilterEmployeePopup(updateEmployeeDropdownData);
+      },
+    });
+
+    const locationDropdown = dropdown.build({
       dropdownId: 'locationDropdown',
-      label: 'Location:',
+      label: 'Location',
       style: 'secondary',
     });
+    const employeeDropdown = dropdown.build({
+      dropdownId: 'employeeDropdown',
+      label: 'Employee',
+      style: 'secondary',
+    });
+
+    const startTimeInput = input.build({
+      label: 'Start Time',
+      type: 'time',
+      style: 'secondary',
+    });
+    const endTimeInput = input.build({
+      label: 'End Time',
+      type: 'time',
+      style: 'secondary',
+    });
+
+    const individualWrap = document.createElement('div');
+
+    const notifyEmployee = input.buildCheckbox({
+      text: 'Notify Employee',
+      isChecked: false,
+    });
+
+    const buttonWrap = document.createElement('div');
+    const savebtn = button.build({
+      text: 'Save',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        POPUP.hide(shiftPopup);
+      },
+    });
+    const cancelbtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        POPUP.hide(shiftPopup);
+      },
+    });
+    buttonWrap.appendChild(savebtn);
+    buttonWrap.appendChild(cancelbtn);
+
+    shiftPopup.appendChild(filterEmployeesBtn);
+    shiftPopup.appendChild(locationDropdown);
+    shiftPopup.appendChild(employeeDropdown);
+    shiftPopup.appendChild(startTimeInput);
+    shiftPopup.appendChild(endTimeInput);
+    shiftPopup.appendChild(individualWrap);
+    shiftPopup.appendChild(notifyEmployee);
+    shiftPopup.appendChild(buttonWrap);
+
+    POPUP.show(shiftPopup);
+  }
+
+  // Pub/Sub Popup
+  function showPubSubShiftsPopup() {
+    const pubSubPopup = POPUP.build({
+      id: 'shiftDetailPopup',
+      hideX: hide_X,
+    });
+
+    const locationDropdown = dropdown.build({
+      dropdownId: 'locationDropdown',
+      label: 'Location',
+      style: 'secondary',
+    });
+    const employeeDropdown = dropdown.build({
+      dropdownId: 'employeeDropdown',
+      label: 'Employee',
+      style: 'secondary',
+    });
+    const fromDateInput = input.build({
+      id: 'fromDateInput',
+      type: 'date',
+      label: 'From Date',
+      style: 'secondary',
+      value: filterValues.activityStartDate,
+    });
+    const toDateInput = input.build({
+      id: 'toDateInput',
+      type: 'date',
+      label: 'To Date',
+      style: 'secondary',
+      value: filterValues.activityEndDate,
+    });
+
+    pubSubPopup.appendChild(locationDropdown);
+    pubSubPopup.appendChild(employeeDropdown);
+    pubSubPopup.appendChild(fromDateInput);
+    pubSubPopup.appendChild(toDateInput);
+
+    POPUP.show(pubSubPopup);
   }
 
   // MAIN DOM
@@ -1124,6 +1323,17 @@ const SchedulingCalendar = (function () {
 
   return {
     init,
+    employeeTest: async () => {
+      const data = await schedulingAjax.getEmployeesForSchedulingAjax({
+        locationId: null,
+        includeTrainedOnly: 0,
+        region: 'ALL',
+        maxWeeklyHours: null,
+        shiftStartTime: '',
+        shiftEndTime: '',
+        minTimeBetweenShifts: null,
+      });
+    },
   };
 })();
 
