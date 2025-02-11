@@ -360,8 +360,14 @@ namespace Anywhere.service.Data.PlanSignature
 
         public void setVendorSalesForceId()
         {
-            ISPDTData iSPDT = new ISPDTData();
-            string response = iSPDT.PostAllLocalProviders();
+            try
+            {
+                ISPDTData iSPDT = new ISPDTData();
+                string response = iSPDT.PostAllLocalProviders();
+            } catch 
+            {
+                return;
+            }
         }
 
         public string setSalesForceIdForTeamMemberUpdate(string peopleId, string teamMemberType, string salesForceId)
