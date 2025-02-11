@@ -326,7 +326,7 @@ namespace Anywhere.service.Data
             return SchedulingData;
         }
 
-        public EmployeeDropdown[] getEmployeeDropdown(string token, long locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
+        public EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
         {
             string empDropdown = dg.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly);
             EmployeeDropdown[] empDropdownObj = js.Deserialize<EmployeeDropdown[]>(empDropdown);

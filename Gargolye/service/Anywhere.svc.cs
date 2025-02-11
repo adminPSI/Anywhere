@@ -1238,7 +1238,7 @@ namespace Anywhere
             return anywhereWorker.GetWorkWeeks(token);
         }
 
-        public AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, long locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
+        public AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
         {
             return anywhereWorker.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly);
         }

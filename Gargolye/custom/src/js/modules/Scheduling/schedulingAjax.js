@@ -75,7 +75,7 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-  async function getEmployeesForSchedulingAjax(retrieveData) {
+  async function getEmployeesForSchedulingAjax(retrieveData) {//
     //locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly
     // retrieveData.maxWeeklyHours = parseInt(retrieveData.maxWeeklyHours);
     // retrieveData.minTimeBetweenShifts = parseInt(retrieveData.minTimeBetweenShifts);

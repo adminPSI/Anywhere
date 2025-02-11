@@ -1343,16 +1343,14 @@ namespace Anywhere.Data
                 return "547: Error Getting Consumer Demographics";
             }
         }
-
-        public string getEmployeeDropdown(string token, long locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
+        public string getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
         {
             if (tokenValidator(token) == false) return null;
             List<string> list = new List<string>();
             list.Add(token);
-            list.Add(locationId.ToString());
+            list.Add(locationId);
             list.Add(region);
             list.Add(maxWeeklyHours.ToString());
-            list.Add(shiftStartTime);
             list.Add(shiftStartTime);
             list.Add(shiftEndTime);
             list.Add(minTimeBetweenShifts.ToString());
