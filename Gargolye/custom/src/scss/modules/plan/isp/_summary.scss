@@ -92,8 +92,8 @@
 .skillsTablesWrap {
   .table:not(.sortableTable) .table__row>div:nth-child(2) {
     display: block;
-    max-width: 90% !important;
-    width: 90% !important
+    max-width: 80% !important;
+    width: 80% !important
   }
 
   .table__row {
@@ -116,7 +116,7 @@
     }
     > div:nth-child(3) {
       display: block;
-      max-width: 90% !important;
+      max-width: 80% !important;
     }  
   }
 }
