@@ -103,7 +103,31 @@ const schedulingAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      return result.getEmployeesForSchedulingAjaxResult;
+      return result.getEmployeeDropdownResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+  async function getRegionDropdownAjax() {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getSchedulingRegions/',
+        data: JSON.stringify({
+          token: $.session.Token,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.getSchedulingRegions;
     } catch (error) {
       throw new Error(error.responseText);
     }
@@ -545,6 +569,7 @@ const schedulingAjax = (function () {
     getLocationDropdownForSchedulingAjax: getLocationDropdownForSchedulingAjax,
     getScheduleApptInformationAjax: getScheduleApptInformationAjax,
     getEmployeesForSchedulingAjax: getEmployeesForSchedulingAjax,
+    getRegionDropdownAjax: getRegionDropdownAjax,
     requestDaysOffSchedulingAjax: requestDaysOffSchedulingAjax,
     getCallOffDropdownReasonsAjax: getCallOffDropdownReasonsAjax,
     getCallOffDropdownEmployeesAjax: getCallOffDropdownEmployeesAjax,
