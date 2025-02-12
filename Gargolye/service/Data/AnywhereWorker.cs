@@ -311,12 +311,25 @@ namespace Anywhere.service.Data
             public string prev_end_date { get; set; }
         }
 
+        public class Regions
+        {
+            public string description { get; set; }
+            public string regionId { get; set; }
+        }
+
         //Scheduling Widget Code
         public SchedulingPeriods[] GetSchedulingPeriods(string token)
         {
             string schedulingPeriodsString = dg.getSchedulingPeriods(token);
             SchedulingPeriods[] schedulingPeriods = js.Deserialize<SchedulingPeriods[]>(schedulingPeriodsString);
             return schedulingPeriods;
+        }
+
+        public AnywhereWorker.Regions[] getSchedulingRegions(string token)
+        {
+            string schedulingRegionsString = dg.getSchedulingRegions(token);
+            Regions[] schedulingRegions = js.Deserialize<Regions[]>(schedulingRegionsString);
+            return schedulingRegions;
         }
 
         public SchedulingData[] getSchedulingPeriodsDetails(string token, string startDate, string endDate)

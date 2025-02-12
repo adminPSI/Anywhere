@@ -1248,6 +1248,11 @@ namespace Anywhere
             return anywhereWorker.GetSchedulingPeriods(token);
         }
 
+        public AnywhereWorker.Regions[] getSchedulingRegions(string token)
+        {
+            return anywhereWorker.getSchedulingRegions(token);
+        }
+
         public AnywhereWorker.SchedulingData[] getSchedulingPeriodsDetails(string token, string startDate, string endDate)
         {
             return anywhereWorker.getSchedulingPeriodsDetails(token, startDate, endDate);
