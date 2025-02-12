@@ -3216,6 +3216,24 @@ namespace Anywhere.Data
             }
         }
 
+        public string getSchedulingRegions(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getSchedulingPeriods" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_Scheduling_GetRegions(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("631", ex.Message + "ANYW_Scheduling_GetRegions(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "631: error ANYW_Scheduling_GetRegions";
+            }
+        }
+
         public string getSchedulingPeriodsDetails(string token, string startDate, string endDate)//Needs procedures in db still
         {
             if (tokenValidator(token) == false) return null;
