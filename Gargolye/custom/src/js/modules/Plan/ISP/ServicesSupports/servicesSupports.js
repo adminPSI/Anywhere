@@ -937,20 +937,49 @@ const servicesSupports = (() => {
     }
     //-- Markup ---------
     function toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn) {
+        const isValid = planValidation.validatePaidSupportsDates(multiSaveUpdateData.beginDate, multiSaveUpdateData.endDate)
+
         if (
-            multiSaveUpdateData.beginDate !== '' ||
+            (multiSaveUpdateData.beginDate !== '' ||
             multiSaveUpdateData.endDate !== '' ||
-            multiSaveUpdateData.providerId !== ''
+            multiSaveUpdateData.providerId !== '') &&
+            isValid
         ) {
             updateBtn.classList.remove('disabled');
-            return;
         } else {
             updateBtn.classList.add('disabled');
-            return;
         }
+        
 
         // updateBtn.classList.remove('disabled');
     }
+
+    function isDateValid(date, dateType) {
+        const planStartDate = UTIL.formatDateFromDateObj(planDates.getPlanYearStartDate());
+        const planEndDate = UTIL.formatDateFromDateObj(planDates.getPlanYearEndDate());
+    
+        const planStart = new Date(planStartDate);
+        const planEnd = new Date(planEndDate);
+        const inputDate = new Date(date);
+    
+        if (isNaN(inputDate)) {
+            return false; // Invalid date input
+        }
+    
+        if (dateType === 'beginDate') {
+            // Begin Date must be within the Plan Span
+            return inputDate >= planStart && inputDate <= planEnd;
+        }
+    
+        if (dateType === 'endDate') {
+            // End Date must be within the Plan Span
+            return inputDate >= planStart && inputDate <= planEnd;
+        }
+    
+        return false; // Default return if dateType is incorrect
+    }
+    
+
     function showMultiEditPopup() {
         let multiSaveUpdateData = {
             beginDate: '',
@@ -1009,6 +1038,11 @@ const servicesSupports = (() => {
             callback: e => {
                 multiSaveUpdateData.beginDate = e.target.value;
                 toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
+                if (isDateValid(e.target.value, 'beginDate')) {
+                    beginDateInput.classList.remove('error')
+                } else {
+                    beginDateInput.classList.add('error')
+                }
             },
         });
         const endDateInput = input.build({
@@ -1019,6 +1053,11 @@ const servicesSupports = (() => {
             callback: e => {
                 multiSaveUpdateData.endDate = e.target.value;
                 toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
+                if (isDateValid(e.target.value, 'endDate')) {
+                    endDateInput.classList.remove('error')
+                } else {
+                    endDateInput.classList.add('error')
+                }
             },
         });
 
