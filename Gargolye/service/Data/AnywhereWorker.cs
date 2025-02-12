@@ -328,6 +328,7 @@ namespace Anywhere.service.Data
 
         public EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
         {
+            js.MaxJsonLength = Int32.MaxValue;
             string empDropdown = dg.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly);
             EmployeeDropdown[] empDropdownObj = js.Deserialize<EmployeeDropdown[]>(empDropdown);
             return empDropdownObj;
