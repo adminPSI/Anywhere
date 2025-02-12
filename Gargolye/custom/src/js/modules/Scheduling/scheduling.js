@@ -804,6 +804,7 @@ const SchedulingCalendar = (function () {
   let calendarAppointments;
   let locations;
   let employees;
+  let shiftEmployees;
   let selectedLocationId;
   let selectedEmployeeId;
   let selectedShiftType;
@@ -924,10 +925,6 @@ const SchedulingCalendar = (function () {
   }
 
   // Shift/Event Popup
-  async function filterEmployeeList() {
-    const data = await schedulingAjax.getEmployeesForSchedulingAjax({});
-    return data;
-  }
   function showFilterEmployeePopup(onSaveCallbackFunc) {
     const opts = {
       1: false,
@@ -953,8 +950,16 @@ const SchedulingCalendar = (function () {
       type: 'contained',
       callback: async () => {
         POPUP.hide(popup);
-        const employeeList = await filterEmployeeList();
-        onSaveCallbackFunc(employeeList);
+        shiftEmployees = await schedulingAjax.getEmployeesForSchedulingAjax({
+          locationId: '0',
+          includeTrainedOnly: 0,
+          region: 'ALL',
+          maxWeeklyHours: -1,
+          shiftStartTime: '00:00:00',
+          shiftEndTime: '00:00:00',
+          minTimeBetweenShifts: -1,
+        });
+        onSaveCallbackFunc();
       },
     });
 
@@ -1311,7 +1316,16 @@ const SchedulingCalendar = (function () {
     scheduleCalEle = Calendar.init();
     build();
 
-    employees = [];
+    employees = await schedulingAjax.getEmployeesForSchedulingAjax({
+      locationId: '0',
+      includeTrainedOnly: 0,
+      region: 'ALL',
+      maxWeeklyHours: -1,
+      shiftStartTime: '00:00:00',
+      shiftEndTime: '00:00:00',
+      minTimeBetweenShifts: -1,
+    });
+    shiftEmployees = [...employees];
     populateEmployeeDropdown();
 
     locations = await schedulingAjax.getLocationDropdownForSchedulingAjax();
@@ -1323,17 +1337,6 @@ const SchedulingCalendar = (function () {
 
   return {
     init,
-    employeeTest: async () => {
-      const data = await schedulingAjax.getEmployeesForSchedulingAjax({
-        locationId: null,
-        includeTrainedOnly: 0,
-        region: 'ALL',
-        maxWeeklyHours: null,
-        shiftStartTime: '',
-        shiftEndTime: '',
-        minTimeBetweenShifts: null,
-      });
-    },
   };
 })();
 

@@ -75,11 +75,14 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-  async function getEmployeesForSchedulingAjax(retrieveData) {//
-    //locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly
-    // retrieveData.maxWeeklyHours = parseInt(retrieveData.maxWeeklyHours);
-    // retrieveData.minTimeBetweenShifts = parseInt(retrieveData.minTimeBetweenShifts);
-    // retrieveData.includeTrainedOnly = parseInt(retrieveData.includeTrainedOnly);
+  async function getEmployeesForSchedulingAjax(retrieveData) {
+    // locationId: '0', // '0' for null '%' for all
+    // includeTrainedOnly: 0,
+    // region: 'ALL', // '0' for null '%' for all
+    // maxWeeklyHours: -1, // -1 for null
+    // shiftStartTime: '00:00:00',
+    // shiftEndTime: '00:00:00',
+    // minTimeBetweenShifts: null, // -1 for null
 
     try {
       const result = await $.ajax({
