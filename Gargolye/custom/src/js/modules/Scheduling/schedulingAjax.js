@@ -103,7 +103,7 @@ const schedulingAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      return result.getLocationDropdownForSchedulingResult;
+      return result.getEmployeesForSchedulingAjaxResult;
     } catch (error) {
       throw new Error(error.responseText);
     }
