@@ -937,7 +937,8 @@ const servicesSupports = (() => {
     }
     //-- Markup ---------
     function toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn) {
-        const isValid = planValidation.validatePaidSupportsDates(multiSaveUpdateData.beginDate, multiSaveUpdateData.endDate)
+        let isValid = planValidation.validatePaidSupportsDates(multiSaveUpdateData.beginDate, multiSaveUpdateData.endDate)
+        if (multiSaveUpdateData.beginDate === '' && multiSaveUpdateData.endDate === '') isValid = true;
 
         if (
             (multiSaveUpdateData.beginDate !== '' ||
@@ -946,8 +947,10 @@ const servicesSupports = (() => {
             isValid
         ) {
             updateBtn.classList.remove('disabled');
+            updateBtn.disabled = false;
         } else {
             updateBtn.classList.add('disabled');
+            updateBtn.disabled = true;
         }
         
 
@@ -1194,8 +1197,10 @@ const servicesSupports = (() => {
         const doneBtn = document.querySelector('.paidSupportPopup .doneBtn');
         if (inputsWithErrors) {
             doneBtn.classList.add('disabled');
+            updateBtn.disabled = true;
         } else {
             doneBtn.classList.remove('disabled');
+            updateBtn.disabled = false;
         }
     }
     function showAddPaidSupportPopup({ popupData, isNew, fromAssessment, isCopy, charLimits }) {
@@ -1792,6 +1797,7 @@ const servicesSupports = (() => {
             classNames: 'doneBtn',
             callback: async () => {
                 doneBtn.classList.add('disabled');
+                dontBtn.disabled = true;
 
                 if (isNew) {
                     if (fromAssessment) {
@@ -1809,6 +1815,7 @@ const servicesSupports = (() => {
                 const vendorIds = getSelectedVendorIds();
 
                 doneBtn.classList.remove('disabled');
+                doneBtn.disabled = false;
                 POPUP.hide(paidSupportPopup);
 
                 fundingSourceDropdownSelectedText = undefined;
@@ -1945,6 +1952,7 @@ const servicesSupports = (() => {
         }
         if (hasInitialErros) {
             doneBtn.classList.add('disabled');
+            doneBtn.disabled = true;
         }
         // end required fields
 
