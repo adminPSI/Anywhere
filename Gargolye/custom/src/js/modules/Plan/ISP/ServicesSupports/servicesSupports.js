@@ -1797,7 +1797,7 @@ const servicesSupports = (() => {
             classNames: 'doneBtn',
             callback: async () => {
                 doneBtn.classList.add('disabled');
-                dontBtn.disabled = true;
+                doneBtn.disabled = true;
 
                 if (isNew) {
                     if (fromAssessment) {
