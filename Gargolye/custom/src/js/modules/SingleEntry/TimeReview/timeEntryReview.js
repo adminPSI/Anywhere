@@ -48,6 +48,7 @@ var timeEntryReview = (function () {
     let payPeriodBtnWrap;
     let locationNameBtnWrap;
     let workCodeNameBtnWrap;
+    let rosterConsumers;
 
     // Util
     //------------------------------------
@@ -678,7 +679,7 @@ var timeEntryReview = (function () {
         const message = document.createElement('p');
         const messageConfirm = document.createElement('p');
         const vendorSection = document.createElement('div');
-        var rosterConsumers = await roster2.getAllRosterConsumers();
+       
         undocumentedConsumerIDs.forEach(id => {
             const vendorDisp = document.createElement('div');
             vendorDisp.innerHTML = `<span>${rosterConsumers.find(i => i.id == id).LN}, ${rosterConsumers.find(i => i.id == id).FN}</span>`;
@@ -1135,7 +1136,7 @@ var timeEntryReview = (function () {
         payPeriod = timeEntry.getCurrentPayPeriod(false);
         locationData = timeEntry.getLocations();
         workCodeData = await timeEntry.getWorkCodes();
-
+        rosterConsumers = await roster2.getAllRosterConsumers();     
         loadReviewPage();
     }
 
