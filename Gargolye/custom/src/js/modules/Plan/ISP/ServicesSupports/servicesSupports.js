@@ -1197,10 +1197,10 @@ const servicesSupports = (() => {
         const doneBtn = document.querySelector('.paidSupportPopup .doneBtn');
         if (inputsWithErrors) {
             doneBtn.classList.add('disabled');
-            updateBtn.disabled = true;
+            doneBtn.disabled = true;
         } else {
             doneBtn.classList.remove('disabled');
-            updateBtn.disabled = false;
+            doneBtn.disabled = false;
         }
     }
     function showAddPaidSupportPopup({ popupData, isNew, fromAssessment, isCopy, charLimits }) {
