@@ -855,7 +855,7 @@ const servicesSupports = (() => {
                 [
                     {
                         id: rowId,
-                        hasError: isValid,
+                        hasError: !isValid,
                         values: tableValues,
                         onClick: event => {
                             if (!enableMultiEdit) {
@@ -938,7 +938,7 @@ const servicesSupports = (() => {
     //-- Markup ---------
     function toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn) {
         let isValid = planValidation.validatePaidSupportsDates(multiSaveUpdateData.beginDate, multiSaveUpdateData.endDate)
-        if (multiSaveUpdateData.beginDate === '' && multiSaveUpdateData.endDate === '') isValid = true;
+        if (multiSaveUpdateData.beginDate === '' || multiSaveUpdateData.endDate === '') isValid = true;
 
         if (
             (multiSaveUpdateData.beginDate !== '' ||
