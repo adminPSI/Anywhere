@@ -352,7 +352,7 @@ namespace Anywhere.service.Data
                 string getUndocumentedString = dg.getUndocumentedServicesForWarning(entryDate, id, token);
                 SingleEntryConsumersPresent[] getUndocumentedObj = js.Deserialize<SingleEntryConsumersPresent[]>(getUndocumentedString);
                 if (getUndocumentedObj[0].isDocumented == "false")
-                    undocumentedIds = undocumentedIds.Append<string>(id).ToArray();
+                    undocumentedIds = undocumentedIds.Append<string>(getUndocumentedObj[0].consumername).ToArray();
             }
             return undocumentedIds;
         }

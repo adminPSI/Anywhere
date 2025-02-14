@@ -1825,7 +1825,7 @@ var timeEntryCard = (function () {
         });
         saveAndSumbitBtn.addEventListener('click', async event => {
             //118744 - ADV - ANY - SE: Add warning to users if services are not documented for
-            const undocumentedConsumerIDs = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate, consumerIds);          
+            const undocumentedConsumerIDs = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate, consumerIds); 
             if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedConsumerIDs.length > 0) {
                 undocumentedServicesPopup(event, undocumentedConsumerIDs, 'SAVESUBMIT');
             }
@@ -1879,13 +1879,12 @@ var timeEntryCard = (function () {
         const message = document.createElement('p');
         const messageConfirm = document.createElement('p');
         const vendorSection = document.createElement('div');
-        var rosterConsumers = await roster2.getAllRosterConsumers();
-        undocumentedConsumerIDs.forEach(id => {
+        undocumentedConsumerIDs.forEach(consumerName => { 
             const vendorDisp = document.createElement('div');
-            vendorDisp.innerHTML = `<span>${rosterConsumers.find(i => i.id == id).LN}, ${rosterConsumers.find(i => i.id == id).FN}</span>`;
+            vendorDisp.innerHTML = `<span>${consumerName}</span>`;
             vendorDisp.classList.add('consumerNameList');
             vendorSection.appendChild(vendorDisp);
-        });
+        }); 
 
         message.innerText = 'The following individuals have services that you did not document for on the date of your time record.';
         message.style.textAlign = 'left';
