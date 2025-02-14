@@ -16,7 +16,7 @@ const TRANS_routeDocumentation = (function () {
         Save and Cancel btns
     */
 
-    let routeStartInput, routeEndInput, routeStartOdo, routeEndOdo, ro;
+    let routeStartInput, routeEndInput, routeStartOdo, routeEndOdo, tripIntegratedEmploymentCheckbox, ro;
     let consumerDocCardBody;
 
     // * Data storage
@@ -86,6 +86,18 @@ const TRANS_routeDocumentation = (function () {
             style: "secondary",
             value: tripInfo.odometerStop
         });
+
+        tripIntegratedEmploymentCheckbox = input.buildCheckbox({
+            text: 'Trip To/From Integrated Employment',
+            id: 'tripIntegratedEmploymentCheckbox',
+            //readonly: ro,
+            isChecked: false,
+            style: "secondary",
+            isChecked: tripInfo.integratedEmployment === 'Y' ? true : false,
+        });
+
+        tripIntegratedEmploymentCheckbox.style = "padding-bottom: 15px;";   
+
         if (ro) {
             routeStartInput.classList.add('disabled')
             routeEndInput.classList.add('disabled')
@@ -93,6 +105,7 @@ const TRANS_routeDocumentation = (function () {
             routeEndOdo.classList.add('disabled')
         }
         routeDocCardBody.appendChild(routeStartInput);
+        routeDocCardBody.appendChild(tripIntegratedEmploymentCheckbox);
         routeDocCardBody.appendChild(routeStartOdo);
         routeDocCardBody.appendChild(routeEndInput);
         routeDocCardBody.appendChild(routeEndOdo);
@@ -203,6 +216,10 @@ const TRANS_routeDocumentation = (function () {
         })
         routeStartOdo.addEventListener('change', () => odoCheck())
         routeEndOdo.addEventListener('change', () => odoCheck())
+
+        tripIntegratedEmploymentCheckbox.addEventListener('change', event => {
+
+        });
     }
 
     function buildConsumerCards() {

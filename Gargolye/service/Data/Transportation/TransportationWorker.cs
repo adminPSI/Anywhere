@@ -255,6 +255,8 @@ namespace Anywhere.service.Data.Transportation
             public string driverId { get; set; }
             public string locationId { get; set; }
             public string batchId { get; set; }
+            public string integratedEmployment { get; set; }
+
         }
 
         public Drivers[] getDrivers(string token)
