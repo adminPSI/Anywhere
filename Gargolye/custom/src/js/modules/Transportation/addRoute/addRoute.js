@@ -15,7 +15,7 @@ const TRANS_addRoute = (function () {
         driverDropdown,
         otherRiderDropdown,
         locationDropdown,
-        vehicleDropdown;
+        vehicleDropdown, tripIntegratedEmploymentCheckbox;
     let milesRadio, tripsRadio;
     let consumerSectionBody, noConsumerWarning;
     let consumersOnRecord = new Map();
@@ -50,6 +50,17 @@ const TRANS_addRoute = (function () {
             charLimit: 60
         });
         routeNameInput.autocomplete = 'false'
+
+        tripIntegratedEmploymentCheckbox = input.buildCheckbox({
+            text: 'Trip To/From Integrated Employment',
+            id: 'tripIntegratedEmploymentCheckbox',
+            //readonly: ro,
+            isChecked: false,
+            style: "secondary",
+            //isChecked: confidential === 'Y' ? true : false,
+        });
+
+        tripIntegratedEmploymentCheckbox.style = "padding-bottom: 15px;";  
 
         driverDropdown = dropdown.build({
             dropdownId: "driverDropdown",
@@ -125,6 +136,7 @@ const TRANS_addRoute = (function () {
         column1.appendChild(routeInfoCard)
         routeInfoCardBody.appendChild(dateInput);
         routeInfoCardBody.appendChild(routeNameInput);
+        routeInfoCardBody.appendChild(tripIntegratedEmploymentCheckbox);
         routeInfoCardBody.appendChild(driverDropdown);
         routeInfoCardBody.appendChild(otherRiderDropdown);
         routeInfoCardBody.appendChild(vehicleDropdown);
@@ -145,7 +157,7 @@ const TRANS_addRoute = (function () {
         // No Consumer Warning //
         noConsumerWarning = document.createElement('p');
         noConsumerWarning.style.color = 'red';
-        noConsumerWarning.innerText = 'You must select at least one consumer for the route.'
+        noConsumerWarning.innerText = 'You must select one consumer for the route.'
         consumerSectionBody.appendChild(noConsumerWarning)
         //
         column2.appendChild(consumerSectionCard)
@@ -281,6 +293,32 @@ const TRANS_addRoute = (function () {
             resetPageForNewDate(event.target.value)
             checkRequiredFieldsOfAddRoute();
         })
+
+        tripIntegratedEmploymentCheckbox.addEventListener('change', event => {
+            //confidential = event.target.checked ? 'Y' : 'N';
+            // alert("Yep, that's it");
+            var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+            var MilesRadio = document.getElementById("milesRadio");
+            var TripsRadio = document.getElementById("tripsRadio");
+
+            if (TripIntegratedEmploymentCheckbox.checked == true) {
+              //  var MilesRadio = document.getElementById("milesRadio");
+               TripsRadio.checked = true;  
+               TripsRadio.disabled = true;
+               MilesRadio.disabled = true;
+
+               TripsRadio.classList.add('disabled');
+               MilesRadio.classList.add('disabled');
+            } else {
+               // var TripsRadio = document.getElementById("tripsRadio");
+               MilesRadio.checked = true;   
+               TripsRadio.disabled = false;
+               MilesRadio.disabled = false;
+               TripsRadio.classList.remove('disabled');
+               MilesRadio.classList.remove('disabled');
+            }
+ 
+        });
     }
 
     function resetPageForNewDate(newDate) {
@@ -324,6 +362,13 @@ const TRANS_addRoute = (function () {
         if (consumersOnRecord.size > 0) {
             noConsumerWarning.style.display = 'none';
         } else noConsumerWarning.style.display = 'block';
+
+        if (consumersOnRecord.size > 0) {
+            roster2.toggleMiniRosterBtnVisible(false);
+        } else {
+            roster2.toggleMiniRosterBtnVisible(true);
+        }
+
         checkRequiredFieldsOfAddRoute();
     }
     function updateConsumerData(data) {
@@ -347,6 +392,13 @@ const TRANS_addRoute = (function () {
                     if (consumersOnRecord.size > 0) {
                         noConsumerWarning.style.display = 'none';
                     } else noConsumerWarning.style.display = 'block';
+
+                    if (consumersOnRecord.size > 0) {
+                        roster2.toggleMiniRosterBtnVisible(false);
+                    } else {
+                        roster2.toggleMiniRosterBtnVisible(true);
+                    }
+
                     checkRequiredFieldsOfAddRoute();
                 })
                 break;
