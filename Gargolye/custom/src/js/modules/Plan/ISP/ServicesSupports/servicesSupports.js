@@ -848,7 +848,21 @@ const servicesSupports = (() => {
                 psData.providerName = multiSaveUpdateData.providerName;
             }
 
-            const isValid = planValidation.validatePaidSupportsDates(multiSaveUpdateData.beginDate, multiSaveUpdateData.endDate);
+            let isValid = true;
+         
+            if (multiSaveUpdateData.beginDate !== '' && multiSaveUpdateData.endDate !== '') {
+                isValid = planValidation.validatePaidSupportsDates(multiSaveUpdateData.beginDate, multiSaveUpdateData.endDate)
+            } else {
+                if (multiSaveUpdateData.beginDate === '' || multiSaveUpdateData.endDate === '') {
+                    if (multiSaveUpdateData.beginDate !== '') {
+                        isValid = isDateValid(multiSaveUpdateData.beginDate, 'beginDate')
+                    }
+        
+                    if (multiSaveUpdateData.endDate !== '') {
+                        isValid = isDateValid(multiSaveUpdateData.endDate, 'endDate')
+                    }
+                };
+            }
 
             table.updateRows(
                 paidSupportsTable,
@@ -937,8 +951,21 @@ const servicesSupports = (() => {
     }
     //-- Markup ---------
     function toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn) {
-        let isValid = planValidation.validatePaidSupportsDates(multiSaveUpdateData.beginDate, multiSaveUpdateData.endDate)
-        if (multiSaveUpdateData.beginDate === '' || multiSaveUpdateData.endDate === '') isValid = true;
+        let isValid = true;
+         
+        if (multiSaveUpdateData.beginDate !== '' && multiSaveUpdateData.endDate !== '') {
+            isValid = planValidation.validatePaidSupportsDates(multiSaveUpdateData.beginDate, multiSaveUpdateData.endDate)
+        } else {
+            if (multiSaveUpdateData.beginDate === '' || multiSaveUpdateData.endDate === '') {
+                if (multiSaveUpdateData.beginDate !== '') {
+                    isValid = isDateValid(multiSaveUpdateData.beginDate, 'beginDate')
+                }
+    
+                if (multiSaveUpdateData.endDate !== '') {
+                    isValid = isDateValid(multiSaveUpdateData.endDate, 'endDate')
+                }
+            };
+        }
 
         if (
             (multiSaveUpdateData.beginDate !== '' ||
