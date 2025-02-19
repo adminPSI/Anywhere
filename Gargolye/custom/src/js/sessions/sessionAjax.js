@@ -1,16 +1,16 @@
 ﻿function generateURL(endPoint) {
-  return `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/${endPoint}/`;
+    return `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/${endPoint}/`;
 }
 
 async function md5Hash(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
 
-  const hashBuffer = await crypto.subtle.digest('MD5', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const hashBuffer = await crypto.subtle.digest('MD5', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-  return hashHex;
+    return hashHex;
 }
 
 function logIn() {
@@ -252,165 +252,165 @@ function logIn() {
 
 //Shared functionality of log in for use with change password, because of the ids for username and password on the forms
 function logInChangePassword() {
-  var success = false;
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/getLogIn/',
-    data:
-      '{"userId":"' +
-      $('#username2').val() +
-      '", "hash":"' +
-      $().crypt({
-        method: 'md5',
-        source: $('#newpassword2').val(),
-      }) +
-      '"}',
-    contentType: 'application/json; charset=utf-8',
-    beforeSend: function () {
-      // show gif here, eg:
-      $('body').css('cursor', 'wait');
-    },
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
-      //errorMessage = "";
-      //alert('success: ' + res);
-      eraseCookie('psiuser');
-      var overlay = document.createElement('div');
-      if ($('permissions', res).is('*') && $('#username2').val().toUpperCase() == 'PSI') {
-        eraseCookie('psi');
-        createCookie('psi', res, 1);
-        success = true;
-        createCookie('psiuser', res, 1);
-        document.location.href = 'anywhere.html';
-      } else if ($('permissions', res).is('*') && checkforErrors(res) == 0) {
-        eraseCookie('psi');
-        createCookie('psi', res, 1);
-        success = true;
-        document.location.href = 'anywhere.html';
-      } else {
-        $('#error').css('opacity', '1');
-        $('#error').css('display', 'block');
-        if ($('#error').hasClass('hippaRestriction')) {
-          $('#errortext').text('Password cannot match a recently used password');
-        } else if ($('#error').hasClass('userInputError')) {
-          $('#errortext').text('Invalid username or password');
-        } else {
-          $('#errortext').text('Login unsuccessful');
-        }
-      }
-    },
+    var success = false;
+    $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/getLogIn/',
+        data:
+            '{"userId":"' +
+            $('#username2').val() +
+            '", "hash":"' +
+            $().crypt({
+                method: 'md5',
+                source: $('#newpassword2').val(),
+            }) +
+            '"}',
+        contentType: 'application/json; charset=utf-8',
+        beforeSend: function () {
+            // show gif here, eg:
+            $('body').css('cursor', 'wait');
+        },
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            var res = JSON.stringify(response);
+            //errorMessage = "";
+            //alert('success: ' + res);
+            eraseCookie('psiuser');
+            var overlay = document.createElement('div');
+            if ($('permissions', res).is('*') && $('#username2').val().toUpperCase() == 'PSI') {
+                eraseCookie('psi');
+                createCookie('psi', res, 1);
+                success = true;
+                createCookie('psiuser', res, 1);
+                document.location.href = 'anywhere.html';
+            } else if ($('permissions', res).is('*') && checkforErrors(res) == 0) {
+                eraseCookie('psi');
+                createCookie('psi', res, 1);
+                success = true;
+                document.location.href = 'anywhere.html';
+            } else {
+                $('#error').css('opacity', '1');
+                $('#error').css('display', 'block');
+                if ($('#error').hasClass('hippaRestriction')) {
+                    $('#errortext').text('Password cannot match a recently used password');
+                } else if ($('#error').hasClass('userInputError')) {
+                    $('#errortext').text('Invalid username or password');
+                } else {
+                    $('#errortext').text('Login unsuccessful');
+                }
+            }
+        },
     error: function (xhr, status, error) {},
-    complete: function () {
-      // hide gif here, eg:
-      $('body').css('cursor', 'auto');
-    },
-  });
-  //postError("100", "This is a tricky error", "DEBUG");
+        complete: function () {
+            // hide gif here, eg:
+            $('body').css('cursor', 'auto');
+        },
+    });
+    //postError("100", "This is a tricky error", "DEBUG");
 }
 
 function patchIt() {
-  logIn();
+    logIn();
 }
 
 //Added to get value as to whether or not a strong password is required and the length of password required
 function strongPasswordValue() {
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/getStrongPassword/',
-    data: '{}',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
-      //Had to do this way because both fields are in database under same column name in system settings
-      var passwordInfo = $('results', res);
-      $.session.strongPassword = passwordInfo[0].innerText;
-      $.session.passwordSpecialCharacters = passwordInfo[1].innerText;
-      $.session.advancedPasswordLength = passwordInfo[2].innerText;
-    },
-    error: function (xhr, status, error) {
-      //alert("Error\n-----\n" + xhr.status + '\n-----\n' + error + '\n-----\n' + xhr.responseText);
-    },
-  });
+    $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/getStrongPassword/',
+        data: '{}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            var res = JSON.stringify(response);
+            //Had to do this way because both fields are in database under same column name in system settings
+            var passwordInfo = $('results', res);
+            $.session.strongPassword = passwordInfo[0].innerText;
+            $.session.passwordSpecialCharacters = passwordInfo[1].innerText;
+            $.session.advancedPasswordLength = passwordInfo[2].innerText;
+        },
+        error: function (xhr, status, error) {
+            //alert("Error\n-----\n" + xhr.status + '\n-----\n' + error + '\n-----\n' + xhr.responseText);
+        },
+    });
 }
 
 async function setESignaturesMessage() {
-   // Function to handle sending the code
-   async function sendCode(newCode) {
-    sendBtn.textContent = 'Sending code...';
-    sendBtn.style.backgroundColor = '#cccccc'; 
-    
-    try {
-        // Retrieve user's current position
-        const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject);
-        });
-        
-        const { latitude, longitude } = position.coords;
+    // Function to handle sending the code
+    async function sendCode(newCode) {
+        sendBtn.textContent = 'Sending code...';
+        sendBtn.style.backgroundColor = '#cccccc';
 
-        //sends the code to the signers email with latitude and longitude
-        const generatedCodeSuccessfully = await _UTIL.fetchData('generateAuthenticationCode', { tempUserId, latitude, longitude });
+        try {
+            // Retrieve user's current position
+            const position = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject);
+            });
 
-        // Update the html on the login page
-        if (generatedCodeSuccessfully.generateAuthenticationCodeResult === 'success') {
-            updateHTMLAfterCodeSent();
+            const { latitude, longitude } = position.coords;
 
-            if (newCode) {
-              const newCodeMessageDiv = document.getElementById('eSignErrorMessage');
-              newCodeMessageDiv.innerText = 'A new code has been sent to your email';
+            //sends the code to the signers email with latitude and longitude
+            const generatedCodeSuccessfully = await _UTIL.fetchData('generateAuthenticationCode', { tempUserId, latitude, longitude });
+
+            // Update the html on the login page
+            if (generatedCodeSuccessfully.generateAuthenticationCodeResult === 'success') {
+                updateHTMLAfterCodeSent();
+
+                if (newCode) {
+                    const newCodeMessageDiv = document.getElementById('eSignErrorMessage');
+                    newCodeMessageDiv.innerText = 'A new code has been sent to your email';
+                }
+            } else {
+                popupMessageText.textContent = 'Incorrect Code: Please try again.';
             }
-        } else {
-            popupMessageText.textContent = 'Incorrect Code: Please try again.';
+        } catch (error) {
+            // Handle errors when accessing geolocation
+            console.error('Error accessing geolocation:', error.message);
         }
-    } catch (error) {
-        // Handle errors when accessing geolocation
-        console.error('Error accessing geolocation:', error.message);
     }
-}
 
 
-  const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window.location.search);
 
-  // Get the value of the "TempUser" parameter
-  const tempUserId = params.get('tempUser');
+    // Get the value of the "TempUser" parameter
+    const tempUserId = params.get('tempUser');
 
-  const loginMessageData = await _UTIL.fetchData('getSignerLoginMessageData', { tempUserId });
-  let redactedName = loginMessageData.getSignerLoginMessageDataResult.maskedFirstName + ' ' + loginMessageData.getSignerLoginMessageDataResult.maskedLastName;
-  let signerEmail = loginMessageData.getSignerLoginMessageDataResult.tempUserEmail;
+    const loginMessageData = await _UTIL.fetchData('getSignerLoginMessageData', { tempUserId });
+    let redactedName = loginMessageData.getSignerLoginMessageDataResult.maskedFirstName + ' ' + loginMessageData.getSignerLoginMessageDataResult.maskedLastName;
+    let signerEmail = loginMessageData.getSignerLoginMessageDataResult.tempUserEmail;
 
-  let messageDiv = document.getElementById('redactedNamesMessage');
+    let messageDiv = document.getElementById('redactedNamesMessage');
 
-  let popupMessageText = document.createElement('p')
-  popupMessageText.textContent = 
-    `The document shared with you contains information about ${redactedName}. To confirm your identity
+    let popupMessageText = document.createElement('p')
+    popupMessageText.textContent =
+        `The document shared with you contains information about ${redactedName}. To confirm your identity
     we'll send a code to ${signerEmail}.`;
 
     const sendBtn = button.build({
-      id: 'sendCodeBtn',
-      text: 'Send Code',
-      style: 'secondary',
-      type: 'contained',
-      classNames: ['btn-login'],
-      callback: () => {
-        sendCode();
-      },
+        id: 'sendCodeBtn',
+        text: 'Send Code',
+        style: 'secondary',
+        type: 'contained',
+        classNames: ['btn-login'],
+        callback: () => {
+            sendCode();
+        },
     });
 
     let locationNoticeText = document.createElement('div');
@@ -436,11 +436,11 @@ async function setESignaturesMessage() {
     messageDiv.appendChild(sendBtn);
     messageDiv.appendChild(locationNoticeText);
 
-  // Function to update HTML after sending the code
-  function updateHTMLAfterCodeSent() {
-    // Update the inner HTML
-    messageDiv.innerHTML =
-        `<p id='eSignLoginMessage'>
+    // Function to update HTML after sending the code
+    function updateHTMLAfterCodeSent() {
+        // Update the inner HTML
+        messageDiv.innerHTML =
+            `<p id='eSignLoginMessage'>
           The document shared with you contains information about ${redactedName}. To open the document, enter the code we just emailed to ${signerEmail}.
          <p>
          <p id='eSignErrorMessage'><p>
@@ -456,87 +456,87 @@ async function setESignaturesMessage() {
         </div>
         <div class="verifyCodeBtnWrap"></div>`;
 
-    // Get the verifyCodeBtnWrap div
-    const verifyCodeBtnWrap = document.querySelector('.verifyCodeBtnWrap');
+        // Get the verifyCodeBtnWrap div
+        const verifyCodeBtnWrap = document.querySelector('.verifyCodeBtnWrap');
 
-    // Create and append the buttons
+        // Create and append the buttons
 
-    const sendCodeAgainBtn = button.build({
-      id: 'sendCodeBtn',
-      text: 'Send Code Again',
-      style: 'secondary',
-      type: 'contained',
-      classNames: [],
-      callback: () => {
-        sendCode(true);
-      },
-    });
-    verifyCodeBtnWrap.appendChild(sendCodeAgainBtn);
+        const sendCodeAgainBtn = button.build({
+            id: 'sendCodeBtn',
+            text: 'Send Code Again',
+            style: 'secondary',
+            type: 'contained',
+            classNames: [],
+            callback: () => {
+                sendCode(true);
+            },
+        });
+        verifyCodeBtnWrap.appendChild(sendCodeAgainBtn);
 
-    const verifyBtn = button.build({
-      id: 'verifyCodeBtn',
-      text: 'Verify',
-      style: 'secondary',
-      type: 'contained',
-      classNames: ['btn-login'],
-      callback: () => {
-        checkVerificationCode(tempUserId);
-      },
-    });
+        const verifyBtn = button.build({
+            id: 'verifyCodeBtn',
+            text: 'Verify',
+            style: 'secondary',
+            type: 'contained',
+            classNames: ['btn-login'],
+            callback: () => {
+                checkVerificationCode(tempUserId);
+            },
+        });
 
-    verifyCodeBtnWrap.appendChild(verifyBtn);
-  }
+        verifyCodeBtnWrap.appendChild(verifyBtn);
+    }
 
 }
 
 async function checkVerificationCode(tempUserId) {
-  const passwordInput = document.getElementById('verificationCode').value;
+    const passwordInput = document.getElementById('verificationCode').value;
 
-  // Hash the value using MD5
-  const hashedPassword = $().crypt({
-    method: 'md5',
-    source: passwordInput
-  });
-  const codeVerification = await _UTIL.fetchData('verifyESignLogin', { tempUserId, hashedPassword });
-    
-  if (codeVerification.verifyESignLoginResult === 'Success') {
-    document.querySelector('main').innerHTML = '';
-      // open the E-Signature form     
-      esignatures.init(tempUserId);  
-  } else {
-    // Display the error or reason for failure
-    const errorMessageDiv = document.getElementById('eSignErrorMessage');
-    errorMessageDiv.innerText = codeVerification.verifyESignLoginResult;
-  }
+    // Hash the value using MD5
+    const hashedPassword = $().crypt({
+        method: 'md5',
+        source: passwordInput
+    });
+    const codeVerification = await _UTIL.fetchData('verifyESignLogin', { tempUserId, hashedPassword });
+
+    if (codeVerification.verifyESignLoginResult === 'Success') {
+        document.querySelector('main').innerHTML = '';
+        // open the E-Signature form     
+        esignatures.init(tempUserId);
+    } else {
+        // Display the error or reason for failure
+        const errorMessageDiv = document.getElementById('eSignErrorMessage');
+        errorMessageDiv.innerText = codeVerification.verifyESignLoginResult;
+    }
 }
 
 function getCustomLoginTextAndVersion(callback) {
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/getCustomTextAndAnywhereVersion/',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      var res = response.getCustomTextAndAnywhereVersionResult.replace(/\r/g, '').replace(/\n/g, '<br>');
-      //var res = JSON.stringify(response);
-      callback(res);
-    },
-    error: function (xhr, status, error) {
-      $('#customLoginText').text(
-        'Primary Solutions, in conjunction with amazing people like you, has built a new product from the ground up that ' +
-          "focuses on ease of use so that you can focus on what's really important.",
-      );
-      //alert("Error\n-----\n" + xhr.status + '\n-----\n' + error + '\n-----\n' + xhr.responseText);
-    },
-  });
+    $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/getCustomTextAndAnywhereVersion/',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            var res = response.getCustomTextAndAnywhereVersionResult.replace(/\r/g, '').replace(/\n/g, '<br>');
+            //var res = JSON.stringify(response);
+            callback(res);
+        },
+        error: function (xhr, status, error) {
+            $('#customLoginText').text(
+                'Primary Solutions, in conjunction with amazing people like you, has built a new product from the ground up that ' +
+                "focuses on ease of use so that you can focus on what's really important.",
+            );
+            //alert("Error\n-----\n" + xhr.status + '\n-----\n' + error + '\n-----\n' + xhr.responseText);
+        },
+    });
 }
 
 function changeIt() {
@@ -708,421 +708,427 @@ function resetIt() {
 }
 
 function tokenCheck() {
-  var success = false;
-  //alert('checking token');
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/tokenCheck/',
-    data: '{"token":"' + $.session.Token + '"}',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
-      //alert('success: ' + res);
-      if (res.indexOf('607') > -1 || res.indexOf('606') > -1) {
-        document.location.href = 'login.html';
-      } else {
-        success = true;
-      }
-    },
-    //error: function (xhr, status, error) { alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText); },
-  });
+    var success = false;
+    //alert('checking token');
+    $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/tokenCheck/',
+        data: '{"token":"' + $.session.Token + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            var res = JSON.stringify(response);
+            //alert('success: ' + res);
+            if (res.indexOf('607') > -1 || res.indexOf('606') > -1) {
+                document.location.href = 'login.html';
+            } else {
+                success = true;
+            }
+        },
+        //error: function (xhr, status, error) { alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText); },
+    });
 }
 
 function postError(errNum, errMsg, errLvl) {
-  var d = new Date();
-  var curr_month = d.getMonth() + 1; //Months are zero based
-  var strDate = d.getDate() + '-' + curr_month + '-' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes();
-  var dataString =
-    't=' +
-    strDate +
-    '&l=' +
-    'client' +
-    '&u=' +
-    $.session.Name +
-    ' ' +
-    $.session.LName +
-    '&en=' +
-    errNum +
-    '&em=' +
-    errMsg +
-    '&s=' +
-    errLvl;
-  //$.ajax({
-  //  type: "POST",
-  //  url: http://anyerr.primarysolutions.net/Default.aspx,  //$.webServer.anyerr,
-  //  data: dataString,
-  //  success: function() {
-  //  }
-  //});
+    var d = new Date();
+    var curr_month = d.getMonth() + 1; //Months are zero based
+    var strDate = d.getDate() + '-' + curr_month + '-' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes();
+    var dataString =
+        't=' +
+        strDate +
+        '&l=' +
+        'client' +
+        '&u=' +
+        $.session.Name +
+        ' ' +
+        $.session.LName +
+        '&en=' +
+        errNum +
+        '&em=' +
+        errMsg +
+        '&s=' +
+        errLvl;
+    //$.ajax({
+    //  type: "POST",
+    //  url: http://anyerr.primarysolutions.net/Default.aspx,  //$.webServer.anyerr,
+    //  data: dataString,
+    //  success: function() {
+    //  }
+    //});
 }
 
 function saveDefaultLocationValueAjax(switchCase, locationId) {
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/saveDefaultLocationValue/',
-    data: '{"token":"' + $.session.Token + '", "switchCase":"' + switchCase + '", "locationId":"' + locationId + '"}',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
-    },
-    //error: function (xhr, status, error) { alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText); },
-  });
+    $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/saveDefaultLocationValue/',
+        data: '{"token":"' + $.session.Token + '", "switchCase":"' + switchCase + '", "locationId":"' + locationId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            var res = JSON.stringify(response);
+        },
+        //error: function (xhr, status, error) { alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText); },
+    });
 }
 
 function saveDefaultLocationNameAjax(switchCase, locationName) {
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/saveDefaultLocationName/',
-    data:
-      '{"token":"' + $.session.Token + '", "switchCase":"' + switchCase + '", "locationName":"' + locationName + '"}',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
-    },
-    //error: function (xhr, status, error) { alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText); },
-  });
+    $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/saveDefaultLocationName/',
+        data:
+            '{"token":"' + $.session.Token + '", "switchCase":"' + switchCase + '", "locationName":"' + locationName + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            var res = JSON.stringify(response);
+        },
+        //error: function (xhr, status, error) { alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText); },
+    });
 }
 
 function updateVersionAjax() {
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/updateVersion/',
-    data: '{"token":"' + $.session.Token + '", "version":"' + $.session.version + '"}',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
-    },
-    //error: function (xhr, status, error) { alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText); },
-  });
+    $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/updateVersion/',
+        data: '{"token":"' + $.session.Token + '", "version":"' + $.session.version + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            var res = JSON.stringify(response);
+        },
+        //error: function (xhr, status, error) { alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText); },
+    });
 }
 
 //Infal  login. Will look differently and possibly be moved. Putting here for functionality tests.
 function checkLogin() {
-  $.ajax({
-    type: 'POST',
-    //url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
-    //    "/" + $.webServer.serviceName + "/getURL/",
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/ValidateLogin/',
-    data: '{"id":"' + $('#userIDInfal').val() + '"}',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
-      allowAccess(res);
-    },
-    error: function (xhr, status, error) {
-      //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-    },
-  });
+    $.ajax({
+        type: 'POST',
+        //url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
+        //    "/" + $.webServer.serviceName + "/getURL/",
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/ValidateLogin/',
+        data: '{"id":"' + $('#userIDInfal').val() + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            var res = JSON.stringify(response);
+            allowAccess(res);
+        },
+        error: function (xhr, status, error) {
+            //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+        },
+    });
 }
 
 //Going to call on login to see if a connection for Infal exists in the webconfig
 function checkInfalConnectionAjax(callback) {
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/CheckInfalConnection/',
-    data: '{}',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      if (response.CheckInfalConnectionResult == 'Connection') {
-        $.session.infalHasConnectionString = true;
-      }
-      if ($.session.infalOnly) {
-        dashboard.load();
-      }
-    },
-    error: function (xhr, status, error) {
-      //callback(error, null);
-    },
-  });
+    $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/CheckInfalConnection/',
+        data: '{}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            if (response.CheckInfalConnectionResult == 'Connection') {
+                $.session.infalHasConnectionString = true;
+            }
+            if ($.session.infalOnly) {
+                dashboard.load();
+            }
+        },
+        error: function (xhr, status, error) {
+            //callback(error, null);
+        },
+    });
 }
 
 //Gets user permissions pertaining to what modules they can see.
 function getUserPermissions(callback) {
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/getUserPermissions/',
-    data: '{"token":"' + $.session.Token + '"}',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-      success: function (response, status, xhr) {
+    $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/getUserPermissions/',
+        data: '{"token":"' + $.session.Token + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
 
-      $.session.permissionString = response.getUserPermissionsResult;
+            $.session.permissionString = response.getUserPermissionsResult;
 
-      const caseNotesPerm = $.session.permissionString.find(obj => obj.window_name === 'EnableCaseNotes');
-      const supervisorPerm = $.session.permissionString.find(obj => obj.window_name === 'Supervisor');
-      const docTimePerm = $.session.permissionString.find(obj => obj.window_name === 'UpdateDocTime');
-      const caseNoteDocTimePerm = $.session.permissionString.find(obj => obj.window_name === 'Anywhere Case Notes');
-      const adminSEPerm = $.session.permissionString.find(obj => obj.window_name === 'SESupervisorApprove');
+            const caseNotesPerm = $.session.permissionString.find(obj => obj.window_name === 'EnableCaseNotes');
+            const supervisorPerm = $.session.permissionString.find(obj => obj.window_name === 'Supervisor');
+            const docTimePerm = $.session.permissionString.find(obj => obj.window_name === 'UpdateDocTime');
+            const caseNoteDocTimePerm = $.session.permissionString.find(obj => obj.window_name === 'Anywhere Case Notes');
+            const adminSEPerm = $.session.permissionString.find(obj => obj.window_name === 'SESupervisorApprove');
 
-      $.session.CaseNotesTablePermissionView = caseNotesPerm && caseNotesPerm.permission === 'Y' ? true : false;
-      $.session.ViewAdminSingleEntry = supervisorPerm && supervisorPerm.permission === 'Y' ? true : false;
-      $.session.UpdateCaseNotesDocTime =
-        docTimePerm &&
-        caseNoteDocTimePerm &&
-        docTimePerm.permission === 'Update Doc Time' &&
-        caseNoteDocTimePerm.permission === 'Update Doc Time'
-          ? true
-          : false;
-      $.session.SEViewAdminWidget = adminSEPerm && adminSEPerm.permission === 'Y' ? true : false;
+            $.session.CaseNotesTablePermissionView = caseNotesPerm && caseNotesPerm.permission === 'Y' ? true : false;
+            $.session.ViewAdminSingleEntry = supervisorPerm && supervisorPerm.permission === 'Y' ? true : false;
+            $.session.UpdateCaseNotesDocTime =
+                docTimePerm &&
+                    caseNoteDocTimePerm &&
+                    docTimePerm.permission === 'Update Doc Time' &&
+                    caseNoteDocTimePerm.permission === 'Update Doc Time'
+                    ? true
+                    : false;
+            $.session.SEViewAdminWidget = adminSEPerm && adminSEPerm.permission === 'Y' ? true : false;
 
-      setSessionVariables();
+            setSessionVariables();
 
-      //check to see which modules should be disabled
-      checkModulePermissions();
+            //check to see which modules should be disabled
+            checkModulePermissions();
 
-      if (callback) callback();
+            if (callback) callback();
 
-      $('#userName').text($.session.Name);
-      $('#firstName').text($.session.Name);
-      $('#lastName').text($.session.LName);
-    },
-  });
+            $('#userName').text($.session.Name);
+            $('#firstName').text($.session.Name);
+            $('#lastName').text($.session.LName);
+        },
+    });
 }
 
 function featureLogging(appName) {
-  if (appName != 'roster') {
-    var featureDescription = 'Anywhere ' + appName;
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/featureLogging/',
-      data: '{"token":"' + $.session.Token + '","featureDescription":"' + featureDescription + '"}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = JSON.stringify(response);
-      },
-      error: function (xhr, status, error) {
-        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-      },
-    });
-  }
+    if (appName != 'roster') {
+        var featureDescription = 'Anywhere ' + appName;
+        $.ajax({
+            type: 'POST',
+            url:
+                $.webServer.protocol +
+                '://' +
+                $.webServer.address +
+                ':' +
+                $.webServer.port +
+                '/' +
+                $.webServer.serviceName +
+                '/featureLogging/',
+            data: '{"token":"' + $.session.Token + '","featureDescription":"' + featureDescription + '"}',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (response, status, xhr) {
+                var res = JSON.stringify(response);
+            },
+            error: function (xhr, status, error) {
+                //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+            },
+        });
+    }
 }
 
 function getDefaultAnywhereSettings() {
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/getDefaultAnywhereSettingsJSON/',
-    data: '{"token":"' + $.session.Token + '"}',
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      res = response.getDefaultAnywhereSettingsJSONResult;
-      res = res[0];
+    $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/getDefaultAnywhereSettingsJSON/',
+        data: '{"token":"' + $.session.Token + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            res = response.getDefaultAnywhereSettingsJSONResult;
+            res = res[0];
 
-      $.session.anAdmin = res.admistrator;
-      $.session.defaultCaseNoteReviewDays = res.setting_value === '' ? '7' : res.setting_value;
-      $.session.defaultProgressNoteReviewDays = res.notes_days_back === '' ? '99' : res.notes_days_back;
-      $.session.defaultIncidentTrackingDaysBack =
-        res.incidentTracking_days_back === '' ? '7' : res.incidentTracking_days_back;
-      $.session.defaultProgressNoteChecklistReviewDays = res.checklist_days_back === '' ? '7' : res.checklist_days_back;
-      $.session.anywhereMinutestotimeout = res.minutesToTimeout === '' ? '15' : res.minutesToTimeout;
-      $.session.removeGoalsWidget = res.removeGoalsWidget === 'Y' ? true : false;
-      $.session.seAdminRemoveMap = res.removeSEAdminMap === 'Y' ? true : false;
-      $.session.isASupervisor = res.isASupervisor === '' ? false : true;
-      $.session.sttEnabled = res.sttEnabled === 'Y' ? true : false;
-      $.session.watchingConnection = '';
-      $.session.azureSTTApi = res.azureSttApi;
-      $.session.reportSeconds = res.reportSeconds;
-      $.session.incidentTrackingPopulateIncidentDate = res.incidentTrackingPopulateIncidentDate;
-      $.session.incidentTrackingPopulateIncidentTime = res.incidentTrackingPopulateIncidentTime;
-      $.session.incidentTrackingPopulateReportedDate = res.incidentTrackingPopulateReportedDate;
-      $.session.incidentTrackingPopulateReportedTime = res.incidentTrackingPopulateReportedTime;
+            $.session.anAdmin = res.admistrator;
+            $.session.defaultCaseNoteReviewDays = res.setting_value === '' ? '7' : res.setting_value;
+            $.session.defaultProgressNoteReviewDays = res.notes_days_back === '' ? '99' : res.notes_days_back;
+            $.session.defaultIncidentTrackingDaysBack =
+                res.incidentTracking_days_back === '' ? '7' : res.incidentTracking_days_back;
+            $.session.defaultProgressNoteChecklistReviewDays = res.checklist_days_back === '' ? '7' : res.checklist_days_back;
+            $.session.anywhereMinutestotimeout = res.minutesToTimeout === '' ? '15' : res.minutesToTimeout;
+            $.session.removeGoalsWidget = res.removeGoalsWidget === 'Y' ? true : false;
+            $.session.seAdminRemoveMap = res.removeSEAdminMap === 'Y' ? true : false;
+            $.session.isASupervisor = res.isASupervisor === '' ? false : true;
+            $.session.sttEnabled = res.sttEnabled === 'Y' ? true : false;
+            $.session.watchingConnection = '';
+            $.session.azureSTTApi = res.azureSttApi;
+            $.session.reportSeconds = res.reportSeconds;
+            $.session.incidentTrackingPopulateIncidentDate = res.incidentTrackingPopulateIncidentDate;
+            $.session.incidentTrackingPopulateIncidentTime = res.incidentTrackingPopulateIncidentTime;
+            $.session.incidentTrackingPopulateReportedDate = res.incidentTrackingPopulateReportedDate;
+            $.session.incidentTrackingPopulateReportedTime = res.incidentTrackingPopulateReportedTime;
 
-      $.session.incidentTrackingShowCauseAndContributingFactors =
-        res.incidentTrackingShowCauseAndContributingFactors === 'Y' ? true : false;
-      $.session.incidentTrackingShowPreventionPlan = res.incidentTrackingShowPreventionPlan === 'Y' ? true : false;
+            $.session.incidentTrackingShowCauseAndContributingFactors =
+                res.incidentTrackingShowCauseAndContributingFactors === 'Y' ? true : false;
+            $.session.incidentTrackingShowPreventionPlan = res.incidentTrackingShowPreventionPlan === 'Y' ? true : false;
 
-      $.session.updateIncidentSummaryText = res.appendITSummary === 'Y' ? true : false;
-      $.session.updateIncidentActionText = res.appendITImmediateAction === 'Y' ? true : false;
-      $.session.updateIncidentPreventionText = res.appendITPreventionPlan === 'Y' ? true : false;
-      $.session.updateIncidentCauseText = res.appendITCause === 'Y' ? true : false;
-      $.session.planFormCarryover = res.planFormCarryover === 'Y' ? true : false;
-      //Waiting List
-      $.session.sendWaitingListEmail = true;// res.sendWaitingListEmail === 'Y' ? true : false;
-      //Hide stuff
-      $.session.useAbsentFeature = res.useAbsentFeature;
-      $.session.billableTransportation = res.billableTransportation;
-      $.session.requireTimeEntryTransportationTimes = res.requireTimeEntryTransportationTimes;
-      $.session.ohioEVVChangeDate = res.ohioEVVChangeDate; 
-      $.session.anyRequireEndTime = res.anyRequireEndTime;
-      $.session.useProgressNotes = res.useProgressNotes;
-      $.session.applicationName = res.application;
-      $.session.portraitPath = res.portraitPath;
-      $.session.anywhereMainPermission = res.anywhereMainPermission;
-      $.session.outcomesPermission = res.outcomesPermission;
-      $.session.dayServicesPermission = res.dayServicesPermission;
-      $.session.caseNotesPermission = res.caseNotesPermission;
-      $.session.incidentTrackingPermission = res.incidentTrackingPermission;
-      $.session.singleEntryPermission = res.singleEntryPermission;
-      $.session.workshopPermission = res.workshopPermission;
-      $.session.intellivuePermission = res.intellivuePermission;
-      $.session.schedulingPermission = res.schedulingPermission;
-      $.session.anywhereSchedulingPermission = res.anywhereSchedulingPermission;
-      $.session.covidPermission = res.covidPermission;
-      $.session.webPermission = res.webPermission; //Should be set equal to Web when true
-      $.session.transportationPermission = res.transportationPermission;
-      $.session.emarPermission = res.emarPermission;
-      $.session.formsPermission = res.formsPermission;
-      $.session.OODPermission = res.OODPermission;
-      // TODO: ASH
-      //$.session.anywhereAuthorizationsPermission = res.anywhereAuthorizationsPermission;
-      $.session.anywherePlanPermission = res.anywherePlanPermission;
-      $.session.singleEntryApproveEnabled = res.singleEntryApproveEnabled;
-      $.session.singleEntryLocationRequired = res.singleEntryLocationRequired;
-      $.session.singleEntryShowConsumerSignature = res.seShowConsumerSignature;
-      $.session.singleEntryShowConsumerNote = res.seShowConsumerNote;
-      $.session.singleEntryShowTransportation = res.seShowTransportation;
-      $.session.schedAllowCallOffRequests = res.allowCallOffRequests;
-      $.session.schedRequestOpenShifts = res.requestOpenShifts;
-      $.session.oneSpan = res.oneSpan;
+            $.session.updateIncidentSummaryText = res.appendITSummary === 'Y' ? true : false;
+            $.session.updateIncidentActionText = res.appendITImmediateAction === 'Y' ? true : false;
+            $.session.updateIncidentPreventionText = res.appendITPreventionPlan === 'Y' ? true : false;
+            $.session.updateIncidentCauseText = res.appendITCause === 'Y' ? true : false;
+            $.session.planFormCarryover = res.planFormCarryover === 'Y' ? true : false;
+            //Waiting List
+            $.session.sendWaitingListEmail = true;// res.sendWaitingListEmail === 'Y' ? true : false;
+            //Hide stuff
+            $.session.useAbsentFeature = res.useAbsentFeature;
+            $.session.billableTransportation = res.billableTransportation;
+            $.session.requireTimeEntryTransportationTimes = res.requireTimeEntryTransportationTimes;
+            $.session.ohioEVVChangeDate = res.ohioEVVChangeDate;
+            $.session.anyRequireEndTime = res.anyRequireEndTime;
+            $.session.anyUndocumentedServices = res.anyUndocumentedServices;
+            $.session.useProgressNotes = res.useProgressNotes;
+            $.session.applicationName = res.application;
+            $.session.portraitPath = res.portraitPath;
+            $.session.anywhereMainPermission = res.anywhereMainPermission;
+            $.session.outcomesPermission = res.outcomesPermission;
+            $.session.dayServicesPermission = res.dayServicesPermission;
+            $.session.caseNotesPermission = res.caseNotesPermission;
+            $.session.incidentTrackingPermission = res.incidentTrackingPermission;
+            $.session.singleEntryPermission = res.singleEntryPermission;
+            $.session.workshopPermission = res.workshopPermission;
+            $.session.intellivuePermission = res.intellivuePermission;
+            $.session.schedulingPermission = res.schedulingPermission;
+            $.session.anywhereSchedulingPermission = res.anywhereSchedulingPermission;
+            $.session.covidPermission = res.covidPermission;
+            $.session.webPermission = res.webPermission; //Should be set equal to Web when true
+            $.session.transportationPermission = res.transportationPermission;
+            $.session.emarPermission = res.emarPermission;
+            $.session.formsPermission = res.formsPermission;
+            $.session.OODPermission = res.OODPermission;
+            // TODO: ASH
+            //$.session.anywhereAuthorizationsPermission = res.anywhereAuthorizationsPermission;
+            $.session.anywherePlanPermission = res.anywherePlanPermission;
+            $.session.singleEntryApproveEnabled = res.singleEntryApproveEnabled;
+            $.session.singleEntryLocationRequired = res.singleEntryLocationRequired;
+            $.session.singleEntryShowConsumerSignature = res.seShowConsumerSignature;
+            $.session.singleEntryShowConsumerNote = res.seShowConsumerNote;
+            $.session.singleEntryShowTransportation = res.seShowTransportation;
+            $.session.schedAllowCallOffRequests = res.allowCallOffRequests;
+            $.session.schedRequestOpenShifts = res.requestOpenShifts;
+            $.session.oneSpan = res.oneSpan;
 
-      $.session.anywhereResetPasswordPermission = res.anywhereResetPasswordPermission;
-      $.session.anywhereConsumerFinancesPermission = res.anywhereConsumerFinancesPermission;
-      $.session.anywhereEmploymentPermission = res.anywhereEmploymentPermission;
-      $.session.anywhereFSSPermission = res.anywhereFSSPermission; 
-      //Default Work
-      //.session.
-      $.session.defaultRosterLocation = res.defaultrosterlocation;
-      $.session.defaultRosterLocationName = res.defaultrosterlocationname;
-      $.session.defaultRosterGroupValue = res.defaultrostergroup;
-      $.session.defaultDayServiceLocation =
-        res.defaultdayservicelocation === 'notDSCertified' ? '' : res.defaultdayservicelocation;
-      $.session.defaultDayServiceLocationName = res.defaultdayservicelocationname;
-      $.session.dsCertified = res.defaulttimeclocklocation === 'notDSCertified' ? false : true;
-      $.session.defaultDSTimeClockValue = res.defaulttimeclocklocation;
-      $.session.defaultDSTimeClockName = res.defaulttimeclocklocationName;
-      $.session.defaultWorkshopLocationValue = res.defaultworkshoplocation;
-      $.session.defaultWorkshopLocation = res.defaultworkshoplocationname;
-      $.session.defaultMoneyManagementLocationValue = res.defaultMoneyManagementLocation;
-      $.session.defaultMoneyManagementLocation = res.defaultMoneyManagementLocationName; 
-      //$.session.defaultDSTimeClockName = res.defaulttimeclocklocationname;
-      //database state - Indiana or Ohio
-      $.session.stateAbbreviation = res.stateAbbreviation;
-      //Set session peopleId for use in ADV Plan
-      $.session.planPeopleId = res.planPeopleId;
-      $.session.RequireViewPlan = res.RequireViewPlan === 'Y' ? true : false;
+            $.session.anywhereResetPasswordPermission = res.anywhereResetPasswordPermission;
+            $.session.anywhereConsumerFinancesPermission = res.anywhereConsumerFinancesPermission;
+            $.session.anywhereEmploymentPermission = res.anywhereEmploymentPermission;
+            $.session.anywhereFSSPermission = res.anywhereFSSPermission;
+            //Default Work
+            //.session.
+            $.session.defaultRosterLocation = res.defaultrosterlocation;
+            $.session.defaultRosterLocationName = res.defaultrosterlocationname;
+            $.session.defaultRosterGroupValue = res.defaultrostergroup;
+            $.session.defaultPlanLocation = res.defaultplanlocation;
+            $.session.defaultPlanLocationName = res.defaultplanlocationname;
+            $.session.defaultPlanGroupValue = res.defaultplangroup;
+            $.session.defaultPlanGroupName = res.defaultplangroupname;
+            $.session.defaultContact = res.defaultcontact;
+            $.session.defaultDayServiceLocation =
+                res.defaultdayservicelocation === 'notDSCertified' ? '' : res.defaultdayservicelocation;
+            $.session.defaultDayServiceLocationName = res.defaultdayservicelocationname;
+            $.session.dsCertified = res.defaulttimeclocklocation === 'notDSCertified' ? false : true;
+            $.session.defaultDSTimeClockValue = res.defaulttimeclocklocation;
+            $.session.defaultDSTimeClockName = res.defaulttimeclocklocationName;
+            $.session.defaultWorkshopLocationValue = res.defaultworkshoplocation;
+            $.session.defaultWorkshopLocation = res.defaultworkshoplocationname;
+            $.session.defaultMoneyManagementLocationValue = res.defaultMoneyManagementLocation;
+            $.session.defaultMoneyManagementLocation = res.defaultMoneyManagementLocationName;
+            //$.session.defaultDSTimeClockName = res.defaulttimeclocklocationname;
+            //database state - Indiana or Ohio
+            $.session.stateAbbreviation = res.stateAbbreviation;
+            //Set session peopleId for use in ADV Plan
+            $.session.planPeopleId = res.planPeopleId;
+            $.session.RequireViewPlan = res.RequireViewPlan === 'Y' ? true : false;
 
-      if ($.session.applicationName === 'Gatekeeper') {
-        $.session.caseNotesWarningStartTime = res.warningStartTime;
-        $.session.caseNotesWarningEndTime = res.warningEndTime;
-      }
+            if ($.session.applicationName === 'Gatekeeper') {
+                $.session.caseNotesWarningStartTime = res.warningStartTime;
+                $.session.caseNotesWarningEndTime = res.warningEndTime;
+            }
 
-      /////////
-      defaultRosterLocationValue = res.defaultrosterlocation;
-      defaultRosterLocationName = res.defaultrosterlocationname;
-      defaultDayServiceLocationValue = res.defaultdayservicelocation;
-      defaultDayServiceLocationName = res.defaultdayservicelocationname;
-      defaultTimeClockLocationValue = res.defaulttimeclocklocation;
-      defaultTimeClockLocationName = res.defaulttimeclocklocationname;
-      defaultWorkshopLocationValue = res.defaultworkshoplocation;
-      defaultWorkshopLocationName = res.defaultworkshoplocationname;
-      defaultRosterGroupValue = res.defaultrostergroup;
-      defaultRosterGroupName = res.defaultrostergroupname;
-      $.session.defaultWorkshopLocation = defaultWorkshopLocationName;
+            /////////
+            defaultRosterLocationValue = res.defaultrosterlocation;
+            defaultRosterLocationName = res.defaultrosterlocationname;
+            defaultDayServiceLocationValue = res.defaultdayservicelocation;
+            defaultDayServiceLocationName = res.defaultdayservicelocationname;
+            defaultTimeClockLocationValue = res.defaulttimeclocklocation;
+            defaultTimeClockLocationName = res.defaulttimeclocklocationname;
+            defaultWorkshopLocationValue = res.defaultworkshoplocation;
+            defaultWorkshopLocationName = res.defaultworkshoplocationname;
+            defaultRosterGroupValue = res.defaultrostergroup;
+            defaultRosterGroupName = res.defaultrostergroupname;
+            $.session.defaultWorkshopLocation = defaultWorkshopLocationName;
 
-      //setDefaultCookies(
-      //	defaultRosterLocationValue,
-      //	defaultRosterLocationName,
-      //	defaultDayServiceLocationValue,
-      //	defaultDayServiceLocationName,
-      //	defaultTimeClockLocationValue,
-      //	defaultTimeClockLocationName,
-      //	defaultWorkshopLocationValue,
-      //	defaultWorkshopLocationName,
-      //	defaultRosterGroupValue,
-      //	defaultRosterGroupName
-      //);
+            //setDefaultCookies(
+            //	defaultRosterLocationValue,
+            //	defaultRosterLocationName,
+            //	defaultDayServiceLocationValue,
+            //	defaultDayServiceLocationName,
+            //	defaultTimeClockLocationValue,
+            //	defaultTimeClockLocationName,
+            //	defaultWorkshopLocationValue,
+            //	defaultWorkshopLocationName,
+            //	defaultRosterGroupValue,
+            //	defaultRosterGroupName
+            //);
 
-      $('#casenotesdaysback').val($.session.defaultCaseNoteReviewDays);
-      $('#progressnotesdaysback').val($.session.defaultProgressNoteReviewDays);
-      $('#progressnoteschecklistdaysback').val($.session.defaultProgressNoteChecklistReviewDays);
-      $('#incidenttrackingdaysback').val($.session.defaultIncidentTrackingDaysBack);
+            $('#casenotesdaysback').val($.session.defaultCaseNoteReviewDays);
+            $('#progressnotesdaysback').val($.session.defaultProgressNoteReviewDays);
+            $('#progressnoteschecklistdaysback').val($.session.defaultProgressNoteChecklistReviewDays);
+            $('#incidenttrackingdaysback').val($.session.defaultIncidentTrackingDaysBack);
 
-      disableModules();
-      loadApp('home');
-    },
-    error: function (xhr, status, error) {
-      //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-    },
-  });
+            disableModules();
+            loadApp('home');
+        },
+        error: function (xhr, status, error) {
+            //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+        },
+    });
 }
 
 //function setDefaultCookies(
@@ -1171,70 +1177,70 @@ function getDefaultAnywhereSettings() {
 //}
 
 function authenticatedLogin(key) {
-  //insertData must userName and genKey
-  const insertData = {
-    userName: $('#username').val().trim(),
-    genKey: key,
-  };
-  $.ajax({
-    type: 'POST',
-    url:
-      $.webServer.protocol +
-      '://' +
-      $.webServer.address +
-      ':' +
-      $.webServer.port +
-      '/' +
-      $.webServer.serviceName +
-      '/authenticatedLogin/',
-    data: JSON.stringify(insertData),
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    success: function (response, status, xhr) {
-      if (
-        response.authenticatedLoginResult === 'Invalid key' ||
-        response.authenticatedLoginResult === 'Too many failed attempts' ||
-        response.authenticatedLoginResult === 'Expired key'
-      ) {
-        mfa.mfaReject(response.authenticatedLoginResult);
-        return;
-      }
-      var res = JSON.stringify(response);
-      eraseCookie('psiuser');
-      if ($('permissions', res).is('*') && $('#username').val().toUpperCase() == 'PSI') {
-        $.session.isPSI = true;
-        eraseCookie('psi');
-        createCookie('psi', res, 1);
-        createCookie('psiuser', res, 1);
-        success = true;
-        document.location.href = 'anywhere.html';
-      } else if ($('permissions', res).is('*') && checkforErrors(res) == 0) {
-        UTIL.LS.setStorage('device', $.session.deviceGUID, $('#username').val());
-        $.session.deviceGUID = '';
-        eraseCookie('psi');
-        createCookie('psi', res, 1);
-        success = true;
-        document.location.href = 'anywhere.html';
-      } else if (res.indexOf('609') > -1) {
-        customPasswordChange();
-      } else {
-        $('#error').css('opacity', '1');
-        $('#error').css('display', 'block');
-        if ($('#error').hasClass('hippaRestriction')) {
-          $('#errortext').text('Password cannot match a recently used password');
-        } else if ($('#error').hasClass('userInputError')) {
-          $('#errortext').text('Invalid username or password');
-        } else if (res.indexOf('608') > -1) {
-          $('#errortext').text('This user name does not exist in demographics.');
-        } else {
-          $('#errortext').text('Login unsuccessful');
-        }
-      }
-    },
+    //insertData must userName and genKey
+    const insertData = {
+        userName: $('#username').val().trim(),
+        genKey: key,
+    };
+    $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/authenticatedLogin/',
+        data: JSON.stringify(insertData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            if (
+                response.authenticatedLoginResult === 'Invalid key' ||
+                response.authenticatedLoginResult === 'Too many failed attempts' ||
+                response.authenticatedLoginResult === 'Expired key'
+            ) {
+                mfa.mfaReject(response.authenticatedLoginResult);
+                return;
+            }
+            var res = JSON.stringify(response);
+            eraseCookie('psiuser');
+            if ($('permissions', res).is('*') && $('#username').val().toUpperCase() == 'PSI') {
+                $.session.isPSI = true;
+                eraseCookie('psi');
+                createCookie('psi', res, 1);
+                createCookie('psiuser', res, 1);
+                success = true;
+                document.location.href = 'anywhere.html';
+            } else if ($('permissions', res).is('*') && checkforErrors(res) == 0) {
+                UTIL.LS.setStorage('device', $.session.deviceGUID, $('#username').val());
+                $.session.deviceGUID = '';
+                eraseCookie('psi');
+                createCookie('psi', res, 1);
+                success = true;
+                document.location.href = 'anywhere.html';
+            } else if (res.indexOf('609') > -1) {
+                customPasswordChange();
+            } else {
+                $('#error').css('opacity', '1');
+                $('#error').css('display', 'block');
+                if ($('#error').hasClass('hippaRestriction')) {
+                    $('#errortext').text('Password cannot match a recently used password');
+                } else if ($('#error').hasClass('userInputError')) {
+                    $('#errortext').text('Invalid username or password');
+                } else if (res.indexOf('608') > -1) {
+                    $('#errortext').text('This user name does not exist in demographics.');
+                } else {
+                    $('#errortext').text('Login unsuccessful');
+                }
+            }
+        },
     error: function (xhr, status, error) {},
-    complete: function () {
-      // hide gif here, eg:
-      $('body').css('cursor', 'auto');
-    },
-  });
+        complete: function () {
+            // hide gif here, eg:
+            $('body').css('cursor', 'auto');
+        },
+    });
 }

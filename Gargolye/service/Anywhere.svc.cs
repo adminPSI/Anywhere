@@ -798,6 +798,11 @@ namespace Anywhere
             return singleEntryWorker.getSingleEntryEvvEligibilityJSON(token, consumerId, entryDate);
         }
 
+        public string[] getUndocumentedServicesForWarning(string entryDate,string[] consumerId, string token)
+        {
+            return singleEntryWorker.getUndocumentedServicesForWarning(entryDate, consumerId, token);
+        }
+
         public string getClockedInDayServicesAtLocationCounts(string token, string locationId)
         {
             return dg.getClockedInDayServicesAtLocationCounts(token, locationId);
@@ -1065,6 +1070,11 @@ namespace Anywhere
         public string updateConsumerNotesDaysBack(string token, string updatedReviewDays)
         {
             return dg.updateConsumerNotesDaysBack(token, updatedReviewDays);
+        }
+
+        public string updateConnectWithPerson(string token, string connectType)
+        {
+            return dg.updateConnectWithPerson(token, connectType);
         }
 
         public string updateConsumerNotesChecklistDaysBack(string token, string updatedChecklistDays)
@@ -4322,8 +4332,8 @@ namespace Anywhere
                 dg.addOutcomePlanNow(token, consumerId);
                 anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             }
-            
-            
+
+
 
         }
 
@@ -4411,6 +4421,21 @@ namespace Anywhere
         public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID)
         {
             return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
+        }
+
+        public void deleteAuthorization(string token, string authDetailId)
+        {
+            fssw.deleteAuthorization(token, authDetailId);
+        }
+
+        public void setWidgetFilter(string token, string widgetId, string filterKey, string filterValue)
+        {
+            dashWork.setWidgetFilter(token, widgetId, filterKey, filterValue);
+        }
+
+        public string getWidgetFilter(string token, string widgetId, string filterKey)
+        {
+            return dashWork.getWidgetFilter(token, widgetId, filterKey);
         }
 
     }

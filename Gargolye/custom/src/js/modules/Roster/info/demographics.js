@@ -21,6 +21,7 @@ const demographics = (function () {
     let sectionLoad;
     let dataLoad;
     let consumerIDLoad;
+    let detailBtn;
 
     function stringAdd(string, start, newSubStr) {
         return string.slice(0, start) + newSubStr + string.slice(start);
@@ -561,7 +562,7 @@ const demographics = (function () {
     }
 
     function buildPathToEmployment() {
-        const groupWrap = buildInputGroupWrap('Path To Employment');
+        const groupWrap = buildInputGroupWrap('Path To Employment'); 
         const { inputGroup } = buildInputGroup('pathToEmployment', demoData.pathToEmployment);
         groupWrap.appendChild(inputGroup);
 
@@ -724,13 +725,23 @@ const demographics = (function () {
         sectionInner = section.querySelector('.sectionInner');
         sectionInner.innerHTML = '';
 
+        detailBtn = button.build({
+            text: '',
+            icon: 'forwardArrow',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'floatRight', 
+            callback: () => { },
+        }); 
+
         const pathToEmployment = buildPathToEmployment();
         const addressInfo = buildAddressInfo();
         const contactInfo = buildContactInfo();
         const additionalInfo = buildAdditionalInfo();
         const organizationInfo = buildOrganizationInfo();
-        const demographicInfo = buildDemographicInfo();
+        const demographicInfo = buildDemographicInfo(); 
 
+        sectionInner.appendChild(detailBtn);
         sectionInner.appendChild(pathToEmployment);
         sectionInner.appendChild(addressInfo);
         sectionInner.appendChild(contactInfo);

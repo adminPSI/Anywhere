@@ -940,6 +940,15 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getUndocumentedServicesForWarning/")]
+        string[] getUndocumentedServicesForWarning(string entryDate,string[] consumerId, string token);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
@@ -1469,6 +1478,14 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateConsumerNotesDaysBack/")]
         string updateConsumerNotesDaysBack(string token, string updatedReviewDays);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/updateConnectWithPerson/")]
+        string updateConnectWithPerson(string token, string connectType);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5265,9 +5282,9 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-               BodyStyle = WebMessageBodyStyle.Wrapped,
-               ResponseFormat = WebMessageFormat.Json,
-               RequestFormat = WebMessageFormat.Json,
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
                UriTemplate = "/getEditAccountInfoById/")]
         ConsumerFinancesWorker.EditAccountInfo[] getEditAccountInfoById(string token, string accountId);
 
@@ -5757,6 +5774,31 @@ namespace Anywhere
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/insertUtilization/")]
         string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/deleteAuthorization/")]
+        void deleteAuthorization(string token, string authDetailId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/setWidgetFilter/")]
+        void setWidgetFilter(string token, string widgetId, string filterKey, string filterValue);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getWidgetFilter/")]
+        string getWidgetFilter(string token, string widgetId, string filterKey);
+
     }
 
 

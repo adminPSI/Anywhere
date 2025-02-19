@@ -13,7 +13,7 @@ namespace Anywhere.service.Data
 
         public ConsumerAndLocation[] getSelectedConsumerLocations(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
         {
-            
+
             List<string> consumerIdList = new List<string>();
             List<string> locationIdList = new List<string>();
             int consumerCount = 0;
@@ -42,11 +42,11 @@ namespace Anywhere.service.Data
                 return emptyconsumerAndLocations;
 
             }
-                
+
         }
 
 
-            public ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime)
+        public ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime)
         {
             List<string> consumerIdList = new List<string>();
             List<string> locationIdList = new List<string>();
@@ -344,6 +344,18 @@ namespace Anywhere.service.Data
             SingleEntryEvvEligibility[] evvEligibilityObj = js.Deserialize<SingleEntryEvvEligibility[]>(evvEligibilityString);
             return evvEligibilityObj;
         }
+        public string[] getUndocumentedServicesForWarning(string entryDate, string[] consumerId, string token)
+        {
+            string[] undocumentedIds = new string[] { };
+            foreach (var id in consumerId)
+            {
+                string getUndocumentedString = dg.getUndocumentedServicesForWarning(entryDate, id, token);
+                SingleEntryConsumersPresent[] getUndocumentedObj = js.Deserialize<SingleEntryConsumersPresent[]>(getUndocumentedString);
+                if (getUndocumentedObj[0].isDocumented == "false")
+                    undocumentedIds = undocumentedIds.Append<string>(getUndocumentedObj[0].consumername).ToArray();
+            }
+            return undocumentedIds;
+        }
 
         public class SingleEntryEvvEligibility
         {
@@ -537,6 +549,7 @@ namespace Anywhere.service.Data
             public string evvReasonCode { get; set; }
             public string hasSignature { get; set; }
             public string hasNote { get; set; }
+            public string isDocumented { get; set; }
         }
     }
 

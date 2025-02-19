@@ -6,6 +6,7 @@ using System.Management.Automation.Language;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereAssessmentWorker;
 
 namespace Anywhere.service.Data
 {
@@ -237,6 +238,9 @@ namespace Anywhere.service.Data
             // get relationships for dropdowns and in contact information section
             string relationshipString = adg.getConsumerRelationships(token, consumerId, effectiveStartDate, effectiveEndDate, areInSalesForce, planId);
             ConsumerRelationships[] relationshipObj = js.Deserialize<ConsumerRelationships[]>(relationshipString);
+            // get active vendors for import vendors in contact information section 
+            string vendorsString = adg.getVendors(token);
+            Vendors[] vendorsObj = js.Deserialize<Vendors[]>(vendorsString);
             // Fix last names to include generatational tags
             ServiceAndsSupportData sASData = new ServiceAndsSupportData();
             sASData.assessmentAreas = assessmentAreasObj;
@@ -244,6 +248,8 @@ namespace Anywhere.service.Data
             sASData.serviceTypesOther = serviceTypeObj;
             //sASData.fundingSource = fundingObj;
             sASData.relationships = relationshipObj;
+            sASData.vendors = vendorsObj;
+            
             return sASData;
         }
 
@@ -295,6 +301,7 @@ namespace Anywhere.service.Data
             public ServiceTypesOther[] serviceTypesOther { get; set; }
             public FundingSource[] fundingSource { get; set; }
             public ConsumerRelationships[] relationships { get; set; }
+            public Vendors[] vendors { get; set; }
         }
 
         public class AssessmentAreas
@@ -351,6 +358,17 @@ namespace Anywhere.service.Data
             public string teamMember { get; set; }
             public string generation { get; set; }
             public string guardianSalesforceId { get; set; }
+        }
+
+        public class Vendors
+        {
+            public string VendorId { get; set; }
+            public string name { get; set; }
+            public string address { get; set; }
+            public string city { get; set; }
+            public string state { get; set; }
+            public string zip { get; set; } 
+            public string phone { get; set; }
         }
     }
 }

@@ -343,7 +343,7 @@ var timeEntryReview = (function () {
         workCodeNameBtnWrap.classList.add('filterSelectionBtnWrap');
         workCodeNameBtnWrap.appendChild(workCodeNameBtn);
         workCodeNameBtnWrap.appendChild(workCodeNameCloseBtn);
-        btnWrap.appendChild(workCodeNameBtnWrap); 
+        btnWrap.appendChild(workCodeNameBtnWrap);
     }
 
     function closeFilter(closeFilter) {
@@ -354,9 +354,9 @@ var timeEntryReview = (function () {
         }
         if (closeFilter == 'locationNameBtn') {
             tmpLocationId = '%';
-            locationName = 'All';  
-            tmpLocationName = 'All'; 
-        } 
+            locationName = 'All';
+            tmpLocationName = 'All';
+        }
         applyFilter();
     }
 
@@ -459,7 +459,7 @@ var timeEntryReview = (function () {
         endDate = payPeriod.end;
         //reformat startDate and endDate
         var splitStartDate = startDate.split('-');
-        var splitEndDate = endDate.split('-');  
+        var splitEndDate = endDate.split('-');
 
         if (document.getElementById('payPeriodBtn') != null)
             document.getElementById('payPeriodBtn').innerHTML = 'Pay Period: ' + UTIL.leadingZero(splitStartDate[1]) + '/' + UTIL.leadingZero(splitStartDate[2],)
@@ -560,7 +560,7 @@ var timeEntryReview = (function () {
             });
         });
     }
-    function showRowDetails(entryId, entryStatus, isValid, consumersPresent) {
+    function showRowDetails(entryId, entryStatus, isValid, consumersPresent, entryDate, endTime) {
         // popup
         var popup = POPUP.build({
             classNames: 'timeEntryDetailsPopup',
@@ -582,21 +582,21 @@ var timeEntryReview = (function () {
             text: 'Submit',
             style: 'secondary',
             type: 'contained',
-            callback: function () {
-                POPUP.hide(popup);
-                var updateObj = {
-                    token: $.session.Token,
-                    singleEntryIdString: entryId,
-                    newStatus: 'S',
-                };
-                // var entry = entriesByDate.filter(e => e.Single_Entry_ID === entryId)[0];
-                if (!isValid) {
-                    showSubmitError(`Unable to submit entry, end time needed.`);
-                } else {
-                    var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
-                    showDeleteEntryWarningPopup(warningMessage, () => submitEntry(updateObj));
-                    POPUP.hide(popup);
-                }
+            callback: async function () {
+                //118744 - ADV - ANY - SE: Add warning to users if services are not documented for
+                singleEntryAjax.getSingleEntryConsumersPresent(entryId, async function (consumers)  {
+                    var consumerIds = [];   
+                    var dateFormat = moment(entryDate, 'MM-DD-YY').format('YYYY-MM-DD'); 
+                    await consumers.forEach(c => { consumerIds.push(c.consumerid) });   
+                    const undocumentedConsumerIDs = await singleEntryAjax.getUndocumentedServicesForWarning(dateFormat, consumerIds); 
+                    if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedConsumerIDs.length > 0) {
+                        undocumentedServicesPopup(undocumentedConsumerIDs, entryId, popup, isValid);
+                    }
+                    ////////
+                    else {
+                        submitFunction(entryId, popup, isValid);
+                    }            
+                });                                   
             },
         });
         var deleteBtn = button.build({
@@ -630,6 +630,78 @@ var timeEntryReview = (function () {
 
         POPUP.show(popup);
         timeEntryDetailsPopup.init(entryId, consumersPresent);
+    }
+
+    function submitFunction(entryId, popup, isValid) {
+        POPUP.hide(popup);
+        var updateObj = {
+            token: $.session.Token,
+            singleEntryIdString: entryId,
+            newStatus: 'S',
+        };
+        // var entry = entriesByDate.filter(e => e.Single_Entry_ID === entryId)[0];
+        if (!isValid) { 
+            showSubmitError(`Unable to submit entry, end time needed.`);
+        } else {
+            var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
+            showDeleteEntryWarningPopup(warningMessage, () => submitEntry(updateObj));
+            overlay.show();   
+        }
+    }
+    //118744 - ADV - ANY - SE: Add warning to users if services are not documented for
+    async function undocumentedServicesPopup(undocumentedConsumerIDs, entryId, popup, isValid) {  
+        const confirmPopup = POPUP.build({
+            hideX: true, 
+            classNames: 'warning',
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: async () => {
+                POPUP.hide(confirmPopup);
+                submitFunction(entryId, popup, isValid); 
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+                overlay.show();    
+            },
+        });
+
+        const message = document.createElement('p');
+        const messageConfirm = document.createElement('p');
+        const vendorSection = document.createElement('div');
+       
+        undocumentedConsumerIDs.forEach(consumerName => {
+            const vendorDisp = document.createElement('div');
+            vendorDisp.innerHTML = `<span>${consumerName}</span>`;
+            vendorDisp.classList.add('consumerNameList');
+            vendorSection.appendChild(vendorDisp);
+        });
+
+        message.innerText = 'The following individuals have services that you did not document for on the date of your time record.';
+        message.style.textAlign = 'left';
+        message.style.marginBottom = '15px';
+        messageConfirm.innerText = 'Would you like to save this time record?';
+        messageConfirm.style.textAlign = 'left';
+        messageConfirm.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        confirmPopup.appendChild(vendorSection);
+        confirmPopup.appendChild(messageConfirm);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
     }
 
     // Time Entry Review Table
@@ -692,6 +764,8 @@ var timeEntryReview = (function () {
         var isValid = event.target.dataset.valid === 'true' ? true : false;
         var entryId = event.target.id;
         var consumersPresent = event.target.dataset.consumers;
+        var entryDate = event.target.childNodes[1].innerText;
+        var endTime = event.target.childNodes[3].innerText;
         if (!isRow) return; // if not row return
 
         if (enableMultiEdit && isValid) {
@@ -712,7 +786,7 @@ var timeEntryReview = (function () {
             }
         } else if (!enableMultiEdit) {
             selectedRows = [];
-            showRowDetails(entryId, entryStatus, isValid, consumersPresent);
+            showRowDetails(entryId, entryStatus, isValid, consumersPresent, entryDate, endTime);
         }
     }
     // populate
@@ -882,7 +956,7 @@ var timeEntryReview = (function () {
         });
 
         btnWrap.appendChild(mulitSelectBtn);
-        btnWrap.appendChild(selectAllBtn); 
+        btnWrap.appendChild(selectAllBtn);
 
         return btnWrap;
     }
@@ -1060,8 +1134,7 @@ var timeEntryReview = (function () {
         payPeriodData = timeEntry.getPayPeriods(false);
         payPeriod = timeEntry.getCurrentPayPeriod(false);
         locationData = timeEntry.getLocations();
-        workCodeData = await timeEntry.getWorkCodes();
-
+        workCodeData = await timeEntry.getWorkCodes();    
         loadReviewPage();
     }
 

@@ -467,8 +467,8 @@
    * @returns {Boolean}
    */
   CaseNotesData.prototype.isServiceFunding = function (selectedServiceCode) {
-    const serviceCode = selectedServiceCode ? selectedServiceCode : this.defaultServiceCode;
-    return this.dropdownData[serviceCode].serviceFunding === 'Y' ? true : false;
+      const serviceCode = selectedServiceCode ? selectedServiceCode : this.defaultServiceCode;
+      return serviceCode != '' && this.dropdownData[serviceCode].serviceFunding === 'Y' ? true : false;
   };
   /**
    * @function

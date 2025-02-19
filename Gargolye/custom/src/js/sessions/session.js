@@ -147,7 +147,11 @@ $.session.defaultDSTimeClockValue;
 $.session.defaultDSTimeClockName;
 $.session.defaultMoneyManagementLocation;
 $.session.defaultMoneyManagementLocationValue;
-
+$.session.defaultPlanLocation;
+$.session.defaultPlanLocationName;
+$.session.defaultPlanGroupValue;
+$.session.defaultPlanGroupName;
+$.session.defaultContact;
 //////////
 $.session.areInSalesForce = true;
 $.session.RosterDeleteAbsent = false;
@@ -385,6 +389,7 @@ $.session.billableTransportation = 'N';
 $.session.requireTimeEntryTransportationTimes = 'N';
 $.session.ohioEVVChangeDate = '';
 $.session.anyRequireEndTime = '';
+$.session.anyUndocumentedServices = '';
 $(window).resize(function () {
     //resizeActionCenter();
 });
@@ -1765,6 +1770,32 @@ function setDefaultValue(type, value, event, name) {
             } else {
                 createCookie('defaultMoneyManagementLocationName', 'Remember Last Location', 7);
                 saveDefaultLocationNameAjax('7', 'Remember Last Location');
+            }
+            break;
+        case 8:
+            typeName = 'Default Plan Location';
+            $('#plan8').text(event.srcElement.text);
+            if (value != 0 && name != null) {
+                createCookie('defaultPlanLocationName', name, 7);
+                createCookie('defaultPlanLocationValue', value, 7);
+                saveDefaultLocationNameAjax('8', name);
+                saveDefaultLocationValueAjax('8', value);
+            } else {
+                createCookie('defaultPlantLocationName', 'Remember Last Location', 7);
+                saveDefaultLocationNameAjax('8', 'Remember Last Location');
+            }
+            break;
+        case 9:
+            typeName = 'Default Plan Group';
+            $('#plangroup9').text(event.srcElement.text);
+            if (value != 0 && name != null) {
+                createCookie('defaultPlanGroupName', name, 7);
+                createCookie('defaultPlanGroupValue', value, 7);
+                saveDefaultLocationNameAjax('9', name);
+                saveDefaultLocationValueAjax('9', value);
+            } else {
+                createCookie('defaultPlanGroupName', 'Everyone', 7);
+                saveDefaultLocationNameAjax('9', 'Everyone');
             }
             break;
     }

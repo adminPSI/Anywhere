@@ -977,7 +977,8 @@ const planValidation = (function () {
     }
 
     function checkBestWayToConnect(bestWayToConnect) {
-      if (bestWayToConnect === '') {
+        // #110673 - SH - ANY - PL: Add default settings in SET DEFAULTS for plan
+        if (bestWayToConnect === '' && ($.session.defaultContact == '' || $.session.defaultContact == undefined)) {
         contactsValidation.bestWayToConnect = false;
         return;
       }

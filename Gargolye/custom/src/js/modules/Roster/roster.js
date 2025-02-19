@@ -940,6 +940,9 @@ const roster2 = (function () {
         if ($.loadedApp === 'ConsumerFinances' || $.loadedApp === 'CFEditAccount') {
             if (defaults.rememberLastLocation('moneyManagement')) defaults.setLocation('moneyManagement', selectedLocationId);
         }
+        if ($.loadedApp === 'plan') {
+            if (defaults.rememberLastLocation('plan')) defaults.setLocation('plan', selectedLocationId);
+        }
     }
     async function filterApply() {
         customGroups.init(rosterGroups);
@@ -1195,8 +1198,8 @@ const roster2 = (function () {
         const isSelected = selectedConsumers && selectedConsumers.filter(sc => sc.id === consumerData.id);
         const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
         const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
-        const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : ''; 
-        const SalesforceID = consumerData.SalesforceID ? consumerData.SalesforceID : ''; 
+        const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
+        const SalesforceID = consumerData.SalesforceID ? consumerData.SalesforceID : '';
 
         var isInactive = false;
         if ($.session.applicationName === 'Advisor') {
@@ -1442,7 +1445,7 @@ const roster2 = (function () {
         // Reset date from moving between modules:
         selectedDate = UTIL.getTodaysDate();
         if (locationData) {
-            const { locationId, locationName } = locationData;
+            const { locationId, locationName, groupId, groupName } = locationData;
             if (locationName && locationId) {
                 selectedLocationName = locationName;
                 selectedLocationId = locationId;
@@ -1459,8 +1462,14 @@ const roster2 = (function () {
             }
             // reset group when custom location is passed:
             selectedGroupId = selectedLocationId;
-            selectedGroupCode = 'ALL';
-            selectedGroupName = 'Everyone';
+            if (groupId !== '' && groupId !== undefined) {
+                selectedGroupCode = groupId.split('-')[0];
+                selectedGroupId = groupId.split('-')[1]; 
+                selectedGroupName = groupName;
+            } else {
+                selectedGroupCode = 'ALL';
+                selectedGroupName = 'Everyone';
+            }
         }
         MINI_ROSTER_BTN = button.build({
             icon: 'people',
@@ -1532,7 +1541,7 @@ const roster2 = (function () {
             console.log(error);
         }
     }
-    async function getConsumerGroupsData() {
+    async function getConsumerGroupsData() { 
         try {
             const data = (await customGroupsAjax.getConsumerGroups(selectedLocationId)).getConsumerGroupsJSONResult;
             return data;
