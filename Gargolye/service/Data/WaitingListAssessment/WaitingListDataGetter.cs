@@ -40,7 +40,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
-        public string getWaitingListAssessment(int waitingListAssessmentId)
+        public string getWaitingListAssessment(long waitingListAssessmentId)
         {            
             List<string> list = new List<string>();
             list.Add(waitingListAssessmentId.ToString());
@@ -71,7 +71,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
-        public string insertUpdateWaitingListValue(int id, int linkId, string tableName, string columnName, string linkColumnName, string idNameForWhere, string propertyValue, string propertyValueTwo, char insertOrUpdate)
+        public string insertUpdateWaitingListValue(long id, long linkId, string tableName, string columnName, string linkColumnName, string idNameForWhere, string propertyValue, string propertyValueTwo, char insertOrUpdate)
         {
             if (stringInjectionValidator(propertyValue) == false) return null;
             if(stringInjectionValidator(propertyValueTwo) == false) return null;
@@ -173,7 +173,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
-        public string deleteWaitingListParticipant(string token, int participantId)
+        public string deleteWaitingListParticipant(string token, long participantId)
         {
             if (tokenValidator(token) == false) return null;
             List<string> list = new List<string>();
@@ -191,7 +191,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
-        public string deleteWaitingListAssessment(string token, int waitingListId)
+        public string deleteWaitingListAssessment(string token, long waitingListId)
         {
             if (tokenValidator(token) == false) return null;
             List<string> list = new List<string>();

@@ -259,11 +259,16 @@ const planData = (() => {
           value: '52',
           text: 'Vocational Habilitation - Virtual',
           showWith: ['1', '2', '3', '6'],
-        },
+          },
+          {
+              value: '53',
+              text: 'Health Care Assessment',
+              showWith: ['1', '2', '3'],
+          },
       ],
       newOrExisting: [
         { value: '%', text: '' },
-        { value: '1', text: 'New' },
+        { value: '1', text: 'New' },//
         { value: '2', text: 'Existing' },
       ],
       howOftenHowMuchFrequency: [

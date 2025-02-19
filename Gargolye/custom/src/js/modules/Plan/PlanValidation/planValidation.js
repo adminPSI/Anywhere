@@ -3,7 +3,7 @@ const planValidation = (function () {
   let workingSectionCase = 0;
 
     let assessmentValidationCheck = {
-      workingNotWorking: [],
+      //workingNotWorking: [],
       sectionsApplicable: [],
       servicesAndSupports: {},
       servicesAndSupportsChecked: {
@@ -72,7 +72,7 @@ const planValidation = (function () {
         },
       },
       hasASectionApplicable: true,
-      workingSectionComplete: false,
+      //workingSectionComplete: false,
       servicesAndSupportsError: false,
       complete: false
     };
@@ -230,7 +230,7 @@ const planValidation = (function () {
     async function getAssessmentValidation(planId) {
       // reset the values of the validation for each consumer
       assessmentValidationCheck = {
-        workingNotWorking: [],
+        //workingNotWorking: [],
         sectionsApplicable: [],
         servicesAndSupports: {},
         servicesAndSupportsChecked: {
@@ -299,7 +299,7 @@ const planValidation = (function () {
           },
         },
         hasASectionApplicable: true,
-        workingSectionComplete: false,
+        //workingSectionComplete: false,
         servicesAndSupportsError: false,
         complete: false
       };
@@ -307,8 +307,8 @@ const planValidation = (function () {
       servicesAndSupportsData = await planValidationAjax.getAssessmentValidationData(planId);
   
       // WORKING/NOT WORKING
-      assessmentValidationCheck.workingNotWorking = servicesAndSupportsData.workingNotWorking;
-      workingSectionCheck(assessmentValidationCheck);
+      // assessmentValidationCheck.workingNotWorking = servicesAndSupportsData.workingNotWorking;
+      // workingSectionCheck(assessmentValidationCheck);
   
       // SECTIONS APPLICABLE
       // check each section fo rthe plan and see if any are selected, if at least one is selected, return true
@@ -341,7 +341,7 @@ const planValidation = (function () {
     }
   
     function allAssessmentAreasComplete(assessmentValidationCheck) {
-      if (assessmentValidationCheck.hasASectionApplicable === true && assessmentValidationCheck.workingSectionComplete === true && assessmentValidationCheck.servicesAndSupportsError === false) {
+      if (assessmentValidationCheck.hasASectionApplicable === true && assessmentValidationCheck.servicesAndSupportsError === false) {
           assessmentValidationCheck.complete = true;
       } else {
           assessmentValidationCheck.complete = false;
@@ -352,14 +352,14 @@ const planValidation = (function () {
   
     // ASSESSMENT DATA UPDATE CHECK
     function updatedAssessmenteValidation() {
-      const workingAlertDivCase1 = document.getElementById('workingAlert1');
-      const workingAlertDivCase2 = document.getElementById('workingAlert2');
+     // const workingAlertDivCase1 = document.getElementById('workingAlert1');
+     //const workingAlertDivCase2 = document.getElementById('workingAlert2');
       const tocAlertDiv = document.getElementById('tocAlert');
       const tocMobileAlertDiv = document.getElementById('tocAlertMobile');
       const navAlertDiv = document.getElementById('navAlertAssessment');
   
       //Check working/ not working section
-      workingSectionCheck(assessmentValidationCheck);
+      //workingSectionCheck(assessmentValidationCheck);
   
       //check sections applicable
       tocAssessmentCheck(assessmentValidationCheck);
@@ -390,27 +390,27 @@ const planValidation = (function () {
       }
   
       // If the working/not working section does not have a completed row, show the alert
-      if (!assessmentValidationCheck.workingSectionComplete) {
-        if (workingSectionCase === 1) {
-          if (workingAlertDivCase1) {
-            workingAlertDivCase1.style.display = 'inline-block';
-            workingAlertDivCase2.style.display = 'none';
-          }
-        }
-        else if (workingSectionCase === 2) {
-          if (workingAlertDivCase2) {
-            workingAlertDivCase2.style.display = 'inline-block';
-            workingAlertDivCase1.style.display = 'none';
-          }
-        }
-      } else {
-        if (workingAlertDivCase1) {
-          workingAlertDivCase1.style.display = 'none';
-        }
-        if (workingAlertDivCase2) {
-          workingAlertDivCase2.style.display = 'none';
-        }
-      }
+      // if (!assessmentValidationCheck.workingSectionComplete) {
+      //   if (workingSectionCase === 1) {
+      //     if (workingAlertDivCase1) {
+      //       workingAlertDivCase1.style.display = 'inline-block';
+      //       workingAlertDivCase2.style.display = 'none';
+      //     }
+      //   }
+      //   else if (workingSectionCase === 2) {
+      //     if (workingAlertDivCase2) {
+      //       workingAlertDivCase2.style.display = 'inline-block';
+      //       workingAlertDivCase1.style.display = 'none';
+      //     }
+      //   }
+      // } else {
+      //   if (workingAlertDivCase1) {
+      //     workingAlertDivCase1.style.display = 'none';
+      //   }
+      //   if (workingAlertDivCase2) {
+      //     workingAlertDivCase2.style.display = 'none';
+      //   }
+      // }
   
       // If the assessment page has an error, show the nav alert
       if (assessmentValidationCheck.complete === false) {
@@ -427,68 +427,68 @@ const planValidation = (function () {
     }
   
     // ASSESSMENT WORKING/NOT WORKING
-    function workingSectionCheck(assessmentValidationCheck) {
-        const groupedByRow = {};
-        const hasValue605Array = [];
-        const hasValue606Array = [];
+    // function workingSectionCheck(assessmentValidationCheck) {
+    //     const groupedByRow = {};
+    //     const hasValue605Array = [];
+    //     const hasValue606Array = [];
 
-        // Group objects by row
-        assessmentValidationCheck.workingNotWorking.forEach(obj => {
-            if (!groupedByRow[obj.answerRow]) {
-                groupedByRow[obj.answerRow] = [];
-            }
-            groupedByRow[obj.answerRow].push(obj);
-        });
+    //     // Group objects by row
+    //     assessmentValidationCheck.workingNotWorking.forEach(obj => {
+    //         if (!groupedByRow[obj.answerRow]) {
+    //             groupedByRow[obj.answerRow] = [];
+    //         }
+    //         groupedByRow[obj.answerRow].push(obj);
+    //     });
 
-        // Check for Question 607 within each row having values for 605 or 606
-        for (const row in groupedByRow) {
-            let hasValue605 = false;
-            let hasValue606 = false;
-            let hasValue607 = false;
+    //     // Check for Question 607 within each row having values for 605 or 606
+    //     for (const row in groupedByRow) {
+    //         let hasValue605 = false;
+    //         let hasValue606 = false;
+    //         let hasValue607 = false;
 
-            groupedByRow[row].forEach(obj => {
-                if (obj.questionNumber === "Question 605" && obj.answer) {
-                    hasValue605 = true;
-                }
-                if (obj.questionNumber === "Question 606" && obj.answer) {
-                    hasValue606 = true;
-                }
-                if (obj.questionNumber === "Question 607" && obj.answer) {
-                    hasValue607 = true;
-                }
-            });
+    //         groupedByRow[row].forEach(obj => {
+    //             if (obj.questionNumber === "Question 605" && obj.answer) {
+    //                 hasValue605 = true;
+    //             }
+    //             if (obj.questionNumber === "Question 606" && obj.answer) {
+    //                 hasValue606 = true;
+    //             }
+    //             if (obj.questionNumber === "Question 607" && obj.answer) {
+    //                 hasValue607 = true;
+    //             }
+    //         });
 
-            // If either 605 or 606 has value, then 607 must also have a value
-            if ((hasValue605 || hasValue606) && !hasValue607) {
-                assessmentValidationCheck.workingSectionComplete = false;
-                workingSectionCase = 2; 
-                return assessmentValidationCheck;
-            }
+    //         // If either 605 or 606 has value, then 607 must also have a value
+    //         if ((hasValue605 || hasValue606) && !hasValue607) {
+    //             assessmentValidationCheck.workingSectionComplete = false;
+    //             workingSectionCase = 2; 
+    //             return assessmentValidationCheck;
+    //         }
 
-            // Check if all three questions are blank
-            if (!hasValue605 && !hasValue606) {
-                assessmentValidationCheck.workingSectionComplete = false;
-                workingSectionCase = 2;
-                return assessmentValidationCheck;
-            }
+    //         // Check if all three questions are blank
+    //         if (!hasValue605 && !hasValue606) {
+    //             assessmentValidationCheck.workingSectionComplete = false;
+    //             workingSectionCase = 2;
+    //             return assessmentValidationCheck;
+    //         }
 
-            hasValue605Array.push(hasValue605);
-            hasValue606Array.push(hasValue606);
-        }
+    //         hasValue605Array.push(hasValue605);
+    //         hasValue606Array.push(hasValue606);
+    //     }
 
-        // Check if there's at least one row with both 605 and 606 having values
-        const hasValue605 = hasValue605Array.some(val => val);
-        const hasValue606 = hasValue606Array.some(val => val);
-        if (!hasValue605 || !hasValue606) {
-            assessmentValidationCheck.workingSectionComplete = false;
-            workingSectionCase = 1;
-            return assessmentValidationCheck;
-        }
+    //     // Check if there's at least one row with both 605 and 606 having values
+    //     const hasValue605 = hasValue605Array.some(val => val);
+    //     const hasValue606 = hasValue606Array.some(val => val);
+    //     if (!hasValue605 || !hasValue606) {
+    //         assessmentValidationCheck.workingSectionComplete = false;
+    //         workingSectionCase = 1;
+    //         return assessmentValidationCheck;
+    //     }
 
-        assessmentValidationCheck.workingSectionComplete = true;
-        workingSectionCase = 0; // Set workingSectionCase to 0 if all conditions pass
-        return assessmentValidationCheck;
-      }
+    //     assessmentValidationCheck.workingSectionComplete = true;
+    //     workingSectionCase = 0; // Set workingSectionCase to 0 if all conditions pass
+    //     return assessmentValidationCheck;
+    //   }
 
       function returnWorkingSectionCaseValue() {
         return workingSectionCase;
@@ -497,7 +497,7 @@ const planValidation = (function () {
     async function updateAnswerWorkingSection(planId) {
       const check = await getAssessmentValidation(planId);
 
-      workingSectionCheck(check);
+      //workingSectionCheck(check);
   
       // checks entire assessments for validation errors
       planValidation.updatedAssessmenteValidation();
@@ -1158,7 +1158,7 @@ const planValidation = (function () {
       updatedIspOutcomesSetAlerts,
       reviewsValidationCheck,
       experiencesValidationCheck,
-      workingSectionCheck,
+      //workingSectionCheck,
       updateAnswerWorkingSection,
       tocAssessmentCheck,
       findQuestionIdCategory,

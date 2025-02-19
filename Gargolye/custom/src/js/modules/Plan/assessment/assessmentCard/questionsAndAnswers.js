@@ -171,6 +171,7 @@
       const questionSet = question.closest('.questionSet');
       const inputWrap = question.querySelector('.input-field');
       const inputEle = question.querySelector('.input-field__input');
+      const questionText = question.querySelector('.question__text');
 
       // check for radios
       if (!inputWrap) inputWrap = question.querySelector('.radioWrap');
@@ -183,6 +184,7 @@
       if (conditionalQuestions[0].conditionalAnswerText !== answer) {
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
+        inputWrap.classList.remove('error');
         input.disableInputField(inputWrap);
         if (type === 'checkbox') {
           inputEle.checked = false;
@@ -196,6 +198,9 @@
         addAnswer(answerId);
       } else {
         input.enableInputField(inputWrap);
+        if (questionText.textContent === 'List other tools:') {
+          inputWrap.classList.add('error');
+        }
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
       }
@@ -206,6 +211,7 @@
         const question = document.getElementById(`question${questionId}`);
         const section = question.closest('.assessment__section');
         const questionSet = question.closest('.questionSet');
+        const questionText = question.querySelector('.question__text');
         let inputWrap = question.querySelector('.input-field');
         let inputEle = question.querySelector('.input-field__input');
 
@@ -220,6 +226,7 @@
         if (conditionalAnswerText !== answer) {
           sectionQuestionCount[sectionId][setId][questionId].answered = false;
           sectionQuestionCount[sectionId][setId][questionId].required = false;
+          //inputWrap.classList.remove('error');
           input.disableInputField(inputWrap);
           if (type === 'checkbox') {
             inputEle.checked = false;
@@ -234,6 +241,9 @@
           addAnswer(answerId);
         } else {
           input.enableInputField(inputWrap);
+          // if (questionText.textContent === 'List other tools:') {
+          //   inputWrap.classList.add('error');
+          // }
           sectionQuestionCount[sectionId][setId][questionId].answered = false;
           sectionQuestionCount[sectionId][setId][questionId].required = true;
         }
@@ -359,7 +369,7 @@
       const isChecked = e.target.checked;
       const skipped = isChecked ? 'Y' : 'N';
       const isForRow = e.target.dataset.isforrow;
-      
+
       let answerId = e.target.dataset.answerid;
       let questionId = e.target.dataset.questionid;
       let setId = e.target.dataset.setid;
@@ -426,7 +436,7 @@
       if (hideOrShowStatus === 'hide') {
         toggleUnansweredQuestionFilter(hideOrShowStatus);
       }
-      
+
       tableOfContents.showUnansweredQuestionCount();
 
       return;
@@ -486,6 +496,21 @@
           }
         }
 
+        // check attachments
+        const attachmentBtn = e.target.parentElement.parentElement.querySelector('.attachmentBtn');
+        if (attachmentBtn) {
+          const text = attachmentBtn.textContent;
+          const match = text.match(/\((\d+)\)/);
+          if (match) {
+            const number = parseInt(match[1], 10);
+            if (answer === '1' && number === 0) {
+              attachmentBtn.classList.add('error');
+            } else {
+              attachmentBtn.classList.remove('error');
+            }
+          }
+        }
+
         // checks the status of the buttons and adds/removes error class if needed for specific section
         planValidation.servicesAndSupportsBtnCheck(sectionId);
 
@@ -501,12 +526,18 @@
       if (type === 'text' || type === 'textarea') {
         answer = e.target.value;
 
+        const questionText = e.target.parentElement.parentElement.querySelector('.question__text');
+
         if (answer !== '') {
           await addAnswer(answerId, answer);
 
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
+          }
+
+          if (questionText.textContent === 'List other tools:') {
+            e.target.parentElement.classList.remove('error');
           }
         } else {
           await addAnswer(answerId);
@@ -515,10 +546,14 @@
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
+
+          if (questionText.textContent === 'List other tools:') {
+            e.target.parentElement.classList.add('error');
+          }
         }
 
         if (sectionId === '41') {
-          await planValidation.updateAnswerWorkingSection(assessmentId);
+          //await planValidation.updateAnswerWorkingSection(assessmentId);
           tableOfContents.showUnansweredQuestionCount();
         }
       }
@@ -1253,11 +1288,10 @@
 
             switch (answerStyle) {
               case 'TEXTAREA': {
-
                 // Handle text limit for the working/not working section
-                if (questionId === "605" || questionId === "606") {
+                if (questionId === '605' || questionId === '606') {
                   textAreaCharLimit = 1000;
-                } else if (questionId === "607") {
+                } else if (questionId === '607') {
                   textAreaCharLimit = 250;
                 }
 
@@ -1497,7 +1531,8 @@
     return questionInputMarkup;
   }
   function buildTextareaInput(data) {
-    const { answerId, answerText, conditionalQuestionId, conditionalAnswerText, sectionId, setId, questionId } = data;
+    const { answerId, answerText, conditionalQuestionId, conditionalAnswerText, sectionId, setId, questionId, text } =
+      data;
 
     let charLimit = 10000;
 
@@ -1516,7 +1551,6 @@
       const parentAnswerText = parentQuestion && parentQuestion.answerText;
 
       if (parentAnswerText !== conditionalAnswerText) {
-        //questionInputMarkup.classList.add('disabled');
         input.disableInputField(questionInputMarkup);
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
@@ -1526,6 +1560,11 @@
         }
         sectionQuestionCount[sectionId][setId][questionId].answered = answerText === '' ? false : true;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
+        if (text === 'List other tools:') {
+          if (answerText === '') {
+            questionInputMarkup.classList.add('error');
+          }
+        }
       }
     } else {
       sectionQuestionCount[sectionId][setId][questionId].answered = answerText === '' ? false : true;
@@ -1734,28 +1773,33 @@
         question.appendChild(questionInputMarkup);
 
         // intentionally blank checkbox
-        const intentionallyBlankCheckbox = input.buildCheckbox({
-          text: 'Intentionally left blank',
-          id: `intentionallyBlankCheckbox${answerId}`,
-          className: 'intentionallyBlankCheckbox',
-          isChecked: skipped === 'Y' ? true : false,
-          isDisabled: readOnly,
-          attributes: [
-            { key: 'data-setid', value: setId },
-            { key: 'data-sectionid', value: sectionId },
-            { key: 'data-questionid', value: questionId },
-            { key: 'data-answerid', value: answerId },
-            { key: 'data-isforrow', value: false },
-          ],
-        });
-        question.appendChild(intentionallyBlankCheckbox);
-        if (answerText) {
-          input.disableInputField(intentionallyBlankCheckbox);
+        if (text !== 'List other tools:') {
+          const intentionallyBlankCheckbox = input.buildCheckbox({
+            text: 'Intentionally left blank',
+            id: `intentionallyBlankCheckbox${answerId}`,
+            className: 'intentionallyBlankCheckbox',
+            isChecked: skipped === 'Y' ? true : false,
+            isDisabled: readOnly,
+            attributes: [
+              { key: 'data-setid', value: setId },
+              { key: 'data-sectionid', value: sectionId },
+              { key: 'data-questionid', value: questionId },
+              { key: 'data-answerid', value: answerId },
+              { key: 'data-isforrow', value: false },
+            ],
+          });
+          question.appendChild(intentionallyBlankCheckbox);
+
+          if (answerText) {
+            input.disableInputField(intentionallyBlankCheckbox);
+          }
+
+          if (skipped === 'Y') {
+            input.disableInputField(questionInputMarkup);
+            question.classList.add('intentionallyDisabled');
+          }
         }
-        if (skipped === 'Y') {
-          input.disableInputField(questionInputMarkup);
-          question.classList.add('intentionallyDisabled');
-        }
+
         break;
       }
       case 'CHECKOPTION': {
@@ -1776,7 +1820,19 @@
         if (addAttachmentButton) {
           const planId = plan.getCurrentPlanId();
           const questionAttachment = new planAttachment.PlanAttachment('', questionId, planId);
-          question.appendChild(questionAttachment.attachmentButton);
+          const attachButton = questionAttachment.attachmentButton;
+          question.appendChild(attachButton);
+
+          const text = attachButton.textContent;
+          const match = text.match(/\((\d+)\)/);
+          if (match) {
+            const number = parseInt(match[1], 10);
+            if (answerText === '1' && number === 0) {
+              attachButton.classList.add('error');
+            } else {
+              attachButton.classList.remove('error');
+            }
+          }
         }
 
         break;

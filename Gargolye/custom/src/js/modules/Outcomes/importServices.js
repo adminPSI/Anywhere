@@ -224,7 +224,7 @@ const importServices = (() => {
 
         knownAndLikelyRisksTable = table.build({
             tableId: `importedPlanRisksTable`,
-            headline: `Know & Likely Risks`,
+            headline: `Known & Likely Risks`,
             columnHeadings: [
               'Assessment Area',
               'What is the risk, what it looks like, where it occurs',
