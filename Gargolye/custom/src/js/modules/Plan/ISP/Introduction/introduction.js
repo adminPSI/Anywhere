@@ -104,12 +104,15 @@ const planIntroduction = (() => {
         if (usePlanImage === '0') {
           usePlanImage = '2';
           noPhotoRadio.checked = true;
+          var fullpath = `./images/new-icons/default.jpg`;
+          var imgElement = document.getElementsByClassName('imageContainer');
+          imgElement[0].setAttribute('src', fullpath);
           updateIntroduction();
         }
+      } else {
+        displayDemographicsPhoto();
       }
     });
-
-    displayDemographicsPhoto();
 
     // Custom Image (Plan) radio button
     const customPhotoRadio = input.buildRadio({
