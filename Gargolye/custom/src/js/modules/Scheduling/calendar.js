@@ -204,10 +204,10 @@ const Calendar = (function () {
 
   function build() {
     wrapperEle.innerHTML = '';
-    calendarElewrapperEle.innerHTML = '';
-    calendarHeaderElewrapperEle.innerHTML = '';
-    calendarTitleElewrapperEle.innerHTML = '';
-    calendarNavElewrapperEle.innerHTML = '';
+    calendarEle.innerHTML = '';
+    calendarHeaderEle.innerHTML = '';
+    calendarTitleEle.innerHTML = '';
+    calendarNavEle.innerHTML = '';
     // main
     wrapperEle.classList.add('calendarWrap');
     calendarHeaderEle.classList.add('calendarHeader');

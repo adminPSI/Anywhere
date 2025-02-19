@@ -1,11 +1,11 @@
 1. [x] Show the Location and Employee dropdowns at the top. If the logged in user does not have the Scheduler security key for Anywhere Scheduling, set the Employee dropdown as the logged in user and disable it. Else, default to logged in user and allow user to select different employee. See mockup #1.
     * [x] Include an option for ALL in both the Location and Employee dropdowns.
     * [o] If the Employee dropdown is disabled, only show shifts on the 'calendar' where the employee is the same as the logged in user.
-    * [ ] If the logged in user does not have the Scheduler security key for Anywhere Scheduling, the values in the Location dropdown should only show locations where the logged in user is assigned to a shift. If the Show Open Shift radio button is "Yes", it should also include any location that has an open shift (a shift where there is no employee assigned). If the user does have the Scheduler security key, show all active locations.
-    * [ ] If the value of ALL is selected in the Location dropdown, group shifts by assigned location. Show the location name to the left of each group. See mockup #2. If ALL is not selected, do not show location name to the left (see mockup #1).
-    * [ ] Include a (NONE) (with the parantheses) option for the Employee dropdown only if the user selects to view open shifts (via the radio button at the top of the page). This should be the top option in the dropdown. If selected, display shifts with no assigned employee. If the user selects "No" to the open shifts radio button while None is selected in the Employee dropdown, hide the None option in the dropdown and change the employee to be the logged in user.
-    * [ ] Location dropdown should show same values that are shown in the current Location dropdown
-    * [ ] Employee dropdown should show all active employees from the same Vendor as the logged in user (in addition to the (NONE) option in requirement #1e above).
+    * [o] If the logged in user does not have the Scheduler security key for Anywhere Scheduling, the values in the Location dropdown should only show locations where the logged in user is assigned to a shift. If the Show Open Shift radio button is "Yes", it should also include any location that has an open shift (a shift where there is no employee assigned). If the user does have the Scheduler security key, show all active locations.
+    * [o] If the value of ALL is selected in the Location dropdown, group shifts by assigned location. Show the location name to the left of each group. See mockup #2. If ALL is not selected, do not show location name to the left (see mockup #1).
+    * [o] Include a (NONE) (with the parantheses) option for the Employee dropdown only if the user selects to view open shifts (via the radio button at the top of the page). This should be the top option in the dropdown. If selected, display shifts with no assigned employee. If the user selects "No" to the open shifts radio button while None is selected in the Employee dropdown, hide the None option in the dropdown and change the employee to be the logged in user.
+    * [x] Location dropdown should show same values that are shown in the current Location dropdown
+    * [x] Employee dropdown should show all active employees from the same Vendor as the logged in user (in addition to the (NONE) option in requirement #1e above).
 
 2. [ ] Add + ADD NEW SHIFT button (see mockup #1). When clicked, show the Add New Shift popup form (see mockup #2).  NOTE: Most of this refers to the location_schedules table.
     * [ ] Only display the + ADD NEW SHIFT button if the logged in user has the Scheduler security key for Anywhere Scheduling.
@@ -25,12 +25,12 @@
     * [ ] Whenever the value in the Location dropdown is changed, remove selected consumers and employee from the shift.
     * [ ] At the top of the pop-up display one checkbox per day of the week.  The specific dates (e.g. 7/6, 7/7, etc.) should be the same as the days of the week that were on the previous screen when the + ADD SHIFT button was selected and it was in the WEEK view.  If it was in the DAY view, show the week that includes the day that was shown.  If it was MONTH view, show the week that includes today's date.  It should always show Sunday thru Saturday.  Allow user to advance/go back one week at a time by clicking the back/forward arrows.  Allow user to select multiple days. On save, save a shift for each day selected.
 
-3. [ ] Add PUBLISH/UN-PUBLISH SCHEDULES button beside the MONTH/WEEK/DAY view selections (see mockup #1).  Only show this  button if the logged in user has the Scheduler security key for Anywhere Scheduling.
-    * [ ] When clicked, display a pop up that allows the user to select a location, employee, and date range.  Values are required for all fields.  Include options for ALL in the Location and Employee dropdowns.
-    * [ ] When the user clicks PUBLISH button, set the publish_date column in location_schedules to the date/time the user published the schedules for all shifts that fit the criteria in these fields supplied by the user.  Close the pop-up.
-        [ ] Also, if Notify Employees checkbox is checked, send a notification via insights to each employee who had a shift get published.  The message should say something like "Your schedule for (begin date) - (end date) can now be viewed in Advisor Anywhere!  Login to check it out." (or something like that)
-    * [ ] When the user clicks UN-PUBLISH, set the publish_date column in location_schedules to null for all shifts that fit the criteria in these fields supplied by the user.  Close the pop-up.
-        [ ] Also, if Notify Employees checkbox is checked, send a notification via insights to each employee who had a shift get published. The message should say something like "Your schedule for (begin date) - (end date) has been un-published in Advisor Anywhere! Login to view your current schedule." (or something like that)
+3. [x] Add PUBLISH/UN-PUBLISH SCHEDULES button beside the MONTH/WEEK/DAY view selections (see mockup #1).  Only show this  button if the logged in user has the Scheduler security key for Anywhere Scheduling.
+    * [x] When clicked, display a pop up that allows the user to select a location, employee, and date range.  Values are required for all fields.  Include options for ALL in the Location and Employee dropdowns.
+    * [x] When the user clicks PUBLISH button, set the publish_date column in location_schedules to the date/time the user published the schedules for all shifts that fit the criteria in these fields supplied by the user.  Close the pop-up.
+        [x] Also, if Notify Employees checkbox is checked, send a notification via insights to each employee who had a shift get published.  The message should say something like "Your schedule for (begin date) - (end date) can now be viewed in Advisor Anywhere!  Login to check it out." (or something like that)
+    * [x] When the user clicks UN-PUBLISH, set the publish_date column in location_schedules to null for all shifts that fit the criteria in these fields supplied by the user.  Close the pop-up.
+        [x] Also, if Notify Employees checkbox is checked, send a notification via insights to each employee who had a shift get published. The message should say something like "Your schedule for (begin date) - (end date) has been un-published in Advisor Anywhere! Login to view your current schedule." (or something like that)
 
 4. [ ] When displaying shifts on the calendar, stack them.
     * [ ] On the shifts, display the start time, end time, and employee assigned to work the shift.  If there is no employee on the shift, show "(OPEN)".  See mockup #1.
@@ -53,8 +53,8 @@
     * [ ] On save, do not update the existing shift (the shift that the copy button was clicked from), but create a new shift with the details provided by the user.  Still perform same validation that is done when adding a new shift (see requirement #2 above)
     * [ ] See requirement #2 above to determine which fields should be visible/hidden logic for sending any insights notifications, validation, etc.
 
-7. [ ] Update the logic that is currently being used to determine if a shift shows in Anywhere.
-    [ ] Right now, it's looking at schedule_periods.show_in_anywhere to determine if the shift should display.  Instead, now reference location_schedules.publish_date.  If publish_date is not null, then display the shift in Anywhere.  If publish_date is null, only show the shift if the user has the Scheduler security key.
+7. [x] Update the logic that is currently being used to determine if a shift shows in Anywhere.
+    [x] Right now, it's looking at schedule_periods.show_in_anywhere to determine if the shift should display.  Instead, now reference location_schedules.publish_date.  If publish_date is not null, then display the shift in Anywhere.  If publish_date is null, only show the shift if the user has the Scheduler security key.
 
 8. [x] To the right of the Employee dropdown in mockups #1 and #2 above, add a dropdown called "Show".
     * [x] Values for this dropdown should be All Shifts, Published Shifts Only, and Un-Publishsed Shifts Only.

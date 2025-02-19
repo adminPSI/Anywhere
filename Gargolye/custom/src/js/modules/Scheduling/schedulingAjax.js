@@ -127,12 +127,13 @@ const schedulingAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      return result.getSchedulingRegions;
+      return result.getSchedulingRegionsResult;
     } catch (error) {
       throw new Error(error.responseText);
     }
   }
 
+  //
   function getLocationDropdownForSchedulingAjaxOLD(cb) {
     $.ajax({
       type: 'POST',

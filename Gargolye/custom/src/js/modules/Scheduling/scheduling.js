@@ -782,6 +782,7 @@ const SchedulingShiftDetails = (function () {
 })();
 
 const SchedulingCalendar = (function () {
+  // Red, Orange, Yellow, Blue, Green, and Purple.
   const currentView = 'mine';
   const calendarGroups = {
     1: 'My Shifts',
@@ -803,11 +804,14 @@ const SchedulingCalendar = (function () {
   let calendarEvents;
   let calendarAppointments;
   let locations;
+  let regions;
   let employees;
   let shiftEmployees;
+
   let selectedLocationId;
   let selectedEmployeeId;
   let selectedShiftType;
+  let viewOptionShifts;
 
   //TODO: put this somewhere => if (currentView === 'mine' && $.session.isPSI) return;
   //TODO: ? should we combine calendarAppointments into calendarEvents? im thinking yes
@@ -1105,6 +1109,8 @@ const SchedulingCalendar = (function () {
 
   // Pub/Sub Popup
   function showPubSubShiftsPopup() {
+    //! Values are required for all fields.
+
     const pubSubPopup = POPUP.build({
       id: 'shiftDetailPopup',
       hideX: hide_X,
@@ -1144,6 +1150,7 @@ const SchedulingCalendar = (function () {
   }
 
   // MAIN DOM
+  //-----------------------------------------------------------------------
   function populateLocationDropdown() {
     const dropdownData = locations
       .map(d => ({
@@ -1162,6 +1169,8 @@ const SchedulingCalendar = (function () {
     dropdown.populate(locationDropdownEle, dropdownData, selectedLocationId);
   }
   function populateEmployeeDropdown() {
+    //TODO: Include a (NONE) (with the parantheses) option for the Employee dropdown only if the user selects to view open shifts (via the radio button at the top of the page).
+
     let dropdownData = [
       {
         value: '%',
@@ -1196,6 +1205,7 @@ const SchedulingCalendar = (function () {
       shiftTypeNote.classList.remove('error');
     }
   }
+  //
   function buildLocationDropdown() {
     const dropdownEle = dropdown.build({
       dropdownId: 'locationDropdown',
@@ -1205,6 +1215,8 @@ const SchedulingCalendar = (function () {
 
     dropdownEle.addEventListener('change', event => {
       selectedLocationId = event.target.options[event.target.selectedIndex].id;
+
+      //TODO: If the value of ALL is selected in the Location dropdown, group shifts by assigned location. Show the location name to the left of each group.
     });
 
     return dropdownEle;
@@ -1219,6 +1231,8 @@ const SchedulingCalendar = (function () {
     if ($.session.schedulingView) {
       dropdownEle.addEventListener('change', event => {
         selectedEmployeeId = event.target.options[event.target.selectedIndex].id;
+
+        //TODO: If (none) selected, display shifts with no assigned employee.
       });
     } else {
       dropdownEle.classList.add('disabled');
@@ -1268,25 +1282,59 @@ const SchedulingCalendar = (function () {
     return shiftTypeWrap;
   }
   function buildPubSubSchedulesButton() {
-    const buttonele = button.build({
+    const buttonEle = button.build({
       text: 'Publish / Un-Publish Schedules',
       style: 'secondary',
       type: 'contained',
       callback: function () {
-        // pub sub scheudles
-        // re pop calendar events
+        showPubSubShiftsPopup();
       },
     });
+
+    return buttonEle;
   }
   function buildNewShiftButton() {
-    const buttonele = button.build({
+    const buttonEle = button.build({
       text: 'Add New Shift',
       style: 'secondary',
       type: 'contained',
       callback: function () {
-        // show add shift popup
+        showShiftPopup();
       },
     });
+
+    return buttonEle;
+  }
+  function buildOpenShiftViewToggleButton() {
+    //Radio Container
+    const radioContainer = document.createElement('div');
+    radioContainer.classList.add('ic_questionRadioContainer');
+
+    const radioTitle = document.createElement('p');
+    radioTitle.innerText = 'Show Open Shifts';
+
+    const radioDiv = document.createElement('div');
+    const yesRadio = input.buildRadio({
+      text: 'Yes',
+      name: 'viewOpenShifts',
+      //isChecked: csChangeMind === 'Y',
+    });
+    const noRadio = input.buildRadio({
+      text: 'No',
+      name: 'viewOpenShifts',
+      // isChecked: csChangeMind === 'N',
+    });
+    radioDiv.appendChild(yesRadio);
+    radioDiv.appendChild(noRadio);
+
+    radioDiv.addEventListener('change', e => {
+      //TODO: If the user selects "No" to the open shifts radio button while None is selected in the Employee dropdown, hide the None option in the dropdown and change the employee to be the logged in user.
+    });
+
+    radioContainer.appendChild(radioTitle);
+    radioContainer.appendChild(radioDiv);
+
+    return radioContainer;
   }
   function build() {
     const scheduleWrap = document.createElement('div');
@@ -1295,17 +1343,29 @@ const SchedulingCalendar = (function () {
     const scheduleNav = document.createElement('div');
     scheduleNav.classList.add('scheduleNav');
 
+    const dropdownWrap = document.createElement('div');
+    dropdownWrap.classList.add('dropdownWrap');
+
     locationDropdownEle = buildLocationDropdown();
     employeeDropdownEle = buildEmployeeDropdown();
+    newShiftButtonEle = buildNewShiftButton();
+    openShiftViewToggleEle = buildOpenShiftViewToggleButton();
+    pubUnpubButtonEle = buildPubSubSchedulesButton();
 
-    scheduleNav.appendChild(locationDropdownEle);
-    scheduleNav.appendChild(employeeDropdownEle);
+    dropdownWrap.appendChild(locationDropdownEle);
+    dropdownWrap.appendChild(employeeDropdownEle);
     if ($.session.schedulingView) {
       shiftTypeDropdownEle = buildShiftTypeDropdown();
-      scheduleNav.appendChild(shiftTypeDropdownEle);
+      dropdownWrap.appendChild(shiftTypeDropdownEle);
     }
 
+    scheduleNav.appendChild(dropdownWrap);
+    scheduleNav.appendChild(newShiftButtonEle);
+    scheduleNav.appendChild(openShiftViewToggleEle);
+    scheduleNav.appendChild(pubUnpubButtonEle);
+
     scheduleWrap.appendChild(scheduleNav);
+
     scheduleWrap.appendChild(scheduleCalEle);
 
     _DOM.ACTIONCENTER.innerHTML = '';
@@ -1328,11 +1388,17 @@ const SchedulingCalendar = (function () {
     shiftEmployees = [...employees];
     populateEmployeeDropdown();
 
+    //TODO: If the logged in user does not have the Scheduler security key for Anywhere Scheduling, the values in the Location dropdown should only show locations where the logged in user is assigned to a shift.
+    //TODO: If the Show Open Shift radio button is "Yes", it should also include any location that has an open shift (a shift where there is no employee assigned).
     locations = await schedulingAjax.getLocationDropdownForSchedulingAjax();
     populateLocationDropdown();
 
+    //TODO: If the Employee dropdown is disabled, only show shifts where the employee is the same as the logged in user.
     calendarEvents = await getCalendarEvents('%', $.session.PeopleId);
     calendarAppointments = await getCalendarAppointments();
+
+    // after everything is on screen pre load some popup data
+    regions = await schedulingAjax.getRegionDropdownAjax();
   }
 
   return {
