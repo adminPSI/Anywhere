@@ -163,6 +163,18 @@ const TRANS_routeDocumentation = (function () {
         DOM.ACTIONCENTER.appendChild(column2)
         buildConsumerCards()
         eventListeners()
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            if (consumersOnRecord.size > 0) {
+                roster2.toggleMiniRosterBtnVisible(false);
+            } else {
+                roster2.toggleMiniRosterBtnVisible(true);
+            }
+            checkRequiredFields();
+            setBtnStatusOfRouteDocumentation();
+
+        }
     }
 
     function eventListeners() {
@@ -272,8 +284,30 @@ const TRANS_routeDocumentation = (function () {
         var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
 
         if (TripIntegratedEmploymentCheckbox.checked == true) {
-            routeStartOdo.classList.add('error');
-            routeEndOdo.classList.add('error');
+
+            routeStartOdo.classList.remove('error');
+            routeEndOdo.classList.remove('error');
+
+            const startVal = parseInt(routeStartOdo.querySelector('input').value)
+            const endVal = parseInt(routeEndOdo.querySelector('input').value)
+
+            if (isNaN(startVal) && isNaN(endVal)) {
+                routeStartOdo.classList.add('error');
+                routeEndOdo.classList.add('error');
+                setBtnStatusOfRouteDocumentation();
+                return;
+            } else {
+                if (isNaN(startVal)) {
+                    routeStartOdo.classList.add('error');
+                    setBtnStatusOfRouteDocumentation();
+                    return;
+                }
+                if (isNaN(endVal)) {
+                    routeEndOdo.classList.add('error');
+                    setBtnStatusOfRouteDocumentation();
+                    return;
+                }
+            }
             setBtnStatusOfRouteDocumentation()
 
         } else {
@@ -407,6 +441,15 @@ const TRANS_routeDocumentation = (function () {
             const endTime = routeEndInput.querySelector('input').value
             const odoStart = routeStartOdo.querySelector('input').value
             const odoEnd = routeEndOdo.querySelector('input').value
+            var tripIntegratedEmployment;
+            var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+            if (TripIntegratedEmploymentCheckbox.checked == true) {
+                tripIntegratedEmployment = 'Y';
+            } else {
+                tripIntegratedEmployment = 'N';
+            }
+
+            
             const dbCallArr = []
             const tripDetailSubmit = {
                 token: $.session.Token,
@@ -414,7 +457,8 @@ const TRANS_routeDocumentation = (function () {
                 odometerStart: odoStart,
                 odometerStop: odoEnd,
                 startTime: startTime,
-                endTime: endTime
+                endTime: endTime,
+                integratedEmployment: tripIntegratedEmployment
             }
             dbCallArr.push(TRANS_routeDocumentationAjax.updateTripDetails(tripDetailSubmit))
       consumersOnRecord.forEach((val,key,map) => {

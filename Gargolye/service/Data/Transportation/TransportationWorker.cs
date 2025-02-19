@@ -295,9 +295,9 @@ namespace Anywhere.service.Data.Transportation
             public string zip { get; set; }
         }
 
-        public string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime)
+        public string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string integratedEmployment)
         {
-            return tdg.updateTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime);
+            return tdg.updateTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, integratedEmployment);
         }
 
 
