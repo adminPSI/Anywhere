@@ -56,10 +56,24 @@ const planIntroduction = (() => {
 
     displayNoPhoto();
 
+    const maxFileSize = 20 * 1024; // 20KB in bytes
+
+    async function checkImageSize(url) {
+      try {
+        const response = await fetch(url, { method: 'HEAD' });
+        const contentLength = response.headers.get('content-length');
+        // If no content-length is provided, we assume the file is acceptable.
+        return contentLength ? parseInt(contentLength, 10) : 0;
+      } catch (err) {
+        console.error('Error fetching image head:', err);
+        return 0;
+      }
+    }
+
     // Demographics radio button
     const demoPhotoRadio = input.buildRadio({
       id: `chkUsePlanImage-no`,
-      text: 'Use Demographics Photo',
+      text: 'Use Demographics Photo (20kb max size)',
       name: 'chkUseImage',
       isChecked: usePlanImage === '0' ? true : false,
       isDisabled: isReadOnly,
@@ -76,12 +90,31 @@ const planIntroduction = (() => {
       },
     });
 
+    // The URL of the demographics image
+    const imageUrl = `./images/portraits/${selectedConsumerId}.png`;
+
+    // Check the image size and disable the radio button if it exceeds maxFileSize
+    checkImageSize(imageUrl).then(fileSize => {
+      if (fileSize > maxFileSize) {
+        // Disable the radio button if the image is larger than 20KB
+        demoPhotoRadio.disabled = true;
+        demoPhotoRadio.classList.add('disabled');
+
+        // if the demographics photo file is too large and the plan has selected to use the demo photo, change it 'No Photo'
+        if (usePlanImage === '0') {
+          usePlanImage = '2';
+          noPhotoRadio.checked = true;
+          updateIntroduction();
+        }
+      }
+    });
+
     displayDemographicsPhoto();
 
     // Custom Image (Plan) radio button
     const customPhotoRadio = input.buildRadio({
       id: `chkUsePlanImage-yes`,
-      text: 'Use Custom Image',
+      text: 'Use Custom Image (20kb max size)',
       name: 'chkUseImage',
       isChecked: usePlanImage === '1' ? true : false,
       isDisabled: isReadOnly,
@@ -115,6 +148,14 @@ const planIntroduction = (() => {
 
     photoInput.addEventListener('change', event => {
       const photoObj = {};
+
+      const file = event.target.files.item(0);
+    
+      if (file && file.size > maxFileSize) {
+        alert("The selected file exceeds the 2MB limit.");
+        event = null; // Reset the file input
+        return;
+      }
 
       const attPromise = new Promise(resolve => {
         const photoFile = event.target.files.item(0);
