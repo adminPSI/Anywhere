@@ -155,10 +155,13 @@ const planIntroduction = (() => {
       const file = event.target.files.item(0);
     
       if (file && file.size > maxFileSize) {
-        alert("The selected file exceeds the 2MB limit.");
+        alert("The selected file exceeds the 20kb limit.");
+        event.target.classList.add('error');
         event = null; // Reset the file input
         return;
       }
+
+      event.target.classList.remove('error');
 
       const attPromise = new Promise(resolve => {
         const photoFile = event.target.files.item(0);
