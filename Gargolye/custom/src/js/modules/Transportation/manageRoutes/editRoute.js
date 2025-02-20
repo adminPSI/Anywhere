@@ -1,5 +1,5 @@
 const TRANS_manageEditRoute = (function () {
-    let driverDropdown, routeNameInput, locationDropdown, otherRiderDropdown, vehicleDropdown, routeStartOdo, routeEndOdo, routeStartInput, routeEndInput;
+    let driverDropdown, routeNameInput, locationDropdown, otherRiderDropdown, vehicleDropdown, routeStartOdo, routeEndOdo, routeStartInput, routeEndInput, tripIntegratedEmploymentCheckbox;
     let milesRadio, tripsRadio;
     let consumerSectionBody, noConsumerWarning;
     let tripInfo;
@@ -52,6 +52,15 @@ const TRANS_manageEditRoute = (function () {
             readonly: ro,
             value: selectedRouteName
         });
+
+        tripIntegratedEmploymentCheckbox = input.buildCheckbox({
+            text: 'Trip To/From Integrated Employment',
+            id: 'tripIntegratedEmploymentCheckbox',
+            readonly: ro,
+            //isChecked: false,
+            isChecked: tripInfo.integratedEmployment === 'Y' ? true : false,
+        });
+        
         locationDropdown = dropdown.build({
             dropdownId: "locationDropdown",
             label: "Location",
@@ -130,6 +139,7 @@ const TRANS_manageEditRoute = (function () {
         // Disable inputs for read only;
         if (ro) {
             routeNameInput.classList.add('disabled')
+            tripIntegratedEmploymentCheckbox.classList.add('disabled')
             locationDropdown.classList.add('disabled')
             routeStartInput.classList.add('disabled')
             routeEndInput.classList.add('disabled')
@@ -198,6 +208,7 @@ const TRANS_manageEditRoute = (function () {
         column1.appendChild(selectedRouteInformation);
         column1.appendChild(routeInfoCard);
         if (isAddHoc) routeInfoCardBody.appendChild(routeNameInput)
+        routeInfoCardBody.appendChild(tripIntegratedEmploymentCheckbox);    
         routeInfoCardBody.appendChild(timeDiv);
         routeInfoCardBody.appendChild(odometerDiv);
         routeInfoCardBody.appendChild(driverDropdown);
@@ -219,7 +230,7 @@ const TRANS_manageEditRoute = (function () {
         // No Consumer Warning //
         noConsumerWarning = document.createElement('p');
         noConsumerWarning.style.color = 'red';
-        noConsumerWarning.innerText = 'You must select at least one consumer for the route.'
+        noConsumerWarning.innerText = 'You must select one consumer for the route.'
         consumerSectionBody.appendChild(noConsumerWarning)
         noConsumerWarning.style.display = 'none';
         //
@@ -340,6 +351,35 @@ const TRANS_manageEditRoute = (function () {
             selectedRouteName = event.target.value;
             setBtnStatusOfAddRoute();
         });
+
+        tripIntegratedEmploymentCheckbox.addEventListener('change', event => {
+            //confidential = event.target.checked ? 'Y' : 'N';
+            // alert("Yep, that's it");
+           // integratedEmployment: tripInfo.integratedEmployment
+
+            var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+            var MilesRadio = document.getElementById("milesRadio");
+            var TripsRadio = document.getElementById("tripsRadio");
+
+            if (TripIntegratedEmploymentCheckbox.checked == true) {
+              //  var MilesRadio = document.getElementById("milesRadio");
+               TripsRadio.checked = true;  
+               TripsRadio.disabled = true;
+               MilesRadio.disabled = true;
+
+               TripsRadio.classList.add('disabled');
+               MilesRadio.classList.add('disabled');
+            } else {
+               // var TripsRadio = document.getElementById("tripsRadio");
+               MilesRadio.checked = true;   
+               TripsRadio.disabled = false;
+               MilesRadio.disabled = false;
+               TripsRadio.classList.remove('disabled');
+               MilesRadio.classList.remove('disabled');
+            }
+ 
+        });
+
         driverDropdown.addEventListener('change', event => {
             const selectedOption = event.target.options[event.target.selectedIndex];
             tripInfo.driverId = selectedOption.value;
@@ -427,6 +467,13 @@ const TRANS_manageEditRoute = (function () {
             noConsumerWarning.style.display = 'block';
             noConsumerWarning.classList.add('error');
         }
+
+        if (consumersOnRecord.size > 0) {
+            roster2.toggleMiniRosterBtnVisible(false);
+        } else {
+            roster2.toggleMiniRosterBtnVisible(true);
+        }
+        
         setBtnStatusOfAddRoute();
     }
     function updateConsumerData(data) {
@@ -517,6 +564,7 @@ const TRANS_manageEditRoute = (function () {
                 locationId: tripInfo.locationId,
                 billingType: billingType,
                 tripName: UTIL.removeUnsavableNoteText(routeName),
+                integratedEmployment: tripInfo.integratedEmployment
             };
             dbCallArr.push(TRANS_manageRoutesAjax.updateManageTripDetails(tripData));
             if (deleteInspection) dbCallArr.push(TRANS_vehicleInspectionAjax.deleteVehicleInspection(vehicleInspection))            
@@ -589,6 +637,15 @@ const TRANS_manageEditRoute = (function () {
                         noConsumerWarning.style.display = 'block';
                         noConsumerWarning.classList.add('error');
                     }
+
+                    if (consumersOnRecord.size > 0) {
+                        roster2.toggleMiniRosterBtnVisible(false);
+                    } else {
+                        roster2.toggleMiniRosterBtnVisible(true);
+                    }
+
+                    
+
                     setBtnStatusOfAddRoute();
                 })
                 break;
