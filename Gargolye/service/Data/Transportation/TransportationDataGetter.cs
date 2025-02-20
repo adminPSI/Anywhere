@@ -134,7 +134,7 @@ namespace Anywhere.service.Data.Transportation
             }
         }
 
-        public string updateManageTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string driverId, string otherRiderId, string vehicleId, string locationId, string billingType, string tripName)
+        public string updateManageTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string driverId, string otherRiderId, string vehicleId, string locationId, string billingType, string tripName, string integratedEmployment)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("updateManageTripDetails " + token);
@@ -151,6 +151,7 @@ namespace Anywhere.service.Data.Transportation
             list.Add(locationId);
             list.Add(billingType);
             list.Add(tripName);
+            list.Add(integratedEmployment);
             string text = "CALL DBA.ANYW_Transportation_UpdateManageTripDetails(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
