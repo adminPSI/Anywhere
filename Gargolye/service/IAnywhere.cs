@@ -36,6 +36,7 @@ using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DashboardWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.ESign.ESignWorker;
+using static Anywhere.service.Data.PlanInformedConsent.PlanInformedConsentWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
@@ -3688,6 +3689,20 @@ namespace Anywhere
             UriTemplate = "/updatePlanConsentStatements/")]
         string updatePlanConsentStatements(string token, string signatureId, string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology);
 
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/updateConsentSummaryofChanges/")]
+        string updateConsentSummaryofChanges(string planID, string summaryofChangesText);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getPlanConsentSummaryofChanges/")]
+        ConsentSummaryofChanges[] getPlanConsentSummaryofChanges(string planId);
+
         //Plan Signature
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -4309,6 +4324,15 @@ namespace Anywhere
         string generateForm4(System.IO.Stream testInput);
         //string generateForm4(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber);
 
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/generateForm3/")]
+        //string generateForm10(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber);
+        string generateForm3(System.IO.Stream testInput);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5757,6 +5781,14 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertAuthorization/")]
         string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getISPValidationData/")]
+        PlanValidationWorker.PlanTotalOutcome getISPValidationData(string token, string assessmentId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

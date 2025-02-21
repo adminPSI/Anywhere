@@ -117,7 +117,6 @@
         numOfQuestionsUnawnseredWrapDiv.classList.add('hidden');
       }
 
-      const isWorkingSectionComplete = planValidation.returnAssessmentValidationData();
       if (sectionKey === '41') {
         numOfQuestionsUnawnsered = 0;
         numOfQuestionsUnawnseredWrapDiv.classList.add('hidden');
@@ -154,43 +153,6 @@
     planValidation.createTooltip('This section is missing an Outcome, Support, or Referral', tocSectionAlertDiv);
 
     tocSectionAlertDiv.style.display = 'none';
-
-    // if (title === 'WORKING/ NOT WORKING') {
-    //   const workingAlertDivCase1 = document.createElement('div');
-    //   workingAlertDivCase1.classList.add('workingAlertDivCase1');
-    //   workingAlertDivCase1.id = `workingAlert1`;
-    //   workingAlertDivCase1.innerHTML = `${icons.error}`;
-    //   sectionHeading.appendChild(workingAlertDivCase1);
-
-    //   planValidation.createTooltip(
-    //     "There must be at least one record for What's Working/What's Not Working",
-    //     workingAlertDivCase1,
-    //   );
-
-    //   workingAlertDivCase1.style.display = 'none';
-
-    //   const workingAlertDivCase2 = document.createElement('div');
-    //   workingAlertDivCase2.classList.add('workingAlertDivCase2');
-    //   workingAlertDivCase2.id = `workingAlert2`;
-    //   workingAlertDivCase2.innerHTML = `${icons.error}`;
-    //   sectionHeading.appendChild(workingAlertDivCase2);
-
-    //   planValidation.createTooltip(
-    //     "Each record must include at least one 'What's Working' or 'What's Not Working', along with a 'Who Said It?' entry",
-    //     workingAlertDivCase2,
-    //   );
-
-    //   workingAlertDivCase2.style.display = 'none';
-
-    //   if (assessmentValidationCheck.workingSectionComplete === false) {
-    //     let workingSectionCaseValue = planValidation.returnWorkingSectionCaseValue();
-    //     if (workingSectionCaseValue === 1) {
-    //       workingAlertDivCase1.style.display = 'inline-block';
-    //     } else if (workingSectionCaseValue === 2) {
-    //       workingAlertDivCase2.style.display = 'inline-block';
-    //     }
-    //   }
-    // }
 
     section.appendChild(sectionHeading);
 
@@ -313,8 +275,6 @@
 
     toc.appendChild(tocHeader);
     toc.appendChild(tocMain);
-
-    // planValidation.tocAssessmentCheck(assessmentValidationCheck);
   }
 
   return {
