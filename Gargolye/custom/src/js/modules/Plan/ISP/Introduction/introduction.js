@@ -155,7 +155,7 @@ const planIntroduction = (() => {
       const file = event.target.files.item(0);
     
       if (file && file.size > maxFileSize) {
-        alert("The selected file exceeds the 20kb limit.");
+        alert("The selected file is larger than 20kb. Please select a different file.");
         event.target.classList.add('error');
         event = null; // Reset the file input
         return;
