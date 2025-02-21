@@ -6,36 +6,55 @@
 }
 .scheduleNav{
   display: flex;
+  gap: 10px;
   justify-content: space-between;
 
-  > div {
-    flex-grow: 2;
-    margin-right: 10px;
+  .dropdownWrap {
+    display: flex;
+    flex-grow: 1;
 
-    &:first-child {
-      flex-grow: 3;
+    > div {
+      flex-grow: 2;
       margin-right: 10px;
+  
+      &:first-child {
+        flex-grow: 3;
+        margin-right: 10px;
+      }
+      &:last-child {
+        flex-grow: 1;
+        margin-right: 0px;
+      }
     }
-    &:last-child {
-      flex-grow: 1;
-      margin-right: 0px;
-    }
-  }
 
-  .shiftTypeWrap {
-    position: relative;
-
-    p {
-      position: absolute;
-      right: 0px;
-      bottom: 0px;
-      font-weight: $_normal;
-
-      &.error {
-        color: $error;
+    .shiftTypeWrap {
+      position: relative;
+  
+      p {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        font-weight: $_normal;
+  
+        &.error {
+          color: $error;
+        }
       }
     }
   }
+
+  .newShiftButton {}
+  .openShiftWrap {
+    p {
+      margin-bottom: 4px;
+    }
+    
+    > div {
+      display: flex;
+      justify-content: space-evenly;
+    }
+  }
+  .pubUnpubButton {}
 }
 #locationDropdown {
   min-width: 200px;
