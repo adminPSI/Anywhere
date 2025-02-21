@@ -824,7 +824,7 @@ const servicesSupports = (() => {
         const numPaidSupports = getNumberOfPaidSupports();
         planSummary.checkForPaidSupports(numPaidSupports);
     }
-    function updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData) {
+    async function updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData) {
         selectedPaidSupportRows.forEach(row => {
             const { rowNode, ...tableData } = row;
 
@@ -848,11 +848,28 @@ const servicesSupports = (() => {
                 psData.providerName = multiSaveUpdateData.providerName;
             }
 
+            let isValid = true;
+         
+            if (multiSaveUpdateData.beginDate !== '' && multiSaveUpdateData.endDate !== '') {
+                isValid = planValidation.validatePaidSupportsDates(multiSaveUpdateData.beginDate, multiSaveUpdateData.endDate)
+            } else {
+                if (multiSaveUpdateData.beginDate === '' || multiSaveUpdateData.endDate === '') {
+                    if (multiSaveUpdateData.beginDate !== '') {
+                        isValid = isDateValid(multiSaveUpdateData.beginDate, 'beginDate')
+                    }
+        
+                    if (multiSaveUpdateData.endDate !== '') {
+                        isValid = isDateValid(multiSaveUpdateData.endDate, 'endDate')
+                    }
+                };
+            }
+
             table.updateRows(
                 paidSupportsTable,
                 [
                     {
                         id: rowId,
+                        hasError: !isValid,
                         values: tableValues,
                         onClick: event => {
                             if (!enableMultiEdit) {
@@ -910,6 +927,19 @@ const servicesSupports = (() => {
                 row: psData.rowOrder,
             });
         });
+
+        let ISPValidation = await planValidation.ISPValidation(planID);
+                planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
+                planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
+
+                let serviceAlertDiv = document.getElementById('servicesAlert');
+
+                if (ISPValidation.paidSupportsValidDates === false)
+                    {
+                      serviceAlertDiv.style.display = 'flex';
+                    } else {
+                      serviceAlertDiv.style.display = 'none';
+                    }
     }
     function checkForMatchingFundingSourceAndSeriviceNames(paidSupportRows) {
         // grab the first row to set values
@@ -921,20 +951,65 @@ const servicesSupports = (() => {
     }
     //-- Markup ---------
     function toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn) {
+        let isValid = true;
+         
+        if (multiSaveUpdateData.beginDate !== '' && multiSaveUpdateData.endDate !== '') {
+            isValid = planValidation.validatePaidSupportsDates(multiSaveUpdateData.beginDate, multiSaveUpdateData.endDate)
+        } else {
+            if (multiSaveUpdateData.beginDate === '' || multiSaveUpdateData.endDate === '') {
+                if (multiSaveUpdateData.beginDate !== '') {
+                    isValid = isDateValid(multiSaveUpdateData.beginDate, 'beginDate')
+                }
+    
+                if (multiSaveUpdateData.endDate !== '') {
+                    isValid = isDateValid(multiSaveUpdateData.endDate, 'endDate')
+                }
+            };
+        }
+
         if (
-            multiSaveUpdateData.beginDate !== '' ||
+            (multiSaveUpdateData.beginDate !== '' ||
             multiSaveUpdateData.endDate !== '' ||
-            multiSaveUpdateData.providerId !== ''
+            multiSaveUpdateData.providerId !== '') &&
+            isValid
         ) {
             updateBtn.classList.remove('disabled');
-            return;
+            updateBtn.disabled = false;
         } else {
             updateBtn.classList.add('disabled');
-            return;
+            updateBtn.disabled = true;
         }
+        
 
         // updateBtn.classList.remove('disabled');
     }
+
+    function isDateValid(date, dateType) {
+        const planStartDate = UTIL.formatDateFromDateObj(planDates.getPlanYearStartDate());
+        const planEndDate = UTIL.formatDateFromDateObj(planDates.getPlanYearEndDate());
+    
+        const planStart = new Date(planStartDate);
+        const planEnd = new Date(planEndDate);
+        const inputDate = new Date(date);
+    
+        if (isNaN(inputDate)) {
+            return false; // Invalid date input
+        }
+    
+        if (dateType === 'beginDate') {
+            // Begin Date must be within the Plan Span
+            return inputDate >= planStart && inputDate <= planEnd;
+        }
+    
+        if (dateType === 'endDate') {
+            // End Date must be within the Plan Span
+            return inputDate >= planStart && inputDate <= planEnd;
+        }
+    
+        return false; // Default return if dateType is incorrect
+    }
+    
+
     function showMultiEditPopup() {
         let multiSaveUpdateData = {
             beginDate: '',
@@ -993,6 +1068,11 @@ const servicesSupports = (() => {
             callback: e => {
                 multiSaveUpdateData.beginDate = e.target.value;
                 toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
+                if (isDateValid(e.target.value, 'beginDate')) {
+                    beginDateInput.classList.remove('error')
+                } else {
+                    beginDateInput.classList.add('error')
+                }
             },
         });
         const endDateInput = input.build({
@@ -1003,6 +1083,11 @@ const servicesSupports = (() => {
             callback: e => {
                 multiSaveUpdateData.endDate = e.target.value;
                 toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
+                if (isDateValid(e.target.value, 'endDate')) {
+                    endDateInput.classList.remove('error')
+                } else {
+                    endDateInput.classList.add('error')
+                }
             },
         });
 
@@ -1033,7 +1118,7 @@ const servicesSupports = (() => {
                 var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
                 highlightedRows.forEach(row => row.classList.remove('selected'));
 
-                updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData);
+                await updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData);
                 selectedPaidSupportIds = [];
                 selectedPaidSupportRows = [];
 
@@ -1139,8 +1224,10 @@ const servicesSupports = (() => {
         const doneBtn = document.querySelector('.paidSupportPopup .doneBtn');
         if (inputsWithErrors) {
             doneBtn.classList.add('disabled');
+            doneBtn.disabled = true;
         } else {
             doneBtn.classList.remove('disabled');
+            doneBtn.disabled = false;
         }
     }
     function showAddPaidSupportPopup({ popupData, isNew, fromAssessment, isCopy, charLimits }) {
@@ -1693,7 +1780,11 @@ const servicesSupports = (() => {
             value: saveUpdateData.beginDate,
             callback: e => {
                 saveUpdateData.beginDate = e.target.value;
-                if (saveUpdateData.beginDate === '') {
+
+                // Run validation and determine if the input has an error
+                const isValid = planValidation.validatePaidSupportsDates(saveUpdateData.beginDate, saveUpdateData.endDate);
+
+                if (saveUpdateData.beginDate === '' || !isValid) {
                     beginDateInput.classList.add('error');
                 } else {
                     beginDateInput.classList.remove('error');
@@ -1710,15 +1801,21 @@ const servicesSupports = (() => {
             value: saveUpdateData.endDate,
             callback: e => {
                 saveUpdateData.endDate = e.target.value;
-                if (saveUpdateData.endDate === '') {
+        
+                // Run validation and determine if the input has an error
+                const isValid = planValidation.validatePaidSupportsDates(saveUpdateData.beginDate, saveUpdateData.endDate);
+        
+                // Add or remove error class based on validation result
+                if (saveUpdateData.endDate === '' || !isValid) {
                     endDateInput.classList.add('error');
                 } else {
                     endDateInput.classList.remove('error');
                 }
-
+        
                 togglePaidSupportDoneBtn();
             },
         });
+        
         // Buttons
         const doneBtn = button.build({
             text: isCopy ? 'Save Copy' : isNew ? 'Save' : 'Update',
@@ -1727,6 +1824,7 @@ const servicesSupports = (() => {
             classNames: 'doneBtn',
             callback: async () => {
                 doneBtn.classList.add('disabled');
+                doneBtn.disabled = true;
 
                 if (isNew) {
                     if (fromAssessment) {
@@ -1744,6 +1842,7 @@ const servicesSupports = (() => {
                 const vendorIds = getSelectedVendorIds();
 
                 doneBtn.classList.remove('disabled');
+                doneBtn.disabled = false;
                 POPUP.hide(paidSupportPopup);
 
                 fundingSourceDropdownSelectedText = undefined;
@@ -1757,6 +1856,15 @@ const servicesSupports = (() => {
                 let ISPValidation = await planValidation.ISPValidation(planID);
                 planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
                 planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
+
+                let serviceAlertDiv = document.getElementById('servicesAlert');
+
+                if (ISPValidation.paidSupportsValidDates === false)
+                    {
+                      serviceAlertDiv.style.display = 'flex';
+                    } else {
+                      serviceAlertDiv.style.display = 'none';
+                    }
 
                 let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
                 planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
@@ -1871,6 +1979,7 @@ const servicesSupports = (() => {
         }
         if (hasInitialErros) {
             doneBtn.classList.add('disabled');
+            doneBtn.disabled = true;
         }
         // end required fields
 
@@ -2045,9 +2154,12 @@ const servicesSupports = (() => {
                     const { tableValues, psData } = mapPaidSupportDataForTable(ps);
                     const rowId = `ps${psData.paidSupportsId}`;
 
+                    const isValid = planValidation.validatePaidSupportsDates(psData.beginDate, psData.endDate);
+
                     return {
                         id: rowId,
                         values: tableValues,
+                        hasError: !isValid,
                         attributes: [{ key: 'sectionId', value: psData.assessmentAreaId }],
                         onClick: event => {
                             if (!enableMultiEdit) {

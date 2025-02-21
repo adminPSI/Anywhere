@@ -8,6 +8,14 @@
   .table__row {
     cursor: pointer;
 
+    &.errorRow {
+      /* Target the 7th and 8th divs (Begin Date and End Date columns) */
+      div:nth-child(8),
+      div:nth-child(9) {
+        color: red;
+      }
+    }
+
     &.selected {
       background: $secondary;
     }

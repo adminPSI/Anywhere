@@ -1,6 +1,8 @@
-﻿using Anywhere.service.Data.PlanServicesAndSupports;
+﻿using Anywhere.service.Data.PlanOutcomes;
+using Anywhere.service.Data.PlanServicesAndSupports;
 using System;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 
 namespace Anywhere.service.Data.PlanValidation
@@ -11,6 +13,7 @@ namespace Anywhere.service.Data.PlanValidation
         JavaScriptSerializer js = new JavaScriptSerializer();
         PlanValidationDataGetter pvdg = new PlanValidationDataGetter();
         ServicesAndSupportsDataGetter dg = new ServicesAndSupportsDataGetter();
+        PlanOutcomesDataGetter pdg = new PlanOutcomesDataGetter();
 
         public class ContactValidationData
         {
@@ -92,6 +95,45 @@ namespace Anywhere.service.Data.PlanValidation
             return totalServicesAndSupports;
         }
 
+        public PlanTotalOutcome getISPValidationData(string token, string assessmentId)
+        {
+            //get outcome
+            string planOutcomesString = pvdg.getPlanOutcomes(token, assessmentId);
+            PlanOutcomes[] planOutcomesObj = js.Deserialize<PlanOutcomes[]>(planOutcomesString);
+            //get experiences
+            string planOutcomesExperiencesString = pvdg.getPlanExperiences(token, assessmentId);
+            PlanOutcomesExperiences[] planOutcomesExperiencesObj = js.Deserialize<PlanOutcomesExperiences[]>(planOutcomesExperiencesString);
+            //get experience responsibilities for each experience      
+            for (int j = 0; j < planOutcomesExperiencesObj.Length; j++)
+            {
+                string experienceResponsibilityString = pdg.getPlanExperienceResponsibility(planOutcomesExperiencesObj[j].experienceId);
+                PlanOutcomeExperienceResponsibilities[] experienceResponsibilityObj = js.Deserialize<PlanOutcomeExperienceResponsibilities[]>(experienceResponsibilityString);
+                planOutcomesExperiencesObj[j].planExperienceResponsibilities = experienceResponsibilityObj;
+            }
+            //get review
+            string planOutcomesReviewString = pvdg.getPlanReviews(token, assessmentId);
+            PlanOutcomesReviews[] planOutcomesReviewObj = js.Deserialize<PlanOutcomesReviews[]>(planOutcomesReviewString);
+            //get progress summary
+            string planOutcomesProgressSummaryString = pdg.getPlanOutcomeProgressSummary(token, assessmentId);
+            PlanPorgressSummary[] planOutcomesProgressSummaryObj = js.Deserialize<PlanPorgressSummary[]>(planOutcomesProgressSummaryString);
+
+            //Paid Support
+            long anywAssessmentId;
+            anywAssessmentId = long.Parse(assessmentId);
+            ServicesAndSupportsDataGetter dataGetter = new ServicesAndSupportsDataGetter();
+            string paidSupportString = pvdg.getPaidSupports(token, anywAssessmentId, 0);
+            PaidSupports[] paidSupportObj = js.Deserialize<PaidSupports[]>(paidSupportString);
+
+            PlanTotalOutcome totalOutcome = new PlanTotalOutcome();
+            totalOutcome.planOutcome = planOutcomesObj;
+            totalOutcome.planOutcomeExperiences = planOutcomesExperiencesObj;
+            totalOutcome.planReviews = planOutcomesReviewObj;
+            totalOutcome.planProgressSummary = planOutcomesProgressSummaryObj;
+            totalOutcome.paidSupports = paidSupportObj;
+
+            return totalOutcome;
+        }
+
 
         public class ServicesAndSupports
         {
@@ -109,17 +151,8 @@ namespace Anywhere.service.Data.PlanValidation
             public string anywAssessmentId { get; set; }
             public string providerId { get; set; }
             public string assessmentAreaId { get; set; }
-            public string serviceNameId { get; set; }
-            public string scopeOfservice { get; set; }
-            public string howOftenValue { get; set; }
-            public string howOftenFrequency { get; set; }
-            public string howOftenText { get; set; }
             public string beginDate { get; set; }
             public string endDate { get; set; }
-            public string fundingSource { get; set; }
-            public string fundingSourceText { get; set; }
-            public string rowOrder { get; set; }
-            public string serviceNameOther { get; set; }
 
         }
 
@@ -163,6 +196,28 @@ namespace Anywhere.service.Data.PlanValidation
             public string ispconsumerId { get; set; }
             public string anywAssessmentId { get; set; }
             public string assessmentAreaId { get; set; }
+        }
+
+        public class PlanOutcomes
+        {
+            public string outcomeId { get; set; }
+            public string details { get; set; }
+            public string outcome { get; set; }
+            public string history { get; set; }
+            public string sectionId { get; set; }
+            public string outcomeOrder { get; set; }
+            public string summaryOfProgress { get; set; }
+            public string status { get; set; }
+            public string carryOverReason { get; set; }
+        }
+
+        public class PlanTotalOutcome
+        {
+            public PlanOutcomes[] planOutcome { get; set; }
+            public PlanOutcomesExperiences[] planOutcomeExperiences { get; set; }
+            public PlanOutcomesReviews[] planReviews { get; set; }
+            public PlanPorgressSummary[] planProgressSummary { get; set; }
+            public PaidSupports[] paidSupports { get; set; }
         }
 
     }
