@@ -369,13 +369,17 @@ const CaseNotes = (() => {
     // FORM
     //--------------------------------------------------
     function areRequiredFieldsFilled() {
-        // Select all elements that have the "require" attribute.
-        const requiredFields = document.querySelectorAll(
-            '[required]:not([id="phrase"]):not([id="shortcut"])'
-          );
+        // Select all elements that have the "require" attribute.        
+        const invalidElements = document.querySelectorAll(
+            '[data-ui] .inputGroup input:invalid:not(#phrase):not(#shortcut), ' +
+            '[data-ui] .inputGroup select:invalid:not(#phrase):not(#shortcut), ' +
+            '[data-ui] .inputGroup textarea:invalid:not(#phrase):not(#shortcut)' + 
+            '[data-ui] .inputGroup textarea:invalid:not(#noteText)'
+
+        );
         
         // Check that each field has a non-empty, trimmed value.
-        return Array.from(requiredFields).every(field => field.value && field.value.trim() !== '');
+        return Array.from(invalidElements).every(field => field.value && field.value.trim() !== '');
     
     }
     function checkFormForUnsavedChanges(inputName, newValue) {
