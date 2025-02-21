@@ -35,6 +35,267 @@ namespace OODForms
     {
         private StringBuilder sb = new StringBuilder();
 
+        public string generateForm3(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId, string loggedInUserPersonId)
+        {
+            try
+            {
+                OODFormDataGetter oodfdg = new OODFormDataGetter();
+                string pdfTronKeyResult = oodfdg.getPDFTronKey(token);
+                LicenseResponse[] pdfTronKey = JsonConvert.DeserializeObject<LicenseResponse[]>(pdfTronKeyResult);
+                pdftron.PDFNet.Initialize(pdfTronKey[0].PDFTronKey);
+
+                string crpath = oodfdg.getFormTemplatePath(token);
+                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+                string path = pathdatalist[0].path;
+                //string crname = "Tier1andJDPlan_Form6.pdf";
+                string crname = "IntakeAcknowledgment_Form 3.pdf";
+                // IntakeAcknowledgment_Form 3
+                string reportpath = string.Format(path, crname);
+                string personCompletingReport = string.Empty;
+
+                PDFDoc form3Template = new PDFDoc(reportpath);
+
+                // Gather Data for the Person Completing the Report
+
+
+                //string loggedInUserPersonId = oodfdg.getPersonCompletingReportName(token);
+                //personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                //string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+
+                DataTable dt;
+                DataRow row;
+                
+                string ProviderName = "";
+                string ConsumerName = "";
+
+                if (referenceNumber != "" && referenceNumber != null && referenceNumber != "%25")
+                {
+                    referenceNumber = referenceNumber.Replace("+", " ");
+                    dt = oodfdg.OODDevelopment(referenceNumber).Tables[0];
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        row = dt.Rows[0];
+
+                        ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
+                        ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
+                    }
+
+                } else
+                {
+
+                    dt = oodfdg.OODForm3ConsumerandVendor(consumerIdString).Tables[0];
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        row = dt.Rows[0];
+
+                        ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
+                        ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
+                    } 
+                   
+                    referenceNumber = "";
+                }
+
+                //string Staff = string.Empty;
+                //string StaffWithInitals = string.Empty;
+                //string OODStaff = string.Empty;
+                //string MiddleName = string.Empty;
+
+                //DataSet ds = oodfdg.OODForm8GetDirectStaff(referenceNumber, startDate, endDate);
+
+                //if (ds.Tables.Count > 0)
+                //{
+                //    DataTable dt2 = ds.Tables[0];
+                //    foreach (DataRow row2 in dt2.Rows)
+                //    {
+                //        if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
+                //        {
+                //            Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
+                //            MiddleName = row2["Middle_Name"].ToString();
+                //            OODStaff += String.Format("{0}, ", Staff.Trim());
+                //        }
+
+                //        if (Staff.ToString().Trim().Length > 0)
+                //        {
+                //            StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
+                //        }
+                //    }
+                //}
+
+                string VRCounselor = "";
+
+                if (referenceNumber != "" && referenceNumber != null && referenceNumber != "%25")
+                {
+                    DataSet dsVR = oodfdg.OODForm6GetVRCounselor(referenceNumber, consumerIdString, startDate, endDate);
+                    // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+
+                    if (dsVR.Tables.Count > 0 && dsVR.Tables[0].Rows.Count > 0)
+                    {
+                        if (!string.IsNullOrEmpty(dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString()))
+                        {
+                            VRCounselor = dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString();
+                        }
+                        else
+                        {
+                            VRCounselor = "";
+                        }
+                    }
+
+                }
+                   
+
+                //string IPEGoal = "";
+                //DataSet dsIPE = oodfdg.OODForm6GetIPEGoal(referenceNumber, consumerIdString, startDate, endDate);
+                //// List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+
+                //if (dsIPE.Tables.Count > 0 && dsIPE.Tables[0].Rows.Count > 0)
+                //{
+                //    if (!string.IsNullOrEmpty(dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString()))
+                //    {
+                //        IPEGoal = dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString();
+                //    }
+                //    else
+                //    {
+                //        IPEGoal = "";
+                //    }
+                //}
+
+                //string service = "";
+                //DataSet dsService = oodfdg.OODForm6GetService(referenceNumber, consumerIdString, startDate, endDate);
+                //// List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+
+                //if (dsService.Tables.Count > 0 && dsService.Tables[0].Rows.Count > 0)
+                //{
+                //    if (!string.IsNullOrEmpty(dsService.Tables[0].Rows[0]["service"].ToString()))
+                //    {
+                //        service = dsService.Tables[0].Rows[0]["service"].ToString();
+                //    }
+                //    else
+                //    {
+                //        service = "PBJD Tier I";
+                //    }
+                //}
+
+                //string bilingual = "";  // SAMLevel
+                //string SAMLevel = "";  // bilingualSupplement
+                //DataSet dsSAMandBilingual = oodfdg.OODForm6GetSAMandBilingual(referenceNumber, consumerIdString, startDate, endDate, userId);
+
+                //if (dsSAMandBilingual.Tables.Count > 0 && dsSAMandBilingual.Tables[0].Rows.Count > 0)
+                //{
+                //    if (!string.IsNullOrEmpty(dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString()))
+                //    {
+                //        SAMLevel = dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString();
+                //    }
+                //    else
+                //    {
+                //        SAMLevel = "";
+                //    }
+                //}
+
+                DataSet ds3 = new DataSet();
+                //string personCompletingReport;
+
+                if (!string.IsNullOrEmpty(loggedInUserPersonId))
+                {
+
+                    // long lng_loggedInUserPersonId = long.Parse(loggedInUserPersonId);
+                    ds3 = oodfdg.getPersonCompletingReport(token, loggedInUserPersonId);
+                }
+
+
+
+                if (ds3.Tables.Count > 0 && ds3.Tables[0].Rows.Count > 0)
+                {
+                    personCompletingReport = String.Format("{0} {1} ", ds3.Tables[0].Rows[0]["First_Name"], ds3.Tables[0].Rows[0]["Last_Name"]);
+                }
+
+
+
+                DateTime currentDate = DateTime.Now;
+                string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
+                string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
+                string invoiceDate = currentDate.ToString("MM/dd/yyyy");
+                DateTime startdate = DateTime.ParseExact(startDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                string strStartDate = startdate.ToString("MM/dd/yyyy");
+                DateTime enddate = DateTime.ParseExact(endDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                string strEndDate = enddate.ToString("MM/dd/yyyy");
+
+                    var fieldData = new List<(string fieldName, string value)>
+                {
+                    ("ProviderName", ProviderName),
+                    ("IndividualName", ConsumerName),
+                    // ("IPE_Goal", IPEGoal),         // em_employee_general.ipe for given individual
+                   // ("StaffNames", VRCounselor), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
+                    ("PersonCompletingReport", personCompletingReport),
+                    ("OODRepresentative", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
+
+                    ("AuthorizationNumber", referenceNumber),
+                    ("ProviderInvoiceNumber", invoiceNumber),
+                    //("Service", service),      // Select Service = services.procedure_code for selected service (match on emp_ood.reference_number and consumer_services_master.service_id)
+                    ("InvoiceDate", invoiceDate),
+                    ("ServiceStartDate", strStartDate),
+                    ("ServiceEndDate", strEndDate),
+                    ("InvoiceTotal", ""),
+                    ("ETATotal", ""),
+                    ("BilingualRate", ""),
+                }; 
+
+                // Iterate through the field data and set values
+                foreach (var (fieldName, value) in fieldData)
+                {
+                    Field field = form3Template.GetField(fieldName);
+                    field.SetValue(value);
+
+                    // resets a value on the pdf so all fields show (otherwise the fields may not show correctly on finished pdf)
+                    field.RefreshAppearance();
+                }
+
+                // Iterate through the table data and set values for each row
+                //foreach (var (fieldName, value) in tableData)
+                //{
+                //    Field field = form6Template.GetField(fieldName);
+                //    field.SetValue(value);
+                //    field.RefreshAppearance();
+                //}
+
+
+
+                List<string> fieldNames = new List<string>();
+                List<string> test = new List<string>();
+                FieldIterator itr;
+
+                for (itr = form3Template.GetFieldIterator(); itr.HasNext(); itr.Next())
+                {
+                    Field field = itr.Current();
+                    string fieldName = field.GetName();
+                    fieldNames.Add(fieldName);
+
+                    string testing = field.GetType().ToString();
+                    test.Add(testing);
+                }
+
+                MemoryStream pdfStream = new MemoryStream();
+                form3Template.Save(pdfStream, SDFDoc.SaveOptions.e_linearized);
+
+                Attachment attachment = new Attachment
+                {
+                    filename = "Form3",
+                    data = pdfStream
+                };
+
+                DisplayAttachmentPDF(attachment);
+
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+        }
+
+
+
         public string generateForm4(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
         {
             try
