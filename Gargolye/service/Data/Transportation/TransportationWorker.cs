@@ -8,9 +8,9 @@ namespace Anywhere.service.Data.Transportation
         JavaScriptSerializer js = new JavaScriptSerializer();
         TransportationDataGetter tdg = new TransportationDataGetter();
 
-        public InsertTripCompleted[] insertTripCompleted(string token, string tripName, string driverId, string otherRider, string dateOfService, string billingType, string vehicleInformationId, string locationId)
+        public InsertTripCompleted[] insertTripCompleted(string token, string tripName, string driverId, string otherRider, string dateOfService, string billingType, string vehicleInformationId, string locationId, string integratedEmployment)
         {
-            string tripString = tdg.insertTripCompleted(token, tripName, driverId, otherRider, dateOfService, billingType, vehicleInformationId, locationId);
+            string tripString = tdg.insertTripCompleted(token, tripName, driverId, otherRider, dateOfService, billingType, vehicleInformationId, locationId, integratedEmployment);
             InsertTripCompleted[] tripObj = js.Deserialize<InsertTripCompleted[]>(tripString);
             return tripObj;
         }

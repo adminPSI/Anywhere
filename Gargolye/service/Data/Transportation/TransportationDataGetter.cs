@@ -472,7 +472,7 @@ namespace Anywhere.service.Data.Transportation
             }
         }
 
-        public string insertTripCompleted(string token, string tripName, string driverId, string otherRider, string dateOfService, string billingType, string vehicleInformationId, string locationId)
+        public string insertTripCompleted(string token, string tripName, string driverId, string otherRider, string dateOfService, string billingType, string vehicleInformationId, string locationId, string integratedEmployment)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertTripCompleted " + token);
@@ -485,6 +485,8 @@ namespace Anywhere.service.Data.Transportation
             list.Add(billingType);
             list.Add(vehicleInformationId);
             list.Add(locationId);
+            list.Add(integratedEmployment);
+            
             string text = "CALL DBA.ANYW_Transportation_InsertTripCompleted(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

@@ -16,7 +16,7 @@ const TRANS_addRoute = (function () {
         otherRiderDropdown,
         locationDropdown,
         vehicleDropdown, tripIntegratedEmploymentCheckbox;
-    let milesRadio, tripsRadio;
+    let milesRadio, tripsRadio, selectedIntegratedEmployment;
     let consumerSectionBody, noConsumerWarning;
     let consumersOnRecord = new Map();
     let saveBtn;
@@ -295,7 +295,7 @@ const TRANS_addRoute = (function () {
         })
 
         tripIntegratedEmploymentCheckbox.addEventListener('change', event => {
-            //confidential = event.target.checked ? 'Y' : 'N';
+            selectedIntegratedEmployment = event.target.checked ? 'Y' : 'N';
             // alert("Yep, that's it");
             var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
             var MilesRadio = document.getElementById("milesRadio");
@@ -437,7 +437,8 @@ const TRANS_addRoute = (function () {
                 dateOfService: date,
                 billingType: billingType,
                 vehicleInformationId: vehicle,
-                locationId: location
+                locationId: location,
+                integratedEmployment: selectedIntegratedEmployment
             }
             // 1) Save main trip to get the tripCompletedId from DB
             const tripCompletedId = (await TRANS_addRouteAjax.insertTrip(data)).insertTripCompletedResult[0].tripCompletedId
