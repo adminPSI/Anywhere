@@ -120,23 +120,11 @@
                 const checkFormsLockValue = await formsAjax.checkFormsLock(consumerForm.formId, $.session.UserId);
                 // if the forms lock value returns a non empty string, display the forms lock popup
                 if (checkFormsLockValue !== '') {
-                    formLockPopup(checkFormsLockValue);
-                } else {
-                    let isTemplate = '0';
-                    let documentEdited = '1'; //   document previously edited
-                    let consumerId = selectedConsumer.id;
-                    let isRefresh = false;
-                    let formId = consumerForm.formId;
-                    let formCompleteDate = consumerForm.formCompleteDate;
+                    formLockPopup(checkFormsLockValue, selectedConsumer, consumerForm, displayFormPopup);
+                    isFormLocked = true;
 
-                    displayFormPopup(
-                        formId,
-                        documentEdited,
-                        consumerId,
-                        isRefresh,
-                        isTemplate,
-                        formCompleteDate,
-                    );
+                } else {
+                    openForm(selectedConsumer, consumerForm, displayFormPopup);
                 }
 
             },
@@ -685,7 +673,7 @@
         POPUP.show(formeditpopup);
     }
 
-    function formLockPopup(checkFormsLockValue) {
+    function formLockPopup(checkFormsLockValue, selectedConsumer, consumerForm, displayFormPopup) {
 
         const popup = POPUP.build({
             id: 'formLocksPopup',
@@ -702,6 +690,7 @@
             icon: 'checkmark',
             callback: async function () {
                 POPUP.hide(popup);
+                openForm(selectedConsumer, consumerForm, displayFormPopup);
             },
         });
 
@@ -711,6 +700,24 @@
         popup.appendChild(warningMessage);
         popup.appendChild(btnWrap);
         POPUP.show(popup);
+    }
+
+    function openForm(selectedConsumer, consumerForm, displayFormPopup) {
+        let isTemplate = '0';
+        let documentEdited = '1'; //   document previously edited
+        let consumerId = selectedConsumer.id;
+        let isRefresh = false;
+        let formId = consumerForm.formId;
+        let formCompleteDate = consumerForm.formCompleteDate;
+
+        displayFormPopup(
+            formId,
+            documentEdited,
+            consumerId,
+            isRefresh,
+            isTemplate,
+            formCompleteDate
+        );
     }
 
     function init() {
