@@ -66,9 +66,58 @@ const widgetSettingsAjax = (function () {
         });
     }
 
+    function setWidgetFilter(widgetId, filterKey, filterValue) {
+        data = {
+            token: $.session.Token,
+            widgetId: widgetId,
+            filterKey: filterKey,
+            filterValue: filterValue
+        };
+        return $.ajax({
+            type: "POST",
+            url:
+                $.webServer.protocol +
+                "://" +
+                $.webServer.address +
+                ":" +
+                $.webServer.port +
+                "/" +
+                $.webServer.serviceName +
+                "/setWidgetFilter/",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json"
+        });
+    }
+
+    async function getWidgetFilter(widgetId, filterKey, callback) {
+        data = {
+            token: $.session.Token,
+            widgetId: widgetId,
+            filterKey: filterKey,
+        };
+        return $.ajax({
+            type: "POST",
+            url:
+                $.webServer.protocol +
+                "://" +
+                $.webServer.address +
+                ":" +
+                $.webServer.port +
+                "/" +
+                $.webServer.serviceName +
+                "/getWidgetFilter/",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json"
+        });
+    }
+
     return {
         getWidgetSettings,
         setWidgetSettingConfig,
-        setWidgetSettingOrder 
+        setWidgetSettingOrder,
+        setWidgetFilter,
+        getWidgetFilter
     };
 })();

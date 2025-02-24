@@ -1,4 +1,4 @@
-﻿using Anywhere.anypatch;
+using Anywhere.anypatch;
 using Anywhere.Data;
 using Anywhere.Log;
 using Anywhere.service.Data;

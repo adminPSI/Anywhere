@@ -1923,6 +1923,20 @@ namespace Anywhere.Data
             }
 
         }
+        public string getUndocumentedServicesForWarning(string entryDate, string consumerId, string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getUndocumentedServicesForWarning" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_SingleEntry_GetUndocumentedServicesForWarning('" + entryDate + "','" + consumerId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("570", ex.Message + " ANYW_SingleEntry_GetUndocumentedServicesForWarning('" + entryDate + "','" + consumerId + "')");
+                return "570: Error getting getUndocumentedServicesForWarning";
+            }
+        }
 
         public string getRemainingGoalsCountForDashboard(string token)
         {
@@ -2614,6 +2628,21 @@ namespace Anywhere.Data
             {
                 logger.error("604", ex.Message + "ANYW_ConsumerNotes_UpdateConsumerNotesDaysBack('" + token + "', '" + updatedReviewDays + "')");
                 return "604: error updateConsumerNotesDaysBack";
+            }
+        }
+
+        public string updateConnectWithPerson(string token, string connectType)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateConnectWithPerson" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Settings_updateConnectWithPerson('" + token + "', '" + connectType + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("604", ex.Message + "ANYW_Settings_updateConnectWithPerson('" + token + "', '" + connectType + "')");
+                return "604: error updateConnectWithPerson";
             }
         }
 
@@ -6925,10 +6954,10 @@ namespace Anywhere.Data
                 return "636: error ANYW_GoalsAndServices__GetReviewPageGridSecondary";
             }
         }
-        
+
         public string getExclclamationIds( string startDate, string endDate,string frequency)
         {
-            
+
             List<string> list = new List<string>();
             list.Add(startDate);
             list.Add(endDate);
@@ -7368,6 +7397,46 @@ namespace Anywhere.Data
             {
                 logger.error("677", ex.Message + "ANYW_IncidentTracking_getRelationshipData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "677: error ANYW_IncidentTracking_getRelationshipData";
+            }
+        }
+
+        public void setWidgetFilter(string token, string widgetId, string filterKey, string filterValue)
+        {
+            logger.debug("setWidgetFilter");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(widgetId);
+            list.Add(filterKey);
+            list.Add(filterValue);
+            string text = "CALL DBA.ANYW_Dashboard_setWidgetFilter(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("742", ex.Message + "ANYW_Dashboard_setWidgetFilter(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+            }
+        }
+
+        public string getWidgetFilter(string token, string widgetId, string filterKey)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getWidgetFilter");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(widgetId);
+            list.Add(filterKey);
+
+            string text = "CALL DBA.ANYW_Dashboard_getWidgetFilter(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("742", ex.Message + "ANYW_Dashboard_getWidgetFilter(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "742: error ANYW_Dashboard_getWidgetFilter";
             }
         }
     }

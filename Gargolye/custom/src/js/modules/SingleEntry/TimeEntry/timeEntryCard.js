@@ -1813,38 +1813,27 @@ var timeEntryCard = (function () {
             buildTransportationPopup();
         });
         saveBtn.addEventListener('click', async event => {
-            event.target.classList.add('disabled');
-            saveOrUpdate = event.target.dataset.insertType;
-            if (saveOrUpdate === 'Save') {
-                const result = await singleEntryAjax.getExistingTimeEntry();
-                const { getExistingTimeEntryResult } = result;
-                if (getExistingTimeEntryResult.length > 0 && $.session.anyRequireEndTime == 'Y') {
-                    newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult);
-                } else {
-                    timeEntry.getEntryData(keyStartStop);
-                }
+            //118744 - ADV-ANY-SE: Add warning to users if services are not documented for 
+            const undocumentedConsumerIDs = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate, consumerIds);
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedConsumerIDs.length > 0) {
+                await undocumentedServicesPopup(event, undocumentedConsumerIDs, 'SAVE');
             }
-            if (saveOrUpdate === 'Update') timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop);
+            ////////
+            else {
+                await saveEvent(event);
+            }
         });
         saveAndSumbitBtn.addEventListener('click', async event => {
-            // Save entry first
-            event.target.classList.add('disabled');
-            saveBtn.classList.add('disabled');
-            saveOrUpdate = event.target.dataset.insertType;
-
-            const saveAndUpdate = true;
-            if (saveOrUpdate === 'Save') {
-                const result = await singleEntryAjax.getExistingTimeEntry();
-                const { getExistingTimeEntryResult } = result;
-                if (getExistingTimeEntryResult.length > 0 && $.session.anyRequireEndTime == 'Y') {
-                    newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult);
-                } else {
-                    timeEntry.getEntryData(keyStartStop, saveAndUpdate);
-                }
+            //118744 - ADV - ANY - SE: Add warning to users if services are not documented for
+            const undocumentedConsumerIDs = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate, consumerIds);
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedConsumerIDs.length > 0) {
+                undocumentedServicesPopup(event, undocumentedConsumerIDs, 'SAVESUBMIT');
             }
-            if (saveOrUpdate === 'Update')
-                timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndUpdate);
-
+            ////////
+            else {
+                // Save entry first
+                await saveAndSubmitEvent(event);
+            }
             // TODO, make global so access from timeentry.js
             // event.target.classList.remove('disabled');
             // saveBtn.classList.remove('disabled');
@@ -1858,6 +1847,97 @@ var timeEntryCard = (function () {
             clearAllGlobalVariables();
         });
     }
+    //118744 - ADV-ANY-SE: Add warning to users if services are not documented for
+    async function undocumentedServicesPopup(event, undocumentedConsumerIDs, NameOfEvent) {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+            classNames: 'warning',
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: async () => {
+                POPUP.hide(confirmPopup);
+                if (NameOfEvent === 'SAVESUBMIT')
+                    await saveAndSubmitEvent(event);
+                else
+                    await saveEvent(event);
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+            },
+        });
+
+        const message = document.createElement('p');
+        const messageConfirm = document.createElement('p');
+        const vendorSection = document.createElement('div');
+        undocumentedConsumerIDs.forEach(consumerName => {
+            const vendorDisp = document.createElement('div');
+            vendorDisp.innerHTML = `<span>${consumerName}</span>`;
+            vendorDisp.classList.add('consumerNameList');
+            vendorSection.appendChild(vendorDisp);
+        });
+
+        message.innerText = 'The following individuals have services that you did not document for on the date of your time record.';
+        message.style.textAlign = 'left';
+        message.style.marginBottom = '15px';
+        messageConfirm.innerText = 'Would you like to save this time record?';
+        messageConfirm.style.textAlign = 'left';
+        messageConfirm.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        confirmPopup.appendChild(vendorSection);
+        confirmPopup.appendChild(messageConfirm);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
+    }
+
+    async function saveEvent(event) {
+        event.target.classList.add('disabled');
+        saveOrUpdate = event.target.dataset.insertType;
+        if (saveOrUpdate === 'Save') {
+            const result = await singleEntryAjax.getExistingTimeEntry();
+            const { getExistingTimeEntryResult } = result;
+            if (getExistingTimeEntryResult.length > 0 && $.session.anyRequireEndTime == 'Y') {
+                newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult);
+            } else {
+                timeEntry.getEntryData(keyStartStop);
+            }
+        }
+        if (saveOrUpdate === 'Update') timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop);
+    }
+
+    async function saveAndSubmitEvent(event) {
+        event.target.classList.add('disabled');
+        saveBtn.classList.add('disabled');
+        saveOrUpdate = event.target.dataset.insertType;
+
+        const saveAndUpdate = true;
+        if (saveOrUpdate === 'Save') {
+            const result = await singleEntryAjax.getExistingTimeEntry();
+            const { getExistingTimeEntryResult } = result;
+            if (getExistingTimeEntryResult.length > 0 && $.session.anyRequireEndTime == 'Y') {
+                newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult);
+            } else {
+                timeEntry.getEntryData(keyStartStop, saveAndUpdate);
+            }
+        }
+        if (saveOrUpdate === 'Update')
+            timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndUpdate);
+    }
+
     function enableSaveButtons() {
         saveBtn.classList.remove('disabled');
         saveAndSumbitBtn.classList.remove('disabled');
@@ -1896,7 +1976,7 @@ var timeEntryCard = (function () {
         } else {
             // roster.setAllowedConsumers([]);
             var allowedConsumers = await getAllowedConsumersBasedOffServiceLocations();
-            roster2.setAllowedConsumers(allowedConsumers);            
+            roster2.setAllowedConsumers(allowedConsumers);
         }
 
         var miniRosterBtn = document.querySelector('.consumerListBtn');
@@ -1905,11 +1985,11 @@ var timeEntryCard = (function () {
                 miniRosterBtn.classList.remove('disabled');
             } else {
                 miniRosterBtn.classList.add('disabled');
-                clearConsumerSection();   
+                clearConsumerSection();
             }
         }
 
-        clearCard(); 
+        clearCard();
         // Set start time after card gets cleared
         if (keyStartStop === 'Y') {
             startTimeInput.getElementsByTagName('input')[0].value = `${nowHour}:${nowMinutes}`;

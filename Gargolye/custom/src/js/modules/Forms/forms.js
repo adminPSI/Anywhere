@@ -116,22 +116,29 @@
                     console.error('error: ', err);
                 }
             },
-            onClick: () => {
-                let isTemplate = '0';
-                let documentEdited = '1'; //   document previously edited
-                let consumerId = selectedConsumer.id;
-                let isRefresh = false;
-                let formId = consumerForm.formId;
-                let formCompleteDate = consumerForm.formCompleteDate;
+            onClick: async () => {
+                const checkFormsLockValue = await formsAjax.checkFormsLock(consumerForm.formId, $.session.UserId);
+                // if the forms lock value returns a non empty string, display the forms lock popup
+                if (checkFormsLockValue !== '') {
+                    formLockPopup(checkFormsLockValue);
+                } else {
+                    let isTemplate = '0';
+                    let documentEdited = '1'; //   document previously edited
+                    let consumerId = selectedConsumer.id;
+                    let isRefresh = false;
+                    let formId = consumerForm.formId;
+                    let formCompleteDate = consumerForm.formCompleteDate;
 
-                displayFormPopup(
-                    formId,
-                    documentEdited,
-                    consumerId,
-                    isRefresh,
-                    isTemplate,
-                    formCompleteDate,
-                );
+                    displayFormPopup(
+                        formId,
+                        documentEdited,
+                        consumerId,
+                        isRefresh,
+                        isTemplate,
+                        formCompleteDate,
+                    );
+                }
+
             },
         }));
 
@@ -274,7 +281,7 @@
         setBtnStatus();
     }
 
-    function templateDropdownValidation() {  
+    function templateDropdownValidation() {
         var templateDropdownOptions = document.getElementById('templateDropdown');
         templateId = templateDropdownOptions.options[templateDropdownOptions.selectedIndex].value;
         if (templateId === '') {
@@ -337,7 +344,7 @@
 
         // Array to store unique template objects
         const uniqueForms = [];
-        formIds = []; 
+        formIds = [];
 
         // Iterate over the templates array
         templates.forEach(template => {
@@ -359,7 +366,7 @@
             text: template.formType + ' -- ' + template.formDescription,
         }));
 
-        if (typeId == '0' || templates.length == 0) { 
+        if (typeId == '0' || templates.length == 0) {
             data.unshift({ id: null, value: '', text: '' }); // Add blank value
             dropdown.populate('templateDropdown', data);
         }
@@ -396,46 +403,11 @@
 
         POPUP.show(formPopup);
 
-        // If the form is new, skip the forms lock check
-        if (isTemplate !== '1') {
-            const checkFormsLockValue = await formsAjax.checkFormsLock(formId, $.session.UserId);
 
-            // if the forms lock value returns a non empty string, display the forms lock popup
-            if (checkFormsLockValue !== '') {
-                isFormLocked = true;
-
-                const popup = POPUP.build({
-                    id: 'formLocksPopup',
-                    classNames: 'warning',
-                });
-
-                const btnWrap = document.createElement('div');
-                btnWrap.classList.add('btnWrap');
-
-                const okBtn = button.build({
-                    text: 'OK',
-                    style: 'secondary',
-                    type: 'contained',
-                    icon: 'checkmark',
-                    callback: async function () {
-                        POPUP.hide(popup);
-                        overlay.show();
-                    },
-                });
-
-                btnWrap.appendChild(okBtn);
-                const warningMessage = document.createElement('p');
-                warningMessage.innerHTML = `This form is currently locked by ${checkFormsLockValue}. Any changes you make to this form will not be saved.`;
-                popup.appendChild(warningMessage);
-                popup.appendChild(btnWrap);
-                POPUP.show(popup);
-            }
-        }
-
-        if (formId == '0') {         
-            await formsAjax.insertSeveralConsumerFormAsync($.session.UserId, consumerId, formIds, isTemplate, formCompleteDate); 
+        if (formId == '0') {
+            await formsAjax.insertSeveralConsumerFormAsync($.session.UserId, consumerId, formIds, isTemplate, formCompleteDate);
             POPUP.hide(formPopup);
-            forms.loadPDFFormsLanding();  
+            forms.loadPDFFormsLanding();
         }
         else {
             formsAjax.openFormEditor(
@@ -711,6 +683,34 @@
         }
 
         POPUP.show(formeditpopup);
+    }
+
+    function formLockPopup(checkFormsLockValue) {
+
+        const popup = POPUP.build({
+            id: 'formLocksPopup',
+            classNames: 'warning',
+        });
+
+        const btnWrap = document.createElement('div');
+        btnWrap.classList.add('btnWrap');
+
+        const okBtn = button.build({
+            text: 'OK',
+            style: 'secondary',
+            type: 'contained',
+            icon: 'checkmark',
+            callback: async function () {
+                POPUP.hide(popup);
+            },
+        });
+
+        btnWrap.appendChild(okBtn);
+        const warningMessage = document.createElement('p');
+        warningMessage.innerHTML = `This form is currently locked by ${checkFormsLockValue}. Any changes you make to this form will not be saved.`;
+        popup.appendChild(warningMessage);
+        popup.appendChild(btnWrap);
+        POPUP.show(popup);
     }
 
     function init() {

@@ -891,6 +891,34 @@ var singleEntryAjax = (function () {
         }
     }
 
+    async function getUndocumentedServicesForWarning(entryDate, consumerId) {
+        const retrieveData = {
+            entryDate,
+            consumerId,
+            token: $.session.Token,
+        };
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getUndocumentedServicesForWarning/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.getUndocumentedServicesForWarningResult;
+        } catch (error) {
+            console.log(error.responseText);
+        }
+    }
+
     return {
         deleteSingleEntryRecord,
         getSingleEntryConsumersPresent,
@@ -926,6 +954,7 @@ var singleEntryAjax = (function () {
         getEvvReasonCodes,
         getEvvEligibility,
         getEvvEligibilityAsync,
-        getExistingTimeEntry
+        getExistingTimeEntry,
+        getUndocumentedServicesForWarning
     };
 })();
