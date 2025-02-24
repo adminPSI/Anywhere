@@ -81,7 +81,7 @@
 
     &__time,
     &__date,
-  
+
     &__other {
         display: flex;
         flex-flow: row wrap;
@@ -154,7 +154,7 @@
     &__LocationEvv {
         display: flex;
         flex-flow: row wrap;
-        width: 40%;  
+        width: 40%;
 
         .dropdown {
             flex-grow: 1;
@@ -600,7 +600,7 @@ button.evv-highlight {
     }
 
     .table__row[data-status='R'] {
-        background-color:#ffc857 !important; 
+        background-color:#ffc857 !important;
     }
 }
 
@@ -617,7 +617,7 @@ button.evv-highlight {
         float: right;
         font-weight: 500;
         margin-right: 3px;
-    } 
+    }
 
     .dateWrap {
         justify-content: space-between;
@@ -671,4 +671,15 @@ button.evv-highlight {
 
 .totalhoursdiv{
     padding-top: 6px;
+}
+
+.consumerNameList {
+    font-weight: $bold;
+    color: $primary;
+    margin-bottom: 15px;
+
+    span {
+        font-weight: $bold;
+        color: $font-dark;
+    }
 }

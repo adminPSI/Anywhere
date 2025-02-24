@@ -1,6 +1,6 @@
 var FSSAjax = (function () {
     // FSS Main/Landing Page
-   
+
     async function getFSSPageData(retrieveData) {
         // token
         try {
@@ -140,7 +140,7 @@ var FSSAjax = (function () {
                     '/getMembers/',
                 data:
                     '{"token":"' +
-                    $.session.Token +                  
+                    $.session.Token +
                     '"}',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -351,6 +351,30 @@ var FSSAjax = (function () {
         }
     }
 
+    async function deleteAuthorization(retrieveData) {
+        // token
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/deleteAuthorization/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.deleteAuthorizationResult;
+        } catch (error) {
+            console.log(error.responseText);
+        }
+    }
+
 
     return {
         getFSSPageData,
@@ -366,6 +390,7 @@ var FSSAjax = (function () {
         insertUtilization,
         getFamilyMembersDropDown,
         getServiceCodes,
-        getVendors
+        getVendors,
+        deleteAuthorization
     };
 })();

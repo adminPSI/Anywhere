@@ -35,7 +35,7 @@ namespace Anywhere.service.Data
         {
             StartAndEndWeek startAndEnd = GetCompanyCurrentWorkWeekStart(token, 'N');
             StartAndEndWeek startAndEndPrevious = GetCompanyCurrentWorkWeekStart(token, 'Y');
-            
+
             double daysOfPayPeriod = (startAndEnd.endOfWeek - startAndEnd.startOfWeek).TotalDays;
             string currWS = "";
             string currWE = "";
@@ -55,7 +55,7 @@ namespace Anywhere.service.Data
                     previousWeekStart = startAndEndPrevious.startOfWeek;
                     previousWeekEnd = startAndEndPrevious.endOfWeek;
                 }
-                
+
                 currWS = currentWeekStart.ToString("yyyy-MM-dd");
                 currWE = currentWeekEnd.ToString("yyyy-MM-dd");
                 prevWS = previousWeekStart.ToString("yyyy-MM-dd");
@@ -79,7 +79,7 @@ namespace Anywhere.service.Data
             {
                 workWeek.prev_start_date = prevWS;
                 workWeek.prev_end_date = prevWE;
-            }            
+            }
 
             return workWeek;
         }
@@ -88,7 +88,7 @@ namespace Anywhere.service.Data
             StartAndEndWeek startAndEnd = GetCompanyCurrentWorkWeekStart(token, 'N');
             StartAndEndWeek startAndEndPrevious = GetCompanyCurrentWorkWeekStart(token, 'Y');
 
-            
+
 
             double daysOfPayPeriod = (startAndEnd.endOfWeek - startAndEnd.startOfWeek).TotalDays;
             string currWS = "";
@@ -112,7 +112,7 @@ namespace Anywhere.service.Data
                     previousWeekStart = startAndEndPrevious.startOfWeek;
                     previousWeekEnd = startAndEndPrevious.endOfWeek;
                 }
-                
+
                 currWS = currentWeekStart.ToString("yyyy-MM-dd");
                 currWE = currentWeekEnd.ToString("yyyy-MM-dd");
                 prevWS = previousWeekStart.ToString("yyyy-MM-dd");
@@ -135,7 +135,7 @@ namespace Anywhere.service.Data
                 DaysAndHours[] daysAndHours = js.Deserialize<DaysAndHours[]>(currentWeekHoursWorkedString);
                 return daysAndHours;
             }
-            
+
         }
         //todaysDate = dateTime.ToString("yyyy/MM/dd");
         public StartAndEndWeek GetCompanyCurrentWorkWeekStart(String token, char weekTwo)
@@ -627,6 +627,13 @@ namespace Anywhere.service.Data
             public string requireTimeEntryTransportationTimes { get; set; }
             public string anywhereFSSPermission { get; set; }
             public string RequireViewPlan { get; set; }
+
+            public string defaultplanlocation { get; set; }
+            public string defaultplanlocationname { get; set; }
+            public string defaultplangroup { get; set; }
+            public string defaultplangroupname { get; set; }
+            public string defaultcontact { get; set; }
+            public string anyUndocumentedServices { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)
