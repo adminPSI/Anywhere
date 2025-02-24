@@ -37,6 +37,8 @@ class Calendar {
       prev: document.createElement('button'),
       today: document.createElement('button'),
     };
+
+    this.build();
   }
 
   // Views
@@ -121,10 +123,9 @@ class Calendar {
       const dayCellEle = document.createElement('div');
       weekWrapEle.appendChild(dayCellEle);
 
-      // TODO: check if day is in same month (get isSameMonth from datefns)
-      // if (dates.isSameMonth(day, currentDate)) {
-      //   dayCellEle.classList.add('TODO');
-      // }
+      if (!dates.isSameMonth(day, currentDate)) {
+        dayCellEle.classList.add('notSameMonth');
+      }
 
       // TODO: add events to day
     });
