@@ -811,12 +811,13 @@ const SchedulingCalendar = (function () {
   let selectedLocationId;
   let selectedEmployeeId;
   let selectedShiftType;
-  let viewOptionShifts;
+  let viewOptionShifts = 'yes';
 
   //TODO: put this somewhere => if (currentView === 'mine' && $.session.isPSI) return;
   //TODO: ? should we combine calendarAppointments into calendarEvents? im thinking yes
 
-  // Calendar Events
+  // Calendar Events/Shifts/Appointments
+  //-----------------------------------------------------------------------
   function getEventGroup(personID, callOffStatus, requestShiftStatus) {
     if (!personID && currentView === 'all') {
       if (!callOffStatus && (requestShiftStatus === 'D' || requestShiftStatus === '')) {
@@ -927,8 +928,24 @@ const SchedulingCalendar = (function () {
   function filterCalendarEventsByEmployee() {
     return schedules.filter(sch => {});
   }
+  //
+  function populateCalendarWithEvents() {}
 
-  // Shift/Event Popup
+  // Add/View Shift Popup
+  //-----------------------------------------------------------------------
+  function populateRegionDropdown(regionDropdown) {
+    const dropdownData = regions.map(r => ({
+      value: r,
+      text: r,
+    }));
+
+    dropdownData.unshift({
+      value: '',
+      text: '',
+    });
+
+    dropdown.populate(regionDropdown, dropdownData);
+  }
   function showFilterEmployeePopup(onSaveCallbackFunc) {
     const opts = {
       1: false,
@@ -1024,6 +1041,56 @@ const SchedulingCalendar = (function () {
     employeePopup.appendChild(savebtn);
 
     POPUP.show(employeePopup);
+
+    populateRegionDropdown(regionDropdown);
+  }
+  function populateShiftLocationDropdown(locationDropdown) {
+    const dropdownData = locations
+      .map(d => ({
+        value: d.locationId,
+        text: d.locationName,
+      }))
+      .filter(l => !l.id);
+
+    dropdownData.unshift({
+      value: '%',
+      text: 'All',
+    });
+
+    dropdown.populate(locationDropdown, dropdownData, '');
+  }
+  function populateShiftEmployeeDropdown(employeeDropdown) {
+    let dropdownData = [
+      {
+        value: '%',
+        text: 'All',
+      },
+      {
+        value: $.session.UserId,
+        text: `${$.session.Name}, ${$.session.LName}`,
+      },
+    ];
+
+    employees.forEach(d =>
+      dropdownData.push({
+        id: 'todo',
+        value: 'todo',
+        text: 'todo',
+      }),
+    );
+
+    dropdown.populate(employeeDropdown, dropdownData, '');
+  }
+  function populateShiftColorDropdown(colorDropdown) {
+    const dropdownData = [
+      { value: '', text: '' },
+      { value: '', text: 'red' },
+      { value: '', text: 'green' },
+      { value: '', text: 'yellow' },
+      { value: '', text: '' },
+    ];
+
+    dropdown.populate(colorDropdown, dropdownData, '');
   }
   function showShiftPopup(data) {
     const updateEmployeeDropdownData = newEmployeeData => {
@@ -1056,6 +1123,11 @@ const SchedulingCalendar = (function () {
       label: 'Employee',
       style: 'secondary',
     });
+    const colorDropdown = dropdown.build({
+      dropdownId: 'colorDropdown',
+      label: 'Color',
+      style: 'secondary',
+    });
 
     const startTimeInput = input.build({
       label: 'Start Time',
@@ -1073,6 +1145,21 @@ const SchedulingCalendar = (function () {
     const notifyEmployee = input.buildCheckbox({
       text: 'Notify Employee',
       isChecked: false,
+    });
+
+    shiftPopup.addEventListener('change', e => {
+      if (e.target === locationDropdown) {
+      }
+      if (e.target === employeeDropdown) {
+      }
+      if (e.target === colorDropdown) {
+      }
+      if (e.target === startTimeInput) {
+        //! start time must be before end time
+      }
+      if (e.target === endTimeInput) {
+        //! end time must be after start time
+      }
     });
 
     const buttonWrap = document.createElement('div');
@@ -1108,6 +1195,7 @@ const SchedulingCalendar = (function () {
   }
 
   // Pub/Sub Popup
+  //-----------------------------------------------------------------------
   function showPubSubShiftsPopup() {
     //! Values are required for all fields.
 
@@ -1281,9 +1369,10 @@ const SchedulingCalendar = (function () {
 
     return shiftTypeWrap;
   }
-  function buildPubSubSchedulesButton() {
+  function buildPubUnpubSchedulesButton() {
     const buttonEle = button.build({
       text: 'Publish / Un-Publish Schedules',
+      classNames: ['pubUnpubButton'],
       style: 'secondary',
       type: 'contained',
       callback: function () {
@@ -1296,6 +1385,7 @@ const SchedulingCalendar = (function () {
   function buildNewShiftButton() {
     const buttonEle = button.build({
       text: 'Add New Shift',
+      classNames: ['newShiftButton'],
       style: 'secondary',
       type: 'contained',
       callback: function () {
@@ -1308,7 +1398,7 @@ const SchedulingCalendar = (function () {
   function buildOpenShiftViewToggleButton() {
     //Radio Container
     const radioContainer = document.createElement('div');
-    radioContainer.classList.add('ic_questionRadioContainer');
+    radioContainer.classList.add('openShiftWrap');
 
     const radioTitle = document.createElement('p');
     radioTitle.innerText = 'Show Open Shifts';
@@ -1317,18 +1407,24 @@ const SchedulingCalendar = (function () {
     const yesRadio = input.buildRadio({
       text: 'Yes',
       name: 'viewOpenShifts',
-      //isChecked: csChangeMind === 'Y',
+      isChecked: viewOptionShifts === 'yes',
     });
     const noRadio = input.buildRadio({
       text: 'No',
       name: 'viewOpenShifts',
-      // isChecked: csChangeMind === 'N',
+      isChecked: viewOptionShifts === 'no',
     });
     radioDiv.appendChild(yesRadio);
     radioDiv.appendChild(noRadio);
 
     radioDiv.addEventListener('change', e => {
-      //TODO: If the user selects "No" to the open shifts radio button while None is selected in the Employee dropdown, hide the None option in the dropdown and change the employee to be the logged in user.
+      console.log(e.target);
+
+      viewOptionShifts = e.target.text.toLowerCase();
+
+      if (viewOptionShifts === 'no') {
+        //TODO: If the user selects "No" to the open shifts radio button while None is selected in the Employee dropdown, hide the None option in the dropdown and change the employee to be the logged in user.
+      }
     });
 
     radioContainer.appendChild(radioTitle);
@@ -1350,7 +1446,7 @@ const SchedulingCalendar = (function () {
     employeeDropdownEle = buildEmployeeDropdown();
     newShiftButtonEle = buildNewShiftButton();
     openShiftViewToggleEle = buildOpenShiftViewToggleButton();
-    pubUnpubButtonEle = buildPubSubSchedulesButton();
+    pubUnpubButtonEle = buildPubUnpubSchedulesButton();
 
     dropdownWrap.appendChild(locationDropdownEle);
     dropdownWrap.appendChild(employeeDropdownEle);
@@ -1373,7 +1469,7 @@ const SchedulingCalendar = (function () {
   }
 
   async function init() {
-    scheduleCalEle = Calendar.init();
+    scheduleCalEle = new Calendar();
     build();
 
     employees = await schedulingAjax.getEmployeesForSchedulingAjax({
@@ -1389,6 +1485,8 @@ const SchedulingCalendar = (function () {
     populateEmployeeDropdown();
 
     //TODO: If the logged in user does not have the Scheduler security key for Anywhere Scheduling, the values in the Location dropdown should only show locations where the logged in user is assigned to a shift.
+    if (!$.session.schedulingView) {
+    }
     //TODO: If the Show Open Shift radio button is "Yes", it should also include any location that has an open shift (a shift where there is no employee assigned).
     locations = await schedulingAjax.getLocationDropdownForSchedulingAjax();
     populateLocationDropdown();
@@ -1421,7 +1519,7 @@ const Scheduling = (function () {
       callback: function () {
         setActiveModuleSectionAttribute('scheduling-calendar');
         PROGRESS.SPINNER.show('Loading Schedule...');
-        SchedulingCalendar.init();
+        schedulingCalendar.init();
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
@@ -1459,7 +1557,7 @@ const Scheduling = (function () {
     btnWrap.classList.add('landingBtnWrap');
 
     btnWrap.appendChild(schedulingCalendarBtn);
-    btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
+    //btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === false && $.session.schedulingUpdate === true) {
       btnWrap.appendChild(schedulingRequestTimeOffBtn);

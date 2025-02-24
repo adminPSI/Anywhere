@@ -488,9 +488,6 @@
 
         // checks the status of the buttons and adds/removes error class if needed for specific section
         planValidation.servicesAndSupportsBtnCheck(sectionId);
-
-        // checks entire assessments for validation errors
-        planValidation.updatedAssessmenteValidation();
       }
       if (type === 'radio') {
         const radioLabelText = e.target.nextSibling.innerHTML;
@@ -518,7 +515,6 @@
         }
 
         if (sectionId === '41') {
-          //await planValidation.updateAnswerWorkingSection(assessmentId);
           tableOfContents.showUnansweredQuestionCount();
         }
       }
@@ -534,16 +530,12 @@
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
           }
-
-          planValidation.updateAnswerWorkingSection(assessmentId);
         } else {
           addAnswer(answerId);
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
-
-          planValidation.updateAnswerWorkingSection(assessmentId);
         }
       }
       if (type === 'date') {
@@ -1367,7 +1359,6 @@
           colInput.focus();
 
           if (sectionId === '41') {
-            await planValidation.updateAnswerWorkingSection(assessmentId);
             tableOfContents.showUnansweredQuestionCount();
           }
         }
@@ -1394,7 +1385,6 @@
             }
 
             if (sectionId === '41') {
-              await planValidation.updateAnswerWorkingSection(assessmentId);
               tableOfContents.showUnansweredQuestionCount();
             }
           }

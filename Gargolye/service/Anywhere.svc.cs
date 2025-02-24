@@ -1,4 +1,4 @@
-﻿using Anywhere.anypatch;
+using Anywhere.anypatch;
 using Anywhere.Data;
 using Anywhere.Log;
 using Anywhere.service.Data;
@@ -799,11 +799,6 @@ namespace Anywhere
             return singleEntryWorker.getSingleEntryEvvEligibilityJSON(token, consumerId, entryDate);
         }
 
-        public string[] getUndocumentedServicesForWarning(string entryDate, string[] consumerId, string token)
-        {
-            return singleEntryWorker.getUndocumentedServicesForWarning(entryDate, consumerId, token);
-        }
-
         public string getClockedInDayServicesAtLocationCounts(string token, string locationId)
         {
             return dg.getClockedInDayServicesAtLocationCounts(token, locationId);
@@ -1071,11 +1066,6 @@ namespace Anywhere
         public string updateConsumerNotesDaysBack(string token, string updatedReviewDays)
         {
             return dg.updateConsumerNotesDaysBack(token, updatedReviewDays);
-        }
-
-        public string updateConnectWithPerson(string token, string connectType)
-        {
-            return dg.updateConnectWithPerson(token, connectType);
         }
 
         public string updateConsumerNotesChecklistDaysBack(string token, string updatedChecklistDays)
@@ -2653,7 +2643,16 @@ namespace Anywhere
             return picw.updatePlanConsentStatements(token, signatureId, csChangeMind, csChangeMindSSAPeopleId, csContact, csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess, csResidentialOptions, csSupportsHealthNeeds, csTechnology);
         }
 
+        public string updateConsentSummaryofChanges(string planID, string summaryofChangesText)
+        {
+            return picw.updateConsentSummaryofChanges(planID, summaryofChangesText);
+          // return "this";
+        }
 
+        public ConsentSummaryofChanges[] getPlanConsentSummaryofChanges(string planId)
+        {
+            return picw.getPlanConsentSummaryofChanges(planId);
+        }
 
         //Plan Signatures
         public PlanSignatureWorker.PlanSignatures[] getSignatures(string token, long assessmentId)
@@ -2981,7 +2980,7 @@ namespace Anywhere
         public SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId)
         {
             return wlw.getWLSupportingDocumentList(token, waitingListInformationId);
-        }
+        }        
 
         public string deleteSupportingDocument(string token, string attachmentId)
         {
@@ -3004,6 +3003,34 @@ namespace Anywhere
         }
 
         //OOD Module
+
+        public string generateForm3(System.IO.Stream testInput)
+        {
+
+            string token;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string userId;
+            string loggedInUserPersonId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
+
+            return OODfw.generateForm3(token, referenceNumber, 22, peopleId, startDate, endDate, userId, loggedInUserPersonId);
+
+        }
+
 
         public string generateForm4(System.IO.Stream testInput)
         {
@@ -4343,8 +4370,8 @@ namespace Anywhere
                 dg.addOutcomePlanNow(token, consumerId);
                 anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             }
-
-
+            
+            
 
         }
 
@@ -4434,19 +4461,9 @@ namespace Anywhere
             return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
         }
 
-        public void deleteAuthorization(string token, string authDetailId)
+        public PlanValidationWorker.PlanTotalOutcome getISPValidationData(string token, string assessmentId)
         {
-            fssw.deleteAuthorization(token, authDetailId);
-        }
-
-        public void setWidgetFilter(string token, string widgetId, string filterKey, string filterValue)
-        {
-            dashWork.setWidgetFilter(token, widgetId, filterKey, filterValue);
-        }
-
-        public string getWidgetFilter(string token, string widgetId, string filterKey)
-        {
-            return dashWork.getWidgetFilter(token, widgetId, filterKey);
+            return pv.getISPValidationData(token, assessmentId);
         }
 
     }
