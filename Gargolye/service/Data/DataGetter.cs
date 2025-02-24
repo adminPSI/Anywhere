@@ -4894,12 +4894,13 @@ namespace Anywhere.Data
             }
         }
 
-        public string getLocationDropdownForScheduling(string token)
+        public string getLocationDropdownForScheduling(string token, char showOpeShifts)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getMainLocationDropdownForScheduling ");
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(showOpeShifts.ToString());
             string text = "CALL DBA.ANYW_Scheduling_GetLocationDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
