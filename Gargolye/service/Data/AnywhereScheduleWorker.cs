@@ -19,9 +19,9 @@ namespace Anywhere.service.Data
             return allScheduleObj;
         }
 
-        public MainLocationDropDownData[] getLocationDropdownForScheduling(string token)
+        public MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpeShifts)
         {
-            string locationsString = dg.getLocationDropdownForScheduling(token);
+            string locationsString = dg.getLocationDropdownForScheduling(token, showOpeShifts);
             MainLocationDropDownData[] locationsObj = js.Deserialize<MainLocationDropDownData[]>(locationsString);
             return locationsObj;
         }

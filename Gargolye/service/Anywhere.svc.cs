@@ -1495,9 +1495,9 @@ namespace Anywhere
             return anywhereScheduleWorker.getSchedulesForSchedulingModule(token, locationId, personId);
         }
 
-        public AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token)
+        public AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpeShifts)
         {
-            return anywhereScheduleWorker.getLocationDropdownForScheduling(token);
+            return anywhereScheduleWorker.getLocationDropdownForScheduling(token, showOpeShifts);
         }
 
         public string saveSchedulingCallOffRequest(string token, string shiftId, string personId, string reasonId, string note, string status, string notifiedEmployeeId)

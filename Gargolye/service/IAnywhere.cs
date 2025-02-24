@@ -2160,7 +2160,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getLocationDropdownForScheduling/")]
-        AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token);
+        AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpeShifts);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
