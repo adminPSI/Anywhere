@@ -1097,7 +1097,14 @@ const SchedulingCalendar = (function () {
       console.log(newEmployeeData);
     };
 
-    const shiftData = data ? data : {};
+    const shiftData = data ? data : {
+      locationId: '',
+      employeeId: '',
+      color: '',
+      startTime: '',
+      endTime: '',
+      notifyEmployee: '',
+    };
 
     const shiftPopup = POPUP.build({
       id: 'shiftDetailPopup',
@@ -1159,6 +1166,8 @@ const SchedulingCalendar = (function () {
       }
       if (e.target === endTimeInput) {
         //! end time must be after start time
+      }
+      if (e.target === notifyEmployee) {
       }
     });
 
@@ -1519,6 +1528,7 @@ const Scheduling = (function () {
       callback: function () {
         setActiveModuleSectionAttribute('scheduling-calendar');
         PROGRESS.SPINNER.show('Loading Schedule...');
+        //SchedulingCalendar.init();
         schedulingCalendar.init();
       },
     });
