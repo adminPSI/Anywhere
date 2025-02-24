@@ -297,6 +297,25 @@ namespace Anywhere.service.Data.FSS
             }
         }
 
+        public void deleteAuthorization(string token, string authDetailId)
+        {
+            logger.debug("deleteAuthorization");
+            List<string> list = new List<string>();
+            list.Add(authDetailId);
+
+
+            string text = "CALL DBA.ANYW_FSS_deleteAuthorization(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("677", ex.Message + "ANYW_FSS_deleteAuthorization(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+            }
+        }
+
+
 
         public string executeDataBaseCallJSON(string storedProdCall)
         {

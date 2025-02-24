@@ -504,6 +504,23 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string getVendors(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getVendors ");
+
+            string text = "CALL DBA.ANYW_ISP_GetActiveVendors()";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1APCIDG", ex.Message + "ANYW_ISP_GetActiveVendors()");
+                return "1APCIDG: error ANYW_ISP_GetActiveVendors";
+            }
+        }
+
         public bool tokenValidator(string token)
         {
             if (token.Contains(" "))
@@ -814,7 +831,7 @@ namespace Anywhere.service.Data
                 logger.debug("getVenderServicesEntries");
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@vendorID", DbType.String, vendorID);
-                 
+
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getVenderServicesEntries(?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }

@@ -18,6 +18,9 @@
     var groupDropdown;
     var applyFiltersBtn;
     var cancelFilterBtn;
+    var locationList;
+    var groupList;
+    var outcomeList;
 
     function populateFilteredList(res) {
         var consumers = {};
@@ -144,7 +147,7 @@
             text: 'ALL',
         };
         dataArr.unshift(defaultOutcome);
-
+        outcomeList = dataArr;
         if (!$.session.outcomesWidgetOutcomeTypeId)
             $.session.outcomesWidgetOutcomeTypeId = dataArr[0].value;
         if (!$.session.outcomesWidgetOutcomeTypeName)
@@ -166,7 +169,7 @@
             text: 'ALL',
         };
         dataArr.unshift(defaultLocation);
-
+        locationList = dataArr;
         if (!$.session.outcomeWidgetLocationId) $.session.outcomeWidgetLocationId = dataArr[0].value;
         if (!$.session.outcomeWidgetLocationName) $.session.outcomeWidgetLocationName = dataArr[0].text;
 
@@ -175,7 +178,7 @@
     function populateGroupsFilter(res) {
         var dataArr = res.map(function (data) {
             return {
-                value: data.RetrieveID,
+                value: data.RetrieveID.split('.')[0],
                 text: data.GroupName,
             };
         });
@@ -187,12 +190,12 @@
         var defaultGroup = {
             id: '%',
             value: '%',
-            text: 'EVERYONE',
+            text: 'Everyone',
         };
         dataArr.unshift(defaultGroup);
-
+        groupList = dataArr;
         if (!$.session.outcomesWidgetGroupId) $.session.outcomesWidgetGroupId = dataArr[0].value;
-        if (!$.session.outcomesWidgetGroupName) $.session.outcomesWidgetGroupName = dataArr[0].text;      
+        if (!$.session.outcomesWidgetGroupName) $.session.outcomesWidgetGroupName = dataArr[0].text;
         if (dataArr.find(x => x.value == $.session.outcomesWidgetGroupId) == undefined) $.session.outcomesWidgetGroupId = '%';
         dropdown.populate('goalsWidgetGroups', dataArr, $.session.outcomesWidgetGroupId);
     }
@@ -257,14 +260,17 @@
             filter.location =
                 selectedOption.value === '%' ? '%' : UTIL.removeDecimals(selectedOption.value);
             remainingDailyServicesWidgetAjax.populateGroupsFilter(selectedOption.value, function (groups) {
-                populateGroupsFilter(groups); 
-            }); 
+                populateGroupsFilter(groups);
+            });
             //remainingDailyServicesWidgetAjax.populateFilteredList('%', filter.location, '%')//MIke
             //For remembering filter values
             oldOutcomeWidgetLocationId = $.session.outcomeWidgetLocationId;
             oldOutcomeWidgetLocationName = $.session.outcomeWidgetLocationName;
             $.session.outcomeWidgetLocationId = selectedOption.value;
             $.session.outcomeWidgetLocationName = selectedOption.text;
+            $.session.outcomesWidgetGroupId = '%';
+            $.session.outcomesWidgetGroupName = 'Everyone';
+            filter.group = '%';
         });
         groupDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
@@ -290,6 +296,10 @@
                     displayFilteredBy();
                 },
             );
+
+            widgetSettingsAjax.setWidgetFilter('dashgoalswidget', 'outcomeType', filter.outcomeType)
+            widgetSettingsAjax.setWidgetFilter('dashgoalswidget', 'location', filter.location)
+            widgetSettingsAjax.setWidgetFilter('dashgoalswidget', 'group', filter.group)
         });
         cancelFilterBtn.addEventListener('click', () => {
             filterPopup.classList.remove('visible');
@@ -337,14 +347,20 @@
         </div>`;
     }
 
-    function init() {
+    async function init() {
         widget = document.getElementById('dashgoalswidget');
         widgetBody = widget.querySelector('.widget__body');
         // append filter button
         dashboard.appendFilterButton('dashgoalswidget', 'goalsFilterBtn');
 
-        if ($.session.outcomesWidgetOutcomeTypeId)
-            filter.outcomeType = $.session.outcomesWidgetOutcomeTypeId;
+        var filterLocationDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashgoalswidget', 'location');
+        $.session.outcomeWidgetLocationId = filterLocationDefaultValue.getWidgetFilterResult;
+        var filterGroupDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashgoalswidget', 'group');
+        $.session.outcomesWidgetGroupId = filterGroupDefaultValue.getWidgetFilterResult;
+        var filterOutcomeTypeDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashgoalswidget', 'outcomeType');
+        $.session.outcomesWidgetOutcomeTypeId = filterOutcomeTypeDefaultValue.getWidgetFilterResult;
+
+        if ($.session.outcomesWidgetOutcomeTypeId) filter.outcomeType = $.session.outcomesWidgetOutcomeTypeId;
         if ($.session.outcomeWidgetLocationId) filter.location = $.session.outcomeWidgetLocationId;
         if ($.session.outcomesWidgetGroupId) filter.group = $.session.outcomesWidgetGroupId;
 
@@ -364,6 +380,9 @@
                             populateLocationsFilter(locations);
                             populateGroupsFilter(groups);
                             populateFilteredList(list);
+                            $.session.outcomeWidgetLocationName = locationList.find(l => l.value == filter.location).text;
+                            $.session.outcomesWidgetGroupName = groupList.find(l => l.value == filter.group).text;
+                            $.session.outcomesWidgetOutcomeTypeName = outcomeList.find(l => l.value == filter.outcomeType)?.text;
                             displayFilteredBy();
                         },
                     );
