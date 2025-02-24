@@ -1208,21 +1208,21 @@ const SchedulingCalendar = (function () {
     buttonWrap.appendChild(savebtn);
     buttonWrap.appendChild(cancelbtn);
 
-    if ($.session.schedulingView) {
+    if ($.session.schedulingUpdate) {
       shiftPopup.appendChild(filterEmployeesBtn);
     }
     shiftPopup.appendChild(locationDropdown);
     shiftPopup.appendChild(employeeDropdown);
     shiftPopup.appendChild(startTimeInput);
     shiftPopup.appendChild(endTimeInput);
-    if ($.session.schedulingView) {
+    if ($.session.schedulingUpdate) {
       shiftPopup.appendChild(colorDropdown);
     }
     shiftPopup.appendChild(individualWrap);
-    if ($.session.schedulingView) {
+    if ($.session.schedulingUpdate) {
       shiftPopup.appendChild(addIndividualBtn);
     }
-    if ($.session.schedulingView) {
+    if ($.session.schedulingUpdate) {
       shiftPopup.appendChild(notifyEmployee);
     }
     shiftPopup.appendChild(buttonWrap);
@@ -1304,7 +1304,7 @@ const SchedulingCalendar = (function () {
       },
     ];
 
-    if ($.session.schedulingView) {
+    if ($.session.schedulingUpdate) {
       employees.forEach(d =>
         dropdownData.push({
           id: 'todo',
@@ -1356,7 +1356,7 @@ const SchedulingCalendar = (function () {
       style: 'secondary',
     });
 
-    if ($.session.schedulingView) {
+    if ($.session.schedulingUpdate) {
       dropdownEle.addEventListener('change', event => {
         selectedEmployeeId = event.target.options[event.target.selectedIndex].id;
 
@@ -1473,7 +1473,7 @@ const SchedulingCalendar = (function () {
       if (viewOptionShifts === 'yes') {
         populateEmployeeDropdown();
 
-        if (!$.session.schedulingView) {
+        if (!$.session.schedulingUpdate) {
           locations = await schedulingAjax.getLocationDropdownForSchedulingAjax('Y');
         }
       }
@@ -1502,13 +1502,13 @@ const SchedulingCalendar = (function () {
 
     dropdownWrap.appendChild(locationDropdownEle);
     dropdownWrap.appendChild(employeeDropdownEle);
-    if ($.session.schedulingView) {
+    if ($.session.schedulingUpdate) {
       shiftTypeDropdownEle = buildShiftTypeDropdown();
       dropdownWrap.appendChild(shiftTypeDropdownEle);
     }
 
     scheduleNav.appendChild(dropdownWrap);
-    if ($.session.schedulingView) {
+    if ($.session.schedulingUpdate) {
       scheduleNav.appendChild(newShiftButtonEle);
     }
     scheduleNav.appendChild(openShiftViewToggleEle);

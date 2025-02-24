@@ -136,6 +136,38 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
+  async function saveShift() {
+    // date: '01/01/2015, 01/02/2025'
+    // consumerId: '123, 123, 123'
+    // startTime
+    // endTime
+    // locationId
+    // employeeId
+    // notifyEmployee
+    // color
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getSchedulingRegions/',
+        data: JSON.stringify({
+          token: $.session.Token,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.getSchedulingRegionsResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
 
   //
 
@@ -498,6 +530,10 @@ const schedulingAjax = (function () {
     approveDenyDaysOffRequestSchedulingAjax,
     getScheduleMyApprovalDataAjax,
     getRequestTimeOffDropdownEmployees,
+    //OLD
+    getLocationDropdownForSchedulingAjaxOLD,
+    getSchedulesForSchedulingModuleAjaxOLD,
+    getScheduleApptInformationAjaxOLD,
   };
 
   //OLD
