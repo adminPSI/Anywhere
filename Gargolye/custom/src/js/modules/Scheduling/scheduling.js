@@ -1097,7 +1097,14 @@ const SchedulingCalendar = (function () {
       console.log(newEmployeeData);
     };
 
-    const shiftData = data ? data : {};
+    const shiftData = data ? data : {
+      locationId: '',
+      employeeId: '',
+      color: '',
+      startTime: '',
+      endTime: '',
+      notifyEmployee: '',
+    };
 
     const shiftPopup = POPUP.build({
       id: 'shiftDetailPopup',
@@ -1159,6 +1166,8 @@ const SchedulingCalendar = (function () {
       }
       if (e.target === endTimeInput) {
         //! end time must be after start time
+      }
+      if (e.target === notifyEmployee) {
       }
     });
 
@@ -1519,7 +1528,7 @@ const Scheduling = (function () {
       callback: function () {
         setActiveModuleSectionAttribute('scheduling-calendar');
         PROGRESS.SPINNER.show('Loading Schedule...');
-        schedulingCalendar.init();
+        SchedulingCalendar.init();
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
@@ -1557,7 +1566,7 @@ const Scheduling = (function () {
     btnWrap.classList.add('landingBtnWrap');
 
     btnWrap.appendChild(schedulingCalendarBtn);
-    //btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
+    btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === false && $.session.schedulingUpdate === true) {
       btnWrap.appendChild(schedulingRequestTimeOffBtn);
