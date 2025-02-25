@@ -157,13 +157,22 @@ const TRANS_addRoute = (function () {
         // No Consumer Warning //
         noConsumerWarning = document.createElement('p');
         noConsumerWarning.style.color = 'red';
-        noConsumerWarning.innerText = 'You must select one consumer for the route.'
-        consumerSectionBody.appendChild(noConsumerWarning)
+        noConsumerWarning.id = 'noConsumerWarningMessage';
+
         //
         column2.appendChild(consumerSectionCard)
         column2.appendChild(btnWrap)
         DOM.ACTIONCENTER.appendChild(column1)
         DOM.ACTIONCENTER.appendChild(column2)
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            noConsumerWarning.innerText = 'You must select one consumer for the route.'
+        } else {
+            noConsumerWarning.innerText = 'You must select at least one consumer for the route.'
+        }
+        consumerSectionBody.appendChild(noConsumerWarning)
+
 
         populateDropdowns();
         eventListeners();
@@ -216,6 +225,15 @@ const TRANS_addRoute = (function () {
     }
 
     function setBtnStatusOfAddRoute() {
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            if (consumersOnRecord.size > 1) {
+                saveBtn.classList.add('disabled');
+                return;
+            }
+        }
+
         var hasErrors = [].slice.call(document.querySelectorAll('.error'));
         if (hasErrors.length !== 0) {
             saveBtn.classList.add('disabled');
@@ -298,6 +316,7 @@ const TRANS_addRoute = (function () {
             selectedIntegratedEmployment = event.target.checked ? 'Y' : 'N';
             // alert("Yep, that's it");
             var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+            var noConsumerWarningMessage = document.getElementById("noConsumerWarningMessage");
             var MilesRadio = document.getElementById("milesRadio");
             var TripsRadio = document.getElementById("tripsRadio");
 
@@ -309,6 +328,26 @@ const TRANS_addRoute = (function () {
 
                TripsRadio.classList.add('disabled');
                MilesRadio.classList.add('disabled');
+
+               if (consumersOnRecord.size > 1) {
+                noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+                roster2.toggleMiniRosterBtnVisible(false);
+                noConsumerWarningMessage.classList.add('error');
+               // noConsumerWarning.classList.add('error');
+                alert('You have selected multiple consumers. Only one consumer is allowed for Integrated Employment. Please update your consumers and try again.');
+                
+             } else if (consumersOnRecord.size == 1) {
+                noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+               roster2.toggleMiniRosterBtnVisible(false);
+            } else {
+                noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+                noConsumerWarningMessage.classList.remove('error');
+                // noConsumerWarning.classList.remove('error');
+                roster2.toggleMiniRosterBtnVisible(true);
+               }
+               
+               setBtnStatusOfAddRoute();
+
             } else {
                // var TripsRadio = document.getElementById("tripsRadio");
                MilesRadio.checked = true;   
@@ -316,6 +355,10 @@ const TRANS_addRoute = (function () {
                MilesRadio.disabled = false;
                TripsRadio.classList.remove('disabled');
                MilesRadio.classList.remove('disabled');
+
+               noConsumerWarningMessage.innerText = 'You must select at least one consumer for the route.'
+               roster2.toggleMiniRosterBtnVisible(true);
+               setBtnStatusOfAddRoute();
             }
  
         });
@@ -334,6 +377,16 @@ const TRANS_addRoute = (function () {
         const consumerSection = document.getElementById('consumerOnRouteSection');
         consumerSection.innerHTML = '';
         consumerSection.appendChild(noConsumerWarning)
+        
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        var noConsumerWarningMessage = document.getElementById("noConsumerWarningMessage");
+
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+        } else {
+            noConsumerWarningMessage.innerText = 'You must select at least one consumer for the route.'
+        }
+
         noConsumerWarning.style.display = 'block'
         // *
 
@@ -359,12 +412,27 @@ const TRANS_addRoute = (function () {
 
     function consumerRemoveAction(consumerId) {
         consumersOnRecord.delete(consumerId)
-        if (consumersOnRecord.size > 0) {
-            noConsumerWarning.style.display = 'none';
-        } else noConsumerWarning.style.display = 'block';
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
 
         if (consumersOnRecord.size > 0) {
-            roster2.toggleMiniRosterBtnVisible(false);
+            noConsumerWarning.style.display = 'none';
+        } else {
+            
+            if (TripIntegratedEmploymentCheckbox.checked == true) {
+                noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+            } else {
+                noConsumerWarningMessage.innerText = 'You must select at least one consumer for the route.'
+            }
+            noConsumerWarning.style.display = 'block';
+        }
+
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            if (consumersOnRecord.size > 0) {
+                roster2.toggleMiniRosterBtnVisible(false);
+            } else {
+                roster2.toggleMiniRosterBtnVisible(true);
+            }
         } else {
             roster2.toggleMiniRosterBtnVisible(true);
         }
@@ -389,15 +457,31 @@ const TRANS_addRoute = (function () {
                     consumersOnRecord.get(consumer.id)['riderStatus'] = '';
                     const transportationCard = TRANS_consumerDocCard.createCard(consumer.id, consumerDetails);
                     consumerSectionBody.appendChild(transportationCard)
-                    if (consumersOnRecord.size > 0) {
-                        noConsumerWarning.style.display = 'none';
-                    } else noConsumerWarning.style.display = 'block';
+
+                    var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
 
                     if (consumersOnRecord.size > 0) {
-                        roster2.toggleMiniRosterBtnVisible(false);
+                        noConsumerWarning.style.display = 'none';
+                    } else { 
+                        if (TripIntegratedEmploymentCheckbox.checked == true) {
+                            noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+                        } else {
+                            noConsumerWarningMessage.innerText = 'You must select at least one consumer for the route.'
+                        }
+                        noConsumerWarning.style.display = 'block';
+                    }
+
+                    if (TripIntegratedEmploymentCheckbox.checked == true) {
+                        if (consumersOnRecord.size > 0) {
+                            roster2.toggleMiniRosterBtnVisible(false);
+                        } else {
+                            roster2.toggleMiniRosterBtnVisible(true);
+                        }
                     } else {
                         roster2.toggleMiniRosterBtnVisible(true);
                     }
+
+                    
 
                     checkRequiredFieldsOfAddRoute();
                 })
