@@ -1,4 +1,37 @@
 const schedulingAjax = (function () {
+  async function saveOrUpdateShift(retrieveData) {
+    // date: '01/01/2015, 01/02/2025'
+    // consumerId: '123, 123, 123'
+    // startTime
+    // endTime
+    // locationId
+    // employeeId
+    // notifyEmployee
+    // color
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/saveOrUpdateShift/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          ...retrieveData,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.saveOrUpdateShiftResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
   async function getSchedulesForSchedulingModule(locationId, personId) {
     //When using this call:
     //Pass a '%' for the personId and the locationId from the dropdown to get all schedules for a location
@@ -113,38 +146,6 @@ const schedulingAjax = (function () {
     }
   }
   async function getRegionDropdown() {
-    try {
-      const result = await $.ajax({
-        type: 'POST',
-        url:
-          $.webServer.protocol +
-          '://' +
-          $.webServer.address +
-          ':' +
-          $.webServer.port +
-          '/' +
-          $.webServer.serviceName +
-          '/getSchedulingRegions/',
-        data: JSON.stringify({
-          token: $.session.Token,
-        }),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-      });
-      return result.getSchedulingRegionsResult;
-    } catch (error) {
-      throw new Error(error.responseText);
-    }
-  }
-  async function saveShift() {
-    // date: '01/01/2015, 01/02/2025'
-    // consumerId: '123, 123, 123'
-    // startTime
-    // endTime
-    // locationId
-    // employeeId
-    // notifyEmployee
-    // color
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -511,6 +512,7 @@ const schedulingAjax = (function () {
   }
 
   return {
+    saveOrUpdateShift,
     getSchedulesForSchedulingModule,
     getScheduleApptInformation,
     getLocationDropdownForScheduling,

@@ -1557,11 +1557,11 @@ const SchedulingCalendar = (function () {
 })();
 
 const Scheduling = (function () {
-  $.session.schedulingUpdate = true;
-  $.session.schedulingView = true;
-  $.session.schedAllowCallOffRequests = 'Y';
-  $.session.schedRequestOpenShifts = 'Y';
-  $.session.hideAllScheduleButton = false;
+  // $.session.schedulingUpdate = true;
+  // $.session.schedulingView = true;
+  // $.session.schedAllowCallOffRequests = 'Y';
+  // $.session.schedRequestOpenShifts = 'Y';
+  // $.session.hideAllScheduleButton = false;
 
   function loadSchedulingLanding() {
     const schedulingCalendarBtn = button.build({
