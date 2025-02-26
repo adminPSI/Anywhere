@@ -793,7 +793,7 @@ const SchedulingCalendar = (function () {
     6: 'Appointments Shifts',
   };
 
-  let scheduleCalEle;
+  let ScheduleCalendar;
   let locationDropdownEle;
   let employeeDropdownEle;
   let shiftTypeDropdownEle;
@@ -1491,42 +1491,47 @@ const SchedulingCalendar = (function () {
     const scheduleNav = document.createElement('div');
     scheduleNav.classList.add('scheduleNav');
 
-    const dropdownWrap = document.createElement('div');
-    dropdownWrap.classList.add('dropdownWrap');
+    const colLeft = document.createElement('div');
+    colLeft.classList.add('colLeft');
+
+    const colRight = document.createElement('div');
+    colRight.classList.add('colRight');
 
     locationDropdownEle = buildLocationDropdown();
     employeeDropdownEle = buildEmployeeDropdown();
-    newShiftButtonEle = buildNewShiftButton();
     openShiftViewToggleEle = buildOpenShiftViewToggleButton();
     pubUnpubButtonEle = buildPubUnpubSchedulesButton();
+    shiftTypeDropdownEle = buildShiftTypeDropdown();
+    newShiftButtonEle = buildNewShiftButton();
 
-    dropdownWrap.appendChild(locationDropdownEle);
-    dropdownWrap.appendChild(employeeDropdownEle);
+    colLeft.appendChild(locationDropdownEle);
+    colLeft.appendChild(employeeDropdownEle);
     if ($.session.schedulingUpdate) {
-      shiftTypeDropdownEle = buildShiftTypeDropdown();
-      dropdownWrap.appendChild(shiftTypeDropdownEle);
+      colLeft.appendChild(shiftTypeDropdownEle);
     }
 
-    scheduleNav.appendChild(dropdownWrap);
+    colRight.appendChild(openShiftViewToggleEle);
     if ($.session.schedulingUpdate) {
-      scheduleNav.appendChild(newShiftButtonEle);
+      colRight.appendChild(newShiftButtonEle);
     }
-    scheduleNav.appendChild(openShiftViewToggleEle);
-    scheduleNav.appendChild(pubUnpubButtonEle);
+    colRight.appendChild(pubUnpubButtonEle);
 
+    scheduleNav.appendChild(colLeft);
+    scheduleNav.appendChild(colRight);
     scheduleWrap.appendChild(scheduleNav);
-
-    scheduleWrap.appendChild(scheduleCalEle);
+    scheduleWrap.appendChild(ScheduleCalendar.rootEle);
 
     _DOM.ACTIONCENTER.innerHTML = '';
     _DOM.ACTIONCENTER.appendChild(scheduleWrap);
+
+    ScheduleCalendar.renderCalendar();
   }
 
   async function init() {
+    console.clear();
     selectedEmployeeId = $.session.UserId;
 
-    scheduleCalendar = new Calendar();
-    scheduleCalEle = scheduleCalendar.rootEle;
+    ScheduleCalendar = new Calendar();
     build();
 
     employees = await schedulingAjax.getEmployeesForScheduling({
@@ -1539,6 +1544,7 @@ const SchedulingCalendar = (function () {
       minTimeBetweenShifts: -1,
     });
     shiftEmployees = [...employees];
+    console.log('Employees:', employees);
     populateEmployeeDropdown();
 
     //locations = await schedulingAjax.getLocationDropdownForScheduling('N');
@@ -1546,6 +1552,8 @@ const SchedulingCalendar = (function () {
 
     calendarEvents = await getCalendarEvents('%', $.session.PeopleId);
     calendarAppointments = await getCalendarAppointments();
+    console.log('Events:', calendarEvents);
+    console.log('Appointments:', calendarAppointments);
 
     // after everything is on screen pre load some popup data
     //regions = await schedulingAjax.getRegionDropdown();
@@ -1610,7 +1618,7 @@ const Scheduling = (function () {
     btnWrap.classList.add('landingBtnWrap');
 
     btnWrap.appendChild(schedulingCalendarBtn);
-    //btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
+    btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === false && $.session.schedulingUpdate === true) {
       btnWrap.appendChild(schedulingRequestTimeOffBtn);

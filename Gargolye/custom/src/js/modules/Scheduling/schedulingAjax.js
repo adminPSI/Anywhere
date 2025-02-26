@@ -171,7 +171,6 @@ const schedulingAjax = (function () {
   }
 
   //
-
   async function requestDaysOffSchedulingAjax(insertData) {
     //insertData must include token, personId, dates, fromTime, toTime, reason, employeeNotifiedId, status
     try {
