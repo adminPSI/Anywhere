@@ -17,7 +17,7 @@ const TRANS_routeDocumentation = (function () {
     */
 
     let routeStartInput, routeEndInput, routeStartOdo, routeEndOdo, tripIntegratedEmploymentCheckbox, ro;
-    let consumerDocCardBody;
+    let consumerDocCardBody, noConsumerWarning, tooManyConsumersWarning;
 
     // * Data storage
     let consumersOnRecord = new Map() //{consumerId: {consumer data}}
@@ -151,13 +151,23 @@ const TRANS_routeDocumentation = (function () {
         });
         const btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
+
+        // Too many Consumer Warning //
+        tooManyConsumersWarning = document.createElement('p');
+        tooManyConsumersWarning.style.color = 'red';
+        tooManyConsumersWarning.id = 'tooManyConsumersWarning';
+        tooManyConsumersWarning.innerText = 'You must select only one consumer for this route.'
+        tooManyConsumersWarning.style.display = 'none';
+
         if (!ro) {
             btnWrap.appendChild(saveBtn);
             btnWrap.appendChild(saveCloseBtn);
             column2.appendChild(btnWrap);
+            
         }
         column2.appendChild(cancelBtn)
         cancelBtn.style.width = '100%';
+        column2.appendChild(tooManyConsumersWarning)
         /////////////////////
         DOM.ACTIONCENTER.appendChild(column1)
         DOM.ACTIONCENTER.appendChild(column2)
@@ -216,6 +226,23 @@ const TRANS_routeDocumentation = (function () {
                 }
             }
 
+            if (consumersOnRecord.size > 1) {
+                roster2.toggleMiniRosterBtnVisible(false);
+                tooManyConsumersWarning.style.display = 'block'; 
+             } else if (consumersOnRecord.size == 1) {
+               roster2.toggleMiniRosterBtnVisible(false);
+               tooManyConsumersWarning.style.display = 'none';
+            } else {
+                roster2.toggleMiniRosterBtnVisible(true);
+                tooManyConsumersWarning.style.display = 'none';
+            }
+          //  setBtnStatusOfRouteDocumentation();
+
+        } else {  //TripIntegratedEmploymentCheckbox.checked == false
+
+            roster2.toggleMiniRosterBtnVisible(true);
+            tooManyConsumersWarning.style.display = 'none';
+         //   setBtnStatusOfRouteDocumentation();
         }
 
         const dif = endVal - startVal;
@@ -267,13 +294,19 @@ const TRANS_routeDocumentation = (function () {
 
         var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
         if (TripIntegratedEmploymentCheckbox.checked == true) {
-            if (consumersOnRecord.size > 0) {
+            if (consumersOnRecord.size > 1) {
+                tooManyConsumersWarning.style.display = 'block';
                 roster2.toggleMiniRosterBtnVisible(false);
-            } else {
+            } else if (consumersOnRecord.size == 1) {
+                roster2.toggleMiniRosterBtnVisible(false);
+                tooManyConsumersWarning.style.display = 'none';
+            }else {
                 roster2.toggleMiniRosterBtnVisible(true);
+                tooManyConsumersWarning.style.display = 'none';
             }
         } else {
             roster2.toggleMiniRosterBtnVisible(true);
+            tooManyConsumersWarning.style.display = 'none';
         }
             checkRequiredFields();
         });
@@ -319,6 +352,33 @@ const TRANS_routeDocumentation = (function () {
     }
 
     function setBtnStatusOfRouteDocumentation() {
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            if (consumersOnRecord.size > 1) {
+                saveBtn.classList.add('disabled');
+                saveCloseBtn.classList.add('disabled');
+                return;
+            } else if (consumersOnRecord.size == 1) {
+                saveBtn.classList.remove('disabled');
+                saveCloseBtn.classList.remove('disabled');
+            }else {
+                saveBtn.classList.add('disabled'); 
+                saveCloseBtn.classList.add('disabled');
+                return;
+            }
+        } else {
+            if (consumersOnRecord.size == 0) {
+                saveBtn.classList.add('disabled');
+                saveCloseBtn.classList.add('disabled');
+                return;
+            } else {
+                saveBtn.classList.remove('disabled'); 
+                saveCloseBtn.classList.remove('disabled');
+            }
+        }
+
+
         var hasErrors = [].slice.call(document.querySelectorAll('.error'));
         if (hasErrors.length !== 0) {
             saveBtn.classList.add('disabled');
@@ -384,13 +444,23 @@ const TRANS_routeDocumentation = (function () {
 
        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
        if (TripIntegratedEmploymentCheckbox.checked == true) {
-           if (consumersOnRecord.size > 0) {
-               roster2.toggleMiniRosterBtnVisible(false);
-           } else {
-               roster2.toggleMiniRosterBtnVisible(true);
-           }
-       }
+        if (consumersOnRecord.size > 1) {
+            tooManyConsumersWarning.style.display = 'block';
+            roster2.toggleMiniRosterBtnVisible(false);
+        } else if (consumersOnRecord.size == 1) {
+            roster2.toggleMiniRosterBtnVisible(false);
+            tooManyConsumersWarning.style.display = 'none';
+        }else {
+            roster2.toggleMiniRosterBtnVisible(true);
+            tooManyConsumersWarning.style.display = 'none';
+        }
+    } else {
+        roster2.toggleMiniRosterBtnVisible(true);
+        tooManyConsumersWarning.style.display = 'none';
+    }
 
+    setBtnStatusOfRouteDocumentation();
+    
     }
     function updateConsumerData(data) {
         const { consumerId, key, value } = data
@@ -413,12 +483,20 @@ const TRANS_routeDocumentation = (function () {
 
                    var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
                    if (TripIntegratedEmploymentCheckbox.checked == true) {
-                       if (consumersOnRecord.size > 0) {
-                           roster2.toggleMiniRosterBtnVisible(false);
-                       } else {
-                           roster2.toggleMiniRosterBtnVisible(true);
-                       }
-                   }
+                    if (consumersOnRecord.size > 1) {
+                        tooManyConsumersWarning.style.display = 'block';
+                        roster2.toggleMiniRosterBtnVisible(false);
+                    } else if (consumersOnRecord.size == 1) {
+                        roster2.toggleMiniRosterBtnVisible(false);
+                        tooManyConsumersWarning.style.display = 'none';
+                    }else {
+                        roster2.toggleMiniRosterBtnVisible(true);
+                        tooManyConsumersWarning.style.display = 'none';
+                    }
+                } else {
+                    roster2.toggleMiniRosterBtnVisible(true);
+                    tooManyConsumersWarning.style.display = 'none';
+                }
                 })
                 break;
             }

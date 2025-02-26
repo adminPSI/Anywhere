@@ -352,7 +352,7 @@ const TRANS_addRoute = (function () {
                if (consumersOnRecord.size > 1) {
                 noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
                 roster2.toggleMiniRosterBtnVisible(false);
-                noConsumerWarningMessage.classList.add('error');
+              //  noConsumerWarningMessage.classList.add('error');
                // noConsumerWarning.classList.add('error');
                tooManyConsumersWarning.style.display = 'block';
                // alert('You have selected multiple consumers. Only one consumer is allowed for Integrated Employment. Please update your consumers and try again.');
@@ -360,10 +360,11 @@ const TRANS_addRoute = (function () {
              } else if (consumersOnRecord.size == 1) {
                 noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
                roster2.toggleMiniRosterBtnVisible(false);
+              // noConsumerWarningMessage.classList.remove('error');
                tooManyConsumersWarning.style.display = 'none';
             } else {
                 noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
-                noConsumerWarningMessage.classList.remove('error');
+               // noConsumerWarningMessage.classList.remove('error');
                 // noConsumerWarning.classList.remove('error');
                 roster2.toggleMiniRosterBtnVisible(true);
                 tooManyConsumersWarning.style.display = 'none';

@@ -233,10 +233,17 @@ const TRANS_manageEditRoute = (function () {
         noConsumerWarning.id = 'noConsumerWarningMessage';
         consumerSectionBody.appendChild(noConsumerWarning)
         noConsumerWarning.style.display = 'none';
-        //
+        // Too many Consumer Warning //
+        tooManyConsumersWarning = document.createElement('p');
+        tooManyConsumersWarning.style.color = 'red';
+        tooManyConsumersWarning.id = 'tooManyConsumersWarning';
+        tooManyConsumersWarning.innerText = 'You must select only one consumer for this route.'
+        tooManyConsumersWarning.style.display = 'none';
+
         column2.appendChild(consumerSectionCard)
         column2.appendChild(btnWrap);
         if (!ro) column2.appendChild(deleteBtn);
+        column2.appendChild(tooManyConsumersWarning)
         ///////////////////////
         DOM.ACTIONCENTER.appendChild(column1);
         DOM.ACTIONCENTER.appendChild(column2);
@@ -392,17 +399,22 @@ const TRANS_manageEditRoute = (function () {
                if (consumersOnRecord.size > 1) {
                 noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
                 roster2.toggleMiniRosterBtnVisible(false);
-                noConsumerWarningMessage.classList.add('error');
+               // noConsumerWarningMessage.classList.add('error');
                // noConsumerWarning.classList.add('error');
-                alert('You have selected multiple consumers. Only one consumer is allowed for Integrated Employment. Please update your consumers and try again.');
-                } else if (consumersOnRecord.size == 1) {
-                     noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
-                    roster2.toggleMiniRosterBtnVisible(false);
-               } else {
+               tooManyConsumersWarning.style.display = 'block';
+               // alert('You have selected multiple consumers. Only one consumer is allowed for Integrated Employment. Please update your consumers and try again.');
+                
+             } else if (consumersOnRecord.size == 1) {
                 noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
-                noConsumerWarningMessage.classList.remove('error');
+               roster2.toggleMiniRosterBtnVisible(false);
+             //  noConsumerWarningMessage.classList.remove('error');
+               tooManyConsumersWarning.style.display = 'none';
+            } else {
+                noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+               // noConsumerWarningMessage.classList.remove('error');
                 // noConsumerWarning.classList.remove('error');
                 roster2.toggleMiniRosterBtnVisible(true);
+                tooManyConsumersWarning.style.display = 'none';
                }
                
                setBtnStatusOfAddRoute();
@@ -505,6 +517,18 @@ const TRANS_manageEditRoute = (function () {
             if (consumersOnRecord.size > 1) {
                 updateBtn.classList.add('disabled');
                 return;
+            } else if (consumersOnRecord.size == 1) {
+                updateBtn.classList.remove('disabled');
+            }else {
+                updateBtn.classList.add('disabled'); 
+                return;
+            }
+        } else {
+            if (consumersOnRecord.size == 0) {
+                updateBtn.classList.add('disabled');
+                return;
+            } else {
+                updateBtn.classList.remove('disabled'); 
             }
         }
 
@@ -565,13 +589,19 @@ const TRANS_manageEditRoute = (function () {
         }
 
         if (TripIntegratedEmploymentCheckbox.checked == true) {
-            if (consumersOnRecord.size > 0) {
+            if (consumersOnRecord.size > 1) {
+                tooManyConsumersWarning.style.display = 'block';
                 roster2.toggleMiniRosterBtnVisible(false);
-            } else {
+            } else if (consumersOnRecord.size == 1) {
+                roster2.toggleMiniRosterBtnVisible(false);
+                tooManyConsumersWarning.style.display = 'none';
+            }else {
                 roster2.toggleMiniRosterBtnVisible(true);
+                tooManyConsumersWarning.style.display = 'none';
             }
         } else {
             roster2.toggleMiniRosterBtnVisible(true);
+            tooManyConsumersWarning.style.display = 'none';
         }
 
         
@@ -747,13 +777,19 @@ const TRANS_manageEditRoute = (function () {
                     }
 
                     if (TripIntegratedEmploymentCheckbox.checked == true) {
-                        if (consumersOnRecord.size > 0) {
+                        if (consumersOnRecord.size > 1) {
+                            tooManyConsumersWarning.style.display = 'block';
                             roster2.toggleMiniRosterBtnVisible(false);
-                        } else {
+                        } else if (consumersOnRecord.size == 1) {
+                            roster2.toggleMiniRosterBtnVisible(false);
+                            tooManyConsumersWarning.style.display = 'none';
+                        }else {
                             roster2.toggleMiniRosterBtnVisible(true);
+                            tooManyConsumersWarning.style.display = 'none';
                         }
                     } else {
                         roster2.toggleMiniRosterBtnVisible(true);
+                        tooManyConsumersWarning.style.display = 'none';
                     }
 
                     
