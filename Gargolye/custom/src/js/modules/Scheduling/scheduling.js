@@ -1579,8 +1579,8 @@ const Scheduling = (function () {
       callback: function () {
         setActiveModuleSectionAttribute('scheduling-calendar');
         PROGRESS.SPINNER.show('Loading Schedule...');
-        SchedulingCalendar.init();
-        //schedulingCalendar.init();
+        //SchedulingCalendar.init();
+        schedulingCalendar.init();
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
@@ -1618,7 +1618,7 @@ const Scheduling = (function () {
     btnWrap.classList.add('landingBtnWrap');
 
     btnWrap.appendChild(schedulingCalendarBtn);
-    btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
+    //btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === false && $.session.schedulingUpdate === true) {
       btnWrap.appendChild(schedulingRequestTimeOffBtn);
