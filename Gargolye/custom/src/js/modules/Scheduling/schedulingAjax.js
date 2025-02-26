@@ -518,6 +518,7 @@ const schedulingAjax = (function () {
     getLocationDropdownForScheduling,
     getEmployeesForScheduling,
     getRegionDropdown,
+    //
     requestDaysOffSchedulingAjax,
     getCallOffDropdownReasonsAjax,
     getCallOffDropdownEmployeesAjax,

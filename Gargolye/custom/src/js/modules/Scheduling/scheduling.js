@@ -863,7 +863,7 @@ const SchedulingCalendar = (function () {
     return `${lastName}, ${firstName}`;
   }
   async function getCalendarEvents(locationID = '%', peopleID = '%') {
-    schedules = await schedulingAjax.getSchedulesForSchedulingModuleAjax(locationID, peopleID);
+    schedules = await schedulingAjax.getSchedulesForSchedulingModule(locationID, peopleID);
 
     return schedules.map(sch => {
       const timeRegEx = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/;
@@ -902,7 +902,7 @@ const SchedulingCalendar = (function () {
     });
   }
   async function getCalendarAppointments() {
-    appointments = await schedulingAjax.getScheduleApptInformationAjax();
+    appointments = await schedulingAjax.getScheduleApptInformation();
 
     return appointments.map(appt => {
       const serviceDate = formatServiceDate(appt.serviceDate, appt.dateScheduled);
@@ -971,7 +971,7 @@ const SchedulingCalendar = (function () {
       type: 'contained',
       callback: async () => {
         POPUP.hide(popup);
-        shiftEmployees = await schedulingAjax.getEmployeesForSchedulingAjax({
+        shiftEmployees = await schedulingAjax.getEmployeesForScheduling({
           locationId: '0',
           includeTrainedOnly: 0,
           region: 'ALL',
@@ -1474,7 +1474,7 @@ const SchedulingCalendar = (function () {
         populateEmployeeDropdown();
 
         if (!$.session.schedulingUpdate) {
-          locations = await schedulingAjax.getLocationDropdownForSchedulingAjax('Y');
+          locations = await schedulingAjax.getLocationDropdownForScheduling('Y');
         }
       }
     });
@@ -1529,7 +1529,7 @@ const SchedulingCalendar = (function () {
     scheduleCalEle = scheduleCalendar.rootEle;
     build();
 
-    employees = await schedulingAjax.getEmployeesForSchedulingAjax({
+    employees = await schedulingAjax.getEmployeesForScheduling({
       locationId: '0',
       includeTrainedOnly: 0,
       region: 'ALL',
@@ -1541,14 +1541,14 @@ const SchedulingCalendar = (function () {
     shiftEmployees = [...employees];
     populateEmployeeDropdown();
 
-    //locations = await schedulingAjax.getLocationDropdownForSchedulingAjax('N');
+    //locations = await schedulingAjax.getLocationDropdownForScheduling('N');
     //populateLocationDropdown();
 
     calendarEvents = await getCalendarEvents('%', $.session.PeopleId);
     calendarAppointments = await getCalendarAppointments();
 
     // after everything is on screen pre load some popup data
-    regions = await schedulingAjax.getRegionDropdownAjax();
+    //regions = await schedulingAjax.getRegionDropdown();
   }
 
   return {
@@ -1571,8 +1571,8 @@ const Scheduling = (function () {
       callback: function () {
         setActiveModuleSectionAttribute('scheduling-calendar');
         PROGRESS.SPINNER.show('Loading Schedule...');
-        //SchedulingCalendar.init();
-        schedulingCalendar.init();
+        SchedulingCalendar.init();
+        //schedulingCalendar.init();
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
