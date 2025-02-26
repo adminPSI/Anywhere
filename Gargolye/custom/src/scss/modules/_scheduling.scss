@@ -43,18 +43,18 @@
     }
   }
 
-  .newShiftButton {}
+  //.newShiftButton {}
   .openShiftWrap {
     p {
       margin-bottom: 4px;
     }
-    
+
     > div {
       display: flex;
       justify-content: space-evenly;
     }
   }
-  .pubUnpubButton {}
+  //.pubUnpubButton {}
 }
 #locationDropdown {
   min-width: 200px;

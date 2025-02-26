@@ -2160,7 +2160,16 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getLocationDropdownForScheduling/")]
-        AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token);
+        AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpeShifts);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/saveOrUpdateShift/")]
+        string saveOrUpdateShift(string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag);
+
 
         [OperationContract]
         [WebInvoke(Method = "POST",

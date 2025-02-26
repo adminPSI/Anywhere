@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
+using System.Management.Automation.Language;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text.RegularExpressions;
@@ -4894,12 +4895,13 @@ namespace Anywhere.Data
             }
         }
 
-        public string getLocationDropdownForScheduling(string token)
+        public string getLocationDropdownForScheduling(string token, char showOpeShifts)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getMainLocationDropdownForScheduling ");
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(showOpeShifts.ToString());
             string text = "CALL DBA.ANYW_Scheduling_GetLocationDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -4911,6 +4913,36 @@ namespace Anywhere.Data
                 return "691: error ANYW_Scheduling_GetMainLocationDropdown";
             }
         }
+
+        public string saveOrUpdateShift(string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag)
+        {
+            //if (tokenValidator(token) == false) return null;
+            logger.debug("saveOrUpdateShift ");
+
+            List<string> list = new List<string>();
+            list.Add(dateString);
+            list.Add(locationId);
+            list.Add(personId);
+            list.Add(startTime);
+            list.Add(endTime);
+            list.Add(color);
+            list.Add(notifyEmployee);
+            list.Add(consumerIdString);
+            list.Add(saveUpdateFlag);
+
+            string text = "CALL DBA.ANYW_Scheduling_InsertOrUpdateShift(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("692", ex.Message + "ANYW_Scheduling_InsertOrUpdateShift(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "692: error ANYW_Scheduling_InsertOrUpdateShift";
+            }
+        }
+
 
         public string saveSchedulingCallOffRequest(string token, string shiftId, string personId, string reasonId, string note, string status, string notifiedEmployeeId)
         {
