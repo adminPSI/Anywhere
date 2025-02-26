@@ -20,6 +20,8 @@ const signatureWidget = (function () {
     let planStatusDropdown;
     let locationDropdown;
     let groupDropdown;
+    let groupList;
+    let locationList;
 
     function populatePlanStatusDropdown() {
         var data = [
@@ -47,13 +49,15 @@ const signatureWidget = (function () {
         };
         dropdownData.unshift(defaultLocation);
 
+        locationList = dropdownData;
         dropdown.populate(locationDropdown, dropdownData, signatureWidgetLocationId);
     }
     function populateGroupDropdown(groupData) {
         groupData = groupData ? groupData : groupDropdownData;
         const dropdownData = groupData.map(function (data) {
             return {
-                value: data.RetrieveID,
+                id: data.GroupCode,
+                value: data.RetrieveID.split('.')[0],
                 text: data.GroupName,
             };
         });
@@ -65,9 +69,10 @@ const signatureWidget = (function () {
         const defaultGroup = {
             id: '%',
             value: '%',
-            text: 'EVERYONE',
+            text: 'Everyone',
         };
         dropdownData.unshift(defaultGroup);
+        groupList = dropdownData;
 
         dropdown.populate(groupDropdown, dropdownData, signatureWidgetGroupId);
     }
@@ -152,6 +157,8 @@ const signatureWidget = (function () {
             groupDropdownData = await missingSignatureAjax.getGroupsDropdownData(
                 selectedOption.value,
             );
+            signatureWidgetGroupId = '%';
+            signatureWidgetGroupName = 'Everyone';
             populateGroupDropdown(groupDropdownData);
 
         });
@@ -175,12 +182,16 @@ const signatureWidget = (function () {
             filteredSignatures = missingSignatureData.filter(ms => {
                 return (
                     (ms.planStatus === signaturePlanStatus || signaturePlanStatus === '%') &&
-                    (ms.groupId.includes(signatureWidgetGroupId) || signatureWidgetGroupId === '%') &&
+                    (ms.groupId.includes(signatureWidgetGroupId.split('.')[0]) || signatureWidgetGroupId.split('.')[0] === '%') &&
                     (ms.locationId.includes(signatureWidgetLocationId) || signatureWidgetLocationId === '%')
                 );
             });
             populateMissingSignatures(filteredSignatures);
             displayFilteredBy();
+
+            widgetSettingsAjax.setWidgetFilter('dashmissingsignatures', 'status', signaturePlanStatus)
+            widgetSettingsAjax.setWidgetFilter('dashmissingsignatures', 'location', signatureWidgetLocationId)
+            widgetSettingsAjax.setWidgetFilter('dashmissingsignatures', 'group', signatureWidgetGroupId)
         });
         cancelFilterBtn.addEventListener('click', event => {
             filterPopup.classList.remove('visible');
@@ -325,20 +336,7 @@ const signatureWidget = (function () {
         missingSignaturesList.appendChild(sigTable);
     }
 
-    function init() {
-        // if (!signaturePlanStatus) signaturePlanStatus = '%';
-        // if (!signatureWidgetGroupId) signatureWidgetGroupId = '0';
-        // if (!signatureWidgetGroupName) signatureWidgetGroupName = 'Everyone';
-        // if (!signatureWidgetGroupCode) signatureWidgetGroupCode = 'ALL';
-        // if (!signatureWidgetLocationId) signatureWidgetLocationId = '%';
-        // if (!signatureWidgetLocationName) signatureWidgetLocationName = 'ALL';
-        signaturePlanStatus = '%';
-        signatureWidgetGroupId = '%';
-        signatureWidgetGroupName = 'EVERYONE';
-        signatureWidgetGroupCode = 'ALL';
-        signatureWidgetLocationId = '%';
-        signatureWidgetLocationName = 'ALL';
-
+    async function init() {
         widget = document.getElementById('dashmissingsignatures');
         widgetBody = widget.querySelector('.widget__body');
         missingSignaturesList = document.querySelector('.missingSignatures');
@@ -346,19 +344,45 @@ const signatureWidget = (function () {
         // append filter button
         dashboard.appendFilterButton('dashmissingsignatures', 'missingSignaturesFilterBtn');
 
+        var filterStatusDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashmissingsignatures', 'status');
+        signaturePlanStatus = filterStatusDefaultValue.getWidgetFilterResult;
+        var filterLocationDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashmissingsignatures', 'location');
+        signatureWidgetLocationId = filterLocationDefaultValue.getWidgetFilterResult;
+        var filterGroupDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashmissingsignatures', 'group');
+        signatureWidgetGroupId = filterGroupDefaultValue.getWidgetFilterResult;
+        signatureWidgetGroupId = signatureWidgetGroupId.split('.')[0];
+
+        if (!signaturePlanStatus) signaturePlanStatus = '%';
+        if (!signatureWidgetGroupId) signatureWidgetGroupId = '%';
+        if (!signatureWidgetGroupName) signatureWidgetGroupName = 'Everyone';
+        if (!signatureWidgetGroupCode) signatureWidgetGroupCode = 'ALL';
+        if (!signatureWidgetLocationId) signatureWidgetLocationId = '%';
+        if (!signatureWidgetLocationName) signatureWidgetLocationName = 'ALL';
+
         buildFilterPopup();
         displayFilteredBy();
         eventSetup();
 
         missingSignatureAjax.getMissingPlanSignatures({ token: $.session.Token }, async res => {
             missingSignatureData = res;
-            populateMissingSignatures(missingSignatureData);
+            filteredSignatures = missingSignatureData.filter(ms => {
+                return (
+                    (ms.planStatus === signaturePlanStatus || signaturePlanStatus === '%') &&
+                    (ms.groupId.includes(signatureWidgetGroupId.split('.')[0]) || signatureWidgetGroupId.split('.')[0] === '%') &&
+                    (ms.locationId.includes(signatureWidgetLocationId) || signatureWidgetLocationId === '%')
+                );
+            });
+            populateMissingSignatures(filteredSignatures);
             locationDropdownData = await missingSignatureAjax.getLocationDropdownData();
             groupDropdownData = await missingSignatureAjax.getGroupsDropdownData(
                 signatureWidgetLocationId,
             );
             populateLocationDropdown(locationDropdownData);
             populateGroupDropdown(groupDropdownData);
+            signatureWidgetGroupName = groupList.find(l => l.value == signatureWidgetGroupId)?.text;
+            signatureWidgetGroupCode = groupList.find(l => l.value == signatureWidgetGroupId)?.id;
+            signatureWidgetLocationName = locationList.find(l => l.value == signatureWidgetLocationId)?.text;
+            displayFilteredBy();
         });
     }
 
