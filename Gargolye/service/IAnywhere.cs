@@ -948,13 +948,13 @@ namespace Anywhere
         string[] getUndocumentedServicesForWarning(string entryDate, string[] consumerId, string token);
 
 
-        [OperationContract]
-        [WebInvoke(Method = "POST",
-            BodyStyle = WebMessageBodyStyle.Wrapped,
-            ResponseFormat = WebMessageFormat.Json,
-            RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/getUndocumentedServicesForWarning/")]
-        string[] getUndocumentedServicesForWarning(string entryDate,string[] consumerId, string token);
+        //[OperationContract]
+        //[WebInvoke(Method = "POST",
+        //    BodyStyle = WebMessageBodyStyle.Wrapped,
+        //    ResponseFormat = WebMessageFormat.Json,
+        //    RequestFormat = WebMessageFormat.Json,
+        //    UriTemplate = "/getUndocumentedServicesForWarning/")]
+        //string[] getUndocumentedServicesForWarning(string entryDate,string[] consumerId, string token);
 
 
         [OperationContract]
