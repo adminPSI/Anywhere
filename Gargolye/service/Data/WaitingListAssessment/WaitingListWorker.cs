@@ -32,7 +32,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return landingPageObj;
         }
 
-        public WaitingList[] getWaitingListAssessment(int waitingListAssessmentId)
+        public WaitingList[] getWaitingListAssessment(long waitingListAssessmentId)
         {
             string assessmentString = "";
             assessmentString = dg.getWaitingListAssessment(waitingListAssessmentId);
@@ -50,12 +50,12 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return fundSourceObj;
         }
 
-        public string deleteWaitingListAssessment(string token, int waitingListId)
+        public string deleteWaitingListAssessment(string token, long waitingListId)
         {
             return dg.deleteWaitingListAssessment(token, waitingListId);
         }
 
-        public string deleteWaitingListParticipant(string token, int participantId)
+        public string deleteWaitingListParticipant(string token, long participantId)
         {
             return dg.deleteWaitingListParticipant(token, participantId);
         }
@@ -145,7 +145,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return "success";
         }
 
-        public string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, string valueTwo, char insertOrUpdate)
+        public string insertUpdateWaitingListValue(long id, long linkId, string propertyName, string value, string valueTwo, char insertOrUpdate)
         {
             string tableName = "";
             string columnName = "";

@@ -561,7 +561,7 @@ const demographics = (function () {
     }
 
     function buildPathToEmployment() {
-        const groupWrap = buildInputGroupWrap('Path To Employment');
+        const groupWrap = buildInputGroupWrap('Path To Employment'); 
         const { inputGroup } = buildInputGroup('pathToEmployment', demoData.pathToEmployment);
         groupWrap.appendChild(inputGroup);
 
@@ -738,7 +738,7 @@ const demographics = (function () {
         const contactInfo = buildContactInfo();
         const additionalInfo = buildAdditionalInfo();
         const organizationInfo = buildOrganizationInfo();
-        const demographicInfo = buildDemographicInfo();
+        const demographicInfo = buildDemographicInfo(); 
 
         sectionInner.appendChild(detailBtn);
         sectionInner.appendChild(pathToEmployment);

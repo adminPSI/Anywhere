@@ -950,6 +950,15 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getUndocumentedServicesForWarning/")]
+        string[] getUndocumentedServicesForWarning(string entryDate,string[] consumerId, string token);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
@@ -4249,7 +4258,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/deleteWaitingListParticipant/")]
-        string deleteWaitingListParticipant(string token, int participantId);
+        string deleteWaitingListParticipant(string token, long participantId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4257,7 +4266,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/deleteWaitingListAssessment/")]
-        string deleteWaitingListAssessment(string token, int waitingListId);
+        string deleteWaitingListAssessment(string token, long waitingListId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4279,7 +4288,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getWaitingListAssessment/")]
-        WaitingList[] getWaitingListAssessment(int waitingListAssessmentId);
+        WaitingList[] getWaitingListAssessment(long waitingListAssessmentId);
 
         [WebInvoke(Method = "POST",
           BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -4293,7 +4302,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/insertUpdateWaitingListValue/")]
-        string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, string valueTwo, char insertOrUpdate);
+        string insertUpdateWaitingListValue(long id, long linkId, string propertyName, string value, string valueTwo, char insertOrUpdate);
 
         [WebInvoke(Method = "POST",
           BodyStyle = WebMessageBodyStyle.Wrapped,

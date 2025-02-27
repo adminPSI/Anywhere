@@ -1541,7 +1541,7 @@ const roster2 = (function () {
             console.log(error);
         }
     }
-    async function getConsumerGroupsData() {
+    async function getConsumerGroupsData() { 
         try {
             const data = (await customGroupsAjax.getConsumerGroups(selectedLocationId)).getConsumerGroupsJSONResult;
             return data;

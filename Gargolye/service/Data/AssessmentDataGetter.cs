@@ -7,6 +7,7 @@ using System.Data.Odbc;
 using System.IO;
 using System.Linq;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereAssessmentWorker;
 using static Anywhere.service.Data.Authorization.AuthorizationWorker;
 
 namespace Anywhere.service.Data

@@ -1,4 +1,4 @@
-﻿var absentWidget = (function() {
+var absentWidget = (function() {
     // DATA
     //-----------------------
     var date;

@@ -6,6 +6,7 @@ using System.Management.Automation.Language;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereAssessmentWorker;
 
 namespace Anywhere.service.Data
 {

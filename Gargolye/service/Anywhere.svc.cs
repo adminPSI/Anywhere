@@ -2957,12 +2957,12 @@ namespace Anywhere
             return wlw.deleteFromWaitingList(properties);
         }
 
-        public string deleteWaitingListAssessment(string token, int waitingListId)
+        public string deleteWaitingListAssessment(string token, long waitingListId)
         {
             return wlw.deleteWaitingListAssessment(token, waitingListId);
         }
 
-        public string deleteWaitingListParticipant(string token, int participantId)
+        public string deleteWaitingListParticipant(string token, long participantId)
         {
             return wlw.deleteWaitingListParticipant(token, participantId);
         }
@@ -2977,12 +2977,12 @@ namespace Anywhere
             return wlw.getWaitingListFundingSources();
         }
 
-        public WaitingList[] getWaitingListAssessment(int waitingListAssessmentId)
+        public WaitingList[] getWaitingListAssessment(long waitingListAssessmentId)
         {
             return wlw.getWaitingListAssessment(waitingListAssessmentId);
         }
 
-        public string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, string valueTwo, char insertOrUpdate)
+        public string insertUpdateWaitingListValue(long id, long linkId, string propertyName, string value, string valueTwo, char insertOrUpdate)
         {
             return wlw.insertUpdateWaitingListValue(id, linkId, propertyName, value, valueTwo, insertOrUpdate);
         }

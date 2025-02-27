@@ -1,4 +1,4 @@
-const consumerProgresNotes = (function() {
+const consumerProgresNotes = (function () {
 
     let widget
     let widgetBody

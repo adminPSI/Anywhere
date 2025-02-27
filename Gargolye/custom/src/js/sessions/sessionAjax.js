@@ -1124,8 +1124,8 @@ function getDefaultAnywhereSettings() {
           $('#incidenttrackingdaysback').val($.session.defaultIncidentTrackingDaysBack);
 
           disableModules();
-          //loadApp('home');
-          loadApp('schedule');
+          loadApp('home');
+          //loadApp('schedule');
         },
         error: function (xhr, status, error) {
             //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);

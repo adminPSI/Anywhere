@@ -13,7 +13,7 @@ const CaseNotes = (() => {
     let selectedServiceCode;
     let updatedInputs = {};
     let allowGroupNotes = false;
-    let defaultServiceCode;
+      let defaultServiceCode;
     //--------------------------
     // PERMISSIONS
     //--------------------------
@@ -679,7 +679,7 @@ const CaseNotes = (() => {
                         input.fullscreen.disableCloseButon(false);
                         // focus on textarea
                         textareaInput.focus();
-                    });
+                    });                  
                 }
             } else {
                 // check for the #ph
@@ -689,7 +689,7 @@ const CaseNotes = (() => {
                     // #114862 - SH-ANY-CN: Add new phrase pop-up cancel button doesn't work
                     // input.toggleDisabled(true);
                     ////
-
+                     
                     // show phrases dialog
                     cnPhrases.InsertPhrases.show();
 

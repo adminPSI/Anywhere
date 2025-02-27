@@ -153,7 +153,7 @@ $.session.defaultPlanGroupValue;
 $.session.defaultPlanGroupName;
 $.session.defaultContact;
 //////////
-$.session.areInSalesForce = false;
+$.session.areInSalesForce = true;
 $.session.RosterDeleteAbsent = false;
 $.session.defaultStaffLocationName = 0;
 $.session.selectedLocation = ['0', 'defaultlocation'];
@@ -375,7 +375,7 @@ $.session.sendWaitingListEmail = false;
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
 
 //Needs updated for every release.
-$.session.version = '2024.3';
+$.session.version = '2024.3.1';
 //State Abbreviation
 $.session.stateAbbreviation = '';
 // temp holder for the device GUID when logging in
@@ -869,75 +869,101 @@ function setSessionVariables() {
 
         // Consumer Finance
         if (tmpWindow == 'Anywhere Consumer Finances' || $.session.isPSI == true) {
-            if (tmpPerm == 'Update' || $.session.isPSI == true) {
-                $.session.CFUpdate = true;
-            }
-            if (tmpPerm == 'Delete' || $.session.isPSI == true) {
-                $.session.CFDelete = true;
-            }
-            if (tmpPerm == 'View' || $.session.isPSI == true) {
-                $('#cfAccountDiv').removeClass('disabledModule');
-                $('#consumerfinancessettingsdiv').removeClass('disabledModule');
-                $.session.CFView = true;
-            }
-            if (tmpPerm == 'Insert' || $.session.isPSI == true) {
-                $.session.CFInsert = true;
-            }
-            if (tmpPerm == 'Add Payee' || $.session.isPSI == true) {
-                $.session.CFADDPayee = true;
-            }
-            if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
-                $.session.CFEditAccountEntries = true;
-            }
-            if (tmpPerm == 'Insert Accounts' || $.session.isPSI == true) {
-                $.session.CFInsertAccounts = true;
-            }
-            if (tmpPerm == 'Update Edit Accounts' || $.session.isPSI == true) {
-                $.session.CFUpdateEditAccounts = true;
-            }
-            if (tmpPerm == 'View Edit Accounts' || $.session.isPSI == true) {
-                $('#cfEditAccountDiv').removeClass('disabledModule');
-                $('#consumerfinancessettingsdiv').removeClass('disabledModule');
-                $.session.CFViewEditAccounts = true;
-            }
+          if (tmpPerm == 'Update' || $.session.isPSI == true) {
+            $.session.CFUpdate = true;
+          }
+          if (tmpPerm == 'Delete' || $.session.isPSI == true) {
+            $.session.CFDelete = true;
+          }
+          if (tmpPerm == 'View' || $.session.isPSI == true) {
+            $('#cfAccountDiv').removeClass('disabledModule');
+            $('#consumerfinancessettingsdiv').removeClass('disabledModule');
+            $.session.CFView = true;
+          }
+          if (tmpPerm == 'Insert' || $.session.isPSI == true) {
+            $.session.CFInsert = true;
+          }
+          if (tmpPerm == 'Add Payee' || $.session.isPSI == true) {
+            $.session.CFADDPayee = true;
+          }
+          if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
+            $.session.CFEditAccountEntries = true;
+          }
+          if (tmpPerm == 'Insert Accounts' || $.session.isPSI == true) {
+            $.session.CFInsertAccounts = true;
+          }
+          if (tmpPerm == 'Update Edit Accounts' || $.session.isPSI == true) {
+            $.session.CFUpdateEditAccounts = true;
+          }
+          if (tmpPerm == 'View Edit Accounts' || $.session.isPSI == true) {
+            $('#cfEditAccountDiv').removeClass('disabledModule');
+            $('#consumerfinancessettingsdiv').removeClass('disabledModule');
+            $.session.CFViewEditAccounts = true;
+          }
 
-            if (tmpPerm == 'View Checking' || $.session.isPSI == true) {
-                $.session.CFViewChecking = true;
-            }
+          if (tmpPerm == 'View Checking' || $.session.isPSI == true) {
+            $.session.CFViewChecking = true;
+          }
 
-            if (tmpPerm == 'View Credit Card' || $.session.isPSI == true) {
-                $.session.CFViewCraditCard = true;
-            }
+          if (tmpPerm == 'View Credit Card' || $.session.isPSI == true) {
+            $.session.CFViewCraditCard = true;
+          }
 
-            if (tmpPerm == 'View Food Stamps' || $.session.isPSI == true) {
-                $.session.CFViewFoodStamp = true;
-            }
+          if (tmpPerm == 'View Food Stamps' || $.session.isPSI == true) {
+            $.session.CFViewFoodStamp = true;
+          }
 
-            if (tmpPerm == 'View Petty Cash' || $.session.isPSI == true) {
-                $.session.CFViewPettyCash = true;
-            }
+          if (tmpPerm == 'View Petty Cash' || $.session.isPSI == true) {
+            $.session.CFViewPettyCash = true;
+          }
 
-            if (tmpPerm == 'View Savings' || $.session.isPSI == true) {
-                $.session.CFViewShaving = true;
-            }
-            if (tmpPerm == 'View Christmas Club' || $.session.isPSI == true) {
-                $.session.CFViewChristmasClub = true;
-            }
-            if (tmpPerm == 'View System 2018.3A' || $.session.isPSI == true) {
-                $.session.CFViewSystem20183A = true;
-            }
-            if (tmpPerm == 'View System 2018.3' || $.session.isPSI == true) {
-                $.session.CFViewSystem20183 = true;
-            }
-            if (tmpPerm == 'View Ohio EBT' || $.session.isPSI == true) {
-                $.session.CFViewOhioEBT = true;
-            }
-            if (tmpPerm == 'View Food Stamp Debit Card EBT' || $.session.isPSI == true) {
-                $.session.CFViewViewFoodStampDebitCardEBT = true;
-            }
-            if ($.session.isPSI == false && (tmpPerm == 'Case Load' || tmpPerm == 'Caseload' || tmpPerm == 'Caseload only')) {
-                $.session.ConsumerFinanceCaseLoad = true;
-            }
+          if (tmpPerm == 'View Savings' || $.session.isPSI == true) {
+            $.session.CFViewShaving = true;
+          }
+          if (tmpPerm == 'View Christmas Club' || $.session.isPSI == true) {
+            $.session.CFViewChristmasClub = true;
+          }
+          if (tmpPerm == 'View System 2018.3A' || $.session.isPSI == true) {
+            $.session.CFViewSystem20183A = true;
+          }
+          if (tmpPerm == 'View System 2018.3' || $.session.isPSI == true) {
+            $.session.CFViewSystem20183 = true;
+          }
+          if (tmpPerm == 'View Ohio EBT' || $.session.isPSI == true) {
+            $.session.CFViewOhioEBT = true;
+          }
+          if (tmpPerm == 'View Food Stamp Debit Card EBT' || $.session.isPSI == true) {
+            $.session.CFViewViewFoodStampDebitCardEBT = true;
+          }
+          if (
+            $.session.isPSI == false &&
+            (tmpPerm == 'Case Load' || tmpPerm == 'Caseload' || tmpPerm == 'Caseload only')
+          ) {
+            $.session.ConsumerFinanceCaseLoad = true;
+          }
+
+          // if ($.session.UserId === 'ash') {
+          //   $.session.CFUpdate = true;
+          //   $.session.CFDelete = true;
+          //   $.session.CFView = true;
+          //   $.session.CFInsert = true;
+          //   $.session.CFADDPayee = true;
+          //   $.session.CFEditAccountEntries = true;
+          //   $.session.CFInsertAccounts = true;
+          //   $.session.CFUpdateEditAccounts = true;
+          //   $.session.CFViewEditAccounts = true;
+          //   $.session.CFViewChecking = true;
+          //   $.session.CFViewCraditCard = true;
+          //   $.session.CFViewFoodStamp = true;
+          //   $.session.CFViewPettyCash = true;
+          //   $.session.CFViewShaving = true;
+          //   $.session.CFViewChristmasClub = true;
+          //   $.session.CFViewSystem20183A = true;
+          //   $.session.CFViewSystem20183 = true;
+          //   $.session.CFViewOhioEBT = true;
+          //   $.session.CFViewViewFoodStampDebitCardEBT = true;
+          //   $.session.ConsumerFinanceCaseLoad = true;
+          // }
         }
 
         //Reset Password

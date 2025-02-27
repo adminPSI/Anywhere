@@ -469,7 +469,7 @@ const rosterToDoListWidget = (function () {
                 return c.consumerId === filter.consumer;
             });
         };
-
+ 
         // console.log(consumers, " consumer: ", filter.consumer);
         filteredBy.innerHTML = `<div class="filteredByData">
 		  <p><span>Due Date:</span> ${dueDateRange === 'CUSTOM' ? `${dueDateFrom} - ${dueDateTo}` : dueDateRange

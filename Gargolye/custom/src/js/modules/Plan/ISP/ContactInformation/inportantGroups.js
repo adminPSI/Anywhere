@@ -92,7 +92,7 @@ const isp_ci_importantGroups = (() => {
         async function saveData() {
             popup.style.display = 'none';
             pendingSave.show('Saving...');
-
+  
             const statusDD = document.getElementById('isp-ciig-statusDropdown');
             const statusVal = statusDD.options[statusDD.selectedIndex].value;
             const nameVal = document.getElementById('isp-ciig-nameInput').value;
