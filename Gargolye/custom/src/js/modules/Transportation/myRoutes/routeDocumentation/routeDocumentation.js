@@ -16,8 +16,8 @@ const TRANS_routeDocumentation = (function () {
         Save and Cancel btns
     */
 
-    let routeStartInput, routeEndInput, routeStartOdo, routeEndOdo, ro;
-    let consumerDocCardBody;
+    let routeStartInput, routeEndInput, routeStartOdo, routeEndOdo, tripIntegratedEmploymentCheckbox, ro;
+    let consumerDocCardBody, noConsumerWarning, tooManyConsumersWarning;
 
     // * Data storage
     let consumersOnRecord = new Map() //{consumerId: {consumer data}}
@@ -86,6 +86,18 @@ const TRANS_routeDocumentation = (function () {
             style: "secondary",
             value: tripInfo.odometerStop
         });
+
+        tripIntegratedEmploymentCheckbox = input.buildCheckbox({
+            text: 'Trip To/From Integrated Employment',
+            id: 'tripIntegratedEmploymentCheckbox',
+            //readonly: ro,
+            isChecked: false,
+            style: "secondary",
+            isChecked: tripInfo.integratedEmployment === 'Y' ? true : false,
+        });
+
+        tripIntegratedEmploymentCheckbox.style = "padding-bottom: 15px;";   
+
         if (ro) {
             routeStartInput.classList.add('disabled')
             routeEndInput.classList.add('disabled')
@@ -93,6 +105,7 @@ const TRANS_routeDocumentation = (function () {
             routeEndOdo.classList.add('disabled')
         }
         routeDocCardBody.appendChild(routeStartInput);
+        routeDocCardBody.appendChild(tripIntegratedEmploymentCheckbox);
         routeDocCardBody.appendChild(routeStartOdo);
         routeDocCardBody.appendChild(routeEndInput);
         routeDocCardBody.appendChild(routeEndOdo);
@@ -138,49 +151,121 @@ const TRANS_routeDocumentation = (function () {
         });
         const btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
+
+        // Too many Consumer Warning //
+        tooManyConsumersWarning = document.createElement('p');
+        tooManyConsumersWarning.style.color = 'red';
+        tooManyConsumersWarning.id = 'tooManyConsumersWarning';
+        tooManyConsumersWarning.innerText = 'You must select only one consumer for this route.'
+        tooManyConsumersWarning.style.display = 'none';
+
         if (!ro) {
             btnWrap.appendChild(saveBtn);
             btnWrap.appendChild(saveCloseBtn);
             column2.appendChild(btnWrap);
+            
         }
         column2.appendChild(cancelBtn)
         cancelBtn.style.width = '100%';
+        column2.appendChild(tooManyConsumersWarning)
         /////////////////////
         DOM.ACTIONCENTER.appendChild(column1)
         DOM.ACTIONCENTER.appendChild(column2)
         buildConsumerCards()
         eventListeners()
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            if (consumersOnRecord.size > 0) {
+                roster2.toggleMiniRosterBtnVisible(false);
+            } else {
+                roster2.toggleMiniRosterBtnVisible(true);
+            }
+            checkRequiredFields();
+            setBtnStatusOfRouteDocumentation();
+
+        }
     }
 
     function eventListeners() {
         function odoCheck() {
+
             const startVal = parseInt(routeStartOdo.querySelector('input').value)
             const endVal = parseInt(routeEndOdo.querySelector('input').value)
+
+            var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+            
+            routeStartOdo.classList.remove('error');
+            routeEndOdo.classList.remove('error');
+
             //Odo can be null, check to see if they are numbers (NaN when they are null)
-      if (typeof(startVal) !== 'number' && typeof(endVal) !== 'number') {
+            if (typeof(startVal) !== 'number' && typeof(endVal) !== 'number') {
                 routeStartOdo.classList.remove('error');
-                routeEndOdo.classList.remove('error')
+                routeEndOdo.classList.remove('error');
+                setBtnStatusOfRouteDocumentation();
                 return
             }
 
-            const dif = endVal - startVal;
-            if (dif < 0) {
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+
+            if (isNaN(startVal) && isNaN(endVal)) {
                 routeStartOdo.classList.add('error');
-                routeEndOdo.classList.add('error')
+                routeEndOdo.classList.add('error');
+                setBtnStatusOfRouteDocumentation();
+                return;
             } else {
-                routeStartOdo.classList.remove('error');
-                routeEndOdo.classList.remove('error')
+                if (isNaN(startVal)) {
+                    routeStartOdo.classList.add('error');
+                    setBtnStatusOfRouteDocumentation();
+                    return;
+                }
+                if (isNaN(endVal)) {
+                    routeEndOdo.classList.add('error');
+                    setBtnStatusOfRouteDocumentation();
+                    return;
+                }
             }
+
+            if (consumersOnRecord.size > 1) {
+                roster2.toggleMiniRosterBtnVisible(false);
+                tooManyConsumersWarning.style.display = 'block'; 
+             } else if (consumersOnRecord.size == 1) {
+               roster2.toggleMiniRosterBtnVisible(false);
+               tooManyConsumersWarning.style.display = 'none';
+            } else {
+                roster2.toggleMiniRosterBtnVisible(true);
+                tooManyConsumersWarning.style.display = 'none';
+            }
+          //  setBtnStatusOfRouteDocumentation();
+
+        } else {  //TripIntegratedEmploymentCheckbox.checked == false
+
+            roster2.toggleMiniRosterBtnVisible(true);
+            tooManyConsumersWarning.style.display = 'none';
+         //   setBtnStatusOfRouteDocumentation();
         }
+
+        const dif = endVal - startVal;
+        if (dif < 0) {
+            routeStartOdo.classList.add('error');
+            routeEndOdo.classList.add('error')
+        } else {
+             routeStartOdo.classList.remove('error');
+             routeEndOdo.classList.remove('error')
+                }
+            setBtnStatusOfRouteDocumentation();
+            
+        } //end odoCheck()
 
         routeStartInput.addEventListener('click', event => {
             event.target.value = UTIL.getCurrentTime();
             routeStartInput.dispatchEvent(new Event('change'))
-    }, {once: true})
+            }, {once: true})
+
         routeEndInput.addEventListener('click', event => {
             event.target.value = UTIL.getCurrentTime();
             routeEndInput.dispatchEvent(new Event('change'))
-    }, {once: true})
+            }, {once: true})
 
         routeStartInput.addEventListener('change', event => {
             const totalHours = UTIL.calculateTotalHours(routeStartInput.firstChild.value, routeEndInput.querySelector('input').value)
@@ -201,8 +286,114 @@ const TRANS_routeDocumentation = (function () {
                 routeEndInput.classList.remove('error')
             }
         })
+
         routeStartOdo.addEventListener('change', () => odoCheck())
         routeEndOdo.addEventListener('change', () => odoCheck())
+
+        tripIntegratedEmploymentCheckbox.addEventListener('change', event => {
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            if (consumersOnRecord.size > 1) {
+                tooManyConsumersWarning.style.display = 'block';
+                roster2.toggleMiniRosterBtnVisible(false);
+            } else if (consumersOnRecord.size == 1) {
+                roster2.toggleMiniRosterBtnVisible(false);
+                tooManyConsumersWarning.style.display = 'none';
+            }else {
+                roster2.toggleMiniRosterBtnVisible(true);
+                tooManyConsumersWarning.style.display = 'none';
+            }
+        } else {
+            roster2.toggleMiniRosterBtnVisible(true);
+            tooManyConsumersWarning.style.display = 'none';
+        }
+            checkRequiredFields();
+        });
+    }
+
+    function checkRequiredFields() {
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+
+            routeStartOdo.classList.remove('error');
+            routeEndOdo.classList.remove('error');
+
+            const startVal = parseInt(routeStartOdo.querySelector('input').value)
+            const endVal = parseInt(routeEndOdo.querySelector('input').value)
+
+            if (isNaN(startVal) && isNaN(endVal)) {
+                routeStartOdo.classList.add('error');
+                routeEndOdo.classList.add('error');
+                setBtnStatusOfRouteDocumentation();
+                return;
+            } else {
+                if (isNaN(startVal)) {
+                    routeStartOdo.classList.add('error');
+                    setBtnStatusOfRouteDocumentation();
+                    return;
+                }
+                if (isNaN(endVal)) {
+                    routeEndOdo.classList.add('error');
+                    setBtnStatusOfRouteDocumentation();
+                    return;
+                }
+            }
+            setBtnStatusOfRouteDocumentation()
+
+        } else {
+            routeStartOdo.classList.remove('error');
+            routeEndOdo.classList.remove('error');
+            setBtnStatusOfRouteDocumentation()
+        }
+    
+    }
+
+    function setBtnStatusOfRouteDocumentation() {
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            if (consumersOnRecord.size > 1) {
+                saveBtn.classList.add('disabled');
+                saveCloseBtn.classList.add('disabled');
+                return;
+            } else if (consumersOnRecord.size == 1) {
+                saveBtn.classList.remove('disabled');
+                saveCloseBtn.classList.remove('disabled');
+            }else {
+                saveBtn.classList.add('disabled'); 
+                saveCloseBtn.classList.add('disabled');
+                return;
+            }
+        } else {
+            if (consumersOnRecord.size == 0) {
+                saveBtn.classList.add('disabled');
+                saveCloseBtn.classList.add('disabled');
+                return;
+            } else {
+                saveBtn.classList.remove('disabled'); 
+                saveCloseBtn.classList.remove('disabled');
+            }
+        }
+
+
+        var hasErrors = [].slice.call(document.querySelectorAll('.error'));
+        if (hasErrors.length !== 0) {
+            saveBtn.classList.add('disabled');
+            saveCloseBtn.classList.add('disabled');
+            return;
+        } else {
+            if ($.session.transportationUpdate) {
+                saveBtn.classList.remove('disabled');
+                saveCloseBtn.classList.remove('disabled');
+            } else {
+                saveBtn.classList.add('disabled');
+                saveCloseBtn.classList.add('disabled');
+             }
+        }
+
     }
 
     function buildConsumerCards() {
@@ -210,6 +401,16 @@ const TRANS_routeDocumentation = (function () {
             transportationCard = TRANS_consumerDocCard.createCard(key, val, ro);
             consumerDocCardBody.appendChild(transportationCard)
         })
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            if (consumersOnRecord.size > 0) {
+                roster2.toggleMiniRosterBtnVisible(false);
+            } else {
+                roster2.toggleMiniRosterBtnVisible(true);
+            }
+        }
+        
     }
 
     function loadData(routeID, routeName, date) {
@@ -239,7 +440,27 @@ const TRANS_routeDocumentation = (function () {
     }
     function consumerRemoveAction(consumerId) {
         consumersOnRecord.delete(consumerId);
-        consumersToRemove.push(consumerId)
+        consumersToRemove.push(consumerId);
+
+       var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+       if (TripIntegratedEmploymentCheckbox.checked == true) {
+        if (consumersOnRecord.size > 1) {
+            tooManyConsumersWarning.style.display = 'block';
+            roster2.toggleMiniRosterBtnVisible(false);
+        } else if (consumersOnRecord.size == 1) {
+            roster2.toggleMiniRosterBtnVisible(false);
+            tooManyConsumersWarning.style.display = 'none';
+        }else {
+            roster2.toggleMiniRosterBtnVisible(true);
+            tooManyConsumersWarning.style.display = 'none';
+        }
+    } else {
+        roster2.toggleMiniRosterBtnVisible(true);
+        tooManyConsumersWarning.style.display = 'none';
+    }
+
+    setBtnStatusOfRouteDocumentation();
+    
     }
     function updateConsumerData(data) {
         const { consumerId, key, value } = data
@@ -259,6 +480,23 @@ const TRANS_routeDocumentation = (function () {
                     consumersOnRecord.get(consumer.id)['riderStatus'] = '';
                     const transportationCard = TRANS_consumerDocCard.createCard(consumer.id, consumerDetails);
                     consumerDocCardBody.appendChild(transportationCard)
+
+                   var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+                   if (TripIntegratedEmploymentCheckbox.checked == true) {
+                    if (consumersOnRecord.size > 1) {
+                        tooManyConsumersWarning.style.display = 'block';
+                        roster2.toggleMiniRosterBtnVisible(false);
+                    } else if (consumersOnRecord.size == 1) {
+                        roster2.toggleMiniRosterBtnVisible(false);
+                        tooManyConsumersWarning.style.display = 'none';
+                    }else {
+                        roster2.toggleMiniRosterBtnVisible(true);
+                        tooManyConsumersWarning.style.display = 'none';
+                    }
+                } else {
+                    roster2.toggleMiniRosterBtnVisible(true);
+                    tooManyConsumersWarning.style.display = 'none';
+                }
                 })
                 break;
             }
@@ -281,6 +519,15 @@ const TRANS_routeDocumentation = (function () {
             const endTime = routeEndInput.querySelector('input').value
             const odoStart = routeStartOdo.querySelector('input').value
             const odoEnd = routeEndOdo.querySelector('input').value
+            var tripIntegratedEmployment;
+            var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+            if (TripIntegratedEmploymentCheckbox.checked == true) {
+                tripIntegratedEmployment = 'Y';
+            } else {
+                tripIntegratedEmployment = 'N';
+            }
+
+            
             const dbCallArr = []
             const tripDetailSubmit = {
                 token: $.session.Token,
@@ -288,7 +535,8 @@ const TRANS_routeDocumentation = (function () {
                 odometerStart: odoStart,
                 odometerStop: odoEnd,
                 startTime: startTime,
-                endTime: endTime
+                endTime: endTime,
+                integratedEmployment: tripIntegratedEmployment
             }
             dbCallArr.push(TRANS_routeDocumentationAjax.updateTripDetails(tripDetailSubmit))
       consumersOnRecord.forEach((val,key,map) => {
