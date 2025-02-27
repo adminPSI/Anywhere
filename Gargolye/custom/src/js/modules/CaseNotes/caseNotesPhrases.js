@@ -48,15 +48,15 @@
                     required: true,
                 },
             ],
-      // buttons: [
-      //   {
-      //     text: 'Cancel',
-      //     icon: 'cancel',
-      //     style: 'primary',
-      //     styleType: 'outlined',
-      //     name: 'cancel',
-      //   },
-      // ],
+            // buttons: [
+            //   {
+            //     text: 'Cancel',
+            //     icon: 'cancel',
+            //     style: 'primary',
+            //     styleType: 'outlined',
+            //     name: 'cancel',
+            //   },
+            // ],
         });
 
         this.addPhraseForm.renderTo(this.dialog.dialog);
@@ -77,7 +77,7 @@
      * @function
      */
     CaseNotesAddPhrases.prototype.close = function () {
-        this.dialog.close(); 
+        this.dialog.close();
     };
 
     /**
@@ -93,11 +93,10 @@
             const success = data.insertCustomPhraseResult;
 
             this.close();
-            
+
             // update phrases list for inserting
             await this.PhrasesInstance.InsertPhrases.fetchData();
             this.PhrasesInstance.InsertPhrases.populate();
-            this.addPhraseForm.clear();   
         });
         this.addPhraseForm.onChange(event => {
             const value = event.target.value;
@@ -105,8 +104,8 @@
             const input = this.addPhraseForm.inputs[name];
         });
         this.addPhraseForm.onReset(event => {
-            this.close(); 
-        }); 
+            this.close();
+        });
     };
 
     /**

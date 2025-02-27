@@ -19,11 +19,17 @@ namespace Anywhere.service.Data
             return allScheduleObj;
         }
 
-        public MainLocationDropDownData[] getLocationDropdownForScheduling(string token)
+        public MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpeShifts)
         {
-            string locationsString = dg.getLocationDropdownForScheduling(token);
+            string locationsString = dg.getLocationDropdownForScheduling(token, showOpeShifts);
             MainLocationDropDownData[] locationsObj = js.Deserialize<MainLocationDropDownData[]>(locationsString);
             return locationsObj;
+        }
+
+        public string saveOrUpdateShift(string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag)
+        {
+            string saveUpdateString = dg.saveOrUpdateShift(dateString, locationId, personId, startTime, endTime, color, notifyEmployee, consumerIdString, saveUpdateFlag);
+            return saveUpdateString;
         }
 
         public string saveSchedulingCallOffRequest(string token, string shiftId, string personId, string reasonId, string note, string status, string notifiedEmployeeId)

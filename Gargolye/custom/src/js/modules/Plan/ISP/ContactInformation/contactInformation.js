@@ -166,7 +166,7 @@ const contactInformation = (() => {
         });
         populateBestWayToConnectDropdown(
             bestWayToConnectDropdown,
-            bestWayToConnectData.bestWayToConnect,           
+            bestWayToConnectData.bestWayToConnect,
         );
         const otherTextInput = input.build({
             label: 'More Detail',
@@ -218,7 +218,7 @@ const contactInformation = (() => {
         // #110673 - SH - ANY - PL: Add default settings in SET DEFAULTS for plan
         if (contactsValidation.bestWayToConnect === false && ($.session.defaultContact == '' || $.session.defaultContact == undefined)) {
             bestWaytoConnectAlertDiv.style.display = 'flex';
-        } 
+        }
 
         inputSection.appendChild(nameInput);
         inputSection.appendChild(prefNameInput);

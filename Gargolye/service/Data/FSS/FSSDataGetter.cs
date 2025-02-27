@@ -298,7 +298,7 @@ namespace Anywhere.service.Data.FSS
         }
 
         public void deleteAuthorization(string token, string authDetailId)
-        {          
+        {
             logger.debug("deleteAuthorization");
             List<string> list = new List<string>();
             list.Add(authDetailId);

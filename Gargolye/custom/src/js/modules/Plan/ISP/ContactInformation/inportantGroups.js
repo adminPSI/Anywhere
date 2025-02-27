@@ -305,7 +305,7 @@ const isp_ci_importantGroups = (() => {
 
         popup.appendChild(statusDropdown);
         popup.appendChild(importFromVendorBtn);
-        popup.appendChild(nameInput);       
+        popup.appendChild(nameInput);
         popup.appendChild(addressInput);
         popup.appendChild(phoneInput);
         popup.appendChild(meetingInfoInput);

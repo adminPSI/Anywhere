@@ -260,7 +260,7 @@
                         selectedLocationId &&
                         (selectedLocationId === d.Location_ID || selectedLocationId === '%')
                     ) {
-                        
+
 
                         if (!entriesObj[status]) {
                             entriesObj[status] = {};
@@ -270,14 +270,14 @@
                         }
                         entriesObj[status][dateString].count++;
 
-                        
+
                     }
                 }
             }
         });
     }
 
-    async function init() {     
+    async function init() {
         widget = document.getElementById('admindashsingleentrywidget');
         widgetBody = widget.querySelector('.widget__body');
         widgetBody.innerHTML = '';
@@ -303,14 +303,14 @@
             cachedResults_locations = res;
 
             adminSingleEntryWidgetAjax.getSingleEntryAdminApprovalNumbers(async function (results, error) {
-                cachedResults = results;              
+                cachedResults = results;
                 await groupCountInfo(results, selectedConsumerId, selectedLocationId);
-                
+
                 if (selectedLocationId != '' && selectedLocationId != '%') selectedLocationDescription = cachedResults_locations.find(l => l.locationId == selectedLocationId).description;
-                if (selectedConsumerId != '' && selectedConsumerId != '%') { 
+                if (selectedConsumerId != '' && selectedConsumerId != '%') {
                     let ConsumerName = cachedResults.filter(c => c.People_ID == selectedConsumerId);
                     if (ConsumerName.length > 0) selectedConsumerName = ConsumerName[0].last_name + ', ' + ConsumerName[0].first_name;
-                } 
+                }
                 populateConsumerDropdown();
                 populateLocationsDropDown(cachedResults_locations);
                 // info/tabs

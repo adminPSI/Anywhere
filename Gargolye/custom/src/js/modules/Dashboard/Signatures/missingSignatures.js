@@ -49,7 +49,7 @@ const signatureWidget = (function () {
         };
         dropdownData.unshift(defaultLocation);
 
-        locationList = dropdownData;       
+        locationList = dropdownData;
         dropdown.populate(locationDropdown, dropdownData, signatureWidgetLocationId);
     }
     function populateGroupDropdown(groupData) {
@@ -157,7 +157,7 @@ const signatureWidget = (function () {
             groupDropdownData = await missingSignatureAjax.getGroupsDropdownData(
                 selectedOption.value,
             );
-            signatureWidgetGroupId = '%';  
+            signatureWidgetGroupId = '%';
             signatureWidgetGroupName = 'Everyone';
             populateGroupDropdown(groupDropdownData);
 
@@ -358,7 +358,7 @@ const signatureWidget = (function () {
         if (!signatureWidgetGroupCode) signatureWidgetGroupCode = 'ALL';
         if (!signatureWidgetLocationId) signatureWidgetLocationId = '%';
         if (!signatureWidgetLocationName) signatureWidgetLocationName = 'ALL';
-       
+
         buildFilterPopup();
         displayFilteredBy();
         eventSetup();
@@ -379,9 +379,9 @@ const signatureWidget = (function () {
             );
             populateLocationDropdown(locationDropdownData);
             populateGroupDropdown(groupDropdownData);
-            signatureWidgetGroupName = groupList.find(l => l.value == signatureWidgetGroupId).text;
-            signatureWidgetGroupCode = groupList.find(l => l.value == signatureWidgetGroupId).id;
-            signatureWidgetLocationName = locationList.find(l => l.value == signatureWidgetLocationId).text; 
+            signatureWidgetGroupName = groupList.find(l => l.value == signatureWidgetGroupId)?.text;
+            signatureWidgetGroupCode = groupList.find(l => l.value == signatureWidgetGroupId)?.id;
+            signatureWidgetLocationName = locationList.find(l => l.value == signatureWidgetLocationId)?.text;
             displayFilteredBy();
         });
     }

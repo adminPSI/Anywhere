@@ -96,9 +96,9 @@
         var totalConsumers = 0;
 
         clockedInConsumers.forEach(function (consumer) {
-      var fullName = `${consumer.clockedinconsumername.split(' ')[1]}, ${
-        consumer.clockedinconsumername.split(' ')[0]
-                }`;
+            var fullName = `${consumer.clockedinconsumername.split(' ')[1]}, ${
+                consumer.clockedinconsumername.split(' ')[0]
+            }`;
             if (!consumers[fullName]) consumers[fullName] = 0;
             consumers[fullName]++;
             totalConsumers++;

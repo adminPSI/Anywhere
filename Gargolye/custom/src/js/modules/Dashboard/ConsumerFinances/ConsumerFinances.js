@@ -138,7 +138,7 @@
             return {
                 id: r.ID,
                 value: r.FullName,
-                text: r.FullName               
+                text: r.FullName
             }
         });
         data.unshift({ id: null, value: '%', text: 'ALL' });
@@ -205,13 +205,13 @@
             var lastTransaction = td.lastTransaction;
 
             return {
-                id: ID,  
+                id: ID,
                 values: [name, account, balance == '' ? '$0.00' : '$' + balance, lastTransaction == '' ? '' : moment(lastTransaction).format('MM/DD/YY')],
                 attributes: [
-                    { key: 'data-consumer-id', value: td.Id }, { key: 'consumerId', value: td.Id }, { key: 'registerId', value: td.registerId } 
+                    { key: 'data-consumer-id', value: td.Id }, { key: 'consumerId', value: td.Id }, { key: 'registerId', value: td.registerId }
                 ],
-                onClick: (e) => {  
-                    handleAccountTableEvents(e.target.attributes.consumerId.value,e.target.attributes.registerId.value)
+                onClick: (e) => {
+                    handleAccountTableEvents(e.target.attributes.consumerId.value, e.target.attributes.registerId.value)
                 },
             };
         });
@@ -222,8 +222,8 @@
 
     function handleAccountTableEvents(consumerId, registerId) {
         $.session.consumerId = consumerId;
-        NewEntryCF.buildNewEntryForm(registerId); 
-    } 
+        NewEntryCF.buildNewEntryForm(registerId);
+    }
 
     async function init() {
         widget = document.getElementById('dashMoneyManagementwidget');
@@ -237,8 +237,8 @@
         var filterLocationDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashMoneyManagementwidget', 'location');
         cfWidgetLocationName = filterLocationDefaultValue.getWidgetFilterResult;
         var filterSortOrderDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashMoneyManagementwidget', 'sortOrder');
-        cfWidgetSortOrderName = filterSortOrderDefaultValue.getWidgetFilterResult;  
-       
+        cfWidgetSortOrderName = filterSortOrderDefaultValue.getWidgetFilterResult;
+
         if (!cfWidgetLocationName) cfWidgetLocationName = '%';
         if (!cfWidgetConsumerName) cfWidgetConsumerName = '%';
         if (!cfWidgetSortOrderName) cfWidgetSortOrderName = 'Consumer Last Name Ascending';

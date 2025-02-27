@@ -249,7 +249,7 @@ namespace Anywhere.service.Data
             //sASData.fundingSource = fundingObj;
             sASData.relationships = relationshipObj;
             sASData.vendors = vendorsObj;
-            
+
             return sASData;
         }
 
@@ -367,7 +367,7 @@ namespace Anywhere.service.Data
             public string address { get; set; }
             public string city { get; set; }
             public string state { get; set; }
-            public string zip { get; set; } 
+            public string zip { get; set; }
             public string phone { get; set; }
         }
     }

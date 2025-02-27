@@ -30,6 +30,7 @@ namespace OODForms
 {
     class OODFormDataGetter
 
+
     #region "OOD 8"
     {
         private StringBuilder sb = new StringBuilder();
@@ -789,6 +790,23 @@ namespace OODForms
 
         }
 
+
+        public DataSet OODForm3ConsumerandVendor(string consumerId)
+        {
+            sb.Clear();
+            sb.Append("SELECT Distinct DBA.People.Last_Name AS ConsumerLastName, DBA.People.First_Name AS ConsumerFirstName, DBA.Vendors.Name AS VendorName ");
+            sb.Append("FROM   DBA.Consumer_Services_Master ");
+            sb.Append("LEFT OUTER JOIN DBA.Persons ON DBA.Consumer_Services_Master.Person_ID = DBA.Persons.Person_ID ");
+            sb.Append("LEFT OUTER JOIN DBA.EM_Review ON DBA.Consumer_Services_Master.Reference_Number = DBA.EM_Review.Reference_Num ");
+            sb.Append("LEFT OUTER JOIN DBA.People ON DBA.Consumer_Services_Master.Consumer_ID = DBA.People.Consumer_ID ");
+            sb.Append("LEFT OUTER JOIN DBA.Services ON DBA.Consumer_Services_Master.Service_ID = DBA.Services.Service_ID ");
+            sb.Append("LEFT OUTER JOIN DBA.Consumers ON Consumer_Services_Master.Consumer_ID = DBA.Consumers.Consumer_ID ");
+            sb.Append("LEFT OUTER JOIN DBA.Locations ON DBA.Consumers.Location_ID = DBA.Locations.Location_ID ");
+            sb.Append("LEFT OUTER JOIN DBA.Regions ON DBA.Locations.Region_ID = DBA.Regions.Region_ID ");
+            sb.Append("LEFT OUTER JOIN DBA.Vendors ON DBA.Regions.Vendor_ID = DBA.Vendors.Vendor_ID ");
+            sb.AppendFormat("WHERE DBA.People.Consumer_ID = {0} and DBA.Services.OOD_Form_Number = 3", consumerId);
+            return di.SelectRowsDS(sb.ToString());
+        }
 
         #region "OOD 4"
         public DataSet OODDevelopment(string AuthorizationNumber)

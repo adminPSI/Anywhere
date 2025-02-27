@@ -1,4 +1,4 @@
-﻿var absentWidget = (function () {
+var absentWidget = (function() {
     // DATA
     //-----------------------
     var date;
@@ -29,7 +29,7 @@
 
         filterPopup = dashboard.buildFilterPopup();
 
-    var dateInput = input.build({
+        var dateInput = input.build({
             id: 'absentWidgetDate',
             label: 'Date',
             type: 'date',
@@ -71,9 +71,9 @@
         widget.insertBefore(filterPopup, widgetBody);
 
         // Set date filter to today        
-    date = document.getElementById('absentWidgetDate');
-    date.value = UTIL.getTodaysDate();
-    absentWidgetDate = date.value;
+        date = document.getElementById('absentWidgetDate');
+        date.value = UTIL.getTodaysDate();
+        absentWidgetDate = date.value;
     }
     function eventSetup() {
         var oldAbsentDate;
@@ -83,7 +83,7 @@
         var oldGoupCode;
         var oldGroupName;
 
-    date.addEventListener('change', event => {
+        date.addEventListener('change', event => {
             var absentDate = event.target.value;
             oldAbsentDate = absentWidgetDate;
             absentWidgetDate = absentDate;
@@ -248,7 +248,7 @@
                 absentObj[locationId] = [];
                 locations.push(`${locationName}{*}${locationId}`);
             }
-            totalAbsentCount ++
+            totalAbsentCount++
             absentObj[locationId].push(consumerName);
         });
         // sort by location name

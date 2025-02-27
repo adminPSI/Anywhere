@@ -360,7 +360,7 @@
         var filterOutcomeTypeDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashgoalswidget', 'outcomeType');
         $.session.outcomesWidgetOutcomeTypeId = filterOutcomeTypeDefaultValue.getWidgetFilterResult;
 
-        if ($.session.outcomesWidgetOutcomeTypeId)filter.outcomeType = $.session.outcomesWidgetOutcomeTypeId;
+        if ($.session.outcomesWidgetOutcomeTypeId) filter.outcomeType = $.session.outcomesWidgetOutcomeTypeId;
         if ($.session.outcomeWidgetLocationId) filter.location = $.session.outcomeWidgetLocationId;
         if ($.session.outcomesWidgetGroupId) filter.group = $.session.outcomesWidgetGroupId;
 

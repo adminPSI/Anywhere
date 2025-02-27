@@ -121,7 +121,7 @@
                 // if the forms lock value returns a non empty string, display the forms lock popup
                 if (checkFormsLockValue !== '') {
                     formLockPopup(checkFormsLockValue, selectedConsumer, consumerForm, displayFormPopup);
-                    isFormLocked = true; 
+                    isFormLocked = true;
 
                 } else {
                     openForm(selectedConsumer, consumerForm, displayFormPopup);

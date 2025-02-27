@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Utilities.IO;
+using System;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanInformedConsent
@@ -88,6 +89,25 @@ namespace Anywhere.service.Data.PlanInformedConsent
         public string updatePlanConsentStatements(string token, string signatureId, string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology)
         {
             return picdg.updatePlanConsentStatements(token, signatureId, csChangeMind, csChangeMindSSAPeopleId, csContact, csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess, csResidentialOptions, csSupportsHealthNeeds, csTechnology);
+        }
+
+        public string updateConsentSummaryofChanges(string planID, string summaryofChangesText)
+        {
+            return picdg.updateConsentSummaryofChanges(planID, summaryofChangesText);
+        }
+
+        public class ConsentSummaryofChanges
+        {
+            public string summaryofChanges { get; set; }
+
+        }
+
+        public ConsentSummaryofChanges[] getPlanConsentSummaryofChanges(string planId)
+        {
+            string cscString = picdg.getPlanConsentSummaryofChanges(planId);
+            ConsentSummaryofChanges[] cscObj = js.Deserialize<ConsentSummaryofChanges[]>(cscString);
+            //string test = ConsentSummaryofChanges[0].summaryofChanges;
+            return cscObj;
         }
 
         public void carryOverInformedConsentToNewPlan(string consumerPlanId, string priorConsumerPlanId, string token, string revision)

@@ -1,6 +1,6 @@
 var FSSAjax = (function () {
     // FSS Main/Landing Page
-   
+
     async function getFSSPageData(retrieveData) {
         // token
         try {
@@ -140,7 +140,7 @@ var FSSAjax = (function () {
                     '/getMembers/',
                 data:
                     '{"token":"' +
-                    $.session.Token +                  
+                    $.session.Token +
                     '"}',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',

@@ -10,6 +10,7 @@ using System.Web.Script.Serialization;
 using static Anywhere.service.Data.Plan.AnywherePlanWorker;
 using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
+using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
 namespace Anywhere.service.Data.WaitingListAssessment
 {
@@ -1121,7 +1122,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             string docList = dg.getWLSupportingDocumentList(token, waitingListInformationId);
             SupportingDocumentList[] docObj = js.Deserialize<SupportingDocumentList[]>(docList);
             return docObj;
-        }
+        }        
 
         public MemoryStream viewSupportingDocInBrowser(string token, string supportingDocumentId)
         {
@@ -1184,6 +1185,8 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string fundingSourceId { get; set; }
             public string description { get; set; }
         }
+
+        
 
         public class WaitingList
         {

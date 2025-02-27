@@ -81,14 +81,14 @@ const consumerProgresNotes = (function () {
             }
         });
 
-        data.sort(function (a, b) {   // alphabetize
-            if (a.text < b.text) { return -1; }
-            if (a.text > b.text) { return 1; }
+    data.sort(function(a, b) {   // alphabetize
+      if(a.text < b.text) {return -1; }
+      if(a.text > b.text) {return 1; }
             return 0;
         });
 
-        data.unshift({ id: "%", value: "%", text: "All" }) //ADD All Value
-        locationObject.unshift({ locationId: "%", locationName: "All" }) //ADD All Value
+    data.unshift({id: "%", value: "%", text: "All"}) //ADD All Value
+    locationObject.unshift({locationId: "%", locationName: "All"}) //ADD All Value
 
         dropdown.populate(consumerProgresNoteslocationDropdown, data, defaultLocation)
     }
@@ -210,7 +210,7 @@ const consumerProgresNotes = (function () {
         var filterLocationDefaultValue = await widgetSettingsAjax.getWidgetFilter('consumerprogressnoteswidget', 'location');
         filteredLocation = filterLocationDefaultValue.getWidgetFilterResult;
         UTIL.LS.setStorage('dash_consumerProgressNoteLocation', filteredLocation);
-      
+
         getData()
         buildFilterPopup()
         eventSetup()

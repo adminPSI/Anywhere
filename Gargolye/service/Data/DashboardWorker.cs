@@ -185,10 +185,10 @@ namespace Anywhere.service.Data
         }
 
         public string getWidgetFilter(string token, string widgetId, string filterKey)
-        {        
+        {
             string response = dg.getWidgetFilter(token, widgetId, filterKey);
             FilterValue[] filterValue = js.Deserialize<FilterValue[]>(response);
-            return filterValue.Length > 0 ? filterValue[0].Setting_Value : ""; 
+            return filterValue.Length > 0 ? filterValue[0].Setting_Value : "";
         }
 
         public class UserWidgetSettings
@@ -313,7 +313,7 @@ namespace Anywhere.service.Data
 
         public class FilterValue
         {
-            public string Setting_Value { get; set; }         
+            public string Setting_Value { get; set; }
         }
 
     }

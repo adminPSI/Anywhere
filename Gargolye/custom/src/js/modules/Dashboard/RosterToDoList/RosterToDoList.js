@@ -15,7 +15,7 @@ const rosterToDoListWidget = (function () {
     };
 
     async function init() {
-        widget = document.getElementById('rosterToDoList'); 
+        widget = document.getElementById('rosterToDoList');
         widgetBody = widget.querySelector('.widget__body');
         planTasks = widget.querySelector('#roster-workflow-tasks');
         widgetSettings = dashboard.getWidgetSettings('20');
@@ -71,8 +71,8 @@ const rosterToDoListWidget = (function () {
 
         tasks = [...new Set(rosterWorkflows.map(c => c.workflowStepDescription))];
 
-        if (filter.dueDateRange == '') filter.dueDateRange = widgetSettings.widgetConfig.dueDate 
-        setFilterDueDates(filter.dueDateRange); 
+        if (filter.dueDateRange == '') filter.dueDateRange = widgetSettings.widgetConfig.dueDate
+        setFilterDueDates(filter.dueDateRange);
         applyFilter(filter);
         buildFilterPopup();
     }
@@ -411,7 +411,7 @@ const rosterToDoListWidget = (function () {
                         consumerId,
                         consumerFirstName,
                         consumerLastName,
-                        consumerMiddleName,                      
+                        consumerMiddleName,
                         responsiblePartyId,
                         workflowStepId,
                         workflowStepDescription,
@@ -425,7 +425,7 @@ const rosterToDoListWidget = (function () {
                         'font-weight: bold; padding-bottom: 5px;',
                     );
                     consumerPlanInfo.innerHTML = `${consumerLastName}, ${consumerFirstName} ${consumerMiddleName}`;
-                    parent.appendChild(consumerPlanInfo); 
+                    parent.appendChild(consumerPlanInfo);
                     parent.appendChild(
                         buildWorkflowStepHTML(
                             {

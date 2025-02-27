@@ -967,7 +967,7 @@ const FSS = (() => {
         popupInputWrap.appendChild(encumberedInputs);
         popupInputWrap.appendChild(paidAmountInputs);
         UtilizationPopup.appendChild(popupInputWrap);
-        datePaid.style.width = '49%'; 
+        datePaid.style.width = '49%';
         UtilizationPopup.appendChild(datePaid);
 
         var popupbtnWrap = document.createElement('div');
@@ -982,7 +982,7 @@ const FSS = (() => {
         UtilizationRequiredFieldsOfPopup();
     }
 
-    function UtilizationPopupEventListeners() {       
+    function UtilizationPopupEventListeners() {
         encumberedInputs.addEventListener('input', event => {
             encumberedInputsVal = event.target.value;
         });

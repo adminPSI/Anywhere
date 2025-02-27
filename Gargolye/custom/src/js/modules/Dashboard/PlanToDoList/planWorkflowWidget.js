@@ -71,7 +71,7 @@ const planWorkflowWidget = (function () {
 
         tasks = [...new Set(planWorkflows.map(c => c.workflowStepDescription))];
         if (filter.dueDateRange == '') filter.dueDateRange = widgetSettings.widgetConfig.dueDate
-        setFilterDueDates(filter.dueDateRange); 
+        setFilterDueDates(filter.dueDateRange);
         applyFilter(filter);
         buildFilterPopup();
     }

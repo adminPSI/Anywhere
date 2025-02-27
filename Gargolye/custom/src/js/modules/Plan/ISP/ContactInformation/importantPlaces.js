@@ -50,7 +50,7 @@ const isp_ci_importantPlaces = (() => {
     function applyVendor(opts) {
         POPUP.hide(opts.popup);
         overlay.show();
-        const mainPopup = document.getElementById('isp-ciip-mainPopup'); 
+        const mainPopup = document.getElementById('isp-ciip-mainPopup');
         mainPopup.style.removeProperty('display');
 
         let joinedAddress = '';
@@ -167,7 +167,7 @@ const isp_ci_importantPlaces = (() => {
                 if (typeVal === 'Other' && typeOtherVal === '') {
                     typeValValidated =
                         `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${typeVal}`;
-        }  else {
+                } else {
                     typeValValidated = typeVal;
                 }
 
@@ -175,7 +175,7 @@ const isp_ci_importantPlaces = (() => {
                 let typeValueUpdate = typeValValidated;
                 if (typeVal == 'Other' && typeOtherVal != '') {
                     typeValueUpdate = typeValValidated + ' - ' + typeOtherVal;
-                } 
+                }
 
                 table.updateRows(
                     'isp_ci_importanPlacesTable',
@@ -382,7 +382,7 @@ const isp_ci_importantPlaces = (() => {
         popup.appendChild(typeDropdown);
         popup.appendChild(typeOtherInput);
         popup.appendChild(importFromVendorBtn);
-        popup.appendChild(nameInput); 
+        popup.appendChild(nameInput);
         popup.appendChild(addressInput);
         popup.appendChild(phoneInput);
         popup.appendChild(scheduleInput);
@@ -503,7 +503,7 @@ const isp_ci_importantPlaces = (() => {
                 if (d.type === 'Other' && d.typeOther === '') {
                     d.typeValidated =
                         `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${d.type}`;
-      }  else {
+                } else {
                     d.typeValidated = d.type;
                 }
 

@@ -1156,7 +1156,7 @@ const roster2 = (function () {
                 type: 'contained',
                 callback: async function () {
                     pendingSave.show('Updating Database...');
-                    const data = await _UTIL.fetchData('updateSalesforceIdsScriptOneTimeUse', {applicationName: $.session.applicationName});
+                    const data = await _UTIL.fetchData('updateSalesforceIdsScriptOneTimeUse', { applicationName: $.session.applicationName });
                     pendingSave.fulfill('Update Complete')
                     await new Promise(resolve => setTimeout(resolve, 2000));
                     const successfulSavePopup = document.querySelector('.successfulSavePopup');
@@ -1464,7 +1464,7 @@ const roster2 = (function () {
             selectedGroupId = selectedLocationId;
             if (groupId !== '' && groupId !== undefined) {
                 selectedGroupCode = groupId.split('-')[0];
-                selectedGroupId = groupId.split('-')[1]; 
+                selectedGroupId = groupId.split('-')[1];
                 selectedGroupName = groupName;
             } else {
                 selectedGroupCode = 'ALL';

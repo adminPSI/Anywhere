@@ -220,7 +220,7 @@ const unreadLocationNotes = (function() {
 
         getData();
         buildFilterPopup();
-        eventSetup();      
+        eventSetup();
     }
     return {
         init

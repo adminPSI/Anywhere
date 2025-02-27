@@ -13,7 +13,7 @@ const CaseNotes = (() => {
     let selectedServiceCode;
     let updatedInputs = {};
     let allowGroupNotes = false;
-    let defaultServiceCode;
+      let defaultServiceCode;
     //--------------------------
     // PERMISSIONS
     //--------------------------

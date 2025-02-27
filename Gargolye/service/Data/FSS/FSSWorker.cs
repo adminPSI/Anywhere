@@ -95,7 +95,7 @@ namespace Anywhere.service.Data.FSS
             public string familyId { get; set; }
             public string memberId { get; set; }
             public string memberName { get; set; }
-            public string active { get; set; }           
+            public string active { get; set; }
         }
 
         public class dropdowns
@@ -165,7 +165,7 @@ namespace Anywhere.service.Data.FSS
                 sb.Append("(select fsi.description from dba.funding_source_info as fsi where fsi.funding_source_id = fa.funding_source_id) as 'funding' , ");
                 sb.Append("(select fsi.Funding_Source_ID from dba.funding_source_info as fsi where fsi.funding_source_id = fa.funding_source_id) as 'fundingSourceID' ");
                 sb.Append("from dba.fss_authorizations fa ");
-               
+
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);
 
@@ -189,7 +189,7 @@ namespace Anywhere.service.Data.FSS
                 sb.Append("(select si.Service_Code + ' - ' + si.Description  from dba.service_info si where si.Service_ID = fad.Service_ID) as 'serviceCode', ");
                 sb.Append("(select v.Name from Vendor v where v.Vendor_ID = fad.Vendor_ID) as 'Vendor' ");
                 sb.Append("from dba.fss_authorization_detail fad ");
-           
+
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);
 

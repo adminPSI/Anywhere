@@ -507,9 +507,9 @@ namespace Anywhere.service.Data
 
         public string getVendors(string token)
         {
-            if (tokenValidator(token) == false) return null;           
+            if (tokenValidator(token) == false) return null;
             logger.debug("getVendors ");
-            
+
             string text = "CALL DBA.ANYW_ISP_GetActiveVendors()";
             try
             {

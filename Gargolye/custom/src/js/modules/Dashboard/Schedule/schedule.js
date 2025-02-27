@@ -133,8 +133,7 @@
                     initials = initials.length > 0 ? initials.join(', ') : '';
 
                     div.innerHTML += `
-            <p>${startTime.format('h:mma')} to ${endTime.format('h:mma')} - ${location}${
-            initials !== '' ? ` - ${initials}` : ''
+            <p>${startTime.format('h:mma')} to ${endTime.format('h:mma')} - ${location}${initials !== '' ? ` - ${initials}` : ''
                         }</p>
           `;
                 });
@@ -270,11 +269,11 @@
     function populateWeeksDropdown(results) {
         weeks = results;
 
-    let defaultValue;
+        let defaultValue;
 
         var data = results.map(r => {
             if (r.currentWeek) {
-        defaultValue = r.text;
+                defaultValue = r.text;
                 selectedWeek = r.text;
                 selectedStart = r.start;
                 selectedEnd = r.end;
@@ -292,7 +291,7 @@
             selectedEnd = results[0].end;
         }
 
-    dropdown.populate('dashboardScheduleWeekDropdown', data, defaultValue);
+        dropdown.populate('dashboardScheduleWeekDropdown', data, defaultValue);
     }
     function displayFilteredBy() {
         var filteredBy = widget.querySelector('.widgetFilteredBy');
@@ -325,7 +324,7 @@
         var filterLocationDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashschedulewidget', 'location');
         $.session.myscheduleWidgetLocationText = filterLocationDefaultValue.getWidgetFilterResult;
         if (!$.session.myscheduleWidgetLocationText) $.session.myscheduleWidgetLocationText = 'All';
-     
+
         buildFilterPopup();
         eventSetup();
 

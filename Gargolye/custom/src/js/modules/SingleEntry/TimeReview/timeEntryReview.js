@@ -584,19 +584,19 @@ var timeEntryReview = (function () {
             type: 'contained',
             callback: async function () {
                 //118744 - ADV - ANY - SE: Add warning to users if services are not documented for
-                singleEntryAjax.getSingleEntryConsumersPresent(entryId, async function (consumers)  {
-                    var consumerIds = [];   
-                    var dateFormat = moment(entryDate, 'MM-DD-YY').format('YYYY-MM-DD'); 
-                    await consumers.forEach(c => { consumerIds.push(c.consumerid) });   
-                    const undocumentedConsumerIDs = await singleEntryAjax.getUndocumentedServicesForWarning(dateFormat, consumerIds); 
+                singleEntryAjax.getSingleEntryConsumersPresent(entryId, async function (consumers) {
+                    var consumerIds = [];
+                    var dateFormat = moment(entryDate, 'MM-DD-YY').format('YYYY-MM-DD');
+                    await consumers.forEach(c => { consumerIds.push(c.consumerid) });
+                    const undocumentedConsumerIDs = await singleEntryAjax.getUndocumentedServicesForWarning(dateFormat, consumerIds);
                     if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedConsumerIDs.length > 0) {
                         undocumentedServicesPopup(undocumentedConsumerIDs, entryId, popup, isValid);
                     }
                     ////////
                     else {
                         submitFunction(entryId, popup, isValid);
-                    }            
-                });                                   
+                    }
+                });
             },
         });
         var deleteBtn = button.build({
@@ -640,18 +640,18 @@ var timeEntryReview = (function () {
             newStatus: 'S',
         };
         // var entry = entriesByDate.filter(e => e.Single_Entry_ID === entryId)[0];
-        if (!isValid) { 
+        if (!isValid) {
             showSubmitError(`Unable to submit entry, end time needed.`);
         } else {
             var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
             showDeleteEntryWarningPopup(warningMessage, () => submitEntry(updateObj));
-            overlay.show();   
+            overlay.show();
         }
     }
     //118744 - ADV - ANY - SE: Add warning to users if services are not documented for
-    async function undocumentedServicesPopup(undocumentedConsumerIDs, entryId, popup, isValid) {  
+    async function undocumentedServicesPopup(undocumentedConsumerIDs, entryId, popup, isValid) {
         const confirmPopup = POPUP.build({
-            hideX: true, 
+            hideX: true,
             classNames: 'warning',
         });
 
@@ -661,7 +661,7 @@ var timeEntryReview = (function () {
             type: 'contained',
             callback: async () => {
                 POPUP.hide(confirmPopup);
-                submitFunction(entryId, popup, isValid); 
+                submitFunction(entryId, popup, isValid);
             },
         });
 
@@ -671,14 +671,14 @@ var timeEntryReview = (function () {
             type: 'contained',
             callback: () => {
                 POPUP.hide(confirmPopup);
-                overlay.show();    
+                overlay.show();
             },
         });
 
         const message = document.createElement('p');
         const messageConfirm = document.createElement('p');
         const vendorSection = document.createElement('div');
-       
+
         undocumentedConsumerIDs.forEach(consumerName => {
             const vendorDisp = document.createElement('div');
             vendorDisp.innerHTML = `<span>${consumerName}</span>`;
@@ -1134,7 +1134,7 @@ var timeEntryReview = (function () {
         payPeriodData = timeEntry.getPayPeriods(false);
         payPeriod = timeEntry.getCurrentPayPeriod(false);
         locationData = timeEntry.getLocations();
-        workCodeData = await timeEntry.getWorkCodes();    
+        workCodeData = await timeEntry.getWorkCodes();
         loadReviewPage();
     }
 
