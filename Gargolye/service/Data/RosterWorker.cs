@@ -73,6 +73,7 @@ namespace Anywhere.service.Data
         }
         public ConsumerRelationships[] getConsumerRelationshipsJSON(string token, string consumerId)
         {
+            js.MaxJsonLength = Int32.MaxValue;
             string consumerRelString = dg.getConsumerRelationshipsJSON(token, consumerId);
             ConsumerRelationships[] consumerRelObj = js.Deserialize<ConsumerRelationships[]>(consumerRelString);
             return consumerRelObj;
@@ -80,6 +81,7 @@ namespace Anywhere.service.Data
 
         public ConsumerEditRelationship[] getEditConsumerRelationshipsJSON(string token, string consumerId, string isActive)
         {
+            js.MaxJsonLength = Int32.MaxValue;
             string consumerRelString = dg.getEditConsumerRelationshipsJSON(token, consumerId, isActive);
             ConsumerEditRelationship[] consumerRelObj = js.Deserialize<ConsumerEditRelationship[]>(consumerRelString);
             return consumerRelObj;
@@ -87,6 +89,7 @@ namespace Anywhere.service.Data
 
         public ConsumerRelationshipType[] getRelationshipsTypeJSON(string token)
         {
+            js.MaxJsonLength = Int32.MaxValue;
             string consumerRelString = dg.getRelationshipsTypeJSON(token);
             ConsumerRelationshipType[] consumerRelObj = js.Deserialize<ConsumerRelationshipType[]>(consumerRelString);
             return consumerRelObj;

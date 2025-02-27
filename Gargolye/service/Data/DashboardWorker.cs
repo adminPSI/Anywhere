@@ -152,7 +152,7 @@ namespace Anywhere.service.Data
 
             try
             {
-                Employer[] employers = js.Deserialize<Employer[]>(dg.getEmployeeList(token));               
+                Employer[] employers = js.Deserialize<Employer[]>(dg.getEmployeeList(token));
                 return employers;
             }
             catch (Exception ex)
@@ -166,7 +166,7 @@ namespace Anywhere.service.Data
         {
             var expirationDate = DateTime.Parse(dateOfExpiration);
             var expirationTime = TimeSpan.Parse(timeOfExpiration);
-            var mergeDateTime = expirationDate + expirationTime; 
+            var mergeDateTime = expirationDate + expirationTime;
             string expiration= mergeDateTime.ToString("yyyy-MM-dd HH:mm");  
 
             string noteId = dg.insertSystemNotes(token, textMessage, expiration);
@@ -177,6 +177,18 @@ namespace Anywhere.service.Data
                 dg.insertSystemNoteSharing(token, systemNotesObj[0].NoteID, employeeId);
             }
             return systemNotesObj;
+        }
+
+        public void setWidgetFilter(string token, string widgetId, string filterKey, string filterValue)
+        {
+            dg.setWidgetFilter(token, widgetId, filterKey, filterValue);
+        }
+
+        public string getWidgetFilter(string token, string widgetId, string filterKey)
+        {
+            string response = dg.getWidgetFilter(token, widgetId, filterKey);
+            FilterValue[] filterValue = js.Deserialize<FilterValue[]>(response);
+            return filterValue.Length > 0 ? filterValue[0].Setting_Value : "";
         }
 
         public class UserWidgetSettings
@@ -244,6 +256,7 @@ namespace Anywhere.service.Data
             public string lastName { get; set; }
             public string locationId { get; set; }
             public string activeStatus { get; set; }
+            public string groupId { get; set; }
         }
 
         public class SingleEntryLocationObj
@@ -296,6 +309,11 @@ namespace Anywhere.service.Data
         public class SystemNotes
         {
             public string NoteID { get; set; }
+        }
+
+        public class FilterValue
+        {
+            public string Setting_Value { get; set; }
         }
 
     }

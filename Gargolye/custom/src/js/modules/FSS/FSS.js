@@ -552,8 +552,8 @@ const FSS = (() => {
                                     : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(subChild.paidDate.split('T')[0]));
 
                             subChildDataRow.classList.add('fssTable__subChildDataRow', 'fssTable__dataRow');
-                            const endIconSub = document.createElement('div');
-                            endIconSub.classList.add('fssTable__endIcon');
+                            const endIconSubChild = document.createElement('div');
+                            endIconSubChild.classList.add('fssTable__endIcon');
 
 
                             subChildDataRow.innerHTML = `
@@ -565,16 +565,16 @@ const FSS = (() => {
                             <div>${paidAmt}</div>
                             <div>${paidDate}</div>
                             `;
-                            if ($.session.FSSUpdate == true) {
-                                endIconSub.innerHTML = icons['delete'];
+                            if ($.session.FSSDelete == true) {
+                                endIconSubChild.innerHTML = icons['delete'];
                             } else {
-                                endIconSub.innerHTML = `<div></div>`;
+                                endIconSubChild.innerHTML = `<div></div>`;
                             }
-                            subChildDataRow.appendChild(endIconSub);
+                            subChildDataRow.appendChild(endIconSubChild);
                             subChildRowWrap.appendChild(subChildDataRow);
 
-                            subChildDataRow.addEventListener('click', e => {
-                                //subChild.authDetailId  subChild.authId
+                            endIconSubChild.addEventListener('click', e => {
+                                deleteAuthorizationData(subChild.authDetailId);
                             });
                         });
                     }
@@ -875,6 +875,14 @@ const FSS = (() => {
         applyFilter();
     }
 
+    async function deleteAuthorizationData(authDetailId) {
+        await FSSAjax.deleteAuthorization({
+            token: $.session.Token,
+            authDetailId: authDetailId,
+        });
+        applyFilter();
+    }
+
 
 
     function addFamilyUtilization(familyId, authId, fundingSourceID) {
@@ -908,14 +916,14 @@ const FSS = (() => {
 
         encumberedInputs = input.build({
             id: 'encumbered',
-            type: 'text',
+            type: 'number',
             label: 'Encumbered',
             style: 'secondary',
         });
 
         paidAmountInputs = input.build({
             id: 'paidAmountInputs',
-            type: 'text',
+            type: 'number',
             label: 'Paid amount',
             style: 'secondary',
         });
@@ -952,10 +960,14 @@ const FSS = (() => {
         UtilizationPopup.appendChild(serviceCodeDropdown);
         UtilizationPopup.appendChild(vendorDropdown);
 
-
-        UtilizationPopup.appendChild(encumberedInputs);
-        UtilizationPopup.appendChild(paidAmountInputs);
-
+        var popupInputWrap = document.createElement('div');
+        popupInputWrap.classList.add('btnWrap');
+        encumberedInputs.style.width = '49%';
+        paidAmountInputs.style.width = '49%';
+        popupInputWrap.appendChild(encumberedInputs);
+        popupInputWrap.appendChild(paidAmountInputs);
+        UtilizationPopup.appendChild(popupInputWrap);
+        datePaid.style.width = '49%';
         UtilizationPopup.appendChild(datePaid);
 
         var popupbtnWrap = document.createElement('div');
@@ -970,7 +982,7 @@ const FSS = (() => {
         UtilizationRequiredFieldsOfPopup();
     }
 
-    function UtilizationPopupEventListeners() {       
+    function UtilizationPopupEventListeners() {
         encumberedInputs.addEventListener('input', event => {
             encumberedInputsVal = event.target.value;
         });

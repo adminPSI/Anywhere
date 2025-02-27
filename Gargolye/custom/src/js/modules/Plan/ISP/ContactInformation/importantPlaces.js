@@ -8,6 +8,85 @@ const isp_ci_importantPlaces = (() => {
     let addressInput;
     let phoneInput;
     let saveBtn;
+    let vendors;
+    let importFromVendorBtn
+
+    function popFromVendors() {
+        const mainPopup = document.getElementById('isp-ciip-mainPopup');
+        mainPopup.style.display = 'none';
+
+        const importVendorPopup = POPUP.build({
+            id: 'isp-ciip-importVendorPopup',
+            closeCallback: () => {
+                overlay.show();
+                mainPopup.style.removeProperty('display');
+            },
+        });
+        const vendorSection = document.createElement('div');
+
+        vendors.forEach(rel => {
+            const cityStateZip = contactInformation.cleanCityStateZip(rel);
+            const vendorDisp = document.createElement('div');
+            vendorDisp.innerHTML = `Name: <span>${rel.name}</span>`;
+            vendorDisp.classList.add('isp_ciip_gkRelationships');
+
+            vendorDisp.addEventListener('click', () =>
+                applyVendor({
+                    name: rel.name,
+                    address: rel.address,
+                    cityStateZip: cityStateZip,
+                    phone: rel.phone,
+                    popup: importVendorPopup,
+                }),
+            );
+
+            vendorSection.appendChild(vendorDisp);
+        });
+
+        importVendorPopup.appendChild(vendorSection);
+        POPUP.show(importVendorPopup);
+    }
+
+    function applyVendor(opts) {
+        POPUP.hide(opts.popup);
+        overlay.show();
+        const mainPopup = document.getElementById('isp-ciip-mainPopup');
+        mainPopup.style.removeProperty('display');
+
+        let joinedAddress = '';
+
+        if (opts.address !== '') {
+            joinedAddress = opts.address;
+        }
+        if (opts.cityStateZip !== '') {
+            joinedAddress += '\n' + opts.cityStateZip;
+        }
+
+        const phoneDisp = contactInformation.formatPhone(opts.phone.trim()).disp;
+        // NAME
+        nameInput.querySelector('input').value = opts.name;
+        if (opts.name === '') {
+            nameInput.classList.add('error');
+        } else {
+            nameInput.classList.remove('error');
+        }
+        // Address
+        addressInput.querySelector('textarea').value = joinedAddress.trim();
+        if (joinedAddress.trim() === '') {
+            addressInput.classList.add('error');
+        } else {
+            addressInput.classList.remove('error');
+        }
+        // PHONE
+        phoneInput.querySelector('input').value = phoneDisp;
+        if (phoneDisp === '') {
+            phoneInput.classList.add('error');
+        } else {
+            phoneInput.classList.remove('error');
+        }
+
+        checkForErrors();
+    }
 
     function tablePopup(popupData, isNew) {
         const popup = POPUP.build({ id: 'isp-ciip-mainPopup' });
@@ -88,7 +167,7 @@ const isp_ci_importantPlaces = (() => {
                 if (typeVal === 'Other' && typeOtherVal === '') {
                     typeValValidated =
                         `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${typeVal}`;
-        }  else {
+                } else {
                     typeValValidated = typeVal;
                 }
 
@@ -96,7 +175,7 @@ const isp_ci_importantPlaces = (() => {
                 let typeValueUpdate = typeValValidated;
                 if (typeVal == 'Other' && typeOtherVal != '') {
                     typeValueUpdate = typeValValidated + ' - ' + typeOtherVal;
-                } 
+                }
 
                 table.updateRows(
                     'isp_ci_importanPlacesTable',
@@ -186,6 +265,16 @@ const isp_ci_importantPlaces = (() => {
         } else {
             if (popupData.typeOther === '') typeOtherInput.classList.add('error');
         }
+
+        importFromVendorBtn = button.build({
+            text: 'IMPORT FROM VENDORS',
+            type: 'contained',
+            style: 'secondary',
+            callback: () => {
+                popFromVendors();
+            },
+        });
+        importFromVendorBtn.style.width = '100%';
 
         nameInput = input.build({
             label: '*Name',
@@ -292,6 +381,7 @@ const isp_ci_importantPlaces = (() => {
         }
         popup.appendChild(typeDropdown);
         popup.appendChild(typeOtherInput);
+        popup.appendChild(importFromVendorBtn);
         popup.appendChild(nameInput);
         popup.appendChild(addressInput);
         popup.appendChild(phoneInput);
@@ -413,7 +503,7 @@ const isp_ci_importantPlaces = (() => {
                 if (d.type === 'Other' && d.typeOther === '') {
                     d.typeValidated =
                         `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${d.type}`;
-      }  else {
+                } else {
                     d.typeValidated = d.type;
                 }
 
@@ -438,10 +528,11 @@ const isp_ci_importantPlaces = (() => {
         return placesTable;
     }
 
-    function buildSection(tableData, contactId, ro) {
+    function buildSection(tableData, contactId, ro, activeVendors) {
         readOnly = ro;
         cID = contactId;
         rawPlacesTableData = tableData;
+        vendors = activeVendors;
         const ipSection = document.createElement('div');
 
         const addPlaceBtn = button.build({
