@@ -15,8 +15,8 @@ const TRANS_addRoute = (function () {
         driverDropdown,
         otherRiderDropdown,
         locationDropdown,
-        vehicleDropdown;
-    let milesRadio, tripsRadio;
+        vehicleDropdown, tripIntegratedEmploymentCheckbox;
+    let milesRadio, tripsRadio, selectedIntegratedEmployment;
     let consumerSectionBody, noConsumerWarning;
     let consumersOnRecord = new Map();
     let saveBtn;
@@ -50,6 +50,17 @@ const TRANS_addRoute = (function () {
             charLimit: 60
         });
         routeNameInput.autocomplete = 'false'
+
+        tripIntegratedEmploymentCheckbox = input.buildCheckbox({
+            text: 'Trip To/From Integrated Employment',
+            id: 'tripIntegratedEmploymentCheckbox',
+            //readonly: ro,
+            isChecked: false,
+            style: "secondary",
+            //isChecked: confidential === 'Y' ? true : false,
+        });
+
+        tripIntegratedEmploymentCheckbox.style = "padding-bottom: 15px;";  
 
         driverDropdown = dropdown.build({
             dropdownId: "driverDropdown",
@@ -125,6 +136,7 @@ const TRANS_addRoute = (function () {
         column1.appendChild(routeInfoCard)
         routeInfoCardBody.appendChild(dateInput);
         routeInfoCardBody.appendChild(routeNameInput);
+        routeInfoCardBody.appendChild(tripIntegratedEmploymentCheckbox);
         routeInfoCardBody.appendChild(driverDropdown);
         routeInfoCardBody.appendChild(otherRiderDropdown);
         routeInfoCardBody.appendChild(vehicleDropdown);
@@ -145,13 +157,30 @@ const TRANS_addRoute = (function () {
         // No Consumer Warning //
         noConsumerWarning = document.createElement('p');
         noConsumerWarning.style.color = 'red';
-        noConsumerWarning.innerText = 'You must select at least one consumer for the route.'
-        consumerSectionBody.appendChild(noConsumerWarning)
+        noConsumerWarning.id = 'noConsumerWarningMessage';
+        // Too many Consumer Warning //
+        tooManyConsumersWarning = document.createElement('p');
+        tooManyConsumersWarning.style.color = 'red';
+        tooManyConsumersWarning.id = 'tooManyConsumersWarning';
+        tooManyConsumersWarning.innerText = 'You must select only one consumer for this route.'
+        tooManyConsumersWarning.style.display = 'none';
         //
         column2.appendChild(consumerSectionCard)
         column2.appendChild(btnWrap)
+        column2.appendChild(tooManyConsumersWarning)
+
+
         DOM.ACTIONCENTER.appendChild(column1)
         DOM.ACTIONCENTER.appendChild(column2)
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            noConsumerWarning.innerText = 'You must select one consumer for the route.'
+        } else {
+            noConsumerWarning.innerText = 'You must select at least one consumer for the route.'
+        }
+        consumerSectionBody.appendChild(noConsumerWarning)
+
 
         populateDropdowns();
         eventListeners();
@@ -204,6 +233,27 @@ const TRANS_addRoute = (function () {
     }
 
     function setBtnStatusOfAddRoute() {
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            if (consumersOnRecord.size > 1) {
+                saveBtn.classList.add('disabled');
+                return;
+            } else if (consumersOnRecord.size == 1) {
+                saveBtn.classList.remove('disabled');
+            }else {
+                saveBtn.classList.add('disabled'); 
+                return;
+            }
+        } else {
+            if (consumersOnRecord.size == 0) {
+                saveBtn.classList.add('disabled');
+                return;
+            } else {
+                saveBtn.classList.remove('disabled'); 
+            }
+        }
+
         var hasErrors = [].slice.call(document.querySelectorAll('.error'));
         if (hasErrors.length !== 0) {
             saveBtn.classList.add('disabled');
@@ -281,6 +331,61 @@ const TRANS_addRoute = (function () {
             resetPageForNewDate(event.target.value)
             checkRequiredFieldsOfAddRoute();
         })
+
+        tripIntegratedEmploymentCheckbox.addEventListener('change', event => {
+            selectedIntegratedEmployment = event.target.checked ? 'Y' : 'N';
+            
+            var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+            var noConsumerWarningMessage = document.getElementById("noConsumerWarningMessage");
+            var MilesRadio = document.getElementById("milesRadio");
+            var TripsRadio = document.getElementById("tripsRadio");
+
+            if (TripIntegratedEmploymentCheckbox.checked == true) {
+              //  var MilesRadio = document.getElementById("milesRadio");
+               TripsRadio.checked = true;  
+               TripsRadio.disabled = true;
+               MilesRadio.disabled = true;
+
+               TripsRadio.classList.add('disabled');
+               MilesRadio.classList.add('disabled');
+
+               if (consumersOnRecord.size > 1) {
+                noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+                roster2.toggleMiniRosterBtnVisible(false);
+              //  noConsumerWarningMessage.classList.add('error');
+               // noConsumerWarning.classList.add('error');
+               tooManyConsumersWarning.style.display = 'block';
+               // alert('You have selected multiple consumers. Only one consumer is allowed for Integrated Employment. Please update your consumers and try again.');
+                
+             } else if (consumersOnRecord.size == 1) {
+                noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+               roster2.toggleMiniRosterBtnVisible(false);
+              // noConsumerWarningMessage.classList.remove('error');
+               tooManyConsumersWarning.style.display = 'none';
+            } else {
+                noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+               // noConsumerWarningMessage.classList.remove('error');
+                // noConsumerWarning.classList.remove('error');
+                roster2.toggleMiniRosterBtnVisible(true);
+                tooManyConsumersWarning.style.display = 'none';
+               }
+               
+               setBtnStatusOfAddRoute();
+
+            } else {
+               // var TripsRadio = document.getElementById("tripsRadio");
+               MilesRadio.checked = true;   
+               TripsRadio.disabled = false;
+               MilesRadio.disabled = false;
+               TripsRadio.classList.remove('disabled');
+               MilesRadio.classList.remove('disabled');
+
+               noConsumerWarningMessage.innerText = 'You must select at least one consumer for the route.'
+               roster2.toggleMiniRosterBtnVisible(true);
+               setBtnStatusOfAddRoute();
+            }
+ 
+        });
     }
 
     function resetPageForNewDate(newDate) {
@@ -296,6 +401,16 @@ const TRANS_addRoute = (function () {
         const consumerSection = document.getElementById('consumerOnRouteSection');
         consumerSection.innerHTML = '';
         consumerSection.appendChild(noConsumerWarning)
+        
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        var noConsumerWarningMessage = document.getElementById("noConsumerWarningMessage");
+
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+        } else {
+            noConsumerWarningMessage.innerText = 'You must select at least one consumer for the route.'
+        }
+
         noConsumerWarning.style.display = 'block'
         // *
 
@@ -321,9 +436,37 @@ const TRANS_addRoute = (function () {
 
     function consumerRemoveAction(consumerId) {
         consumersOnRecord.delete(consumerId)
+
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+
         if (consumersOnRecord.size > 0) {
             noConsumerWarning.style.display = 'none';
-        } else noConsumerWarning.style.display = 'block';
+        } else {
+            
+            if (TripIntegratedEmploymentCheckbox.checked == true) {
+                noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+            } else {
+                noConsumerWarningMessage.innerText = 'You must select at least one consumer for the route.'
+            }
+            noConsumerWarning.style.display = 'block';
+        }
+
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+            if (consumersOnRecord.size > 1) {
+                tooManyConsumersWarning.style.display = 'block';
+                roster2.toggleMiniRosterBtnVisible(false);
+            } else if (consumersOnRecord.size == 1) {
+                roster2.toggleMiniRosterBtnVisible(false);
+                tooManyConsumersWarning.style.display = 'none';
+            }else {
+                roster2.toggleMiniRosterBtnVisible(true);
+                tooManyConsumersWarning.style.display = 'none';
+            }
+        } else {
+            roster2.toggleMiniRosterBtnVisible(true);
+            tooManyConsumersWarning.style.display = 'none';
+        }
+
         checkRequiredFieldsOfAddRoute();
     }
     function updateConsumerData(data) {
@@ -344,9 +487,38 @@ const TRANS_addRoute = (function () {
                     consumersOnRecord.get(consumer.id)['riderStatus'] = '';
                     const transportationCard = TRANS_consumerDocCard.createCard(consumer.id, consumerDetails);
                     consumerSectionBody.appendChild(transportationCard)
+
+                    var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+
                     if (consumersOnRecord.size > 0) {
                         noConsumerWarning.style.display = 'none';
-                    } else noConsumerWarning.style.display = 'block';
+                    } else { 
+                        if (TripIntegratedEmploymentCheckbox.checked == true) {
+                            noConsumerWarningMessage.innerText = 'You must select one consumer for the route.'
+                        } else {
+                            noConsumerWarningMessage.innerText = 'You must select at least one consumer for the route.'
+                        }
+                        noConsumerWarning.style.display = 'block';
+                    }
+
+                    if (TripIntegratedEmploymentCheckbox.checked == true) {
+                        if (consumersOnRecord.size > 1) {
+                            tooManyConsumersWarning.style.display = 'block';
+                            roster2.toggleMiniRosterBtnVisible(false);
+                        } else if (consumersOnRecord.size == 1) {
+                            roster2.toggleMiniRosterBtnVisible(false);
+                            tooManyConsumersWarning.style.display = 'none';
+                        }else {
+                            roster2.toggleMiniRosterBtnVisible(true);
+                            tooManyConsumersWarning.style.display = 'none';
+                        }
+                    } else {
+                        roster2.toggleMiniRosterBtnVisible(true);
+                        tooManyConsumersWarning.style.display = 'none';
+                    }
+
+                    
+
                     checkRequiredFieldsOfAddRoute();
                 })
                 break;
@@ -385,7 +557,8 @@ const TRANS_addRoute = (function () {
                 dateOfService: date,
                 billingType: billingType,
                 vehicleInformationId: vehicle,
-                locationId: location
+                locationId: location,
+                integratedEmployment: selectedIntegratedEmployment
             }
             // 1) Save main trip to get the tripCompletedId from DB
             const tripCompletedId = (await TRANS_addRouteAjax.insertTrip(data)).insertTripCompletedResult[0].tripCompletedId

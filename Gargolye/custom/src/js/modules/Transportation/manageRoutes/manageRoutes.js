@@ -129,6 +129,7 @@ const TRANS_manageRoutes = (function () {
                 driverId,
                 tripInspection,
                 tripsCompletedId,
+                integratedEmployment,
             } = val;
 
             const vehicleNumber = TRANS_mainLanding.vehicleLookup(vehicleInfoId).vehicleNumber;
@@ -192,6 +193,7 @@ const TRANS_manageRoutes = (function () {
                             locationName: locationName,
                             vehicleInspectionId: tripInspection,
                             batched: batched,
+                            integratedEmployment: integratedEmployment,
                         });
                     }
                 },
