@@ -978,7 +978,7 @@ var timeEntryCard = (function () {
         function checkOrigination() {
             var originationVal = origination;
 
-            if (requiredFields.isOriginationRequired === 'Y') {
+            if (requiredFields.isDestinationRequired === 'Y') {
                 if (originationVal === '' || !originationVal) {
                     originationInput.classList.add('error');
                 } else {
