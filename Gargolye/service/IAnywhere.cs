@@ -1742,6 +1742,14 @@ namespace Anywhere
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getSchedulingRegions/")]
+        AnywhereWorker.Regions[] getSchedulingRegions(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getSingleEntryUsersWCJSON/")]
         SingleEntryWorker.SingleEntryUsersWC[] getSingleEntryUsersWCJSON(string token, string seDate);
 
