@@ -147,6 +147,8 @@ $.session.defaultDSTimeClockValue;
 $.session.defaultDSTimeClockName;
 $.session.defaultMoneyManagementLocation;
 $.session.defaultMoneyManagementLocationValue;
+$.session.defaultOODLocation;
+$.session.defaultOODLocationValue;
 $.session.defaultPlanLocation;
 $.session.defaultPlanLocationName;
 $.session.defaultPlanGroupValue;
@@ -1796,6 +1798,20 @@ function setDefaultValue(type, value, event, name) {
             } else {
                 createCookie('defaultPlanGroupName', 'Everyone', 7);
                 saveDefaultLocationNameAjax('9', 'Everyone');
+            }
+            break;
+        case 10:
+            typeName = 'Default OOD Location';
+            debugger;
+            $('#OOD10').text(event.srcElement.text);
+            if (value != 0 && name != null) {
+                createCookie('defaultOODLocationName', name, 10);
+                createCookie('defaultOODLocationValue', value, 10);
+                saveDefaultLocationNameAjax('10', name);
+                saveDefaultLocationValueAjax('10', value);
+            } else {
+                createCookie('defaultOODLocationName', 'Remember Last Location', 10);
+                saveDefaultLocationNameAjax('10', 'Remember Last Location'); 
             }
             break;
     }

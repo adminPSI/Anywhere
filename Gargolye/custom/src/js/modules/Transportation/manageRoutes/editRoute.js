@@ -334,9 +334,48 @@ const TRANS_manageEditRoute = (function () {
                 routeEndOdo.classList.remove('error')
                 return
             }
+            var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+            if (TripIntegratedEmploymentCheckbox.checked == true) {
+
+                if (isNaN(startVal) && isNaN(endVal)) {
+                    routeStartOdo.classList.add('error');
+                    routeEndOdo.classList.add('error');
+                    setBtnStatusOfAddRoute();
+                    return;
+                } else {
+                    if (isNaN(startVal)) {
+                        routeStartOdo.classList.add('error');
+                        setBtnStatusOfAddRoute();
+                        return;
+                    }
+                    if (isNaN(endVal)) {
+                        routeEndOdo.classList.add('error');
+                        setBtnStatusOfAddRoute();
+                        return;
+                    }
+                }
+    
+                if (consumersOnRecord.size > 1) {
+                    roster2.toggleMiniRosterBtnVisible(false);
+                    tooManyConsumersWarning.style.display = 'block'; 
+                 } else if (consumersOnRecord.size == 1) {
+                   roster2.toggleMiniRosterBtnVisible(false);
+                   tooManyConsumersWarning.style.display = 'none';
+                } else {
+                    roster2.toggleMiniRosterBtnVisible(true);
+                    tooManyConsumersWarning.style.display = 'none';
+                }
+              //  setBtnStatusOfRouteDocumentation();
+    
+            } else {  //TripIntegratedEmploymentCheckbox.checked == false
+    
+                roster2.toggleMiniRosterBtnVisible(true);
+                tooManyConsumersWarning.style.display = 'none';
+             //   setBtnStatusOfRouteDocumentation();
+            }
 
             const dif = endVal - startVal;
-            if (dif < 0) {
+            if (dif <= 0) {
                 routeStartOdo.classList.add('error');
                 routeEndOdo.classList.add('error')
             } else {
@@ -507,6 +546,40 @@ const TRANS_manageEditRoute = (function () {
                tripsRadio.classList.remove('disabled');
                milesRadio.classList.remove('disabled');
         }
+
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+
+            routeStartOdo.classList.remove('error');
+            routeEndOdo.classList.remove('error');
+
+            const startVal = parseInt(routeStartOdo.querySelector('input').value)
+            const endVal = parseInt(routeEndOdo.querySelector('input').value)
+
+            if (isNaN(startVal) && isNaN(endVal)) {
+                routeStartOdo.classList.add('error');
+                routeEndOdo.classList.add('error');
+                setBtnStatusOfAddRoute();
+                return;
+            } else {
+                if (isNaN(startVal)) {
+                    routeStartOdo.classList.add('error');
+                    setBtnStatusOfAddRoute();
+                    return;
+                }
+                if (isNaN(endVal)) {
+                    routeEndOdo.classList.add('error');
+                    setBtnStatusOfAddRoute();
+                    return;
+                }
+            }
+            setBtnStatusOfAddRoute()
+
+        } else {
+            routeStartOdo.classList.remove('error');
+            routeEndOdo.classList.remove('error');
+            setBtnStatusOfAddRoute()
+        }
+
         setBtnStatusOfAddRoute()
     }
 

@@ -1791,6 +1791,19 @@ const OOD = (() => {
 
         setActiveModuleAttribute('OOD');
         DOM.clearActionCenter();
+
+        let defaultOODLocation = defaults.getLocation('OOD');
+        if (defaultOODLocation === '') {
+            defaults.setLocation('OOD', 0);
+            defaultOODLocation = '0';
+        }
+        roster2.miniRosterinit(
+            {
+                locationId: defaultOODLocation,
+                locationName: '', 
+            },          
+        );
+
         roster2.showMiniRoster();
     }
 
