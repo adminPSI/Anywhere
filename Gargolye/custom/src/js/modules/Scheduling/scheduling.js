@@ -1759,7 +1759,7 @@ const SchedulingCalendar = (function () {
     ScheduleCalendar = new Calendar();
     build();
 
-    employees = await schedulingAjax.getEmployeesForScheduling();
+    employees = await schedulingAjax.getEmployeesForScheduling($.session.UserId);
     shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling({
       locationId: '0',
       includeTrainedOnly: 0,
