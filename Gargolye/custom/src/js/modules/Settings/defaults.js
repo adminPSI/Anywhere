@@ -6,11 +6,13 @@ var defaults = (function () {
     var timeClockLocationDropdown;
     var WorkshopLocationDropdown;
     var moneyManagementLocationDropdown;
+    var OODLocationDropdown;
     var rosterRLLCheckBox;
     var dayServicesRLLCheckBox;
     var timeClockRLLCheckBox;
     var WorkshopRLLCheckBox;
     var moneyManagementRLLCheckBox;
+    var OODRLLCheckBox;
     var itDaysBackInput;
     var caseNotesDaysBackInput;
     var progressNotesDaysBackInput;
@@ -28,11 +30,13 @@ var defaults = (function () {
     var timeClockLocation;
     var WorkshopLocation;
     var moneyManagementLocation;
+    var OODLocation;
     var rosterRLL;
     var dayServicesRLL;
     var timeClockRLL;
     var workshopRLL;
     var moneyManagementRLL;
+    var OODRLL;
     var planRLL;
     var planLocation;
     var planGroup;
@@ -44,6 +48,7 @@ var defaults = (function () {
     var dayServiceDropdownData;
     var workshopDropdownData;
     var moneyManagementDropdownData;
+    var OODDropdownData;
     var timeClockDropdownData;
     var rosterLocDropdownData;
     var rosterGroupDropdownData;
@@ -51,7 +56,7 @@ var defaults = (function () {
     var planGroupDropdownData;
     var communicationTypeDropdownData;
 
-    function getLocation(module) {
+    function getLocation(module) { 
         // module ex.. 'roster', 'dayServices'
         switch (module) {
             case 'roster': {
@@ -79,6 +84,10 @@ var defaults = (function () {
             }
             case 'moneyManagement': {
                 return $.session.defaultMoneyManagementLocationValue;
+                break;
+            }
+            case 'OOD': {
+                return $.session.defaultOODLocationValue;
                 break;
             }
             case 'plan': {
@@ -165,6 +174,13 @@ var defaults = (function () {
                 $.session.defaultPlanGroupValue = planGroup;
                 break;
             }
+            case 'OOD': {
+                OODLocation = value;
+                defaultsAjax.saveDefaultLocationValue('10', OODLocation);
+                //reset session var for the current session
+                $.session.defaultOODLocationValue = OODLocation;
+                break;
+            }
             default: {
                 return null;
                 break;
@@ -234,6 +250,16 @@ var defaults = (function () {
                 } else {
                     defaultsAjax.saveDefaultLocationName('8', '');
                     $.session.defaultPlanLocationName = '';
+                }
+                break;
+            }
+            case 'OOD': {
+                if (OODRLL) {
+                    defaultsAjax.saveDefaultLocationName('10', 'Remember Last Location');
+                    $.session.defaultOODLocation = 'Remember Last Location';
+                } else {
+                    defaultsAjax.saveDefaultLocationName('10', '');
+                    $.session.defaultOODLocation = '';
                 }
                 break;
             }
@@ -400,6 +426,26 @@ var defaults = (function () {
             });
         });
 
+        var OODLocationPromise = new Promise(function (resolve, reject) {
+            defaultsAjax.getRosterLocations(loc => {
+                OODDropdownData = loc.map(loc => {
+                    var id = `ros-${loc.ID}`;
+                    var value = loc.ID;
+                    var text = loc.Name;
+                    return {
+                        id,
+                        value,
+                        text,
+                    };
+                });
+                //If they don't have any defaults set, add a blank record to the dropdown.
+                //This will force an update on change and NOT make it look like the have a default set, when they really don't.
+                //Once they set a default, they can only set a new one, they can't change to no default. No default might break things.
+                OODDropdownData.unshift({ id: 'ros-0', value: '0', text: 'ALL' });
+                resolve('success');
+            });
+        });
+
         var planLocPromise = new Promise(function (resolve, reject) {
             defaultsAjax.getRosterLocations(loc => {
                 planLocDropdownData = loc.map(loc => {
@@ -454,6 +500,7 @@ var defaults = (function () {
             rosterLocPromise,
             rosterGroupPromise,
             moneyManagementLocationPromise,
+            OODLocationPromise,
             planLocPromise,
             planGroupPromise
         ]).then(() => {
@@ -486,6 +533,11 @@ var defaults = (function () {
             }
             case 'moneyManagement': {
                 if ($.session.defaultMoneyManagementLocation === 'Remember Last Location') return true;
+                else return false;
+                break;
+            }
+            case 'OOD': {
+                if ($.session.defaultOODLocation === 'Remember Last Location') return true;
                 else return false;
                 break;
             }
@@ -589,6 +641,12 @@ var defaults = (function () {
         moneyManagementSectionHeader.classList.add('header');
         moneyManagementSectionHeader.innerHTML = 'Money Management';
 
+        var OODSection = document.createElement('div');
+        var OODSectionHeader = document.createElement('h3');
+        OODSection.classList.add('settingMenuCard');
+        OODSectionHeader.classList.add('header');
+        OODSectionHeader.innerHTML = 'OOD';
+
         var caseNotesSection = document.createElement('div');
         var caseNotesSectionHeader = document.createElement('h3');
         caseNotesSection.classList.add('settingMenuCard');
@@ -669,6 +727,20 @@ var defaults = (function () {
             className: 'rllCheckBox',
             style: 'secondary',
             isChecked: moneyManagementRLL,
+        });
+
+        OODLocationDropdown = dropdown.build({
+            dropdownId: 'defaultOODLocation',
+            className: 'defaultLocationDD',
+            label: 'Default Location',
+            style: 'secondary',
+        });
+
+        OODRLLCheckBox = input.buildCheckbox({
+            text: 'Remember Last Location',
+            className: 'rllCheckBox',
+            style: 'secondary',
+            isChecked: OODRLL,
         });
 
         var backButton = button.build({
@@ -759,6 +831,7 @@ var defaults = (function () {
         if (timeClockRLL) timeClockLocationDropdown.classList.add('disabled');
         if (workshopRLL) WorkshopLocationDropdown.classList.add('disabled');
         if (moneyManagementRLL) moneyManagementLocationDropdown.classList.add('disabled');
+        if (OODRLL) OODLocationDropdown.classList.add('disabled');
         if (planRLL) planLocationDropdown.classList.add('disabled');
         if (planRLL) planGroupDropdown.classList.add('disabled');
 
@@ -768,12 +841,14 @@ var defaults = (function () {
         timeClockChecboxDiv = document.createElement('div');
         workshopChecboxDiv = document.createElement('div');
         moneyManagementChecboxDiv = document.createElement('div');
+        OODChecboxDiv = document.createElement('div');
         planChecboxDiv = document.createElement('div');
         rosterChecboxDiv.classList.add('checkboxWrap');
         dayServicesChecboxDiv.classList.add('checkboxWrap');
         timeClockChecboxDiv.classList.add('checkboxWrap');
         workshopChecboxDiv.classList.add('checkboxWrap');
         moneyManagementChecboxDiv.classList.add('checkboxWrap');
+        OODChecboxDiv.classList.add('checkboxWrap');
         planChecboxDiv.classList.add('checkboxWrap');
 
         rosterChecboxDiv.appendChild(rosterRLLCheckBox);
@@ -781,6 +856,7 @@ var defaults = (function () {
         timeClockChecboxDiv.appendChild(timeClockRLLCheckBox);
         workshopChecboxDiv.appendChild(WorkshopRLLCheckBox);
         moneyManagementChecboxDiv.appendChild(moneyManagementRLLCheckBox);
+        OODChecboxDiv.appendChild(OODRLLCheckBox);
         planChecboxDiv.appendChild(planRLLCheckBox);
 
         //roster settigns
@@ -820,6 +896,13 @@ var defaults = (function () {
             moneyManagementSection.appendChild(moneyManagementChecboxDiv);
         }
 
+        //OOD settings
+        if ($.session.applicationName === 'Advisor') {
+            OODSection.appendChild(OODSectionHeader);
+            OODSection.appendChild(OODLocationDropdown);
+            OODSection.appendChild(OODChecboxDiv);
+        }
+
         //case notes settings
         caseNotesSection.appendChild(caseNotesSectionHeader);
         caseNotesSection.appendChild(caseNotesDaysBackInput);
@@ -844,12 +927,15 @@ var defaults = (function () {
             defaultsPage.appendChild(incidentTrackingSection);
         if ($.session.applicationName === 'Advisor')
             defaultsPage.appendChild(moneyManagementSection);
+        if ($.session.applicationName === 'Advisor')
+            defaultsPage.appendChild(OODSection);
 
         rosterLocationDropdown.classList.add('defaultLocationDD');
         dayServicesLocationDropdown.classList.add('defaultLocationDD');
         timeClockLocationDropdown.classList.add('defaultLocationDD');
         WorkshopLocationDropdown.classList.add('defaultLocationDD');
         moneyManagementLocationDropdown.classList.add('defaultLocationDD');
+        OODLocationDropdown.classList.add('defaultLocationDD');
         planLocationDropdown.classList.add('defaultLocationDD');
 
         //RESET roster group to all if they have roster remember last location enabled. this is incase they change location but their selected default group is not in that location
@@ -881,11 +967,16 @@ var defaults = (function () {
             workshopDropdownData,
             $.session.defaultWorkshopLocationValue,
         );
-
         dropdown.populate(
             moneyManagementLocationDropdown,
             moneyManagementDropdownData,
             $.session.defaultMoneyManagementLocationValue,
+        );
+
+        dropdown.populate(
+            OODLocationDropdown,
+            OODDropdownData,
+            $.session.defaultOODLocationValue,
         );
 
         dropdown.populate(
@@ -920,6 +1011,7 @@ var defaults = (function () {
         timeClockRLL = rememberLastLocation('timeClock');
         workshopRLL = rememberLastLocation('workshop');
         moneyManagementRLL = rememberLastLocation('moneyManagement');
+        OODRLL = rememberLastLocation('moneyManagement');
         planRLL = rememberLastLocation('plan');
     }
 
@@ -988,6 +1080,22 @@ var defaults = (function () {
             setRememberLastLocation('moneyManagement');
             if (moneyManagementRLL) moneyManagementLocationDropdown.classList.add('disabled');
             else moneyManagementLocationDropdown.classList.remove('disabled');
+        });
+        //=====
+        //OOD
+        OODLocationDropdown.addEventListener('change', () => {
+            if (!OODLocationDropdown.classList.contains('disabled')) {
+                setLocation('OOD', event.target.options[event.target.selectedIndex].value);
+            }
+            else {
+                document.getElementById('defaultOODLocation').value = $.session.defaultOODLocationValue;
+            }
+        });
+        OODRLLCheckBox.addEventListener('change', () => {
+            OODRLL = !OODRLL;
+            setRememberLastLocation('OOD');
+            if (OODRLL) OODLocationDropdown.classList.add('disabled');
+            else OODLocationDropdown.classList.remove('disabled');
         });
         //=====
         // PLAN
@@ -1144,6 +1252,9 @@ var defaults = (function () {
                 case 'Default Plan Location':
                     setLocation('plan', '');
                     setLocation('planGroup', '');
+                    break;
+                case 'Default OOD Location':
+                    setLocation('OOD', '');
                     break;
                 default:
                     console.warn(`couldn't reset a default location`);
