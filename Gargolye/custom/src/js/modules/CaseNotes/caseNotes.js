@@ -373,9 +373,7 @@ const CaseNotes = (() => {
         const invalidElements = document.querySelectorAll(
             '[data-ui] .inputGroup input:invalid:not(#phrase):not(#shortcut), ' +
             '[data-ui] .inputGroup select:invalid:not(#phrase):not(#shortcut), ' +
-            '[data-ui] .inputGroup textarea:invalid:not(#phrase):not(#shortcut)' + 
-            '[data-ui] .inputGroup textarea:invalid:not(#noteText)'
-
+            '[data-ui] .inputGroup textarea:invalid:not(#phrase):not(#shortcut)'
         );
         
         // Check that each field has a non-empty, trimmed value.
