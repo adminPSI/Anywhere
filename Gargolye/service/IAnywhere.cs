@@ -948,13 +948,13 @@ namespace Anywhere
         string[] getUndocumentedServicesForWarning(string entryDate, string[] consumerId, string token);
 
 
-        [OperationContract]
-        [WebInvoke(Method = "POST",
-            BodyStyle = WebMessageBodyStyle.Wrapped,
-            ResponseFormat = WebMessageFormat.Json,
-            RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/getUndocumentedServicesForWarning/")]
-        string[] getUndocumentedServicesForWarning(string entryDate,string[] consumerId, string token);
+        //[OperationContract]
+        //[WebInvoke(Method = "POST",
+        //    BodyStyle = WebMessageBodyStyle.Wrapped,
+        //    ResponseFormat = WebMessageFormat.Json,
+        //    RequestFormat = WebMessageFormat.Json,
+        //    UriTemplate = "/getUndocumentedServicesForWarning/")]
+        //string[] getUndocumentedServicesForWarning(string entryDate,string[] consumerId, string token);
 
 
         [OperationContract]
@@ -1742,6 +1742,14 @@ namespace Anywhere
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getSchedulingRegions/")]
+        AnywhereWorker.Regions[] getSchedulingRegions(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getSingleEntryUsersWCJSON/")]
         SingleEntryWorker.SingleEntryUsersWC[] getSingleEntryUsersWCJSON(string token, string seDate);
 
@@ -2169,7 +2177,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getLocationDropdownForScheduling/")]
-        AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpeShifts);
+        AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpenShifts);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -2299,6 +2307,14 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getScheduleMyApprovalData/")]
         AnywhereScheduleWorker.MyApprovalData[] getScheduleMyApprovalData(string token, string personId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getAllEmployees/")]
+        AnywhereScheduleWorker.AllEmployees[] getAllEmployees(string userId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

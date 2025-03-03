@@ -2147,7 +2147,7 @@ namespace OODForms
                     byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
                     response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ".pdf" + ";");
                     response.ContentType = "application/pdf";
-                    response.AddHeader("Transfer-Encoding", "identity");
+                    //response.AddHeader("Transfer-Encoding", "identity");
                     response.BinaryWrite(bytes);
                 }
             }

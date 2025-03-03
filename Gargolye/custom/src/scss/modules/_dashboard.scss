@@ -449,7 +449,6 @@
         div {
             max-height: 200px;
             overflow-x: hidden;
-            overflow-y: scroll;
 
             p {
                 cursor: pointer;
@@ -469,7 +468,7 @@
 
 @media screen and (min-width: 700px) {
     .assignEmployeePopup {
-        max-width: 400px;
+        max-width: 430px;
 
         .assignPeopleList {
             flex-basis: 100%;
@@ -479,9 +478,17 @@
 
 .nameListFont {
     color: #366a98;
-    font-weight : 500;
+    font-weight: 500;
+    max-height: 150px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .nameListWrap {
     display: flow;
+}
+
+.selectAllBtn {
+    background: #81b941;
+    width: 100%;
 }

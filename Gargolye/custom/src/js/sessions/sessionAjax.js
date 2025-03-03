@@ -1080,6 +1080,8 @@ function getDefaultAnywhereSettings() {
           $.session.defaultWorkshopLocation = res.defaultworkshoplocationname;
           $.session.defaultMoneyManagementLocationValue = res.defaultMoneyManagementLocation;
           $.session.defaultMoneyManagementLocation = res.defaultMoneyManagementLocationName;
+          $.session.defaultOODLocationValue = res.defaultOODLocation; 
+          $.session.defaultOODLocation = res.defaultOODLocationName;
           //$.session.defaultDSTimeClockName = res.defaulttimeclocklocationname;
           //database state - Indiana or Ohio
           $.session.stateAbbreviation = res.stateAbbreviation;

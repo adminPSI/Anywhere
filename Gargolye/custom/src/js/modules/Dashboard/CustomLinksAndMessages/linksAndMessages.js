@@ -180,16 +180,18 @@ var linksAndMessages = (function () {
             isMultiSelection = false;
         });
         saveBtn.addEventListener('click', async () => {
+            POPUP.hide(addMessagePopup);
+            pendingSave.show();           
             selectedEmployee.push($.session.UserId);
             const result = await linksAndMessagesWidgetAjax.addSystemMessageAsync(textMessage, timeOfExpiration, dateOfExpiration, selectedEmployee);
             const { addSystemMessageResult } = result;
-            if (addSystemMessageResult[0].NoteID != null) {
-                POPUP.hide(addMessagePopup);
+            if (addSystemMessageResult[0].NoteID != null) {                
+                pendingSave.hide();                
                 selectedEmployee = [];
                 currentconsumersSelected = [];
                 EmployeeNameList = [];
                 dashboard.load();
-            }
+            }             
         });
 
         cancelBtn.addEventListener('click', () => {
@@ -316,16 +318,17 @@ var linksAndMessages = (function () {
                 cnFilters.init(filterValues);
             },
         });
-
+        let multiSelect = false;
         const multiSelectBodyC = document.createElement('div');
+        multiSelectBodyC.setAttribute('id', 'multiSelectBody');
         consumerswithEmployeeIds.forEach(person => {
             let consumer = document.createElement('p');
             consumer.setAttribute('data-personId', person.employerId);
             consumer.innerText = person.employerName;
             multiSelectBodyC.appendChild(consumer);
-             
+
             if (person.employerId == singleSelectedEmployee) {
-                consumer.classList.add('selected');  
+                consumer.classList.add('selected');
                 currentconsumersSelected.push(person.employerId);
             }
 
@@ -375,7 +378,7 @@ var linksAndMessages = (function () {
             text: 'SAVE',
             style: 'secondary',
             type: 'contained',
-            callback: async function () {               
+            callback: async function () {
                 selectedEmployee = [];
                 selectedEmployee = currentconsumersSelected;
                 EmployeeNameList = [];
@@ -422,13 +425,38 @@ var linksAndMessages = (function () {
             },
         });
 
+        var selectALLBtn = button.build({
+            text: 'SELECT ALL',
+            style: 'secondary',
+            type: 'contained',
+            callback: function () {
+                const divElement = document.getElementById('multiSelectBody');
+                const pElements = divElement.querySelectorAll('p');
+                if (multiSelect) {
+                    currentconsumersSelected = [];
+                    pElements.forEach(p => { p.classList.remove('selected') });
+                    multiSelect = false;
+                }
+                else {
+                    consumerswithEmployeeIds.forEach(person => {
+                        currentconsumersSelected.push(person.employerId);
+                    });
+                    pElements.forEach(p => { p.classList.add('selected') });
+                    multiSelect = true;
+                }
+                toggleAssignButton();
+            },
+        });
+
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
+        selectALLBtn.classList.add('selectAllBtn');
         btnWrap.appendChild(assignBtn);
         btnWrap.appendChild(cancelSelectBtn);
         innerWrap.appendChild(consumersContainer);
         assignEmployeePopup.appendChild(popupMessage);
         assignEmployeePopup.appendChild(innerWrap);
+        assignEmployeePopup.appendChild(selectALLBtn);
         assignEmployeePopup.appendChild(btnWrap);
         POPUP.show(assignEmployeePopup);
     }

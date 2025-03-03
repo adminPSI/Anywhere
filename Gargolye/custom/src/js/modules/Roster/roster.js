@@ -940,6 +940,9 @@ const roster2 = (function () {
         if ($.loadedApp === 'ConsumerFinances' || $.loadedApp === 'CFEditAccount') {
             if (defaults.rememberLastLocation('moneyManagement')) defaults.setLocation('moneyManagement', selectedLocationId);
         }
+        if ($.loadedApp === 'OOD') {
+            if (defaults.rememberLastLocation('OOD')) defaults.setLocation('OOD', selectedLocationId); 
+        }
         if ($.loadedApp === 'plan') {
             if (defaults.rememberLastLocation('plan')) defaults.setLocation('plan', selectedLocationId);
         }
