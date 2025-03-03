@@ -79,6 +79,13 @@ namespace Anywhere.service.Data
             return myApprovalDataObj;
         }
 
+        public AllEmployees[] getAllEmployees(string userId)
+        {
+            string allEmployeeString = dg.getAllEmployees(userId);
+            AllEmployees[] allEmployeeObj = js.Deserialize<AllEmployees[]>(allEmployeeString);
+            return allEmployeeObj;
+        }
+
         public OverlapData[] requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
         {
             string[] dateArr = dates.Split(',');
@@ -367,5 +374,12 @@ namespace Anywhere.service.Data
             public string locationName { get; set; }
             public string requestType { get; set; }
         }
+
+        public class AllEmployees
+        {
+            public string Person_Id { get; set; }
+            public string EmployeeName { get; set; }            
+        }
+
     }
 }

@@ -5373,6 +5373,23 @@ namespace Anywhere.Data
             }
         }
 
+        public string getAllEmployees(string userid)
+        {
+            logger.debug("getScheduleMyApprovalData ");
+            List<string> list = new List<string>();
+            list.Add(userid);
+            string text = "CALL DBA.ANYW_Scheduling_AllEmployeesByVendor(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("704", ex.Message + "ANYW_Scheduling_AllEmployeesByVendor(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "704: error ANYW_Scheduling_AllEmployeesByVendor";
+            }
+        }
+
         public string getConsumersSignaturesAndNotes(string token, string singleEntryId)
         {
             if (tokenValidator(token) == false) return null;

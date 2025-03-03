@@ -1578,6 +1578,12 @@ namespace Anywhere
         {
             return anywhereScheduleWorker.getScheduleMyApprovalData(token, personId);
         }
+
+        public AnywhereScheduleWorker.AllEmployees[] getAllEmployees(string userId)
+        {
+            return anywhereScheduleWorker.getAllEmployees(userId);
+        }
+
         //Single entry note and signature
         public string singleEntrySaveSignatureAndNote(string token, string singleEntryId, string consumerId, string note, string signatureImage)
         {

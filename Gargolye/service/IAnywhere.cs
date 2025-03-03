@@ -2313,6 +2313,14 @@ namespace Anywhere
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getAllEmployees/")]
+        AnywhereScheduleWorker.AllEmployees[] getAllEmployees(string userId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/singleEntrySaveSignatureAndNote/")]
         string singleEntrySaveSignatureAndNote(string token, string singleEntryId, string consumerId, string note, string signatureImage);
 
