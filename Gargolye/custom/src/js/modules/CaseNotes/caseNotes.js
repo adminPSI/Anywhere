@@ -375,11 +375,16 @@ const CaseNotes = (() => {
             '[data-ui] .inputGroup select:invalid:not(#phrase):not(#shortcut), ' +
             '[data-ui] .inputGroup textarea:invalid:not(#phrase):not(#shortcut)'
         );
-        
+    
+        // Check if invalidElements contains #startTime or #endTime
+        if (Array.from(invalidElements).some(field => field.id === 'startTime' || field.id === 'endTime')) {
+            return false;
+        }
+    
         // Check that each field has a non-empty, trimmed value.
         return Array.from(invalidElements).every(field => field.value && field.value.trim() !== '');
-    
     }
+    
     function checkFormForUnsavedChanges(inputName, newValue) {
         const originalNoteDataMap = {
             serviceCode: caseNoteEditData.mainbillingorservicecodeid,
