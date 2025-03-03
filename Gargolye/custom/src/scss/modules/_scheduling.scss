@@ -4,7 +4,7 @@
 .scheduleWrap {
   padding: 10px 0px;
 }
-.scheduleNav{
+.scheduleNav {
   display: flex;
   flex-flow: row wrap;
   gap: 10px;
@@ -17,7 +17,7 @@
 
     > div {
       flex-grow: 2;
-  
+
       &:first-child {
         flex-grow: 3;
       }
@@ -28,13 +28,13 @@
 
     .shiftTypeWrap {
       position: relative;
-  
+
       p {
         position: absolute;
         right: 0px;
         bottom: 0px;
         font-weight: $_normal;
-  
+
         &.error {
           color: $error;
         }
@@ -62,7 +62,7 @@
     .pubUnpubButton {
       flex-grow: 1;
     }
-  }  
+        }
 }
 #locationDropdown {
   min-width: 200px;
@@ -81,7 +81,7 @@
   font-size: 32px;
   font-weight: 500;
 }
-.calendarNav{
+.calendarNav {
   display: flex;
   align-items: center;
 
@@ -90,7 +90,7 @@
     border-radius: 2px;
     padding: 2px;
     order: 1;
-    
+
     button {
       cursor: pointer;
       background: $gray;
@@ -128,14 +128,14 @@
 
   .dayNameHeader {
     display: contents;
-    
+
     > div {
-      background: $white; 
+      background: $white;
       font-weight: $_bold;
       font-size: 16px;
       display: flex;
       align-items: center;
-      justify-content: center; 
+      justify-content: center;
     }
 
     > div.emptyCell {
@@ -146,7 +146,7 @@
   .day {
     background: $white;
 
-    &.notSameMonth  {
+    &.notSameMonth {
       background: $gray;
     }
   }
@@ -169,6 +169,9 @@
   grid-template-columns: 100px repeat(7, minmax(0, 1fr));
   grid-template-rows: 40px minmax(80px, auto);
 
+  // grid-template-columns: [times] 100px [sun-start] 1fr [sun-end mon-start] 1fr [mon-end tue-start] 1fr [tue-end wed-start] 1fr [wed-end thu-start] 1fr [thu-end fri-start] 1fr [fri-end sat-start] 1fr [sat-end];
+  // grid-template-rows: [header] 40px [hour-0-start] auto [hour-1-start] auto [hour-2-start] auto [hour-3-start] auto [hour-4-start] auto [hour-5-start] auto [hour-6-start] auto [hour-7-start] auto [hour-8-start] auto [hour-9-start] auto [hour-10-start] auto [hour-11-start] auto [hour-12-start] auto [hour-13-start] auto [hour-14-start] auto [hour-15-start] auto [hour-16-start] auto [hour-17-start] auto [hour-18-start] auto [hour-19-start] auto [hour-20-start] auto [hour-21-start] auto [hour-22-start] auto [hour-23-start] auto [hour-24-end];
+  
   .week {
     display: grid;
     column-gap: 2px;
@@ -179,9 +182,55 @@
       color: $white;
       text-align: right;
       padding: 4px 6px 4px 0px;
+      grid-column: 1 / 2;
     }
+
     .daySlot {
       background: $white;
+    }
+
+    .daySlot:nth-child(8n + 2) { grid-column: 2 / 3; } /* Sunday */
+    .daySlot:nth-child(8n + 3) { grid-column: 3 / 4; } /* Monday */
+    .daySlot:nth-child(8n + 4) { grid-column: 4 / 5; } /* Tuesday */
+    .daySlot:nth-child(8n + 5) { grid-column: 5 / 6; } /* Wednesday */
+    .daySlot:nth-child(8n + 6) { grid-column: 6 / 7; } /* Thursday */
+    .daySlot:nth-child(8n + 7) { grid-column: 7 / 8; } /* Friday */
+    .daySlot:nth-child(8n + 8) { grid-column: 8 / 9; } /* Saturday */
+    
+    /* Assign correct row (hour) based on index */
+    .daySlot:nth-child(n + 2):nth-child(-n + 8) { grid-row: 1 / 2; }  /* 12:00 AM */
+    .daySlot:nth-child(n + 10):nth-child(-n + 16) { grid-row: 2 / 3; } /* 1:00 AM */
+    .daySlot:nth-child(n + 18):nth-child(-n + 24) { grid-row: 3 / 4; } /* 2:00 AM */
+    .daySlot:nth-child(n + 26):nth-child(-n + 32) { grid-row: 4 / 5; } /* 3:00 AM */
+    .daySlot:nth-child(n + 34):nth-child(-n + 40) { grid-row: 5 / 6; } /* 4:00 AM */
+    .daySlot:nth-child(n + 42):nth-child(-n + 48) { grid-row: 6 / 7; } /* 5:00 AM */
+    .daySlot:nth-child(n + 50):nth-child(-n + 56) { grid-row: 7 / 8; } /* 6:00 AM */
+    .daySlot:nth-child(n + 58):nth-child(-n + 64) { grid-row: 8 / 9; } /* 7:00 AM */
+    .daySlot:nth-child(n + 66):nth-child(-n + 72) { grid-row: 9 / 10; } /* 8:00 AM */
+    .daySlot:nth-child(n + 74):nth-child(-n + 80) { grid-row: 10 / 11; } /* 9:00 AM */
+    .daySlot:nth-child(n + 82):nth-child(-n + 88) { grid-row: 11 / 12; } /* 10:00 AM */
+    .daySlot:nth-child(n + 90):nth-child(-n + 96) { grid-row: 12 / 13; } /* 11:00 AM */
+    .daySlot:nth-child(n + 98):nth-child(-n + 104) { grid-row: 13 / 14; } /* 12:00 PM */
+    .daySlot:nth-child(n + 106):nth-child(-n + 112) { grid-row: 14 / 15; } /* 1:00 PM */
+    .daySlot:nth-child(n + 114):nth-child(-n + 120) { grid-row: 15 / 16; } /* 2:00 PM */
+    .daySlot:nth-child(n + 122):nth-child(-n + 128) { grid-row: 16 / 17; } /* 3:00 PM */
+    .daySlot:nth-child(n + 130):nth-child(-n + 136) { grid-row: 17 / 18; } /* 4:00 PM */
+    .daySlot:nth-child(n + 138):nth-child(-n + 144) { grid-row: 18 / 19; } /* 5:00 PM */
+    .daySlot:nth-child(n + 146):nth-child(-n + 152) { grid-row: 19 / 20; } /* 6:00 PM */
+    .daySlot:nth-child(n + 154):nth-child(-n + 160) { grid-row: 20 / 21; } /* 7:00 PM */
+    .daySlot:nth-child(n + 162):nth-child(-n + 168) { grid-row: 21 / 22; } /* 8:00 PM */
+    .daySlot:nth-child(n + 170):nth-child(-n + 176) { grid-row: 22 / 23; } /* 9:00 PM */
+    .daySlot:nth-child(n + 178):nth-child(-n + 184) { grid-row: 23 / 24; } /* 10:00 PM */
+    .daySlot:nth-child(n + 186):nth-child(-n + 192) { grid-row: 24 / 25; } /* 11:00 PM */
+
+    .weekEvents {
+      display: contents;
+
+      .eventCellEle {
+        background: pink;
+        color: black;
+        z-index: 2;
+      }
     }
   }
 }

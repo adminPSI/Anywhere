@@ -27,20 +27,58 @@ const MONTH_NAMES_ABBR = {
   10: 'Nov',
   11: 'Dec',
 };
+const EVENT_COLOR = {
+  1: 'white', // red, blue, green, orange, purple, yelow
+  2: 'cyan',
+  3: 'teal',
+  4: 'pink',
+  5: 'maroon',
+  6: 'indigo',
+  //? coral, olive
+};
 
-const formatTime = hour => {
+function formatTime(hour) {
   const period = hour < 12 ? 'AM' : 'PM';
   const displayHour = hour % 12 === 0 ? 12 : hour % 12;
   return `${displayHour}:00 ${period}`;
-};
+}
+function roundToNearestQuarter(timeStr) {
+  let [hour, minutes] = timeStr.split(':').map(Number);
+
+  // Round minutes to nearest quarter-hour
+  let roundedMinutes = Math.round(minutes / 15) * 15;
+
+  // Handle edge case where rounding up reaches the next hour
+  if (roundedMinutes === 60) {
+    hour = (hour + 1) % 24; // Ensure 24-hour format wraps around
+    roundedMinutes = 0;
+  }
+
+  // Format with leading zeros if needed
+  let roundedTime = `${String(hour).padStart(2, '0')}:${String(roundedMinutes).padStart(2, '0')}`;
+
+  return roundedTime;
+}
+function isDateWithinSpan(dirtyDate, rangeObj) {
+  return (
+    dates.isEqual(dirtyDate, rangeObj.start) ||
+    dates.isEqual(dirtyDate, rangeObj.end) ||
+    (dates.isAfter(dirtyDate, rangeObj.start) && dates.isBefore(dirtyDate, rangeObj.end))
+  );
+}
 
 class Calendar {
   constructor() {
     this.currentView = 'month';
     this.currentDate = dates.getTodaysDateObj();
     this.todaysDate = dates.getTodaysDateObj();
+    this.dateRange = {
+      start: null,
+      end: null,
+    };
 
-    this.monthDOMCache = {};
+    this.eventCache = null;
+    this.monthDOMCache = null;
 
     this.rootEle = document.createElement('div');
     this.calendarEle = document.createElement('div');
@@ -61,6 +99,7 @@ class Calendar {
     this.build();
   }
 
+  // Helpers
   updateHeader(prevDate) {
     if (prevDate && MONTH_NAMES[prevDate.getMonth()] === MONTH_NAMES[this.currentDate.getMonth()]) return;
 
@@ -71,6 +110,8 @@ class Calendar {
 
   // Views
   renderMonthView() {
+    this.monthDOMCache = {};
+
     const containerEle = document.createElement('div');
     containerEle.className = 'month-view';
 
@@ -86,6 +127,9 @@ class Calendar {
       start: startWeekFirstDay,
       end: endWeekLastDay,
     });
+
+    this.dateRange.start = startWeekFirstDay;
+    this.dateRange.end = endWeekLastDay;
 
     // day header row
     const dayHeaderRowEle = document.createElement('div');
@@ -105,12 +149,14 @@ class Calendar {
         containerEle.appendChild(weekWrapEle);
       }
 
+      const timeStamp = `${day.getTime()}`;
       const dayCellEle = document.createElement('div');
       dayCellEle.textContent = day.getDate();
       dayCellEle.className = 'day';
+      dayCellEle.setAttribute('data-date', timeStamp);
       weekWrapEle.appendChild(dayCellEle);
 
-      this.monthDOMCache[day] = dayCellEle;
+      this.monthDOMCache[timeStamp] = dayCellEle;
 
       containerEle.appendChild(weekWrapEle);
 
@@ -132,6 +178,9 @@ class Calendar {
       end: lastDayOfWeek,
     });
 
+    this.dateRange.start = firstDayOfWeek;
+    this.dateRange.end = lastDayOfWeek;
+
     // day header row
     const dayHeaderRowEle = document.createElement('div');
     dayHeaderRowEle.className = 'dayNameHeader';
@@ -143,9 +192,9 @@ class Calendar {
 
     DAY_NAMES.forEach((dayName, index) => {
       const nameCellEle = document.createElement('div');
-      nameCellEle.textContent = `${dayName}, ${MONTH_NAMES_ABBR[daysToRender[index].getMonth()]} ${daysToRender[
-        index
-      ].getDate()}`;
+      const abbrMonthName = MONTH_NAMES_ABBR[daysToRender[index].getMonth()];
+      const dayOfMonth = daysToRender[index].getDate();
+      nameCellEle.textContent = `${dayName}, ${abbrMonthName} ${dayOfMonth}`;
       dayHeaderRowEle.appendChild(nameCellEle);
     });
 
@@ -156,35 +205,21 @@ class Calendar {
 
     for (let hour = 0; hour < 24; hour++) {
       const timeSlot = document.createElement('div');
-      timeSlot.classList.add('timeSlot');
+      timeSlot.className = 'timeSlot';
       timeSlot.textContent = formatTime(hour);
       weekWrapEle.appendChild(timeSlot);
 
       for (let day = 0; day < daysToRender.length; day++) {
         const daySlot = document.createElement('div');
-        daySlot.classList.add('daySlot');
+        daySlot.className = 'daySlot';
         daySlot.setAttribute('data-time', `${hour}:00`);
         weekWrapEle.appendChild(daySlot);
       }
     }
 
-    // daysToRender.forEach(day => {
-    //   const dayCellEle = document.createElement('div');
-    //   dayCellEle.className = 'day';
-    //   weekWrapEle.appendChild(dayCellEle);
-    //   dayCellEle.textContent = `${day}`.slice(0, 10);
-
-    //   for (let hour = 0; hour < 24; hour++) {
-    //     const timeSlot = document.createElement('div');
-    //     timeSlot.classList.add('dayTimeSlot');
-    //     timeSlot.setAttribute('data-time', `${hour}:00`);
-    //     dayCellEle.appendChild(timeSlot);
-    //   }
-
-    //   if (!dates.isSameMonth(day, this.currentDate)) {
-    //     dayCellEle.classList.add('notSameMonth');
-    //   }
-    // });
+    const weekEventsWrapEle = document.createElement('div');
+    weekEventsWrapEle.className = 'weekEvents';
+    weekWrapEle.appendChild(weekEventsWrapEle);
 
     this.calendarEle.appendChild(containerEle);
   }
@@ -210,7 +245,77 @@ class Calendar {
     }
   }
 
-  // Events
+  // Events, Schedule, etc.
+  renderMonthEvents() {
+    if (!this.eventCache) return;
+
+    this.eventCache
+      .filter(event => isDateWithinSpan(event.date, this.dateRange))
+      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+      .map(event => {
+        const eventDate = new Date(event.date);
+
+        const eventCellEle = document.createElement('div');
+        const color = event.type.id !== 1 ? EVENT_COLOR[event.type.id] : event.color;
+
+        const eventTimeStamp = eventDate.getTime();
+        this.monthDOMCache[eventTimeStamp].appendChild(eventCellEle);
+      });
+  }
+  renderWeekEvents() {
+    const weekEventWrap = this.calendarEle.querySelector('.weekEvents');
+    weekEventWrap.innerHTML = '';
+
+    if (!this.eventCache) return;
+
+    this.eventCache
+      .filter(event => isDateWithinSpan(event.date, this.dateRange))
+      .map(event => {
+        const eventDate = new Date(event.date);
+        const startDate = new Date(event.startTime);
+        const endDate = new Date(event.endTime);
+
+        // Position
+        const dayIndex = eventDate.getDay();
+        const gridColumnStart = dayIndex + 2;
+
+        const startHour = startDate.getHours();
+        const endHour = endDate.getHours();
+        const gridRowStart = startHour + 1;
+        const gridRowEnd = endHour + 2;
+
+        // View
+        const eventCellEle = document.createElement('div');
+        eventCellEle.textContent = `${event.startTime.split(' ')[1]} - ${event.endTime.split(' ')[1]} ${event.name}`;
+        eventCellEle.className = 'eventCellEle';
+        eventCellEle.style.gridColumn = `${gridColumnStart} / span 1`;
+        eventCellEle.style.gridRow = `${gridRowStart} / ${gridRowEnd}`;
+        // set group
+        const color = event.type.id !== 1 ? EVENT_COLOR[event.type.id] : event.color;
+
+        weekEventWrap.appendChild(eventCellEle);
+      });
+  }
+  renderDayEvents() {
+    events.forEach(event => {});
+  }
+  renderEvents(events) {
+    if (events) {
+      this.eventCache = events;
+    }
+
+    if (this.currentView === 'month') {
+      this.renderMonthEvents();
+    }
+    if (this.currentView === 'week') {
+      this.renderWeekEvents();
+    }
+    if (this.currentView === 'day') {
+      this.renderDayEvents();
+    }
+  }
+
+  // Event Listeners
   handleViewChange(newView) {
     if (newView === this.currentView) return;
 
@@ -222,6 +327,7 @@ class Calendar {
 
     this.updateHeader();
     this.renderCalendar();
+    this.renderEvents();
   }
   handleNavigation(navEvent) {
     const prevDate = this.currentDate;
@@ -254,6 +360,7 @@ class Calendar {
 
     this.updateHeader(prevDate);
     this.renderCalendar();
+    this.renderEvents();
   }
 
   build() {

@@ -781,10 +781,207 @@ const SchedulingShiftDetails = (function () {
   };
 })();
 
+const TEST_EVENTS = [
+  // January 2025
+  {
+    allDay: false,
+    date: '1/3/2025',
+    description: 'Bloomingdale, Ash',
+    endTime: '1/3/2025 16:00:00',
+    eventId: 327,
+    eventName: 'Sou Res',
+    group: { name: 'My Shifts', id: 1 },
+    name: 'Sou Res',
+    startTime: '1/3/2025 08:00:00',
+  },
+  {
+    allDay: false,
+    date: '1/5/2025',
+    description: 'Downtown Conference Center',
+    endTime: '1/5/2025 14:00:00',
+    eventId: 328,
+    eventName: 'Tech Meetup',
+    group: { name: 'All Shifts', id: 2 },
+    name: 'Tech Meetup',
+    startTime: '1/5/2025 09:00:00',
+  },
+  {
+    allDay: false,
+    date: '1/10/2025',
+    description: 'Library Event Hall',
+    endTime: '1/10/2025 15:00:00',
+    eventId: 329,
+    eventName: 'Author Talk',
+    group: { name: 'Open Shifts', id: 3 },
+    name: 'Author Talk',
+    startTime: '1/10/2025 11:00:00',
+  },
+  {
+    allDay: false,
+    date: '1/12/2025',
+    description: 'Local Gym',
+    endTime: '1/12/2025 19:00:00',
+    eventId: 330,
+    eventName: 'Fitness Workshop',
+    group: { name: 'Pending Request Open Shifts', id: 4 },
+    name: 'Fitness Workshop',
+    startTime: '1/12/2025 16:00:00',
+  },
+  {
+    allDay: false,
+    date: '1/15/2025',
+    description: 'Office Building - Room 302',
+    endTime: '1/15/2025 17:00:00',
+    eventId: 331,
+    eventName: 'Team Meeting',
+    group: { name: 'Pending Call Off Shifts', id: 5 },
+    name: 'Team Meeting',
+    startTime: '1/15/2025 14:00:00',
+  },
+  {
+    allDay: false,
+    date: '1/20/2025',
+    description: 'Healthcare Clinic',
+    endTime: '1/20/2025 12:00:00',
+    eventId: 332,
+    eventName: 'Doctor Appointment',
+    group: { name: 'Appointments Shifts', id: 6 },
+    name: 'Doctor Appointment',
+    startTime: '1/20/2025 10:00:00',
+  },
+  {
+    allDay: false,
+    date: '1/22/2025',
+    description: 'Tech Hub Conference Room',
+    endTime: '1/22/2025 17:00:00',
+    eventId: 333,
+    eventName: 'Coding Workshop',
+    group: { name: 'All Shifts', id: 2 },
+    name: 'Coding Workshop',
+    startTime: '1/22/2025 13:00:00',
+  },
+  {
+    allDay: false,
+    date: '1/25/2025',
+    description: 'Central Park',
+    endTime: '1/25/2025 15:00:00',
+    eventId: 334,
+    eventName: 'Charity Run',
+    group: { name: 'My Shifts', id: 1 },
+    name: 'Charity Run',
+    startTime: '1/25/2025 09:00:00',
+  },
+  {
+    allDay: false,
+    date: '1/25/2025',
+    description: 'Local Cafe',
+    endTime: '1/25/2025 20:00:00',
+    eventId: 335,
+    eventName: 'Book Club Meeting',
+    group: { name: 'Open Shifts', id: 3 },
+    name: 'Book Club Meeting',
+    startTime: '1/25/2025 17:00:00',
+  },
+  {
+    allDay: false,
+    date: '1/30/2025',
+    description: 'University Lecture Hall',
+    endTime: '1/30/2025 12:00:00',
+    eventId: 336,
+    eventName: 'Guest Lecture',
+    group: { name: 'Pending Request Open Shifts', id: 4 },
+    name: 'Guest Lecture',
+    startTime: '1/30/2025 09:00:00',
+  },
+
+  // February 2025
+  {
+    allDay: false,
+    date: '2/3/2025',
+    description: 'Downtown Conference Center',
+    endTime: '2/3/2025 13:00:00',
+    eventId: 337,
+    eventName: 'Networking Event',
+    group: { name: 'My Shifts', id: 1 },
+    name: 'Networking Event',
+    startTime: '2/3/2025 10:00:00',
+  },
+  {
+    allDay: false,
+    date: '2/10/2025',
+    description: 'Gymnasium',
+    endTime: '2/10/2025 18:00:00',
+    eventId: 338,
+    eventName: 'Basketball Game',
+    group: { name: 'All Shifts', id: 2 },
+    name: 'Basketball Game',
+    startTime: '2/10/2025 16:00:00',
+  },
+  {
+    allDay: false,
+    date: '2/14/2025',
+    description: 'Restaurant Ballroom',
+    endTime: '2/14/2025 23:00:00',
+    eventId: 339,
+    eventName: 'Valentine’s Dinner',
+    group: { name: 'Appointments Shifts', id: 6 },
+    name: 'Valentine’s Dinner',
+    startTime: '2/14/2025 19:00:00',
+  },
+  {
+    allDay: false,
+    date: '2/21/2025',
+    description: 'Corporate Office',
+    endTime: '2/21/2025 16:00:00',
+    eventId: 340,
+    eventName: 'HR Training',
+    group: { name: 'Pending Call Off Shifts', id: 5 },
+    name: 'HR Training',
+    startTime: '2/21/2025 13:00:00',
+  },
+
+  // March 2025
+  {
+    allDay: false,
+    date: '3/5/2025',
+    description: 'Local Theater',
+    endTime: '3/5/2025 21:00:00',
+    eventId: 341,
+    eventName: 'Drama Play',
+    group: { name: 'My Shifts', id: 1 },
+    name: 'Drama Play',
+    startTime: '3/5/2025 18:00:00',
+  },
+  {
+    allDay: false,
+    date: '3/12/2025',
+    description: 'Science Center',
+    endTime: '3/12/2025 16:00:00',
+    eventId: 342,
+    eventName: 'Tech Expo',
+    group: { name: 'All Shifts', id: 2 },
+    name: 'Tech Expo',
+    startTime: '3/12/2025 10:00:00',
+  },
+  {
+    allDay: false,
+    date: '3/20/2025',
+    description: 'Music Hall',
+    endTime: '3/20/2025 22:00:00',
+    eventId: 343,
+    eventName: 'Live Concert',
+    group: { name: 'Pending Request Open Shifts', id: 4 },
+    name: 'Live Concert',
+    startTime: '3/20/2025 19:00:00',
+  },
+];
+
+$.session.schedulingSecurity = true;
+
 const SchedulingCalendar = (function () {
   // Red, Orange, Yellow, Blue, Green, and Purple.
   const currentView = 'mine';
-  const calendarGroups = {
+  const eventTypes = {
     1: 'My Shifts',
     2: 'All Shifts',
     3: 'Open Shifts',
@@ -813,31 +1010,30 @@ const SchedulingCalendar = (function () {
   let selectedShiftType;
   let viewOptionShifts = 'yes';
 
-  //TODO: put this somewhere => if (currentView === 'mine' && $.session.isPSI) return;
   //TODO: ? should we combine calendarAppointments into calendarEvents? im thinking yes
 
   // Calendar Events/Shifts/Appointments
   //-----------------------------------------------------------------------
-  function getEventGroup(personID, callOffStatus, requestShiftStatus) {
+  function getEventType(personID, callOffStatus, requestShiftStatus) {
     if (!personID && currentView === 'all') {
       if (!callOffStatus && (requestShiftStatus === 'D' || requestShiftStatus === '')) {
-        return { group: calendarGroups[3], id: 3 };
+        return { type: eventTypes[3], id: 3 };
       }
 
       if (requestShiftStatus === 'P') {
-        return { group: calendarGroups[4], id: 4 };
+        return { type: eventTypes[4], id: 4 };
       }
     }
 
     if (personID.toString() === $.session.PeopleId) {
       if (callOffStatus === 'P') {
-        return { group: calendarGroups[5], id: 5 };
+        return { type: eventTypes[5], id: 5 };
       }
 
-      return { group: calendarGroups[1], id: 1 };
+      return { type: eventTypes[1], id: 1 };
     }
 
-    return { group: calendarGroups[2], id: 2 };
+    return { type: eventTypes[2], id: 2 };
   }
   function formatServiceDate(serviceDate, dateScheduled) {
     let date = serviceDate ? serviceDate : dateScheduled;
@@ -862,8 +1058,28 @@ const SchedulingCalendar = (function () {
 
     return `${lastName}, ${firstName}`;
   }
+  function getEventTotalTime(dirtyStart, dirtyEnd) {
+    if (!dirtyStart || !dirtyEnd) return 0;
+
+    const startTime = dirtyStart.trim();
+    const endTime = dirtyEnd.trim();
+
+    const endDate = endTime === '12:00 AM' ? '01/02/2019 ' : '01/01/2019 ';
+    const startTimeDate = new Date('01/01/2019 ' + startTime);
+    const endTimeDate = new Date(endDate + endTime);
+    const startTimeMilliseconds = startTimeDate.getTime();
+    const endTimeMilliseconds = endTimeDate.getTime();
+
+    // total milliseconds
+    const milliseconds = endTimeMilliseconds - startTimeMilliseconds;
+    const hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
+
+    return hours + minutes / 60;
+  }
   async function getCalendarEvents(locationID = '%', peopleID = '%') {
     schedules = await schedulingAjax.getSchedulesForSchedulingModule(locationID, peopleID);
+    console.log('Schedules:', schedules);
 
     return schedules.map(sch => {
       const timeRegEx = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/;
@@ -874,9 +1090,9 @@ const SchedulingCalendar = (function () {
         return;
       }
 
-      const { group, id } = getEventGroup(sch.personID, sch.callOffStatus, sch.requestShiftStatus);
+      const { type, id } = getEventType(sch.personID, sch.callOffStatus, sch.requestShiftStatus);
 
-      if (!group) return;
+      if (!type) return;
 
       const serviceDate = formatServiceDate(sch.serviceDate, sch.dateScheduled);
       const startTime = `${serviceDate} ${sch.startTime}`;
@@ -884,13 +1100,15 @@ const SchedulingCalendar = (function () {
       const description = formatDescription(sch.firstName, sch.lastName);
       const eventName = formatEventName(sch.firstName, sch.lastName, sch.locationName);
       const name = currentView === 'mine' || !sch.lastName ? sch.locationName : sch.lastName;
+      const length = getEventTotalTime(sch.startTime, sch.endTime);
 
       return {
+        date: serviceDate,
         startTime: startTime,
         endTime: endTime,
-        date: serviceDate,
-        group: {
-          name: group,
+        length: length,
+        type: {
+          name: type,
           id: id,
         },
         eventId: sch.shiftId,
@@ -914,7 +1132,7 @@ const SchedulingCalendar = (function () {
         endTime: endTime,
         date: serviceDate,
         group: {
-          name: calendarGroups[6],
+          name: eventTypes[6],
           id: 6,
         },
         eventId: appt.medTrackingId,
@@ -925,11 +1143,6 @@ const SchedulingCalendar = (function () {
       };
     });
   }
-  function filterCalendarEventsByEmployee() {
-    return schedules.filter(sch => {});
-  }
-  //
-  function populateCalendarWithEvents() {}
 
   // Add/View Shift Popup
   //-----------------------------------------------------------------------
@@ -971,7 +1184,7 @@ const SchedulingCalendar = (function () {
       type: 'contained',
       callback: async () => {
         POPUP.hide(popup);
-        shiftEmployees = await schedulingAjax.getEmployeesForScheduling({
+        shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling({
           locationId: '0',
           includeTrainedOnly: 0,
           region: 'ALL',
@@ -1083,11 +1296,13 @@ const SchedulingCalendar = (function () {
   }
   function populateShiftColorDropdown(colorDropdown) {
     const dropdownData = [
-      { value: '', text: '' },
-      { value: '', text: 'red' },
-      { value: '', text: 'green' },
-      { value: '', text: 'yellow' },
-      { value: '', text: '' },
+      { value: '%', text: '' },
+      { value: 'red', text: 'red' },
+      { value: 'blue', text: 'blue' },
+      { value: 'green', text: 'green' },
+      { value: 'orange', text: 'orange' },
+      { value: 'purple', text: 'purple' },
+      { value: 'yellow', text: 'yellow' },
     ];
 
     dropdown.populate(colorDropdown, dropdownData, '');
@@ -1129,6 +1344,7 @@ const SchedulingCalendar = (function () {
       dropdownId: 'locationDropdown',
       label: 'Location',
       style: 'secondary',
+      required: true,
     });
     const employeeDropdown = dropdown.build({
       dropdownId: 'employeeDropdown',
@@ -1167,13 +1383,23 @@ const SchedulingCalendar = (function () {
       isChecked: false,
     });
 
+    // Required Fields
+    if (!isNew) {
+      if (!data.locationId) locationDropdown.classList.add('error');
+      if (!data.startTime) startTimeInput.classList.add('error');
+      if (!data.endTime) endTimeInput.classList.add('error');
+    }
+
+    // Event Listener
     shiftPopup.addEventListener('change', e => {
       if (e.target === locationDropdown) {
-        //TODO: Whenever the value in the Location dropdown is changed, remove selected consumers and employee from the shift.
+        //TODO: Whenever the value in the Location dropdown is changed,
+        //TODO: remove selected consumers and employee from the shift.
       }
       if (e.target === employeeDropdown) {
       }
       if (e.target === colorDropdown) {
+        if (e.target.value === '%') data.color = 'white';
       }
       if (e.target === startTimeInput) {
         //! start time must be before end time
@@ -1188,6 +1414,7 @@ const SchedulingCalendar = (function () {
       }
     });
 
+    // Build Popup
     const buttonWrap = document.createElement('div');
     const savebtn = button.build({
       text: 'Save',
@@ -1436,7 +1663,6 @@ const SchedulingCalendar = (function () {
     return buttonEle;
   }
   function buildOpenShiftViewToggleButton() {
-    //Radio Container
     const radioContainer = document.createElement('div');
     radioContainer.classList.add('openShiftWrap');
 
@@ -1464,18 +1690,15 @@ const SchedulingCalendar = (function () {
 
       if (viewOptionShifts === 'no' && selectedEmployeeId === 'none') {
         selectedEmployeeId = $.session.UserId;
-        populateEmployeeDropdown();
         //TODO: re render events with new selectedEmployeeId
-      } else if (viewOptionShifts === 'no') {
-        populateEmployeeDropdown();
       }
 
-      if (viewOptionShifts === 'yes') {
-        populateEmployeeDropdown();
+      populateEmployeeDropdown();
 
-        if (!$.session.schedulingUpdate) {
-          locations = await schedulingAjax.getLocationDropdownForScheduling('Y');
-        }
+      if (!$.session.schedulingUpdate) {
+        const includeOpenShiftLocations = viewOptionShifts === 'yes' ? 'Y' : 'N';
+        locations = await schedulingAjax.getLocationDropdownForScheduling(includeOpenShiftLocations);
+        populateLocationDropdown();
       }
     });
 
@@ -1506,15 +1729,17 @@ const SchedulingCalendar = (function () {
 
     colLeft.appendChild(locationDropdownEle);
     colLeft.appendChild(employeeDropdownEle);
-    if ($.session.schedulingUpdate) {
-      colLeft.appendChild(shiftTypeDropdownEle);
-    }
+    colLeft.appendChild(shiftTypeDropdownEle);
 
     colRight.appendChild(openShiftViewToggleEle);
-    if ($.session.schedulingUpdate) {
-      colRight.appendChild(newShiftButtonEle);
-    }
+    colRight.appendChild(newShiftButtonEle);
     colRight.appendChild(pubUnpubButtonEle);
+
+    if (!$.session.schedulingSecurity) {
+      colLeft.removeChild(shiftTypeDropdownEle);
+      colRight.removeChild(newShiftButtonEle);
+      employeeDropdownEle.classList.add('disabled');
+    }
 
     scheduleNav.appendChild(colLeft);
     scheduleNav.appendChild(colRight);
@@ -1534,7 +1759,8 @@ const SchedulingCalendar = (function () {
     ScheduleCalendar = new Calendar();
     build();
 
-    employees = await schedulingAjax.getEmployeesForScheduling({
+    employees = await schedulingAjax.getEmployeesForScheduling();
+    shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling({
       locationId: '0',
       includeTrainedOnly: 0,
       region: 'ALL',
@@ -1543,20 +1769,23 @@ const SchedulingCalendar = (function () {
       shiftEndTime: '00:00:00',
       minTimeBetweenShifts: -1,
     });
-    shiftEmployees = [...employees];
     console.log('Employees:', employees);
     populateEmployeeDropdown();
 
-    //locations = await schedulingAjax.getLocationDropdownForScheduling('N');
-    //populateLocationDropdown();
+    //! if user does not have the security key for Scheduling, the values in the Location dropdown
+    //! should only show locations where the logged in user is assigned to a shift. **Mike checks this in backend**
+    locations = await schedulingAjax.getLocationDropdownForScheduling('N');
+    // populateLocationDropdown();
 
     calendarEvents = await getCalendarEvents('%', $.session.PeopleId);
     calendarAppointments = await getCalendarAppointments();
     console.log('Events:', calendarEvents);
     console.log('Appointments:', calendarAppointments);
 
+    ScheduleCalendar.renderEvents(TEST_EVENTS);
+
     // after everything is on screen pre load some popup data
-    //regions = await schedulingAjax.getRegionDropdown();
+    regions = await schedulingAjax.getRegionDropdown();
   }
 
   return {
@@ -1565,11 +1794,11 @@ const SchedulingCalendar = (function () {
 })();
 
 const Scheduling = (function () {
-  // $.session.schedulingUpdate = true;
-  // $.session.schedulingView = true;
-  // $.session.schedAllowCallOffRequests = 'Y';
-  // $.session.schedRequestOpenShifts = 'Y';
-  // $.session.hideAllScheduleButton = false;
+  $.session.schedulingUpdate = true;
+  $.session.schedulingView = true;
+  $.session.schedAllowCallOffRequests = 'Y';
+  $.session.schedRequestOpenShifts = 'Y';
+  $.session.hideAllScheduleButton = false;
 
   function loadSchedulingLanding() {
     const schedulingCalendarBtn = button.build({
@@ -1579,8 +1808,8 @@ const Scheduling = (function () {
       callback: function () {
         setActiveModuleSectionAttribute('scheduling-calendar');
         PROGRESS.SPINNER.show('Loading Schedule...');
-        //SchedulingCalendar.init();
-        schedulingCalendar.init();
+        SchedulingCalendar.init();
+        // schedulingCalendar.init();
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({

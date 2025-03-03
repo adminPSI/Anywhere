@@ -112,7 +112,7 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-  async function getEmployeesForScheduling(retrieveData) {
+  async function getFilteredEmployeesForScheduling(retrieveData) {
     // locationId: '0', // '0' for null '%' for all
     // includeTrainedOnly: 0,
     // region: 'ALL', // '0' for null '%' for all
@@ -141,6 +141,31 @@ const schedulingAjax = (function () {
         dataType: 'json',
       });
       return result.getEmployeeDropdownResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+  async function getEmployeesForScheduling(userId) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getAllEmployees/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          userId,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.getAllEmployeesResult;
     } catch (error) {
       throw new Error(error.responseText);
     }
@@ -516,6 +541,7 @@ const schedulingAjax = (function () {
     getScheduleApptInformation,
     getLocationDropdownForScheduling,
     getEmployeesForScheduling,
+    getFilteredEmployeesForScheduling,
     getRegionDropdown,
     //
     requestDaysOffSchedulingAjax,
