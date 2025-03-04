@@ -4,7 +4,7 @@ var incidentTrackingWidget = (function () {
     let widgetBody;
     let defaultShow;
     let tempShow;
-    let incidentTrackingWidgetObj = []; 
+    let incidentTrackingWidgetObj = [];
 
     function buildFilterPopup() {
         var widgetFilter = widget.querySelector(".widget__filters");
@@ -47,6 +47,7 @@ var incidentTrackingWidget = (function () {
             defaultShow = tempShow;
             UTIL.LS.setStorage('dash_incidentTrackingShow', defaultShow);
             populateIncidentTrackingWidget(incidentTrackingWidgetObj);
+            widgetSettingsAjax.setWidgetFilter('incidenttrackingwidget', 'show', defaultShow)
         });
         cancelFilterBtn.addEventListener("click", event => {
             filterPopup.classList.remove("visible");
@@ -95,7 +96,7 @@ var incidentTrackingWidget = (function () {
         // Call function to allow table sorting by clicking on a header.
         table.sortTableByHeader(itTable);
 
-        var incidents = []; 
+        var incidents = [];
         res.forEach(r => {
             if (!incidents[r.incidentId]) {
                 incidents[r.incidentId] = r;
@@ -115,11 +116,11 @@ var incidentTrackingWidget = (function () {
             if (o1 < o2) return -1;
             if (o1 > o2) return 1;
             return 0;
-        }); 
+        });
 
         incidents.sort(function (a, b) {
             return new Date(b.incidentDate) - new Date(a.incidentDate);
-        });  
+        });
 
         var keys = Object.keys(incidents);
         const removeArray = [];
@@ -153,7 +154,7 @@ var incidentTrackingWidget = (function () {
 
                 if (!orginUser && !userHasViewed) {
                     showBold = true;
-                } 
+                }
                 if (defaultShow == 2 && showBold) {
                     removeArray.push(count);
                 }
@@ -187,7 +188,7 @@ var incidentTrackingWidget = (function () {
         table.populate(itTable, data);
     }
 
-    function init() {
+    async function init() {
         widget = document.getElementById('incidenttrackingwidget');
         if (!widget) return;
         widgetBody = widget.querySelector('.widget__body');
@@ -195,15 +196,20 @@ var incidentTrackingWidget = (function () {
             "incidenttrackingwidget",
             "incidenttrackingFilterBtn"
         );
-        defaultShow = '%';
+
+        var filterLocationDefaultValue = await widgetSettingsAjax.getWidgetFilter('incidenttrackingwidget', 'show');
+        defaultShow = filterLocationDefaultValue.getWidgetFilterResult;
+        defaultShow == '' ? defaultShow = '%' : defaultShow;
+        UTIL.LS.setStorage('dash_incidentTrackingShow', defaultShow);
+
         buildFilterPopup();
         eventSetup();
         getData();
         incidentTrackingWidgetAjax.getITDashboardWidgetDataAjax(res => {
-            incidentTrackingWidgetObj = res; 
-            populateIncidentTrackingWidget(incidentTrackingWidgetObj);  
-        }); 
-              
+            incidentTrackingWidgetObj = res;
+            populateIncidentTrackingWidget(incidentTrackingWidgetObj);
+        });
+
     }
 
     return {

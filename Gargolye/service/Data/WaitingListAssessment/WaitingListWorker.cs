@@ -10,6 +10,7 @@ using System.Web.Script.Serialization;
 using static Anywhere.service.Data.Plan.AnywherePlanWorker;
 using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
+using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
 namespace Anywhere.service.Data.WaitingListAssessment
 {
@@ -31,7 +32,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return landingPageObj;
         }
 
-        public WaitingList[] getWaitingListAssessment(int waitingListAssessmentId)
+        public WaitingList[] getWaitingListAssessment(long waitingListAssessmentId)
         {
             string assessmentString = "";
             assessmentString = dg.getWaitingListAssessment(waitingListAssessmentId);
@@ -49,12 +50,12 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return fundSourceObj;
         }
 
-        public string deleteWaitingListAssessment(string token, int waitingListId)
+        public string deleteWaitingListAssessment(string token, long waitingListId)
         {
             return dg.deleteWaitingListAssessment(token, waitingListId);
         }
 
-        public string deleteWaitingListParticipant(string token, int participantId)
+        public string deleteWaitingListParticipant(string token, long participantId)
         {
             return dg.deleteWaitingListParticipant(token, participantId);
         }
@@ -144,7 +145,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return "success";
         }
 
-        public string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, string valueTwo, char insertOrUpdate)
+        public string insertUpdateWaitingListValue(long id, long linkId, string propertyName, string value, string valueTwo, char insertOrUpdate)
         {
             string tableName = "";
             string columnName = "";
@@ -1121,7 +1122,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             string docList = dg.getWLSupportingDocumentList(token, waitingListInformationId);
             SupportingDocumentList[] docObj = js.Deserialize<SupportingDocumentList[]>(docList);
             return docObj;
-        }
+        }        
 
         public MemoryStream viewSupportingDocInBrowser(string token, string supportingDocumentId)
         {
@@ -1184,6 +1185,8 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string fundingSourceId { get; set; }
             public string description { get; set; }
         }
+
+        
 
         public class WaitingList
         {

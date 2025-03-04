@@ -6,12 +6,14 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
+using System.Management.Automation.Language;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereWorkshopWorkerTwo;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
+using static Anywhere.service.Data.SingleEntryWorker;
 
 namespace Anywhere.Data
 {
@@ -1343,6 +1345,29 @@ namespace Anywhere.Data
                 return "547: Error Getting Consumer Demographics";
             }
         }
+        public string getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
+        {
+            if (tokenValidator(token) == false) return null;
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(locationId);
+            list.Add(region);
+            list.Add(maxWeeklyHours.ToString());
+            list.Add(shiftStartTime);
+            list.Add(shiftEndTime);
+            list.Add(minTimeBetweenShifts.ToString());
+            list.Add(includeTrainedOnly.ToString());
+            string text = "CALL DBA.ANYW_Scheduling_GetEmployeeDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4WL", ex.Message + "ANYW_WaitingList_GetSupportingDocumentList(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4WL: error ANYW_WaitingList_GetSupportingDocumentList";
+            }
+        }
 
         public string getRelationshipsNameJSON(string token)
         {
@@ -1899,6 +1924,20 @@ namespace Anywhere.Data
                 return "570: Error getting single entry reason codes";
             }
 
+        }
+        public string getUndocumentedServicesForWarning(string entryDate, string consumerId, string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getUndocumentedServicesForWarning" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_SingleEntry_GetUndocumentedServicesForWarning('" + entryDate + "','" + consumerId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("570", ex.Message + " ANYW_SingleEntry_GetUndocumentedServicesForWarning('" + entryDate + "','" + consumerId + "')");
+                return "570: Error getting getUndocumentedServicesForWarning";
+            }
         }
 
         public string getRemainingGoalsCountForDashboard(string token)
@@ -2594,6 +2633,21 @@ namespace Anywhere.Data
             }
         }
 
+        public string updateConnectWithPerson(string token, string connectType)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateConnectWithPerson" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Settings_updateConnectWithPerson('" + token + "', '" + connectType + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("604", ex.Message + "ANYW_Settings_updateConnectWithPerson('" + token + "', '" + connectType + "')");
+                return "604: error updateConnectWithPerson";
+            }
+        }
+
         public string updateConsumerNotesChecklistDaysBack(string token, string updatedChecklistDays)
         {
             if (tokenValidator(token) == false) return null;
@@ -3190,6 +3244,24 @@ namespace Anywhere.Data
             {
                 logger.error("631", ex.Message + "ANYW_Dashboard_GetSchedulingPeriods(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "631: error ANYW_Dashboard_GetSchedulingPeriods";
+            }
+        }
+
+        public string getSchedulingRegions(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getSchedulingPeriods" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_Scheduling_GetRegions(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("631", ex.Message + "ANYW_Scheduling_GetRegions(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "631: error ANYW_Scheduling_GetRegions";
             }
         }
 
@@ -4824,12 +4896,13 @@ namespace Anywhere.Data
             }
         }
 
-        public string getLocationDropdownForScheduling(string token)
+        public string getLocationDropdownForScheduling(string token, char showOpenShifts)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getMainLocationDropdownForScheduling ");
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(showOpenShifts.ToString());
             string text = "CALL DBA.ANYW_Scheduling_GetLocationDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -4841,6 +4914,36 @@ namespace Anywhere.Data
                 return "691: error ANYW_Scheduling_GetMainLocationDropdown";
             }
         }
+
+        public string saveOrUpdateShift(string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag)
+        {
+            //if (tokenValidator(token) == false) return null;
+            logger.debug("saveOrUpdateShift ");
+
+            List<string> list = new List<string>();
+            list.Add(dateString);
+            list.Add(locationId);
+            list.Add(personId);
+            list.Add(startTime);
+            list.Add(endTime);
+            list.Add(color);
+            list.Add(notifyEmployee);
+            list.Add(consumerIdString);
+            list.Add(saveUpdateFlag);
+
+            string text = "CALL DBA.ANYW_Scheduling_InsertOrUpdateShift(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("692", ex.Message + "ANYW_Scheduling_InsertOrUpdateShift(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "692: error ANYW_Scheduling_InsertOrUpdateShift";
+            }
+        }
+
 
         public string saveSchedulingCallOffRequest(string token, string shiftId, string personId, string reasonId, string note, string status, string notifiedEmployeeId)
         {
@@ -5267,6 +5370,23 @@ namespace Anywhere.Data
             {
                 logger.error("704", ex.Message + "ANYW_Scheduling_GetMyApprovals(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "704: error ANYW_Scheduling_GetMyApprovals";
+            }
+        }
+
+        public string getAllEmployees(string userid)
+        {
+            logger.debug("getScheduleMyApprovalData ");
+            List<string> list = new List<string>();
+            list.Add(userid);
+            string text = "CALL DBA.ANYW_Scheduling_AllEmployeesByVendor(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("704", ex.Message + "ANYW_Scheduling_AllEmployeesByVendor(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "704: error ANYW_Scheduling_AllEmployeesByVendor";
             }
         }
 
@@ -6884,10 +7004,10 @@ namespace Anywhere.Data
                 return "636: error ANYW_GoalsAndServices__GetReviewPageGridSecondary";
             }
         }
-        
+
         public string getExclclamationIds( string startDate, string endDate,string frequency)
         {
-            
+
             List<string> list = new List<string>();
             list.Add(startDate);
             list.Add(endDate);
@@ -7327,6 +7447,46 @@ namespace Anywhere.Data
             {
                 logger.error("677", ex.Message + "ANYW_IncidentTracking_getRelationshipData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "677: error ANYW_IncidentTracking_getRelationshipData";
+            }
+        }
+
+        public void setWidgetFilter(string token, string widgetId, string filterKey, string filterValue)
+        {
+            logger.debug("setWidgetFilter");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(widgetId);
+            list.Add(filterKey);
+            list.Add(filterValue);
+            string text = "CALL DBA.ANYW_Dashboard_setWidgetFilter(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("742", ex.Message + "ANYW_Dashboard_setWidgetFilter(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+            }
+        }
+
+        public string getWidgetFilter(string token, string widgetId, string filterKey)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getWidgetFilter");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(widgetId);
+            list.Add(filterKey);
+
+            string text = "CALL DBA.ANYW_Dashboard_getWidgetFilter(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("742", ex.Message + "ANYW_Dashboard_getWidgetFilter(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "742: error ANYW_Dashboard_getWidgetFilter";
             }
         }
     }

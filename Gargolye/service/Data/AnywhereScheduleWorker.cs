@@ -19,11 +19,17 @@ namespace Anywhere.service.Data
             return allScheduleObj;
         }
 
-        public MainLocationDropDownData[] getLocationDropdownForScheduling(string token)
+        public MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpenShifts)
         {
-            string locationsString = dg.getLocationDropdownForScheduling(token);
+            string locationsString = dg.getLocationDropdownForScheduling(token, showOpenShifts);
             MainLocationDropDownData[] locationsObj = js.Deserialize<MainLocationDropDownData[]>(locationsString);
             return locationsObj;
+        }
+
+        public string saveOrUpdateShift(string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag)
+        {
+            string saveUpdateString = dg.saveOrUpdateShift(dateString, locationId, personId, startTime, endTime, color, notifyEmployee, consumerIdString, saveUpdateFlag);
+            return saveUpdateString;
         }
 
         public string saveSchedulingCallOffRequest(string token, string shiftId, string personId, string reasonId, string note, string status, string notifiedEmployeeId)
@@ -71,6 +77,13 @@ namespace Anywhere.service.Data
             string myApprovalDataString = dg.getScheduleMyApprovalData(token, personId);
             MyApprovalData[] myApprovalDataObj = js.Deserialize<MyApprovalData[]>(myApprovalDataString);
             return myApprovalDataObj;
+        }
+
+        public AllEmployees[] getAllEmployees(string userId)
+        {
+            string allEmployeeString = dg.getAllEmployees(userId);
+            AllEmployees[] allEmployeeObj = js.Deserialize<AllEmployees[]>(allEmployeeString);
+            return allEmployeeObj;
         }
 
         public OverlapData[] requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
@@ -361,5 +374,12 @@ namespace Anywhere.service.Data
             public string locationName { get; set; }
             public string requestType { get; set; }
         }
+
+        public class AllEmployees
+        {
+            public string Person_Id { get; set; }
+            public string EmployeeName { get; set; }            
+        }
+
     }
 }

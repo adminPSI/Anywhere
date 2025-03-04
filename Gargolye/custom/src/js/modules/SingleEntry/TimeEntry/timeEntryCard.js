@@ -217,19 +217,9 @@ var timeEntryCard = (function () {
 
                 // transportation
                 destination: destination ? UTIL.removeUnsavableNoteText(destination) : '',
-                licensePlateNumber: licensePlateNumber
-                    ? UTIL.removeUnsavableNoteText(licensePlateNumber)
-                    : '',
-                odometerEnd: !odometerEnd
-                    ? null
-                    : odometerEnd === 0 || odometerEnd === '0'
-                        ? null
-                        : odometerEnd,
-                odometerStart: !odometerStart
-                    ? null
-                    : odometerStart === 0 || odometerStart === '0'
-                        ? null
-                        : odometerStart,
+                licensePlateNumber: licensePlateNumber ? UTIL.removeUnsavableNoteText(licensePlateNumber) : '',
+                odometerEnd: !odometerEnd ? null : odometerEnd === 0 || odometerEnd === '0' ? null : odometerEnd,
+                odometerStart: !odometerStart ? null : odometerStart === 0 || odometerStart === '0' ? null : odometerStart,
                 transportationEndTime: transportationEndTime ? transportationEndTime : '',
                 transportationStartTime: transportationStartTime ? transportationStartTime : '',
                 reason: reason ? UTIL.removeUnsavableNoteText(reason) : '',
@@ -274,19 +264,9 @@ var timeEntryCard = (function () {
                 workCodeID: workCode ? workCode : '',
                 // transportation
                 destination: destination ? UTIL.removeUnsavableNoteText(destination) : '',
-                licensePlateNumber: licensePlateNumber
-                    ? UTIL.removeUnsavableNoteText(licensePlateNumber)
-                    : '',
-                odometerEnd: !odometerEnd
-                    ? null
-                    : odometerEnd === 0 || odometerEnd === '0'
-                        ? null
-                        : odometerEnd,
-                odometerStart: !odometerStart
-                    ? null
-                    : odometerStart === 0 || odometerStart === '0'
-                        ? null
-                        : odometerStart,
+                licensePlateNumber: licensePlateNumber ? UTIL.removeUnsavableNoteText(licensePlateNumber) : '',
+                odometerEnd: !odometerEnd ? null : odometerEnd === 0 || odometerEnd === '0' ? null : odometerEnd,
+                odometerStart: !odometerStart ? null : odometerStart === 0 || odometerStart === '0' ? null : odometerStart,
                 transportationEndTime: transportationEndTime ? transportationEndTime : '',
                 transportationStartTime: transportationStartTime ? transportationStartTime : '',
                 reason: reason ? UTIL.removeUnsavableNoteText(reason) : '',
@@ -297,8 +277,7 @@ var timeEntryCard = (function () {
                 evvReason: evvReasonCode,
                 attest: attestCheckbox.getElementsByTagName('input')[0].checked ? 'Y' : 'N',
                 community: communityCheckbox.getElementsByTagName('input')[0].checked ? 'Y' : 'N',
-                updateEVVReason:
-                    $.session.singleEntrycrossMidnight && !defaultStartTimeChanged ? 'false' : 'true',
+                updateEVVReason: $.session.singleEntrycrossMidnight && !defaultStartTimeChanged ? 'false' : 'true',
                 evvLocationType: locationTypeCode,
             };
         }
@@ -606,7 +585,8 @@ var timeEntryCard = (function () {
                 switch (isAdminEdit) {
                     case true:
                         if ($.session.SingleEntryEditTimeEntry) {
-                            if (isEndTimeChangePermission) // this is for if pay period is closed than disabled to delete counsumers
+                            if (isEndTimeChangePermission)
+                                // this is for if pay period is closed than disabled to delete counsumers
                                 roster2.setAllowedConsumers([]);
                             else {
                                 results = (await singleEntryAjax.getSingleEntryUsersByLocation(locationId, entryDate))
@@ -620,7 +600,8 @@ var timeEntryCard = (function () {
                         }
                         break;
                     default:
-                        if (isEndTimeChangePermission) // this is for if pay period is closed than disabled to delete counsumers
+                        if (isEndTimeChangePermission)
+                            // this is for if pay period is closed than disabled to delete counsumers
                             roster2.setAllowedConsumers([]);
                         else {
                             results = (await singleEntryAjax.getSingleEntryUsersByLocation(locationId, entryDate))
@@ -632,7 +613,8 @@ var timeEntryCard = (function () {
                 }
                 break;
             default:
-                if (isEndTimeChangePermission) // this is for if pay period is closed than disabled to delete counsumers
+                if (isEndTimeChangePermission)
+                    // this is for if pay period is closed than disabled to delete counsumers
                     roster2.setAllowedConsumers([]);
                 else {
                     roster2.setAllowedConsumers(['%']);
@@ -674,10 +656,7 @@ var timeEntryCard = (function () {
 
         card.appendChild(consumerCard);
 
-        if (
-            $.session.singleEntryShowConsumerSignature === 'Y' ||
-            $.session.singleEntryShowConsumerNote === 'Y'
-        ) {
+        if ($.session.singleEntryShowConsumerSignature === 'Y' || $.session.singleEntryShowConsumerNote === 'Y') {
             var hasNote = consumerData.hasNote === 'True' ? true : false;
             var hasSignature = consumerData.hasSignature === 'True' ? true : false;
             var classes = hasSignature || hasNote ? ['evv-highlight', 'extrasBtn'] : ['extrasBtn'];
@@ -713,11 +692,7 @@ var timeEntryCard = (function () {
         checkPermissions();
     }
     function removeConsumerFromTimeCard(event) {
-        if (
-            $.session.singleEntryAddConsumersOnBillable === 'P' &&
-            isEdit === true &&
-            consumerIds.length === 1
-        ) {
+        if ($.session.singleEntryAddConsumersOnBillable === 'P' && isEdit === true && consumerIds.length === 1) {
             // do not allow them to remove consumer and show an error
             var consumerWarningPopup = POPUP.build({
                 classNames: ['warning'],
@@ -879,10 +854,7 @@ var timeEntryCard = (function () {
                     return;
                 }
 
-                if (
-                    (totalValue && (!startValue || !endValue)) ||
-                    (odoStartVal === '0' && odoEndVal === '0')
-                ) {
+                if ((totalValue && (!startValue || !endValue)) || (odoStartVal === '0' && odoEndVal === '0')) {
                     // use total miles input
                     // var odometerTotalInput = odometerTotalInput.querySelector('input');
                     if (!startValue && endValue) {
@@ -1028,7 +1000,13 @@ var timeEntryCard = (function () {
                     }
                 }
             } else {
-                if (transportationStartTimeVal && transportationEndTimeVal && transportationEndTimeVal !== '' && transportationStartTimeVal !== '' && !UTIL.checkValidDateRange(transportationStartTimeVal, transportationEndTimeVal)) {
+                if (
+                    transportationStartTimeVal &&
+                    transportationEndTimeVal &&
+                    transportationEndTimeVal !== '' &&
+                    transportationStartTimeVal !== '' &&
+                    !UTIL.checkValidDateRange(transportationStartTimeVal, transportationEndTimeVal)
+                ) {
                     transportationEndTimeInput.classList.add('error');
                 } else {
                     transportationEndTimeInput.classList.remove('error');
@@ -1131,11 +1109,16 @@ var timeEntryCard = (function () {
                 transportationReimbursable = oldTransportationReimbursable
                     ? oldTransportationReimbursable
                     : transportationReimbursable;
-                odometerStart =
-                    oldOdometerStart || oldOdometerStart === '' ? oldOdometerStart : odometerStart;
+                odometerStart = oldOdometerStart || oldOdometerStart === '' ? oldOdometerStart : odometerStart;
                 odometerEnd = oldOdometerEnd || oldOdometerEnd === '' ? oldOdometerEnd : odometerEnd;
-                transportationEndTime = oldTransportationEndTime || oldTransportationEndTime === '' ? oldTransportationEndTime : transportationEndTime;
-                transportationStartTime = oldTransportationStartTime || oldTransportationStartTime === '' ? oldTransportationStartTime : transportationStartTime;
+                transportationEndTime =
+                    oldTransportationEndTime || oldTransportationEndTime === ''
+                        ? oldTransportationEndTime
+                        : transportationEndTime;
+                transportationStartTime =
+                    oldTransportationStartTime || oldTransportationStartTime === ''
+                        ? oldTransportationStartTime
+                        : transportationStartTime;
                 destination = oldDestination || oldDestination === '' ? oldDestination : destination;
                 reason = oldReason || oldReason === '' ? oldReason : reason;
                 licensePlateNumber = oldlicenseplate || oldlicenseplate === '' ? oldlicenseplate : licensePlateNumber;
@@ -1328,8 +1311,7 @@ var timeEntryCard = (function () {
             // Added isDateAfter, and isDateBefore check. Can't blanket remove the error for non-billable
             // because the date still has to be within the pay period
             if (isBillable === 'N' && isDateAfter && isDateBefore) dateInput.classList.remove('error');
-            if (isBillable === 'Y' && isDateAfter && isDateBefore && isDateAfterToday)
-                dateInput.classList.add('error');
+            if (isBillable === 'Y' && isDateAfter && isDateBefore && isDateAfterToday) dateInput.classList.add('error');
         }
         // workcode
         function checkWorkcodes() {
@@ -1385,11 +1367,7 @@ var timeEntryCard = (function () {
                     var todaysDate = UTIL.getTodaysDate();
                     // error endTime: for billable codes with Service Date today, don't allow cross over midnight (next day)
                     if (isEdit && evvReasonCode !== '') {
-                        if (
-                            isBillable === 'Y' &&
-                            entryDate === todaysDate &&
-                            checkTimeForAfterNow(endInput.value)
-                        ) {
+                        if (isBillable === 'Y' && entryDate === todaysDate && checkTimeForAfterNow(endInput.value)) {
                             endTimeInput.classList.add('error');
                         }
                     } else if (isEdit && evvReasonCode === '') {
@@ -1397,11 +1375,7 @@ var timeEntryCard = (function () {
                             endTimeInput.classList.add('error');
                         }
                     } else {
-                        if (
-                            isBillable === 'Y' &&
-                            entryDate === todaysDate &&
-                            $.session.singleEntrycrossMidnight
-                        ) {
+                        if (isBillable === 'Y' && entryDate === todaysDate && $.session.singleEntrycrossMidnight) {
                             endTimeInput.classList.add('error');
                         }
                     }
@@ -1420,11 +1394,7 @@ var timeEntryCard = (function () {
             const tempNow = new Date();
             const convertedToday = new Date(tempNow.getFullYear(), tempNow.getMonth(), tempNow.getDate());
             const splitServiceDate = entryDate.split('-');
-            const entryDateObj = new Date(
-                splitServiceDate[0],
-                parseInt(splitServiceDate[1]) - 1,
-                splitServiceDate[2],
-            );
+            const entryDateObj = new Date(splitServiceDate[0], parseInt(splitServiceDate[1]) - 1, splitServiceDate[2]);
 
             if (isBillable === 'Y' && sendEvvData === 'Y' && !(entryDateObj < convertedToday)) {
                 if (checkTimeForAfterNow(startTime)) {
@@ -1494,10 +1464,7 @@ var timeEntryCard = (function () {
             } else {
                 if (
                     currentValue === '%' ||
-                    (currentValue === '' &&
-                        reasonRequired &&
-                        (!evvReasonCode || evvReasonCode === '%') &&
-                        defaultTimesChanged)
+                    (currentValue === '' && reasonRequired && (!evvReasonCode || evvReasonCode === '%') && defaultTimesChanged)
                 ) {
                     if (document.querySelector('.timeCard__evv').style.display !== 'none') {
                         reasonDropdown.classList.add('error');
@@ -1639,8 +1606,7 @@ var timeEntryCard = (function () {
                 endTimeInput.classList.add('error');
                 saveBtn.classList.add('disabled');
                 saveAndSumbitBtn.classList.add('disabled');
-            }
-            else {
+            } else {
                 endTimeInput.classList.remove('error');
                 saveBtn.classList.remove('disabled');
                 saveAndSumbitBtn.classList.remove('disabled');
@@ -1813,38 +1779,27 @@ var timeEntryCard = (function () {
             buildTransportationPopup();
         });
         saveBtn.addEventListener('click', async event => {
-            event.target.classList.add('disabled');
-            saveOrUpdate = event.target.dataset.insertType;
-            if (saveOrUpdate === 'Save') {
-                const result = await singleEntryAjax.getExistingTimeEntry();
-                const { getExistingTimeEntryResult } = result;
-                if (getExistingTimeEntryResult.length > 0 && $.session.anyRequireEndTime == 'Y') {
-                    newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult);
-                } else {
-                    timeEntry.getEntryData(keyStartStop);
-                }
+            //118744 - ADV-ANY-SE: Add warning to users if services are not documented for 
+            const undocumentedConsumerIDs = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate, consumerIds);
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedConsumerIDs.length > 0) {
+                await undocumentedServicesPopup(event, undocumentedConsumerIDs, 'SAVE');
             }
-            if (saveOrUpdate === 'Update') timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop);
+            ////////
+            else {
+                await saveEvent(event);
+            }
         });
         saveAndSumbitBtn.addEventListener('click', async event => {
-            // Save entry first
-            event.target.classList.add('disabled');
-            saveBtn.classList.add('disabled');
-            saveOrUpdate = event.target.dataset.insertType;
-
-            const saveAndUpdate = true;
-            if (saveOrUpdate === 'Save') {
-                const result = await singleEntryAjax.getExistingTimeEntry();
-                const { getExistingTimeEntryResult } = result;
-                if (getExistingTimeEntryResult.length > 0 && $.session.anyRequireEndTime == 'Y') {
-                    newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult);
-                } else {
-                    timeEntry.getEntryData(keyStartStop, saveAndUpdate);
-                }
+            //118744 - ADV - ANY - SE: Add warning to users if services are not documented for
+            const undocumentedConsumerIDs = await singleEntryAjax.getUndocumentedServicesForWarning(entryDate, consumerIds);
+            if ($.session.anyUndocumentedServices === 'Y' && endTime != null && endTime != '' && undocumentedConsumerIDs.length > 0) {
+                undocumentedServicesPopup(event, undocumentedConsumerIDs, 'SAVESUBMIT');
             }
-            if (saveOrUpdate === 'Update')
-                timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndUpdate);
-
+            ////////
+            else {
+                // Save entry first
+                await saveAndSubmitEvent(event);
+            }
             // TODO, make global so access from timeentry.js
             // event.target.classList.remove('disabled');
             // saveBtn.classList.remove('disabled');
@@ -1858,6 +1813,97 @@ var timeEntryCard = (function () {
             clearAllGlobalVariables();
         });
     }
+    //118744 - ADV-ANY-SE: Add warning to users if services are not documented for
+    async function undocumentedServicesPopup(event, undocumentedConsumerIDs, NameOfEvent) {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+            classNames: 'warning',
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: async () => {
+                POPUP.hide(confirmPopup);
+                if (NameOfEvent === 'SAVESUBMIT')
+                    await saveAndSubmitEvent(event);
+                else
+                    await saveEvent(event);
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+            },
+        });
+
+        const message = document.createElement('p');
+        const messageConfirm = document.createElement('p');
+        const vendorSection = document.createElement('div');
+        undocumentedConsumerIDs.forEach(consumerName => {
+            const vendorDisp = document.createElement('div');
+            vendorDisp.innerHTML = `<span>${consumerName}</span>`;
+            vendorDisp.classList.add('consumerNameList');
+            vendorSection.appendChild(vendorDisp);
+        });
+
+        message.innerText = 'The following individuals have services that you did not document for on the date of your time record.';
+        message.style.textAlign = 'left';
+        message.style.marginBottom = '15px';
+        messageConfirm.innerText = 'Would you like to save this time record?';
+        messageConfirm.style.textAlign = 'left';
+        messageConfirm.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        confirmPopup.appendChild(vendorSection);
+        confirmPopup.appendChild(messageConfirm);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
+    }
+
+    async function saveEvent(event) {
+        event.target.classList.add('disabled');
+        saveOrUpdate = event.target.dataset.insertType;
+        if (saveOrUpdate === 'Save') {
+            const result = await singleEntryAjax.getExistingTimeEntry();
+            const { getExistingTimeEntryResult } = result;
+            if (getExistingTimeEntryResult.length > 0 && $.session.anyRequireEndTime == 'Y') {
+                newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult);
+            } else {
+                timeEntry.getEntryData(keyStartStop);
+            }
+        }
+        if (saveOrUpdate === 'Update') timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop);
+    }
+
+    async function saveAndSubmitEvent(event) {
+        event.target.classList.add('disabled');
+        saveBtn.classList.add('disabled');
+        saveOrUpdate = event.target.dataset.insertType;
+
+        const saveAndUpdate = true;
+        if (saveOrUpdate === 'Save') {
+            const result = await singleEntryAjax.getExistingTimeEntry();
+            const { getExistingTimeEntryResult } = result;
+            if (getExistingTimeEntryResult.length > 0 && $.session.anyRequireEndTime == 'Y') {
+                newTimeEntry.endDateWarningPopup(getExistingTimeEntryResult);
+            } else {
+                timeEntry.getEntryData(keyStartStop, saveAndUpdate);
+            }
+        }
+        if (saveOrUpdate === 'Update')
+            timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndUpdate);
+    }
+
     function enableSaveButtons() {
         saveBtn.classList.remove('disabled');
         saveAndSumbitBtn.classList.remove('disabled');
@@ -1896,7 +1942,7 @@ var timeEntryCard = (function () {
         } else {
             // roster.setAllowedConsumers([]);
             var allowedConsumers = await getAllowedConsumersBasedOffServiceLocations();
-            roster2.setAllowedConsumers(allowedConsumers);            
+            roster2.setAllowedConsumers(allowedConsumers);
         }
 
         var miniRosterBtn = document.querySelector('.consumerListBtn');
@@ -1905,11 +1951,11 @@ var timeEntryCard = (function () {
                 miniRosterBtn.classList.remove('disabled');
             } else {
                 miniRosterBtn.classList.add('disabled');
-                clearConsumerSection();   
+                clearConsumerSection();
             }
         }
 
-        clearCard(); 
+        clearCard();
         // Set start time after card gets cleared
         if (keyStartStop === 'Y') {
             startTimeInput.getElementsByTagName('input')[0].value = `${nowHour}:${nowMinutes}`;
@@ -1925,8 +1971,7 @@ var timeEntryCard = (function () {
         endTimeClicks = 1;
         let tempEndTime = new Date();
         let endTimeHour = tempEndTime.getHours() < '10' ? `0${now.getHours()}` : tempEndTime.getHours();
-        let endTimeMinute =
-            tempEndTime.getMinutes() < '10' ? `0${now.getMinutes()}` : tempEndTime.getMinutes();
+        let endTimeMinute = tempEndTime.getMinutes() < '10' ? `0${now.getMinutes()}` : tempEndTime.getMinutes();
         event.target.value = `${endTimeHour}:${endTimeMinute}`;
         endTime = `${endTimeHour}:${endTimeMinute}`;
         UTIL.getGeoLocation(setEndTimeLocation);
@@ -1992,22 +2037,37 @@ var timeEntryCard = (function () {
         dropdown.populate(workCodeDropdown, dropdownData, workCode);
     }
     function populateReasonCodeDropdown() {
-        const dropdownData = evvReasonCodeObj.map(reason => {
-            return {
-                value: reason.reasonCode,
-                text: `${reason.reasonCode} - ${reason.reasonDescription}`,
-            };
-        });
-        dropdownData.unshift({ value: '%', text: '' });
-        dropdown.populate(reasonDropdown, dropdownData, evvReasonCode);
+        if ($.session.stateAbbreviation === 'OH') {
+            dropdown.populate(
+                reasonDropdown,
+                [
+                    { value: '%', text: '' },
+                    { value: '99', text: '99 - Documentation on file supports manual change' },
+                ],
+                evvReasonCode,
+            );
+
+            if (evvReasonCode === '99') {
+                reasonCodeValue = '99 - Documentation on file supports manual change';
+            }
+        } else {
+            const dropdownData = evvReasonCodeObj.map(reason => {
+                return {
+                    value: reason.reasonCode,
+                    text: `${reason.reasonCode} - ${reason.reasonDescription}`,
+                };
+            });
+            dropdownData.unshift({ value: '%', text: '' });
+            dropdown.populate(reasonDropdown, dropdownData, evvReasonCode);
 
 
-        if (evvReasonCode == null || evvReasonCode == '%' || evvReasonCode == undefined || evvReasonCode == '99') {
-            evvReasonCode = '99';
-            reasonCodeValue = '99 - Documentation on file supports manual change';
-        }
-        else {
-            reasonCodeValue = dropdownData.find(x => x.value == evvReasonCode).text;
+            if (evvReasonCode == null || evvReasonCode == '%' || evvReasonCode == undefined || evvReasonCode == '99') {
+                evvReasonCode = '99';
+                reasonCodeValue = '99 - Documentation on file supports manual change';
+            }
+            else {
+                reasonCodeValue = dropdownData.find(x => x.value == evvReasonCode).text;
+            }
         }
 
         if (document.getElementById('reasonInput') != null && document.getElementById('reasonInput') != undefined) {
@@ -2018,10 +2078,10 @@ var timeEntryCard = (function () {
     }
 
     function populateLocationTypeDropdown() {
-        const locationTypeDropdownData = ([
-            { id: 1, value: 1, text: "1 - Home" },
-            { id: 2, value: 2, text: "2 - Community" },
-        ]);
+        const locationTypeDropdownData = [
+            { id: 1, value: 1, text: '1 - Home' },
+            { id: 2, value: 2, text: '2 - Community' },
+        ];
         dropdown.populate(locationTypeDropdown, locationTypeDropdownData, locationTypeCode);
     }
     async function populateCard(useAllWorkCodes) {
@@ -2057,12 +2117,7 @@ var timeEntryCard = (function () {
                 saveBtn.classList.add('disabled');
                 deleteBtn.classList.add('disabled');
             } else {
-                if (
-                    status === 'A' ||
-                    status === 'S' ||
-                    status === 'I' ||
-                    (!$.session.SingleEntryUpdate && isEdit)
-                ) {
+                if (status === 'A' || status === 'S' || status === 'I' || (!$.session.SingleEntryUpdate && isEdit)) {
                     if ($.session.SingleEntryEditTimeEntry && status === 'A') {
                         isCardDisabled = false;
                         card.classList.remove('disabled');
@@ -2104,10 +2159,7 @@ var timeEntryCard = (function () {
             rejectionReasonInput.classList.add('disabled');
         }
         // initially when editing a rejected/Non-Billable, the Save btns are disabled, they become enabled after the first edit of the form
-        if (
-            status === 'R' &&
-            (personId === $.session.PeopleId || supervisorId === $.session.PeopleId)
-        ) {
+        if (status === 'R' && (personId === $.session.PeopleId || supervisorId === $.session.PeopleId)) {
             saveBtn.classList.add('disabled');
             saveAndSumbitBtn.classList.add('disabled');
         }
@@ -2140,9 +2192,7 @@ var timeEntryCard = (function () {
         let tempNow = new Date();
         let nowHour = tempNow.getHours() < '10' ? `0${now.getHours()}` : tempNow.getHours();
         let nowMinuet = tempNow.getMinutes() < '10' ? `0${now.getMinutes()}` : tempNow.getMinutes();
-        return (
-            Date.parse(`01/01/2020 ${enteredTime}`) > Date.parse(`01/01/2020 ${nowHour}:${nowMinuet}`)
-        );
+        return Date.parse(`01/01/2020 ${enteredTime}`) > Date.parse(`01/01/2020 ${nowHour}:${nowMinuet}`);
     }
 
     async function evvCheck() {
@@ -2251,7 +2301,13 @@ var timeEntryCard = (function () {
             }
             disableCardFields();
 
-            if (isEVVSingleEntry && sendEvvData === 'Y' && eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
+            if (
+                isEVVSingleEntry &&
+                sendEvvData === 'Y' &&
+                eVVChangeDate != '' &&
+                $.session.stateAbbreviation == 'OH' &&
+                todayDate >= eVVChangeDate
+            ) {
                 populateLocationTypeDropdown();
                 document.querySelector('.timeCard__LocationEvv').style.display = 'flex';
                 locationTypeCode = '1';
@@ -2530,21 +2586,20 @@ var timeEntryCard = (function () {
         eVVChangeDate = $.session.ohioEVVChangeDate != '' ? new Date($.session.ohioEVVChangeDate.split('-').join('/')) : '';
         todayDate = new Date(UTIL.getTodaysDate().split('-').join('/'));
         if (defaultTimesChanged) {
-            (wrap4.style.display = 'flex');
+            wrap4.style.display = 'flex';
             if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate)
-                (wrap5.style.display = 'flex');
-            (wrap6.style.display = 'flex');
+                wrap5.style.display = 'flex';
+            wrap6.style.display = 'flex';
         } else {
-            (wrap4.style.display = 'none');
+            wrap4.style.display = 'none';
             if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate)
-                (wrap5.style.display = 'none');
-            (wrap6.style.display = 'none');
+                wrap5.style.display = 'none';
+            wrap6.style.display = 'none';
         }
         if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
             wrap4.appendChild(reasonInput);
             wrap5.appendChild(locationTypeDropdown);
-        }
-        else {
+        } else {
             wrap4.appendChild(reasonDropdown);
         }
 

@@ -1,6 +1,5 @@
 ﻿var consumerFinancesWidget = (function () {
     // cached data
-    var cfWidgetLocationId;
     var cfWidgetLocationName;
     var cfWidgetConsumerName;
     var cfWidgetSortOrderId;
@@ -105,6 +104,10 @@
                 locationName: cfWidgetLocationName,
                 sortOrderName: cfWidgetSortOrderName
             }, populateConsumerFinanceResults);
+
+            widgetSettingsAjax.setWidgetFilter('dashMoneyManagementwidget', 'consumer', cfWidgetConsumerName)
+            widgetSettingsAjax.setWidgetFilter('dashMoneyManagementwidget', 'location', cfWidgetLocationName)
+            widgetSettingsAjax.setWidgetFilter('dashMoneyManagementwidget', 'sortOrder', cfWidgetSortOrderName)
         });
         cancelFilterBtn.addEventListener('click', event => {
             filterPopup.classList.remove('visible');
@@ -128,14 +131,14 @@
             }
         });
         data.unshift({ id: null, value: '%', text: 'ALL' });
-        dropdown.populate('consumerFinancesWidgetLocations', data, cfWidgetLocationId);
+        dropdown.populate('consumerFinancesWidgetLocations', data, cfWidgetLocationName);
     }
     function populateCFWidgetConsumers(results) {
         var data = results.map(r => {
             return {
                 id: r.ID,
                 value: r.FullName,
-                text: r.FullName               
+                text: r.FullName
             }
         });
         data.unshift({ id: null, value: '%', text: 'ALL' });
@@ -202,13 +205,13 @@
             var lastTransaction = td.lastTransaction;
 
             return {
-                id: ID,  
+                id: ID,
                 values: [name, account, balance == '' ? '$0.00' : '$' + balance, lastTransaction == '' ? '' : moment(lastTransaction).format('MM/DD/YY')],
                 attributes: [
-                    { key: 'data-consumer-id', value: td.Id }, { key: 'consumerId', value: td.Id }, { key: 'registerId', value: td.registerId } 
+                    { key: 'data-consumer-id', value: td.Id }, { key: 'consumerId', value: td.Id }, { key: 'registerId', value: td.registerId }
                 ],
-                onClick: (e) => {  
-                    handleAccountTableEvents(e.target.attributes.consumerId.value,e.target.attributes.registerId.value)
+                onClick: (e) => {
+                    handleAccountTableEvents(e.target.attributes.consumerId.value, e.target.attributes.registerId.value)
                 },
             };
         });
@@ -219,19 +222,26 @@
 
     function handleAccountTableEvents(consumerId, registerId) {
         $.session.consumerId = consumerId;
-        NewEntryCF.buildNewEntryForm(registerId); 
-    } 
+        NewEntryCF.buildNewEntryForm(registerId);
+    }
 
-    function init() {
-        if (!cfWidgetLocationName) cfWidgetLocationName = '%';
-        if (!cfWidgetConsumerName) cfWidgetConsumerName = '%';
-        if (!cfWidgetSortOrderName) cfWidgetSortOrderName = 'Consumer Last Name Ascending';
-
+    async function init() {
         widget = document.getElementById('dashMoneyManagementwidget');
         widgetBody = widget.querySelector('.widget__body');
 
         // append filter button
         dashboard.appendFilterButton('dashMoneyManagementwidget', 'moneyManagementFilterBtn');
+
+        var filterConsumerDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashMoneyManagementwidget', 'consumer');
+        cfWidgetConsumerName = filterConsumerDefaultValue.getWidgetFilterResult;
+        var filterLocationDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashMoneyManagementwidget', 'location');
+        cfWidgetLocationName = filterLocationDefaultValue.getWidgetFilterResult;
+        var filterSortOrderDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashMoneyManagementwidget', 'sortOrder');
+        cfWidgetSortOrderName = filterSortOrderDefaultValue.getWidgetFilterResult;
+
+        if (!cfWidgetLocationName) cfWidgetLocationName = '%';
+        if (!cfWidgetConsumerName) cfWidgetConsumerName = '%';
+        if (!cfWidgetSortOrderName) cfWidgetSortOrderName = 'Consumer Last Name Ascending';
 
         buildFilterPopup();
         displayFilteredBy();

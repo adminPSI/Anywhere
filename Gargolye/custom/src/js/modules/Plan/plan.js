@@ -1740,7 +1740,7 @@ const plan = (function () {
             style: 'secondary',
             type: 'contained',
             classNames:
-                planStatus === 'C' && $.session.webPermission === 'Web' ? ['sendtoPortalBtn'] : ['sendtoPortalBtn', 'disabled'],
+                (($.session.applicationName === 'Advisor' && planStatus === 'C' && $.session.webPermission === 'Web') || (planStatus === 'C' && $.session.webPermission === 'Web' && $.session.applicationName === 'Gatekeeper' && $.session.sendToPortal == true)) ? ['sendtoPortalBtn'] : ['sendtoPortalBtn', 'disabled'],
         });
         const sendToDODDBtn = button.build({
             text: 'Send To DODD',
@@ -2045,7 +2045,7 @@ const plan = (function () {
                         token: $.session.Token,
                         planAttachmentIds: getAttachmentIds(selectedAttachmentsPlan),
                         wfAttachmentIds: getAttachmentIds(selectedAttachmentsWorkflow),
-                        sigAttachmentIds: getAttachmentIds(selectedAttachmentsSignature), 
+                        sigAttachmentIds: getAttachmentIds(selectedAttachmentsSignature),
                         wfAttachmentStepIds: getwfstepdocIds(selectedAttachmentsWorkflow),
                         userId: $.session.UserId,
                         assessmentID: planId,
@@ -3442,6 +3442,22 @@ const plan = (function () {
     async function init() {
         setActiveModuleAttribute('plan');
         DOM.clearActionCenter();
+
+        let defaultPlanLocation = defaults.getLocation('plan');
+        let defaultPlanGroup = defaults.getLocation('planGroup');
+        let defaultPlanGroupName = defaults.getLocation('planGroupName');
+
+        if (defaultPlanLocation === '') {
+            defaults.setLocation('plan', 0);
+            defaultPlanLocation = "0";
+        }
+        roster2.miniRosterinit({
+            locationId: defaultPlanLocation,
+            locationName: '',
+            groupId: defaultPlanGroup,
+            groupName: defaultPlanGroupName,
+        });
+
         roster2.showMiniRoster();
         await planAjax.checkForSalesForce();
         PROGRESS.init();

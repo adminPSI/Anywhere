@@ -30,37 +30,40 @@ namespace Anywhere.service.Data.ConsumerFinances
             [DataMember(Order = 4)]
             public string category { get; set; }
             [DataMember(Order = 5)]
-            public string amount { get; set; }
+            public string categoryCode { get; set; }
             [DataMember(Order = 6)]
-            public string checkno { get; set; }
+            public string amount { get; set; }
             [DataMember(Order = 7)]
-            public string balance { get; set; }
+            public string checkno { get; set; }
             [DataMember(Order = 8)]
-            public string enteredby { get; set; }
+            public string balance { get; set; }
             [DataMember(Order = 9)]
-            public string AttachmentsID { get; set; }
+            public string enteredby { get; set; }
             [DataMember(Order = 10)]
-            public string subCategory { get; set; }
+            public string AttachmentsID { get; set; }
             [DataMember(Order = 11)]
-            public string accountType { get; set; }
+            public string subCategory { get; set; }
             [DataMember(Order = 12)]
-            public string description { get; set; }
+            public string accountType { get; set; }
             [DataMember(Order = 13)]
-            public string receipt { get; set; }
+            public string description { get; set; }
             [DataMember(Order = 14)]
+            public string receipt { get; set; }
+            [DataMember(Order = 15)]
             public string accountID { get; set; }
 
-            [DataMember(Order = 15)]
-            public string reconciled { get; set; }
             [DataMember(Order = 16)]
-            public string lastUpdateBy { get; set; }
+            public string reconciled { get; set; }
             [DataMember(Order = 17)]
-            public string deposit { get; set; }
+            public string lastUpdateBy { get; set; }
             [DataMember(Order = 18)]
-            public string expance { get; set; }
+            public string deposit { get; set; }
             [DataMember(Order = 19)]
+            public string expance { get; set; }
+            [DataMember(Order = 20)]
             public string isExpance { get; set; }
-
+            [DataMember(Order = 21)]
+            public string payee2 { get; set; }
         }
 
         [DataContract]

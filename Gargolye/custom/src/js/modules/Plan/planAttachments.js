@@ -264,11 +264,11 @@ const planAttachment = (() => {
                 attachments.set(attachment.questionId, attArray);
               });
               // build new button
-              const newAttachmentBtn = this.buildAttachmentButton();
-              const oldAttachmentBtn = document.getElementById(`attach-${this.questionId}`);
-              const attachmentParent = oldAttachmentBtn.parentElement;
-              attachmentParent.removeChild(oldAttachmentBtn);
-              attachmentParent.appendChild(newAttachmentBtn);
+              // const newAttachmentBtn = this.buildAttachmentButton();
+              // const oldAttachmentBtn = document.getElementById(`attach-${this.questionId}`);
+              // const attachmentParent = oldAttachmentBtn.parentElement;
+              // attachmentParent.removeChild(oldAttachmentBtn);
+              // attachmentParent.appendChild(newAttachmentBtn);
             }, 2000);
           } catch (error) {
             pendingSave.reject('Error saving attachment changes');
@@ -360,14 +360,14 @@ const planAttachment = (() => {
       const attachmentBtn = document.getElementById(`attach-${this.questionId}`);
       attachmentBtn.innerText = `ATTACHMENTS (${this.attachmentsForQuestion.length})`;
 
-      const relativeCheckbox = attachmentBtn.closest('.input-field__input');
+      const relativeCheckbox = attachmentBtn.parentElement.querySelector('.input-field__input');
 
       if (this.attachmentsForQuestion.length > 0) {
         attachmentBtn.classList.add('hasAttachments');
         attachmentBtn.classList.remove('error');
       } else {
         attachmentBtn.classList.remove('hasAttachments');
-        if (!relativeCheckbox.checked) {
+        if (relativeCheckbox.checked) {
           attachmentBtn.classList.add('error');
         } else {
           attachmentBtn.classList.remove('error');

@@ -693,8 +693,11 @@ const CaseNotes = (() => {
                 // check for the #ph
                 if (words.includes('#ph')) {
                     // temp disable input
-                    input.toggleDisabled(true);
 
+                    // #114862 - SH-ANY-CN: Add new phrase pop-up cancel button doesn't work
+                    // input.toggleDisabled(true);
+                    ////
+                     
                     // show phrases dialog
                     cnPhrases.InsertPhrases.show();
 
@@ -1115,7 +1118,7 @@ const CaseNotes = (() => {
                     required: true,
                     fullscreen: true,
                     speechToText: true,
-                    note: `Use the new quick insert key for phrases, type #ph. (#ph must not be apart of another word)`,
+                    note: `Use the new quick insert key for phrases, type #ph. (#ph must not be a part of another word)`,
                 },
                 //mileage
                 {

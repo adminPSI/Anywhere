@@ -6,36 +6,63 @@
 }
 .scheduleNav{
   display: flex;
+  flex-flow: row wrap;
+  gap: 10px;
   justify-content: space-between;
 
-  > div {
-    flex-grow: 2;
-    margin-right: 10px;
+  .colLeft {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
 
-    &:first-child {
-      flex-grow: 3;
-      margin-right: 10px;
+    > div {
+      flex-grow: 2;
+  
+      &:first-child {
+        flex-grow: 3;
+      }
+      &:last-child {
+        flex-grow: 1;
+      }
     }
-    &:last-child {
-      flex-grow: 1;
-      margin-right: 0px;
-    }
-  }
 
-  .shiftTypeWrap {
-    position: relative;
-
-    p {
-      position: absolute;
-      right: 0px;
-      bottom: 0px;
-      font-weight: $_normal;
-
-      &.error {
-        color: $error;
+    .shiftTypeWrap {
+      position: relative;
+  
+      p {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        font-weight: $_normal;
+  
+        &.error {
+          color: $error;
+        }
       }
     }
   }
+
+  .colRight {
+    display: flex;
+    gap: 10px;
+
+    .newShiftButton {
+      flex-grow: 1;
+    }
+    .openShiftWrap {
+      p {
+        margin-bottom: 4px;
+      }
+
+      > div {
+        display: flex;
+        justify-content: space-evenly;
+      }
+    }
+    .pubUnpubButton {
+      flex-grow: 1;
+    }
+  }  
 }
 #locationDropdown {
   min-width: 200px;
@@ -52,6 +79,7 @@
 }
 .calendarTitleEle {
   font-size: 32px;
+  font-weight: 500;
 }
 .calendarNav{
   display: flex;
@@ -96,46 +124,64 @@
 .calendar {
   background: $primary;
   border-radius: $r-sm;
-
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: 40px;
-  grid-auto-rows: minmax(80px, auto);
-  grid-gap: 2px;
   padding: 6px;
-
-  .month-view,
-  .week-view,
-  .day-view {
-    display: contents;
-  }
 
   .dayNameHeader {
     display: contents;
-
+    
     > div {
-      background: $white;
+      background: $white; 
       font-weight: $_bold;
-      font-size: 18px;
-
+      font-size: 16px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: center; 
+    }
+
+    > div.emptyCell {
+      background: $primary;
     }
   }
 
-  .week {
-    display: contents;
+  .day {
+    background: $white;
 
-    .day {
-      background: $white;
+    &.notSameMonth  {
+      background: $gray;
     }
   }
 }
 .calendar .month-view {
-  .day {
-    &.notSameMonth  {
-      background: $gray;
+  display: grid;
+  grid-gap: 2px;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: 40px;
+  grid-auto-rows: minmax(80px, auto);
+
+  .week {
+    display: contents;
+  }
+}
+.calendar .week-view {
+  display: grid;
+  column-gap: 2px;
+  row-gap: 4px;
+  grid-template-columns: 100px repeat(7, minmax(0, 1fr));
+  grid-template-rows: 40px minmax(80px, auto);
+
+  .week {
+    display: grid;
+    column-gap: 2px;
+    grid-template-columns: 100px repeat(7, minmax(0, 1fr));
+    grid-column: 1/-1;
+
+    .timeSlot {
+      color: $white;
+      text-align: right;
+      padding: 4px 6px 4px 0px;
+    }
+    .daySlot {
+      background: $white;
     }
   }
 }

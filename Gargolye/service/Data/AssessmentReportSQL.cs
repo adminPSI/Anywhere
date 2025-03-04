@@ -859,7 +859,7 @@ namespace Anywhere.service.Data
         }
 
         public DataSet ISPImportantPeople(long AssesmentID)
-        { 
+        {
             sb.Clear();
             sb.Append("SELECT   DBA.ANYW_ISP_Consumer_Contact_Important_People.ISP_Consumer_Important_People_ID, ");
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.ISP_Consumer_Contact_Id, DBA.ANYW_ISP_Consumer_Contact_Important_People.Type, ");
@@ -877,7 +877,7 @@ namespace Anywhere.service.Data
             return dt.DataSet;
         }
 
-    public DataSet ISPClubs(long AssesmentID)
+        public DataSet ISPClubs(long AssesmentID)
         {
             sb.Clear();
             sb.Append("SELECT   DBA.ANYW_ISP_Consumer_Contact_Important_Groups.ISP_Consumer_Important_Groups_ID, ");
@@ -1043,7 +1043,7 @@ namespace Anywhere.service.Data
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
         }
-    
+
     }
 }
 

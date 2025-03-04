@@ -1,5 +1,5 @@
 var defaultsAjax = (function () {
-    function setDefaultValue(type, value, name) { 
+    function setDefaultValue(type, value, name) {
         var typeName = "";
         var switchCase = 0;
         switch (type) {
@@ -101,6 +101,55 @@ var defaultsAjax = (function () {
                         7
                     );
                     saveDefaultLocationNameAjax("7", "Remember Last Location");
+                }
+                break;
+            case 2:
+                typeName = "Default Plan Location";
+                createCookie("defaultPlanGroupName", "Everyone", 7);
+                createCookie("defaultPlanGroupValue", "ALL", 7);
+                saveDefaultLocationNameAjax("9", "Everyone");
+                saveDefaultLocationValueAjax("9", "ALL");
+                $("#plangroup9").text("Everyone");
+                if (value != 0 && name != null) {
+                    getConsumerGroups(value, name);
+                    $.session.defaultPlanLocation = value;
+                    createCookie("defaultPlanLocationName", name, 7);
+                    saveDefaultLocationNameAjax("8", name);
+                } else {
+                    createCookie(
+                        "defaultPlanLocationName",
+                        "Remember Last Location",
+                        7
+                    );
+                    saveDefaultLocationNameAjax("8", "Remember Last Location");
+                }
+                break;
+            case 9:
+                typeName = "Default Plan Group";
+                if (value != 0 && name != null) {
+                    createCookie("defaultPlanGroupName", name, 7);
+                    createCookie("defaultPlanGroupValue", value, 7);
+                    saveDefaultLocationNameAjax("9", name);
+                    saveDefaultLocationValueAjax("9", value);
+                } else {
+                    createCookie("defaultPlanGroupName", "Everyone", 7);
+                    saveDefaultLocationNameAjax("9", "Everyone");
+                }
+                break;
+            case 10:
+                typeName = "Default OOD Location";
+                if (value != 0 && name != null) {
+                    createCookie("defaultOODLocationName", name, 10);
+                    createCookie("defaultOODLocationValue", value, 10);
+                    saveDefaultLocationNameAjax("10", name);
+                    saveDefaultLocationValueAjax("10", value);
+                } else {
+                    createCookie(
+                        "defaultOODLocationName",
+                        "Remember Last Location",
+                        10
+                    );
+                    saveDefaultLocationNameAjax("10", "Remember Last Location");
                 }
                 break;
         }
@@ -310,6 +359,37 @@ var defaultsAjax = (function () {
         });
     }
 
+    function updateConnectWithPerson(connectType) {
+        $.session.defaultContact = connectType;
+        $.ajax({
+            type: "POST",
+            url:
+                $.webServer.protocol +
+                "://" +
+                $.webServer.address +
+                ":" +
+                $.webServer.port +
+                "/" +
+                $.webServer.serviceName +
+                "/updateConnectWithPerson/",
+            data:
+                '{"token":"' +
+                $.session.Token +
+                '", "connectType":"' +
+                connectType +
+                '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response, status, xhr) {
+                var res = JSON.stringify(response);
+            },
+            error: function (xhr, status, error) {
+                //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+            }
+        });
+    }
+
+
     return {
         setDefaultValue,
         updateConsumerNotesDaysBack,
@@ -320,6 +400,7 @@ var defaultsAjax = (function () {
         updateCaseNotesDaysBack,
         getConsumerGroups,
         getRosterLocations,
-        getInvalidDefaults
+        getInvalidDefaults,
+        updateConnectWithPerson
     };
 })();

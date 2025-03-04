@@ -511,6 +511,7 @@ namespace Anywhere.service.Data
 
         public TotalSecondGridCall getOutcomesReviewGridSecondary(string token, string consumerId, string startDate, string endDate, string objectiveIdList, string frequency)
         {
+            js.MaxJsonLength = Int32.MaxValue;
             string reviewGrid = dg.getOutcomesReviewGridSecondary(token, consumerId, startDate, endDate, objectiveIdList, frequency);
             OutcomesReviewGridSecondary[] reviewGridObj = js.Deserialize<OutcomesReviewGridSecondary[]>(reviewGrid);
             string exclationPointIds = dg.getExclclamationIds(startDate, endDate, frequency);

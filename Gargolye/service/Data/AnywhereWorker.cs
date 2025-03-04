@@ -19,6 +19,7 @@ using Anywhere.service.Data.PlanSignature;
 using System.Linq;
 using System.Data.Odbc;
 using System.Configuration;
+using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
 namespace Anywhere.service.Data
 {
@@ -34,7 +35,7 @@ namespace Anywhere.service.Data
         {
             StartAndEndWeek startAndEnd = GetCompanyCurrentWorkWeekStart(token, 'N');
             StartAndEndWeek startAndEndPrevious = GetCompanyCurrentWorkWeekStart(token, 'Y');
-            
+
             double daysOfPayPeriod = (startAndEnd.endOfWeek - startAndEnd.startOfWeek).TotalDays;
             string currWS = "";
             string currWE = "";
@@ -54,7 +55,7 @@ namespace Anywhere.service.Data
                     previousWeekStart = startAndEndPrevious.startOfWeek;
                     previousWeekEnd = startAndEndPrevious.endOfWeek;
                 }
-                
+
                 currWS = currentWeekStart.ToString("yyyy-MM-dd");
                 currWE = currentWeekEnd.ToString("yyyy-MM-dd");
                 prevWS = previousWeekStart.ToString("yyyy-MM-dd");
@@ -78,7 +79,7 @@ namespace Anywhere.service.Data
             {
                 workWeek.prev_start_date = prevWS;
                 workWeek.prev_end_date = prevWE;
-            }            
+            }
 
             return workWeek;
         }
@@ -87,7 +88,7 @@ namespace Anywhere.service.Data
             StartAndEndWeek startAndEnd = GetCompanyCurrentWorkWeekStart(token, 'N');
             StartAndEndWeek startAndEndPrevious = GetCompanyCurrentWorkWeekStart(token, 'Y');
 
-            
+
 
             double daysOfPayPeriod = (startAndEnd.endOfWeek - startAndEnd.startOfWeek).TotalDays;
             string currWS = "";
@@ -111,7 +112,7 @@ namespace Anywhere.service.Data
                     previousWeekStart = startAndEndPrevious.startOfWeek;
                     previousWeekEnd = startAndEndPrevious.endOfWeek;
                 }
-                
+
                 currWS = currentWeekStart.ToString("yyyy-MM-dd");
                 currWE = currentWeekEnd.ToString("yyyy-MM-dd");
                 prevWS = previousWeekStart.ToString("yyyy-MM-dd");
@@ -134,7 +135,7 @@ namespace Anywhere.service.Data
                 DaysAndHours[] daysAndHours = js.Deserialize<DaysAndHours[]>(currentWeekHoursWorkedString);
                 return daysAndHours;
             }
-            
+
         }
         //todaysDate = dateTime.ToString("yyyy/MM/dd");
         public StartAndEndWeek GetCompanyCurrentWorkWeekStart(String token, char weekTwo)
@@ -310,6 +311,12 @@ namespace Anywhere.service.Data
             public string prev_end_date { get; set; }
         }
 
+        public class Regions
+        {
+            public string description { get; set; }
+            public string regionId { get; set; }
+        }
+
         //Scheduling Widget Code
         public SchedulingPeriods[] GetSchedulingPeriods(string token)
         {
@@ -318,11 +325,32 @@ namespace Anywhere.service.Data
             return schedulingPeriods;
         }
 
+        public AnywhereWorker.Regions[] getSchedulingRegions(string token)
+        {
+            string schedulingRegionsString = dg.getSchedulingRegions(token);
+            Regions[] schedulingRegions = js.Deserialize<Regions[]>(schedulingRegionsString);
+            return schedulingRegions;
+        }
+
         public SchedulingData[] getSchedulingPeriodsDetails(string token, string startDate, string endDate)
         {
             string schedulePerodDataString = dg.getSchedulingPeriodsDetails(token, startDate, endDate);
             SchedulingData[] SchedulingData = js.Deserialize<SchedulingData[]>(schedulePerodDataString);
             return SchedulingData;
+        }
+
+        public EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
+        {
+            js.MaxJsonLength = Int32.MaxValue;
+            string empDropdown = dg.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly);
+            EmployeeDropdown[] empDropdownObj = js.Deserialize<EmployeeDropdown[]>(empDropdown);
+            return empDropdownObj;
+        }
+
+        public class EmployeeDropdown
+        {
+            public string Person_ID { get; set; }
+            public string EmployeeName { get; set; }
         }
 
         public class SchedulingPeriods
@@ -592,6 +620,8 @@ namespace Anywhere.service.Data
             public string sendWaitingListEmail { get; set; }
             public string defaultMoneyManagementLocation { get; set; }
             public string defaultMoneyManagementLocationName { get; set; }
+            public string defaultOODLocation { get; set; }
+            public string defaultOODLocationName { get; set; }
             public string billableTransportation { get; set; }
             public string ohioEVVChangeDate { get; set; }
             public string anyRequireEndTime { get; set; }
@@ -599,6 +629,13 @@ namespace Anywhere.service.Data
             public string requireTimeEntryTransportationTimes { get; set; }
             public string anywhereFSSPermission { get; set; }
             public string RequireViewPlan { get; set; }
+
+            public string defaultplanlocation { get; set; }
+            public string defaultplanlocationname { get; set; }
+            public string defaultplangroup { get; set; }
+            public string defaultplangroupname { get; set; }
+            public string defaultcontact { get; set; }
+            public string anyUndocumentedServices { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)

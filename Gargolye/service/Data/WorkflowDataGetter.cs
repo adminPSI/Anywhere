@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
+using System.Management.Automation.Language;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereWorker;
 
@@ -942,24 +943,46 @@ namespace Anywhere.service.Data
             }
         }
 
+        //public string updateWorkflowStepDocument(string docId, string attachmentId, string attachmentType, string attachment, string documentEdited, DistributedTransaction transaction)
+        //{
+        //    try
+        //    {
+        //        logger.debug("updateWorkflowStepDocument ");
+        //        System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[5];
+        //        args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepDocumentId", DbType.String, docId);
+        //        args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachmentId", DbType.String, attachmentId);
+        //        args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachmentType", DbType.String, attachmentType);
+        //        args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachment", DbType.String, attachment);
+        //        args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@documentEdited", DbType.String, documentEdited);
+        //        // returns the documentId of the document that was just inserted
+        //        return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_UpdateWorkflowStepDocument(?, ?, ?, ?, ?)", args, ref transaction).ToString();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.error("WFDG", ex.Message + "ANYW_WF_UpdateWorkflowStepDocument(" + docId + "," + attachmentId + "," + documentEdited + ")");
+        //        throw ex;
+        //    }
+        //}
+
         public string updateWorkflowStepDocument(string docId, string attachmentId, string attachmentType, string attachment, string documentEdited, DistributedTransaction transaction)
         {
+            //if (tokenValidator(token) == false) return null;
+            logger.debug("updateWorkflowStepDocument ");
+            List<string> list = new List<string>();
+            list.Add(docId);
+            list.Add(attachmentId);
+            list.Add(attachmentType);
+            list.Add(attachment);
+            list.Add(documentEdited);
+            string text = "CALL DBA.ANYW_WF_UpdateWorkflowStepDocument(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
-                logger.debug("updateWorkflowStepDocument ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[5];
-                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepDocumentId", DbType.String, docId);
-                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachmentId", DbType.String, attachmentId);
-                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachmentType", DbType.String, attachmentType);
-                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachment", DbType.String, attachment);
-                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@documentEdited", DbType.String, documentEdited);
-                // returns the documentId of the document that was just inserted
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_UpdateWorkflowStepDocument(?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("WFDG", ex.Message + "ANYW_WF_UpdateWorkflowStepDocument(" + docId + "," + attachmentId + "," + documentEdited + ")");
-                throw ex;
+                logger.error("740", ex.Message + "ANYW_WF_UpdateWorkflowStepDocument(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "740: error ANYW_WF_UpdateWorkflowStepDocument";
             }
         }
 
