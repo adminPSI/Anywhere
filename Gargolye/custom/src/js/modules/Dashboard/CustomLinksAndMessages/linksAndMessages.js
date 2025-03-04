@@ -157,7 +157,7 @@ var linksAndMessages = (function () {
         EmployeeListWrap.appendChild(nameHeading);
         EmployeeListWrap.appendChild(nameList);
         EmployeeListWrap.style.marginBottom = '10px';
-
+        employeeDropdown.style.marginTop = '40px';
         addMessagePopup.appendChild(employeeDropdown);
         addMessagePopup.appendChild(EmployeeListWrap);
         addMessagePopup.appendChild(selectMoreEmployeeBtn);

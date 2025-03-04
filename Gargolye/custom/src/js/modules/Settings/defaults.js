@@ -1011,7 +1011,7 @@ var defaults = (function () {
         timeClockRLL = rememberLastLocation('timeClock');
         workshopRLL = rememberLastLocation('workshop');
         moneyManagementRLL = rememberLastLocation('moneyManagement');
-        OODRLL = rememberLastLocation('moneyManagement');
+        OODRLL = rememberLastLocation('OOD');
         planRLL = rememberLastLocation('plan');
     }
 
@@ -1076,7 +1076,7 @@ var defaults = (function () {
             }
         });
         moneyManagementRLLCheckBox.addEventListener('change', () => {
-            moneyManagementRLL = !moneyManagementRLL;
+            moneyManagementRLL = !moneyManagementRLL; 
             setRememberLastLocation('moneyManagement');
             if (moneyManagementRLL) moneyManagementLocationDropdown.classList.add('disabled');
             else moneyManagementLocationDropdown.classList.remove('disabled');
