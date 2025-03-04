@@ -4896,13 +4896,13 @@ namespace Anywhere.Data
             }
         }
 
-        public string getLocationDropdownForScheduling(string token, char showOpeShifts)
+        public string getLocationDropdownForScheduling(string token, char showOpenShifts)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getMainLocationDropdownForScheduling ");
             List<string> list = new List<string>();
             list.Add(token);
-            list.Add(showOpeShifts.ToString());
+            list.Add(showOpenShifts.ToString());
             string text = "CALL DBA.ANYW_Scheduling_GetLocationDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -5370,6 +5370,23 @@ namespace Anywhere.Data
             {
                 logger.error("704", ex.Message + "ANYW_Scheduling_GetMyApprovals(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "704: error ANYW_Scheduling_GetMyApprovals";
+            }
+        }
+
+        public string getAllEmployees(string userid)
+        {
+            logger.debug("getScheduleMyApprovalData ");
+            List<string> list = new List<string>();
+            list.Add(userid);
+            string text = "CALL DBA.ANYW_Scheduling_AllEmployeesByVendor(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("704", ex.Message + "ANYW_Scheduling_AllEmployeesByVendor(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "704: error ANYW_Scheduling_AllEmployeesByVendor";
             }
         }
 

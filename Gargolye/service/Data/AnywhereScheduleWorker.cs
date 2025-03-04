@@ -19,9 +19,9 @@ namespace Anywhere.service.Data
             return allScheduleObj;
         }
 
-        public MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpeShifts)
+        public MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpenShifts)
         {
-            string locationsString = dg.getLocationDropdownForScheduling(token, showOpeShifts);
+            string locationsString = dg.getLocationDropdownForScheduling(token, showOpenShifts);
             MainLocationDropDownData[] locationsObj = js.Deserialize<MainLocationDropDownData[]>(locationsString);
             return locationsObj;
         }
@@ -77,6 +77,13 @@ namespace Anywhere.service.Data
             string myApprovalDataString = dg.getScheduleMyApprovalData(token, personId);
             MyApprovalData[] myApprovalDataObj = js.Deserialize<MyApprovalData[]>(myApprovalDataString);
             return myApprovalDataObj;
+        }
+
+        public AllEmployees[] getAllEmployees(string userId)
+        {
+            string allEmployeeString = dg.getAllEmployees(userId);
+            AllEmployees[] allEmployeeObj = js.Deserialize<AllEmployees[]>(allEmployeeString);
+            return allEmployeeObj;
         }
 
         public OverlapData[] requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
@@ -303,6 +310,7 @@ namespace Anywhere.service.Data
             public string callOffStatus { get; set; }
             public string consumerNames { get; set; }
             public string preferred { get; set; }
+            public string publishDate { get; set; }
         }
 
         public class OverlapData
@@ -367,5 +375,12 @@ namespace Anywhere.service.Data
             public string locationName { get; set; }
             public string requestType { get; set; }
         }
+
+        public class AllEmployees
+        {
+            public string Person_Id { get; set; }
+            public string EmployeeName { get; set; }            
+        }
+
     }
 }

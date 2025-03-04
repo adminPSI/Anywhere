@@ -1495,9 +1495,9 @@ namespace Anywhere
             return anywhereScheduleWorker.getSchedulesForSchedulingModule(token, locationId, personId);
         }
 
-        public AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpeShifts)
+        public AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpenShifts)
         {
-            return anywhereScheduleWorker.getLocationDropdownForScheduling(token, showOpeShifts);
+            return anywhereScheduleWorker.getLocationDropdownForScheduling(token, showOpenShifts);
         }
 
         public string saveOrUpdateShift(string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag)
@@ -1578,6 +1578,12 @@ namespace Anywhere
         {
             return anywhereScheduleWorker.getScheduleMyApprovalData(token, personId);
         }
+
+        public AnywhereScheduleWorker.AllEmployees[] getAllEmployees(string userId)
+        {
+            return anywhereScheduleWorker.getAllEmployees(userId);
+        }
+
         //Single entry note and signature
         public string singleEntrySaveSignatureAndNote(string token, string singleEntryId, string consumerId, string note, string signatureImage)
         {
