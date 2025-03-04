@@ -31,6 +31,9 @@ var linksAndMessages = (function () {
     let nameHeading;
     let nameList;
     let singleSelectedEmployee;
+    let displayedConsumers = [];
+    let isSearched = false;
+    let multiSelect;    
 
     function loadCustomLinks() {
         var linksList = linksWidget.querySelector('.customLinksList');
@@ -181,17 +184,17 @@ var linksAndMessages = (function () {
         });
         saveBtn.addEventListener('click', async () => {
             POPUP.hide(addMessagePopup);
-            pendingSave.show();           
+            pendingSave.show();
             selectedEmployee.push($.session.UserId);
             const result = await linksAndMessagesWidgetAjax.addSystemMessageAsync(textMessage, timeOfExpiration, dateOfExpiration, selectedEmployee);
             const { addSystemMessageResult } = result;
-            if (addSystemMessageResult[0].NoteID != null) {                
-                pendingSave.hide();                
+            if (addSystemMessageResult[0].NoteID != null) {
+                pendingSave.hide();
                 selectedEmployee = [];
                 currentconsumersSelected = [];
                 EmployeeNameList = [];
                 dashboard.load();
-            }             
+            }
         });
 
         cancelBtn.addEventListener('click', () => {
@@ -318,7 +321,7 @@ var linksAndMessages = (function () {
                 cnFilters.init(filterValues);
             },
         });
-        let multiSelect = false;
+        multiSelect = false;
         const multiSelectBodyC = document.createElement('div');
         multiSelectBodyC.setAttribute('id', 'multiSelectBody');
         consumerswithEmployeeIds.forEach(person => {
@@ -343,8 +346,13 @@ var linksAndMessages = (function () {
                     currentconsumersSelected.push(person.employerId);
                 }
                 toggleAssignButton();
+                document.getElementById('employeeCountMessage').innerHTML = 'Selected Employees : ' + currentconsumersSelected.length;
             });
         });
+
+        isSearched = false;
+        var employeeCount = document.createElement('div');
+        employeeCount.innerHTML = `<h4 id="employeeCountMessage" >Selected Employees : ${currentconsumersSelected.length}</h4>`;
 
         consumersContainer.appendChild(cHeading);
 
@@ -431,19 +439,30 @@ var linksAndMessages = (function () {
             type: 'contained',
             callback: function () {
                 const divElement = document.getElementById('multiSelectBody');
-                const pElements = divElement.querySelectorAll('p');
-                if (multiSelect) {
-                    currentconsumersSelected = [];
+                const pElements = divElement.querySelectorAll('p');  
+                currentconsumersSelected = [];  
+                if (multiSelect) {                   
                     pElements.forEach(p => { p.classList.remove('selected') });
                     multiSelect = false;
                 }
                 else {
-                    consumerswithEmployeeIds.forEach(person => {
-                        currentconsumersSelected.push(person.employerId);
-                    });
-                    pElements.forEach(p => { p.classList.add('selected') });
+                    if (isSearched) {                       
+                        currentconsumersSelected = displayedConsumers;
+                        pElements.forEach(p => { 
+                            if (p.classList.contains('hidden'))
+                                p.classList.remove('selected')
+                            else
+                                p.classList.add('selected')
+                        }); 
+                    } else {
+                        consumerswithEmployeeIds.forEach(person => {
+                            currentconsumersSelected.push(person.employerId);
+                        });
+                        pElements.forEach(p => { p.classList.add('selected') });
+                    }                
                     multiSelect = true;
                 }
+                document.getElementById('employeeCountMessage').innerHTML = 'Selected Employees : ' + currentconsumersSelected.length;
                 toggleAssignButton();
             },
         });
@@ -456,6 +475,7 @@ var linksAndMessages = (function () {
         innerWrap.appendChild(consumersContainer);
         assignEmployeePopup.appendChild(popupMessage);
         assignEmployeePopup.appendChild(innerWrap);
+        assignEmployeePopup.appendChild(employeeCount);
         assignEmployeePopup.appendChild(selectALLBtn);
         assignEmployeePopup.appendChild(btnWrap);
         POPUP.show(assignEmployeePopup);
@@ -465,7 +485,7 @@ var linksAndMessages = (function () {
         searchValue = searchValue.toLowerCase();
         // gather all names shown
         //reset the array containing list of consumers that are being displayed 
-        displayedConsumers = [searchValue];
+        displayedConsumers = [];   
         consumerswithEmployeeIds.forEach(consumer => {
             var fullName = consumer.employerName.toLowerCase();
             var matchesName = fullName.indexOf(searchValue);
@@ -480,6 +500,8 @@ var linksAndMessages = (function () {
                 if (index > -1) displayedConsumers.splice(index, 1);
             }
         });
+        isSearched = true;
+        multiSelect = true; 
     }
 
     function init() {
