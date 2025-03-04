@@ -27,14 +27,13 @@ const MONTH_NAMES_ABBR = {
   10: 'Nov',
   11: 'Dec',
 };
-const EVENT_COLOR = {
-  1: 'white', // red, blue, green, orange, purple, yelow
-  2: 'cyan',
-  3: 'teal',
-  4: 'pink',
-  5: 'maroon',
-  6: 'indigo',
-  //? coral, olive
+const GROUP_COLOR = {
+  1: 'blankish', // blankish, red, blue, green, orange, purple, yellow
+  2: 'blankish', // blankish, red, blue, green, orange, purple, yellow
+  3: 'white',
+  4: 'blankish', // blankish, red, blue, green, orange, purple, yellow
+  5: 'blankish', // blankish, red, blue, green, orange, purple, yellow
+  6: 'blankish', // blankish, red, blue, green, orange, purple, yellow
 };
 
 function formatTime(hour) {
@@ -60,16 +59,23 @@ function roundToNearestQuarter(timeStr) {
   return roundedTime;
 }
 function isDateWithinSpan(dirtyDate, rangeObj) {
-  return (
-    dates.isEqual(dirtyDate, rangeObj.start) ||
-    dates.isEqual(dirtyDate, rangeObj.end) ||
-    (dates.isAfter(dirtyDate, rangeObj.start) && dates.isBefore(dirtyDate, rangeObj.end))
-  );
+  const isEqualWithStart = dates.isEqual(new Date(dirtyDate), rangeObj.start);
+  const isEqualWithEnd = dates.isEqual(new Date(dirtyDate), rangeObj.end);
+  const isAfterStart = dates.isAfter(new Date(dirtyDate), rangeObj.start);
+  const isBeforeEnd = dates.isBefore(new Date(dirtyDate), rangeObj.end);
+
+  if ((isEqualWithStart || isAfterStart) && (isEqualWithEnd || isBeforeEnd)) {
+    return true;
+  }
+
+  return false;
 }
 
 class Calendar {
-  constructor() {
-    this.currentView = 'month';
+  constructor(opts) {
+    this.currentView = opts.defaultView;
+    this.customGroups = {};
+
     this.currentDate = dates.getTodaysDateObj();
     this.todaysDate = dates.getTodaysDateObj();
     this.dateRange = {
@@ -97,6 +103,11 @@ class Calendar {
     };
 
     this.build();
+  }
+
+  // Util
+  getDateRangeInView() {
+    return this.dateRange;
   }
 
   // Helpers
@@ -203,6 +214,13 @@ class Calendar {
     weekWrapEle.className = 'week';
     containerEle.appendChild(weekWrapEle);
 
+    // CUSTOM GROUPING
+    //--------------------------------------------------
+    //! grouping by time has to be default, meaning we can't load calendar for first time with custom grouping
+    //! if we wanted to render custom groupoing first we would have to have eventData on init
+
+    // GROUPING BY TIME
+    //--------------------------------------------------
     for (let hour = 0; hour < 24; hour++) {
       const timeSlot = document.createElement('div');
       timeSlot.className = 'timeSlot';
@@ -245,7 +263,10 @@ class Calendar {
     }
   }
 
-  // Events, Schedule, etc.
+  // Events
+  setRenderGrouping(groupById, groupByName) {
+    this.customGroups = {};
+  }
   renderMonthEvents() {
     if (!this.eventCache) return;
 
@@ -256,13 +277,14 @@ class Calendar {
         const eventDate = new Date(event.date);
 
         const eventCellEle = document.createElement('div');
-        const color = event.type.id !== 1 ? EVENT_COLOR[event.type.id] : event.color;
+        const color = event.type.id !== 1 ? GROUP_COLOR[event.type.id] : event.color;
 
         const eventTimeStamp = eventDate.getTime();
         this.monthDOMCache[eventTimeStamp].appendChild(eventCellEle);
       });
   }
   renderWeekEvents() {
+    const weekWrap = this.calendarEle.querySelector('.week');
     const weekEventWrap = this.calendarEle.querySelector('.weekEvents');
     weekEventWrap.innerHTML = '';
 
@@ -271,6 +293,13 @@ class Calendar {
     this.eventCache
       .filter(event => isDateWithinSpan(event.date, this.dateRange))
       .map(event => {
+        const color = event.type.id !== 1 ? GROUP_COLOR[event.type.id] : event.color;
+
+        // CUSTOM GROUPING
+        //--------------------------------------------------
+
+        // GROUPING BY TIME
+        //--------------------------------------------------
         const eventDate = new Date(event.date);
         const startDate = new Date(event.startTime);
         const endDate = new Date(event.endTime);
@@ -290,8 +319,6 @@ class Calendar {
         eventCellEle.className = 'eventCellEle';
         eventCellEle.style.gridColumn = `${gridColumnStart} / span 1`;
         eventCellEle.style.gridRow = `${gridRowStart} / ${gridRowEnd}`;
-        // set group
-        const color = event.type.id !== 1 ? EVENT_COLOR[event.type.id] : event.color;
 
         weekEventWrap.appendChild(eventCellEle);
       });

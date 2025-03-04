@@ -35,7 +35,7 @@ const schedulingAjax = (function () {
   async function getSchedulesForSchedulingModule(locationId, personId) {
     //When using this call:
     //Pass a '%' for the personId and the locationId from the dropdown to get all schedules for a location
-    //Pass a '%' for the locationId and the users personId to get all of that pesons schedules
+    //Pass a '%' for the locationId and the users personId to get all of that persons schedules
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -190,6 +190,31 @@ const schedulingAjax = (function () {
         dataType: 'json',
       });
       return result.getSchedulingRegionsResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+  async function publishUnpublishSchedules(retrieveData) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/publishUnpublishSchedules/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          ...retrieveData,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.publishUnpublishSchedulesResult;
     } catch (error) {
       throw new Error(error.responseText);
     }
@@ -543,6 +568,7 @@ const schedulingAjax = (function () {
     getEmployeesForScheduling,
     getFilteredEmployeesForScheduling,
     getRegionDropdown,
+    publishUnpublishSchedules,
     //
     requestDaysOffSchedulingAjax,
     getCallOffDropdownReasonsAjax,

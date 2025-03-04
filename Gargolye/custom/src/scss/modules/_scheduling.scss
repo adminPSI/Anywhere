@@ -168,9 +168,6 @@
   row-gap: 4px;
   grid-template-columns: 100px repeat(7, minmax(0, 1fr));
   grid-template-rows: 40px minmax(80px, auto);
-
-  // grid-template-columns: [times] 100px [sun-start] 1fr [sun-end mon-start] 1fr [mon-end tue-start] 1fr [tue-end wed-start] 1fr [wed-end thu-start] 1fr [thu-end fri-start] 1fr [fri-end sat-start] 1fr [sat-end];
-  // grid-template-rows: [header] 40px [hour-0-start] auto [hour-1-start] auto [hour-2-start] auto [hour-3-start] auto [hour-4-start] auto [hour-5-start] auto [hour-6-start] auto [hour-7-start] auto [hour-8-start] auto [hour-9-start] auto [hour-10-start] auto [hour-11-start] auto [hour-12-start] auto [hour-13-start] auto [hour-14-start] auto [hour-15-start] auto [hour-16-start] auto [hour-17-start] auto [hour-18-start] auto [hour-19-start] auto [hour-20-start] auto [hour-21-start] auto [hour-22-start] auto [hour-23-start] auto [hour-24-end];
   
   .week {
     display: grid;
@@ -285,7 +282,6 @@ div.leftnav-on #calendarContent {
     }
   }
 }
-
 .requestOffBtnWrap {
   display: flex;
 
@@ -294,9 +290,9 @@ div.leftnav-on #calendarContent {
     margin: 0 5px 0;
   }
 }
+
 // Request Approval Page
 // ===============================
-
 .actioncenter[data-active-module='schedule'] {
   .table__row {
     &[data-approval-status='approve'] {
@@ -425,7 +421,6 @@ div.leftnav-on #calendarContent {
 
 //Calendar MAIN
 //=====================
-
 .scheduleViewWrap {
   display: flex;
   .btn {
@@ -448,24 +443,20 @@ div.leftnav-on #calendarContent {
 .detailsHeading {
   margin: 0 0 25px;
 }
-
 hr {
   border-color: rgba(0, 0, 0, 0.14);
   border-width: 1px 0 0;
   margin: 0 0 10px 0;
 }
-
 .divider--right-inset {
   border-color: rgba(0, 0, 0, 0.14);
   border-width: 1px 0 0;
   margin: 0 30% 10px 0;
 }
-
 .smallDetail {
   padding: 4px 0 0;
   font-size: 0.8em;
 }
-
 .popupDetailsLine:first-child {
   margin: 15px 0 10px;
 }
@@ -475,15 +466,12 @@ hr {
 .popupDetailsLine {
   margin: 0 0 10px;
 }
-
 .label {
   margin: 0 0 5px;
 }
-
 label {
   margin: 0 0 5px;
 }
-
 .popupBtnWrap {
   display: flex;
   > button:nth-child(2) {
@@ -493,11 +481,9 @@ label {
     flex-grow: 1;
   }
 }
-//call off button in popup
 .request-off {
   margin: 20px 0 15px 0;
 }
-
 .overlapRequestShiftPopup {
   display: flex;
   border: 1px solid;
