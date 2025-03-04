@@ -313,42 +313,8 @@ const TRANS_routeDocumentation = (function () {
     }
 
     function checkRequiredFields() {
-
-        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
-
-        if (TripIntegratedEmploymentCheckbox.checked == true) {
-
-            routeStartOdo.classList.remove('error');
-            routeEndOdo.classList.remove('error');
-
-            const startVal = parseInt(routeStartOdo.querySelector('input').value)
-            const endVal = parseInt(routeEndOdo.querySelector('input').value)
-
-            if (isNaN(startVal) && isNaN(endVal)) {
-                routeStartOdo.classList.add('error');
-                routeEndOdo.classList.add('error');
-                setBtnStatusOfRouteDocumentation();
-                return;
-            } else {
-                if (isNaN(startVal)) {
-                    routeStartOdo.classList.add('error');
-                    setBtnStatusOfRouteDocumentation();
-                    return;
-                }
-                if (isNaN(endVal)) {
-                    routeEndOdo.classList.add('error');
-                    setBtnStatusOfRouteDocumentation();
-                    return;
-                }
-            }
-            setBtnStatusOfRouteDocumentation()
-
-        } else {
-            routeStartOdo.classList.remove('error');
-            routeEndOdo.classList.remove('error');
-            setBtnStatusOfRouteDocumentation()
-        }
-    
+        odoCheck();
+        setBtnStatusOfRouteDocumentation()
     }
 
     function setBtnStatusOfRouteDocumentation() {

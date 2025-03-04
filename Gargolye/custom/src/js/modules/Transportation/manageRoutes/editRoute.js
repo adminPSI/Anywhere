@@ -469,6 +469,7 @@ const TRANS_manageEditRoute = (function () {
                MilesRadio.classList.remove('disabled');
 
                noConsumerWarningMessage.innerText = 'You must select at least one consumer for the route.'
+               tooManyConsumersWarning.style.display = 'none';
                roster2.toggleMiniRosterBtnVisible(true);
                setBtnStatusOfAddRoute();
             }
@@ -547,39 +548,7 @@ const TRANS_manageEditRoute = (function () {
                milesRadio.classList.remove('disabled');
         }
 
-        if (TripIntegratedEmploymentCheckbox.checked == true) {
-
-            routeStartOdo.classList.remove('error');
-            routeEndOdo.classList.remove('error');
-
-            const startVal = parseInt(routeStartOdo.querySelector('input').value)
-            const endVal = parseInt(routeEndOdo.querySelector('input').value)
-
-            if (isNaN(startVal) && isNaN(endVal)) {
-                routeStartOdo.classList.add('error');
-                routeEndOdo.classList.add('error');
-                setBtnStatusOfAddRoute();
-                return;
-            } else {
-                if (isNaN(startVal)) {
-                    routeStartOdo.classList.add('error');
-                    setBtnStatusOfAddRoute();
-                    return;
-                }
-                if (isNaN(endVal)) {
-                    routeEndOdo.classList.add('error');
-                    setBtnStatusOfAddRoute();
-                    return;
-                }
-            }
-            setBtnStatusOfAddRoute()
-
-        } else {
-            routeStartOdo.classList.remove('error');
-            routeEndOdo.classList.remove('error');
-            setBtnStatusOfAddRoute()
-        }
-
+        odoCheck();
         setBtnStatusOfAddRoute()
     }
 

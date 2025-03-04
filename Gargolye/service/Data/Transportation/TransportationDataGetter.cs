@@ -476,6 +476,10 @@ namespace Anywhere.service.Data.Transportation
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertTripCompleted " + token);
+
+            string origination = null;
+            string destination = null;
+
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(tripName);
@@ -486,6 +490,8 @@ namespace Anywhere.service.Data.Transportation
             list.Add(vehicleInformationId);
             list.Add(locationId);
             list.Add(integratedEmployment);
+            list.Add(origination);
+            list.Add(destination);
             
             string text = "CALL DBA.ANYW_Transportation_InsertTripCompleted(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
