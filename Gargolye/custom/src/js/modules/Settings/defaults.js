@@ -926,9 +926,9 @@ var defaults = (function () {
         if ($.session.applicationName === 'Advisor')
             defaultsPage.appendChild(incidentTrackingSection);
         if ($.session.applicationName === 'Advisor')
-            defaultsPage.appendChild(moneyManagementSection);
+            defaultsPage.appendChild(OODSection); 
         if ($.session.applicationName === 'Advisor')
-            defaultsPage.appendChild(OODSection);
+            defaultsPage.appendChild(moneyManagementSection);        
 
         rosterLocationDropdown.classList.add('defaultLocationDD');
         dayServicesLocationDropdown.classList.add('defaultLocationDD');
