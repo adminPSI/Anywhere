@@ -529,7 +529,7 @@ namespace Anywhere.service.Data
         {
             string category = "Incident Tracking";
             string title = "Incidents [Composite] by Consumer, Date";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = dg.generateIncidentTrackingReport(token, category, title, reportServerList, incidentId);

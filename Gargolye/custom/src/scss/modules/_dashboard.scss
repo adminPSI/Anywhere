@@ -424,7 +424,8 @@
 }
 
 .assignEmployeePopup {
-    min-height : 75%;
+    min-height : 85%; 
+    padding-top : 15px !important;
     .popupMessage {
         margin: 0 0 10px;
         font-style: italic;
