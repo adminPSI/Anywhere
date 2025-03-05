@@ -16,7 +16,7 @@ const TRANS_routeDocumentation = (function () {
         Save and Cancel btns
     */
 
-    let routeStartInput, routeEndInput, routeStartOdo, routeEndOdo, tripIntegratedEmploymentCheckbox, ro;
+    let routeStartInput, routeEndInput, routeStartOdo, routeEndOdo, tripIntegratedEmploymentCheckbox, ro, originationInput, destinationInput;
     let consumerDocCardBody, noConsumerWarning, tooManyConsumersWarning;
 
     // * Data storage
@@ -96,6 +96,22 @@ const TRANS_routeDocumentation = (function () {
             isChecked: tripInfo.integratedEmployment === 'Y' ? true : false,
         });
 
+        //152264 - ADV-ANY-TR: Add Origination and Destination fields to Anywhere Transportation//
+        originationInput = input.build({
+            id: "originationInput",
+            label: "Origination",
+            type: "textarea",
+            value: tripInfo.origination
+        })
+
+        destinationInput = input.build({
+            id: "destinationInput",
+            label: "Destination",
+            type: "textarea",
+            value: tripInfo.destination 
+        })
+        /////////
+
         tripIntegratedEmploymentCheckbox.style = "padding-bottom: 15px;";   
 
         if (ro) {
@@ -107,8 +123,10 @@ const TRANS_routeDocumentation = (function () {
         routeDocCardBody.appendChild(routeStartInput);
         routeDocCardBody.appendChild(tripIntegratedEmploymentCheckbox);
         routeDocCardBody.appendChild(routeStartOdo);
+        routeDocCardBody.appendChild(originationInput);
         routeDocCardBody.appendChild(routeEndInput);
         routeDocCardBody.appendChild(routeEndOdo);
+        routeDocCardBody.appendChild(destinationInput);
         column1.appendChild(routeDocCard);
         // ! Consumer Section //
         const consumerDocCard = document.createElement("div");
@@ -526,6 +544,8 @@ const TRANS_routeDocumentation = (function () {
             } else {
                 tripIntegratedEmployment = 'N';
             }
+            const originationVal = originationInput.querySelector('textarea').value;
+            const destinationVal = destinationInput.querySelector('textarea').value;
 
             
             const dbCallArr = []
@@ -536,7 +556,9 @@ const TRANS_routeDocumentation = (function () {
                 odometerStop: odoEnd,
                 startTime: startTime,
                 endTime: endTime,
-                integratedEmployment: tripIntegratedEmployment
+                integratedEmployment: tripIntegratedEmployment,
+                origination: originationVal,
+                destination: destinationVal 
             }
             dbCallArr.push(TRANS_routeDocumentationAjax.updateTripDetails(tripDetailSubmit))
       consumersOnRecord.forEach((val,key,map) => {
