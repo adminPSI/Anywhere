@@ -398,6 +398,7 @@ const TRANS_addRoute = (function () {
                MilesRadio.classList.remove('disabled');
 
                noConsumerWarningMessage.innerText = 'You must select at least one consumer for the route.'
+               tooManyConsumersWarning.style.display = 'none';
                roster2.toggleMiniRosterBtnVisible(true);
                setBtnStatusOfAddRoute();
             }
