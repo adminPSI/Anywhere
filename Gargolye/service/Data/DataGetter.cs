@@ -4915,6 +4915,30 @@ namespace Anywhere.Data
             }
         }
 
+        public string publishShift(string token, string locationId, string employeeId, string fromDate, string toDate, string notifyEmployee, string publish)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getMainLocationDropdownForScheduling ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(locationId);
+            list.Add(employeeId);
+            list.Add(fromDate);
+            list.Add(toDate);
+            list.Add(notifyEmployee);
+            list.Add(publish);
+            string text = "CALL DBA.ANYW_Scheduling_PublishShift(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("691", ex.Message + "ANYW_Scheduling_PublishShift(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "691: error ANYW_Scheduling_PublishShift";
+            }
+        }
+
         public string saveOrUpdateShift(string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag)
         {
             //if (tokenValidator(token) == false) return null;

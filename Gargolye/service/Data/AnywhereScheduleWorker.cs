@@ -32,6 +32,12 @@ namespace Anywhere.service.Data
             return saveUpdateString;
         }
 
+        public string publishShift(string token, string locationId, string employeeId, string fromDate, string toDate, string notifyEmployee, string publish)
+        {
+            string publishShift = dg.publishShift(token, locationId, employeeId, fromDate, toDate, notifyEmployee, publish);
+            return publishShift;
+        }
+
         public string saveSchedulingCallOffRequest(string token, string shiftId, string personId, string reasonId, string note, string status, string notifiedEmployeeId)
         {
             return dg.saveSchedulingCallOffRequest(token, shiftId, personId, reasonId, note, status, notifiedEmployeeId);

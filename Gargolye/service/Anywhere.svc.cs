@@ -1504,6 +1504,11 @@ namespace Anywhere
         {
             return anywhereScheduleWorker.saveOrUpdateShift(dateString, locationId, personId, startTime, endTime, color, notifyEmployee, consumerIdString, saveUpdateFlag);
         }
+
+        public string publishShift(string token, string locationId, string employeeId, string fromDate, string toDate, string notifyEmployee, string publish)
+        {
+            return anywhereScheduleWorker.publishShift(token, locationId, employeeId, fromDate, toDate, notifyEmployee, publish);
+        }
         public string saveSchedulingCallOffRequest(string token, string shiftId, string personId, string reasonId, string note, string status, string notifiedEmployeeId)
         {
             return anywhereScheduleWorker.saveSchedulingCallOffRequest(token, shiftId, personId, reasonId, note, status, notifiedEmployeeId);

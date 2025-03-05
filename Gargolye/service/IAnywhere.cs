@@ -2187,6 +2187,14 @@ namespace Anywhere
              UriTemplate = "/saveOrUpdateShift/")]
         string saveOrUpdateShift(string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/publishShift/")]
+        string publishShift(string token, string locationId, string employeeId, string fromDate, string toDate, string notifyEmployee, string publish);
+
 
         [OperationContract]
         [WebInvoke(Method = "POST",
