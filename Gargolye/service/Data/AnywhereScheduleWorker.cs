@@ -310,6 +310,7 @@ namespace Anywhere.service.Data
             public string callOffStatus { get; set; }
             public string consumerNames { get; set; }
             public string preferred { get; set; }
+            public string publishDate { get; set; }
         }
 
         public class OverlapData

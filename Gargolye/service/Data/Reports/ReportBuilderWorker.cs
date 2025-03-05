@@ -131,7 +131,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Day Services";
             string title = "Consumer Day Service Activity - By Location and Date of Service";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateIndividualDayServiceActivityReport(token, category, title, reportServerList, reportData.dayServiceLocation, reportData.dayServiceServiceDate);
@@ -143,7 +143,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Forms";
             string title = "Form Listing - By Consumer";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateformListingReport(token, category, title, reportServerList, reportData.formsConsumer);
@@ -155,7 +155,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Outcomes and Services";
             string title = "Habilitation Documentation - Completed with Percentages";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateOutcomeDocumentationReport(token, category, title, reportServerList, reportData.outcomesDate, reportData.outcomesConsumer, reportData.outcomesType);
@@ -167,7 +167,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Outcomes and Services";
             string title = "Outcome Activity - With Community Integration by Employee, Consumer, Date";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateOutcomeActivityReport(token, category, title, reportServerList, reportData.outcomesService, reportData.outcomesDate, reportData.outcomesConsumer);
@@ -179,7 +179,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Case Notes";
             string title = "Detailed Case Notes By Biller";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateDetailedCaseNotesReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.consumerName, reportData.serviceDateStart, reportData.serviceDateEnd, reportData.location,
@@ -192,7 +192,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Case Notes";
             string title = "Minutes By Date";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
             string caseloadRestriction = "";
 
@@ -228,7 +228,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Case Notes";
             string title = "Detailed Case Notes";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateDetailedCaseNotesReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.consumerName, reportData.serviceDateStart, reportData.serviceDateEnd, reportData.location,
@@ -241,7 +241,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Case Notes";
             string title = "Case Notes Time Analysis with Doc and Travel Time ANYWTEST";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateCaseNoteTimeReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.billCodeText, reportData.serviceDateStart, reportData.serviceDateEnd);
@@ -253,7 +253,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Case Notes";
             string title = "TXX Case Notes";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             DateTime startDate = DateTime.Parse(reportData.serviceDateStart);
@@ -270,7 +270,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Workshop";
             string title = "Job Activity Detail Report by Employee and Job";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateJobActivityReport(token, category, title, reportServerList, reportData.workshopLocation, reportData.workshopJob, reportData.workshopStartDate, reportData.workshopEndDate, reportData.workshopDate);
@@ -281,7 +281,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Incident Tracking";
             string title = "Incident Reporting Log";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateIncidentReportingLog(token, category, title, reportServerList, reportData.ITLocation, reportData.ITConsumer, reportData.ITFromDate, reportData.ITToDate);
@@ -300,7 +300,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Waiting List";
             string title = "Ohio Assessment for Immediate and Current Needs";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateWaitingListAssessmentReport(token, category, title, reportServerList, waitingListId);
@@ -377,7 +377,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Employment";
             string title = "Employment Reporting Information";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateEmploymentReport(token, category, title, reportServerList, reportData.employer, reportData.position, reportData.positionStartDate, reportData.positionEndDate, reportData.jobStanding, reportData.consumerID);
@@ -388,7 +388,7 @@ namespace Anywhere.service.Data.ReportBuilder
         {
             string category = "Demographics - Case Load";
             string title = "My Case Load Roster List";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string result = "";
 
             result = rbdg.generateCaseLoadRosterListReport(token, category, title, reportServerList);

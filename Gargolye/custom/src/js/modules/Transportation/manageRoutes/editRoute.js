@@ -1,5 +1,5 @@
 const TRANS_manageEditRoute = (function () {
-    let driverDropdown, routeNameInput, locationDropdown, otherRiderDropdown, vehicleDropdown, routeStartOdo, routeEndOdo, routeStartInput, routeEndInput, tripIntegratedEmploymentCheckbox;
+    let driverDropdown, routeNameInput, locationDropdown, otherRiderDropdown, vehicleDropdown, routeStartOdo, routeEndOdo, routeStartInput, routeEndInput, tripIntegratedEmploymentCheckbox, originationInput, destinationInput ;
     let milesRadio, tripsRadio;
     let consumerSectionBody, noConsumerWarning;
     let tripInfo;
@@ -119,6 +119,21 @@ const TRANS_manageEditRoute = (function () {
             style: "secondary",
         });
 
+        //152264 - ADV-ANY-TR: Add Origination and Destination fields to Anywhere Transportation//
+        originationInput = input.build({
+            id: "originationInput",
+            label: "Origination",
+            type: "textarea",
+            value: tripInfo.origination
+        })
+
+        destinationInput = input.build({
+            id: "destinationInput",
+            label: "Destination",
+            type: "textarea",
+            value: tripInfo.destination
+        })
+        /////////
 
         // Billing Radios //
         milesRadio = input.buildRadio({
@@ -215,6 +230,8 @@ const TRANS_manageEditRoute = (function () {
         routeInfoCardBody.appendChild(otherRiderDropdown);
         routeInfoCardBody.appendChild(vehicleDropdown);
         if (isAddHoc) routeInfoCardBody.appendChild(locationDropdown)
+        routeInfoCardBody.appendChild(originationInput);
+        routeInfoCardBody.appendChild(destinationInput);
         routeInfoCardBody.appendChild(radioDiv);
         ////////////////////
         // Consumer Section //
@@ -723,6 +740,9 @@ const TRANS_manageEditRoute = (function () {
             const endTime = routeEndInput.querySelector('input').value
             const odoStart = routeStartOdo.querySelector('input').value
             const odoEnd = routeEndOdo.querySelector('input').value;
+            const originationVal = originationInput.querySelector('textarea').value;
+            const destinationVal = destinationInput.querySelector('textarea').value; 
+
       const billingType = document.getElementById("milesRadio").checked ? "M":"T";
             const dbCallArr = [];
             const tripData = {
@@ -739,7 +759,9 @@ const TRANS_manageEditRoute = (function () {
                 billingType: billingType,
                 tripName: UTIL.removeUnsavableNoteText(routeName),
                // integratedEmployment: tripInfo.integratedEmployment
-                integratedEmployment: selectedIntegratedEmployment
+                integratedEmployment: selectedIntegratedEmployment,
+                origination: originationVal,
+                destination: destinationVal 
             };
             dbCallArr.push(TRANS_manageRoutesAjax.updateManageTripDetails(tripData));
             if (deleteInspection) dbCallArr.push(TRANS_vehicleInspectionAjax.deleteVehicleInspection(vehicleInspection))            

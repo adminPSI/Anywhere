@@ -15,6 +15,7 @@ const TRANS_addRoute = (function () {
         driverDropdown,
         otherRiderDropdown,
         locationDropdown,
+        originationInput, destinationInput,
         vehicleDropdown, tripIntegratedEmploymentCheckbox;
     let milesRadio, tripsRadio, selectedIntegratedEmployment;
     let consumerSectionBody, noConsumerWarning;
@@ -84,6 +85,20 @@ const TRANS_addRoute = (function () {
             style: "secondary",
         });
 
+        //152264 - ADV-ANY-TR: Add Origination and Destination fields to Anywhere Transportation//
+        originationInput = input.build({
+            id: "originationInput",
+            label: "Origination",
+            type: "textarea",
+        })
+
+        destinationInput = input.build({
+            id: "destinationInput",
+            label: "Destination",
+            type: "textarea",
+        })
+        /////////
+
         // Billing Radios //
         milesRadio = input.buildRadio({
             id: `milesRadio`,
@@ -141,6 +156,8 @@ const TRANS_addRoute = (function () {
         routeInfoCardBody.appendChild(otherRiderDropdown);
         routeInfoCardBody.appendChild(vehicleDropdown);
         routeInfoCardBody.appendChild(locationDropdown);
+        routeInfoCardBody.appendChild(originationInput);
+        routeInfoCardBody.appendChild(destinationInput);
         routeInfoCardBody.appendChild(radioDiv);
         ////////////////////
         // Consumer Section //
@@ -330,7 +347,7 @@ const TRANS_addRoute = (function () {
         dateInput.addEventListener('change', event => {
             resetPageForNewDate(event.target.value)
             checkRequiredFieldsOfAddRoute();
-        })
+        })        
 
         tripIntegratedEmploymentCheckbox.addEventListener('change', event => {
             selectedIntegratedEmployment = event.target.checked ? 'Y' : 'N';
@@ -550,6 +567,8 @@ const TRANS_addRoute = (function () {
             const locationElement = document.getElementById('locationDropdown');
             const location = locationElement.options[locationElement.selectedIndex].value;
             const billingType = document.getElementById("milesRadio").checked ? "M" : "T";
+            const originationVal = originationInput.querySelector('textarea').value;
+            const destinationVal = destinationInput.querySelector('textarea').value; 
             const data = {
                 token: $.session.Token,
                 tripName: UTIL.removeUnsavableNoteText(routeName),
@@ -559,7 +578,9 @@ const TRANS_addRoute = (function () {
                 billingType: billingType,
                 vehicleInformationId: vehicle,
                 locationId: location,
-                integratedEmployment: selectedIntegratedEmployment
+                integratedEmployment: selectedIntegratedEmployment,
+                origination: originationVal,
+                destination: destinationVal 
             }
             // 1) Save main trip to get the tripCompletedId from DB
             const tripCompletedId = (await TRANS_addRouteAjax.insertTrip(data)).insertTripCompletedResult[0].tripCompletedId

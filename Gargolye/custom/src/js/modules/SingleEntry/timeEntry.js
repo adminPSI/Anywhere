@@ -15,6 +15,7 @@ var timeEntry = (function () {
     // required fields
     var requiredFields = {
         isDestinationRequired: '',
+        isOriginationRequired: '',
         isNoteRequired: '',
         isOdometerRequired: '',
         isLicensePlateRequired: '',
@@ -82,6 +83,7 @@ var timeEntry = (function () {
 
             // transportation only saved with the first day entry
             saveData2.destination = '';
+            saveData2.origination = '';
             saveData2.licensePlateNumber = '';
             saveData2.odometerEnd = '';
             saveData2.odometerStart = '';
@@ -413,6 +415,7 @@ var timeEntry = (function () {
 
             // transportation only saved with the first day entry
             saveData.destination = '';
+            saveData.origination = '';
             saveData.licensePlateNumber = '';
             saveData.odometerEnd = '';
             saveData.odometerStart = '';
@@ -981,6 +984,7 @@ var timeEntry = (function () {
         var res = results[0];
 
         requiredFields.isDestinationRequired = res.destinationrequired;
+        requiredFields.isOriginationRequired = res.originationrequired;
         requiredFields.isNoteRequired = res.noterequired;
         requiredFields.isOdometerRequired = res.odometerrequired;
         requiredFields.isLicensePlateRequired = res.licenseplaterequired;

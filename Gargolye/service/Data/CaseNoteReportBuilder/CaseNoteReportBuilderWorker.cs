@@ -18,7 +18,7 @@ namespace Anywhere.service.Data.CaseNoteReportBuilder
         {
             string category = "Case Notes";
             string title = "Detailed Case Notes";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string source = "Report Window";
             string filterSyntax = "";
             string result = "";
@@ -35,7 +35,7 @@ namespace Anywhere.service.Data.CaseNoteReportBuilder
         {
             string category = "Case Notes";
             string title = "Case Notes Time Analysis with Doc and Travel Time ANYWTEST";
-            string reportServerList = "Primary";
+            string reportServerList = "-Any-";
             string source = "Report Window";
             string filterSyntax = "";
             string result = "";

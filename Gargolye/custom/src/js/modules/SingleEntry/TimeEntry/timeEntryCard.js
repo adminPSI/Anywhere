@@ -33,6 +33,7 @@ var timeEntryCard = (function () {
     var odometerEndInput;
     var odometerTotalInput;
     var destinationInput;
+    var originationInput;
     var reasonInput;
     var saveTransBtn;
     var deleteTransBtn;
@@ -94,6 +95,7 @@ var timeEntryCard = (function () {
     var transportationSaved = false;
     var isTransportationValid;
     var destination = null;
+    var origination = null;
     var odometerEnd = null;
     var odometerStart = null;
     var transportationEndTime = null;
@@ -112,6 +114,7 @@ var timeEntryCard = (function () {
     var tmpOdometerEnd = null;
     var tmpTransportationUnits = null;
     var tmpDestination = null;
+    var tmpOrigination = null;
     var tmpReason = null;
     var tmpLicenseplate = null;
     var isEVVSingleEntry = false;
@@ -216,7 +219,8 @@ var timeEntryCard = (function () {
                 workCodeID: workCode ? workCode : '',
 
                 // transportation
-                destination: destination ? UTIL.removeUnsavableNoteText(destination) : '',
+                destination: destination ? UTIL.removeUnsavableNoteText(destination) : '',               
+                origination: origination ? UTIL.removeUnsavableNoteText(origination) : '',
                 licensePlateNumber: licensePlateNumber ? UTIL.removeUnsavableNoteText(licensePlateNumber) : '',
                 odometerEnd: !odometerEnd ? null : odometerEnd === 0 || odometerEnd === '0' ? null : odometerEnd,
                 odometerStart: !odometerStart ? null : odometerStart === 0 || odometerStart === '0' ? null : odometerStart,
@@ -264,6 +268,7 @@ var timeEntryCard = (function () {
                 workCodeID: workCode ? workCode : '',
                 // transportation
                 destination: destination ? UTIL.removeUnsavableNoteText(destination) : '',
+                origination: origination ? UTIL.removeUnsavableNoteText(origination) : '',
                 licensePlateNumber: licensePlateNumber ? UTIL.removeUnsavableNoteText(licensePlateNumber) : '',
                 odometerEnd: !odometerEnd ? null : odometerEnd === 0 || odometerEnd === '0' ? null : odometerEnd,
                 odometerStart: !odometerStart ? null : odometerStart === 0 || odometerStart === '0' ? null : odometerStart,
@@ -398,12 +403,14 @@ var timeEntryCard = (function () {
         numberOfConsumersPresent = ed.Number_Consumers_Present;
         isBillable = ed.billable;
         keyStartStop = ed.keytimes;
-
+  
         evvAttest = ed.attest;
         evvCommunity = ed.community;
         supervisorId = ed.supervisorId;
         rejectedTime = ed.rejected_time;
         destination = ed.destination;
+
+        origination = ed.origination;
         odometerEnd = ed.odometerend;
         odometerStart = ed.odometerstart;
         transportationEndTime = ed.transportationendtime;
@@ -448,6 +455,7 @@ var timeEntryCard = (function () {
 
         isTransportationValid = undefined;
         destination = null;
+        origination = null;
         odometerEnd = null;
         odometerStart = null;
         transportationEndTime = null;
@@ -466,6 +474,7 @@ var timeEntryCard = (function () {
         tmpTransportationEndTime = null;
         tmpTransportationUnits = null;
         tmpDestination = null;
+        tmpOrigination = null;
         tmpReason = null;
         tmpLicenseplate = null;
 
@@ -740,6 +749,7 @@ var timeEntryCard = (function () {
     }
     function clearTransportationValues() {
         destination = null;
+        origination = null;
         odometerEnd = null;
         odometerStart = null;
         transportationEndTime = null;
@@ -964,6 +974,18 @@ var timeEntryCard = (function () {
                 }
             }
         }
+        // origination
+        function checkOrigination() {
+            var originationVal = origination;
+
+            if (requiredFields.isDestinationRequired === 'Y') {
+                if (originationVal === '' || !originationVal) {
+                    originationInput.classList.add('error');
+                } else {
+                    originationInput.classList.remove('error');
+                }
+            }
+        }
 
         // license plate
         function checkLicensePlate() {
@@ -1018,6 +1040,7 @@ var timeEntryCard = (function () {
         checkOdometer();
         checkReason();
         checkDestination();
+        checkOrigination();
         checkLicensePlate();
         checkTransportationStartEndTimes();
 
@@ -1038,6 +1061,7 @@ var timeEntryCard = (function () {
         var oldTransportationEndTime;
         var oldTransportationStartTime;
         var oldTransportationUnits;
+        var oldOrigination;
         var oldDestination;
         var oldReason;
 
@@ -1087,6 +1111,11 @@ var timeEntryCard = (function () {
             transportationEndTime = event.target.value;
             checkTransportationRequiredFields();
         });
+        originationInput.addEventListener('change', event => {
+            if (!oldOrigination) oldOrigination = origination;
+            origination = event.target.value;
+            checkTransportationRequiredFields();
+        });
         destinationInput.addEventListener('change', event => {
             if (!oldDestination) oldDestination = destination;
             destination = event.target.value;
@@ -1119,6 +1148,7 @@ var timeEntryCard = (function () {
                     oldTransportationStartTime || oldTransportationStartTime === ''
                         ? oldTransportationStartTime
                         : transportationStartTime;
+                origination = oldOrigination || oldOrigination === '' ? oldOrigination : origination;
                 destination = oldDestination || oldDestination === '' ? oldDestination : destination;
                 reason = oldReason || oldReason === '' ? oldReason : reason;
                 licensePlateNumber = oldlicenseplate || oldlicenseplate === '' ? oldlicenseplate : licensePlateNumber;
@@ -1149,6 +1179,7 @@ var timeEntryCard = (function () {
         tmpOdometerStart = null;
         tmpOdometerEnd = null;
         tmpTransportationUnits = null;
+        tmpOrigination = null;
         tmpDestination = null;
         tmpReason = null;
         tmpLicenseplate = null;
@@ -1207,6 +1238,12 @@ var timeEntryCard = (function () {
             style: 'secondary',
             value: transportationUnits,
         });
+        originationInput = input.build({
+            label: 'Origination',
+            type: 'textarea',
+            style: 'secondary',
+            value: origination,
+        });
         destinationInput = input.build({
             label: 'Destination',
             type: 'textarea',
@@ -1254,10 +1291,17 @@ var timeEntryCard = (function () {
         timeWrap.appendChild(transportationEndTimeInput);
         transportationPopup.appendChild(timeWrap);
 
-        transportationPopup.appendChild(odometerStartInput);
-        transportationPopup.appendChild(odometerEndInput);
+        var inputWrap = document.createElement('div');
+        inputWrap.classList.add('btnWrap');
+        odometerStartInput.style.width = '49%';
+        odometerEndInput.style.width = '49%';
+        inputWrap.appendChild(odometerStartInput);
+        inputWrap.appendChild(odometerEndInput);
+        transportationPopup.appendChild(inputWrap);
+
         transportationPopup.appendChild(odometerTotalInput);
         transportationPopup.appendChild(licenseplateInput);
+        transportationPopup.appendChild(originationInput);
         transportationPopup.appendChild(destinationInput);
         transportationPopup.appendChild(reasonInput);
         transportationPopup.appendChild(btnWrap);
