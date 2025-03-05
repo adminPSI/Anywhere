@@ -481,9 +481,6 @@ namespace Anywhere.service.Data.Transportation
             if (tokenValidator(token) == false) return null;
             logger.debug("insertTripCompleted " + token);
 
-            string origination = null;
-            string destination = null;
-
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(tripName);
