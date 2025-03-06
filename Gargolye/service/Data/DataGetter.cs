@@ -4896,13 +4896,33 @@ namespace Anywhere.Data
             }
         }
 
+        public string getSchedulesForSchedulingModuleNew(string token, string locationId, string personId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getSchedulesForSchedulingModule ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(locationId);
+            list.Add(personId);
+            string text = "CALL DBA.ANYW_Scheduling_GetSchedulesForSchedulingModuleNew(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("690", ex.Message + "ANYW_Scheduling_GetSchedulesForSchedulingModuleNew(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "690: error ANYW_Scheduling_GetAllSchedulesForLocationNew";
+            }
+        }
+
         public string getLocationDropdownForScheduling(string token, char showOpenShifts)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getMainLocationDropdownForScheduling ");
             List<string> list = new List<string>();
             list.Add(token);
-            list.Add(showOpenShifts.ToString());
+            list.Add("N");
             string text = "CALL DBA.ANYW_Scheduling_GetLocationDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -4912,6 +4932,25 @@ namespace Anywhere.Data
             {
                 logger.error("691", ex.Message + "ANYW_Scheduling_GetLocationDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "691: error ANYW_Scheduling_GetMainLocationDropdown";
+            }
+        }
+
+        public string getLocationDropdownForSchedulingNew(string token, char showOpenShifts)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getMainLocationDropdownForScheduling ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(showOpenShifts.ToString());
+            string text = "CALL DBA.ANYW_Scheduling_GetLocationDropdownNew(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("691", ex.Message + "ANYW_Scheduling_GetLocationDropdownNew(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "691: error ANYW_Scheduling_GetMainLocationDropdownNew";
             }
         }
 

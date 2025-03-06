@@ -19,9 +19,24 @@ namespace Anywhere.service.Data
             return allScheduleObj;
         }
 
+        public AllScheduleData[] getSchedulesForSchedulingModuleNew(string token, string locationId, string personId)
+        {
+            string allSchedules = dg.getSchedulesForSchedulingModuleNew(token, locationId, personId);
+            js.MaxJsonLength = Int32.MaxValue;
+            AllScheduleData[] allScheduleObj = js.Deserialize<AllScheduleData[]>(allSchedules);
+            return allScheduleObj;
+        }
+
         public MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpenShifts)
         {
             string locationsString = dg.getLocationDropdownForScheduling(token, showOpenShifts);
+            MainLocationDropDownData[] locationsObj = js.Deserialize<MainLocationDropDownData[]>(locationsString);
+            return locationsObj;
+        }
+
+        public MainLocationDropDownData[] getLocationDropdownForSchedulingNew(string token, char showOpenShifts)
+        {
+            string locationsString = dg.getLocationDropdownForSchedulingNew(token, showOpenShifts);
             MainLocationDropDownData[] locationsObj = js.Deserialize<MainLocationDropDownData[]>(locationsString);
             return locationsObj;
         }

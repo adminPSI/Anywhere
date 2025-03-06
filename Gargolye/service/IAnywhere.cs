@@ -2176,8 +2176,24 @@ namespace Anywhere
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getSchedulesForSchedulingModuleNew/")]
+        AnywhereScheduleWorker.AllScheduleData[] getSchedulesForSchedulingModuleNew(string token, string locationId, string personId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getLocationDropdownForScheduling/")]
         AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpenShifts);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getLocationDropdownForSchedulingNew/")]
+        AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForSchedulingNew(string token, char showOpenShifts);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
