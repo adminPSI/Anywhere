@@ -175,6 +175,35 @@
     grid-template-columns: 100px repeat(7, minmax(0, 1fr));
     grid-column: 1/-1;
 
+    .eventCellEle {
+      position: relative;
+      z-index: 2;
+    }
+
+    // CUSTOM GROUPING GRID
+    //==================================================
+    .eventGroup {
+      display: contents;
+
+      .eventGroup-label {
+        color: $white;
+        text-align: right;
+        padding: 4px 6px 4px 0px;
+        grid-column: 1 / 2;
+      }
+    }
+
+    // TIME GRID
+    //==================================================
+    .weekEvents {
+      display: contents;
+
+      .eventCellEle {
+        color: black;
+        z-index: 2;
+      }
+    }
+
     .timeSlot {
       color: $white;
       text-align: right;
@@ -224,7 +253,6 @@
       display: contents;
 
       .eventCellEle {
-        background: pink;
         color: black;
         z-index: 2;
       }

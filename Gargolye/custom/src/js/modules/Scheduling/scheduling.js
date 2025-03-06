@@ -12,6 +12,15 @@ const EVENT_TYPES = {
   5: 'Pending Call Off Shifts', // blankish, red, blue, green, orange, purple, yellow
   6: 'Appointments Shifts', // blankish, red, blue, green, orange, purple, yellow
 };
+const EVENT_COLORS = {
+  red: '#BE0000',
+  blue: '#5E9BCD',
+  green: '#2CB167',
+  orange: '#F37F2C',
+  purple: '#8C7EE3',
+  yellow: '#DED896',
+  defaultMuted: '#CACACA',
+};
 
 const SchedulingEventDetails = (function () {
   // TODO: add color dropdown to shift popups for EVENT_TYPES 4,5,6
@@ -404,7 +413,10 @@ const SchedulingEventDetails = (function () {
   function showShiftPopup(data) {
     const updateEmployeeDropdownData = newEmployeeData => {
       console.log(newEmployeeData);
-      //TODO: When user clicks UPDATE EMPLOYEE LIST, if there was an employee already selected in the dropdown before getting to this pop-up and the selected employee no longer fits the criteria selected here, clear the Employee dropdown when going back to the Add Shift/Edit Shift popup.
+      //TODO: When user clicks UPDATE EMPLOYEE LIST,
+      //TODO: if there was an employee already selected in the dropdown before getting to
+      //TODO: this pop-up and the selected employee no longer fits the criteria selected here,
+      //TODO: clear the Employee dropdown when going back to the Add Shift/Edit Shift popup.
     };
 
     const isNew = data ? false : true;
@@ -1132,6 +1144,7 @@ const SchedulingEventDetails = (function () {
   }
 
   function showEventDetailsPopup(eventTypeID, data) {
+    debugger;
     if (eventTypeID === '1' || eventTypeID === '2') {
       showShiftPopup(data);
     }
@@ -1226,6 +1239,17 @@ const SchedulingCalendar = (function () {
 
     return { type: EVENT_TYPES[2], id: 2 };
   }
+  function getEventColor(typeId, color) {
+    if (typeId === 3) {
+      return '#FFFFFF';
+    }
+
+    if (!color) {
+      return '#CACACA';
+    }
+
+    return EVENT_COLORS[color];
+  }
   function formatServiceDate(serviceDate, dateScheduled) {
     let date = serviceDate ? serviceDate : dateScheduled;
     return date.split(' ')[0];
@@ -1243,23 +1267,22 @@ const SchedulingCalendar = (function () {
     return `${lastName}, ${firstName}`;
   }
   function getEventTotalTime(dirtyStart, dirtyEnd) {
-    if (!dirtyStart || !dirtyEnd) return 0;
+    if (!dirtyStart || !dirtyEnd) return '';
 
-    const startTime = dirtyStart.trim();
-    const endTime = dirtyEnd.trim();
+    const [startHours, startMinutes, startSeconds] = dirtyStart.split(':').map(Number);
+    const [endHours, endMinutes, endSeconds] = dirtyEnd.split(':').map(Number);
 
-    const endDate = endTime === '12:00 AM' ? '01/02/2019 ' : '01/01/2019 ';
-    const startTimeDate = new Date('01/01/2019 ' + startTime);
-    const endTimeDate = new Date(endDate + endTime);
-    const startTimeMilliseconds = startTimeDate.getTime();
-    const endTimeMilliseconds = endTimeDate.getTime();
+    const startTimeMilliseconds = (startHours * 3600 + startMinutes * 60 + startSeconds) * 1000;
+    const endTimeMilliseconds = (endHours * 3600 + endMinutes * 60 + endSeconds) * 1000;
 
-    // total milliseconds
-    const milliseconds = endTimeMilliseconds - startTimeMilliseconds;
-    const hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
+    let milliseconds = endTimeMilliseconds - startTimeMilliseconds;
 
-    return hours + minutes / 60;
+    if (milliseconds < 0) {
+      milliseconds += 24 * 3600 * 1000;
+    }
+
+    const hours = milliseconds / (1000 * 60 * 60);
+    return hours === 0 ? '' : `(${hours})`;
   }
   async function getCalendarEvents(locationID = '%', peopleID = '%') {
     schedules = await schedulingAjax.getSchedulesForSchedulingModule(locationID, peopleID);
@@ -1284,6 +1307,7 @@ const SchedulingCalendar = (function () {
       const endTime = `${serviceDate} ${sch.endTime}`;
       const length = getEventTotalTime(sch.startTime, sch.endTime);
       const description = formatDescription(sch.firstName, sch.lastName);
+      const color = getEventColor(id, sch.color);
 
       return {
         eventId: sch.shiftId,
@@ -1300,6 +1324,7 @@ const SchedulingCalendar = (function () {
         locationId: sch.locationId,
         locationName: sch.locationName,
         publishedDate: sch.publishDate,
+        color: color,
       };
     });
   }
@@ -1309,27 +1334,79 @@ const SchedulingCalendar = (function () {
     return appointments.map(appt => {
       const serviceDate = formatServiceDate(appt.serviceDate, appt.dateScheduled);
       const startTime = `${serviceDate} ${appt.timeScheduled}`;
-      const endTime = ''; //TODO: endTime is 1 hour past startTime
+      const endTime = dates.addHours(startTime, 1);
+      const color = getEventColor(id, appt.color);
 
       return {
+        eventId: appt.medTrackingId,
+        date: serviceDate,
         startTime: startTime,
         endTime: endTime,
-        date: serviceDate,
-        group: {
+        length: 1,
+        description: appt.typeDescription,
+        name: appt.consumerName,
+        type: {
           name: EVENT_TYPES[6],
           id: 6,
         },
-        eventId: appt.medTrackingId,
-        allDay: false,
-        description: appt.typeDescription,
-        name: appt.consumerName,
-        eventName: appt.takenToApptBy,
+        locationId: appt.locationId,
+        locationName: appt.locationName,
+        publishedDate: appt.publishDate,
+        color: color,
       };
     });
   }
 
   // Pub/Sub Popup
   //-----------------------------------------------------------------------
+  function populateLocationPubUnpubDropdown() {
+    const dropdownData = locations
+      .map(d => ({
+        value: d.locationId,
+        text: d.locationName,
+      }))
+      .filter(l => !l.id);
+
+    dropdownData.unshift({
+      value: '%',
+      text: 'All',
+    });
+    dropdownData.unshift({
+      value: '',
+      text: '',
+    });
+
+    selectedLocationId = dropdownData[0].value;
+
+    dropdown.populate(locationDropdownEle, dropdownData, selectedLocationId);
+  }
+  function populateEmployeePubUnpubDropdown(dropdown) {
+    let dropdownData = [
+      {
+        value: '',
+        text: '',
+      },
+      {
+        value: '%',
+        text: 'All',
+      },
+      {
+        value: $.session.UserId,
+        text: `${$.session.Name}, ${$.session.LName}`,
+      },
+    ];
+
+    if ($.session.schedulingUpdate) {
+      employees.forEach(d =>
+        dropdownData.push({
+          value: d.Person_Id,
+          text: d.EmployeeName,
+        }),
+      );
+    }
+
+    dropdown.populate(dropdown, dropdownData, '');
+  }
   function showPubUnpubSchedulesPopup() {
     //! Values are required for all fields.
     const data = {
@@ -1427,6 +1504,9 @@ const SchedulingCalendar = (function () {
 
     pubUnpubPopup.appendChild(buttonWrap);
 
+    populateLocationPubUnpubDropdown(locationDropdown);
+    populateEmployeePubUnpubDropdown(employeeDropdown);
+
     POPUP.show(pubUnpubPopup);
   }
 
@@ -1445,7 +1525,8 @@ const SchedulingCalendar = (function () {
       text: 'All',
     });
 
-    selectedLocationId = dropdownData[0].id;
+    //TODO: change back to dropdownData[1].value;
+    selectedLocationId = dropdownData[0].value;
 
     dropdown.populate(locationDropdownEle, dropdownData, selectedLocationId);
   }
@@ -1464,9 +1545,8 @@ const SchedulingCalendar = (function () {
     if ($.session.schedulingUpdate) {
       employees.forEach(d =>
         dropdownData.push({
-          id: 'todo',
-          value: 'todo',
-          text: 'todo',
+          value: d.Person_Id,
+          text: d.EmployeeName,
         }),
       );
     }
@@ -1481,16 +1561,6 @@ const SchedulingCalendar = (function () {
 
     dropdown.populate(employeeDropdownEle, dropdownData, selectedEmployeeId);
   }
-  function updateShiftTypeNote(shiftCount) {
-    shiftTypeNote.textContent = `Un-Publishsed Shifts: ${shiftCount}`;
-
-    if (shiftCount === 0) {
-      shiftTypeNote.classList.add('error');
-    } else {
-      shiftTypeNote.classList.remove('error');
-    }
-  }
-  //
   function buildLocationDropdown() {
     const dropdownEle = dropdown.build({
       dropdownId: 'locationDropdown',
@@ -1498,17 +1568,19 @@ const SchedulingCalendar = (function () {
       style: 'secondary',
     });
 
-    dropdownEle.addEventListener('change', event => {
-      selectedLocationId = event.target.options[event.target.selectedIndex].id;
+    dropdownEle.addEventListener('change', async event => {
+      selectedLocationId = event.target.options[event.target.selectedIndex].value;
 
-      //TODO: get new events
+      calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
 
       if (selectedLocationId === '%' && (currentCalView === 'week' || currentCalView === 'day')) {
-        //TODO: If the value of ALL is selected in the Location dropdown,
-        //TODO: group shifts by assigned location. Show the location name to the left of each group.
+        ScheduleCalendar.renderGroupedEvents(calendarEvents, {
+          groupBy: 'locationId',
+          groupName: 'locationName',
+        });
+      } else {
+        ScheduleCalendar.renderEvents(calendarEvents);
       }
-
-      //TODO: render new events
     });
 
     return dropdownEle;
@@ -1520,19 +1592,31 @@ const SchedulingCalendar = (function () {
       style: 'secondary',
     });
 
-    dropdownEle.addEventListener('change', event => {
-      selectedEmployeeId = event.target.options[event.target.selectedIndex].id;
+    dropdownEle.addEventListener('change', async event => {
+      selectedEmployeeId = event.target.options[event.target.selectedIndex].value;
 
-      //TODO: get new events
+      calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
 
       if (selectedEmployeeId === '%' && (currentCalView === 'week' || currentCalView === 'day')) {
-        //TODO: if value is all employees group by employee similar to how we group by location
+        ScheduleCalendar.renderGroupedEvents(calendarEvents, {
+          groupBy: 'personId',
+          groupName: 'name',
+        });
+      } else {
+        ScheduleCalendar.renderEvents(calendarEvents);
       }
-
-      //TODO: render new events
     });
 
     return dropdownEle;
+  }
+  function updateShiftTypeNote(shiftCount) {
+    shiftTypeNote.textContent = `Un-Publishsed Shifts: ${shiftCount}`;
+
+    if (shiftCount === 0) {
+      shiftTypeNote.classList.add('error');
+    } else {
+      shiftTypeNote.classList.remove('error');
+    }
   }
   function buildShiftTypeDropdown() {
     const shiftTypeWrap = document.createElement('div');
@@ -1546,7 +1630,7 @@ const SchedulingCalendar = (function () {
     });
 
     dropdownEle.addEventListener('change', event => {
-      selectedShiftType = event.target.options[event.target.selectedIndex].id;
+      selectedShiftType = event.target.options[event.target.selectedIndex].value;
     });
 
     selectedShiftType = '0';
@@ -1677,6 +1761,7 @@ const SchedulingCalendar = (function () {
     if (!$.session.schedulingSecurity) {
       colLeft.removeChild(shiftTypeDropdownEle);
       colRight.removeChild(newShiftButtonEle);
+      colRight.removeChild(pubUnpubButtonEle);
       employeeDropdownEle.classList.add('disabled');
     }
 
@@ -1702,67 +1787,24 @@ const SchedulingCalendar = (function () {
     $.session.schedulingSecurity = true; // this needs added from db
     $.session.PeopleId = '7357';
     $.session.UserId = 'joshk';
-
-    const TEST_EVENTS = [
-      {
-        allDay: false,
-        date: '3/2/2025',
-        description: 'Bloomingdale, Ash',
-        endTime: '3/1/2025 16:00:00',
-        eventId: 327,
-        eventName: 'Sou Res',
-        type: { name: 'My Shifts', id: 1 },
-        name: 'Sou Res',
-        startTime: '3/1/2025 08:00:00',
-      },
-      {
-        allDay: false,
-        date: '3/3/2025',
-        description: 'Downtown Conference Center',
-        endTime: '3/3/2025 14:00:00',
-        eventId: 328,
-        eventName: 'Tech Meetup',
-        type: { name: 'All Shifts', id: 2 },
-        name: 'Tech Meetup',
-        startTime: '3/3/2025 09:00:00',
-      },
-      {
-        allDay: false,
-        date: '3/5/2025',
-        description: 'Library Event Hall',
-        endTime: '3/5/2025 15:00:00',
-        eventId: 329,
-        eventName: 'Author Talk',
-        type: { name: 'Open Shifts', id: 3 },
-        name: 'Author Talk',
-        startTime: '3/5/2025 11:00:00',
-      },
-      {
-        allDay: false,
-        date: '3/7/2025',
-        description: 'Local Gym',
-        endTime: '3/7/2025 19:00:00',
-        eventId: 330,
-        eventName: 'Fitness Workshop',
-        type: { name: 'Pending Request Open Shifts', id: 4 },
-        name: 'Fitness Workshop',
-        startTime: '3/7/2025 16:00:00',
-      },
-    ];
     //TODO: remove after dev testing
 
     selectedEmployeeId = $.session.UserId;
 
     ScheduleCalendar = new Calendar({
       defaultView: currentCalView,
+      onEventClick({ id }) {
+        const targetEvent = [...appointments, ...schedules].find(event => event.eventId === id);
+        SchedulingEventDetails.showEventDetailsPopup(targetEvent);
+      },
       onViewChange(newView) {
         currentCalView = newView;
       },
     });
+
     build();
 
     employees = await schedulingAjax.getEmployeesForScheduling($.session.UserId);
-    console.log('Employees:', employees);
     populateEmployeeDropdown();
 
     //! if user does not have the security key for Scheduling, the values in the Location dropdown
@@ -1771,13 +1813,22 @@ const SchedulingCalendar = (function () {
     locations = await schedulingAjax.getLocationDropdownForScheduling('N');
     populateLocationDropdown();
 
-    calendarEvents = await getCalendarEvents('%', $.session.PeopleId);
+    calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
     calendarAppointments = await getCalendarAppointments();
+    //ScheduleCalendar.renderEvents([...calendarEvents, ...calendarAppointments]);
     console.log('Schedules:', schedules);
     console.log('Events:', calendarEvents);
     console.log('Appointments:', calendarAppointments);
 
-    ScheduleCalendar.renderEvents(TEST_EVENTS);
+    // ScheduleCalendar.renderEvents(TEST_EVENTS);
+    ScheduleCalendar.renderGroupedEvents(TEST_EVENTS, {
+      groupBy: 'locationId',
+      groupName: 'locationName',
+    });
+    // ScheduleCalendar.renderGroupedEvents(TEST_EVENTS, {
+    //   groupBy: 'personId',
+    //   groupName: 'name',
+    // });
 
     SchedulingEventDetails.preLoadData(locations);
   }
@@ -1796,17 +1847,7 @@ const Scheduling = (function () {
       callback: function () {
         setActiveModuleSectionAttribute('scheduling-calendar');
         PROGRESS.SPINNER.show('Loading Schedule...');
-        SchedulingCalendar.init();
-        // schedulingCalendar.init();
-      },
-    });
-    const schedulingCalendarWeb2CalBtn = button.build({
-      text: 'View Calendar - Web2Cal',
-      style: 'secondary',
-      type: 'contained',
-      callback: function () {
-        setActiveModuleSectionAttribute('scheduling-calendar');
-        PROGRESS.SPINNER.show('Loading Schedule...');
+        //SchedulingCalendar.init();
         schedulingCalendar.init();
       },
     });
@@ -1835,7 +1876,6 @@ const Scheduling = (function () {
     btnWrap.classList.add('landingBtnWrap');
 
     btnWrap.appendChild(schedulingCalendarBtn);
-    //btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === false && $.session.schedulingUpdate === true) {
       btnWrap.appendChild(schedulingRequestTimeOffBtn);
@@ -1858,3 +1898,203 @@ const Scheduling = (function () {
     init,
   };
 })();
+
+const TEST_EVENTS = [
+  {
+    color: '#FFFFFF',
+    date: '3/2/2025',
+    description: '',
+    endTime: '3/2/2025 12:00:00',
+    eventId: 101,
+    length: '(2)',
+    locationId: '1001',
+    locationName: 'Main Hall',
+    name: 'Morning Shift',
+    personId: '501',
+    publishedDate: '3/1/2025 10:00:00 AM',
+    startTime: '3/2/2025 10:00:00',
+    type: { name: 'Open Shifts', id: 3 },
+  },
+  {
+    color: '#BE0000',
+    date: '3/2/2025',
+    description: '',
+    endTime: '3/2/2025 18:00:00',
+    eventId: 102,
+    length: '(2)',
+    locationId: '1002',
+    locationName: 'Conference Room A',
+    name: 'Afternoon Meeting',
+    personId: '502',
+    publishedDate: '3/1/2025 12:00:00 PM',
+    startTime: '3/2/2025 16:00:00',
+    type: { name: 'My Shifts', id: 1 },
+  },
+  {
+    color: '#5E9BCD',
+    date: '3/3/2025',
+    description: '',
+    endTime: '3/3/2025 14:00:00',
+    eventId: 103,
+    length: '(2)',
+    locationId: '1003',
+    locationName: 'Break Room',
+    name: 'Lunch Break',
+    personId: '503',
+    publishedDate: '3/2/2025 09:30:00 AM',
+    startTime: '3/3/2025 12:00:00',
+    type: { name: 'Not My Shifts', id: 2 },
+  },
+  {
+    color: '#FFFFFF',
+    date: '3/3/2025',
+    description: '',
+    endTime: '3/3/2025 22:00:00',
+    eventId: 104,
+    length: '(2)',
+    locationId: '1001',
+    locationName: 'Main Hall',
+    name: 'Evening Coverage',
+    personId: '501',
+    publishedDate: '3/2/2025 13:00:00 PM',
+    startTime: '3/3/2025 20:00:00',
+    type: { name: 'Open Shifts', id: 3 },
+  },
+  {
+    color: '#2CB167',
+    date: '3/4/2025',
+    description: '',
+    endTime: '3/4/2025 17:00:00',
+    eventId: 105,
+    length: '(2)',
+    locationId: '1002',
+    locationName: 'Conference Room A',
+    name: 'Training Session',
+    personId: '504',
+    publishedDate: '3/3/2025 14:00:00 PM',
+    startTime: '3/4/2025 15:00:00',
+    type: { name: 'Pending Request Open Shifts', id: 4 },
+  },
+  {
+    color: '#F37F2C',
+    date: '3/4/2025',
+    description: '',
+    endTime: '3/4/2025 21:00:00',
+    eventId: 106,
+    length: '(2)',
+    locationId: '1003',
+    locationName: 'Break Room',
+    name: 'Late Shift',
+    personId: '505',
+    publishedDate: '3/3/2025 16:30:00 PM',
+    startTime: '3/4/2025 19:00:00',
+    type: { name: 'Pending Call Off Shifts', id: 5 },
+  },
+  {
+    color: '#8C7EE3',
+    date: '3/5/2025',
+    description: '',
+    endTime: '3/5/2025 11:30:00',
+    eventId: 107,
+    length: '(2)',
+    locationId: '1001',
+    locationName: 'Main Hall',
+    name: 'Team Briefing',
+    personId: '501',
+    publishedDate: '3/4/2025 07:00:00 AM',
+    startTime: '3/5/2025 09:30:00',
+    type: { name: 'Appointments Shifts', id: 6 },
+  },
+  {
+    color: '#CACACA',
+    date: '3/5/2025',
+    description: '',
+    endTime: '3/5/2025 18:00:00',
+    eventId: 108,
+    length: '(2)',
+    locationId: '1002',
+    locationName: 'Conference Room A',
+    name: 'Project Review',
+    personId: '502',
+    publishedDate: '3/4/2025 10:00:00 AM',
+    startTime: '3/5/2025 16:00:00',
+    type: { name: 'My Shifts', id: 1 },
+  },
+  {
+    color: '#DED896',
+    date: '3/6/2025',
+    description: '',
+    endTime: '3/6/2025 20:00:00',
+    eventId: 109,
+    length: '(2)',
+    locationId: '1003',
+    locationName: 'Break Room',
+    name: 'Shift Handover',
+    personId: '503',
+    publishedDate: '3/5/2025 12:00:00 PM',
+    startTime: '3/6/2025 18:00:00',
+    type: { name: 'Pending Request Open Shifts', id: 4 },
+  },
+  {
+    color: '#FFFFFF',
+    date: '3/6/2025',
+    description: '',
+    endTime: '3/6/2025 15:00:00',
+    eventId: 110,
+    length: '(2)',
+    locationId: '1001',
+    locationName: 'Main Hall',
+    name: 'Guest Visit',
+    personId: '504',
+    publishedDate: '3/5/2025 14:30:00 PM',
+    startTime: '3/6/2025 13:00:00',
+    type: { name: 'Open Shifts', id: 3 },
+  },
+  {
+    color: '#5E9BCD',
+    date: '3/7/2025',
+    description: '',
+    endTime: '3/7/2025 17:00:00',
+    eventId: 111,
+    length: '(2)',
+    locationId: '1002',
+    locationName: 'Conference Room A',
+    name: 'Weekly Planning',
+    personId: '505',
+    publishedDate: '3/6/2025 09:00:00 AM',
+    startTime: '3/7/2025 15:00:00',
+    type: { name: 'Not My Shifts', id: 2 },
+  },
+  {
+    color: '#F37F2C',
+    date: '3/7/2025',
+    description: '',
+    endTime: '3/7/2025 21:30:00',
+    eventId: 112,
+    length: '(2)',
+    locationId: '1003',
+    locationName: 'Break Room',
+    name: 'Maintenance Shift',
+    personId: '501',
+    publishedDate: '3/6/2025 16:00:00 PM',
+    startTime: '3/7/2025 19:30:00',
+    type: { name: 'Pending Call Off Shifts', id: 5 },
+  },
+  {
+    color: '#8C7EE3',
+    date: '3/8/2025',
+    description: '',
+    endTime: '3/8/2025 10:00:00',
+    eventId: 113,
+    length: '(2)',
+    locationId: '1001',
+    locationName: 'Main Hall',
+    name: 'Early Morning Prep',
+    personId: '502',
+    publishedDate: '3/7/2025 06:00:00 AM',
+    startTime: '3/8/2025 08:00:00',
+    type: { name: 'Appointments Shifts', id: 6 },
+  },
+];
+
+// console.log(events);

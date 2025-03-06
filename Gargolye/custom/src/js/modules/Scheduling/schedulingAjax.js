@@ -603,7 +603,11 @@ const schedulingAjax = (function () {
         '/' +
         $.webServer.serviceName +
         '/getLocationDropdownForScheduling/',
-      data: '{"token":"' + $.session.Token + '"}',
+      data: JSON.stringify({
+        token: $.session.Token,
+        ...retrieveData,
+        showOpenShifts: 'N',
+      }),
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {

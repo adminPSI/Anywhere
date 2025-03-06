@@ -34,7 +34,7 @@
 
 4. [x] When displaying shifts on the calendar, stack them.
     * [x] On the shifts, display the start time, end time, and employee assigned to work the shift.  If there is no employee on the shift, show "(OPEN)".  See mockup #1.
-    * [o] In the lower left hand corner of each shift, show an icon that indicates if that shift has been published or not (see requirement #3 above).  If location_schedules.published_date is null, show a closed eye (or something similar to the mockup).  If location_schedules.published_date is not null, show an open eye (or something similar to the mockup).
+    * [x] In the lower left hand corner of each shift, show an icon that indicates if that shift has been published or not (see requirement #3 above).  If location_schedules.published_date is null, show a closed eye (or something similar to the mockup).  If location_schedules.published_date is not null, show an open eye (or something similar to the mockup).
 
 5. [x] When the user clicks on a shift, display a pop-up that shows the details of that shift.
     * [o] If the logged in user has the Scheduler security key for Anywhere Scheduling, this pop-up should look just like the form used to add a new shift with the same functionality (see requirement #2) with the following exceptions:
@@ -48,7 +48,7 @@
         [x] The Notify Employee checkbox and label should be hidden
         [o] Use existing logic to determine if the CALL OFF or REQUEST SHIFT buttons should display at the bottom
 
-6. [ ] On each shift in the calendar view, add a copy icon in the lower right hand corner.
+6. [x] On each shift in the calendar view, add a copy icon in the lower right hand corner.
     * [ ] The "title" of the pop-up should be say "Copy Shift"
     * [ ] On save, do not update the existing shift (the shift that the copy button was clicked from), but create a new shift with the details provided by the user.  Still perform same validation that is done when adding a new shift (see requirement #2 above)
     * [ ] See requirement #2 above to determine which fields should be visible/hidden logic for sending any insights notifications, validation, etc.
@@ -64,4 +64,3 @@
     * [x] Below this dropdown, show a count of Un-Published Shifts displayed on the page. IF the count is 0, show green ELSE show red. This should only show if the user has the Scheduler security key.
 
 
-if employee === ALL and location !== ALL
