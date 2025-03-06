@@ -22,7 +22,8 @@ const EVENT_COLORS = {
   defaultMuted: '#CACACA',
 };
 
-const SchedulingEventDetails = (function () {//
+const SchedulingEventDetails = (function () {
+  //
   // TODO: add color dropdown to shift popups for EVENT_TYPES 4,5,6
   let locations;
   let shiftEmployees;
@@ -1847,8 +1848,8 @@ const Scheduling = (function () {
       callback: function () {
         setActiveModuleSectionAttribute('scheduling-calendar');
         PROGRESS.SPINNER.show('Loading Schedule...');
-        SchedulingCalendar.init();
-        // schedulingCalendar.init();
+        // SchedulingCalendar.init();
+        schedulingCalendar.init();
       },
     });
     const schedulingRequestTimeOffBtn = button.build({
