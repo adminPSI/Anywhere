@@ -640,6 +640,8 @@ const planSummary = (function () {
       },
     });
 
+    importantTable.classList.add('importantSummaryTable')
+
     Object.entries(data).forEach(([sectionTitle, rowData]) => {
       Object.entries(rowData).forEach(([rowId, val]) => {
         const importantTo = val.importantTo.answer;

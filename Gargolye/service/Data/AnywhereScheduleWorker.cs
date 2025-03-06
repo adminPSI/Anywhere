@@ -32,6 +32,12 @@ namespace Anywhere.service.Data
             return saveUpdateString;
         }
 
+        public string publishShift(string token, string locationId, string employeeId, string fromDate, string toDate, string notifyEmployee, string publish)
+        {
+            string publishShift = dg.publishShift(token, locationId, employeeId, fromDate, toDate, notifyEmployee, publish);
+            return publishShift;
+        }
+
         public string saveSchedulingCallOffRequest(string token, string shiftId, string personId, string reasonId, string note, string status, string notifiedEmployeeId)
         {
             return dg.saveSchedulingCallOffRequest(token, shiftId, personId, reasonId, note, status, notifiedEmployeeId);
@@ -359,6 +365,10 @@ namespace Anywhere.service.Data
             public string reason { get; set; }
             public string notes { get; set; }
             public string takenToApptBy { get; set; }
+            public string publishDate { get; set; }
+            public string locationId { get; set; }
+            public string locationName { get; set; }
+            public string personId { get; set; }
         }
 
         public class MyApprovalData

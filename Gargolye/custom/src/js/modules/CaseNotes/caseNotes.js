@@ -122,10 +122,10 @@ const CaseNotes = (() => {
         return match ? match[1] : null;
     }
     function checkRequiredFields() {
-        // const isFormValid = areAllFormFieldsValid();
+        const isFormValid = areRequiredFieldsFilled();
         let isSaveDisabled = false;
 
-        if (selectedConsumers.length === 0) {
+        if (selectedConsumers.length === 0 || !isFormValid) {
             isSaveDisabled = true;
         } else {
             isSaveDisabled = false;
@@ -368,15 +368,23 @@ const CaseNotes = (() => {
 
     // FORM
     //--------------------------------------------------
-    function areAllFormFieldsValid() {
-        const invalidControls = cnForm.form.querySelectorAll(':invalid');
-
-        if (invalidControls.length > 0) {
+    function areRequiredFieldsFilled() {
+        // Select all elements that have the "require" attribute.        
+        const invalidElements = document.querySelectorAll(
+            '[data-ui] .inputGroup input:invalid:not(#phrase):not(#shortcut), ' +
+            '[data-ui] .inputGroup select:invalid:not(#phrase):not(#shortcut), ' +
+            '[data-ui] .inputGroup textarea:invalid:not(#phrase):not(#shortcut)'
+        );
+    
+        // Check if invalidElements contains #startTime or #endTime
+        if (Array.from(invalidElements).some(field => field.id === 'startTime' || field.id === 'endTime')) {
             return false;
         }
-
-        return true;
+    
+        // Check that each field has a non-empty, trimmed value.
+        return Array.from(invalidElements).every(field => field.value && field.value.trim() !== '');
     }
+    
     function checkFormForUnsavedChanges(inputName, newValue) {
         const originalNoteDataMap = {
             serviceCode: caseNoteEditData.mainbillingorservicecodeid,
@@ -1153,6 +1161,11 @@ const CaseNotes = (() => {
                 },
             ],
         });
+
+        cnForm.buttons['submit'].toggleDisabled(true);
+        cnForm.buttons['saveAndNew'].toggleDisabled(true);
+        cnForm.buttons['update'].toggleDisabled(true);
+        
         cnFormToast = new Toast();
 
         // Overview Cards

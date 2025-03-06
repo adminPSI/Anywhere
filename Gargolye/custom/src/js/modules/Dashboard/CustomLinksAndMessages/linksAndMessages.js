@@ -346,13 +346,13 @@ var linksAndMessages = (function () {
                     currentconsumersSelected.push(person.employerId);
                 }
                 toggleAssignButton();
-                document.getElementById('employeeCountMessage').innerHTML = 'Selected Employees : ' + currentconsumersSelected.length;
+                document.getElementById('employeeCountMessage').innerHTML = currentconsumersSelected.length + ' users selected';
             });
         });
 
         isSearched = false;
         var employeeCount = document.createElement('div');
-        employeeCount.innerHTML = `<h4 id="employeeCountMessage" >Selected Employees : ${currentconsumersSelected.length}</h4>`;
+        employeeCount.innerHTML = `<h4 id="employeeCountMessage" >${currentconsumersSelected.length} users selected</h4>`;
 
         consumersContainer.appendChild(cHeading);
 
@@ -462,7 +462,7 @@ var linksAndMessages = (function () {
                     }                
                     multiSelect = true;
                 }
-                document.getElementById('employeeCountMessage').innerHTML = 'Selected Employees : ' + currentconsumersSelected.length;
+                document.getElementById('employeeCountMessage').innerHTML = currentconsumersSelected.length + ' users selected';
                 toggleAssignButton();
             },
         });
@@ -470,14 +470,15 @@ var linksAndMessages = (function () {
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
         selectALLBtn.classList.add('selectAllBtn');
+        employeeCount.style.marginTop = '5px';  
         btnWrap.appendChild(assignBtn);
         btnWrap.appendChild(cancelSelectBtn);
         innerWrap.appendChild(consumersContainer);
         assignEmployeePopup.appendChild(popupMessage);
-        assignEmployeePopup.appendChild(innerWrap);
-        assignEmployeePopup.appendChild(employeeCount);
+        assignEmployeePopup.appendChild(innerWrap);        
         assignEmployeePopup.appendChild(selectALLBtn);
         assignEmployeePopup.appendChild(btnWrap);
+        assignEmployeePopup.appendChild(employeeCount);
         POPUP.show(assignEmployeePopup);
     }
 

@@ -674,9 +674,9 @@ namespace Anywhere
         }
 
         //Single Entry Below
-        public string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime)
+        public string insertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime, string origination)
         {
-            return dg.insertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType, transportationStartTime, transportationEndTime);
+            return dg.insertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType, transportationStartTime, transportationEndTime, origination);
         }
 
         public SingleEntryWorker.ConsumerAndLocation[] getSelectedConsumerLocations(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
@@ -684,14 +684,14 @@ namespace Anywhere
             return singleEntryWorker.getSelectedConsumerLocations(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community);
         }
 
-        public SingleEntryWorker.ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime)
+        public SingleEntryWorker.ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string evvLocationType, string transportationStartTime, string transportationEndTime, string origination)
         {
-            return singleEntryWorker.preInsertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType, transportationStartTime, transportationEndTime);
+            return singleEntryWorker.preInsertSingleEntry(token, userId, updaterId, personId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, inComments, odometerStart, odometerEnd, destination, reason, latitude, longitude, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, evvLocationType, transportationStartTime, transportationEndTime, origination);
         }
 
-        public string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason, string evvLocationType, string transportationStartTime, string transportationEndTime)
+        public string updateSingleEntry(string token, string userId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string singleEntryId, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community, string updateEVVReason, string evvLocationType, string transportationStartTime, string transportationEndTime, string origination)
         {
-            return dg.updateSingleEntry(token, userId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, singleEntryId, inComments, odometerStart, odometerEnd, destination, reason, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, updateEVVReason, evvLocationType, transportationStartTime, transportationEndTime);
+            return dg.updateSingleEntry(token, userId, dateOfService, locationId, workCodeID, startTime, endTime, checkHours, consumerId, transportationUnits, transportationReimbursable, numberOfConsumersPresent, singleEntryId, inComments, odometerStart, odometerEnd, destination, reason, endLatitude, endLongitude, deviceType, evvReason, attest, licensePlateNumber, community, updateEVVReason, evvLocationType, transportationStartTime, transportationEndTime, origination);
         }
 
         public SingleEntryWorker.SingleEntryById[] getSingleEntryByIdJSON(string token, string singleEntryId)
@@ -1504,6 +1504,11 @@ namespace Anywhere
         {
             return anywhereScheduleWorker.saveOrUpdateShift(dateString, locationId, personId, startTime, endTime, color, notifyEmployee, consumerIdString, saveUpdateFlag);
         }
+
+        public string publishShift(string token, string locationId, string employeeId, string fromDate, string toDate, string notifyEmployee, string publish)
+        {
+            return anywhereScheduleWorker.publishShift(token, locationId, employeeId, fromDate, toDate, notifyEmployee, publish);
+        }
         public string saveSchedulingCallOffRequest(string token, string shiftId, string personId, string reasonId, string note, string status, string notifiedEmployeeId)
         {
             return anywhereScheduleWorker.saveSchedulingCallOffRequest(token, shiftId, personId, reasonId, note, status, notifiedEmployeeId);
@@ -2294,9 +2299,9 @@ namespace Anywhere
         }
 
         //Transportation
-        public TransportationWorker.InsertTripCompleted[] insertTripCompleted(string token, string tripName, string driverId, string otherRider, string dateOfService, string billingType, string vehicleInformationId, string locationId, string integratedEmployment)
+        public TransportationWorker.InsertTripCompleted[] insertTripCompleted(string token, string tripName, string driverId, string otherRider, string dateOfService, string billingType, string vehicleInformationId, string locationId, string integratedEmployment, string origination, string destination)
         {
-            return trW.insertTripCompleted(token, tripName, driverId, otherRider, dateOfService, billingType, vehicleInformationId, locationId, integratedEmployment);
+            return trW.insertTripCompleted(token, tripName, driverId, otherRider, dateOfService, billingType, vehicleInformationId, locationId, integratedEmployment, origination, destination);
         }
 
         public string insertVehicleInformation(string token)
@@ -2387,13 +2392,13 @@ namespace Anywhere
         {
             return trW.getConsumerDetails(token, consumerId);
         }
-        public string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string integratedEmployment)
+        public string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string integratedEmployment, string origination, string destination)
         {
-            return trW.updateTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, integratedEmployment);
+            return trW.updateTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, integratedEmployment, origination, destination);
         }
-        public string updateManageTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string driverId, string otherRiderId, string vehicleId, string locationId, string billingType, string tripName, string integratedEmployment)
+        public string updateManageTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string driverId, string otherRiderId, string vehicleId, string locationId, string billingType, string tripName, string integratedEmployment, string origination, string destination)
         {
-            return trW.updateManageTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, driverId, otherRiderId, vehicleId, locationId, billingType, tripName, integratedEmployment);
+            return trW.updateManageTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, driverId, otherRiderId, vehicleId, locationId, billingType, tripName, integratedEmployment, origination, destination);
         }
         public string insertUpdateTripConsumers(string token, string tripDetailId, string tripsCompletedId, string consumerId, string alternateAddress, string scheduledTime,
             string totalTravelTime, string riderStatus, string specialInstructions, string directions, string pickupOrder, string notes)
