@@ -1495,9 +1495,19 @@ namespace Anywhere
             return anywhereScheduleWorker.getSchedulesForSchedulingModule(token, locationId, personId);
         }
 
+        public AnywhereScheduleWorker.AllScheduleData[] getSchedulesForSchedulingModuleNew(string token, string locationId, string personId)
+        {
+            return anywhereScheduleWorker.getSchedulesForSchedulingModuleNew(token, locationId, personId);
+        }
+
         public AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpenShifts)
         {
             return anywhereScheduleWorker.getLocationDropdownForScheduling(token, showOpenShifts);
+        }
+
+        public AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForSchedulingNew(string token, char showOpenShifts)
+        {
+            return anywhereScheduleWorker.getLocationDropdownForSchedulingNew(token, showOpenShifts);
         }
 
         public string saveOrUpdateShift(string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag)
@@ -1577,6 +1587,11 @@ namespace Anywhere
         public AnywhereScheduleWorker.ConsumerAppointmentData[] getScheduleApptInformation(string token, string locationId)
         {
             return anywhereScheduleWorker.getScheduleApptInformation(token, locationId);
+        }
+
+        public AnywhereScheduleWorker.ConsumerAppointmentDataNew[] getScheduleApptInformationNew(string token, string locationId)
+        {
+            return anywhereScheduleWorker.getScheduleApptInformationNew(token, locationId);
         }
 
         public AnywhereScheduleWorker.MyApprovalData[] getScheduleMyApprovalData(string token, string personId)

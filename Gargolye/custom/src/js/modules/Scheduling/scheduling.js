@@ -22,7 +22,7 @@ const EVENT_COLORS = {
   defaultMuted: '#CACACA',
 };
 
-const SchedulingEventDetails = (function () {
+const SchedulingEventDetails = (function () {//
   // TODO: add color dropdown to shift popups for EVENT_TYPES 4,5,6
   let locations;
   let shiftEmployees;

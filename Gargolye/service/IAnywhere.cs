@@ -2176,8 +2176,24 @@ namespace Anywhere
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getSchedulesForSchedulingModuleNew/")]
+        AnywhereScheduleWorker.AllScheduleData[] getSchedulesForSchedulingModuleNew(string token, string locationId, string personId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getLocationDropdownForScheduling/")]
         AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpenShifts);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getLocationDropdownForSchedulingNew/")]
+        AnywhereScheduleWorker.MainLocationDropDownData[] getLocationDropdownForSchedulingNew(string token, char showOpenShifts);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -2243,6 +2259,14 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getScheduleApptInformation/")]
         AnywhereScheduleWorker.ConsumerAppointmentData[] getScheduleApptInformation(string token, string locationId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getScheduleApptInformationNew/")]
+        AnywhereScheduleWorker.ConsumerAppointmentDataNew[] getScheduleApptInformationNew(string token, string locationId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

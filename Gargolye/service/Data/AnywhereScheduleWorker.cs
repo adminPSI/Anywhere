@@ -19,9 +19,24 @@ namespace Anywhere.service.Data
             return allScheduleObj;
         }
 
+        public AllScheduleData[] getSchedulesForSchedulingModuleNew(string token, string locationId, string personId)
+        {
+            string allSchedules = dg.getSchedulesForSchedulingModuleNew(token, locationId, personId);
+            js.MaxJsonLength = Int32.MaxValue;
+            AllScheduleData[] allScheduleObj = js.Deserialize<AllScheduleData[]>(allSchedules);
+            return allScheduleObj;
+        }
+
         public MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpenShifts)
         {
             string locationsString = dg.getLocationDropdownForScheduling(token, showOpenShifts);
+            MainLocationDropDownData[] locationsObj = js.Deserialize<MainLocationDropDownData[]>(locationsString);
+            return locationsObj;
+        }
+
+        public MainLocationDropDownData[] getLocationDropdownForSchedulingNew(string token, char showOpenShifts)
+        {
+            string locationsString = dg.getLocationDropdownForSchedulingNew(token, showOpenShifts);
             MainLocationDropDownData[] locationsObj = js.Deserialize<MainLocationDropDownData[]>(locationsString);
             return locationsObj;
         }
@@ -75,6 +90,13 @@ namespace Anywhere.service.Data
         {
             string consumerApptString = dg.getScheduleApptInformation(token, locationId);
             ConsumerAppointmentData[] consumerApptObj = js.Deserialize<ConsumerAppointmentData[]>(consumerApptString);
+            return consumerApptObj;
+        }
+
+        public ConsumerAppointmentDataNew[] getScheduleApptInformationNew(string token, string locationId)
+        {
+            string consumerApptString = dg.getScheduleApptInformationNew(token, locationId);
+            ConsumerAppointmentDataNew[] consumerApptObj = js.Deserialize<ConsumerAppointmentDataNew[]>(consumerApptString);
             return consumerApptObj;
         }
 
@@ -355,6 +377,19 @@ namespace Anywhere.service.Data
         }
 
         public class ConsumerAppointmentData
+        {
+            public string medTrackingId { get; set; }
+            public string consumerName { get; set; }
+            public string typeDescription { get; set; }
+            public string dateScheduled { get; set; }
+            public string timeScheduled { get; set; }
+            public string provider { get; set; }
+            public string reason { get; set; }
+            public string notes { get; set; }
+            public string takenToApptBy { get; set; }
+        }
+
+        public class ConsumerAppointmentDataNew
         {
             public string medTrackingId { get; set; }
             public string consumerName { get; set; }
