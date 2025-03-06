@@ -605,7 +605,6 @@ const schedulingAjax = (function () {
         '/getLocationDropdownForScheduling/',
       data: JSON.stringify({
         token: $.session.Token,
-        ...retrieveData,
         showOpenShifts: 'N',
       }),
       contentType: 'application/json; charset=utf-8',
