@@ -1579,7 +1579,7 @@ namespace Anywhere
             return anywhereScheduleWorker.getScheduleApptInformation(token, locationId);
         }
 
-        public AnywhereScheduleWorker.ConsumerAppointmentData[] getScheduleApptInformationNew(string token, string locationId)
+        public AnywhereScheduleWorker.ConsumerAppointmentDataNew[] getScheduleApptInformationNew(string token, string locationId)
         {
             return anywhereScheduleWorker.getScheduleApptInformationNew(token, locationId);
         }
