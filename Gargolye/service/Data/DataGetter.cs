@@ -5068,6 +5068,25 @@ namespace Anywhere.Data
             }
         }
 
+        public string getScheduleApptInformationNew(string token, string locationId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getScheduleApptInformation ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(locationId);
+            string text = "CALL DBA.ANYW_Scheduling_GetAppointmentInformationNew(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("695", ex.Message + "ANYW_Scheduling_GetAppointmentInformationNew(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "695: error ANYW_Scheduling_GetAppointmentInformation";
+            }
+        }
+
         public string requestDaysOffScheduling(string token, string personId, string requestedDate, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
         {
             if (tokenValidator(token) == false) return null;
