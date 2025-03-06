@@ -365,6 +365,10 @@ namespace Anywhere.service.Data
             public string reason { get; set; }
             public string notes { get; set; }
             public string takenToApptBy { get; set; }
+            public string publishDate { get; set; }
+            public string locationId { get; set; }
+            public string locationName { get; set; }
+            public string personId { get; set; }
         }
 
         public class MyApprovalData
