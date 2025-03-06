@@ -1,4 +1,85 @@
 const schedulingAjax = (function () {
+  async function getSchedulesForSchedulingModuleNew(locationId, personId) {
+    //When using this call:
+    //Pass a '%' for the personId and the locationId from the dropdown to get all schedules for a location
+    //Pass a '%' for the locationId and the users personId to get all of that persons schedules
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getSchedulesForSchedulingModuleNew/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          locationId: locationId,
+          personId: personId,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return result.getSchedulesForSchedulingModuleNewResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+  async function getScheduleApptInformationNew(locationId) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getScheduleApptInformationNew/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          locationId: locationId,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.getScheduleApptInformationNewResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+  async function getLocationDropdownForSchedulingNew(openShiftYes) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getLocationDropdownForSchedulingNew/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          showOpenShifts: openShiftYes,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.getLocationDropdownForSchedulingNewResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+
   async function saveOrUpdateShift(retrieveData) {
     // date: '01/01/2015, 01/02/2025'
     // consumerId: '123, 123, 123'
@@ -83,31 +164,6 @@ const schedulingAjax = (function () {
         dataType: 'json',
       });
       return result.getScheduleApptInformationResult;
-    } catch (error) {
-      throw new Error(error.responseText);
-    }
-  }
-  async function getLocationDropdownForScheduling(openShiftYes) {
-    try {
-      const result = await $.ajax({
-        type: 'POST',
-        url:
-          $.webServer.protocol +
-          '://' +
-          $.webServer.address +
-          ':' +
-          $.webServer.port +
-          '/' +
-          $.webServer.serviceName +
-          '/getLocationDropdownForScheduling/',
-        data: JSON.stringify({
-          token: $.session.Token,
-          showOpenShifts: openShiftYes,
-        }),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-      });
-      return result.getLocationDropdownForSchedulingResult;
     } catch (error) {
       throw new Error(error.responseText);
     }
@@ -561,10 +617,13 @@ const schedulingAjax = (function () {
   }
 
   return {
+    getSchedulesForSchedulingModuleNew,
+    getScheduleApptInformationNew,
+    getLocationDropdownForSchedulingNew,
+    //
     saveOrUpdateShift,
     getSchedulesForSchedulingModule,
     getScheduleApptInformation,
-    getLocationDropdownForScheduling,
     getEmployeesForScheduling,
     getFilteredEmployeesForScheduling,
     getRegionDropdown,

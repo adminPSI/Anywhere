@@ -1285,7 +1285,7 @@ const SchedulingCalendar = (function () {
     return hours === 0 ? '' : `(${hours})`;
   }
   async function getCalendarEvents(locationID = '%', peopleID = '%') {
-    schedules = await schedulingAjax.getSchedulesForSchedulingModule(locationID, peopleID);
+    schedules = await schedulingAjax.getSchedulesForSchedulingModuleNew(locationID, peopleID);
 
     return schedules.map(sch => {
       const timeRegEx = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/;
@@ -1329,7 +1329,7 @@ const SchedulingCalendar = (function () {
     });
   }
   async function getCalendarAppointments() {
-    appointments = await schedulingAjax.getScheduleApptInformation();
+    appointments = await schedulingAjax.getScheduleApptInformationNew();
 
     return appointments.map(appt => {
       const serviceDate = formatServiceDate(appt.serviceDate, appt.dateScheduled);
@@ -1810,7 +1810,7 @@ const SchedulingCalendar = (function () {
     //! if user does not have the security key for Scheduling, the values in the Location dropdown
     //! should only show locations where the logged in user is assigned to a shift.
     //! **Mike checks this in backend**
-    locations = await schedulingAjax.getLocationDropdownForScheduling('N');
+    locations = await schedulingAjax.getLocationDropdownForSchedulingNew('N');
     populateLocationDropdown();
 
     calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
@@ -1847,8 +1847,8 @@ const Scheduling = (function () {
       callback: function () {
         setActiveModuleSectionAttribute('scheduling-calendar');
         PROGRESS.SPINNER.show('Loading Schedule...');
-        //SchedulingCalendar.init();
-        schedulingCalendar.init();
+        SchedulingCalendar.init();
+        // schedulingCalendar.init();
       },
     });
     const schedulingRequestTimeOffBtn = button.build({
