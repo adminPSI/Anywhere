@@ -2265,6 +2265,14 @@ namespace Anywhere
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/saveOrUpdateAppointment/")]
+        string saveOrUpdateAppointment(string token, string medTrackingId, string consumerName, string typeDescription, string dateScheduled, string timeScheduled, string provider, string reason, string notes, string takenToApptBy, string publishDate, string locationId, string locationName, string personId, string color);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getScheduleApptInformationNew/")]
         AnywhereScheduleWorker.ConsumerAppointmentDataNew[] getScheduleApptInformationNew(string token, string locationId);
 

@@ -1589,6 +1589,10 @@ namespace Anywhere
             return anywhereScheduleWorker.getScheduleApptInformation(token, locationId);
         }
 
+        public string saveOrUpdateAppointment(string token, string medTrackingId, string consumerName, string typeDescription, string dateScheduled, string timeScheduled, string provider, string reason, string notes, string takenToApptBy, string publishDate, string locationId, string locationName, string personId, string color)
+        {
+            return anywhereScheduleWorker.saveOrUpdateAppointment(token, medTrackingId, consumerName, typeDescription, dateScheduled, timeScheduled, provider, reason, notes, takenToApptBy, publishDate, locationId, locationName, personId, color);
+        }
         public AnywhereScheduleWorker.ConsumerAppointmentDataNew[] getScheduleApptInformationNew(string token, string locationId)
         {
             return anywhereScheduleWorker.getScheduleApptInformationNew(token, locationId);

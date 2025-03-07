@@ -93,6 +93,11 @@ namespace Anywhere.service.Data
             return consumerApptObj;
         }
 
+        public string saveOrUpdateAppointment(string token, string medTrackingId, string consumerName, string typeDescription, string dateScheduled, string timeScheduled, string provider, string reason, string notes, string takenToApptBy, string publishDate, string locationId, string locationName, string personId, string color)
+        {
+            return dg.saveOrUpdateAppointment(token, medTrackingId, consumerName, typeDescription, dateScheduled, timeScheduled, provider, reason, notes, takenToApptBy, publishDate, locationId, locationName, personId, color);
+        }
+
         public ConsumerAppointmentDataNew[] getScheduleApptInformationNew(string token, string locationId)
         {
             string consumerApptString = dg.getScheduleApptInformationNew(token, locationId);
@@ -339,6 +344,7 @@ namespace Anywhere.service.Data
             public string consumerNames { get; set; }
             public string preferred { get; set; }
             public string publishDate { get; set; }
+            public string color { get; set; }
         }
 
         public class OverlapData
@@ -404,6 +410,7 @@ namespace Anywhere.service.Data
             public string locationId { get; set; }
             public string locationName { get; set; }
             public string personId { get; set; }
+            public string color { get; set; }
         }
 
         public class MyApprovalData

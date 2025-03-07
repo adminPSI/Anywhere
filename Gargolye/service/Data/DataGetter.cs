@@ -5107,6 +5107,38 @@ namespace Anywhere.Data
             }
         }
 
+        public string saveOrUpdateAppointment(string token, string medTrackingId, string consumerName, string typeDescription, string dateScheduled, string timeScheduled, string provider, string reason, string notes, string takenToApptBy, string publishDate, string locationId, string locationName, string personId, string color)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("saveOrUpdateAppointment ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(medTrackingId);
+            list.Add(consumerName);
+            list.Add(typeDescription);
+            list.Add(dateScheduled);
+            list.Add(timeScheduled);
+            list.Add(provider);
+            list.Add(reason);
+            list.Add(notes);
+            list.Add(takenToApptBy);
+            list.Add(publishDate);
+            list.Add(locationId);
+            list.Add(locationName);
+            list.Add(personId);
+            list.Add(color);
+            string text = "CALL DBA.ANYW_Scheduling_SaveOrUpdateAppointment(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("695", ex.Message + "ANYW_Scheduling_SaveOrUpdateAppointment(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "695: error ANYW_Scheduling_SaveOrUpdateAppointment";
+            }
+        }
+
         public string getScheduleApptInformationNew(string token, string locationId)
         {
             if (tokenValidator(token) == false) return null;
