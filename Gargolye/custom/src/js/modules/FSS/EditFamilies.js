@@ -8,6 +8,7 @@ const EditFamilies = (function () {
     let displayedUsers = [];
     var userTable;
     var isChecked;
+    let backBtn;
 
     function init() {
         setActiveModuleAttribute('FSS');
@@ -135,9 +136,10 @@ const EditFamilies = (function () {
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('roster-top-nav');
 
-        SEARCH_BTN = buildSearchBtn();
-        INACTIVE_CHKBOX = buildInactiveChkBox();
-
+        SEARCH_BTN = buildSearchBtn();       
+        INACTIVE_CHKBOX = buildInactiveChkBox();     
+        backBtn = backButton();
+       
         // custom search stuff
         SEARCH_WRAP = document.createElement('div');
         SEARCH_WRAP.classList.add('rosterSearch');
@@ -146,11 +148,14 @@ const EditFamilies = (function () {
         SEARCH_WRAP.appendChild(SEARCH_BTN);
         SEARCH_WRAP.appendChild(SEARCH_INPUT);
 
-        INACTIVE_CHKBOX.classList.add('chkBoxStyle');
         var wrap1 = document.createElement('div');
-        wrap1.classList.add('btnWrap');
+        wrap1.classList.add('headerWrap');
+        INACTIVE_CHKBOX.classList.add('width25Per');
         wrap1.appendChild(INACTIVE_CHKBOX);
+        SEARCH_WRAP.classList.add('width75Per');
         wrap1.appendChild(SEARCH_WRAP);
+        backBtn.classList.add('width13Per');
+        wrap1.appendChild(backBtn);
 
         INACTIVE_CHKBOX.addEventListener('change', event => {
             isChecked = event.target.checked;
@@ -159,6 +164,17 @@ const EditFamilies = (function () {
 
         btnWrap.appendChild(wrap1);
         return btnWrap;
+    }
+
+    function backButton() {
+        return button.build({
+            text: 'BACK',
+            style: 'secondary',
+            type: 'outlined',
+            callback: async () => {
+                FSS.fSSLanding() 
+            },
+        });
     }
 
     function setCheckForInactiveUser(input) {
