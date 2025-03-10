@@ -941,9 +941,9 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-            BodyStyle = WebMessageBodyStyle.Wrapped,
-            ResponseFormat = WebMessageFormat.Json,
-            RequestFormat = WebMessageFormat.Json,
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getUndocumentedServicesForWarning/")]
         string[] getUndocumentedServicesForWarning(string entryDate, string[] consumerId, string token);
 
@@ -5388,9 +5388,9 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-          BodyStyle = WebMessageBodyStyle.Wrapped,
-          ResponseFormat = WebMessageFormat.Json,
-          RequestFormat = WebMessageFormat.Json,
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
                UriTemplate = "/getEditAccountInfoById/")]
         ConsumerFinancesWorker.EditAccountInfo[] getEditAccountInfoById(string token, string accountId);
 
@@ -5767,7 +5767,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getFSSPageData/")]
-        FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName);
+        FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName, string consumerID);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5799,7 +5799,7 @@ namespace Anywhere
                  ResponseFormat = WebMessageFormat.Json,
                  RequestFormat = WebMessageFormat.Json,
                  UriTemplate = "/getFamilyMembers/")]
-        FSSWorker.Members[] getFamilyMembers(string token, string familyID);
+        FSSWorker.Members[] getFamilyMembers(string token, string familyID); 
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5875,9 +5875,9 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-            BodyStyle = WebMessageBodyStyle.Wrapped,
-            ResponseFormat = WebMessageFormat.Json,
-            RequestFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getISPValidationData/")]
         PlanValidationWorker.PlanTotalOutcome getISPValidationData(string token, string assessmentId);
 

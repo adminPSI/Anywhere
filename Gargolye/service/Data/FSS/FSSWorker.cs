@@ -104,11 +104,11 @@ namespace Anywhere.service.Data.FSS
             public string name { get; set; }
         }
 
-        public FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName)
+        public FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName, string consumerID)
         {
             FSSPageData pageData = new FSSPageData();
             js.MaxJsonLength = Int32.MaxValue;
-            string parentString = getFSSPageDataParent(token, familyName, primaryPhone, address, appName);
+            string parentString = getFSSPageDataParent(token, familyName, primaryPhone, address, appName, consumerID);
             PDParentFSS[] parentObj = js.Deserialize<PDParentFSS[]>(parentString);
 
             string childString = getFSSPageDataChildren();
@@ -123,7 +123,7 @@ namespace Anywhere.service.Data.FSS
             return pageData;
         }
 
-        public string getFSSPageDataParent(string token, string familyName, string primaryPhone, string address, string appName)
+        public string getFSSPageDataParent(string token, string familyName, string primaryPhone, string address, string appName, string consumerID)
         {
             try
             {
@@ -132,9 +132,19 @@ namespace Anywhere.service.Data.FSS
 
                 sb.Append("SELECT ff.FSS_Family_ID as familyId ,ff.Family_Name as familyName, ff.address1 + ' ' + ff.address2 + ' ' + ff.city + ' ' + ff.state + ' ' + ff.zip_code as address , ff.Primary_Phone as primaryPhone , ff.Notes as notes ");
                 sb.Append("from dba.fss_family as ff ");
-                sb.AppendFormat("WHERE (ff.Family_Name like '%{0}%' )", familyName);
-                sb.AppendFormat("AND (ff.Primary_Phone like '%{0}%')", primaryPhone);
-                sb.AppendFormat("AND address like '%{0}%'", address);
+                sb.AppendFormat("WHERE ff.FSS_Family_ID IN(select FSS_Family_ID from dba.fss_family_member where ID like '{0}' )", consumerID);
+                if (familyName == "%")
+                    sb.AppendFormat("AND (ff.Family_Name like '%' OR ff.Family_Name IS NULL)");
+                else
+                    sb.AppendFormat("AND (ff.Family_Name like '%{0}%' )", familyName);
+                if (primaryPhone == "%")
+                    sb.AppendFormat("AND (ff.Primary_Phone like '%' OR ff.Primary_Phone IS NULL )");
+                else
+                    sb.AppendFormat("AND (ff.Primary_Phone like '%{0}%' )", primaryPhone);
+                if (address == "%")
+                    sb.AppendFormat("AND (address like '%' OR  address IS NULL)");
+                else
+                    sb.AppendFormat("AND address like '%{0}%'", address);
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);

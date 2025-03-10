@@ -1,4 +1,4 @@
-using Anywhere.anypatch;
+﻿using Anywhere.anypatch;
 using Anywhere.Data;
 using Anywhere.Log;
 using Anywhere.service.Data;
@@ -4415,8 +4415,8 @@ namespace Anywhere
                 dg.addOutcomePlanNow(token, consumerId);
                 anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             }
-
-
+            
+            
 
         }
 
@@ -4435,9 +4435,9 @@ namespace Anywhere
             return iTW.getRelationshipData(token, supervisorId, consumerId);
         }
 
-        public FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName)
+        public FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName, string consumerID)
         {
-            return fssw.getFSSPageData(token, familyName, primaryPhone, address, appName);
+            return fssw.getFSSPageData(token, familyName, primaryPhone, address, appName, consumerID);
         }
 
         public FSSWorker.ActiveInactiveFamily[] getActiveInactiveFamilylist(string token, string isActive)
