@@ -817,6 +817,9 @@ function setSessionVariables() {
       if (tmpPerm == 'View' || $.session.isPSI == true) {
         $.session.schedulingView = true;
       }
+      if (tmpPerm == 'Security' || $.session.isPSI == true) {
+        $.session.schedulingSecurity = true;
+      }
     }
 
     // Anywhere Forms

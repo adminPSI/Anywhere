@@ -1982,10 +1982,6 @@ const SchedulingCalendar = (function () {
   };
 })();
 
-// if (tmpPerm == 'Security' || $.session.isPSI == true) {
-//   $.session.schedulingSecurity = true;
-// }
-
 const Scheduling = (function () {
   function loadSchedulingLanding() {
     const schedulingCalendarBtn = button.build({
@@ -2032,7 +2028,7 @@ const Scheduling = (function () {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
 
-    btnWrap.appendChild(schedulingCalendarBtn);
+    // btnWrap.appendChild(schedulingCalendarBtn);
     btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === false && $.session.schedulingUpdate === true) {
