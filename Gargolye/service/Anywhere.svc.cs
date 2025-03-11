@@ -1,4 +1,4 @@
-using Anywhere.anypatch;
+﻿using Anywhere.anypatch;
 using Anywhere.Data;
 using Anywhere.Log;
 using Anywhere.service.Data;
@@ -1589,6 +1589,10 @@ namespace Anywhere
             return anywhereScheduleWorker.getScheduleApptInformation(token, locationId);
         }
 
+        public string saveOrUpdateAppointment(string token, string medTrackingId, string consumerName, string typeDescription, string dateScheduled, string timeScheduled, string provider, string reason, string notes, string takenToApptBy, string publishDate, string locationId, string locationName, string personId, string color)
+        {
+            return anywhereScheduleWorker.saveOrUpdateAppointment(token, medTrackingId, consumerName, typeDescription, dateScheduled, timeScheduled, provider, reason, notes, takenToApptBy, publishDate, locationId, locationName, personId, color);
+        }
         public AnywhereScheduleWorker.ConsumerAppointmentDataNew[] getScheduleApptInformationNew(string token, string locationId)
         {
             return anywhereScheduleWorker.getScheduleApptInformationNew(token, locationId);
@@ -4411,8 +4415,8 @@ namespace Anywhere
                 dg.addOutcomePlanNow(token, consumerId);
                 anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             }
-
-
+            
+            
 
         }
 
@@ -4431,9 +4435,9 @@ namespace Anywhere
             return iTW.getRelationshipData(token, supervisorId, consumerId);
         }
 
-        public FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName)
+        public FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName, string consumerID)
         {
-            return fssw.getFSSPageData(token, familyName, primaryPhone, address, appName);
+            return fssw.getFSSPageData(token, familyName, primaryPhone, address, appName, consumerID);
         }
 
         public FSSWorker.ActiveInactiveFamily[] getActiveInactiveFamilylist(string token, string isActive)

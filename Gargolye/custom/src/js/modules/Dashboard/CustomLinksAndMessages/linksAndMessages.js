@@ -424,12 +424,11 @@ var linksAndMessages = (function () {
             type: 'contained',
             callback: function () {
                 POPUP.hide(assignEmployeePopup);
-                saveBtn.classList.remove('disabled');
-                checkRequiredFieldsOfNewMessage();
-                cancelBtn.classList.remove('disabled');
-                overlay.show();
+                selectedEmployee = [];
                 currentconsumersSelected = [];
-                isMultiSelection = true;
+                EmployeeNameList = [];
+                POPUP.hide(addMessagePopup);
+                buildAddMessagePopup();     
             },
         });
 

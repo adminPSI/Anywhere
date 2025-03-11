@@ -146,7 +146,7 @@ const EditFamilyInformation = (() => {
         notesInput = input.build({
             id: 'notesInput',
             label: 'Notes',
-            type: 'text',
+            type: 'textarea',
             style: 'secondary',
             readonly: $.session.FSSUpdate == true ? false : true,
             value: (notes) ? notes : '',

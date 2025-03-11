@@ -1,6 +1,6 @@
 const FSS = (() => {
     //Inputs
-    var selectedConsumer;
+    var selectedConsumer; 
     let fSSData;
     //filter
     let filterValues;
@@ -9,7 +9,7 @@ const FSS = (() => {
     let filesList = [];
     let backBtn;
     // DOM
-    let pageWrap;
+    let pageWrap; 
     let overviewTable;
     //--
     let filterPopup;
@@ -55,6 +55,15 @@ const FSS = (() => {
         }
     }
 
+    async function fSSLanding() {
+        var activeConsumers = roster2.getActiveConsumers();
+        selectedConsumer = activeConsumers[activeConsumers.length - 1];
+        selectedConsumersId = activeConsumers[activeConsumers.length - 1].id;
+        await loadFSSLanding();
+        DOM.toggleNavLayout();
+    }
+
+
     async function loadFSSLanding() {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
@@ -94,6 +103,7 @@ const FSS = (() => {
             primaryPhone: filterValues.primaryPhone,
             address: filterValues.address,
             appName: $.session.applicationName,
+            consumerID: selectedConsumersId
         });
 
         pageWrap.removeChild(spinner);
@@ -353,6 +363,7 @@ const FSS = (() => {
             primaryPhone: filterValues.primaryPhone,
             address: filterValues.address,
             appName: $.session.applicationName,
+            consumerID: selectedConsumersId
         });
 
         pageWrap.removeChild(spinner);
@@ -414,6 +425,9 @@ const FSS = (() => {
             const familyID = parent.familyId;
             var eventName;
             const notes = parent.notes == null ? '' : parent.notes;
+            const primaryPhone = parent.primaryPhone == null ? '' : parent.primaryPhone;
+            const address = parent.address == null ? '' : parent.address;
+            const familyName = parent.familyName == null ? '' : parent.familyName;
             const rowWrap = document.createElement('div');
             rowWrap.classList.add('fssTable__subTableWrap');
 
@@ -430,9 +444,9 @@ const FSS = (() => {
             toggleIcon.classList.add('fssTable__endIcon');
             toggleIcon.innerHTML = icons['keyArrowRight'];
             mainDataRow.innerHTML = `       
-        <div>${parent.familyName}</div>
-        <div>${parent.address}</div>
-        <div>${parent.primaryPhone}</div>
+        <div>${familyName}</div>
+        <div>${address}</div>
+        <div>${primaryPhone}</div>
         <div>${notes}</div>               
       `;
             mainDataRow.prepend(toggleIcon);
@@ -473,10 +487,14 @@ const FSS = (() => {
                 fSSData.pageDataChild[familyID].forEach(child => {
                     const fundingSourceID = child.fundingSourceID;
                     const fID = child.familyId;
-                    const authId = child.authId;
+                    const authId = child.authId; 
+                    const coPay = child.coPay == null ? '0.0' : child.coPay;
                     const encumbered = child.encumbered == null ? '0.0' : child.encumbered;
                     const amtPaid = child.amtPaid == null ? '0.0' : child.amtPaid;
-                    const subDataRow = document.createElement('div');
+                    const balance = child.balance == null ? '0.0' : child.balance;
+                    const allocation = child.allocation == null ? '0.0' : child.allocation;
+                    const funding = child.funding == null ? '' : child.funding;
+                    const subDataRow = document.createElement('div'); 
                     var startDate =
                         child.startDate == null || ''
                             ? ''
@@ -496,12 +514,12 @@ const FSS = (() => {
                     subDataRow.innerHTML = `
             <div>${startDate}</div>     
             <div>${endDate}</div>
-            <div>${child.coPay}</div>
-            <div>${child.allocation}</div>
+            <div>${coPay}</div>
+            <div>${allocation}</div>
             <div>${encumbered}</div> 
              <div>${amtPaid}</div>
-            <div>${child.balance}</div>
-            <div>${child.funding}</div> 
+            <div>${balance}</div>
+            <div>${funding}</div> 
 
           `;
                     subDataRow.prepend(toggleIconSub);
@@ -545,6 +563,9 @@ const FSS = (() => {
                             const aID = subChild.authId;
                             const encumbered = subChild.encumbered == null ? '0.0' : subChild.encumbered;
                             const paidAmt = subChild.paidAmt == null ? '0.0' : subChild.paidAmt;
+                            const Vendor = subChild.Vendor == null ? '' : subChild.Vendor;
+                            const serviceCode = subChild.serviceCode == null ? '' : subChild.serviceCode;
+                            const familyMember = subChild.familyMember == null ? '' : subChild.familyMember;
                             const subChildDataRow = document.createElement('div');
                             var paidDate =
                                 subChild.paidDate == null || ''
@@ -558,9 +579,9 @@ const FSS = (() => {
 
                             subChildDataRow.innerHTML = `
                              <div></div>
-                            <div>${subChild.familyMember}</div>
-                            <div>${subChild.serviceCode}</div>
-                            <div>${subChild.Vendor}</div>
+                            <div>${familyMember}</div>
+                            <div>${serviceCode}</div>
+                            <div>${Vendor}</div>
                             <div>${encumbered}</div> 
                             <div>${paidAmt}</div>
                             <div>${paidDate}</div>
@@ -982,7 +1003,7 @@ const FSS = (() => {
         UtilizationRequiredFieldsOfPopup();
     }
 
-    function UtilizationPopupEventListeners() {
+    function UtilizationPopupEventListeners() {       
         encumberedInputs.addEventListener('input', event => {
             encumberedInputsVal = event.target.value;
         });
@@ -1124,5 +1145,6 @@ const FSS = (() => {
         init,
         handleActionNavEvent,
         loadFSSLanding,
+        fSSLanding
     };
 })(); 
