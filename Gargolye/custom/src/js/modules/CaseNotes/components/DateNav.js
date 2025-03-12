@@ -107,8 +107,6 @@
   function DateNavigation(options) {
     // Data Init
     this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
-    //? by default selectedDate, weekStart, weekEnd and eachDayoFWeek
-    //? will be the most current week of calandar year
     this.weekStart = dates.startDayOfWeek(this.options.selectedDate);
     this.weekEnd = dates.endOfWeek(this.options.selectedDate);
     this.eachDayOfWeek = dates.eachDayOfInterval({

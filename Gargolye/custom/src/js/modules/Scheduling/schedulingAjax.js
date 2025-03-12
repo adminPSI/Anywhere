@@ -113,6 +113,31 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
+  async function saveOrUpdateAppointment(retrieveData) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/saveOrUpdateAppointment/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          ...retrieveData,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.saveOrUpdateAppointmentResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
   async function getSchedulesForSchedulingModule(locationId, personId) {
     //When using this call:
     //Pass a '%' for the personId and the locationId from the dropdown to get all schedules for a location
@@ -622,6 +647,7 @@ const schedulingAjax = (function () {
     getLocationDropdownForSchedulingNew,
     //
     saveOrUpdateShift,
+    saveOrUpdateAppointment,
     getSchedulesForSchedulingModule,
     getScheduleApptInformation,
     getEmployeesForScheduling,

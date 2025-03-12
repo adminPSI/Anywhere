@@ -2,7 +2,10 @@
 //  search out below comment symbols to make sure noting was forgotten
 //?Q:
 //TODO:
+//!W
 //* DO NOT FORGET
+
+const { error } = require('fancy-log');
 
 const EVENT_TYPES = {
   1: 'My Shifts', // blankish, red, blue, green, orange, purple, yellow
@@ -22,17 +25,70 @@ const EVENT_COLORS = {
   defaultMuted: '#CACACA',
 };
 
-const SchedulingEventDetails = (function () {
-  //
-  // TODO: add color dropdown to shift popups for EVENT_TYPES 4,5,6
+const SchedulingCalendar = (function () {
+  // DOM
+  let ScheduleCalendar;
+  let locationDropdownEle;
+  let employeeDropdownEle;
+  let shiftTypeDropdownEle;
+  let shiftTypeNote;
+  let pubUnpubButtonEle;
+  let newShiftButtonEle;
+
+  // DATA
+  let schedules;
+  let appointments;
+  let calendarEvents;
+  let calendarAppointments;
   let locations;
+  let employees;
+  let rosterCache;
+
+  // GLOBALS
+  let currentCalView = 'month';
+  let selectedLocationId;
+  let selectedEmployeeId;
+  let selectedShiftType;
+  let viewOptionShifts = 'yes';
+
+  // Shift Popups
   let shiftEmployees;
   let regions;
-
-  let rosterPicker;
-
   var shiftDateForCall;
   var detailsLocationId;
+
+  function resetModule() {
+    // DOM
+    ScheduleCalendar = undefined;
+    locationDropdownEle = undefined;
+    employeeDropdownEle = undefined;
+    shiftTypeDropdownEle = undefined;
+    shiftTypeNote = undefined;
+    pubUnpubButtonEle = undefined;
+    newShiftButtonEle = undefined;
+
+    // DATA
+    schedules = undefined;
+    appointments = undefined;
+    calendarEvents = undefined;
+    calendarAppointments = undefined;
+    locations = undefined;
+    employees = undefined;
+    rosterCache = undefined;
+
+    // GLOBALS
+    currentCalView = 'month';
+    selectedLocationId = undefined;
+    selectedEmployeeId = undefined;
+    selectedShiftType = undefined;
+    viewOptionShifts = 'yes';
+
+    // Shift Popups
+    shiftEmployees = undefined;
+    regions = undefined;
+    shiftDateForCall = undefined;
+    detailsLocationId = undefined;
+  }
 
   function checkRequiredFields(btn) {
     var hasErrors = [].slice.call(document.querySelectorAll('.error'));
@@ -45,7 +101,7 @@ const SchedulingEventDetails = (function () {
 
   // Shift Call Off Request
   //-----------------------------------------------------------------------
-  function populateReasonsDropdown(results) {
+  function populateCallOffReasonsDropdown(results) {
     results.sort((a, b) => (a.reasonName < b.reasonName ? -1 : 1));
     results = [{ reasonId: '%', reasonName: '' }, ...results];
     var dropdownData = results.map(r => {
@@ -64,7 +120,7 @@ const SchedulingEventDetails = (function () {
     //   reasonId = selectedOption.id;
     // })
   }
-  function populateEmployeesDropdown(results) {
+  function populateCallOffEmployeesDropdown(results) {
     results = [{ employeeId: '%', employeeName: '' }, ...results];
     var employeeData = results.map(r => {
       var id = r.employeeId;
@@ -85,7 +141,9 @@ const SchedulingEventDetails = (function () {
     //   employeeId !== '%' ? sendRequestBtn.classList.remove('disabled'): sendRequestBtn.classList.add('disabled');
     // });
   }
-  function renderRequestOffPopup(eventId) {
+  function renderRequestOffPopup(eventId, cb) {
+    let reasonId, note, employeeId;
+
     const popup = POPUP.build({
       classNames: 'request-off-popup',
       attributes: [{ key: 'shiftId', value: eventId }],
@@ -118,9 +176,6 @@ const SchedulingEventDetails = (function () {
       icon: 'close',
       callback: function () {
         POPUP.hide(popup);
-        reasonId = '';
-        employeeId = '';
-        note = '';
       },
     });
 
@@ -132,8 +187,7 @@ const SchedulingEventDetails = (function () {
       type: 'contained',
       icon: 'send',
       callback: function () {
-        var note = document.getElementById('noteInput').value;
-        var data = {
+        schedulingAjax.saveSchedulingCallOffRequestAjax({
           token: $.session.Token,
           shiftId: eventId,
           personId: $.session.PeopleId,
@@ -141,11 +195,11 @@ const SchedulingEventDetails = (function () {
           note: note,
           status: 'P',
           notifiedEmployeeId: employeeId,
-        };
+        });
 
-        schedulingAjax.saveSchedulingCallOffRequestAjax(data);
         POPUP.hide(popup);
-        init();
+
+        cb();
       },
     });
 
@@ -154,7 +208,7 @@ const SchedulingEventDetails = (function () {
     employeeDropdown.classList.add('error');
 
     reasonDropdown.addEventListener('change', e => {
-      var selectedOption = event.target.options[event.target.selectedIndex];
+      var selectedOption = e.target.options[e.target.selectedIndex];
       reasonId = selectedOption.id;
 
       if (reasonId === '%') {
@@ -165,23 +219,28 @@ const SchedulingEventDetails = (function () {
       checkRequiredFields(sendRequestBtn);
     });
 
-    notesInput.addEventListener('change', function () {
-      if (notesInput.firstChild.value === '') {
+    notesInput.addEventListener('change', e => {
+      note = e.target.value;
+
+      if (e.target.value === '') {
         notesInput.classList.add('error');
       } else {
         notesInput.classList.remove('error');
       }
+
       checkRequiredFields(sendRequestBtn);
     });
 
-    employeeDropdown.addEventListener('change', function () {
-      var selectedOption = event.target.options[event.target.selectedIndex];
+    employeeDropdown.addEventListener('change', e => {
+      var selectedOption = e.target.options[e.target.selectedIndex];
       employeeId = selectedOption.id;
+
       if (employeeId === '%') {
         employeeDropdown.classList.add('error');
       } else {
         employeeDropdown.classList.remove('error');
       }
+
       checkRequiredFields(sendRequestBtn);
     });
 
@@ -189,7 +248,6 @@ const SchedulingEventDetails = (function () {
     header.classList.add('detailsHeading');
     header.innerHTML = 'Call Off Request';
 
-    POPUP.show(popup);
     let btnWrap = document.createElement('div');
     btnWrap.classList.add('popupBtnWrap');
     btnWrap.appendChild(sendRequestBtn);
@@ -201,12 +259,128 @@ const SchedulingEventDetails = (function () {
     popup.appendChild(employeeDropdown);
     popup.appendChild(btnWrap);
 
-    schedulingAjax.getCallOffDropdownEmployeesAjax(shiftDateForCall, detailsLocationId, populateEmployeesDropdown);
-    schedulingAjax.getCallOffDropdownReasonsAjax(populateReasonsDropdown);
+    POPUP.show(popup);
+
+    schedulingAjax.getCallOffDropdownEmployeesAjax(
+      shiftDateForCall,
+      detailsLocationId,
+      populateCallOffEmployeesDropdown,
+    );
+    schedulingAjax.getCallOffDropdownReasonsAjax(populateCallOffReasonsDropdown);
   }
 
-  // Shifts: EVENT_TYPES 1 & 2
+  // Shifts
   //-----------------------------------------------------------------------
+  function displayOverlapPopup(existingShiftLocationName) {
+    const overlapPopup = POPUP.build({
+      classNames: 'sendRequestShiftPopup',
+    });
+
+    overlapWrap = document.createElement('div');
+    overlapWrap.innerHTML = `
+      <div class="detailsHeading">
+        <h2>Requested Shift Overlap</h2>
+        <p>This open shift overlaps with an existing shift you are scheduled to work at ${existingShiftLocationName}. You cannot request this open shift.</p>
+      </div>
+    `;
+
+    const overlapCancelBtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
+      icon: 'close',
+      callback: function () {
+        POPUP.hide(overlapPopup);
+      },
+    });
+
+    overlapPopup.appendChild(overlapWrap);
+    overlapPopup.appendChild(overlapCancelBtn);
+
+    POPUP.show(overlapPopup);
+  }
+  function renderSendShiftRequestPopup(data, cb) {
+    let employeeId;
+
+    const popup = POPUP.build({
+      classNames: 'sendRequestShiftPopup',
+    });
+
+    wrap = document.createElement('div');
+    wrap.innerHTML = `
+          <div class="detailsHeading">
+            <h2>Request Open Shift</h2>
+          </div>
+
+          <div class="detailsBody">
+            <div class="dropdown-wrap">
+              <span class="requestError"></span>
+            </div>
+          </div>
+      `;
+    popup.appendChild(wrap);
+
+    const employeeDropdown = dropdown.build({
+      dropdownId: 'employeeDropdown',
+      label: 'Employee To Notify',
+      style: 'secondary',
+    });
+    employeeDropdown.classList.add('error');
+    employeeDropdown.addEventListener('change', e => {
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      employeeId = selectedOption.id;
+
+      if (employeeId === '%') {
+        employeeDropdown.classList.add('error');
+      } else {
+        employeeDropdown.classList.remove('error');
+      }
+
+      checkRequiredFields(sendRequestBtn);
+    });
+
+    const cancelBtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
+      icon: 'close',
+      callback: function () {
+        POPUP.hide(popup);
+      },
+    });
+    const sendRequestBtn = button.build({
+      id: 'sendReqBtn',
+      classNames: 'disabled',
+      text: 'Send Request',
+      style: 'secondary',
+      type: 'contained',
+      icon: 'send',
+      callback: async function () {
+        data.notifiedEmployeeId = employeeId;
+        await schedulingAjax.saveOpenShiftRequestSchedulingAjax(data);
+        POPUP.hide(popup);
+
+        cb();
+      },
+    });
+
+    schedulingAjax.getCallOffDropdownEmployeesAjax(
+      shiftDateForCall,
+      detailsLocationId,
+      populateCallOffEmployeesDropdown,
+    );
+
+    popup.appendChild(employeeDropdown);
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('popupBtnWrap');
+    btnWrap.appendChild(sendRequestBtn);
+    btnWrap.appendChild(cancelBtn);
+    popup.appendChild(btnWrap);
+
+    POPUP.show(popup);
+  }
+  //
   function populateRegionDropdown(regionDropdown) {
     const dropdownData = regions.map(r => ({
       value: r,
@@ -231,35 +405,10 @@ const SchedulingEventDetails = (function () {
 
     const employeePopup = POPUP.build({
       id: 'filterEmployeePopup',
+      hideX: true,
     });
 
-    const regionDropdown = dropdown.build({
-      dropdownId: 'regionDropdown',
-      label: 'Region',
-      style: 'secondary',
-    });
-
-    const savebtn = button.build({
-      text: 'Update Employee List',
-      style: 'secondary',
-      type: 'contained',
-      callback: async () => {
-        POPUP.hide(popup);
-        shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling({
-          locationId: '0',
-          includeTrainedOnly: 0,
-          region: 'ALL',
-          maxWeeklyHours: -1,
-          shiftStartTime: '00:00:00',
-          shiftEndTime: '00:00:00',
-          minTimeBetweenShifts: -1,
-        });
-        onSaveCallbackFunc();
-      },
-    });
-
-    const employeeOptionsWrap = document.createElement('div');
-    employeeOptionsWrap = `
+    employeePopup.innerHTML = `
       <p>Select employee options</p>
 
       <div class="employeeOptionsContainer">
@@ -273,7 +422,7 @@ const SchedulingEventDetails = (function () {
 
         <div class="employeeOption">
           <input type="checkbox" name="hour" />
-          <div class="label">
+          <div class="label nestedInput">
             <p>Exclude employees that would have more than</p>
             <input type="number" name="hours" />
             <p> hours for the work week</p>
@@ -282,7 +431,7 @@ const SchedulingEventDetails = (function () {
 
         <div class="employeeOption">
           <input type="checkbox" name="minute" />
-          <div class="label">
+          <div class="label nestedInput">
             <p>Exclude employees that have a shift less than</p>
             <input type="number" name="minutes" />
             <p>minutes before this one</p>
@@ -306,17 +455,288 @@ const SchedulingEventDetails = (function () {
       </div>
     `;
 
-    employeeOptionsWrap.addEventListener('change', e => {
-      console.log(e.target);
+    const regionDropdown = dropdown.build({
+      dropdownId: 'regionDropdown',
+      label: 'Region',
+      style: 'secondary',
     });
 
-    employeePopup.appendChild(employeeOptionsWrap);
-    employeePopup.appendChild(regionDropdown);
-    employeePopup.appendChild(savebtn);
+    const savebtn = button.build({
+      text: 'Update Employee List',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        employeePopup.remove();
 
-    POPUP.show(employeePopup);
+        shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling({
+          locationId: '0',
+          includeTrainedOnly: 0,
+          region: 'ALL',
+          maxWeeklyHours: -1,
+          shiftStartTime: '00:00:00',
+          shiftEndTime: '00:00:00',
+          minTimeBetweenShifts: -1,
+        });
+
+        onSaveCallbackFunc(shiftEmployees);
+      },
+    });
+    const cancelbtn = button.build({
+      text: 'cancel',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        employeePopup.remove();
+        onSaveCallbackFunc();
+      },
+    });
+
+    employeePopup.addEventListener('change', e => {
+      console.log('employeeOptions', e.target, e.target.checked);
+    });
+
+    const buttonWrap = document.createElement('div');
+    buttonWrap.classList.add('btnWrap');
+    buttonWrap.appendChild(savebtn);
+    buttonWrap.appendChild(cancelbtn);
+
+    employeePopup.appendChild(regionDropdown);
+    employeePopup.appendChild(buttonWrap);
 
     populateRegionDropdown(regionDropdown);
+
+    POPUP.show(employeePopup);
+  }
+  //
+  async function getConsumersForIndivualPop(selectedDate) {
+    try {
+      const todaysDate = selectedDate == undefined ? dates.getTodaysDateObj() : new Date(selectedDate);
+      todaysDate.setHours(0, 0, 0, 0);
+      const filterDate = dates.formatISO(todaysDate, { representation: 'date' });
+
+      if (rosterCache[filterDate]) {
+        return rosterCache[filterDate];
+      }
+
+      const daysBackDate = dates.subDays(todaysDate, $.session.defaultProgressNoteReviewDays);
+      const data = await _UTIL.fetchData('getConsumersByGroupJSON', {
+        groupCode: 'All',
+        retrieveId: '0',
+        serviceDate: filterDate,
+        daysBackDate: dates.formatISO(daysBackDate, { representation: 'date' }),
+        isActive: 'No',
+      });
+
+      const consumers = data.getConsumersByGroupJSONResult.reduce((acc, cv) => {
+        acc[cv.id] = cv;
+        return acc;
+      }, {});
+
+      rosterCache[filterDate] = Object.values(consumers).sort((a, b) => {
+        if (a.LN < b.LN) return -1;
+        if (a.LN > b.LN) return 1;
+
+        if (a.FN < b.FN) return -1;
+        if (a.FN > b.FN) return 1;
+
+        return 0;
+      });
+
+      return rosterCache[filterDate];
+    } catch (error) {
+      console.log('uh oh something went horribly wrong :(', error.message);
+    }
+  }
+  async function showAddIndividualPopup(onSelectCallback, selectedConsumers, rosterDate) {
+    let newSelectedConsumers = [...selectedConsumers];
+
+    const addIndividualPopup = POPUP.build({
+      id: 'addIndividualPopup',
+      hideX: true,
+    });
+
+    const consumerWrap = document.createElement('div');
+    consumerWrap.classList.add('rosterCardsWrap');
+
+    const savebtn = button.build({
+      text: 'Update',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        addIndividualPopup.remove();
+        onSelectCallback(newSelectedConsumers);
+      },
+    });
+    const cancelbtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        addIndividualPopup.remove();
+      },
+    });
+
+    const buttonWrap = document.createElement('div');
+    buttonWrap.classList.add('btnWrap');
+    buttonWrap.appendChild(savebtn);
+    buttonWrap.appendChild(cancelbtn);
+
+    addIndividualPopup.appendChild(consumerWrap);
+    addIndividualPopup.appendChild(buttonWrap);
+
+    POPUP.show(addIndividualPopup);
+
+    const spinner = PROGRESS.SPINNER.get('Gathering Individuals...');
+    consumerWrap.appendChild(spinner);
+
+    const consumersRes = await getConsumersForIndivualPop(rosterDate, newSelectedConsumers);
+    consumersRes.forEach(c => {
+      const consumerString = `${c.FN} ${c.LN}|${c.id}`;
+
+      const gridAnimationWrapper = document.createElement('div');
+      gridAnimationWrapper.classList.add('rosterCardWrap');
+
+      const rosterCard = new RosterCard({
+        consumerId: c.id,
+        firstName: c.FN,
+        middleName: c.MN,
+        lastName: c.LN,
+      });
+      rosterCard.rootElement.id = consumerString;
+      rosterCard.renderTo(gridAnimationWrapper);
+      consumerWrap.appendChild(gridAnimationWrapper);
+
+      if (newSelectedConsumers.includes(consumerString)) {
+        gridAnimationWrapper.classList.add('selected');
+      }
+
+      gridAnimationWrapper.addEventListener('click', () => {
+        if (gridAnimationWrapper.classList.contains('selected')) {
+          newSelectedConsumers = newSelectedConsumers.filter(c => c === consumerString);
+          gridAnimationWrapper.classList.remove('selected');
+        } else {
+          newSelectedConsumers.push(consumerString);
+          gridAnimationWrapper.classList.add('selected');
+        }
+      });
+    });
+
+    spinner.remove();
+  }
+  //
+  class WeekViewDatePicker {
+    constructor(opts) {
+      this.onDateChange = opts.onDateChange;
+
+      // Dates
+      this.selectedDates = [];
+      this.weekStart = dates.startOfWeek(opts.defaultDate);
+      this.weekEnd = dates.endOfWeek(opts.defaultDate);
+      this.daysToRender = dates.eachDayOfInterval({
+        start: this.weekStart,
+        end: this.weekEnd,
+      });
+
+      // DOM
+      this.rootEle = document.createElement('div');
+      this.weekWrapEle = document.createElement('div');
+      this.prevWeekNavBtn = document.createElement('div');
+      this.nextWeekNavBtn = document.createElement('div');
+
+      this.build();
+      this.render();
+    }
+
+    handleClick(e) {
+      if (e.target === this.prevWeekNavBtn) {
+        this.weekStart = dates.subWeeks(this.weekStart, 1);
+        this.weekEnd = dates.subWeeks(this.weekEnd, 1);
+        this.daysToRender = dates.eachDayOfInterval({
+          start: this.weekStart,
+          end: this.weekEnd,
+        });
+
+        this.render();
+        return;
+      }
+      if (e.target === this.prevWeekNavBtn) {
+        this.weekStart = dates.addWeeks(this.weekStart, 1);
+        this.weekEnd = dates.addWeeks(this.weekEnd, 1);
+        this.daysToRender = dates.eachDayOfInterval({
+          start: this.weekStart,
+          end: this.weekEnd,
+        });
+
+        this.render();
+        return;
+      }
+      if (e.target.dataset.target === 'date') {
+        if (e.target.classList.contains('selected')) {
+          this.selectedDates = this.selectedDates.filter(d => d !== e.target.dataset.date);
+          e.target.classList.remove('selected');
+        } else {
+          this.selectedDates.push(e.target.dataset.date);
+          e.target.classList.add('selected');
+        }
+
+        const dates = this.selectedDates.map(dirtyDate => {
+          const returnDate = new Date(dirtyDate);
+          returnDate.setHours(0, 0, 0, 0);
+          const dd = returnDate.getDate();
+          const mm = returnDate.getMonth() + 1;
+          const yyyy = returnDate.getFullYear();
+          return `${yyyy}-${dates.leadingZero(mm)}-${dates.leadingZero(dd)}`;
+        });
+        this.onDateChange(dates);
+
+        return;
+      }
+    }
+
+    render() {
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+      for (let index = 0; index < this.daysToRender.length; index++) {
+        const month = this.daysToRender[index].getMonth() + 1;
+        const day = this.daysToRender[index].getDate();
+        const dateString = this.daysToRender[index].toDateString();
+
+        const dateWrapEle = document.createElement('div');
+        dateWrapEle.classList.add('dateWrap');
+        dateWrapEle.setAttribute('data-target', 'date');
+        dateWrapEle.setAttribute('data-date', dateString);
+        if (this.selectedDates.includes(dateString)) {
+          dateWrapEle.classList.add('selected');
+        }
+
+        const nameEle = document.createElement('div');
+        nameEle.textContent = `${dayNames[index]}`;
+
+        const dateEle = document.createElement('div');
+        dateEle.textContent = `${month}/${day}`;
+
+        dateWrapEle.appendChild(nameEle);
+        dateWrapEle.appendChild(dateEle);
+
+        this.weekWrapEle.appendChild(dateWrapEle);
+      }
+    }
+
+    build() {
+      this.rootEle.classList.add('weekViewDatePicker');
+      this.weekWrapEle.classList.add('weekWrap');
+      this.prevWeekNavBtn.classList.add('prevWeekBtn');
+      this.nextWeekNavBtn.classList.add('nextWeekBtn');
+
+      this.prevWeekNavBtn.appendChild(Icon.getIcon('arrowLeft'));
+      this.nextWeekNavBtn.appendChild(Icon.getIcon('arrowRight'));
+
+      this.rootEle.appendChild(this.prevWeekNavBtn);
+      this.rootEle.appendChild(this.weekWrapEle);
+      this.rootEle.appendChild(this.nextWeekNavBtn);
+
+      this.rootEle.addEventListener('click', this.handleClick.bind(this));
+    }
   }
   function populateShiftLocationDropdown(locationDropdown, defaultValue = '') {
     const dropdownData = locations
@@ -329,6 +749,10 @@ const SchedulingEventDetails = (function () {
     dropdownData.unshift({
       value: '%',
       text: 'All',
+    });
+    dropdownData.unshift({
+      value: '',
+      text: '',
     });
 
     dropdown.populate(locationDropdown, dropdownData, defaultValue);
@@ -345,11 +769,10 @@ const SchedulingEventDetails = (function () {
       },
     ];
 
-    employees.forEach(d =>
+    shiftEmployees.forEach(d =>
       dropdownData.push({
-        id: 'todo',
-        value: 'todo',
-        text: 'todo',
+        value: d.Person_Id,
+        text: d.EmployeeName,
       }),
     );
 
@@ -357,7 +780,7 @@ const SchedulingEventDetails = (function () {
   }
   function populateShiftColorDropdown(colorDropdown, defaultValue = '') {
     const dropdownData = [
-      { value: '%', text: '' },
+      { value: '', text: '' }, // default gray
       { value: 'red', text: 'red' },
       { value: 'blue', text: 'blue' },
       { value: 'green', text: 'green' },
@@ -368,59 +791,19 @@ const SchedulingEventDetails = (function () {
 
     dropdown.populate(colorDropdown, dropdownData, defaultValue);
   }
-  function buildCallOffButton(shiftId) {
-    if (
-      _scheduleView === 'mine' &&
-      (_currentView === 'week' || _currentView === 'day') &&
-      $.session.schedAllowCallOffRequests === 'Y' &&
-      $.session.schedulingUpdate
-    ) {
-      const callOffBtn = button.build({
-        text: 'Call Off',
-        style: 'secondary',
-        type: 'contained',
-        callback: function () {
-          POPUP.hide(shiftPopup);
-          renderRequestOffPopup(shiftId);
-        },
-      });
 
-      let btnWrap = document.createElement('div');
-      btnWrap.classList.add('popupBtnWrap');
-      btnWrap.appendChild(callOffBtn);
+  function showShiftPopup(data, eventTypeID, isCopy) {
+    const checkRequiredFieldsShiftPopup = () => {
+      let errors = [...shiftPopup.querySelectorAll('.error')];
 
-      return btnWrap;
-    }
-
-    return null;
-  }
-  function showAddIndividualPopup(onSelectCallback, selectedConsumers) {
-    const addIndividualPopup = POPUP.build({
-      id: 'shiftDetailPopup',
-      hideX: true,
-    });
-
-    rosterPicker.renderTo(addIndividualPopup);
-    rosterPicker.populate();
-
-    if (selectedConsumers) {
-      rosterPicker.setSelectedConsumers(selectedConsumers);
-    }
-
-    rosterPicker.onConsumerSelect(onSelectCallback);
-
-    POPUP.show(addIndividualPopup);
-  }
-  function showShiftPopup(data) {
-    const updateEmployeeDropdownData = newEmployeeData => {
-      console.log(newEmployeeData);
-      //TODO: When user clicks UPDATE EMPLOYEE LIST,
-      //TODO: if there was an employee already selected in the dropdown before getting to
-      //TODO: this pop-up and the selected employee no longer fits the criteria selected here,
-      //TODO: clear the Employee dropdown when going back to the Add Shift/Edit Shift popup.
+      if (errors.length > 0 || shiftData.date.length === 0) {
+        savebtn.classList.add('disabled');
+      } else {
+        savebtn.classList.remove('disabled');
+      }
     };
 
-    const isNew = data ? false : true;
+    const isNew = data && !isCopy ? false : true;
 
     const shiftData = data
       ? {
@@ -431,7 +814,7 @@ const SchedulingEventDetails = (function () {
           startTime: data.startTime,
           endTime: data.endTime,
           notifyEmployee: '',
-          consumerNames: [],
+          consumerNames: data.consumerNames === '' ? [] : data.consumerNames.split(','), // [name|id]
           date: [data.serviceDate.split(' ')[0]],
         }
       : {
@@ -445,6 +828,8 @@ const SchedulingEventDetails = (function () {
           consumerNames: [],
           date: [],
         };
+
+    if (isCopy) shiftData.shiftId = '';
 
     const shiftPopup = POPUP.build({
       id: 'shiftDetailPopup',
@@ -511,29 +896,24 @@ const SchedulingEventDetails = (function () {
           </div>
         </div>
       `;
-
-      // add call off
-      //?Q: do we want to show call off button if the do not have $.session.schedulingUpdate
-      const callOffBtn = buildCallOffButton(data.shiftId);
-      if (callOffBtn) {
-        shiftPopup.appendChild(callOffBtn);
-      }
     }
 
-    const dateNavigation = new DateNavigation({
-      selectedDate: selectedDate,
-      allowFutureDate: false,
-    });
+    const defaultDate = ScheduleCalendar.getCurrentDate();
+    const shiftDateSelect = new WeekViewDatePicker({
+      defaultDate: defaultDate,
+      selectedDates: [...shiftData.date],
+      onDateChange(newDateArray) {
+        shiftData.date = [...newDateArray];
 
+        checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
+      },
+    });
     const filterEmployeesBtn = button.build({
       text: 'Filter Employee List',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        showFilterEmployeePopup(updateEmployeeDropdownData);
-      },
+      classNames: 'filterEmployeesBtn',
     });
-
     const locationDropdown = dropdown.build({
       dropdownId: 'locationDropdown',
       label: 'Location',
@@ -550,58 +930,100 @@ const SchedulingEventDetails = (function () {
       label: 'Color',
       style: 'secondary',
     });
-
     const startTimeInput = input.build({
       label: 'Start Time',
       type: 'time',
       style: 'secondary',
+      value: shiftData.startTime,
     });
     const endTimeInput = input.build({
       label: 'End Time',
       type: 'time',
       style: 'secondary',
+      value: shiftData.endTime,
+    });
+    const notifyEmployee = input.buildCheckbox({
+      text: 'Notify Employee',
+      isChecked: false,
+    });
+    const callOffBtn = button.build({
+      text: 'Call Off',
+      style: 'secondary',
+      type: 'contained',
+    });
+    const requestShiftBtn = button.build({
+      text: 'Request Shift',
+      style: 'secondary',
+      type: 'contained',
+    });
+    const cancelShiftBtn = button.build({
+      text: 'Cancel Request',
+      style: 'secondary',
+      type: 'contained',
     });
 
     const addIndividualBtn = button.build({
       text: '+ Add Individual',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        POPUP.hide(shiftPopup);
-      },
+      classNames: 'addIndividualBtn',
     });
-    const individualWrap = document.createElement('div');
-    //TODO: loop over shiftData.consumerNames to build out cards
-    // const rosterCard = new RosterCard({
-    //   consumerId: consumer.id,
-    //   firstName: consumer.FN,
-    //   middleName: consumer.MN,
-    //   lastName: consumer.LN,
-    //   isInactive: inActive,
-    // });
-    rosterCard.renderTo(individualWrap);
+    const individualCardWrap = document.createElement('div');
+    individualCardWrap.classList.add('individualCardWrap');
 
-    const notifyEmployee = input.buildCheckbox({
-      text: 'Notify Employee',
-      isChecked: false,
-    });
+    if (shiftData.consumerNames.length > 0) {
+      const consumerNames = shiftData.consumerNames;
+      consumerNames.forEach(cn => {
+        const [name, id] = cn[0].split('|');
+        const [first, last] = name.split(' ');
 
-    const buttonWrap = document.createElement('div');
+        const gridAnimationWrapper = document.createElement('div');
+        gridAnimationWrapper.classList.add('rosterCardWrap');
+
+        const rosterCard = new RosterCard({
+          consumerId: id,
+          firstName: first,
+          middleName: '',
+          lastName: last,
+        });
+
+        rosterCard.renderTo(gridAnimationWrapper);
+        individualCardWrap.appendChild(gridAnimationWrapper);
+      });
+    }
+
     const savebtn = button.build({
       text: 'Save',
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        POPUP.hide(shiftPopup);
         const res = await schedulingAjax.saveOrUpdateShift({
           date: shiftData.date.join(','),
-          consumerId: shiftData.join(','),
+          consumerId: shiftData.consumerNames.map(n => n.split('|')[1]).join(','),
           startTime: shiftData.startTime,
           endTime: shiftData.endTime,
           color: shiftData.color,
           locationId: shiftData.locationId,
           notifyEmployee: shiftData.notifyEmployee,
         });
+
+        calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
+
+        //TODO:
+        // need to see if we get array of new shiftIds
+        // refresh calendarEvents data, then use new shiftIds to find out which are new and then add those
+
+        // const newEvents = calendarEvents.filter(calEvent => newShiftIds.includes(calEvent.eventId))
+
+        newEvents.forEach(event => {
+          if (!isNew) {
+            ScheduleCalendar.updateEvent({ ...event });
+          } else {
+            ScheduleCalendar.addEvent({ ...event });
+          }
+        });
+
+        POPUP.hide(shiftPopup);
       },
     });
     const cancelbtn = button.build({
@@ -612,17 +1034,18 @@ const SchedulingEventDetails = (function () {
         POPUP.hide(shiftPopup);
       },
     });
-    buttonWrap.appendChild(savebtn);
-    buttonWrap.appendChild(cancelbtn);
 
     // Required Fields
-    if (!shiftData.locationId) locationDropdown.classList.add('error');
+    if (!shiftData.locationId) {
+      locationDropdown.classList.add('error');
+      employeeDropdown.classList.add('disabled');
+    }
     if (!shiftData.startTime) startTimeInput.classList.add('error');
     if (!shiftData.endTime) endTimeInput.classList.add('error');
 
     // Event Listener
     shiftPopup.addEventListener('change', e => {
-      if (e.target === locationDropdown) {
+      if (e.target.parentElement === locationDropdown) {
         const selectedOption = e.target.options[e.target.selectedIndex];
         shiftData.locationId = selectedOption.value;
 
@@ -641,10 +1064,9 @@ const SchedulingEventDetails = (function () {
 
         // Clear out consumers
         shiftData.consumerNames = [];
-        rosterPicker.setSelectedConsumers([]);
-        individualWrap.innerHTML = '';
+        individualCardWrap.innerHTML = '';
       }
-      if (e.target === employeeDropdown) {
+      if (e.target.parentElement === employeeDropdown) {
         const selectedOption = e.target.options[e.target.selectedIndex];
         shiftData.employeeId = selectedOption.value;
 
@@ -654,44 +1076,168 @@ const SchedulingEventDetails = (function () {
           employeeDropdown.classList.remove('error');
         }
       }
-      if (e.target === colorDropdown) {
+      if (e.target.parentElement === colorDropdown) {
         const selectedOption = e.target.options[e.target.selectedIndex];
         shiftData.color = selectedOption.value;
 
         if (selectedOption.value === '%') shiftData.color = 'white';
       }
-      if (e.target === startTimeInput) {
-        //TODO: start time must be before end time
-        console.log('start time', e.target.value);
-        // if valid
+      if (e.target.parentElement === startTimeInput) {
         shiftData.startTime = e.target.value;
+
+        if (!shiftData.startTime || (shiftData.endTime && shiftData.startTime > shiftData.endTime)) {
+          startTimeInput.classList.add('error');
+        } else {
+          startTimeInput.classList.remove('error');
+
+          if (shiftData.endTime) {
+            endTimeInput.classList.remove('error');
+          }
+        }
       }
-      if (e.target === endTimeInput) {
-        //TODO: end time must be after start time
-        console.log('end time', e.target.value);
-        // if valid
+      if (e.target.parentElement === endTimeInput) {
         shiftData.endTime = e.target.value;
+
+        if (!shiftData.endTime || (shiftData.startTime && shiftData.endTime < shiftData.startTime)) {
+          endTimeInput.classList.add('error');
+        } else {
+          endTimeInput.classList.remove('error');
+
+          if (shiftData.startTime) {
+            startTimeInput.classList.remove('error');
+          }
+        }
       }
-      if (e.target === notifyEmployee) {
+      if (e.target.parentElement === notifyEmployee) {
+        shiftData.notifyEmployee = e.target.checked ? 'Y' : 'N';
       }
 
+      checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
+    });
+    shiftPopup.addEventListener('click', async e => {
+      if (e.target === filterEmployeesBtn) {
+        showFilterEmployeePopup(newEmployeeData => {
+          if (!newEmployeeData) return;
+
+          if (!newEmployeeData.find(empData => empData.Person_Id === shiftData.employeeId)) {
+            shiftData.employeeId = '';
+          }
+
+          populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
+        });
+      }
       if (e.target === addIndividualBtn) {
-        showAddIndividualPopup(onSelectCallback);
+        const datesSelectedCount = shiftData.date.length > 0 ? null : shiftData.date[0];
+        showAddIndividualPopup(
+          consumers => {
+            shiftData.consumerNames = [...consumers];
+            individualCardWrap.innerHTML = '';
+            if (shiftData.consumerNames.length > 0) {
+              const consumerNames = shiftData.consumerNames;
+              consumerNames.forEach(cn => {
+                const [name, id] = cn.split('|');
+                const [fName, lName] = name.split(' ');
+
+                const gridAnimationWrapper = document.createElement('div');
+                gridAnimationWrapper.classList.add('rosterCardWrap');
+
+                const rosterCard = new RosterCard({
+                  consumerId: id,
+                  firstName: fName,
+                  middleName: '',
+                  lastName: lName,
+                });
+
+                rosterCard.renderTo(gridAnimationWrapper);
+                individualCardWrap.appendChild(gridAnimationWrapper);
+              });
+            }
+          },
+          shiftData.consumerNames,
+          datesSelectedCount,
+        );
+      }
+      if (e.target === callOffBtn) {
+        POPUP.hide(shiftPopup);
+        renderRequestOffPopup(shiftData.shiftId, () => {
+          const updatedShift = calendarEvents.find(event => event.eventId === shiftData.shiftId);
+          updatedShift.type.name = EVENT_TYPES[5];
+          updatedShift.type.id = 5;
+
+          const updatedShiftScheduleCache = schedules.find(event => event.shiftId === shiftData.shiftId);
+          updatedShiftScheduleCache.type.name = EVENT_TYPES[5];
+          updatedShiftScheduleCache.type.id = 5;
+
+          ScheduleCalendar.updateEvent({ ...updatedShift });
+        });
+      }
+      if (e.target === requestShiftBtn) {
+        POPUP.hide(shiftPopup);
+
+        const { getOverlapStatusforSelectedShiftResult: overlapWithExistingShift } =
+          await schedulingAjax.getOverlapStatusforSelectedShiftAjax(shiftData.shiftId, $.session.PeopleId);
+
+        if (overlapWithExistingShift == 'NoOverLap') {
+          renderSendShiftRequestPopup(
+            {
+              token: $.session.Token,
+              shiftId: shiftData.shiftId,
+              personId: $.session.PeopleId,
+              status: 'P',
+              notifiedEmployeeId: null,
+            },
+            () => {
+              const updatedShift = calendarEvents.find(event => event.eventId === shiftData.shiftId);
+              updatedShift.type.name = EVENT_TYPES[4];
+              updatedShift.type.id = 4;
+
+              const updatedShiftScheduleCache = schedules.find(event => event.shiftId === shiftData.shiftId);
+              updatedShiftScheduleCache.type.name = EVENT_TYPES[4];
+              updatedShiftScheduleCache.type.id = 4;
+
+              ScheduleCalendar.updateEvent({ ...updatedShift });
+            },
+          );
+        } else {
+          displayOverlapPopup(overlapWithExistingShift);
+          return;
+        }
+      }
+      if (e.target === cancelShiftBtn) {
+        POPUP.hide(shiftPopup);
+        schedulingAjax.cancelRequestOpenShiftSchedulingAjax(shiftData.shiftId);
+
+        const updatedShift = calendarEvents.find(event => event.eventId === shiftData.shiftId);
+        updatedShift.type.name = EVENT_TYPES[3];
+        updatedShift.type.id = 3;
+
+        const updatedShiftScheduleCache = schedules.find(event => event.shiftId === shiftData.shiftId);
+        updatedShiftScheduleCache.type.name = EVENT_TYPES[3];
+        updatedShiftScheduleCache.type.id = 3;
+
+        ScheduleCalendar.updateEvent({ ...updatedShift });
       }
     });
-    individualWrap.addEventListener('click', e => {
-      //TODO: remove roster card from DOM
-      //TODO: remove consumerID from consumerNames array
+    individualCardWrap.addEventListener('click', e => {
+      const idToRemove = e.target.id;
+      shiftData.consumerNames = shiftData.consumerNames.filter(cn => (cn.id = idToRemove));
+      e.target.remove();
     });
 
     // Build Popup
+    const buttonWrap = document.createElement('div');
+    buttonWrap.classList.add('btnWrap');
+    buttonWrap.appendChild(savebtn);
+    buttonWrap.appendChild(cancelbtn);
+    //
     shiftPopup.appendChild(filterEmployeesBtn);
+    shiftPopup.appendChild(shiftDateSelect.rootEle);
     shiftPopup.appendChild(locationDropdown);
     shiftPopup.appendChild(employeeDropdown);
     shiftPopup.appendChild(startTimeInput);
     shiftPopup.appendChild(endTimeInput);
     shiftPopup.appendChild(colorDropdown);
-    shiftPopup.appendChild(individualWrap);
+    shiftPopup.appendChild(individualCardWrap);
     shiftPopup.appendChild(addIndividualBtn);
     shiftPopup.appendChild(notifyEmployee);
     shiftPopup.appendChild(buttonWrap);
@@ -703,10 +1249,28 @@ const SchedulingEventDetails = (function () {
       shiftPopup.remove(notifyEmployee);
     }
 
-    // add call off
-    const callOffBtn = buildCallOffButton(data.shiftId);
-    if (callOffBtn) {
+    if (
+      eventTypeID === '1' &&
+      selectedEmployeeId === $.session.UserId &&
+      (currentCalView === 'week' || currentCalView === 'day') &&
+      $.session.schedAllowCallOffRequests === 'Y' &&
+      $.session.schedulingUpdate
+    ) {
       shiftPopup.appendChild(callOffBtn);
+    }
+
+    if (
+      eventTypeID === '3' &&
+      $.session.schedRequestOpenShifts === 'Y' &&
+      !$.session.isPSI &&
+      $.session.schedulingUpdate &&
+      $.session.schedulingView
+    ) {
+      shiftPopup.appendChild(requestShiftBtn);
+    }
+
+    if (eventTypeID === '4' && data && data.requestedById === $.session.PeopleId) {
+      shiftPopup.appendChild(cancelShiftBtn);
     }
 
     // Populate Dropdowns
@@ -714,371 +1278,9 @@ const SchedulingEventDetails = (function () {
     populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
     populateShiftColorDropdown(colorDropdown, shiftData.color);
 
+    checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
+
     POPUP.show(shiftPopup);
-  }
-
-  // Open Shifts: EVENT_TYPE 3
-  //-----------------------------------------------------------------------
-  function displayOverlapPopup(existingShiftLocationName) {
-    const overlapPopup = POPUP.build({
-      classNames: 'sendRequestShiftPopup',
-    });
-
-    overlapWrap = document.createElement('div');
-    overlapWrap.innerHTML = `
-      <div class="detailsHeading">
-        <h2>Requested Shift Overlap</h2>
-        <p>This open shift overlaps with an existing shift you are scheduled to work at ${existingShiftLocationName}. You cannot request this open shift.</p>
-      </div>
-    `;
-
-    const overlapCancelBtn = button.build({
-      text: 'Cancel',
-      style: 'secondary',
-      type: 'outlined',
-      icon: 'close',
-      callback: function () {
-        POPUP.hide(overlapPopup);
-      },
-    });
-
-    overlapPopup.appendChild(overlapWrap);
-    overlapPopup.appendChild(overlapCancelBtn);
-
-    POPUP.show(overlapPopup);
-  }
-  function renderSendShiftRequestPopup(data) {
-    const popup = POPUP.build({
-      classNames: 'sendRequestShiftPopup',
-    });
-
-    wrap = document.createElement('div');
-    wrap.innerHTML = `
-          <div class="detailsHeading">
-            <h2>Request Open Shift</h2>
-          </div>
-
-          <div class="detailsBody">
-            <div class="dropdown-wrap">
-              <span class="requestError"></span>
-            </div>
-          </div>
-      `;
-    popup.appendChild(wrap);
-
-    const employeeDropdown = dropdown.build({
-      dropdownId: 'employeeDropdown',
-      label: 'Employee To Notify',
-      style: 'secondary',
-    });
-    employeeDropdown.classList.add('error');
-    employeeDropdown.addEventListener('change', e => {
-      const selectedOption = e.target.options[e.target.selectedIndex];
-      employeeId = selectedOption.id;
-
-      if (employeeId === '%') {
-        employeeDropdown.classList.add('error');
-      } else {
-        employeeDropdown.classList.remove('error');
-      }
-
-      checkRequiredFields(sendRequestBtn);
-    });
-
-    const cancelBtn = button.build({
-      text: 'Cancel',
-      style: 'secondary',
-      type: 'outlined',
-      icon: 'close',
-      callback: function () {
-        POPUP.hide(popup);
-      },
-    });
-
-    const sendRequestBtn = button.build({
-      id: 'sendReqBtn',
-      classNames: 'disabled',
-      text: 'Send Request',
-      style: 'secondary',
-      type: 'contained',
-      icon: 'send',
-      callback: function () {
-        data.notifiedEmployeeId = employeeId;
-        schedulingAjax.saveOpenShiftRequestSchedulingAjax(data);
-        POPUP.hide(popup);
-
-        //TODO: ? reload the calendar ?
-        //? I think we just want to remove this event from the calendar
-        // _scheduleView = 'mine';
-        // _currentView = 'week';
-        // init();
-      },
-    });
-
-    schedulingAjax.getCallOffDropdownEmployeesAjax(shiftDateForCall, detailsLocationId, populateEmployeesDropdown);
-
-    popup.appendChild(employeeDropdown);
-
-    const btnWrap = document.createElement('div');
-    btnWrap.classList.add('popupBtnWrap');
-    btnWrap.appendChild(sendRequestBtn);
-    btnWrap.appendChild(cancelBtn);
-    popup.appendChild(btnWrap);
-
-    POPUP.show(popup);
-  }
-  function showOpenShiftPopup(data) {
-    const shiftDate = data.serviceDate.split(' ')[0];
-    let startTime = data.startTime;
-    let endTime = data.endTime;
-    startTime = dates.convertFromMilitary(startTime);
-    endTime = dates.convertFromMilitary(endTime);
-    const consumers = data.consumerNames;
-    const location = data.locationName;
-    const shiftNotes = data.shiftNotes;
-    const workCode = `${data.workCode} - ${data.workCodeDescription}`;
-    let shiftType = data.shiftType;
-    shiftType = shiftType === 'A' ? 'Awake' : shiftType === 'N' ? 'Night' : shiftType === 'D' ? 'Day' : '';
-    shiftDateForCall = shiftDate;
-
-    const popup = POPUP.build({
-      classNames: 'openShiftDetails',
-      attributes: [{ key: 'shiftId', value: data.shiftId }],
-    });
-
-    wrap = document.createElement('div');
-    wrap.innerHTML = `
-          <div class="detailsHeading">
-            <h2>Shift Details</h2>
-            <p class="smallDetail font-mediumEmphasis">${shiftDate}</p>
-          </div>
-          <hr>
-          <div class="detailsBody">
-            <div class="location popupDetailsLine">
-              <h4 class="label">Location:</h4>
-              <p>${location}</p>
-            </div>
-            <hr>
-            <div class="time popupDetailsLine">
-              <h4 class="label">Time:</h4>
-              <p>${startTime} - ${endTime}</p>
-            </div>
-            <hr>
-            <div class="employee popupDetailsLine">
-              <h4 class="label">Consumers:</h4>
-              <p>${consumers}</p>
-            </div>
-            <hr>
-            <div class="workCode popupDetailsLine">
-              <h4 class="label">Work Code:</h4>
-              <p>${workCode}</p>
-            </div>
-            <hr>
-            <div class="shiftType popupDetailsLine">
-              <h4 class="label">Shift Type:</h4>
-              <p>${shiftType}</p>
-            </div>
-            <hr>
-            <div class="shiftNotes popupDetailsLine">
-              <h4 class="label">Notes:</h4>
-              <p>${shiftNotes}</p>
-            </div>
-          </div>
-      `;
-    popup.appendChild(wrap);
-
-    if ($.session.schedRequestOpenShifts === 'N' || $.session.isPSI) {
-    } else if (!$.session.schedulingUpdate || !$.session.schedulingView) {
-    } else {
-      const btnWrap = document.createElement('div');
-      btnWrap.classList.add('popupBtnWrap');
-
-      const requestShiftBtn = button.build({
-        text: 'Request Shift',
-        style: 'secondary',
-        type: 'contained',
-        callback: async function () {
-          POPUP.hide(popup);
-
-          const { getOverlapStatusforSelectedShiftResult: overlapWithExistingShift } =
-            await schedulingAjax.getOverlapStatusforSelectedShiftAjax(data.shiftId, $.session.PeopleId);
-
-          if (overlapWithExistingShift == 'NoOverLap') {
-            renderSendShiftRequestPopup({
-              token: $.session.Token,
-              shiftId: data.shiftId,
-              personId: $.session.PeopleId,
-              status: 'P',
-              notifiedEmployeeId: null,
-            });
-          } else {
-            displayOverlapPopup(overlapWithExistingShift);
-            return;
-          }
-        },
-      });
-
-      btnWrap.appendChild(requestShiftBtn);
-      popup.appendChild(btnWrap);
-    }
-
-    POPUP.show(popup);
-  }
-
-  // Pending Open Shifts: EVENT_TYPE 4
-  //-----------------------------------------------------------------------
-  function showPendingOpenShiftsPopup(data) {
-    const shiftDate = data.serviceDate.split(' ')[0];
-    let startTime = data.startTime;
-    let endTime = data.endTime;
-    startTime = dates.convertFromMilitary(startTime);
-    endTime = dates.convertFromMilitary(endTime);
-    const consumers = data.consumerNames;
-    const location = data.locationName;
-    const shiftNotes = data.shiftNotes;
-    const workCode = `${data.workCode} - ${data.workCodeDescription}`;
-    let shiftType = data.shiftType;
-    shiftType = shiftType === 'A' ? 'Awake' : shiftType === 'N' ? 'Night' : shiftType === 'D' ? 'Day' : '';
-    shiftDateForCall = shiftDate;
-
-    const popup = POPUP.build({
-      classNames: 'pendingOpenShiftPopup',
-      attributes: [{ key: 'shiftId', value: data.shiftId }],
-    });
-
-    wrap = document.createElement('div');
-    wrap.innerHTML = `
-          <div class="detailsHeading">
-            <h2>Shift Details</h2>
-            <p class="smallDetail font-mediumEmphasis">${shiftDate}</p>
-          </div>
-          
-          <div class="detailsBody">
-            <div class="location popupDetailsLine">
-              <h4 class="label">Location:</h4>
-              <p>${location}</p>
-            </div>
-            <hr>
-            <div class="time popupDetailsLine">
-              <h4 class="label">Time:</h4>
-              <p>${startTime} - ${endTime}</p>
-            </div>
-            <hr>
-            <div class="employee popupDetailsLine">
-              <h4 class="label">Consumers:</h4>
-              <p>${consumers}</p>
-            </div>
-            <hr>
-            <div class="workCode popupDetailsLine">
-              <h4 class="label">Work Code:</h4>
-              <p>${workCode}</p>
-            </div>
-            <hr>
-            <div class="shiftType popupDetailsLine">
-              <h4 class="label">Shift Type:</h4>
-              <p>${shiftType}</p>
-            </div>
-            <hr>
-            <div class="shiftNotes popupDetailsLine">
-              <h4 class="label">Notes:</h4>
-              <p>${shiftNotes}</p>
-            </div>
-          </div>
-      `;
-
-    popup.appendChild(wrap);
-
-    if (data.requestedById === $.session.PeopleId) {
-      const cancelRequestBtn = button.build({
-        id: 'cancelRequestBtn',
-        attributes: [{ shiftId: data.shiftId }],
-        text: 'Cancel Request',
-        style: 'secondary',
-        type: 'contained',
-        callback: function () {
-          const shiftId = data.shiftId;
-          schedulingAjax.cancelRequestOpenShiftSchedulingAjax(shiftId);
-          POPUP.hide(popup);
-
-          //TODO: ? reload the calendar ?
-          //? I think we just want to remove this event from the calendar
-          // _scheduleView = 'mine';
-          // _currentView = 'week';
-          // init();
-        },
-      });
-
-      let btnWrap = document.createElement('div');
-      btnWrap.classList.add('popupBtnWrap');
-      btnWrap.appendChild(cancelRequestBtn);
-      popup.appendChild(btnWrap);
-    }
-
-    POPUP.show(popup);
-  }
-
-  // Call Off Shifts: EVENT_TYPE 5
-  //-----------------------------------------------------------------------
-  function showPendingCallOffShiftsPopup(data) {
-    const shiftDate = data.serviceDate.split(' ')[0];
-    let startTime = data.startTime;
-    let endTime = data.endTime;
-    startTime = data.convertFromMilitary(startTime);
-    endTime = data.convertFromMilitary(endTime);
-    const consumers = data.consumerNames;
-    const location = data.locationName;
-    const shiftNotes = data.shiftNotes;
-    const workCode = `${data.workCode} - ${data.workCodeDescription}`;
-    let shiftType = data.shiftType;
-    shiftType = shiftType === 'A' ? 'Awake' : shiftType === 'N' ? 'Night' : shiftType === 'D' ? 'Day' : '';
-    shiftDateForCall = shiftDate;
-
-    const popup = POPUP.build({
-      classNames: 'pendingCallOffDetails',
-      attributes: [{ key: 'shiftId', value: details.shiftId }],
-    });
-
-    const wrap = document.createElement('div');
-    wrap.innerHTML = `
-        <div class="detailsHeading">
-          <h2>Shift Details</h2>
-          <p class="smallDetail font-mediumEmphasis">${shiftDate}</p>
-        </div>
-        <div class="detailsBody">
-          <div class="location popupDetailsLine">
-            <h4 class="label">Location:  </h4>
-            <p>${location}</p>
-          </div>
-          <hr>
-          <div class="time popupDetailsLine">
-            <h4 class="label">Time:  </h4>
-            <p>${startTime} - ${endTime}</p>
-          </div>
-          <hr>
-          <div class="employee popupDetailsLine">
-            <h4 class="label">Consumers:  </h4>
-            <p>${consumers}</p>
-          </div>
-          <hr>
-          <div class="workCode popupDetailsLine">
-            <h4 class="label">Work Code:  </h4>
-            <p>${workCode}</p>
-          </div>
-          <hr>
-          <div class="shiftType popupDetailsLine">
-            <h4 class="label">Shift Type:  </h4>
-            <p>${shiftType}</p>
-          </div>
-          <hr>
-          <div class="shiftNotes popupDetailsLine">
-            <h4 class="label">Notes:  </h4>
-            <p>${shiftNotes}</p>
-          </div>
-        </div>
-      `;
-    popup.appendChild(wrap);
-
-    POPUP.show(popup);
   }
 
   // Appointments: EVENT_TYPE 6
@@ -1144,28 +1346,14 @@ const SchedulingEventDetails = (function () {
     POPUP.show(popup);
   }
 
-  function showEventDetailsPopup(eventTypeID, data) {
-    debugger;
-    if (eventTypeID === '1' || eventTypeID === '2') {
-      showShiftPopup(data);
-    }
-    if (eventTypeID === '3') {
-      showOpenShiftPopup(data);
-    }
-    if (eventTypeID === '4') {
-      showPendingOpenShiftsPopup(data);
-    }
-    if (eventTypeID === '5') {
-      showPendingCallOffShiftsPopup(data);
-    }
-    if (eventTypeID === '6') {
+  function showEventDetailsPopup({ eventTypeId, data, viewDate, isCopy }) {
+    if (eventTypeId === '6') {
       showAppointmentPopup(data);
     }
+
+    showShiftPopup(data, eventTypeId, isCopy);
   }
-
-  async function preLoadData(defaultLocations) {
-    locations = [...defaultLocations];
-
+  async function preLoadPopupData() {
     shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling({
       locationId: '0',
       includeTrainedOnly: 0,
@@ -1177,47 +1365,9 @@ const SchedulingEventDetails = (function () {
     });
 
     regions = await schedulingAjax.getRegionDropdown();
-
-    rosterPicker = new RosterPicker({
-      allowMultiSelect: true,
-      consumerRequired: false,
-      selectionDate: undefined,
-    });
-    await rosterPicker.fetchConsumers();
   }
 
-  return {
-    preLoadData,
-    showEventDetailsPopup,
-  };
-})();
-
-const SchedulingCalendar = (function () {
-  // DOM
-  let ScheduleCalendar;
-  let locationDropdownEle;
-  let employeeDropdownEle;
-  let shiftTypeDropdownEle;
-  let shiftTypeNote;
-  let pubUnpubButtonEle;
-  let newShiftButtonEle;
-
-  // DATA
-  let schedules;
-  let appointments;
-  let calendarEvents;
-  let calendarAppointments;
-  let locations;
-  let employees;
-
-  // GLOBALS
-  let currentCalView = 'month';
-  let selectedLocationId;
-  let selectedEmployeeId;
-  let selectedShiftType;
-  let viewOptionShifts = 'yes';
-
-  // Calendar Events/Shifts/Appointments
+  // Calendar
   //-----------------------------------------------------------------------
   function getEventType(personID, callOffStatus, requestShiftStatus) {
     if (!personID) {
@@ -1356,6 +1506,34 @@ const SchedulingCalendar = (function () {
         color: color,
       };
     });
+  }
+  //
+  function handleCalendarEventClick(eventTarget) {
+    if (eventTarget.classList.contains('eventCellEle')) {
+      const viewDate = ScheduleCalendar.getCurrentDate();
+      const eventTypeId = eventTarget.dataset.typeId;
+      const shiftId = eventTarget.dataset.eventId;
+      const targetEvent = [...appointments, ...schedules].find(ev => ev.shiftId == shiftId);
+      showEventDetailsPopup({
+        eventTypeId,
+        data: targetEvent,
+        viewDate,
+        isCopy: false,
+      });
+    }
+
+    if (eventTarget.classList.contains('copyShiftIcon')) {
+      const viewDate = ScheduleCalendar.getCurrentDate();
+      const eventTypeId = eventTarget.dataset.typeId;
+      const shiftId = eventTarget.dataset.eventId;
+      const targetEvent = [...appointments, ...schedules].find(event => event.eventId === shiftId);
+      showEventDetailsPopup({
+        eventTypeId,
+        data: targetEvent,
+        viewDate,
+        isCopy: true,
+      });
+    }
   }
 
   // Pub/Sub Popup
@@ -1526,8 +1704,7 @@ const SchedulingCalendar = (function () {
       text: 'All',
     });
 
-    //TODO: change back to dropdownData[1].value;
-    selectedLocationId = dropdownData[0].value;
+    selectedLocationId = dropdownData[1].value;
 
     dropdown.populate(locationDropdownEle, dropdownData, selectedLocationId);
   }
@@ -1574,7 +1751,7 @@ const SchedulingCalendar = (function () {
 
       calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
 
-      if (selectedLocationId === '%' && (currentCalView === 'week' || currentCalView === 'day')) {
+      if (selectedLocationId === '%') {
         ScheduleCalendar.renderGroupedEvents(calendarEvents, {
           groupBy: 'locationId',
           groupName: 'locationName',
@@ -1598,7 +1775,7 @@ const SchedulingCalendar = (function () {
 
       calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
 
-      if (selectedEmployeeId === '%' && (currentCalView === 'week' || currentCalView === 'day')) {
+      if (selectedEmployeeId === '%') {
         ScheduleCalendar.renderGroupedEvents(calendarEvents, {
           groupBy: 'personId',
           groupName: 'name',
@@ -1632,6 +1809,15 @@ const SchedulingCalendar = (function () {
 
     dropdownEle.addEventListener('change', event => {
       selectedShiftType = event.target.options[event.target.selectedIndex].value;
+      // filter out events based off selectedShiftType
+      if (selectedShiftType === '0') {
+        ScheduleCalendar.filterEventsBy({
+          resetFilter: true,
+        });
+      }
+
+      const filterCheck = selectedShiftType === '1' ? value => value !== '' : value => value === '';
+      ScheduleCalendar.filterEventsBy({ filterKey: 'publishedDate', filterCheck });
     });
 
     selectedShiftType = '0';
@@ -1666,9 +1852,10 @@ const SchedulingCalendar = (function () {
       classNames: ['pubUnpubButton'],
       style: 'secondary',
       type: 'contained',
-      callback: function () {
-        showPubUnpubSchedulesPopup();
-      },
+    });
+
+    buttonEle.addEventListener('click', e => {
+      showPubUnpubSchedulesPopup();
     });
 
     return buttonEle;
@@ -1679,9 +1866,16 @@ const SchedulingCalendar = (function () {
       classNames: ['newShiftButton'],
       style: 'secondary',
       type: 'contained',
-      callback: function () {
-        showShiftPopup();
-      },
+    });
+
+    buttonEle.addEventListener('click', e => {
+      const viewDate = ScheduleCalendar.getCurrentDate();
+      showEventDetailsPopup({
+        eventTypeId: '',
+        data: null,
+        viewDate,
+        isCopy: false,
+      });
     });
 
     return buttonEle;
@@ -1714,7 +1908,15 @@ const SchedulingCalendar = (function () {
 
       if (viewOptionShifts === 'no' && selectedEmployeeId === 'none') {
         selectedEmployeeId = $.session.UserId;
-        //TODO: re render events with new selectedEmployeeId
+
+        if (selectedLocationId === '%') {
+          ScheduleCalendar.renderGroupedEvents(calendarEvents, {
+            groupBy: 'locationId',
+            groupName: 'locationName',
+          });
+        } else {
+          ScheduleCalendar.renderEvents(calendarEvents);
+        }
       }
 
       populateEmployeeDropdown();
@@ -1778,26 +1980,26 @@ const SchedulingCalendar = (function () {
   }
 
   async function init() {
-    //TODO: remove after dev testing
+    resetModule();
+
+    //!W remove after dev testing
     console.clear();
     $.session.schedulingUpdate = true;
     $.session.schedulingView = true;
     $.session.schedAllowCallOffRequests = 'Y';
     $.session.schedRequestOpenShifts = 'Y';
     $.session.hideAllScheduleButton = false;
-    $.session.schedulingSecurity = true; // this needs added from db
-    $.session.PeopleId = '7357';
-    $.session.UserId = 'joshk';
-    //TODO: remove after dev testing
+    $.session.schedulingSecurity = true;
+    // $.session.PeopleId = '7357';
+    // $.session.UserId = 'joshk';
+    //!W remove after dev testing
 
     selectedEmployeeId = $.session.UserId;
+    rosterCache = {};
 
     ScheduleCalendar = new Calendar({
       defaultView: currentCalView,
-      onEventClick({ id }) {
-        const targetEvent = [...appointments, ...schedules].find(event => event.eventId === id);
-        SchedulingEventDetails.showEventDetailsPopup(targetEvent);
-      },
+      onEventClick: handleCalendarEventClick,
       onViewChange(newView) {
         currentCalView = newView;
       },
@@ -1816,22 +2018,12 @@ const SchedulingCalendar = (function () {
 
     calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
     calendarAppointments = await getCalendarAppointments();
-    //ScheduleCalendar.renderEvents([...calendarEvents, ...calendarAppointments]);
-    console.log('Schedules:', schedules);
-    console.log('Events:', calendarEvents);
-    console.log('Appointments:', calendarAppointments);
+    ScheduleCalendar.renderEvents([...calendarEvents, ...calendarAppointments]);
+    // console.log('Schedules:', schedules);
+    // console.log('Events:', calendarEvents);
+    // console.log('Appointments:', calendarAppointments);
 
-    // ScheduleCalendar.renderEvents(TEST_EVENTS);
-    ScheduleCalendar.renderGroupedEvents(TEST_EVENTS, {
-      groupBy: 'locationId',
-      groupName: 'locationName',
-    });
-    // ScheduleCalendar.renderGroupedEvents(TEST_EVENTS, {
-    //   groupBy: 'personId',
-    //   groupName: 'name',
-    // });
-
-    SchedulingEventDetails.preLoadData(locations);
+    preLoadPopupData();
   }
 
   return {
@@ -1848,7 +2040,16 @@ const Scheduling = (function () {
       callback: function () {
         setActiveModuleSectionAttribute('scheduling-calendar');
         PROGRESS.SPINNER.show('Loading Schedule...');
-        // SchedulingCalendar.init();
+        SchedulingCalendar.init();
+      },
+    });
+    const schedulingCalendarWeb2CalBtn = button.build({
+      text: 'View Calendar Web2Cal',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        setActiveModuleSectionAttribute('scheduling-calendar');
+        PROGRESS.SPINNER.show('Loading Schedule...');
         schedulingCalendar.init();
       },
     });
@@ -1877,6 +2078,7 @@ const Scheduling = (function () {
     btnWrap.classList.add('landingBtnWrap');
 
     btnWrap.appendChild(schedulingCalendarBtn);
+    btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === false && $.session.schedulingUpdate === true) {
       btnWrap.appendChild(schedulingRequestTimeOffBtn);
@@ -1899,203 +2101,3 @@ const Scheduling = (function () {
     init,
   };
 })();
-
-const TEST_EVENTS = [
-  {
-    color: '#FFFFFF',
-    date: '3/2/2025',
-    description: '',
-    endTime: '3/2/2025 12:00:00',
-    eventId: 101,
-    length: '(2)',
-    locationId: '1001',
-    locationName: 'Main Hall',
-    name: 'Morning Shift',
-    personId: '501',
-    publishedDate: '3/1/2025 10:00:00 AM',
-    startTime: '3/2/2025 10:00:00',
-    type: { name: 'Open Shifts', id: 3 },
-  },
-  {
-    color: '#BE0000',
-    date: '3/2/2025',
-    description: '',
-    endTime: '3/2/2025 18:00:00',
-    eventId: 102,
-    length: '(2)',
-    locationId: '1002',
-    locationName: 'Conference Room A',
-    name: 'Afternoon Meeting',
-    personId: '502',
-    publishedDate: '3/1/2025 12:00:00 PM',
-    startTime: '3/2/2025 16:00:00',
-    type: { name: 'My Shifts', id: 1 },
-  },
-  {
-    color: '#5E9BCD',
-    date: '3/3/2025',
-    description: '',
-    endTime: '3/3/2025 14:00:00',
-    eventId: 103,
-    length: '(2)',
-    locationId: '1003',
-    locationName: 'Break Room',
-    name: 'Lunch Break',
-    personId: '503',
-    publishedDate: '3/2/2025 09:30:00 AM',
-    startTime: '3/3/2025 12:00:00',
-    type: { name: 'Not My Shifts', id: 2 },
-  },
-  {
-    color: '#FFFFFF',
-    date: '3/3/2025',
-    description: '',
-    endTime: '3/3/2025 22:00:00',
-    eventId: 104,
-    length: '(2)',
-    locationId: '1001',
-    locationName: 'Main Hall',
-    name: 'Evening Coverage',
-    personId: '501',
-    publishedDate: '3/2/2025 13:00:00 PM',
-    startTime: '3/3/2025 20:00:00',
-    type: { name: 'Open Shifts', id: 3 },
-  },
-  {
-    color: '#2CB167',
-    date: '3/4/2025',
-    description: '',
-    endTime: '3/4/2025 17:00:00',
-    eventId: 105,
-    length: '(2)',
-    locationId: '1002',
-    locationName: 'Conference Room A',
-    name: 'Training Session',
-    personId: '504',
-    publishedDate: '3/3/2025 14:00:00 PM',
-    startTime: '3/4/2025 15:00:00',
-    type: { name: 'Pending Request Open Shifts', id: 4 },
-  },
-  {
-    color: '#F37F2C',
-    date: '3/4/2025',
-    description: '',
-    endTime: '3/4/2025 21:00:00',
-    eventId: 106,
-    length: '(2)',
-    locationId: '1003',
-    locationName: 'Break Room',
-    name: 'Late Shift',
-    personId: '505',
-    publishedDate: '3/3/2025 16:30:00 PM',
-    startTime: '3/4/2025 19:00:00',
-    type: { name: 'Pending Call Off Shifts', id: 5 },
-  },
-  {
-    color: '#8C7EE3',
-    date: '3/5/2025',
-    description: '',
-    endTime: '3/5/2025 11:30:00',
-    eventId: 107,
-    length: '(2)',
-    locationId: '1001',
-    locationName: 'Main Hall',
-    name: 'Team Briefing',
-    personId: '501',
-    publishedDate: '3/4/2025 07:00:00 AM',
-    startTime: '3/5/2025 09:30:00',
-    type: { name: 'Appointments Shifts', id: 6 },
-  },
-  {
-    color: '#CACACA',
-    date: '3/5/2025',
-    description: '',
-    endTime: '3/5/2025 18:00:00',
-    eventId: 108,
-    length: '(2)',
-    locationId: '1002',
-    locationName: 'Conference Room A',
-    name: 'Project Review',
-    personId: '502',
-    publishedDate: '3/4/2025 10:00:00 AM',
-    startTime: '3/5/2025 16:00:00',
-    type: { name: 'My Shifts', id: 1 },
-  },
-  {
-    color: '#DED896',
-    date: '3/6/2025',
-    description: '',
-    endTime: '3/6/2025 20:00:00',
-    eventId: 109,
-    length: '(2)',
-    locationId: '1003',
-    locationName: 'Break Room',
-    name: 'Shift Handover',
-    personId: '503',
-    publishedDate: '3/5/2025 12:00:00 PM',
-    startTime: '3/6/2025 18:00:00',
-    type: { name: 'Pending Request Open Shifts', id: 4 },
-  },
-  {
-    color: '#FFFFFF',
-    date: '3/6/2025',
-    description: '',
-    endTime: '3/6/2025 15:00:00',
-    eventId: 110,
-    length: '(2)',
-    locationId: '1001',
-    locationName: 'Main Hall',
-    name: 'Guest Visit',
-    personId: '504',
-    publishedDate: '3/5/2025 14:30:00 PM',
-    startTime: '3/6/2025 13:00:00',
-    type: { name: 'Open Shifts', id: 3 },
-  },
-  {
-    color: '#5E9BCD',
-    date: '3/7/2025',
-    description: '',
-    endTime: '3/7/2025 17:00:00',
-    eventId: 111,
-    length: '(2)',
-    locationId: '1002',
-    locationName: 'Conference Room A',
-    name: 'Weekly Planning',
-    personId: '505',
-    publishedDate: '3/6/2025 09:00:00 AM',
-    startTime: '3/7/2025 15:00:00',
-    type: { name: 'Not My Shifts', id: 2 },
-  },
-  {
-    color: '#F37F2C',
-    date: '3/7/2025',
-    description: '',
-    endTime: '3/7/2025 21:30:00',
-    eventId: 112,
-    length: '(2)',
-    locationId: '1003',
-    locationName: 'Break Room',
-    name: 'Maintenance Shift',
-    personId: '501',
-    publishedDate: '3/6/2025 16:00:00 PM',
-    startTime: '3/7/2025 19:30:00',
-    type: { name: 'Pending Call Off Shifts', id: 5 },
-  },
-  {
-    color: '#8C7EE3',
-    date: '3/8/2025',
-    description: '',
-    endTime: '3/8/2025 10:00:00',
-    eventId: 113,
-    length: '(2)',
-    locationId: '1001',
-    locationName: 'Main Hall',
-    name: 'Early Morning Prep',
-    personId: '502',
-    publishedDate: '3/7/2025 06:00:00 AM',
-    startTime: '3/8/2025 08:00:00',
-    type: { name: 'Appointments Shifts', id: 6 },
-  },
-];
-
-// console.log(events);

@@ -62,7 +62,7 @@
     .pubUnpubButton {
       flex-grow: 1;
     }
-        }
+  }
 }
 #locationDropdown {
   min-width: 200px;
@@ -168,22 +168,42 @@
   row-gap: 4px;
   grid-template-columns: 100px repeat(7, minmax(0, 1fr));
   grid-template-rows: 40px minmax(80px, auto);
-  
+
   .week {
     display: grid;
     column-gap: 2px;
     grid-template-columns: 100px repeat(7, minmax(0, 1fr));
     grid-column: 1/-1;
 
+    &.customGrouping {
+      row-gap: 10px;
+    }
+
     .eventCellEle {
+      cursor: pointer;
+      padding: 2px;
       position: relative;
       z-index: 2;
+
+      .eventTime,
+      .eventName,
+      .pubUnpubIcon {
+        pointer-events: none;
+      }
+      .pubUnpubIcon,
+      .copyShiftIcon {
+        width: 24px;
+      }
     }
 
     // CUSTOM GROUPING GRID
     //==================================================
     .eventGroup {
-      display: contents;
+      border: 1px solid $white;
+      border-radius: $r-sm;
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: 1/-1;
 
       .eventGroup-label {
         color: $white;
@@ -197,11 +217,6 @@
     //==================================================
     .weekEvents {
       display: contents;
-
-      .eventCellEle {
-        color: black;
-        z-index: 2;
-      }
     }
 
     .timeSlot {
@@ -215,39 +230,101 @@
       background: $white;
     }
 
-    .daySlot:nth-child(8n + 2) { grid-column: 2 / 3; } /* Sunday */
-    .daySlot:nth-child(8n + 3) { grid-column: 3 / 4; } /* Monday */
-    .daySlot:nth-child(8n + 4) { grid-column: 4 / 5; } /* Tuesday */
-    .daySlot:nth-child(8n + 5) { grid-column: 5 / 6; } /* Wednesday */
-    .daySlot:nth-child(8n + 6) { grid-column: 6 / 7; } /* Thursday */
-    .daySlot:nth-child(8n + 7) { grid-column: 7 / 8; } /* Friday */
-    .daySlot:nth-child(8n + 8) { grid-column: 8 / 9; } /* Saturday */
-    
+    .daySlot:nth-child(8n + 2) {
+      grid-column: 2 / 3;
+    } /* Sunday */
+    .daySlot:nth-child(8n + 3) {
+      grid-column: 3 / 4;
+    } /* Monday */
+    .daySlot:nth-child(8n + 4) {
+      grid-column: 4 / 5;
+    } /* Tuesday */
+    .daySlot:nth-child(8n + 5) {
+      grid-column: 5 / 6;
+    } /* Wednesday */
+    .daySlot:nth-child(8n + 6) {
+      grid-column: 6 / 7;
+    } /* Thursday */
+    .daySlot:nth-child(8n + 7) {
+      grid-column: 7 / 8;
+    } /* Friday */
+    .daySlot:nth-child(8n + 8) {
+      grid-column: 8 / 9;
+    } /* Saturday */
+
     /* Assign correct row (hour) based on index */
-    .daySlot:nth-child(n + 2):nth-child(-n + 8) { grid-row: 1 / 2; }  /* 12:00 AM */
-    .daySlot:nth-child(n + 10):nth-child(-n + 16) { grid-row: 2 / 3; } /* 1:00 AM */
-    .daySlot:nth-child(n + 18):nth-child(-n + 24) { grid-row: 3 / 4; } /* 2:00 AM */
-    .daySlot:nth-child(n + 26):nth-child(-n + 32) { grid-row: 4 / 5; } /* 3:00 AM */
-    .daySlot:nth-child(n + 34):nth-child(-n + 40) { grid-row: 5 / 6; } /* 4:00 AM */
-    .daySlot:nth-child(n + 42):nth-child(-n + 48) { grid-row: 6 / 7; } /* 5:00 AM */
-    .daySlot:nth-child(n + 50):nth-child(-n + 56) { grid-row: 7 / 8; } /* 6:00 AM */
-    .daySlot:nth-child(n + 58):nth-child(-n + 64) { grid-row: 8 / 9; } /* 7:00 AM */
-    .daySlot:nth-child(n + 66):nth-child(-n + 72) { grid-row: 9 / 10; } /* 8:00 AM */
-    .daySlot:nth-child(n + 74):nth-child(-n + 80) { grid-row: 10 / 11; } /* 9:00 AM */
-    .daySlot:nth-child(n + 82):nth-child(-n + 88) { grid-row: 11 / 12; } /* 10:00 AM */
-    .daySlot:nth-child(n + 90):nth-child(-n + 96) { grid-row: 12 / 13; } /* 11:00 AM */
-    .daySlot:nth-child(n + 98):nth-child(-n + 104) { grid-row: 13 / 14; } /* 12:00 PM */
-    .daySlot:nth-child(n + 106):nth-child(-n + 112) { grid-row: 14 / 15; } /* 1:00 PM */
-    .daySlot:nth-child(n + 114):nth-child(-n + 120) { grid-row: 15 / 16; } /* 2:00 PM */
-    .daySlot:nth-child(n + 122):nth-child(-n + 128) { grid-row: 16 / 17; } /* 3:00 PM */
-    .daySlot:nth-child(n + 130):nth-child(-n + 136) { grid-row: 17 / 18; } /* 4:00 PM */
-    .daySlot:nth-child(n + 138):nth-child(-n + 144) { grid-row: 18 / 19; } /* 5:00 PM */
-    .daySlot:nth-child(n + 146):nth-child(-n + 152) { grid-row: 19 / 20; } /* 6:00 PM */
-    .daySlot:nth-child(n + 154):nth-child(-n + 160) { grid-row: 20 / 21; } /* 7:00 PM */
-    .daySlot:nth-child(n + 162):nth-child(-n + 168) { grid-row: 21 / 22; } /* 8:00 PM */
-    .daySlot:nth-child(n + 170):nth-child(-n + 176) { grid-row: 22 / 23; } /* 9:00 PM */
-    .daySlot:nth-child(n + 178):nth-child(-n + 184) { grid-row: 23 / 24; } /* 10:00 PM */
-    .daySlot:nth-child(n + 186):nth-child(-n + 192) { grid-row: 24 / 25; } /* 11:00 PM */
+    .daySlot:nth-child(n + 2):nth-child(-n + 8) {
+      grid-row: 1 / 2;
+    } /* 12:00 AM */
+    .daySlot:nth-child(n + 10):nth-child(-n + 16) {
+      grid-row: 2 / 3;
+    } /* 1:00 AM */
+    .daySlot:nth-child(n + 18):nth-child(-n + 24) {
+      grid-row: 3 / 4;
+    } /* 2:00 AM */
+    .daySlot:nth-child(n + 26):nth-child(-n + 32) {
+      grid-row: 4 / 5;
+    } /* 3:00 AM */
+    .daySlot:nth-child(n + 34):nth-child(-n + 40) {
+      grid-row: 5 / 6;
+    } /* 4:00 AM */
+    .daySlot:nth-child(n + 42):nth-child(-n + 48) {
+      grid-row: 6 / 7;
+    } /* 5:00 AM */
+    .daySlot:nth-child(n + 50):nth-child(-n + 56) {
+      grid-row: 7 / 8;
+    } /* 6:00 AM */
+    .daySlot:nth-child(n + 58):nth-child(-n + 64) {
+      grid-row: 8 / 9;
+    } /* 7:00 AM */
+    .daySlot:nth-child(n + 66):nth-child(-n + 72) {
+      grid-row: 9 / 10;
+    } /* 8:00 AM */
+    .daySlot:nth-child(n + 74):nth-child(-n + 80) {
+      grid-row: 10 / 11;
+    } /* 9:00 AM */
+    .daySlot:nth-child(n + 82):nth-child(-n + 88) {
+      grid-row: 11 / 12;
+    } /* 10:00 AM */
+    .daySlot:nth-child(n + 90):nth-child(-n + 96) {
+      grid-row: 12 / 13;
+    } /* 11:00 AM */
+    .daySlot:nth-child(n + 98):nth-child(-n + 104) {
+      grid-row: 13 / 14;
+    } /* 12:00 PM */
+    .daySlot:nth-child(n + 106):nth-child(-n + 112) {
+      grid-row: 14 / 15;
+    } /* 1:00 PM */
+    .daySlot:nth-child(n + 114):nth-child(-n + 120) {
+      grid-row: 15 / 16;
+    } /* 2:00 PM */
+    .daySlot:nth-child(n + 122):nth-child(-n + 128) {
+      grid-row: 16 / 17;
+    } /* 3:00 PM */
+    .daySlot:nth-child(n + 130):nth-child(-n + 136) {
+      grid-row: 17 / 18;
+    } /* 4:00 PM */
+    .daySlot:nth-child(n + 138):nth-child(-n + 144) {
+      grid-row: 18 / 19;
+    } /* 5:00 PM */
+    .daySlot:nth-child(n + 146):nth-child(-n + 152) {
+      grid-row: 19 / 20;
+    } /* 6:00 PM */
+    .daySlot:nth-child(n + 154):nth-child(-n + 160) {
+      grid-row: 20 / 21;
+    } /* 7:00 PM */
+    .daySlot:nth-child(n + 162):nth-child(-n + 168) {
+      grid-row: 21 / 22;
+    } /* 8:00 PM */
+    .daySlot:nth-child(n + 170):nth-child(-n + 176) {
+      grid-row: 22 / 23;
+    } /* 9:00 PM */
+    .daySlot:nth-child(n + 178):nth-child(-n + 184) {
+      grid-row: 23 / 24;
+    } /* 10:00 PM */
+    .daySlot:nth-child(n + 186):nth-child(-n + 192) {
+      grid-row: 24 / 25;
+    } /* 11:00 PM */
 
     .weekEvents {
       display: contents;
@@ -257,6 +334,180 @@
         z-index: 2;
       }
     }
+  }
+}
+// Shift Popups
+.weekViewDatePicker {
+  display: flex;
+  flex-flow: row nowrap;
+  margin: 0 0 10px 0;
+
+  .weekWrap {
+    flex-grow: 5;
+    display: grid;
+    column-gap: 2px;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+
+    .prevWeekBtn,
+    .prevWeekBtn {
+      cursor: pointer;
+
+      svg {
+        pointer-events: none;
+      }
+    }
+
+    .dateWrap {
+      cursor: pointer;
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: center;
+
+      &.selected {
+        background-color: $green;
+        //outline: 1px solid $green;
+      }
+
+      > div {
+        pointer-events: none;
+      }
+    }
+  }
+}
+#shiftDetailPopup {
+  .filterEmployeesBtn,
+  .addIndividualBtn {
+    width: 100%;
+  }
+
+  .individualCardWrap {
+    display: flex;
+    flex-flow: column nowrap;
+    overflow-y: scroll;
+    padding: 0;
+  }
+}
+#addIndividualPopup {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr min-content;
+  row-gap: 10px;
+}
+#filterEmployeePopup {
+  border: 2px solid black;
+
+  .employeeOptionsContainer {}
+  .employeeOption {
+    display: flex;
+    flex-flow: row nowrap;
+    margin-bottom: 10px;
+
+    
+    .label {
+      &.nestedInput {
+        display: flex;
+        flex-flow: row wrap;
+      }
+    }
+
+    input[type='checkbox'] {
+      min-width: 20px;
+      margin: 0 4px 0 0;
+    }
+    input[type='number'] {
+      margin: 0 4px;
+      max-width: 44px;
+      outline: 1px solid black;
+    }
+  }
+}
+// roster stuff for popups
+#shiftDetailPopup,
+#addIndividualPopup {
+  .rosterCardsWrap {
+    display: flex;
+    flex-flow: column nowrap;
+    overflow-y: scroll;
+    padding: 0 10px;
+
+    .rosterCardWrap {
+      border-radius: 4px;
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.1s ease-in;
+      padding: 4px 6px;
+      position: relative;
+      order: 3;
+
+      &.isClosed:not(.selected) {
+        grid-template-rows: 0fr;
+        margin: 0;
+        padding: 0;
+      }
+
+      &.locked {
+        pointer-events: none;
+        order: 0;
+      }
+
+      &.selected {
+        background: rgba(129, 185, 65, 0.9);
+        color: $white;
+        order: 1;
+        margin: 0 0 6px;
+      }
+
+      .svgIcon {
+        color: $black;
+        pointer-events: all;
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        rotate: 0deg;
+        transition: rotate 0.3s ease-in;
+      }
+    }
+
+    .rosterCard {
+      display: flex;
+      cursor: pointer;
+      flex-flow: row nowrap;
+      overflow: hidden;
+
+      * {
+        pointer-events: none;
+      }
+
+      .portrait {
+        border-radius: 50%;
+        height: 60px;
+        width: 60px;
+
+        img {
+          width: 100%;
+        }
+      }
+
+      .details {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        white-space: nowrap;
+      }
+
+      .inactiveDetails {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        white-space: nowrap;
+        background: #f10927;
+        font-style: italic;
+        color: white;
+      }
+    }
+  }
+  .btnWrap {
+    margin: 10px 0;
   }
 }
 

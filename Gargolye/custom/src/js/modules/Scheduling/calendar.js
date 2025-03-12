@@ -80,7 +80,9 @@ class Calendar {
     };
 
     this.eventCache = null;
+    this.eventCacheBackup = null;
     this.monthDOMCache = null;
+    this.eventGroupDOMCache = {};
 
     this.rootEle = document.createElement('div');
     this.calendarEle = document.createElement('div');
@@ -102,11 +104,7 @@ class Calendar {
     this.weekEventsWrapEle = document.createElement('div');
 
     this.build();
-  }
-
-  // Util
-  getDateRangeInView() {
-    return this.dateRange;
+    this.attachEventListeners();
   }
 
   // Helpers
@@ -209,6 +207,7 @@ class Calendar {
     });
 
     // week wrap
+    this.weekWrapEle.innerHTML = '';
     this.weekWrapEle.className = 'week';
     containerEle.appendChild(this.weekWrapEle);
 
@@ -239,19 +238,6 @@ class Calendar {
 
     this.calendarEle.appendChild(containerEle);
   }
-  renderCalendar() {
-    this.calendarEle.innerHTML = '';
-
-    if (this.currentView === 'month') {
-      this.renderMonthView();
-    }
-    if (this.currentView === 'week') {
-      this.renderWeekView();
-    }
-    if (this.currentView === 'day') {
-      this.renderDayView();
-    }
-  }
 
   // Events
   renderMonthEvents() {
@@ -270,9 +256,9 @@ class Calendar {
       });
   }
   renderWeekEventsAsGroups(opts) {
-    const eventGroupDOMCache = {};
+    this.eventGroupDOMCache = {};
 
-    this.weekWrapEle.className = 'week customGrouping';
+    this.weekWrapEle.classList.add('customGrouping');
     this.weekWrapEle.innerHTML = '';
 
     this.eventCache
@@ -282,8 +268,9 @@ class Calendar {
         const groupByKey = event[opts.groupBy];
         const groupByName = event[opts.groupName];
 
-        if (!eventGroupDOMCache[groupByKey]) {
+        if (!this.eventGroupDOMCache[groupByKey]) {
           const groupWrapEle = document.createElement('div');
+          groupWrapEle.id = `g-${groupByKey}`;
           const groupLabelEle = document.createElement('div');
           groupWrapEle.className = 'eventGroup';
           groupLabelEle.className = 'eventGroup-label';
@@ -292,7 +279,7 @@ class Calendar {
           groupWrapEle.appendChild(groupLabelEle);
           this.weekWrapEle.appendChild(groupWrapEle);
 
-          eventGroupDOMCache[groupByKey] = groupWrapEle;
+          this.eventGroupDOMCache[groupByKey] = groupWrapEle;
         }
 
         // Position
@@ -302,16 +289,23 @@ class Calendar {
 
         // Event
         const eventCellEle = document.createElement('div');
+        eventCellEle.id = `e-${event.eventId}`;
+        eventCellEle.setAttribute('data-event-id', event.eventId);
+        eventCellEle.setAttribute('data-type-id', event.type.id);
         eventCellEle.className = 'eventCellEle';
         eventCellEle.style.gridColumn = `${gridColumnStart} / span 1`;
         eventCellEle.style.backgroundColor = event.color;
-        eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
+        this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
 
         const startTime = dates.convertFromMilitary(event.startTime.split(' ')[1]);
         const endTime = dates.convertFromMilitary(event.endTime.split(' ')[1]);
+        const isPublished = event.publishedDate;
+        const icon = isPublished ? icons.show : icons.eyeClose;
         eventCellEle.innerHTML = `
-          <p>${startTime} - ${endTime} ${event.length}</p>
-          <p>${groupByName}</p>
+          <p class="eventTime">${startTime} - ${endTime} ${event.length}</p>
+          <p class="eventName">${event.name}</p>
+          <p class="pubUnpubIcon">${icon}</p>
+          <p class="copyShiftIcon">${icons.copyShift}</p>
         `;
       });
   }
@@ -339,9 +333,9 @@ class Calendar {
         // View
         const eventCellEle = document.createElement('div');
         eventCellEle.className = 'eventCellEle';
-        eventCellEle.id = event.eventId;
-        eventCellEle.setAttribute('data-event-id', event.type.id);
-        eventCellEle.setAttribute('data-typeID', event.type.id);
+        eventCellEle.id = `e-${event.eventId}`;
+        eventCellEle.setAttribute('data-event-id', event.eventId);
+        eventCellEle.setAttribute('data-type-id', event.type.id);
         eventCellEle.style.gridColumn = `${gridColumnStart} / span 1`;
         eventCellEle.style.gridRow = `${gridRowStart} / ${gridRowEnd}`;
         eventCellEle.style.backgroundColor = event.color;
@@ -362,47 +356,6 @@ class Calendar {
   }
   renderDayEvents() {
     events.forEach(event => {});
-  }
-  renderGroupedEvents(events, groupOptions) {
-    if (events) {
-      this.eventCache = events;
-    }
-
-    if (groupOptions) {
-      this.customGroupOptions = groupOptions;
-    }
-
-    this.customGroupingOn = true;
-
-    if (this.currentView === 'week') {
-      this.renderWeekEventsAsGroups(this.customGroupOptions);
-      return;
-    }
-  }
-  renderEvents(events) {
-    if (events) {
-      this.eventCache = events;
-    }
-
-    if (this.customGroupingOn) {
-      // reset calendar grid
-      this.renderCalendar();
-      this.customGroupingOn = false;
-      this.customGroupOptions = null;
-    }
-
-    if (this.currentView === 'month') {
-      this.renderMonthEvents();
-      return;
-    }
-    if (this.currentView === 'week') {
-      this.renderWeekEvents();
-      return;
-    }
-    if (this.currentView === 'day') {
-      this.renderDayEvents();
-      return;
-    }
   }
 
   // Event Listeners
@@ -464,18 +417,28 @@ class Calendar {
       this.renderEvents();
     }
   }
-  handleCalendarEventClick(e) {
-    if (e.target.classList.contains('eventCellEle')) {
-      const a = e.target.dataset;
+  handleNavClickEvent(e) {
+    const dataset = e.target.dataset;
 
-      this.onEventClick({
-        id: e.target.id,
-      });
+    if (dataset.view) {
+      this.handleViewChange(dataset.view);
+    }
 
-      return;
+    if (dataset.nav) {
+      this.handleNavigation(dataset.nav);
     }
   }
+  handleCalendarEventClick(e) {
+    const a = e.target.dataset;
+    console.log(a);
 
+    this.onEventClick(e.target);
+  }
+
+  attachEventListeners() {
+    this.calendarEle.addEventListener('click', this.handleCalendarEventClick.bind(this));
+    this.calendarNavEle.addEventListener('click', this.handleNavClickEvent.bind(this));
+  }
   build() {
     this.rootEle.innerHTML = '';
     this.calendarEle.innerHTML = '';
@@ -533,18 +496,293 @@ class Calendar {
 
     this.rootEle.appendChild(this.calendarHeaderEle);
     this.rootEle.appendChild(this.calendarEle);
+  }
 
-    // event setup
-    this.calendarEle.addEventListener('click', this.handleCalendarEventClick);
+  // PUBLIC
+  //============================================
+  getDateRangeInView() {
+    return this.dateRange;
+  }
+  getCurrentDate() {
+    return this.currentDate;
+  }
+  removeEvent(id) {
+    const eventToRemove = this.calendarEle.getElementById(`e-${id}`);
 
-    this.calendarNavEle.addEventListener('click', e => {
-      if (e.target.dataset.view) {
-        this.handleViewChange(e.target.dataset.view);
+    if (eventToRemove) {
+      eventToRemove.remove();
+    }
+
+    if (this.eventCacheBackup) {
+      this.eventCacheBackup = this.eventCacheBackup.filter(e => e.eventId !== id);
+    } else {
+      this.eventCache = this.eventCache.filter(e => e.eventId !== id);
+    }
+  }
+  addEvent(newEvent) {
+    if (this.eventCacheBackup) {
+      this.eventCacheBackup.push(newEvent);
+    } else {
+      this.eventCache.push(newEvent);
+    }
+
+    if (this.currentView === 'month') {
+      return;
+    }
+
+    if (this.currentView === 'week' || this.currentView === 'day') {
+      if (this.customGroupingOn) {
+        // Grouping
+        const groupByKey = newEvent[opts.groupBy];
+        const groupByName = newEvent[opts.groupName];
+
+        if (!this.eventGroupDOMCache[groupByKey]) {
+          const groupWrapEle = document.createElement('div');
+          groupWrapEle.id = `g-${groupByKey}`;
+          const groupLabelEle = document.createElement('div');
+          groupWrapEle.className = 'eventGroup';
+          groupLabelEle.className = 'eventGroup-label';
+          groupLabelEle.textContent = groupByName;
+
+          groupWrapEle.appendChild(groupLabelEle);
+          this.weekWrapEle.appendChild(groupWrapEle);
+
+          this.eventGroupDOMCache[groupByKey] = groupWrapEle;
+        }
+
+        // Position
+        const eventDate = new Date(newEvent.date);
+        const dayIndex = eventDate.getDay();
+        const gridColumnStart = dayIndex + 2;
+
+        // Event
+        const eventCellEle = document.createElement('div');
+        eventCellEle.id = `e-${newEvent.eventId}`;
+        eventCellEle.setAttribute('data-event-id', newEvent.eventId);
+        eventCellEle.setAttribute('data-type-id', newEvent.type.id);
+        eventCellEle.className = 'eventCellEle';
+        eventCellEle.style.gridColumn = `${gridColumnStart} / span 1`;
+        eventCellEle.style.backgroundColor = newEvent.color;
+        this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
+
+        const startTime = dates.convertFromMilitary(newEvent.startTime.split(' ')[1]);
+        const endTime = dates.convertFromMilitary(newEvent.endTime.split(' ')[1]);
+        const isPublished = newEvent.publishedDate;
+        const icon = isPublished ? icons.show : icons.eyeClose;
+        eventCellEle.innerHTML = `
+           <p class="eventTime">${startTime} - ${endTime} ${newEvent.length}</p>
+           <p class="eventName">${newEvent.name}</p>
+           <p class="pubUnpubIcon">${icon}</p>
+           <p class="copyShiftIcon">${icons.copyShift}</p>
+         `;
+      } else {
+        const eventDate = new Date(newEvent.date);
+        const startDate = new Date(newEvent.startTime);
+        const endDate = new Date(newEvent.endTime);
+
+        // Position
+        const dayIndex = eventDate.getDay();
+        const gridColumnStart = dayIndex + 2;
+
+        const startHour = startDate.getHours();
+        const endHour = endDate.getHours();
+        const gridRowStart = startHour + 1;
+        const gridRowEnd = endHour + 2;
+
+        // View
+        const eventCellEle = document.createElement('div');
+        eventCellEle.className = 'eventCellEle';
+        eventCellEle.id = `e-${newEvent.eventId}`;
+        eventCellEle.setAttribute('data-event-id', newEvent.eventId);
+        eventCellEle.setAttribute('data-type-id', newEvent.type.id);
+        eventCellEle.style.gridColumn = `${gridColumnStart} / span 1`;
+        eventCellEle.style.gridRow = `${gridRowStart} / ${gridRowEnd}`;
+        eventCellEle.style.backgroundColor = newEvent.color;
+
+        const startTime = dates.convertFromMilitary(newEvent.startTime.split(' ')[1]);
+        const endTime = dates.convertFromMilitary(newEvent.endTime.split(' ')[1]);
+        const isPublished = newEvent.publishedDate;
+        const icon = isPublished ? icons.show : icons.eyeClose;
+        eventCellEle.innerHTML = `
+          <p class="eventTime">${startTime} - ${endTime} ${newEvent.length}</p>
+          <p class="eventName">${newEvent.name}</p>
+          <p class="pubUnpubIcon">${icon}</p>
+          <p class="copyShiftIcon">${icons.copyShift}</p>
+        `;
+
+        this.weekEventsWrapEle.appendChild(eventCellEle);
+      }
+    }
+  }
+  updateEvent(updatedEvent) {
+    let oldEvent;
+
+    if (this.eventCacheBackup) {
+      this.eventCacheBackup.forEach((event, index) => {
+        if (event.eventId === updatedEvent.eventId) {
+          oldEvent = { ...event };
+          event = { ...updatedEvent };
+        }
+      });
+    } else {
+      this.eventCache.forEach((event, index) => {
+        if (event.eventId === updatedEvent.eventId) {
+          oldEvent = { ...event };
+          event = { ...updatedEvent };
+        }
+      });
+    }
+
+    const eventCell = this.calendarEle.getElementById(`e-${updatedEvent.eventId}`);
+
+    // See if there was a date change that took it out of view
+    const isStillInRange = isDateWithinSpan(updatedEvent.date, this.dateRange);
+    if (!isStillInRange) {
+      eventCell.remove();
+    }
+
+    if (this.currentView === 'month') {
+      return;
+    }
+
+    // Update cell group type and color
+    if (this.currentView === 'week' || this.currentView === 'day') {
+      eventCell.setAttribute('data-type-id', updatedEvent.type.id);
+      eventCell.style.backgroundColor = updatedEvent.color;
+    }
+
+    // Check if it needs moved
+    if (this.customGroupingOn) {
+      if (updatedEvent.locationId !== oldEvent.locationId) {
+        const newGroup = this.calendarEle.getElementById(`g-${updatedEvent.locationId}`);
+        newGroup.appendChild(eventCell);
+
+        // Position
+        const eventDate = new Date(updatedEvent.date);
+        const dayIndex = eventDate.getDay();
+        const gridColumnStart = dayIndex + 2;
+        eventCell.style.gridColumn = `${gridColumnStart} / span 1`;
       }
 
-      if (e.target.dataset.nav) {
-        this.handleNavigation(e.target.dataset.nav);
+      if (oldEvent.date !== updatedEvent.date) {
+        // Position
+        const eventDate = new Date(updatedEvent.date);
+        const dayIndex = eventDate.getDay();
+        const gridColumnStart = dayIndex + 2;
+        eventCell.style.gridColumn = `${gridColumnStart} / span 1`;
       }
+    } else {
+      const oldStartDate = new Date(oldEvent.startTime);
+      const oldEndDate = new Date(oldEvent.endTime);
+      const newStartDate = new Date(updatedEvent.startTime);
+      const newEndDate = new Date(updatedEvent.endTime);
+
+      const sameStart = oldStartDate.getTime() === newStartDate.getTime();
+      const sameEnd = oldEndDate.getTime() === newEndDate.getTime();
+
+      if (oldEvent.date !== updatedEvent.date || !sameStart || !sameEnd) {
+        // Position
+        const eventDate = new Date(updatedEvent.date);
+        const startDate = new Date(updatedEvent.startTime);
+        const endDate = new Date(updatedEvent.endTime);
+
+        const dayIndex = eventDate.getDay();
+        const gridColumnStart = dayIndex + 2;
+
+        const startHour = startDate.getHours();
+        const endHour = endDate.getHours();
+        const gridRowStart = startHour + 1;
+        const gridRowEnd = endHour + 2;
+
+        eventCell.style.gridColumn = `${gridColumnStart} / span 1`;
+        eventCell.style.gridRow = `${gridRowStart} / ${gridRowEnd}`;
+      }
+    }
+
+    // Refresh inner HTML markup
+    const startTime = dates.convertFromMilitary(updatedEvent.startTime.split(' ')[1]);
+    const endTime = dates.convertFromMilitary(updatedEvent.endTime.split(' ')[1]);
+    const isPublished = updatedEvent.publishedDate;
+    const icon = isPublished ? icons.show : icons.eyeClose;
+    eventCellEle.innerHTML = `
+      <p class="eventTime">${startTime} - ${endTime} ${updatedEvent.length}</p>
+      <p class="eventName">${updatedEvent.name}</p>
+      <p class="pubUnpubIcon">${icon}</p>
+      <p class="copyShiftIcon">${icons.copyShift}</p>
+    `;
+  }
+  filterEventsBy(filterOptions) {
+    if (filterOptions.resetFilter) {
+      this.eventCache = [...this.eventCacheBackup];
+      this.eventCacheBackup = null;
+
+      if (this.customGroupingOn) {
+        this.renderGroupedEvents();
+      } else {
+        this.renderEvents();
+      }
+      return;
+    }
+
+    this.eventCacheBackup = [...this.eventCache];
+
+    const { filterKey, filterCheck } = filterOptions;
+    this.eventCache = this.eventCache.filter(event => {
+      return filterCheck(event[filterKey]);
     });
+  }
+  renderGroupedEvents(events, groupOptions) {
+    if (events) {
+      this.eventCache = events;
+    }
+
+    if (groupOptions) {
+      this.customGroupOptions = groupOptions;
+    }
+
+    this.customGroupingOn = true;
+
+    if (this.currentView === 'week') {
+      this.renderWeekEventsAsGroups(this.customGroupOptions);
+      return;
+    }
+  }
+  renderEvents(events) {
+    if (events) {
+      this.eventCache = events;
+    }
+
+    if (this.customGroupingOn) {
+      // reset calendar grid
+      this.renderCalendar();
+      this.customGroupingOn = false;
+      this.customGroupOptions = null;
+    }
+
+    if (this.currentView === 'month') {
+      this.renderMonthEvents();
+      return;
+    }
+    if (this.currentView === 'week') {
+      this.renderWeekEvents();
+      return;
+    }
+    if (this.currentView === 'day') {
+      this.renderDayEvents();
+      return;
+    }
+  }
+  renderCalendar() {
+    this.calendarEle.innerHTML = '';
+
+    if (this.currentView === 'month') {
+      this.renderMonthView();
+    }
+    if (this.currentView === 'week') {
+      this.renderWeekView();
+    }
+    if (this.currentView === 'day') {
+      this.renderDayView();
+    }
   }
 }
