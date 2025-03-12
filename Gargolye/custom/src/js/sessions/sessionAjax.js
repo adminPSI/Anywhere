@@ -1159,7 +1159,7 @@ function getDefaultAnywhereSettings() {
 
       disableModules();
       loadApp('home');
-      // loadApp('schedule');
+      //loadApp('schedule');
     },
     error: function (xhr, status, error) {
       //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);

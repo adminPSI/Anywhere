@@ -5,6 +5,8 @@
 //!W
 //* DO NOT FORGET
 
+const { error } = require('fancy-log');
+
 const EVENT_TYPES = {
   1: 'My Shifts', // blankish, red, blue, green, orange, purple, yellow
   2: 'Not My Shifts', // blankish, red, blue, green, orange, purple, yellow **only can see this group security key
@@ -52,7 +54,6 @@ const SchedulingCalendar = (function () {
   // Shift Popups
   let shiftEmployees;
   let regions;
-  let rosterPicker;
   var shiftDateForCall;
   var detailsLocationId;
 
@@ -85,7 +86,6 @@ const SchedulingCalendar = (function () {
     // Shift Popups
     shiftEmployees = undefined;
     regions = undefined;
-    rosterPicker = undefined;
     shiftDateForCall = undefined;
     detailsLocationId = undefined;
   }
@@ -685,7 +685,7 @@ const SchedulingCalendar = (function () {
           const dd = returnDate.getDate();
           const mm = returnDate.getMonth() + 1;
           const yyyy = returnDate.getFullYear();
-          return `${yyyy}-${mm}-${dd}`;
+          return `${yyyy}-${dates.leadingZero(mm)}-${dates.leadingZero(dd)}`;
         });
         this.onDateChange(dates);
 
@@ -791,16 +791,18 @@ const SchedulingCalendar = (function () {
 
     dropdown.populate(colorDropdown, dropdownData, defaultValue);
   }
-  function checkRequiredFieldsShiftPopup(shiftPopup, saveButton) {
-    const errors = [...shiftPopup.querySelectorAll('.error')];
 
-    if (errors.length > 0) {
-      saveButton.classList.add('disabled');
-    } else {
-      saveButton.classList.remove('disabled');
-    }
-  }
   function showShiftPopup(data, eventTypeID, isCopy) {
+    const checkRequiredFieldsShiftPopup = () => {
+      let errors = [...shiftPopup.querySelectorAll('.error')];
+
+      if (errors.length > 0 || shiftData.date.length === 0) {
+        savebtn.classList.add('disabled');
+      } else {
+        savebtn.classList.remove('disabled');
+      }
+    };
+
     const isNew = data && !isCopy ? false : true;
 
     const shiftData = data
@@ -901,7 +903,9 @@ const SchedulingCalendar = (function () {
       defaultDate: defaultDate,
       selectedDates: [...shiftData.date],
       onDateChange(newDateArray) {
-        shiftData.dates = [...newDateArray];
+        shiftData.date = [...newDateArray];
+
+        checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
       },
     });
     const filterEmployeesBtn = button.build({
@@ -995,15 +999,13 @@ const SchedulingCalendar = (function () {
       callback: async () => {
         const res = await schedulingAjax.saveOrUpdateShift({
           date: shiftData.date.join(','),
-          consumerId: shiftData.join(','),
+          consumerId: shiftData.consumerNames.map(n => n.split('|')[1]).join(','),
           startTime: shiftData.startTime,
           endTime: shiftData.endTime,
           color: shiftData.color,
           locationId: shiftData.locationId,
           notifyEmployee: shiftData.notifyEmployee,
         });
-
-        console.log(res);
 
         calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
 
@@ -1043,7 +1045,7 @@ const SchedulingCalendar = (function () {
 
     // Event Listener
     shiftPopup.addEventListener('change', e => {
-      if (e.target === locationDropdown) {
+      if (e.target.parentElement === locationDropdown) {
         const selectedOption = e.target.options[e.target.selectedIndex];
         shiftData.locationId = selectedOption.value;
 
@@ -1062,10 +1064,9 @@ const SchedulingCalendar = (function () {
 
         // Clear out consumers
         shiftData.consumerNames = [];
-        rosterPicker.setSelectedConsumers([]);
         individualCardWrap.innerHTML = '';
       }
-      if (e.target === employeeDropdown) {
+      if (e.target.parentElement === employeeDropdown) {
         const selectedOption = e.target.options[e.target.selectedIndex];
         shiftData.employeeId = selectedOption.value;
 
@@ -1075,29 +1076,40 @@ const SchedulingCalendar = (function () {
           employeeDropdown.classList.remove('error');
         }
       }
-      if (e.target === colorDropdown) {
+      if (e.target.parentElement === colorDropdown) {
         const selectedOption = e.target.options[e.target.selectedIndex];
         shiftData.color = selectedOption.value;
 
         if (selectedOption.value === '%') shiftData.color = 'white';
       }
-      if (e.target === startTimeInput) {
-        if (e.target.value > shiftData.endTime) {
+      if (e.target.parentElement === startTimeInput) {
+        shiftData.startTime = e.target.value;
+
+        if (!shiftData.startTime || (shiftData.endTime && shiftData.startTime > shiftData.endTime)) {
           startTimeInput.classList.add('error');
         } else {
-          shiftData.startTime = e.target.value;
           startTimeInput.classList.remove('error');
+
+          if (shiftData.endTime) {
+            endTimeInput.classList.remove('error');
+          }
         }
       }
-      if (e.target === endTimeInput) {
-        if (e.target.value < shiftData.startTime) {
+      if (e.target.parentElement === endTimeInput) {
+        shiftData.endTime = e.target.value;
+
+        if (!shiftData.endTime || (shiftData.startTime && shiftData.endTime < shiftData.startTime)) {
           endTimeInput.classList.add('error');
         } else {
-          shiftData.endTime = e.target.value;
           endTimeInput.classList.remove('error');
+
+          if (shiftData.startTime) {
+            startTimeInput.classList.remove('error');
+          }
         }
       }
-      if (e.target === notifyEmployee) {
+      if (e.target.parentElement === notifyEmployee) {
+        shiftData.notifyEmployee = e.target.checked ? 'Y' : 'N';
       }
 
       checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
@@ -1353,13 +1365,6 @@ const SchedulingCalendar = (function () {
     });
 
     regions = await schedulingAjax.getRegionDropdown();
-
-    rosterPicker = new RosterPicker({
-      allowMultiSelect: true,
-      consumerRequired: false,
-      selectionDate: undefined,
-    });
-    await rosterPicker.fetchConsumers();
   }
 
   // Calendar
