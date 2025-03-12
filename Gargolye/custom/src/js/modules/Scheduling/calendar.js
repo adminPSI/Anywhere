@@ -62,6 +62,9 @@ function isDateWithinSpan(dirtyDate, rangeObj) {
 
   return false;
 }
+function isSameDay(dirtyDate, dirtySelectedDate) {
+  return dates.isEqual(dirtyDate, dirtySelectedDate);
+}
 
 class Calendar {
   constructor(opts) {
@@ -102,6 +105,8 @@ class Calendar {
 
     this.weekWrapEle = document.createElement('div');
     this.weekEventsWrapEle = document.createElement('div');
+    this.dayWrapEle = document.createElement('div');
+    this.dayEventsWrapEle = document.createElement('div');
 
     this.build();
     this.attachEventListeners();
@@ -234,7 +239,47 @@ class Calendar {
     const containerEle = document.createElement('div');
     containerEle.className = 'day-view';
 
-    // TODO: add events to day
+    const dayStart = new Date(this.currentDate);
+    const dayEnd = new Date(this.currentDate);
+
+    this.dateRange.start = dayStart;
+    this.dateRange.end = dayEnd;
+
+    // day header
+    const dayHeaderRowEle = document.createElement('div');
+    dayHeaderRowEle.className = 'dayNameHeader';
+    containerEle.appendChild(dayHeaderRowEle);
+
+    const emptyCellEle = document.createElement('div');
+    emptyCellEle.className = 'emptyCell';
+    dayHeaderRowEle.appendChild(emptyCellEle);
+
+    const nameCellEle = document.createElement('div');
+    const abbrMonthName = MONTH_NAMES_ABBR[this.currentDate.getMonth()];
+    const dayOfMonth = this.currentDate.getDate();
+    const dayName = DAY_NAMES[this.currentDate.getDay()];
+    nameCellEle.textContent = `${dayName}, ${abbrMonthName} ${dayOfMonth}`;
+    dayHeaderRowEle.appendChild(nameCellEle);
+
+    // day wrap
+    this.dayWrapEle.innerHTML = '';
+    this.dayWrapEle.className = 'day';
+    containerEle.appendChild(this.dayWrapEle);
+
+    for (let hour = 0; hour < 24; hour++) {
+      const timeSlot = document.createElement('div');
+      timeSlot.className = 'timeSlot';
+      timeSlot.textContent = formatTime(hour);
+      this.dayWrapEle.appendChild(timeSlot);
+
+      const daySlot = document.createElement('div');
+      daySlot.className = 'daySlot';
+      daySlot.setAttribute('data-time', `${hour}:00`);
+      this.dayWrapEle.appendChild(daySlot);
+    }
+
+    this.dayEventsWrapEle.className = 'dayEvents';
+    this.dayWrapEle.appendChild(this.dayEventsWrapEle);
 
     this.calendarEle.appendChild(containerEle);
   }
@@ -355,7 +400,100 @@ class Calendar {
       });
   }
   renderDayEvents() {
-    events.forEach(event => {});
+    this.dayEventsWrapEle.innerHTML = '';
+
+    if (!this.eventCache) return;
+
+    this.eventCache
+      .filter(e => isSameDay(e.date, this.selectedDate))
+      .map(event => {
+        const startDate = new Date(event.startTime);
+        const endDate = new Date(event.endTime);
+
+        // Position
+        const startHour = startDate.getHours();
+        const endHour = endDate.getHours();
+        const gridRowStart = startHour + 1;
+        const gridRowEnd = endHour + 2;
+
+        // View
+        const eventCellEle = document.createElement('div');
+        eventCellEle.className = 'eventCellEle';
+        eventCellEle.id = `e-${event.eventId}`;
+        eventCellEle.setAttribute('data-event-id', event.eventId);
+        eventCellEle.setAttribute('data-type-id', event.type.id);
+        eventCellEle.style.gridRow = `${gridRowStart} / ${gridRowEnd}`;
+        eventCellEle.style.backgroundColor = event.color;
+
+        const startTime = dates.convertFromMilitary(event.startTime.split(' ')[1]);
+        const endTime = dates.convertFromMilitary(event.endTime.split(' ')[1]);
+        const isPublished = event.publishedDate;
+        const icon = isPublished ? icons.show : icons.eyeClose;
+        eventCellEle.innerHTML = `
+          <p class="eventTime">${startTime} - ${endTime} ${event.length}</p>
+          <p class="eventName">${event.name}</p>
+          <p class="pubUnpubIcon">${icon}</p>
+          <p class="copyShiftIcon">${icons.copyShift}</p>
+        `;
+
+        this.dayEventsWrapEle.appendChild(eventCellEle);
+      });
+  }
+  renderDayEventsAsGroups(opts) {
+    this.eventGroupDOMCache = {};
+    this.dayWrapEle.classList.add('customGrouping');
+    this.dayWrapEle.innerHTML = '';
+
+    this.eventCache
+      .filter(e => isSameDay(e.date, this.selectedDate))
+      .map(event => {
+        // Grouping
+        const groupByKey = event[opts.groupBy];
+        const groupByName = event[opts.groupName];
+
+        if (!this.eventGroupDOMCache[groupByKey]) {
+          const groupWrapEle = document.createElement('div');
+          groupWrapEle.id = `g-${groupByKey}`;
+          const groupLabelEle = document.createElement('div');
+          groupWrapEle.className = 'eventGroup';
+          groupLabelEle.className = 'eventGroup-label';
+          groupLabelEle.textContent = groupByName;
+
+          groupWrapEle.appendChild(groupLabelEle);
+          this.dayWrapEle.appendChild(groupWrapEle);
+
+          this.eventGroupDOMCache[groupByKey] = groupWrapEle;
+        }
+
+        // Position
+        const startDate = new Date(event.startTime);
+        const endDate = new Date(event.endTime);
+        const startHour = startDate.getHours();
+        const endHour = endDate.getHours();
+        const gridRowStart = startHour + 1;
+        const gridRowEnd = endHour + 2;
+
+        // Event
+        const eventCellEle = document.createElement('div');
+        eventCellEle.id = `e-${event.eventId}`;
+        eventCellEle.setAttribute('data-event-id', event.eventId);
+        eventCellEle.setAttribute('data-type-id', event.type.id);
+        eventCellEle.className = 'eventCellEle';
+        eventCellEle.style.gridRow = `${gridRowStart} / ${gridRowEnd}`;
+        eventCellEle.style.backgroundColor = event.color;
+        this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
+
+        const startTime = dates.convertFromMilitary(event.startTime.split(' ')[1]);
+        const endTime = dates.convertFromMilitary(event.endTime.split(' ')[1]);
+        const isPublished = event.publishedDate;
+        const icon = isPublished ? icons.show : icons.eyeClose;
+        eventCellEle.innerHTML = `
+          <p class="eventTime">${startTime} - ${endTime} ${event.length}</p>
+          <p class="eventName">${event.name}</p>
+          <p class="pubUnpubIcon">${icon}</p>
+          <p class="copyShiftIcon">${icons.copyShift}</p>
+        `;
+      });
   }
 
   // Event Listeners

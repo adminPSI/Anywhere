@@ -4,9 +4,6 @@
 //TODO:
 //!W
 //* DO NOT FORGET
-
-const { error } = require('fancy-log');
-
 const EVENT_TYPES = {
   1: 'My Shifts', // blankish, red, blue, green, orange, purple, yellow
   2: 'Not My Shifts', // blankish, red, blue, green, orange, purple, yellow **only can see this group security key
@@ -679,15 +676,16 @@ const SchedulingCalendar = (function () {
           e.target.classList.add('selected');
         }
 
-        const dates = this.selectedDates.map(dirtyDate => {
-          const returnDate = new Date(dirtyDate);
-          returnDate.setHours(0, 0, 0, 0);
-          const dd = returnDate.getDate();
-          const mm = returnDate.getMonth() + 1;
-          const yyyy = returnDate.getFullYear();
-          return `${yyyy}-${dates.leadingZero(mm)}-${dates.leadingZero(dd)}`;
-        });
-        this.onDateChange(dates);
+        this.onDateChange(
+          this.selectedDates.map(dirtyDate => {
+            const returnDate = new Date(dirtyDate);
+            returnDate.setHours(0, 0, 0, 0);
+            const dd = returnDate.getDate();
+            const mm = returnDate.getMonth() + 1;
+            const yyyy = returnDate.getFullYear();
+            return `${yyyy}-${UTIL.leadingZero(mm)}-${UTIL.leadingZero(dd)}`;
+          }),
+        );
 
         return;
       }
@@ -764,7 +762,7 @@ const SchedulingCalendar = (function () {
         text: 'All',
       },
       {
-        value: $.session.UserId,
+        value: $.session.PeopleId,
         text: `${$.session.Name}, ${$.session.LName}`,
       },
     ];
@@ -813,7 +811,7 @@ const SchedulingCalendar = (function () {
           color: data.color,
           startTime: data.startTime,
           endTime: data.endTime,
-          notifyEmployee: '',
+          notifyEmployee: 'N',
           consumerNames: data.consumerNames === '' ? [] : data.consumerNames.split(','), // [name|id]
           date: [data.serviceDate.split(' ')[0]],
         }
@@ -824,7 +822,7 @@ const SchedulingCalendar = (function () {
           color: '',
           startTime: '',
           endTime: '',
-          notifyEmployee: '',
+          notifyEmployee: 'N',
           consumerNames: [],
           date: [],
         };
@@ -998,14 +996,18 @@ const SchedulingCalendar = (function () {
       type: 'contained',
       callback: async () => {
         const res = await schedulingAjax.saveOrUpdateShift({
-          date: shiftData.date.join(','),
-          consumerId: shiftData.consumerNames.map(n => n.split('|')[1]).join(','),
+          dateString: shiftData.date.join(','),
+          consumerIdString: shiftData.consumerNames.map(n => n.split('|')[1]).join(','),
           startTime: shiftData.startTime,
           endTime: shiftData.endTime,
           color: shiftData.color,
           locationId: shiftData.locationId,
           notifyEmployee: shiftData.notifyEmployee,
+          personId: selectedEmployeeId,
+          saveUpdateFlag: isNew ? 'S' : 'U',
         });
+
+        debugger;
 
         calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
 
@@ -1026,6 +1028,7 @@ const SchedulingCalendar = (function () {
         POPUP.hide(shiftPopup);
       },
     });
+
     const cancelbtn = button.build({
       text: 'Cancel',
       style: 'secondary',
@@ -1128,6 +1131,8 @@ const SchedulingCalendar = (function () {
       }
       if (e.target === addIndividualBtn) {
         const datesSelectedCount = shiftData.date.length > 0 ? null : shiftData.date[0];
+        shiftPopup.style.opacity = 0.5;
+        shiftPopup.style.pointerEvents = 'none';
         showAddIndividualPopup(
           consumers => {
             shiftData.consumerNames = [...consumers];
@@ -1152,6 +1157,8 @@ const SchedulingCalendar = (function () {
                 individualCardWrap.appendChild(gridAnimationWrapper);
               });
             }
+            shiftPopup.style.opacity = 1;
+            shiftPopup.style.pointerEvents = 'all';
           },
           shiftData.consumerNames,
           datesSelectedCount,
@@ -1251,7 +1258,7 @@ const SchedulingCalendar = (function () {
 
     if (
       eventTypeID === '1' &&
-      selectedEmployeeId === $.session.UserId &&
+      selectedEmployeeId === $.session.PeopleId &&
       (currentCalView === 'week' || currentCalView === 'day') &&
       $.session.schedAllowCallOffRequests === 'Y' &&
       $.session.schedulingUpdate
@@ -1570,7 +1577,7 @@ const SchedulingCalendar = (function () {
         text: 'All',
       },
       {
-        value: $.session.UserId,
+        value: $.session.PeopleId,
         text: `${$.session.Name}, ${$.session.LName}`,
       },
     ];
@@ -1715,7 +1722,7 @@ const SchedulingCalendar = (function () {
         text: 'All',
       },
       {
-        value: $.session.UserId,
+        value: $.session.PeopleId,
         text: `${$.session.Name}, ${$.session.LName}`,
       },
     ];
@@ -1907,7 +1914,7 @@ const SchedulingCalendar = (function () {
       viewOptionShifts = e.target.text.toLowerCase();
 
       if (viewOptionShifts === 'no' && selectedEmployeeId === 'none') {
-        selectedEmployeeId = $.session.UserId;
+        selectedEmployeeId = $.session.PeopleId;
 
         if (selectedLocationId === '%') {
           ScheduleCalendar.renderGroupedEvents(calendarEvents, {
@@ -1984,17 +1991,15 @@ const SchedulingCalendar = (function () {
 
     //!W remove after dev testing
     console.clear();
-    $.session.schedulingUpdate = true;
-    $.session.schedulingView = true;
-    $.session.schedAllowCallOffRequests = 'Y';
-    $.session.schedRequestOpenShifts = 'Y';
-    $.session.hideAllScheduleButton = false;
-    $.session.schedulingSecurity = true;
-    // $.session.PeopleId = '7357';
-    // $.session.UserId = 'joshk';
+    // $.session.schedulingUpdate = true;
+    // $.session.schedulingView = true;
+    // $.session.schedAllowCallOffRequests = 'Y';
+    // $.session.schedRequestOpenShifts = 'Y';
+    // $.session.hideAllScheduleButton = false;
+    // $.session.schedulingSecurity = true;
     //!W remove after dev testing
 
-    selectedEmployeeId = $.session.UserId;
+    selectedEmployeeId = $.session.PeopleId;
     rosterCache = {};
 
     ScheduleCalendar = new Calendar({
