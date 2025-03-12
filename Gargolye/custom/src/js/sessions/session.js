@@ -275,6 +275,7 @@ $.session.singleEntryShowConsumerSignature = 'N';
 $.session.singleEntryShowConsumerNote = 'N';
 //Scheduling
 $.session.schedulingUpdate = false;
+$.session.schedulingSecurity = false;
 $.session.schedulingView = false;
 $.session.schedulingStartDayOfWeek = 0;
 $.session.schedAllowCallOffRequests = 'N';

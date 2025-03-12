@@ -393,7 +393,37 @@
   grid-template-rows: 1fr min-content;
   row-gap: 10px;
 }
-[data-active-module='schedule'] {
+#filterEmployeePopup {
+  border: 2px solid black;
+
+  .employeeOptionsContainer {}
+  .employeeOption {
+    display: flex;
+    flex-flow: row nowrap;
+    margin-bottom: 10px;
+
+    
+    .label {
+      &.nestedInput {
+        display: flex;
+        flex-flow: row wrap;
+      }
+    }
+
+    input[type='checkbox'] {
+      min-width: 20px;
+      margin: 0 4px 0 0;
+    }
+    input[type='number'] {
+      margin: 0 4px;
+      max-width: 44px;
+      outline: 1px solid black;
+    }
+  }
+}
+// roster stuff for popups
+#shiftDetailPopup,
+#addIndividualPopup {
   .rosterCardsWrap {
     display: flex;
     flex-flow: column nowrap;

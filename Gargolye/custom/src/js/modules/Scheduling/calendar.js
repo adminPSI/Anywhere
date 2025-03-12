@@ -207,6 +207,7 @@ class Calendar {
     });
 
     // week wrap
+    this.weekWrapEle.innerHTML = '';
     this.weekWrapEle.className = 'week';
     containerEle.appendChild(this.weekWrapEle);
 
