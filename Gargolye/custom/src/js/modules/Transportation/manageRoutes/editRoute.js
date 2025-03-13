@@ -163,6 +163,8 @@ const TRANS_manageEditRoute = (function () {
             driverDropdown.classList.add('disabled')
             otherRiderDropdown.classList.add('disabled')
             vehicleDropdown.classList.add('disabled')
+            originationInput.classList.add('disabled')
+            destinationInput.classList.add('disabled') 
         }
         const radioDiv = document.createElement("div");
         radioDiv.classList.add("addRouteRadioDiv");
