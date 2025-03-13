@@ -91,9 +91,10 @@
                 makePublic: formData.public === 'on' ? 'Y' : 'N',
             });
             const success = data.insertCustomPhraseResult;
-
-            this.close();
-
+ 
+            this.addPhraseForm.clear();
+            this.close();            
+            
             // update phrases list for inserting
             await this.PhrasesInstance.InsertPhrases.fetchData();
             this.PhrasesInstance.InsertPhrases.populate();
