@@ -692,15 +692,18 @@ const SchedulingCalendar = (function () {
       const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
       for (let index = 0; index < this.daysToRender.length; index++) {
-        const month = this.daysToRender[index].getMonth() + 1;
-        const day = this.daysToRender[index].getDate();
-        const dateString = this.daysToRender[index].toDateString();
-
         const dateWrapEle = document.createElement('div');
         dateWrapEle.classList.add('dateWrap');
         dateWrapEle.setAttribute('data-target', 'date');
+
+        const dateString = this.daysToRender[index].toDateString();
         dateWrapEle.setAttribute('data-date', dateString);
-        if (this.selectedDates.includes(dateString)) {
+
+        const month = this.daysToRender[index].getMonth() + 1;
+        const day = this.daysToRender[index].getDate();
+        const year = this.daysToRender[index].getYear();
+
+        if (this.selectedDates.includes(`${month}/${day}/${year}`)) {
           dateWrapEle.classList.add('selected');
         }
 
@@ -894,7 +897,7 @@ const SchedulingCalendar = (function () {
     if (isCopy) {
       shiftData.shiftId = '';
 
-      const copyHeading = document.createElement('p');
+      const copyHeading = document.createElement('h2');
       copyHeading.textContent = 'Copy Shift';
       shiftPopup.appendChild(copyHeading);
     }
@@ -1996,12 +1999,12 @@ const SchedulingCalendar = (function () {
 
     //!W remove after dev testing
     console.clear();
-    $.session.schedulingUpdate = true;
-    $.session.schedulingView = true;
-    $.session.schedAllowCallOffRequests = 'Y';
-    $.session.schedRequestOpenShifts = 'Y';
-    $.session.hideAllScheduleButton = false;
-    $.session.schedulingSecurity = true;
+    // $.session.schedulingUpdate = true;
+    // $.session.schedulingView = true;
+    // $.session.schedAllowCallOffRequests = 'Y';
+    // $.session.schedRequestOpenShifts = 'Y';
+    // $.session.hideAllScheduleButton = false;
+    // $.session.schedulingSecurity = true;
     //!W remove after dev testing
 
     selectedEmployeeId = $.session.PeopleId;
