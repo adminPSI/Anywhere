@@ -1,9 +1,6 @@
-//* DO NOT FORGET
-//  search out below comment symbols to make sure noting was forgotten
-//?Q:
-//TODO:
-//!W
-//* DO NOT FORGET
+//!: copy icon click event not working
+//!: figure out why events are not moving up in grid
+
 const EVENT_TYPES = {
   1: 'My Shifts', // blankish, red, blue, green, orange, purple, yellow
   2: 'Not My Shifts', // blankish, red, blue, green, orange, purple, yellow **only can see this group security key
@@ -626,7 +623,7 @@ const SchedulingCalendar = (function () {
       this.onDateChange = opts.onDateChange;
 
       // Dates
-      this.selectedDates = [];
+      this.selectedDates = [...opts.selectedDates];
       this.weekStart = dates.startOfWeek(opts.defaultDate);
       this.weekEnd = dates.endOfWeek(opts.defaultDate);
       this.daysToRender = dates.eachDayOfInterval({
@@ -827,8 +824,6 @@ const SchedulingCalendar = (function () {
           date: [],
         };
 
-    if (isCopy) shiftData.shiftId = '';
-
     const shiftPopup = POPUP.build({
       id: 'shiftDetailPopup',
     });
@@ -894,6 +889,14 @@ const SchedulingCalendar = (function () {
           </div>
         </div>
       `;
+    }
+
+    if (isCopy) {
+      shiftData.shiftId = '';
+
+      const copyHeading = document.createElement('p');
+      copyHeading.textContent = 'Copy Shift';
+      shiftPopup.appendChild(copyHeading);
     }
 
     const defaultDate = ScheduleCalendar.getCurrentDate();
@@ -1226,6 +1229,8 @@ const SchedulingCalendar = (function () {
       }
     });
     individualCardWrap.addEventListener('click', e => {
+      if (!$.session.schedulingSecurity) return;
+
       const idToRemove = e.target.id;
       shiftData.consumerNames = shiftData.consumerNames.filter(cn => (cn.id = idToRemove));
       e.target.remove();
@@ -1249,7 +1254,7 @@ const SchedulingCalendar = (function () {
     shiftPopup.appendChild(notifyEmployee);
     shiftPopup.appendChild(buttonWrap);
 
-    if (!$.session.schedulingUpdate) {
+    if (!$.session.schedulingSecurity) {
       shiftPopup.remove(filterEmployeesBtn);
       shiftPopup.remove(colorDropdown);
       shiftPopup.remove(addIndividualBtn);
@@ -1991,12 +1996,12 @@ const SchedulingCalendar = (function () {
 
     //!W remove after dev testing
     console.clear();
-    // $.session.schedulingUpdate = true;
-    // $.session.schedulingView = true;
-    // $.session.schedAllowCallOffRequests = 'Y';
-    // $.session.schedRequestOpenShifts = 'Y';
-    // $.session.hideAllScheduleButton = false;
-    // $.session.schedulingSecurity = true;
+    $.session.schedulingUpdate = true;
+    $.session.schedulingView = true;
+    $.session.schedAllowCallOffRequests = 'Y';
+    $.session.schedRequestOpenShifts = 'Y';
+    $.session.hideAllScheduleButton = false;
+    $.session.schedulingSecurity = true;
     //!W remove after dev testing
 
     selectedEmployeeId = $.session.PeopleId;

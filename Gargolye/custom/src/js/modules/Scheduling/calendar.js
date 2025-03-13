@@ -567,9 +567,6 @@ class Calendar {
     }
   }
   handleCalendarEventClick(e) {
-    const a = e.target.dataset;
-    console.log(a);
-
     this.onEventClick(e.target);
   }
 
@@ -882,6 +879,11 @@ class Calendar {
 
     if (this.currentView === 'week') {
       this.renderWeekEventsAsGroups(this.customGroupOptions);
+      return;
+    }
+
+    if (this.currentView === 'day') {
+      this.renderDayEventsAsGroups(this.customGroupOptions);
       return;
     }
   }

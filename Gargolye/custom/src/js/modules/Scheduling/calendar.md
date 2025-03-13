@@ -37,21 +37,21 @@
     * [x] In the lower left hand corner of each shift, show an icon that indicates if that shift has been published or not (see requirement #3 above).  If location_schedules.published_date is null, show a closed eye (or something similar to the mockup).  If location_schedules.published_date is not null, show an open eye (or something similar to the mockup).
 
 5. [x] When the user clicks on a shift, display a pop-up that shows the details of that shift.
-    * [o] If the logged in user has the Scheduler security key for Anywhere Scheduling, this pop-up should look just like the form used to add a new shift with the same functionality (see requirement #2) with the following exceptions:
-        [o] The Notify Employee checkbox should be unchecked and disabled when the form is opened.  If the user makes any change to the values displayed on the form AND the date on the form is after today, then the checkbox should automatically get checked and enabled.  If the user makes no change to the form OR the date on the form is null or before today, the box should be unchecked and disabled.  On SAVE, if this box is checked, then an insights notification should be sent to the user that says something like "Your schedule has been updated! " and show details of the new shift.  If a shift was changed by changing an employee, then an additional insights message should go out to the FORMER employee that says "You have been removed from the following shift:" along with shift details. 
-        [o] Use existing logic to determine if the CALL OFF or REQUEST SHIFT buttons should display at the bottom
-    * [o] If the logged in user does NOT have the Scheduler security key for Anywhere Scheduling, it should look like the form used to add a new shift with the following exceptions:
+    * [x] If the logged in user has the Scheduler security key for Anywhere Scheduling, this pop-up should look just like the form used to add a new shift with the same functionality (see requirement #2) with the following exceptions:
+        [o] **The Notify Employee checkbox should be unchecked and disabled when the form is opened.  If the user makes any change to the values displayed on the form AND the date on the form is after today, then the checkbox should automatically get checked and enabled.  If the user makes no change to the form OR the date on the form is null or before today, the box should be unchecked and disabled.**  On SAVE, if this box is checked, then an insights notification should be sent to the user that says something like "Your schedule has been updated! " and show details of the new shift.  If a shift was changed by changing an employee, then an additional insights message should go out to the FORMER employee that says "You have been removed from the following shift:" along with shift details. 
+        [x] Use existing logic to determine if the CALL OFF or REQUEST SHIFT buttons should display at the bottom
+    * [x] If the logged in user does NOT have the Scheduler security key for Anywhere Scheduling, it should look like the form used to add a new shift with the following exceptions:
         [x] All fields should be disabled
         [x] The FILTER EMPLOYEE LIST button should be hidden
         [x] The Color dropdown should be hidden
         [x] The + ADD INDIVIDUAL button should be hidden and consumers should not be able to be removed by clicking on them
         [x] The Notify Employee checkbox and label should be hidden
-        [o] Use existing logic to determine if the CALL OFF or REQUEST SHIFT buttons should display at the bottom
+        [x] Use existing logic to determine if the CALL OFF or REQUEST SHIFT buttons should display at the bottom
 
 6. [x] On each shift in the calendar view, add a copy icon in the lower right hand corner.
-    * [ ] The "title" of the pop-up should be say "Copy Shift"
-    * [ ] On save, do not update the existing shift (the shift that the copy button was clicked from), but create a new shift with the details provided by the user.  Still perform same validation that is done when adding a new shift (see requirement #2 above)
-    * [ ] See requirement #2 above to determine which fields should be visible/hidden logic for sending any insights notifications, validation, etc.
+    * [x] The "title" of the pop-up should be say "Copy Shift"
+    * [x] On save, do not update the existing shift (the shift that the copy button was clicked from), but create a new shift with the details provided by the user.  Still perform same validation that is done when adding a new shift (see requirement #2 above)
+    * [x] See requirement #2 above to determine which fields should be visible/hidden logic for sending any insights notifications, validation, etc.
 
 7. [x] Update the logic that is currently being used to determine if a shift shows in Anywhere.
     [x] Right now, it's looking at schedule_periods.show_in_anywhere to determine if the shift should display.  Instead, now reference location_schedules.publish_date.  If publish_date is not null, then display the shift in Anywhere.  If publish_date is null, only show the shift if the user has the Scheduler security key.
@@ -59,7 +59,7 @@
 8. [x] To the right of the Employee dropdown in mockups #1 and #2 above, add a dropdown called "Show".
     * [x] Values for this dropdown should be All Shifts, Published Shifts Only, and Un-Publishsed Shifts Only.
     * [x] Default to All Shifts.
-    * [ ] **When updated, update calendar to only show shifts based on this selection. Use location_schedules.publish_date to determine if a shift is published or not.**
+    * [x] When updated, update calendar to only show shifts based on this selection. Use location_schedules.publish_date to determine if a shift is published or not.
     * [x] This dropdown should only be visible if the user has the Scheduler security key for the Anywhere Scheduling window.
     * [x] Below this dropdown, show a count of Un-Published Shifts displayed on the page. IF the count is 0, show green ELSE show red. This should only show if the user has the Scheduler security key.
 

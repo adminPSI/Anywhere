@@ -174,7 +174,8 @@
 
     .eventTime,
     .eventName,
-    .pubUnpubIcon {
+    .pubUnpubIcon,
+    .copyShiftIcon svg {
       pointer-events: none;
     }
     .pubUnpubIcon,
@@ -190,6 +191,7 @@
     border-radius: $r-sm;
     display: grid;
     grid-template-columns: subgrid;
+    grid-auto-flow: row dense;
     grid-column: 1/-1;
 
     .eventGroup-label {
