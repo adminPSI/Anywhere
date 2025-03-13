@@ -701,7 +701,7 @@ const SchedulingCalendar = (function () {
 
         const month = this.daysToRender[index].getMonth() + 1;
         const day = this.daysToRender[index].getDate();
-        const year = this.daysToRender[index].getYear();
+        const year = this.daysToRender[index].getFullYear();
 
         if (this.selectedDates.includes(`${month}/${day}/${year}`)) {
           dateWrapEle.classList.add('selected');
