@@ -120,6 +120,8 @@ const TRANS_routeDocumentation = (function () {
             routeStartOdo.classList.add('disabled')
             routeEndOdo.classList.add('disabled')
             tripIntegratedEmploymentCheckbox.classList.add('disabled');
+            originationInput.classList.add('disabled');
+            destinationInput.classList.add('disabled');
         }
         routeDocCardBody.appendChild(routeStartInput);
         routeDocCardBody.appendChild(tripIntegratedEmploymentCheckbox);
