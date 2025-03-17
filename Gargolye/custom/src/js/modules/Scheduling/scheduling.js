@@ -1,5 +1,4 @@
-//!: copy icon click event not working
-//!: figure out why events are not moving up in grid
+//!: check filter function on newEvents when save/updating a shift from popups
 
 const EVENT_TYPES = {
   1: 'My Shifts', // blankish, red, blue, green, orange, purple, yellow
@@ -1013,15 +1012,9 @@ const SchedulingCalendar = (function () {
           saveUpdateFlag: isNew ? 'S' : 'U',
         });
 
-        debugger;
-
         calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
 
-        //TODO:
-        // need to see if we get array of new shiftIds
-        // refresh calendarEvents data, then use new shiftIds to find out which are new and then add those
-
-        // const newEvents = calendarEvents.filter(calEvent => newShiftIds.includes(calEvent.eventId))
+        const newEvents = calendarEvents.filter(calEvent => res.includes(calEvent.eventId));
 
         newEvents.forEach(event => {
           if (!isNew) {
@@ -1174,12 +1167,12 @@ const SchedulingCalendar = (function () {
         POPUP.hide(shiftPopup);
         renderRequestOffPopup(shiftData.shiftId, () => {
           const updatedShift = calendarEvents.find(event => event.eventId === shiftData.shiftId);
-          updatedShift.type.name = EVENT_TYPES[5];
-          updatedShift.type.id = 5;
+          updatedShift.typeName = EVENT_TYPES[5];
+          updatedShift.typeId = 5;
 
           const updatedShiftScheduleCache = schedules.find(event => event.shiftId === shiftData.shiftId);
-          updatedShiftScheduleCache.type.name = EVENT_TYPES[5];
-          updatedShiftScheduleCache.type.id = 5;
+          updatedShiftScheduleCache.typeName = EVENT_TYPES[5];
+          updatedShiftScheduleCache.typeId = 5;
 
           ScheduleCalendar.updateEvent({ ...updatedShift });
         });
@@ -1201,12 +1194,12 @@ const SchedulingCalendar = (function () {
             },
             () => {
               const updatedShift = calendarEvents.find(event => event.eventId === shiftData.shiftId);
-              updatedShift.type.name = EVENT_TYPES[4];
-              updatedShift.type.id = 4;
+              updatedShift.typeName = EVENT_TYPES[4];
+              updatedShift.typeId = 4;
 
               const updatedShiftScheduleCache = schedules.find(event => event.shiftId === shiftData.shiftId);
-              updatedShiftScheduleCache.type.name = EVENT_TYPES[4];
-              updatedShiftScheduleCache.type.id = 4;
+              updatedShiftScheduleCache.typeName = EVENT_TYPES[4];
+              updatedShiftScheduleCache.typeId = 4;
 
               ScheduleCalendar.updateEvent({ ...updatedShift });
             },
@@ -1221,12 +1214,12 @@ const SchedulingCalendar = (function () {
         schedulingAjax.cancelRequestOpenShiftSchedulingAjax(shiftData.shiftId);
 
         const updatedShift = calendarEvents.find(event => event.eventId === shiftData.shiftId);
-        updatedShift.type.name = EVENT_TYPES[3];
-        updatedShift.type.id = 3;
+        updatedShift.typeName = EVENT_TYPES[3];
+        updatedShift.typeId = 3;
 
         const updatedShiftScheduleCache = schedules.find(event => event.shiftId === shiftData.shiftId);
-        updatedShiftScheduleCache.type.name = EVENT_TYPES[3];
-        updatedShiftScheduleCache.type.id = 3;
+        updatedShiftScheduleCache.typeName = EVENT_TYPES[3];
+        updatedShiftScheduleCache.typeId = 3;
 
         ScheduleCalendar.updateEvent({ ...updatedShift });
       }
@@ -1483,10 +1476,8 @@ const SchedulingCalendar = (function () {
         length: length,
         description: description,
         name: sch.lastName,
-        type: {
-          name: type,
-          id: id,
-        },
+        typeId: id,
+        typeName: type,
         locationId: sch.locationId,
         locationName: sch.locationName,
         publishedDate: sch.publishDate,
@@ -1511,16 +1502,29 @@ const SchedulingCalendar = (function () {
         length: 1,
         description: appt.typeDescription,
         name: appt.consumerName,
-        type: {
-          name: EVENT_TYPES[6],
-          id: 6,
-        },
+        typeId: 6,
+        typeName: EVENT_TYPES[6],
         locationId: appt.locationId,
         locationName: appt.locationName,
         publishedDate: appt.publishDate,
         color: color,
       };
     });
+  }
+  function renderCalendarEvents() {
+    if (selectedLocationId === '%') {
+      ScheduleCalendar.renderGroupedEvents([...calendarEvents, ...calendarAppointments], {
+        groupBy: 'locationId',
+        groupName: 'locationName',
+      });
+    } else if (selectedEmployeeId === '%') {
+      ScheduleCalendar.renderGroupedEvents([...calendarEvents, ...calendarAppointments], {
+        groupBy: 'personId',
+        groupName: 'name',
+      });
+    } else {
+      ScheduleCalendar.renderEvents([...calendarEvents, ...calendarAppointments]);
+    }
   }
   //
   function handleCalendarEventClick(eventTarget) {
@@ -1766,14 +1770,7 @@ const SchedulingCalendar = (function () {
 
       calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
 
-      if (selectedLocationId === '%') {
-        ScheduleCalendar.renderGroupedEvents(calendarEvents, {
-          groupBy: 'locationId',
-          groupName: 'locationName',
-        });
-      } else {
-        ScheduleCalendar.renderEvents(calendarEvents);
-      }
+      renderCalendarEvents();
     });
 
     return dropdownEle;
@@ -1790,14 +1787,7 @@ const SchedulingCalendar = (function () {
 
       calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
 
-      if (selectedEmployeeId === '%') {
-        ScheduleCalendar.renderGroupedEvents(calendarEvents, {
-          groupBy: 'personId',
-          groupName: 'name',
-        });
-      } else {
-        ScheduleCalendar.renderEvents(calendarEvents);
-      }
+      renderCalendarEvents();
     });
 
     return dropdownEle;
@@ -1921,18 +1911,22 @@ const SchedulingCalendar = (function () {
 
       viewOptionShifts = e.target.text.toLowerCase();
 
-      if (viewOptionShifts === 'no' && selectedEmployeeId === 'none') {
-        selectedEmployeeId = $.session.PeopleId;
+      // if USER don't have security key they are only ever viewing their own schedule
 
-        if (selectedLocationId === '%') {
-          ScheduleCalendar.renderGroupedEvents(calendarEvents, {
-            groupBy: 'locationId',
-            groupName: 'locationName',
-          });
-        } else {
-          ScheduleCalendar.renderEvents(calendarEvents);
+      if (viewOptionShifts === 'no') {
+        if (selectedEmployeeId === 'none') {
+          selectedEmployeeId = $.session.PeopleId;
+
+          renderCalendarEvents();
         }
+
+        const filterCheck = value => value === 3;
+        ScheduleCalendar.filterEventsBy({ filterKey: 'typeId', filterCheck });
+      } else {
+        ScheduleCalendar.filterEventsBy({ resetFilter: true });
       }
+
+      renderCalendarEvents();
 
       populateEmployeeDropdown();
 

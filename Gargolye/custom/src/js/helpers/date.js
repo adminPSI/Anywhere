@@ -66,11 +66,11 @@ const dates = (function () {
         date.getHours(),
         date.getMinutes(),
         date.getSeconds(),
-        date.getMilliseconds()
-      )
-    )
-    utcDate.setUTCFullYear(date.getFullYear())
-    return date.getTime() - utcDate.getTime()
+        date.getMilliseconds(),
+      ),
+    );
+    utcDate.setUTCFullYear(date.getFullYear());
+    return date.getTime() - utcDate.getTime();
   }
 
   function isValid(dirtyDate) {
@@ -422,7 +422,7 @@ const dates = (function () {
       result = `${result}${separator}${time}${tzOffset}`;
     }
 
-    return result;
+    return result.split('T')[0];
   }
   function formateToISO(dirtyDate) {
     if (!dirtyDate) return;
