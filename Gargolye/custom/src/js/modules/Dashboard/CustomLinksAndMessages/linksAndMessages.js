@@ -437,6 +437,7 @@ var linksAndMessages = (function () {
             style: 'secondary',
             type: 'contained',
             callback: function () {
+                selectALLBtn.classList.toggle('enabled');
                 const divElement = document.getElementById('multiSelectBody');
                 const pElements = divElement.querySelectorAll('p');  
                 currentconsumersSelected = [];  
@@ -469,6 +470,7 @@ var linksAndMessages = (function () {
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
         selectALLBtn.classList.add('selectAllBtn');
+        selectALLBtn.style.width = '100%';
         employeeCount.style.marginTop = '5px';  
         btnWrap.appendChild(assignBtn);
         btnWrap.appendChild(cancelSelectBtn);
