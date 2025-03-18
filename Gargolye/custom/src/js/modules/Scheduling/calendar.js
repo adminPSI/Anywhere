@@ -708,6 +708,27 @@ class Calendar {
     }
 
     if (this.currentView === 'month') {
+      if (this.customGroupingOn) {
+      } else {
+        const eventDate = new Date(newEvent.date);
+        const dateISO = dates.formatISO(eventDate);
+
+        const startTime = dates.convertFromMilitary(newEvent.startTime.split(' ')[1]);
+        const endTime = dates.convertFromMilitary(newEvent.endTime.split(' ')[1]);
+
+        const eventCellEle = document.createElement('div');
+        eventCellEle.id = `e-${newEvent.eventId}`;
+        eventCellEle.setAttribute('data-event-id', newEvent.eventId);
+        eventCellEle.setAttribute('data-type-id', newEvent.typeId);
+        eventCellEle.style.backgroundColor = newEvent.color;
+        eventCellEle.className = 'eventCellEle';
+        eventCellEle.innerHTML = `
+          <p class="eventTime">${startTime} - ${endTime} ${newEvent.length}</p>
+        `;
+
+        this.monthDOMCache[dateISO].appendChild(eventCellEle);
+      }
+
       return;
     }
   }
