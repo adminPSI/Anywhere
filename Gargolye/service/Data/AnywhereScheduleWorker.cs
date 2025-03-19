@@ -49,7 +49,7 @@ namespace Anywhere.service.Data
 
         public string publishShift(string token, string locationId, string employeeId, string fromDate, string toDate, string notifyEmployee, string publish)
         {
-            string publishShift = dg.publishShift(token, locationId, employeeId, fromDate, toDate, notifyEmployee, publish);
+            string publishShift = dg.publishShift(token, locationId, employeeId, fromDate, toDate, notifyEmployee, publish);//
             return publishShift;
         }
 
