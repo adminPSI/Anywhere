@@ -1410,6 +1410,92 @@ var OODAjax = (function () {
     form.submit();
   }
 
+  function generateForm5(data) {
+    var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/generateForm5/`;
+    var successFunction = function (resp) {
+      var res = JSON.stringify(response);
+      return res;
+      //callback()
+    };
+    data = {
+      token: $.session.Token, 
+      referenceNumber: data.referenceNumber,
+      vendorId: '',
+      peopleId: data.peopleId,
+      serviceCodeId: data.serviceCodeId,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      userId: data.userId
+    }
+
+  // Create an HTML form element
+  var form = document.createElement('form');
+  form.setAttribute('action', action);
+  form.setAttribute('method', 'POST');
+  form.setAttribute('target', '_blank');  // Open the response in a new tab
+
+  // Create input elements for form data
+  var tokenInput = document.createElement('input');
+  tokenInput.setAttribute('type', 'hidden');  // Hidden input
+  tokenInput.setAttribute('name', 'token');
+  tokenInput.setAttribute('value', $.session.Token);
+  form.setAttribute('success', successFunction);
+  form.setAttribute('enctype', 'bare');
+  //form.setAttribute('enctype', 'multipart/form-data');
+
+
+    form.onsubmit = successFunction;
+
+    var tokenInput = document.createElement('input');
+    tokenInput.setAttribute('name', 'token');
+    tokenInput.setAttribute('value', $.session.Token);
+    tokenInput.id = 'token';
+
+    var userIdInput = document.createElement('input');
+    userIdInput.setAttribute('name', 'userId');
+    userIdInput.setAttribute('value', data.userId);
+    userIdInput.id = 'userId';
+
+    var referenceNumberInput = document.createElement('input');
+    referenceNumberInput.setAttribute('name', 'referenceNumber');
+    referenceNumberInput.setAttribute('value', data.referenceNumber);
+    referenceNumberInput.id = 'referenceNumber';
+
+    var peopleIdInput = document.createElement('input');
+    peopleIdInput.setAttribute('name', 'peopleId');
+    peopleIdInput.setAttribute('value', data.peopleId);
+    peopleIdInput.id = 'peopleId';
+
+    var serviceCodeIdInput = document.createElement('input');
+    serviceCodeIdInput.setAttribute('name', 'serviceCodeId');
+    serviceCodeIdInput.setAttribute('value', data.serviceCodeId);
+    serviceCodeIdInput.id = 'serviceCodeId';
+
+    var startDateInput = document.createElement('input');
+    startDateInput.setAttribute('name', 'startDate');
+    startDateInput.setAttribute('value', data.startDate);
+    startDateInput.id = 'startDate';
+
+    var endDateInput = document.createElement('input');
+    endDateInput.setAttribute('name', 'endDate');
+    endDateInput.setAttribute('value', data.endDate);
+    endDateInput.id = 'endDate';
+
+    form.appendChild(tokenInput);
+    form.appendChild(userIdInput);
+    form.appendChild(referenceNumberInput);
+    form.appendChild(peopleIdInput);
+    form.appendChild(serviceCodeIdInput);
+    form.appendChild(startDateInput);
+    form.appendChild(endDateInput);
+
+    form.style.position = 'absolute';
+    form.style.opacity = '0';
+    document.body.appendChild(form);
+
+    form.submit();
+  }
+
   function generateForm6(data) {
     var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/generateForm6/`;
     var successFunction = function (resp) {

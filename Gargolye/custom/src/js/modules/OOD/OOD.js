@@ -882,6 +882,10 @@ const OOD = (() => {
                 case 4:
                     sentStatus = await OODAjax.generateForm4(data);
                     break;
+                
+                case 5: 
+                    sentStatus = await OODAjax.generateForm5(data);
+                    break;
     
                 case 6:
                     sentStatus = await OODAjax.generateForm6(data);
@@ -1011,6 +1015,7 @@ const OOD = (() => {
 
         const form3Btn = buildIndividualFormBtn('Form 3 - Intake Acknowledgement', 3);
         const form4Btn = buildIndividualFormBtn('Form 4 - Monthly Job & Site Development', 4);
+        const form5Btn = buildIndividualFormBtn('Form 5 - Job Search Assistance Parts 2 & 3', 5);
         const form6Btn = buildIndividualFormBtn('Form 6 - Tier1 and JD Plan', 6);
         const form8Btn = buildIndividualFormBtn('Form 8 - Work Activities and Assessment', 8);
         const form10Btn = buildIndividualFormBtn('Form 10 - Transportation', 10);
@@ -1018,6 +1023,7 @@ const OOD = (() => {
 
         popup.appendChild(form3Btn);
         popup.appendChild(form4Btn);
+        popup.appendChild(form5Btn);
         popup.appendChild(form6Btn);
         popup.appendChild(form8Btn);
         popup.appendChild(form10Btn);
@@ -1518,6 +1524,13 @@ const OOD = (() => {
             // value: '',
         });
 
+        createPositionDropdown = dropdown.build({
+            label: 'Position',
+            dropdownId: 'createPositionDropdown',
+            id: 'createPositionDropdown',
+            // value: '',
+        });
+
         // apply filters button
         createfilterPopupCreateBTN = button.build({
             text: `Create Form ${formNumber}`,
@@ -1542,13 +1555,16 @@ const OOD = (() => {
 
         // build popup
   
-           if (formNumber != '3') createfilterPopup.appendChild(employeeDropdown);
+           if (formNumber != '3' || formNumber != '4') createfilterPopup.appendChild(employeeDropdown);
    
             createfilterPopup.appendChild(createServiceDateStartInput);
      
             createfilterPopup.appendChild(createServiceDateEndInput);
    
             createfilterPopup.appendChild(createreferenceNumbersDropdown);
+            
+            if (formNumber == '5') createfilterPopup.appendChild(createPositionDropdown);
+
             createfilterPopup.appendChild(btnWrap);
 
         populateCreateEmployeeDropdown();
