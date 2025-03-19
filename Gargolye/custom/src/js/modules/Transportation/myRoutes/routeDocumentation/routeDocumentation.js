@@ -16,7 +16,7 @@ const TRANS_routeDocumentation = (function () {
         Save and Cancel btns
     */
 
-    let routeStartInput, routeEndInput, routeStartOdo, routeEndOdo, tripIntegratedEmploymentCheckbox, ro;
+    let routeStartInput, routeEndInput, routeStartOdo, routeEndOdo, tripIntegratedEmploymentCheckbox, ro, originationInput, destinationInput;
     let consumerDocCardBody, noConsumerWarning, tooManyConsumersWarning;
 
     // * Data storage
@@ -96,6 +96,22 @@ const TRANS_routeDocumentation = (function () {
             isChecked: tripInfo.integratedEmployment === 'Y' ? true : false,
         });
 
+        //152264 - ADV-ANY-TR: Add Origination and Destination fields to Anywhere Transportation//
+        originationInput = input.build({
+            id: "originationInput",
+            label: "Origination",
+            type: "textarea",
+            value: tripInfo.origination
+        })
+
+        destinationInput = input.build({
+            id: "destinationInput",
+            label: "Destination",
+            type: "textarea",
+            value: tripInfo.destination 
+        })
+        /////////
+
         tripIntegratedEmploymentCheckbox.style = "padding-bottom: 15px;";   
 
         if (ro) {
@@ -103,12 +119,17 @@ const TRANS_routeDocumentation = (function () {
             routeEndInput.classList.add('disabled')
             routeStartOdo.classList.add('disabled')
             routeEndOdo.classList.add('disabled')
+            tripIntegratedEmploymentCheckbox.classList.add('disabled');
+            originationInput.classList.add('disabled');
+            destinationInput.classList.add('disabled');
         }
         routeDocCardBody.appendChild(routeStartInput);
         routeDocCardBody.appendChild(tripIntegratedEmploymentCheckbox);
         routeDocCardBody.appendChild(routeStartOdo);
+        routeDocCardBody.appendChild(originationInput);
         routeDocCardBody.appendChild(routeEndInput);
         routeDocCardBody.appendChild(routeEndOdo);
+        routeDocCardBody.appendChild(destinationInput);
         column1.appendChild(routeDocCard);
         // ! Consumer Section //
         const consumerDocCard = document.createElement("div");
@@ -187,76 +208,76 @@ const TRANS_routeDocumentation = (function () {
         }
     }
 
-    function eventListeners() {
-        function odoCheck() {
+    function odoCheck() {
 
-            const startVal = parseInt(routeStartOdo.querySelector('input').value)
-            const endVal = parseInt(routeEndOdo.querySelector('input').value)
+        const startVal = parseInt(routeStartOdo.querySelector('input').value)
+        const endVal = parseInt(routeEndOdo.querySelector('input').value)
 
-            var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
-            
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        
+        routeStartOdo.classList.remove('error');
+        routeEndOdo.classList.remove('error');
+
+        //Odo can be null, check to see if they are numbers (NaN when they are null)
+        if (typeof(startVal) !== 'number' && typeof(endVal) !== 'number') {
             routeStartOdo.classList.remove('error');
             routeEndOdo.classList.remove('error');
+            setBtnStatusOfRouteDocumentation();
+            return
+        }
 
-            //Odo can be null, check to see if they are numbers (NaN when they are null)
-            if (typeof(startVal) !== 'number' && typeof(endVal) !== 'number') {
-                routeStartOdo.classList.remove('error');
-                routeEndOdo.classList.remove('error');
-                setBtnStatusOfRouteDocumentation();
-                return
-            }
+    if (TripIntegratedEmploymentCheckbox.checked == true) {
 
-        if (TripIntegratedEmploymentCheckbox.checked == true) {
-
-            if (isNaN(startVal) && isNaN(endVal)) {
+        if (isNaN(startVal) && isNaN(endVal)) {
+            routeStartOdo.classList.add('error');
+            routeEndOdo.classList.add('error');
+            setBtnStatusOfRouteDocumentation();
+            return;
+        } else {
+            if (isNaN(startVal)) {
                 routeStartOdo.classList.add('error');
+                setBtnStatusOfRouteDocumentation();
+                return;
+            }
+            if (isNaN(endVal)) {
                 routeEndOdo.classList.add('error');
                 setBtnStatusOfRouteDocumentation();
                 return;
-            } else {
-                if (isNaN(startVal)) {
-                    routeStartOdo.classList.add('error');
-                    setBtnStatusOfRouteDocumentation();
-                    return;
-                }
-                if (isNaN(endVal)) {
-                    routeEndOdo.classList.add('error');
-                    setBtnStatusOfRouteDocumentation();
-                    return;
-                }
             }
-
-            if (consumersOnRecord.size > 1) {
-                roster2.toggleMiniRosterBtnVisible(false);
-                tooManyConsumersWarning.style.display = 'block'; 
-             } else if (consumersOnRecord.size == 1) {
-               roster2.toggleMiniRosterBtnVisible(false);
-               tooManyConsumersWarning.style.display = 'none';
-            } else {
-                roster2.toggleMiniRosterBtnVisible(true);
-                tooManyConsumersWarning.style.display = 'none';
-            }
-          //  setBtnStatusOfRouteDocumentation();
-
-        } else {  //TripIntegratedEmploymentCheckbox.checked == false
-
-            roster2.toggleMiniRosterBtnVisible(true);
-            tooManyConsumersWarning.style.display = 'none';
-         //   setBtnStatusOfRouteDocumentation();
         }
 
-        const dif = endVal - startVal;
-        if (dif < 0) {
-            routeStartOdo.classList.add('error');
-            routeEndOdo.classList.add('error')
+        if (consumersOnRecord.size > 1) {
+            roster2.toggleMiniRosterBtnVisible(false);
+            tooManyConsumersWarning.style.display = 'block'; 
+         } else if (consumersOnRecord.size == 1) {
+           roster2.toggleMiniRosterBtnVisible(false);
+           tooManyConsumersWarning.style.display = 'none';
         } else {
-             routeStartOdo.classList.remove('error');
-             routeEndOdo.classList.remove('error')
-                }
-            setBtnStatusOfRouteDocumentation();
-            
-        } //end odoCheck()
+            roster2.toggleMiniRosterBtnVisible(true);
+            tooManyConsumersWarning.style.display = 'none';
+        }
+      //  setBtnStatusOfRouteDocumentation();
 
+    } else {  //TripIntegratedEmploymentCheckbox.checked == false
+
+        roster2.toggleMiniRosterBtnVisible(true);
+        tooManyConsumersWarning.style.display = 'none';
+     //   setBtnStatusOfRouteDocumentation();
+    }
+
+    const dif = endVal - startVal;
+    if (dif < 0) {
+        routeStartOdo.classList.add('error');
+        routeEndOdo.classList.add('error')
+    } else {
+         routeStartOdo.classList.remove('error');
+         routeEndOdo.classList.remove('error')
+            }
+        setBtnStatusOfRouteDocumentation();
+        
+    } //end odoCheck()
+
+    function eventListeners() {
         routeStartInput.addEventListener('click', event => {
             event.target.value = UTIL.getCurrentTime();
             routeStartInput.dispatchEvent(new Event('change'))
@@ -313,42 +334,8 @@ const TRANS_routeDocumentation = (function () {
     }
 
     function checkRequiredFields() {
-
-        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
-
-        if (TripIntegratedEmploymentCheckbox.checked == true) {
-
-            routeStartOdo.classList.remove('error');
-            routeEndOdo.classList.remove('error');
-
-            const startVal = parseInt(routeStartOdo.querySelector('input').value)
-            const endVal = parseInt(routeEndOdo.querySelector('input').value)
-
-            if (isNaN(startVal) && isNaN(endVal)) {
-                routeStartOdo.classList.add('error');
-                routeEndOdo.classList.add('error');
-                setBtnStatusOfRouteDocumentation();
-                return;
-            } else {
-                if (isNaN(startVal)) {
-                    routeStartOdo.classList.add('error');
-                    setBtnStatusOfRouteDocumentation();
-                    return;
-                }
-                if (isNaN(endVal)) {
-                    routeEndOdo.classList.add('error');
-                    setBtnStatusOfRouteDocumentation();
-                    return;
-                }
-            }
-            setBtnStatusOfRouteDocumentation()
-
-        } else {
-            routeStartOdo.classList.remove('error');
-            routeEndOdo.classList.remove('error');
-            setBtnStatusOfRouteDocumentation()
-        }
-    
+        odoCheck();
+        setBtnStatusOfRouteDocumentation()
     }
 
     function setBtnStatusOfRouteDocumentation() {
@@ -526,6 +513,8 @@ const TRANS_routeDocumentation = (function () {
             } else {
                 tripIntegratedEmployment = 'N';
             }
+            const originationVal = originationInput.querySelector('textarea').value;
+            const destinationVal = destinationInput.querySelector('textarea').value;
 
             
             const dbCallArr = []
@@ -536,7 +525,9 @@ const TRANS_routeDocumentation = (function () {
                 odometerStop: odoEnd,
                 startTime: startTime,
                 endTime: endTime,
-                integratedEmployment: tripIntegratedEmployment
+                integratedEmployment: tripIntegratedEmployment,
+                origination: originationVal,
+                destination: destinationVal 
             }
             dbCallArr.push(TRANS_routeDocumentationAjax.updateTripDetails(tripDetailSubmit))
       consumersOnRecord.forEach((val,key,map) => {

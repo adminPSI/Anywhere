@@ -3,7 +3,7 @@
         margin: 0px 5px 20px;
     }
 
-    h3 {
+    h3 {  
         font-size: 1rem;
     }
 
@@ -69,6 +69,44 @@
 
         @media screen and (min-width: 560px) {
             display: flex;
+        }
+    }
+
+    .headerWrap {
+        display: flow;
+
+        .width25Per {
+            width: 100%;
+        }
+
+        .width75Per {
+            width: 100%;
+        }
+
+        .width15Per {
+            width: 100%;
+        }
+
+        @media screen and (min-width: 560px) {
+            display: flex;
+            justify-content: space-between;
+
+            .checkbox-mtd > span:after {
+                top: 21px !important;
+            }
+
+            .width25Per {
+                width: 24%;
+            }
+
+            .width75Per {
+                width: 74%;
+            }
+
+            .width13Per {
+                margin-left: 1%;
+                width: 13%;
+            }
         }
     }
 

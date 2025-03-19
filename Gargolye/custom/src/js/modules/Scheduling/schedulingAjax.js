@@ -1,4 +1,85 @@
 const schedulingAjax = (function () {
+  async function getSchedulesForSchedulingModuleNew(locationId, personId) {
+    //When using this call:
+    //Pass a '%' for the personId and the locationId from the dropdown to get all schedules for a location
+    //Pass a '%' for the locationId and the users personId to get all of that persons schedules
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getSchedulesForSchedulingModuleNew/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          locationId: locationId,
+          personId: personId,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return result.getSchedulesForSchedulingModuleNewResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+  async function getScheduleApptInformationNew(locationId) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getScheduleApptInformationNew/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          locationId: locationId,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.getScheduleApptInformationNewResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+  async function getLocationDropdownForSchedulingNew(openShiftYes) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getLocationDropdownForSchedulingNew/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          showOpenShifts: openShiftYes,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.getLocationDropdownForSchedulingNewResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+
   async function saveOrUpdateShift(retrieveData) {
     // date: '01/01/2015, 01/02/2025'
     // consumerId: '123, 123, 123'
@@ -32,10 +113,35 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
+  async function saveOrUpdateAppointment(retrieveData) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/saveOrUpdateAppointment/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          ...retrieveData,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.saveOrUpdateAppointmentResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
   async function getSchedulesForSchedulingModule(locationId, personId) {
     //When using this call:
     //Pass a '%' for the personId and the locationId from the dropdown to get all schedules for a location
-    //Pass a '%' for the locationId and the users personId to get all of that pesons schedules
+    //Pass a '%' for the locationId and the users personId to get all of that persons schedules
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -87,32 +193,7 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-  async function getLocationDropdownForScheduling(openShiftYes) {
-    try {
-      const result = await $.ajax({
-        type: 'POST',
-        url:
-          $.webServer.protocol +
-          '://' +
-          $.webServer.address +
-          ':' +
-          $.webServer.port +
-          '/' +
-          $.webServer.serviceName +
-          '/getLocationDropdownForScheduling/',
-        data: JSON.stringify({
-          token: $.session.Token,
-          openShiftYes: openShiftYes,
-        }),
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-      });
-      return result.getLocationDropdownForSchedulingResult;
-    } catch (error) {
-      throw new Error(error.responseText);
-    }
-  }
-  async function getEmployeesForScheduling(retrieveData) {
+  async function getFilteredEmployeesForScheduling(retrieveData) {
     // locationId: '0', // '0' for null '%' for all
     // includeTrainedOnly: 0,
     // region: 'ALL', // '0' for null '%' for all
@@ -145,6 +226,31 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
+  async function getEmployeesForScheduling(userId) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getAllEmployees/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          userId,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.getAllEmployeesResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
   async function getRegionDropdown() {
     try {
       const result = await $.ajax({
@@ -165,6 +271,31 @@ const schedulingAjax = (function () {
         dataType: 'json',
       });
       return result.getSchedulingRegionsResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+  async function publishUnpublishSchedules(retrieveData) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/publishUnpublishSchedules/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          ...retrieveData,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.publishUnpublishSchedulesResult;
     } catch (error) {
       throw new Error(error.responseText);
     }
@@ -511,12 +642,18 @@ const schedulingAjax = (function () {
   }
 
   return {
+    getSchedulesForSchedulingModuleNew,
+    getScheduleApptInformationNew,
+    getLocationDropdownForSchedulingNew,
+    //
     saveOrUpdateShift,
+    saveOrUpdateAppointment,
     getSchedulesForSchedulingModule,
     getScheduleApptInformation,
-    getLocationDropdownForScheduling,
     getEmployeesForScheduling,
+    getFilteredEmployeesForScheduling,
     getRegionDropdown,
+    publishUnpublishSchedules,
     //
     requestDaysOffSchedulingAjax,
     getCallOffDropdownReasonsAjax,
@@ -551,7 +688,10 @@ const schedulingAjax = (function () {
         '/' +
         $.webServer.serviceName +
         '/getLocationDropdownForScheduling/',
-      data: '{"token":"' + $.session.Token + '"}',
+      data: JSON.stringify({
+        token: $.session.Token,
+        showOpenShifts: 'N',
+      }),
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {

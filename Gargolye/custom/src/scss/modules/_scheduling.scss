@@ -4,7 +4,7 @@
 .scheduleWrap {
   padding: 10px 0px;
 }
-.scheduleNav{
+.scheduleNav {
   display: flex;
   flex-flow: row wrap;
   gap: 10px;
@@ -17,7 +17,7 @@
 
     > div {
       flex-grow: 2;
-  
+
       &:first-child {
         flex-grow: 3;
       }
@@ -28,13 +28,13 @@
 
     .shiftTypeWrap {
       position: relative;
-  
+
       p {
         position: absolute;
         right: 0px;
         bottom: 0px;
         font-weight: $_normal;
-  
+
         &.error {
           color: $error;
         }
@@ -62,7 +62,7 @@
     .pubUnpubButton {
       flex-grow: 1;
     }
-  }  
+  }
 }
 #locationDropdown {
   min-width: 200px;
@@ -81,7 +81,7 @@
   font-size: 32px;
   font-weight: 500;
 }
-.calendarNav{
+.calendarNav {
   display: flex;
   align-items: center;
 
@@ -90,7 +90,7 @@
     border-radius: 2px;
     padding: 2px;
     order: 1;
-    
+
     button {
       cursor: pointer;
       background: $gray;
@@ -128,29 +128,22 @@
 
   .dayNameHeader {
     display: contents;
-    
+
     > div {
-      background: $white; 
+      background: $white;
       font-weight: $_bold;
       font-size: 16px;
       display: flex;
       align-items: center;
-      justify-content: center; 
+      justify-content: center;
     }
 
     > div.emptyCell {
       background: $primary;
     }
   }
-
-  .day {
-    background: $white;
-
-    &.notSameMonth  {
-      background: $gray;
-    }
-  }
 }
+// month view
 .calendar .month-view {
   display: grid;
   grid-gap: 2px;
@@ -160,6 +153,53 @@
 
   .week {
     display: contents;
+  }
+
+  .day {
+    background: $white;
+
+    &.notSameMonth {
+      background: $gray;
+    }
+  }
+}
+// week & day view
+.calendar .week-view,
+.calendar .day-view {
+  .eventCellEle {
+    cursor: pointer;
+    padding: 2px;
+    position: relative;
+    z-index: 2;
+
+    .eventTime,
+    .eventName,
+    .pubUnpubIcon,
+    .copyShiftIcon svg {
+      pointer-events: none;
+    }
+    .pubUnpubIcon,
+    .copyShiftIcon {
+      width: 24px;
+    }
+  }
+
+  // CUSTOM GROUPING GRID
+  //==================================================
+  .eventGroup {
+    border: 1px solid $white;
+    border-radius: $r-sm;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-auto-flow: row dense;
+    grid-column: 1/-1;
+
+    .eventGroup-label {
+      color: $white;
+      text-align: right;
+      padding: 4px 6px 4px 0px;
+      grid-column: 1 / 2;
+    }
   }
 }
 .calendar .week-view {
@@ -172,17 +212,338 @@
   .week {
     display: grid;
     column-gap: 2px;
+    row-gap: 2px;
     grid-template-columns: 100px repeat(7, minmax(0, 1fr));
     grid-column: 1/-1;
+
+    &.customGrouping {
+      row-gap: 10px;
+    }
+
+    // TIME GRID
+    //==================================================
+    .weekEvents {
+      display: contents;
+    }
 
     .timeSlot {
       color: $white;
       text-align: right;
       padding: 4px 6px 4px 0px;
+      grid-column: 1 / 2;
     }
+
     .daySlot {
       background: $white;
     }
+
+    .daySlot:nth-child(8n + 2) { grid-column: 2 / 3; } /* Sunday */
+    .daySlot:nth-child(8n + 3) { grid-column: 3 / 4; } /* Monday */
+    .daySlot:nth-child(8n + 4) { grid-column: 4 / 5; } /* Tuesday */
+    .daySlot:nth-child(8n + 5) { grid-column: 5 / 6; } /* Wednesday */
+    .daySlot:nth-child(8n + 6) { grid-column: 6 / 7; } /* Thursday */
+    .daySlot:nth-child(8n + 7) { grid-column: 7 / 8; } /* Friday */
+    .daySlot:nth-child(8n + 8) { grid-column: 8 / 9; } /* Saturday */
+
+    /* Assign correct row (hour) based on index */
+    .daySlot:nth-child(n + 2):nth-child(-n + 8) { grid-row: 1 / 2; } /* 12:00 AM */
+    .daySlot:nth-child(n + 10):nth-child(-n + 16) { grid-row: 2 / 3; } /* 1:00 AM */
+    .daySlot:nth-child(n + 18):nth-child(-n + 24) { grid-row: 3 / 4; } /* 2:00 AM */
+    .daySlot:nth-child(n + 26):nth-child(-n + 32) { grid-row: 4 / 5; } /* 3:00 AM */
+    .daySlot:nth-child(n + 34):nth-child(-n + 40) { grid-row: 5 / 6; } /* 4:00 AM */
+    .daySlot:nth-child(n + 42):nth-child(-n + 48) { grid-row: 6 / 7; } /* 5:00 AM */
+    .daySlot:nth-child(n + 50):nth-child(-n + 56) { grid-row: 7 / 8; } /* 6:00 AM */
+    .daySlot:nth-child(n + 58):nth-child(-n + 64) { grid-row: 8 / 9; } /* 7:00 AM */
+    .daySlot:nth-child(n + 66):nth-child(-n + 72) { grid-row: 9 / 10; } /* 8:00 AM */
+    .daySlot:nth-child(n + 74):nth-child(-n + 80) { grid-row: 10 / 11; } /* 9:00 AM */
+    .daySlot:nth-child(n + 82):nth-child(-n + 88) { grid-row: 11 / 12; } /* 10:00 AM */
+    .daySlot:nth-child(n + 90):nth-child(-n + 96) { grid-row: 12 / 13; } /* 11:00 AM */
+    .daySlot:nth-child(n + 98):nth-child(-n + 104) { grid-row: 13 / 14; } /* 12:00 PM */
+    .daySlot:nth-child(n + 106):nth-child(-n + 112) { grid-row: 14 / 15; } /* 1:00 PM */
+    .daySlot:nth-child(n + 114):nth-child(-n + 120) { grid-row: 15 / 16; } /* 2:00 PM */
+    .daySlot:nth-child(n + 122):nth-child(-n + 128) { grid-row: 16 / 17; } /* 3:00 PM */
+    .daySlot:nth-child(n + 130):nth-child(-n + 136) { grid-row: 17 / 18; } /* 4:00 PM */
+    .daySlot:nth-child(n + 138):nth-child(-n + 144) { grid-row: 18 / 19; } /* 5:00 PM */
+    .daySlot:nth-child(n + 146):nth-child(-n + 152) { grid-row: 19 / 20; } /* 6:00 PM */
+    .daySlot:nth-child(n + 154):nth-child(-n + 160) { grid-row: 20 / 21; } /* 7:00 PM */
+    .daySlot:nth-child(n + 162):nth-child(-n + 168) { grid-row: 21 / 22; } /* 8:00 PM */
+    .daySlot:nth-child(n + 170):nth-child(-n + 176) { grid-row: 22 / 23; } /* 9:00 PM */
+    .daySlot:nth-child(n + 178):nth-child(-n + 184) { grid-row: 23 / 24; } /* 10:00 PM */
+    .daySlot:nth-child(n + 186):nth-child(-n + 192) { grid-row: 24 / 25; } /* 11:00 PM */
+
+    .weekEvents {
+      display: contents;
+
+      .eventCellEle {
+        color: black;
+        z-index: 2;
+      }
+    }
+  }
+}
+.calendar .day-view {
+  display: grid;
+  row-gap: 4px;
+  grid-template-columns: 100px minmax(0, 1fr);
+  grid-template-rows: 40px minmax(80px, auto);
+
+  .day {
+    display: grid;
+    row-gap: 2px;
+    grid-template-columns: 100px minmax(0, 1fr);
+    grid-column: 1/-1;
+
+    &.customGrouping {
+      row-gap: 10px;
+    }
+
+    // TIME GRID
+    //==================================================
+    .dayEvents {
+      display: contents;
+    }
+
+    .timeSlot {
+      color: $white;
+      text-align: right;
+      padding: 4px 6px 4px 0px;
+      grid-column: 1 / 2;
+    }
+
+    .daySlot {
+      background: $white;
+      grid-column: 2 / 3;
+    }
+
+    .timeSlot:nth-of-type(n) {
+      grid-row: calc(var(--index) * 2 + 1);
+    }
+    .daySlot:nth-of-type(n) {
+      grid-row: calc(var(--index) * 2 + 2);
+    }
+
+    /* Assign correct row (hour) based on index */
+    // .daySlot:nth-child(n + 2):nth-child(-n + 8) { grid-row: 1 / 2; } /* 12:00 AM */
+    // .daySlot:nth-child(n + 10):nth-child(-n + 16) { grid-row: 2 / 3; } /* 1:00 AM */
+    // .daySlot:nth-child(n + 18):nth-child(-n + 24) { grid-row: 3 / 4; } /* 2:00 AM */
+    // .daySlot:nth-child(n + 26):nth-child(-n + 32) { grid-row: 4 / 5; } /* 3:00 AM */
+    // .daySlot:nth-child(n + 34):nth-child(-n + 40) { grid-row: 5 / 6; } /* 4:00 AM */
+    // .daySlot:nth-child(n + 42):nth-child(-n + 48) { grid-row: 6 / 7; } /* 5:00 AM */
+    // .daySlot:nth-child(n + 50):nth-child(-n + 56) { grid-row: 7 / 8; } /* 6:00 AM */
+    // .daySlot:nth-child(n + 58):nth-child(-n + 64) { grid-row: 8 / 9; } /* 7:00 AM */
+    // .daySlot:nth-child(n + 66):nth-child(-n + 72) { grid-row: 9 / 10; } /* 8:00 AM */
+    // .daySlot:nth-child(n + 74):nth-child(-n + 80) { grid-row: 10 / 11; } /* 9:00 AM */
+    // .daySlot:nth-child(n + 82):nth-child(-n + 88) { grid-row: 11 / 12; } /* 10:00 AM */
+    // .daySlot:nth-child(n + 90):nth-child(-n + 96) { grid-row: 12 / 13; } /* 11:00 AM */
+    // .daySlot:nth-child(n + 98):nth-child(-n + 104) { grid-row: 13 / 14; } /* 12:00 PM */
+    // .daySlot:nth-child(n + 106):nth-child(-n + 112) { grid-row: 14 / 15; } /* 1:00 PM */
+    // .daySlot:nth-child(n + 114):nth-child(-n + 120) { grid-row: 15 / 16; } /* 2:00 PM */
+    // .daySlot:nth-child(n + 122):nth-child(-n + 128) { grid-row: 16 / 17; } /* 3:00 PM */
+    // .daySlot:nth-child(n + 130):nth-child(-n + 136) { grid-row: 17 / 18; } /* 4:00 PM */
+    // .daySlot:nth-child(n + 138):nth-child(-n + 144) { grid-row: 18 / 19; } /* 5:00 PM */
+    // .daySlot:nth-child(n + 146):nth-child(-n + 152) { grid-row: 19 / 20; } /* 6:00 PM */
+    // .daySlot:nth-child(n + 154):nth-child(-n + 160) { grid-row: 20 / 21; } /* 7:00 PM */
+    // .daySlot:nth-child(n + 162):nth-child(-n + 168) { grid-row: 21 / 22; } /* 8:00 PM */
+    // .daySlot:nth-child(n + 170):nth-child(-n + 176) { grid-row: 22 / 23; } /* 9:00 PM */
+    // .daySlot:nth-child(n + 178):nth-child(-n + 184) { grid-row: 23 / 24; } /* 10:00 PM */
+    // .daySlot:nth-child(n + 186):nth-child(-n + 192) { grid-row: 24 / 25; } /* 11:00 PM */
+
+    .dayEvents {
+      display: contents;
+
+      .eventCellEle {
+        color: black;
+        z-index: 2;
+      }
+    }
+  }
+}
+// Shift Popups
+.weekViewDatePicker {
+  display: flex;
+  align-items: center;
+  flex-flow: row nowrap;
+  margin: 0 0 10px 0;
+
+  .prevWeekBtn,
+  .nextWeekBtn {
+    min-width: 20px;
+  }
+
+  .weekWrap {
+    flex-grow: 5;
+    display: grid;
+    column-gap: 2px;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+
+    .prevWeekBtn,
+    .prevWeekBtn {
+      cursor: pointer;
+
+      svg {
+        pointer-events: none;
+      }
+    }
+
+    .dateWrap {
+      cursor: pointer;
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: center;
+
+      &.selected {
+        background-color: $green;
+        //outline: 1px solid $green;
+      }
+
+      > div {
+        pointer-events: none;
+      }
+    }
+  }
+}
+#shiftDetailPopup {
+  max-width: 450px;
+
+  h2 {
+    margin: 0 0 10px 0;
+  }
+
+  .filterEmployeesBtn,
+  .addIndividualBtn {
+    width: 100%;
+  }
+
+  .individualCardWrap {
+    display: flex;
+    flex-flow: column nowrap;
+    overflow-y: scroll;
+    padding: 0;
+  }
+}
+#addIndividualPopup {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr min-content;
+  row-gap: 10px;
+  min-height: 600px;
+  max-height: 600px;
+}
+#filterEmployeePopup {
+  border: 2px solid black;
+
+  //.employeeOptionsContainer {}
+  .employeeOption {
+    display: flex;
+    flex-flow: row nowrap;
+    margin-bottom: 10px;
+
+    
+    .label {
+      &.nestedInput {
+        display: flex;
+        flex-flow: row wrap;
+      }
+    }
+
+    input[type='checkbox'] {
+      min-width: 20px;
+      margin: 0 4px 0 0;
+    }
+    input[type='number'] {
+      margin: 0 4px;
+      max-width: 44px;
+      outline: 1px solid black;
+    }
+  }
+}
+// roster stuff for popups
+#shiftDetailPopup,
+#addIndividualPopup {
+  .rosterCardsWrap {
+    display: flex;
+    flex-flow: column nowrap;
+    overflow-y: scroll;
+    padding: 0 10px;
+
+    .rosterCardWrap {
+      border-radius: 4px;
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.1s ease-in;
+      padding: 4px 6px;
+      position: relative;
+      order: 3;
+
+      &.isClosed:not(.selected) {
+        grid-template-rows: 0fr;
+        margin: 0;
+        padding: 0;
+      }
+
+      &.locked {
+        pointer-events: none;
+        order: 0;
+      }
+
+      &.selected {
+        background: rgba(129, 185, 65, 0.9);
+        color: $white;
+        order: 1;
+        margin: 0 0 6px;
+      }
+
+      .svgIcon {
+        color: $black;
+        pointer-events: all;
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        rotate: 0deg;
+        transition: rotate 0.3s ease-in;
+      }
+    }
+
+    .rosterCard {
+      display: flex;
+      cursor: pointer;
+      flex-flow: row nowrap;
+      overflow: hidden;
+
+      * {
+        pointer-events: none;
+      }
+
+      .portrait {
+        border-radius: 50%;
+        height: 60px;
+        width: 60px;
+
+        img {
+          width: 100%;
+        }
+      }
+
+      .details {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        white-space: nowrap;
+      }
+
+      .inactiveDetails {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        white-space: nowrap;
+        background: #f10927;
+        font-style: italic;
+        color: white;
+      }
+    }
+  }
+  .btnWrap {
+    margin: 10px 0;
   }
 }
 
@@ -236,7 +597,6 @@ div.leftnav-on #calendarContent {
     }
   }
 }
-
 .requestOffBtnWrap {
   display: flex;
 
@@ -245,9 +605,9 @@ div.leftnav-on #calendarContent {
     margin: 0 5px 0;
   }
 }
+
 // Request Approval Page
 // ===============================
-
 .actioncenter[data-active-module='schedule'] {
   .table__row {
     &[data-approval-status='approve'] {
@@ -376,7 +736,6 @@ div.leftnav-on #calendarContent {
 
 //Calendar MAIN
 //=====================
-
 .scheduleViewWrap {
   display: flex;
   .btn {
@@ -399,24 +758,20 @@ div.leftnav-on #calendarContent {
 .detailsHeading {
   margin: 0 0 25px;
 }
-
 hr {
   border-color: rgba(0, 0, 0, 0.14);
   border-width: 1px 0 0;
   margin: 0 0 10px 0;
 }
-
 .divider--right-inset {
   border-color: rgba(0, 0, 0, 0.14);
   border-width: 1px 0 0;
   margin: 0 30% 10px 0;
 }
-
 .smallDetail {
   padding: 4px 0 0;
   font-size: 0.8em;
 }
-
 .popupDetailsLine:first-child {
   margin: 15px 0 10px;
 }
@@ -426,15 +781,12 @@ hr {
 .popupDetailsLine {
   margin: 0 0 10px;
 }
-
 .label {
   margin: 0 0 5px;
 }
-
 label {
   margin: 0 0 5px;
 }
-
 .popupBtnWrap {
   display: flex;
   > button:nth-child(2) {
@@ -444,11 +796,9 @@ label {
     flex-grow: 1;
   }
 }
-//call off button in popup
 .request-off {
   margin: 20px 0 15px 0;
 }
-
 .overlapRequestShiftPopup {
   display: flex;
   border: 1px solid;

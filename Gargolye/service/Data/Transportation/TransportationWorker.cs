@@ -8,9 +8,9 @@ namespace Anywhere.service.Data.Transportation
         JavaScriptSerializer js = new JavaScriptSerializer();
         TransportationDataGetter tdg = new TransportationDataGetter();
 
-        public InsertTripCompleted[] insertTripCompleted(string token, string tripName, string driverId, string otherRider, string dateOfService, string billingType, string vehicleInformationId, string locationId, string integratedEmployment)
+        public InsertTripCompleted[] insertTripCompleted(string token, string tripName, string driverId, string otherRider, string dateOfService, string billingType, string vehicleInformationId, string locationId, string integratedEmployment, string origination, string destination)
         {
-            string tripString = tdg.insertTripCompleted(token, tripName, driverId, otherRider, dateOfService, billingType, vehicleInformationId, locationId, integratedEmployment);
+            string tripString = tdg.insertTripCompleted(token, tripName, driverId, otherRider, dateOfService, billingType, vehicleInformationId, locationId, integratedEmployment, origination, destination);
             InsertTripCompleted[] tripObj = js.Deserialize<InsertTripCompleted[]>(tripString);
             return tripObj;
         }
@@ -257,6 +257,8 @@ namespace Anywhere.service.Data.Transportation
             public string locationId { get; set; }
             public string batchId { get; set; }
             public string integratedEmployment { get; set; }
+            public string origination { get; set; }
+            public string destination { get; set; }
 
         }
 
@@ -296,15 +298,15 @@ namespace Anywhere.service.Data.Transportation
             public string zip { get; set; }
         }
 
-        public string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string integratedEmployment)
+        public string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string integratedEmployment, string origination, string destination)
         {
-            return tdg.updateTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, integratedEmployment);
+            return tdg.updateTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, integratedEmployment, origination, destination);
         }
 
 
-        public string updateManageTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string driverId, string otherRiderId, string vehicleId, string locationId, string billingType, string tripName, string integratedEmployment)
+        public string updateManageTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string driverId, string otherRiderId, string vehicleId, string locationId, string billingType, string tripName, string integratedEmployment, string origination, string destination)
         {
-            return tdg.updateManageTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, driverId, otherRiderId, vehicleId, locationId, billingType, tripName, integratedEmployment);
+            return tdg.updateManageTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, driverId, otherRiderId, vehicleId, locationId, billingType, tripName, integratedEmployment, origination, destination);
         }
 
         public string insertUpdateTripConsumers(string token, string tripDetailId, string tripsCompletedId, string consumerId, string alternateAddress, string scheduledTime,

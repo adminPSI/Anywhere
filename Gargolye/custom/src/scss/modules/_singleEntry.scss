@@ -234,6 +234,10 @@
     .btnWrap {
         flex-flow: row nowrap;
     }
+
+    .input-field.textarea {
+        min-height: 75px !important; 
+    }
 }
 
 // EVV Signature & Note

@@ -1,5 +1,5 @@
 const TRANS_manageEditRoute = (function () {
-    let driverDropdown, routeNameInput, locationDropdown, otherRiderDropdown, vehicleDropdown, routeStartOdo, routeEndOdo, routeStartInput, routeEndInput, tripIntegratedEmploymentCheckbox;
+    let driverDropdown, routeNameInput, locationDropdown, otherRiderDropdown, vehicleDropdown, routeStartOdo, routeEndOdo, routeStartInput, routeEndInput, tripIntegratedEmploymentCheckbox, originationInput, destinationInput ;
     let milesRadio, tripsRadio;
     let consumerSectionBody, noConsumerWarning;
     let tripInfo;
@@ -119,6 +119,21 @@ const TRANS_manageEditRoute = (function () {
             style: "secondary",
         });
 
+        //152264 - ADV-ANY-TR: Add Origination and Destination fields to Anywhere Transportation//
+        originationInput = input.build({
+            id: "originationInput",
+            label: "Origination",
+            type: "textarea",
+            value: tripInfo.origination
+        })
+
+        destinationInput = input.build({
+            id: "destinationInput",
+            label: "Destination",
+            type: "textarea",
+            value: tripInfo.destination
+        })
+        /////////
 
         // Billing Radios //
         milesRadio = input.buildRadio({
@@ -148,6 +163,8 @@ const TRANS_manageEditRoute = (function () {
             driverDropdown.classList.add('disabled')
             otherRiderDropdown.classList.add('disabled')
             vehicleDropdown.classList.add('disabled')
+            originationInput.classList.add('disabled')
+            destinationInput.classList.add('disabled') 
         }
         const radioDiv = document.createElement("div");
         radioDiv.classList.add("addRouteRadioDiv");
@@ -215,6 +232,8 @@ const TRANS_manageEditRoute = (function () {
         routeInfoCardBody.appendChild(otherRiderDropdown);
         routeInfoCardBody.appendChild(vehicleDropdown);
         if (isAddHoc) routeInfoCardBody.appendChild(locationDropdown)
+        routeInfoCardBody.appendChild(originationInput);
+        routeInfoCardBody.appendChild(destinationInput);
         routeInfoCardBody.appendChild(radioDiv);
         ////////////////////
         // Consumer Section //
@@ -324,27 +343,67 @@ const TRANS_manageEditRoute = (function () {
         dropdown.populate(otherRiderDropdown, otherRiderDropdownData, tripInfo.otherRider);
     }
 
-    function eventListeners() {
-        function odoCheck() {
-            const startVal = parseInt(routeStartOdo.querySelector('input').value)
-            const endVal = parseInt(routeEndOdo.querySelector('input').value)
-            //Odo can be null, check to see if they are numbers (NaN when they are null)
-      if (typeof(startVal) !== 'number' && typeof(endVal) !== 'number') {
-                routeStartOdo.classList.remove('error');
-                routeEndOdo.classList.remove('error')
-                return
+    function odoCheck() {
+        const startVal = parseInt(routeStartOdo.querySelector('input').value)
+        const endVal = parseInt(routeEndOdo.querySelector('input').value)
+        //Odo can be null, check to see if they are numbers (NaN when they are null)
+  if (typeof(startVal) !== 'number' && typeof(endVal) !== 'number') {
+            routeStartOdo.classList.remove('error');
+            routeEndOdo.classList.remove('error')
+            return
+        }
+        var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
+        if (TripIntegratedEmploymentCheckbox.checked == true) {
+
+            if (isNaN(startVal) && isNaN(endVal)) {
+                routeStartOdo.classList.add('error');
+                routeEndOdo.classList.add('error');
+                setBtnStatusOfAddRoute();
+                return;
+            } else {
+                if (isNaN(startVal)) {
+                    routeStartOdo.classList.add('error');
+                    setBtnStatusOfAddRoute();
+                    return;
+                }
+                if (isNaN(endVal)) {
+                    routeEndOdo.classList.add('error');
+                    setBtnStatusOfAddRoute();
+                    return;
+                }
             }
 
-            const dif = endVal - startVal;
-            if (dif < 0) {
-                routeStartOdo.classList.add('error');
-                routeEndOdo.classList.add('error')
+            if (consumersOnRecord.size > 1) {
+                roster2.toggleMiniRosterBtnVisible(false);
+                tooManyConsumersWarning.style.display = 'block'; 
+             } else if (consumersOnRecord.size == 1) {
+               roster2.toggleMiniRosterBtnVisible(false);
+               tooManyConsumersWarning.style.display = 'none';
             } else {
-                routeStartOdo.classList.remove('error');
-                routeEndOdo.classList.remove('error')
+                roster2.toggleMiniRosterBtnVisible(true);
+                tooManyConsumersWarning.style.display = 'none';
             }
-            setBtnStatusOfAddRoute();
+          //  setBtnStatusOfRouteDocumentation();
+
+        } else {  //TripIntegratedEmploymentCheckbox.checked == false
+
+            roster2.toggleMiniRosterBtnVisible(true);
+            tooManyConsumersWarning.style.display = 'none';
+         //   setBtnStatusOfRouteDocumentation();
         }
+
+        const dif = endVal - startVal;
+        if (dif <= 0) {
+            routeStartOdo.classList.add('error');
+            routeEndOdo.classList.add('error')
+        } else {
+            routeStartOdo.classList.remove('error');
+            routeEndOdo.classList.remove('error')
+        }
+        setBtnStatusOfAddRoute();
+    }
+
+    function eventListeners() {
         routeStartInput.addEventListener('change', event => {
             const totalHours = UTIL.calculateTotalHours(routeStartInput.firstChild.value, routeEndInput.querySelector('input').value)
             if (totalHours < 0) {
@@ -430,6 +489,7 @@ const TRANS_manageEditRoute = (function () {
                MilesRadio.classList.remove('disabled');
 
                noConsumerWarningMessage.innerText = 'You must select at least one consumer for the route.'
+               tooManyConsumersWarning.style.display = 'none';
                roster2.toggleMiniRosterBtnVisible(true);
                setBtnStatusOfAddRoute();
             }
@@ -507,6 +567,8 @@ const TRANS_manageEditRoute = (function () {
                tripsRadio.classList.remove('disabled');
                milesRadio.classList.remove('disabled');
         }
+
+        odoCheck();
         setBtnStatusOfAddRoute()
     }
 
@@ -680,6 +742,9 @@ const TRANS_manageEditRoute = (function () {
             const endTime = routeEndInput.querySelector('input').value
             const odoStart = routeStartOdo.querySelector('input').value
             const odoEnd = routeEndOdo.querySelector('input').value;
+            const originationVal = originationInput.querySelector('textarea').value;
+            const destinationVal = destinationInput.querySelector('textarea').value; 
+
       const billingType = document.getElementById("milesRadio").checked ? "M":"T";
             const dbCallArr = [];
             const tripData = {
@@ -696,7 +761,9 @@ const TRANS_manageEditRoute = (function () {
                 billingType: billingType,
                 tripName: UTIL.removeUnsavableNoteText(routeName),
                // integratedEmployment: tripInfo.integratedEmployment
-                integratedEmployment: selectedIntegratedEmployment
+                integratedEmployment: selectedIntegratedEmployment,
+                origination: originationVal,
+                destination: destinationVal 
             };
             dbCallArr.push(TRANS_manageRoutesAjax.updateManageTripDetails(tripData));
             if (deleteInspection) dbCallArr.push(TRANS_vehicleInspectionAjax.deleteVehicleInspection(vehicleInspection))            

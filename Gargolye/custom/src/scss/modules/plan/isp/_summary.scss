@@ -67,6 +67,28 @@
     }
   }
 }
+
+.importantSummaryTable {
+  .table__row {
+    cursor: pointer;
+  }
+
+  .table__row div {
+    flex-grow: 1;
+    margin: 0 5px 0 0;
+    overflow-wrap: break-word;
+  }
+
+  // Target the last two columns
+  .table__row div:nth-last-child(2),
+  .table__row div:nth-last-child(1) {
+    display: block;
+    max-width: 500px !important;
+    width: 500px !important;
+  }
+}
+
+
 .skillsTablesWrap {
   .table:not(.sortableTable) .table__row>div:nth-child(2) {
     display: block;

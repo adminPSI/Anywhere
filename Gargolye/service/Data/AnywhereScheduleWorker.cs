@@ -19,9 +19,24 @@ namespace Anywhere.service.Data
             return allScheduleObj;
         }
 
-        public MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpeShifts)
+        public AllScheduleData[] getSchedulesForSchedulingModuleNew(string token, string locationId, string personId)
         {
-            string locationsString = dg.getLocationDropdownForScheduling(token, showOpeShifts);
+            string allSchedules = dg.getSchedulesForSchedulingModuleNew(token, locationId, personId);
+            js.MaxJsonLength = Int32.MaxValue;
+            AllScheduleData[] allScheduleObj = js.Deserialize<AllScheduleData[]>(allSchedules);
+            return allScheduleObj;
+        }
+
+        public MainLocationDropDownData[] getLocationDropdownForScheduling(string token, char showOpenShifts)
+        {
+            string locationsString = dg.getLocationDropdownForScheduling(token, showOpenShifts);
+            MainLocationDropDownData[] locationsObj = js.Deserialize<MainLocationDropDownData[]>(locationsString);
+            return locationsObj;
+        }
+
+        public MainLocationDropDownData[] getLocationDropdownForSchedulingNew(string token, char showOpenShifts)
+        {
+            string locationsString = dg.getLocationDropdownForSchedulingNew(token, showOpenShifts);
             MainLocationDropDownData[] locationsObj = js.Deserialize<MainLocationDropDownData[]>(locationsString);
             return locationsObj;
         }
@@ -30,6 +45,12 @@ namespace Anywhere.service.Data
         {
             string saveUpdateString = dg.saveOrUpdateShift(dateString, locationId, personId, startTime, endTime, color, notifyEmployee, consumerIdString, saveUpdateFlag);
             return saveUpdateString;
+        }
+
+        public string publishShift(string token, string locationId, string employeeId, string fromDate, string toDate, string notifyEmployee, string publish)
+        {
+            string publishShift = dg.publishShift(token, locationId, employeeId, fromDate, toDate, notifyEmployee, publish);
+            return publishShift;
         }
 
         public string saveSchedulingCallOffRequest(string token, string shiftId, string personId, string reasonId, string note, string status, string notifiedEmployeeId)
@@ -72,11 +93,30 @@ namespace Anywhere.service.Data
             return consumerApptObj;
         }
 
+        public string saveOrUpdateAppointment(string token, string medTrackingId, string consumerName, string typeDescription, string dateScheduled, string timeScheduled, string provider, string reason, string notes, string takenToApptBy, string publishDate, string locationId, string locationName, string personId, string color)
+        {
+            return dg.saveOrUpdateAppointment(token, medTrackingId, consumerName, typeDescription, dateScheduled, timeScheduled, provider, reason, notes, takenToApptBy, publishDate, locationId, locationName, personId, color);
+        }
+
+        public ConsumerAppointmentDataNew[] getScheduleApptInformationNew(string token, string locationId)
+        {
+            string consumerApptString = dg.getScheduleApptInformationNew(token, locationId);
+            ConsumerAppointmentDataNew[] consumerApptObj = js.Deserialize<ConsumerAppointmentDataNew[]>(consumerApptString);
+            return consumerApptObj;
+        }
+
         public MyApprovalData[] getScheduleMyApprovalData(string token, string personId)
         {
             string myApprovalDataString = dg.getScheduleMyApprovalData(token, personId);
             MyApprovalData[] myApprovalDataObj = js.Deserialize<MyApprovalData[]>(myApprovalDataString);
             return myApprovalDataObj;
+        }
+
+        public AllEmployees[] getAllEmployees(string userId)
+        {
+            string allEmployeeString = dg.getAllEmployees(userId);
+            AllEmployees[] allEmployeeObj = js.Deserialize<AllEmployees[]>(allEmployeeString);
+            return allEmployeeObj;
         }
 
         public OverlapData[] requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
@@ -303,6 +343,8 @@ namespace Anywhere.service.Data
             public string callOffStatus { get; set; }
             public string consumerNames { get; set; }
             public string preferred { get; set; }
+            public string publishDate { get; set; }
+            public string color { get; set; }
         }
 
         public class OverlapData
@@ -353,6 +395,24 @@ namespace Anywhere.service.Data
             public string takenToApptBy { get; set; }
         }
 
+        public class ConsumerAppointmentDataNew
+        {
+            public string medTrackingId { get; set; }
+            public string consumerName { get; set; }
+            public string typeDescription { get; set; }
+            public string dateScheduled { get; set; }
+            public string timeScheduled { get; set; }
+            public string provider { get; set; }
+            public string reason { get; set; }
+            public string notes { get; set; }
+            public string takenToApptBy { get; set; }
+            public string publishDate { get; set; }
+            public string locationId { get; set; }
+            public string locationName { get; set; }
+            public string personId { get; set; }
+            public string color { get; set; }
+        }
+
         public class MyApprovalData
         {
             public string personId { get; set; }
@@ -367,5 +427,12 @@ namespace Anywhere.service.Data
             public string locationName { get; set; }
             public string requestType { get; set; }
         }
+
+        public class AllEmployees
+        {
+            public string Person_Id { get; set; }
+            public string EmployeeName { get; set; }            
+        }
+
     }
 }

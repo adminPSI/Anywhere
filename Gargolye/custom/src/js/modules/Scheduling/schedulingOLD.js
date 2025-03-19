@@ -61,283 +61,258 @@ var scheduling = (function () {
   };
 })();
 
-const CalendarOld = (function () {
-  const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const MONTH_NAMES = {
-    0: 'January',
-    1: 'February',
-    2: 'March',
-    3: 'April',
-    4: 'May',
-    5: 'June',
-    6: 'July',
-    7: 'August',
-    8: 'September',
-    9: 'October',
-    10: 'November',
-    11: 'December',
-  };
-  // DOM
-  const wrapperEle = document.createElement('div');
-  const calendarEle = document.createElement('div');
-  const calendarHeaderEle = document.createElement('div');
-  const calendarTitleEle = document.createElement('div');
-  const calendarNavEle = document.createElement('div');
+// Open Shifts: EVENT_TYPE 3
+//-----------------------------------------------------------------------
+function showOpenShiftPopup(data) {
+  const shiftDate = data.serviceDate.split(' ')[0];
+  let startTime = data.startTime;
+  let endTime = data.endTime;
+  startTime = dates.convertFromMilitary(startTime);
+  endTime = dates.convertFromMilitary(endTime);
+  const consumers = data.consumerNames;
+  const location = data.locationName;
+  const shiftNotes = data.shiftNotes;
+  const workCode = `${data.workCode} - ${data.workCodeDescription}`;
+  let shiftType = data.shiftType;
+  shiftType = shiftType === 'A' ? 'Awake' : shiftType === 'N' ? 'Night' : shiftType === 'D' ? 'Day' : '';
+  shiftDateForCall = shiftDate;
 
-  const viewBtnEle = {
-    month: document.createElement('button'),
-    week: document.createElement('button'),
-    day: document.createElement('button'),
-  };
+  const popup = POPUP.build({
+    classNames: 'openShiftDetails',
+    attributes: [{ key: 'shiftId', value: data.shiftId }],
+  });
 
-  const navBtnEle = {
-    next: document.createElement('button'),
-    prev: document.createElement('button'),
-    today: document.createElement('button'),
-  };
-  const monthDOMCache = {};
+  wrap = document.createElement('div');
+  wrap.innerHTML = `
+      <div class="detailsHeading">
+        <h2>Shift Details</h2>
+        <p class="smallDetail font-mediumEmphasis">${shiftDate}</p>
+      </div>
+      <hr>
+      <div class="detailsBody">
+        <div class="location popupDetailsLine">
+          <h4 class="label">Location:</h4>
+          <p>${location}</p>
+        </div>
+        <hr>
+        <div class="time popupDetailsLine">
+          <h4 class="label">Time:</h4>
+          <p>${startTime} - ${endTime}</p>
+        </div>
+        <hr>
+        <div class="employee popupDetailsLine">
+          <h4 class="label">Consumers:</h4>
+          <p>${consumers}</p>
+        </div>
+        <hr>
+        <div class="workCode popupDetailsLine">
+          <h4 class="label">Work Code:</h4>
+          <p>${workCode}</p>
+        </div>
+        <hr>
+        <div class="shiftType popupDetailsLine">
+          <h4 class="label">Shift Type:</h4>
+          <p>${shiftType}</p>
+        </div>
+        <hr>
+        <div class="shiftNotes popupDetailsLine">
+          <h4 class="label">Notes:</h4>
+          <p>${shiftNotes}</p>
+        </div>
+      </div>
+  `;
+  popup.appendChild(wrap);
 
-  // Date
-  let currentView = 'month';
-  let currentDate = dates.getTodaysDateObj();
-  const todaysDate = dates.getTodaysDateObj();
+  if ($.session.schedRequestOpenShifts === 'N' || $.session.isPSI) {
+  } else if (!$.session.schedulingUpdate || !$.session.schedulingView) {
+  } else {
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('popupBtnWrap');
 
-  function renderEvents(events = []) {
-    // sort events by date/time
-    events
-      .sort((a, b) => {})
-      .forEach(e => {
-        const eventEle = document.createElement('div');
-        eventEle.addEventListener('click', () => {});
-      });
-  }
+    const requestShiftBtn = button.build({
+      text: 'Request Shift',
+      style: 'secondary',
+      type: 'contained',
+      callback: async function () {
+        POPUP.hide(popup);
 
-  function renderMonthView() {
-    const containerEle = document.createElement('div');
-    containerEle.className = 'month-view';
+        const { getOverlapStatusforSelectedShiftResult: overlapWithExistingShift } =
+          await schedulingAjax.getOverlapStatusforSelectedShiftAjax(data.shiftId, $.session.PeopleId);
 
-    const firstDayOfMonth = dates.startOfMonth(currentDate);
-    const lastDayOfMonth = dates.endOfMonth(currentDate);
-    const startWeekFirstDay = dates.startOfWeek(firstDayOfMonth, {
-      weekStartsOn: 0,
-    });
-    const endWeekLastDay = dates.endOfWeek(lastDayOfMonth, {
-      weekStartsOn: 0,
-    });
-    const daysToRender = dates.eachDayOfInterval({
-      start: startWeekFirstDay,
-      end: endWeekLastDay,
-    });
-
-    // cal header
-    calendarTitleEle.textContent = `${MONTH_NAMES[currentDate.getMonth()]} - ${currentDate.getFullYear()}`;
-
-    // day header row
-    const dayHeaderRowEle = document.createElement('div');
-    dayHeaderRowEle.className = 'dayNameHeader';
-    containerEle.appendChild(dayHeaderRowEle);
-    DAY_NAMES.forEach(dayName => {
-      const nameCellEle = document.createElement('div');
-      nameCellEle.textContent = dayName;
-      dayHeaderRowEle.appendChild(nameCellEle);
-    });
-
-    let weekWrapEle;
-    daysToRender.forEach((day, index) => {
-      if (index % 7 === 0) {
-        weekWrapEle = document.createElement('div');
-        weekWrapEle.className = 'week';
-        containerEle.appendChild(weekWrapEle);
-      }
-
-      const dayCellEle = document.createElement('div');
-      dayCellEle.textContent = day.getDate();
-      dayCellEle.className = 'day';
-      weekWrapEle.appendChild(dayCellEle);
-
-      monthDOMCache[day] = dayCellEle;
-
-      containerEle.appendChild(weekWrapEle);
-
-      if (!dates.isSameMonth(day, currentDate)) {
-        dayCellEle.classList.add('notSameMonth');
-      }
+        if (overlapWithExistingShift == 'NoOverLap') {
+          renderSendShiftRequestPopup({
+            token: $.session.Token,
+            shiftId: data.shiftId,
+            personId: $.session.PeopleId,
+            status: 'P',
+            notifiedEmployeeId: null,
+          });
+        } else {
+          displayOverlapPopup(overlapWithExistingShift);
+          return;
+        }
+      },
     });
 
-    calendarEle.appendChild(containerEle);
+    btnWrap.appendChild(requestShiftBtn);
+    popup.appendChild(btnWrap);
   }
-  function renderWeekView() {
-    const containerEle = document.createElement('div');
-    containerEle.className = 'week-view';
 
-    const firstDayOfWeek = dates.startOfWeek(currentDate);
-    const lastDayOfWeek = dates.endOfWeek(currentDate);
-    const daysToRender = eachDayOfInterval({
-      start: firstDayOfWeek,
-      end: lastDayOfWeek,
+  POPUP.show(popup);
+}
+
+// Pending Open Shifts: EVENT_TYPE 4
+//-----------------------------------------------------------------------
+function showPendingOpenShiftsPopup(data) {
+  const shiftDate = data.serviceDate.split(' ')[0];
+  let startTime = data.startTime;
+  let endTime = data.endTime;
+  startTime = dates.convertFromMilitary(startTime);
+  endTime = dates.convertFromMilitary(endTime);
+  const consumers = data.consumerNames;
+  const location = data.locationName;
+  const shiftNotes = data.shiftNotes;
+  const workCode = `${data.workCode} - ${data.workCodeDescription}`;
+  let shiftType = data.shiftType;
+  shiftType = shiftType === 'A' ? 'Awake' : shiftType === 'N' ? 'Night' : shiftType === 'D' ? 'Day' : '';
+  shiftDateForCall = shiftDate;
+
+  const popup = POPUP.build({
+    classNames: 'pendingOpenShiftPopup',
+    attributes: [{ key: 'shiftId', value: data.shiftId }],
+  });
+
+  wrap = document.createElement('div');
+  wrap.innerHTML = `
+      <div class="detailsHeading">
+        <h2>Shift Details</h2>
+        <p class="smallDetail font-mediumEmphasis">${shiftDate}</p>
+      </div>
+      
+      <div class="detailsBody">
+        <div class="location popupDetailsLine">
+          <h4 class="label">Location:</h4>
+          <p>${location}</p>
+        </div>
+        <hr>
+        <div class="time popupDetailsLine">
+          <h4 class="label">Time:</h4>
+          <p>${startTime} - ${endTime}</p>
+        </div>
+        <hr>
+        <div class="employee popupDetailsLine">
+          <h4 class="label">Consumers:</h4>
+          <p>${consumers}</p>
+        </div>
+        <hr>
+        <div class="workCode popupDetailsLine">
+          <h4 class="label">Work Code:</h4>
+          <p>${workCode}</p>
+        </div>
+        <hr>
+        <div class="shiftType popupDetailsLine">
+          <h4 class="label">Shift Type:</h4>
+          <p>${shiftType}</p>
+        </div>
+        <hr>
+        <div class="shiftNotes popupDetailsLine">
+          <h4 class="label">Notes:</h4>
+          <p>${shiftNotes}</p>
+        </div>
+      </div>
+  `;
+
+  popup.appendChild(wrap);
+
+  if (data.requestedById === $.session.PeopleId) {
+    const cancelRequestBtn = button.build({
+      id: 'cancelRequestBtn',
+      attributes: [{ shiftId: data.shiftId }],
+      text: 'Cancel Request',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        const shiftId = data.shiftId;
+        schedulingAjax.cancelRequestOpenShiftSchedulingAjax(shiftId);
+        POPUP.hide(popup);
+
+        //TODO: ? reload the calendar ?
+        //? I think we just want to remove this event from the calendar
+        // _scheduleView = 'mine';
+        // _currentView = 'week';
+        // init();
+      },
     });
 
-    // day header row
-    const dayHeaderRowEle = document.createElement('div');
-    containerEle.appendChild(dayHeaderRowEle);
-    DAY_NAMES.forEach(dayName => {
-      const nameCellEle = document.createElement('div');
-      nameCellEle.textContent = dayName;
-      dayHeaderRowEle.appendChild(nameCellEle);
-    });
-
-    const weekWrapEle = document.createElement('div');
-    daysToRender.forEach(day => {
-      const dayCellEle = document.createElement('div');
-      weekWrapEle.appendChild(dayCellEle);
-
-      // TODO: check if day is in same month (get isSameMonth from datefns)
-      // if (dates.isSameMonth(day, currentDate)) {
-      //   dayCellEle.classList.add('TODO');
-      // }
-
-      // TODO: add events to day
-    });
-
-    calendarEle.appendChild(containerEle);
-  }
-  function renderDayView() {
-    const containerEle = document.createElement('div');
-    containerEle.className = 'day-view';
-
-    // TODO: add events to day
-
-    calendarEle.appendChild(containerEle);
+    let btnWrap = document.createElement('div');
+    btnWrap.classList.add('popupBtnWrap');
+    btnWrap.appendChild(cancelRequestBtn);
+    popup.appendChild(btnWrap);
   }
 
-  function renderCalendar() {
-    calendarEle.innerHTML = '';
+  POPUP.show(popup);
+}
 
-    if (currentView === 'month') {
-      renderMonthView();
-    }
-    if (currentView === 'week') {
-      renderWeekView();
-    }
-    if (currentView === 'day') {
-      renderDayView();
-    }
-  }
+// Call Off Shifts: EVENT_TYPE 5
+//-----------------------------------------------------------------------
+function showPendingCallOffShiftsPopup(data) {
+  const shiftDate = data.serviceDate.split(' ')[0];
+  let startTime = data.startTime;
+  let endTime = data.endTime;
+  startTime = data.convertFromMilitary(startTime);
+  endTime = data.convertFromMilitary(endTime);
+  const consumers = data.consumerNames;
+  const location = data.locationName;
+  const shiftNotes = data.shiftNotes;
+  const workCode = `${data.workCode} - ${data.workCodeDescription}`;
+  let shiftType = data.shiftType;
+  shiftType = shiftType === 'A' ? 'Awake' : shiftType === 'N' ? 'Night' : shiftType === 'D' ? 'Day' : '';
+  shiftDateForCall = shiftDate;
 
-  function handleViewChange(newView) {
-    if (newView === currentView) return;
+  const popup = POPUP.build({
+    classNames: 'pendingCallOffDetails',
+    attributes: [{ key: 'shiftId', value: details.shiftId }],
+  });
 
-    calendarEle.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+      <div class="detailsHeading">
+        <h2>Shift Details</h2>
+        <p class="smallDetail font-mediumEmphasis">${shiftDate}</p>
+      </div>
+      <div class="detailsBody">
+        <div class="location popupDetailsLine">
+          <h4 class="label">Location:  </h4>
+          <p>${location}</p>
+        </div>
+        <hr>
+        <div class="time popupDetailsLine">
+          <h4 class="label">Time:  </h4>
+          <p>${startTime} - ${endTime}</p>
+        </div>
+        <hr>
+        <div class="employee popupDetailsLine">
+          <h4 class="label">Consumers:  </h4>
+          <p>${consumers}</p>
+        </div>
+        <hr>
+        <div class="workCode popupDetailsLine">
+          <h4 class="label">Work Code:  </h4>
+          <p>${workCode}</p>
+        </div>
+        <hr>
+        <div class="shiftType popupDetailsLine">
+          <h4 class="label">Shift Type:  </h4>
+          <p>${shiftType}</p>
+        </div>
+        <hr>
+        <div class="shiftNotes popupDetailsLine">
+          <h4 class="label">Notes:  </h4>
+          <p>${shiftNotes}</p>
+        </div>
+      </div>
+    `;
+  popup.appendChild(wrap);
 
-    viewBtnEle[currentView].classList.remove('active');
-    viewBtnEle[newView].classList.add('active');
-    currentView = newView;
-
-    renderCalendar();
-  }
-  function handleNavigation(navEvent) {
-    if (navEvent === 'prev') {
-      if (currentView === 'month') {
-        currentDate = dates.subMonths(currentDate, 1);
-      }
-      if (currentView === 'week') {
-        currentDate = dates.subWeeks(currentDate, 1);
-      }
-      if (currentView === 'day') {
-        currentDate = dates.subDays(currentDate, 1);
-      }
-    }
-    if (navEvent === 'next') {
-      if (currentView === 'month') {
-        currentDate = dates.addMonths(currentDate, 1);
-      }
-      if (currentView === 'week') {
-        currentDate = dates.addWeeks(currentDate, 1);
-      }
-      if (currentView === 'day') {
-        currentDate = dates.addDays(currentDate, 1);
-      }
-    }
-    if (navEvent === 'today') {
-      currentDate = todaysDate;
-    }
-
-    renderCalendar();
-  }
-
-  function build() {
-    wrapperEle.innerHTML = '';
-    calendarEle.innerHTML = '';
-    calendarHeaderEle.innerHTML = '';
-    calendarTitleEle.innerHTML = '';
-    calendarNavEle.innerHTML = '';
-    // main
-    wrapperEle.classList.add('calendarWrap');
-    calendarHeaderEle.classList.add('calendarHeader');
-    calendarTitleEle.classList.add('calendarTitleEle');
-    calendarNavEle.classList.add('calendarNav');
-    calendarEle.classList.add('calendar');
-
-    // view buttons
-    viewBtnEle['month'].setAttribute('data-view', 'month');
-    viewBtnEle['week'].setAttribute('data-view', 'week');
-    viewBtnEle['day'].setAttribute('data-view', 'day');
-    viewBtnEle['month'].textContent = 'Month';
-    viewBtnEle['week'].textContent = 'Week';
-    viewBtnEle['day'].textContent = 'Day';
-
-    // nav buttons
-    navBtnEle['next'].setAttribute('data-nav', 'next');
-    navBtnEle['prev'].setAttribute('data-nav', 'prev');
-    navBtnEle['today'].setAttribute('data-nav', 'today');
-    navBtnEle['next'].textContent = 'Next >>';
-    navBtnEle['prev'].textContent = '<< Prev';
-    navBtnEle['today'].textContent = 'Today';
-
-    const viewToggleWrap = document.createElement('div');
-    const dateNavWrap = document.createElement('div');
-    viewToggleWrap.classList.add('viewToggle');
-    dateNavWrap.classList.add('dateNav');
-
-    viewToggleWrap.appendChild(viewBtnEle['month']);
-    viewToggleWrap.appendChild(viewBtnEle['week']);
-    viewToggleWrap.appendChild(viewBtnEle['day']);
-
-    dateNavWrap.appendChild(navBtnEle['prev']);
-    dateNavWrap.appendChild(navBtnEle['today']);
-    dateNavWrap.appendChild(navBtnEle['next']);
-
-    calendarNavEle.appendChild(dateNavWrap);
-    calendarNavEle.appendChild(viewToggleWrap);
-
-    calendarHeaderEle.appendChild(calendarTitleEle);
-    calendarHeaderEle.appendChild(calendarNavEle);
-
-    wrapperEle.appendChild(calendarHeaderEle);
-    wrapperEle.appendChild(calendarEle);
-
-    calendarNavEle.addEventListener('click', e => {
-      if (e.target.dataset.view) {
-        handleViewChange(e.target.dataset.view);
-      }
-
-      if (e.target.dataset.nav) {
-        handleNavigation(e.target.dataset.nav);
-      }
-    });
-  }
-
-  function init() {
-    build();
-
-    viewBtnEle['month'].classList.add('active');
-
-    renderCalendar();
-
-    return wrapperEle;
-  }
-
-  return {
-    init,
-  };
-})();
+  POPUP.show(popup);
+}
