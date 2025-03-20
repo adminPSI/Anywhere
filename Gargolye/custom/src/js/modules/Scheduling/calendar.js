@@ -84,7 +84,7 @@ class Calendar {
 
     this.eventCache = null;
     this.eventCacheBackup = null;
-    this.monthDOMCache = null;
+    this.monthEventDOMCache = null;
     this.eventGroupDOMCache = {};
 
     this.rootEle = document.createElement('div');
@@ -192,7 +192,7 @@ class Calendar {
 
   // Views
   renderMonthView() {
-    this.monthDOMCache = {};
+    this.monthEventDOMCache = {};
 
     const containerEle = document.createElement('div');
     containerEle.className = 'month-view';
@@ -233,16 +233,19 @@ class Calendar {
 
       const timeStamp = `${day.getTime()}`;
       const dateISO = dates.formatISO(day);
+
       const dayCellEle = document.createElement('div');
-      dayCellEle.textContent = day.getDate();
+      dayCellEle.innerHTML = `<p>${day.getDate()}</p>`;
       dayCellEle.className = 'day';
       dayCellEle.setAttribute('data-date', dateISO);
       dayCellEle.setAttribute('data-datetime', timeStamp);
+
+      const dayEventCellEle = document.createElement('div');
+
+      dayCellEle.appendChild(dayEventCellEle);
       weekWrapEle.appendChild(dayCellEle);
-
-      this.monthDOMCache[dateISO] = dayCellEle;
-
       containerEle.appendChild(weekWrapEle);
+      this.monthEventDOMCache[dateISO] = dayEventCellEle;
 
       if (!dates.isSameMonth(day, this.currentDate)) {
         dayCellEle.classList.add('notSameMonth');
@@ -359,7 +362,7 @@ class Calendar {
   renderMonthEvents() {
     if (!this.eventCache) return;
 
-    Object.values(this.monthDOMCache).forEach(div => (div.innerHTML = ''));
+    Object.values(this.monthEventDOMCache).forEach(div => (div.innerHTML = ''));
 
     this.eventCache
       .filter(e => isDateWithinSpan(e.date, this.dateRange))
@@ -380,7 +383,7 @@ class Calendar {
           <p class="eventTime">${startTime} - ${endTime} ${event.length}</p>
         `;
 
-        this.monthDOMCache[dateISO].appendChild(eventCellEle);
+        this.monthEventDOMCache[dateISO].appendChild(eventCellEle);
       });
   }
   renderWeekEvents() {
@@ -412,7 +415,7 @@ class Calendar {
   renderMonthEventsAsGroups() {
     if (!this.eventCache) return;
 
-    Object.values(this.monthDOMCache).forEach(div => (div.innerHTML = ''));
+    Object.values(this.monthEventDOMCache).forEach(div => (div.innerHTML = ''));
 
     this.eventGroupDOMCache = {};
     this.eventGroupDOMCount = {};
@@ -429,7 +432,7 @@ class Calendar {
 
           this.eventGroupDOMCount[groupByKey] = 0;
           this.eventGroupDOMCache[groupByKey] = groupWrapEle;
-          this.monthDOMCache[dateISO].appendChild(groupWrapEle);
+          this.monthEventDOMCache[dateISO].appendChild(groupWrapEle);
         }
 
         this.eventGroupDOMCache[groupByKey].innerHTML = `
@@ -726,7 +729,7 @@ class Calendar {
           <p class="eventTime">${startTime} - ${endTime} ${newEvent.length}</p>
         `;
 
-        this.monthDOMCache[dateISO].appendChild(eventCellEle);
+        this.monthEventDOMCache[dateISO].appendChild(eventCellEle);
       }
 
       return;

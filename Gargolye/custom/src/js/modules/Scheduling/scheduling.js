@@ -2000,12 +2000,12 @@ const SchedulingCalendar = (function () {
 
     //!W remove after dev testing
     console.clear();
-    $.session.schedulingUpdate = true;
-    $.session.schedulingView = true;
-    $.session.schedAllowCallOffRequests = 'Y';
-    $.session.schedRequestOpenShifts = 'Y';
-    $.session.hideAllScheduleButton = false;
-    $.session.schedulingSecurity = true;
+    // $.session.schedulingUpdate = true;
+    // $.session.schedulingView = true;
+    // $.session.schedAllowCallOffRequests = 'Y';
+    // $.session.schedRequestOpenShifts = 'Y';
+    // $.session.hideAllScheduleButton = false;
+    // $.session.schedulingSecurity = true;
     //!W remove after dev testing
 
     selectedEmployeeId = $.session.PeopleId;
