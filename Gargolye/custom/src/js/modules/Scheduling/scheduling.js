@@ -1000,7 +1000,7 @@ const SchedulingCalendar = (function () {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        const res = await schedulingAjax.saveOrUpdateShift({
+        await saveUpdateShift({
           dateString: shiftData.date.join(','),
           consumerIdString: shiftData.consumerNames.map(n => n.split('|')[1]).join(','),
           startTime: shiftData.startTime,
@@ -1010,18 +1010,6 @@ const SchedulingCalendar = (function () {
           notifyEmployee: shiftData.notifyEmployee,
           personId: selectedEmployeeId,
           saveUpdateFlag: isNew ? 'S' : 'U',
-        });
-
-        calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
-
-        const newEvents = calendarEvents.filter(calEvent => res.includes(calEvent.eventId));
-
-        newEvents.forEach(event => {
-          if (!isNew) {
-            ScheduleCalendar.updateEvent({ ...event });
-          } else {
-            ScheduleCalendar.addEvent({ ...event });
-          }
         });
 
         POPUP.hide(shiftPopup);
@@ -1289,6 +1277,25 @@ const SchedulingCalendar = (function () {
     checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
 
     POPUP.show(shiftPopup);
+  }
+  async function saveUpdateShift(data) {
+    let res = await schedulingAjax.saveOrUpdateShift({
+      ...data,
+    });
+
+    const parsedRes = JSON.parse(res);
+
+    // calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
+
+    // const newEvents = calendarEvents.filter(calEvent => res.includes(calEvent.eventId));
+
+    // newEvents.forEach(event => {
+    //   if (!isNew) {
+    //     ScheduleCalendar.updateEvent({ ...event });
+    //   } else {
+    //     ScheduleCalendar.addEvent({ ...event });
+    //   }
+    // });
   }
 
   // Appointments: EVENT_TYPE 6
@@ -1993,12 +2000,12 @@ const SchedulingCalendar = (function () {
 
     //!W remove after dev testing
     console.clear();
-    // $.session.schedulingUpdate = true;
-    // $.session.schedulingView = true;
-    // $.session.schedAllowCallOffRequests = 'Y';
-    // $.session.schedRequestOpenShifts = 'Y';
-    // $.session.hideAllScheduleButton = false;
-    // $.session.schedulingSecurity = true;
+    $.session.schedulingUpdate = true;
+    $.session.schedulingView = true;
+    $.session.schedAllowCallOffRequests = 'Y';
+    $.session.schedRequestOpenShifts = 'Y';
+    $.session.hideAllScheduleButton = false;
+    $.session.schedulingSecurity = true;
     //!W remove after dev testing
 
     selectedEmployeeId = $.session.PeopleId;
