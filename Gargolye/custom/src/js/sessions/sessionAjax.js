@@ -1056,7 +1056,8 @@ function getDefaultAnywhereSettings() {
       $.session.requireTimeEntryTransportationTimes = res.requireTimeEntryTransportationTimes;
       $.session.ohioEVVChangeDate = res.ohioEVVChangeDate;
       $.session.anyRequireEndTime = res.anyRequireEndTime;
-      $.session.anyUndocumentedServices = res.anyUndocumentedServices;
+      $.session.anyUndocumentedServices = res.anyUndocumentedServices; 
+      $.session.automateSimpleBilling = res.automateSimpleBilling;
       $.session.useProgressNotes = res.useProgressNotes;
       $.session.applicationName = res.application;
       $.session.portraitPath = res.portraitPath;

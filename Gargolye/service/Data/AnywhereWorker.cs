@@ -636,6 +636,7 @@ namespace Anywhere.service.Data
             public string defaultplangroupname { get; set; }
             public string defaultcontact { get; set; }
             public string anyUndocumentedServices { get; set; }
+            public string automateSimpleBilling { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)

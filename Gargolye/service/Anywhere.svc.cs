@@ -4501,9 +4501,9 @@ namespace Anywhere
             return fssw.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID);
         }
 
-        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID)
+        public UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling)
         {
-            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
+            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID, isSimpleBilling);
         }
 
         public void deleteAuthorization(string token, string authDetailId)

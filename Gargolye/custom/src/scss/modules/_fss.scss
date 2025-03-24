@@ -3,7 +3,7 @@
         margin: 0px 5px 20px;
     }
 
-    h3 {  
+    h3 {
         font-size: 1rem;
     }
 
@@ -455,6 +455,12 @@
                 }
 
                 div:nth-child(5) {
+                    display: block;
+                    width: 80px;
+                    max-width: 80px;
+                }
+
+                div:nth-child(6) {
                     display: block;
                     width: 80px;
                     max-width: 80px;
