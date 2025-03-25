@@ -89,7 +89,7 @@ var customGroups = (function () {
     function groupCheckboxEvent(inputEl, checkboxEl) {
         const isChecked = inputEl.checked;
         const groupId = inputEl.dataset.groupId;
-        checkboxEl.classList.add('disabled');
+        checkboxEl.classList.add('disabled');  
 
         if (isChecked) {
             customGroupsAjax.addConsumerToGroup(groupId, consumerId, function () {
@@ -240,9 +240,9 @@ var customGroups = (function () {
         });
 
         addNewGroupInput.addEventListener('keyup', event => {
-            newGroupName = event.target.value;
+            newGroupName = event.target.value.trim();   
 
-            if (newGroupName.length > 0) {
+            if (newGroupName.length > 0) { 
                 addNewGroupBtn.classList.remove('disabled');
             } else {
                 addNewGroupBtn.classList.add('disabled');
