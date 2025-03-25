@@ -47,20 +47,11 @@ namespace OODForms
                 string crpath = oodfdg.getFormTemplatePath(token);
                 PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
                 string path = pathdatalist[0].path;
-                //string crname = "Tier1andJDPlan_Form6.pdf";
                 string crname = "IntakeAcknowledgment_Form 3.pdf";
-                // IntakeAcknowledgment_Form 3
                 string reportpath = string.Format(path, crname);
                 string personCompletingReport = string.Empty;
 
                 PDFDoc form3Template = new PDFDoc(reportpath);
-
-                // Gather Data for the Person Completing the Report
-
-
-                //string loggedInUserPersonId = oodfdg.getPersonCompletingReportName(token);
-                //personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
-                //string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
 
                 DataTable dt;
                 DataRow row;
@@ -97,32 +88,6 @@ namespace OODForms
                     referenceNumber = "";
                 }
 
-                //string Staff = string.Empty;
-                //string StaffWithInitals = string.Empty;
-                //string OODStaff = string.Empty;
-                //string MiddleName = string.Empty;
-
-                //DataSet ds = oodfdg.OODForm8GetDirectStaff(referenceNumber, startDate, endDate);
-
-                //if (ds.Tables.Count > 0)
-                //{
-                //    DataTable dt2 = ds.Tables[0];
-                //    foreach (DataRow row2 in dt2.Rows)
-                //    {
-                //        if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
-                //        {
-                //            Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
-                //            MiddleName = row2["Middle_Name"].ToString();
-                //            OODStaff += String.Format("{0}, ", Staff.Trim());
-                //        }
-
-                //        if (Staff.ToString().Trim().Length > 0)
-                //        {
-                //            StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
-                //        }
-                //    }
-                //}
-
                 string VRCounselor = "";
 
                 if (referenceNumber != "" && referenceNumber != null && referenceNumber != "%25")
@@ -143,74 +108,19 @@ namespace OODForms
                     }
 
                 }
-                   
-
-                //string IPEGoal = "";
-                //DataSet dsIPE = oodfdg.OODForm6GetIPEGoal(referenceNumber, consumerIdString, startDate, endDate);
-                //// List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
-
-                //if (dsIPE.Tables.Count > 0 && dsIPE.Tables[0].Rows.Count > 0)
-                //{
-                //    if (!string.IsNullOrEmpty(dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString()))
-                //    {
-                //        IPEGoal = dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString();
-                //    }
-                //    else
-                //    {
-                //        IPEGoal = "";
-                //    }
-                //}
-
-                //string service = "";
-                //DataSet dsService = oodfdg.OODForm6GetService(referenceNumber, consumerIdString, startDate, endDate);
-                //// List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
-
-                //if (dsService.Tables.Count > 0 && dsService.Tables[0].Rows.Count > 0)
-                //{
-                //    if (!string.IsNullOrEmpty(dsService.Tables[0].Rows[0]["service"].ToString()))
-                //    {
-                //        service = dsService.Tables[0].Rows[0]["service"].ToString();
-                //    }
-                //    else
-                //    {
-                //        service = "PBJD Tier I";
-                //    }
-                //}
-
-                //string bilingual = "";  // SAMLevel
-                //string SAMLevel = "";  // bilingualSupplement
-                //DataSet dsSAMandBilingual = oodfdg.OODForm6GetSAMandBilingual(referenceNumber, consumerIdString, startDate, endDate, userId);
-
-                //if (dsSAMandBilingual.Tables.Count > 0 && dsSAMandBilingual.Tables[0].Rows.Count > 0)
-                //{
-                //    if (!string.IsNullOrEmpty(dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString()))
-                //    {
-                //        SAMLevel = dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString();
-                //    }
-                //    else
-                //    {
-                //        SAMLevel = "";
-                //    }
-                //}
-
+                
                 DataSet ds3 = new DataSet();
                 //string personCompletingReport;
 
                 if (!string.IsNullOrEmpty(loggedInUserPersonId))
                 {
-
-                    // long lng_loggedInUserPersonId = long.Parse(loggedInUserPersonId);
                     ds3 = oodfdg.getPersonCompletingReport(token, loggedInUserPersonId);
                 }
-
-
 
                 if (ds3.Tables.Count > 0 && ds3.Tables[0].Rows.Count > 0)
                 {
                     personCompletingReport = String.Format("{0} {1} ", ds3.Tables[0].Rows[0]["First_Name"], ds3.Tables[0].Rows[0]["Last_Name"]);
                 }
-
-
 
                 DateTime currentDate = DateTime.Now;
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
@@ -225,14 +135,10 @@ namespace OODForms
                 {
                     ("ProviderName", ProviderName),
                     ("IndividualName", ConsumerName),
-                    // ("IPE_Goal", IPEGoal),         // em_employee_general.ipe for given individual
-                   // ("StaffNames", VRCounselor), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
                     ("PersonCompletingReport", personCompletingReport),
-                    ("OODRepresentative", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
-
+                    ("OODRepresentative", VRCounselor),
                     ("AuthorizationNumber", referenceNumber),
                     ("ProviderInvoiceNumber", invoiceNumber),
-                    //("Service", service),      // Select Service = services.procedure_code for selected service (match on emp_ood.reference_number and consumer_services_master.service_id)
                     ("InvoiceDate", invoiceDate),
                     ("ServiceStartDate", strStartDate),
                     ("ServiceEndDate", strEndDate),
@@ -250,16 +156,6 @@ namespace OODForms
                     // resets a value on the pdf so all fields show (otherwise the fields may not show correctly on finished pdf)
                     field.RefreshAppearance();
                 }
-
-                // Iterate through the table data and set values for each row
-                //foreach (var (fieldName, value) in tableData)
-                //{
-                //    Field field = form6Template.GetField(fieldName);
-                //    field.SetValue(value);
-                //    field.RefreshAppearance();
-                //}
-
-
 
                 List<string> fieldNames = new List<string>();
                 List<string> test = new List<string>();
@@ -634,7 +530,7 @@ namespace OODForms
             }
         }
 
-        public string generateForm5(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId, string loggedInUserPersonId)
+        public string generateForm5(string token, string userId, string referenceNumber, string consumerId, String startDate, String endDate, string loggedInUserPersonId, string position)
         {
             try
             {
@@ -652,84 +548,68 @@ namespace OODForms
 
                 PDFDoc form6Template = new PDFDoc(reportpath);
 
-                // Gather Data for the Person Completing the Report
-
-
-                //string loggedInUserPersonId = oodfdg.getPersonCompletingReportName(token);
-                //personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
-                //string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
-
                 DataTable dt;
                 DataRow row;
 
-                referenceNumber = referenceNumber.Replace("+", " ");
-                dt = oodfdg.OODDevelopment(referenceNumber).Tables[0];
+                if (referenceNumber == "%")
+                {
+                    referenceNumber = "";
+                }
+                dt = oodfdg.GetNamesAndGoal(consumerId).Tables[0];
                 row = dt.Rows[0];
 
-                string ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
-                string ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
+                string ProviderName = string.Format("{0}", row["providerName"].ToString().Trim());
+                string ConsumerName = string.Format("{0}", row["consumerName"].ToString().Trim());
+                string IPEGoal = string.Format("{0}", row["IPEGoal"].ToString().Trim());
 
                 string Staff = string.Empty;
                 string StaffWithInitals = string.Empty;
                 string OODStaff = string.Empty;
                 string MiddleName = string.Empty;
 
-                DataSet ds = oodfdg.OODForm8GetDirectStaff(referenceNumber, startDate, endDate);
-
-                if (ds.Tables.Count > 0)
-                {
-                    DataTable dt2 = ds.Tables[0];
-                    foreach (DataRow row2 in dt2.Rows)
-                    {
-                        if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
-                        {
-                            Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
-                            MiddleName = row2["Middle_Name"].ToString();
-                            OODStaff += String.Format("{0}, ", Staff.Trim());
-                        }
-
-                        if (Staff.ToString().Trim().Length > 0)
-                        {
-                            StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
-                        }
-                    }
-                }
-
                 string VRCounselor = "";
-                DataSet dsVR = oodfdg.OODForm6GetVRCounselor(referenceNumber, consumerIdString, startDate, endDate);
-                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
-
-                if (dsVR.Tables.Count > 0 && dsVR.Tables[0].Rows.Count > 0)
+                if (referenceNumber == "")
                 {
-                    if (!string.IsNullOrEmpty(dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString()))
-                    {
-                        VRCounselor = dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString();
-                    }
-                    else
-                    {
-                        VRCounselor = "";
-                    }
-                }
+                    // Gets values for Direct Service and Staff Name and Initials
+                    DataSet ds = oodfdg.OODForm8GetDirectStaff(referenceNumber, startDate, endDate);
 
-                string IPEGoal = "";
-                DataSet dsIPE = oodfdg.OODForm6GetIPEGoal(referenceNumber, consumerIdString, startDate, endDate);
-                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+                    if (ds.Tables.Count > 0)
+                    {
+                        DataTable dt2 = ds.Tables[0];
+                        foreach (DataRow row2 in dt2.Rows)
+                        {
+                            if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
+                            {
+                                Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
+                                MiddleName = row2["Middle_Name"].ToString();
+                                OODStaff += String.Format("{0}, ", Staff.Trim());
+                            }
 
-                if (dsIPE.Tables.Count > 0 && dsIPE.Tables[0].Rows.Count > 0)
-                {
-                    if (!string.IsNullOrEmpty(dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString()))
-                    {
-                        IPEGoal = dsIPE.Tables[0].Rows[0]["IPEGoal"].ToString();
+                            if (Staff.ToString().Trim().Length > 0)
+                            {
+                                StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
+                            }
+                        }
                     }
-                    else
+
+                    // Gets values for VR Counselor 
+                    DataSet dsVR = oodfdg.OODForm6GetVRCounselor(referenceNumber, consumerId, startDate, endDate);
+
+                    if (dsVR.Tables.Count > 0 && dsVR.Tables[0].Rows.Count > 0)
                     {
-                        IPEGoal = "";
+                        if (!string.IsNullOrEmpty(dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString()))
+                        {
+                            VRCounselor = dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString();
+                        }
+                        else
+                        {
+                            VRCounselor = "";
+                        }
                     }
                 }
 
                 string service = "";
-                DataSet dsService = oodfdg.OODForm6GetService(referenceNumber, consumerIdString, startDate, endDate);
-                // List<form6Data> form6DataList = JsonConvert.DeserializeObject<List<form6Data>>(returnedData);
+                DataSet dsService = oodfdg.OODForm6GetService(referenceNumber, consumerId, startDate, endDate);
 
                 if (dsService.Tables.Count > 0 && dsService.Tables[0].Rows.Count > 0)
                 {
@@ -745,7 +625,7 @@ namespace OODForms
 
                 string bilingual = "";  // SAMLevel
                 string SAMLevel = "";  // bilingualSupplement
-                DataSet dsSAMandBilingual = oodfdg.OODForm6GetSAMandBilingual(referenceNumber, consumerIdString, startDate, endDate, userId);
+                DataSet dsSAMandBilingual = oodfdg.OODForm6GetSAMandBilingual(referenceNumber, consumerId, startDate, endDate, userId);
 
                 if (dsSAMandBilingual.Tables.Count > 0 && dsSAMandBilingual.Tables[0].Rows.Count > 0)
                 {
@@ -760,23 +640,16 @@ namespace OODForms
                 }
 
                 DataSet ds3 = new DataSet();
-                //string personCompletingReport;
 
                 if (!string.IsNullOrEmpty(loggedInUserPersonId))
                 {
-
-                    // long lng_loggedInUserPersonId = long.Parse(loggedInUserPersonId);
                     ds3 = oodfdg.getPersonCompletingReport(token, loggedInUserPersonId);
                 }
-
-
 
                 if (ds3.Tables.Count > 0 && ds3.Tables[0].Rows.Count > 0)
                 {
                     personCompletingReport = String.Format("{0} {1} ", ds3.Tables[0].Rows[0]["First_Name"], ds3.Tables[0].Rows[0]["Last_Name"]);
                 }
-
-
 
                 DateTime currentDate = DateTime.Now;
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
@@ -787,12 +660,14 @@ namespace OODForms
                 DateTime enddate = DateTime.ParseExact(endDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 string strEndDate = enddate.ToString("MM/dd/yyyy");
 
+                //List<string> fieldNamesview = GetAllFieldNames(reportpath);
+
                 var fieldData = new List<(string fieldName, string value)>
                 {
                     ("Provider Name", ProviderName),
                     ("Individuals Name", ConsumerName),
                     ("IPE_Goal", IPEGoal),         // em_employee_general.ipe for given individual
-                    ("Direct Service Staff Nam(s) and Initials", ""), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
+                    ("Direct Service Staff Name", ""), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
                     ("Person Completing Report", personCompletingReport),
                     ("VR CounselorCoordinator", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
 
@@ -814,28 +689,60 @@ namespace OODForms
                     field.RefreshAppearance();
                 }
 
-                // Iterate through the table data and set values for each row
-                //foreach (var (fieldName, value) in tableData)
-                //{
-                //    Field field = form6Template.GetField(fieldName);
-                //    field.SetValue(value);
-                //    field.RefreshAppearance();
-                //}
-
-
-
-                List<string> fieldNames = new List<string>();
-                List<string> test = new List<string>();
-                FieldIterator itr;
-
-                for (itr = form6Template.GetFieldIterator(); itr.HasNext(); itr.Next())
+                if (position != "")
                 {
-                    Field field = itr.Current();
-                    string fieldName = field.GetName();
-                    fieldNames.Add(fieldName);
+                    ds3 = oodfdg.GetForm5PositionData(position, consumerId, startDate, endDate);
+                    if (ds3.Tables.Count > 0)
+                    {
+                        DataTable dt2 = ds3.Tables[0];
+                        row = dt2.Rows[0];
 
-                    string testing = field.GetType().ToString();
-                    test.Add(testing);
+                        string employerName = string.Format("{0}", row["employerName"].ToString().Trim());
+                        string employerAddress = string.Format("{0}", row["employerAddress"].ToString().Trim());
+                        string county = string.Format("{0}", row["county"].ToString().Trim());
+                        string phoneNumber = string.Format("{0}", row["phoneNumber"].ToString().Trim());
+                        string wages = string.Format("{0}", row["wages"].ToString().Trim());
+                        string firstDayOfWork = string.Format("{0}", row["firstDayOfWork"].ToString().Trim());
+                        string firstPaycheck = string.Format("{0}", row["firstPaycheck"].ToString().Trim());
+
+                        string firstDayOfWorkDateFormattedString = string.Empty;
+                        string firstPaycheckFormattedString = string.Empty;
+                        if (firstDayOfWork != "")
+                        {
+                            DateTime firsDayOfWorkDate = DateTime.Parse(firstDayOfWork);
+                             firstDayOfWorkDateFormattedString = firsDayOfWorkDate.ToString("MM/dd/yy");
+                        }
+                        
+                        if (firstPaycheck != "")
+                        {
+                            DateTime firstPaycheckDate = DateTime.Parse(firstPaycheck);
+                            firstPaycheckFormattedString = firstPaycheckDate.ToString("MM/dd/yy");
+                        }
+                        
+
+                        var fieldData2 = new List<(string fieldName, string value)>
+                        {
+                            ("Employer", employerName),
+                            ("Employer Address", employerAddress),
+                            ("County", county),
+                            ("Phone Number", phoneNumber),
+                            ("Supervisors Name", ""),
+                            ("Wages", wages),
+                            ("First Day of Work_af_date", firstDayOfWorkDateFormattedString),
+                            ("Date of 1st Paycheck_af_date", firstPaycheckFormattedString),
+                            ("Dropdown20", "Hourly"),
+                        };
+
+                        // Iterate through the field data and set values
+                        foreach (var (fieldName, value) in fieldData2)
+                        {
+                            Field field = form6Template.GetField(fieldName);
+                            field.SetValue(value);
+
+                            // resets a value on the pdf so all fields show (otherwise the fields may not show correctly on finished pdf)
+                            field.RefreshAppearance();
+                        }
+                    }
                 }
 
                 MemoryStream pdfStream = new MemoryStream();
@@ -2224,7 +2131,27 @@ namespace OODForms
         }
 
         // BEGIN -- Form 16 -- Dealing with a passed in month date range , however the Form 16 Excel breaks down the data by the week 
-        
+
+        static List<string> GetAllFieldNames(string pdfPath)
+        {
+            var fieldNames = new List<string>();
+
+            using (PDFDoc doc = new PDFDoc(pdfPath))
+            {
+                doc.InitSecurityHandler();
+
+                FieldIterator itr = doc.GetFieldIterator();
+                while (itr.HasNext())
+                {
+                    Field field = itr.Current();
+                    fieldNames.Add(field.GetName());
+                    itr.Next();
+                }
+            }
+
+            return fieldNames;
+        }
+
         public static IEnumerable<Range> GetRange(DateTime start, DateTime end)
         {
             DateTime currentStart = start;

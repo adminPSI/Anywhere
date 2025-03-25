@@ -863,6 +863,7 @@ const OOD = (() => {
     async function generateAndTrackFormProgress(formNumber) {
         // Prepare data for form generation
         if (createFilterValues.referenceNumber == undefined) createFilterValues.referenceNumber = '';
+        if (createFilterValues.position == undefined) createFilterValues.position = '';
         
         let data = {
             referenceNumber: createFilterValues.referenceNumber,
@@ -871,7 +872,8 @@ const OOD = (() => {
             startDate: createFilterValues.serviceDateStart,
             endDate: createFilterValues.serviceDateEnd,
             userId: createFilterValues.userId,
-            loggedInUserPersonId: $.session.PeopleId 
+            loggedInUserPersonId: $.session.PeopleId,
+            position: createFilterValues.position,
         };
     
         try {
@@ -925,13 +927,14 @@ const OOD = (() => {
             filterValues = {
                 token: $.session.Token,
                 serviceDateStart: UTIL.formatDateFromDateObj(dates.subDays(new Date(), 30)),
-               serviceDateEnd: UTIL.getTodaysDate(),
+                serviceDateEnd: UTIL.getTodaysDate(),
               
                 userId: $.session.UserId,
                 userName: $.session.LName + ', ' + $.session.Name,
                 serviceId: '%',
                 serviceName: '',
                 referenceNumber: '%',
+                position: '%'
             };
         }
     }
@@ -1366,6 +1369,23 @@ const OOD = (() => {
         
     }
 
+    // populate values for Position dropdown
+    async function populateCreatePositionDropdown() {
+        var consumerIds = selectedConsumerIds.join(', ');
+
+        const { getConsumerPositionsResult: positions } =
+            await OODAjax.getConsumerPositionsAsync(consumerIds, createFilterValues.serviceDateStart, createFilterValues.serviceDateEnd);
+
+        let data = positions.map(position => ({
+            id: position.position,
+            value: position.position,
+            text: position.position,
+        }));
+        data.unshift({ id: null, value: '%', text: '' }); //ADD Blank value
+       
+        dropdown.populate('positionDropdown', data, filterValues.position);
+    }
+
     // Populate the Service Code DDL for the 'Entry' Service Popup Window
     async function populateConsumerServiceCodeDropdown(consumerId, serviceDate) {
         const { getConsumerServiceCodesResult: services } = await OODAjax.getConsumerServiceCodesAsync(
@@ -1526,8 +1546,8 @@ const OOD = (() => {
 
         createPositionDropdown = dropdown.build({
             label: 'Position',
-            dropdownId: 'createPositionDropdown',
-            id: 'createPositionDropdown',
+            dropdownId: 'positionDropdown',
+            id: 'positionDropdown',
             // value: '',
         });
 
@@ -1555,17 +1575,22 @@ const OOD = (() => {
 
         // build popup
   
-           if (formNumber != '3' || formNumber != '4') createfilterPopup.appendChild(employeeDropdown);
+        if (formNumber != '3' && formNumber != '4' && formNumber != '5') {
+            createfilterPopup.appendChild(employeeDropdown);
+        }
    
-            createfilterPopup.appendChild(createServiceDateStartInput);
+        createfilterPopup.appendChild(createServiceDateStartInput);
      
-            createfilterPopup.appendChild(createServiceDateEndInput);
+        createfilterPopup.appendChild(createServiceDateEndInput);
    
-            createfilterPopup.appendChild(createreferenceNumbersDropdown);
+        createfilterPopup.appendChild(createreferenceNumbersDropdown);
             
-            if (formNumber == '5') createfilterPopup.appendChild(createPositionDropdown);
+        if (formNumber == '5') {
+            createfilterPopup.appendChild(createPositionDropdown);
+            populateCreatePositionDropdown();
+        }
 
-            createfilterPopup.appendChild(btnWrap);
+        createfilterPopup.appendChild(btnWrap);
 
         populateCreateEmployeeDropdown();
         populatecreateReferenceNumberDropdown(formNumber);
@@ -1644,6 +1669,11 @@ const OOD = (() => {
             checkCreatePopupRequiredFields(formNumber);
             createfilterPopupCreateBTNStatus(formNumber);
         });
+
+        createPositionDropdown.addEventListener('change', event => {
+            createFilterValues.position = event.target.value;
+            filterValues.positions = event.target.value;
+        })
         
     }
 
@@ -1669,14 +1699,16 @@ const OOD = (() => {
     if (formNumber != '3') {
        let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
 
-        if (createreferenceNumbersDropDown.value === '' || createreferenceNumbersDropDown.value === '%') { 
-            createreferenceNumbersDropDown.parentElement.classList.add('error');
-            createfilterPopupCreateBTN.classList.add('disabled'); 
-            return;
-        } else {
-            createreferenceNumbersDropDown.parentElement.classList.remove('error');
-            createfilterPopupCreateBTN.classList.remove('disabled');
-        }
+       if (formNumber != '5') {
+            if (createreferenceNumbersDropDown.value === '' || createreferenceNumbersDropDown.value === '%') { 
+                createreferenceNumbersDropDown.parentElement.classList.add('error');
+                createfilterPopupCreateBTN.classList.add('disabled'); 
+                return;
+            } else {
+                createreferenceNumbersDropDown.parentElement.classList.remove('error');
+                createfilterPopupCreateBTN.classList.remove('disabled');
+            }
+       }
      } 
     }
 

@@ -328,6 +328,35 @@ var OODAjax = (function () {
       throw new Error(error.responseText);
     }
   }
+
+  async function getConsumerPositionsAsync(consumerIds, startDate, endDate) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getConsumerPositions/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          consumerIds: consumerIds,
+          startDate: startDate,
+          endDate: endDate,
+          
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
   
   // OOD Main/Landing Page
   async function getConsumerServiceCodesAsync(consumerId, serviceDate) {
@@ -1420,12 +1449,13 @@ var OODAjax = (function () {
     data = {
       token: $.session.Token, 
       referenceNumber: data.referenceNumber,
-      vendorId: '',
+      loggedInUserPersonId: data.loggedInUserPersonId,
       peopleId: data.peopleId,
       serviceCodeId: data.serviceCodeId,
       startDate: data.startDate,
       endDate: data.endDate,
-      userId: data.userId
+      userId: data.userId,
+      position: data.position
     }
 
   // Create an HTML form element
@@ -1481,6 +1511,16 @@ var OODAjax = (function () {
     endDateInput.setAttribute('value', data.endDate);
     endDateInput.id = 'endDate';
 
+    var loggedInUserPersonIdInput = document.createElement('input');
+    loggedInUserPersonIdInput.setAttribute('name', 'loggedInUserPersonId');
+    loggedInUserPersonIdInput.setAttribute('value', data.loggedInUserPersonId);
+    loggedInUserPersonIdInput.id = 'loggedInUserPersonId';
+
+    var positionInput = document.createElement('input');
+    positionInput.setAttribute('name', 'position');
+    positionInput.setAttribute('value', data.position);
+    positionInput.id = 'position';
+
     form.appendChild(tokenInput);
     form.appendChild(userIdInput);
     form.appendChild(referenceNumberInput);
@@ -1488,6 +1528,8 @@ var OODAjax = (function () {
     form.appendChild(serviceCodeIdInput);
     form.appendChild(startDateInput);
     form.appendChild(endDateInput);
+    form.appendChild(loggedInUserPersonIdInput)
+    form.appendChild(positionInput)
 
     form.style.position = 'absolute';
     form.style.opacity = '0';
@@ -1866,6 +1908,7 @@ var OODAjax = (function () {
       getEmploymentGoal,
       getActiveServiceCodesAsync,
       getConsumerReferenceNumbersAsync,
+      getConsumerPositionsAsync,
       getConsumerServiceCodesAsync,
       getContactTypesAsync,
       getOutcomesAsync,
@@ -1901,6 +1944,7 @@ var OODAjax = (function () {
       insertForm16MonthlySummary,
       generateForm3,
       generateForm4,
+      generateForm5,
       generateForm6,
       generateForm8,
       generateForm10,

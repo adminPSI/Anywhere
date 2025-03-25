@@ -4553,6 +4553,14 @@ namespace Anywhere
           BodyStyle = WebMessageBodyStyle.Wrapped,
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getConsumerPositions/")]
+        OODWorker.Position[] getConsumerPositions(string token, string consumerIds, string startDate, string endDate);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getConsumerServiceCodes/")]
         OODWorker.ServiceCode[] getConsumerServiceCodes(string consumerId, string serviceDate, string token);
 
