@@ -160,7 +160,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/addCustomGroupJSON/")]
-        RosterWorker.AddCustomGroup[] addCustomGroupJSON(string groupName, string locationId, string token);
+        RosterWorker.AddCustomGroup[] addCustomGroupJSON(string groupName, string locationId, string token, string ispubliclyAvailableChecked);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -169,6 +169,14 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/removeCustomGroup/")]
         string removeCustomGroup(string groupId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/updatePublicAvailable/")]
+        string updatePublicAvailable(string groupId, string isPublicAvailable);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

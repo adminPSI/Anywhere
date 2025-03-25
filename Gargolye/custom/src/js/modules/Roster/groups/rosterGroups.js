@@ -1,4 +1,4 @@
-var customGroups = (function(){
+var customGroups = (function () {
     // DOM
     var GROUP_ADMIN_POPUP;
     var GROUP_LIST; // list of custom groups
@@ -11,6 +11,7 @@ var customGroups = (function(){
     var location;
     var locationId;
     let newGroupID;
+    let ispubliclyAvailableChecked;
 
     async function updateCustomGroupData(callback) {
         const results = (await customGroupsAjax.getConsumerGroups(locationId)).getConsumerGroupsJSONResult;
@@ -29,8 +30,8 @@ var customGroups = (function(){
             text: 'Yes',
             style: 'secondary',
             type: 'contained',
-      callback: function(event) {
-        customGroupsAjax.removeCustomGroup(groupId, async function() {
+            callback: function (event) {
+                customGroupsAjax.removeCustomGroup(groupId, async function () {
                     results = (await customGroupsAjax.getConsumerGroups(locationId)).getConsumerGroupsJSONResult;
                     roster2.setRosterGroups(results);
 
@@ -44,7 +45,7 @@ var customGroups = (function(){
             text: 'No',
             style: 'secondary',
             type: 'contained',
-      callback: function() {
+            callback: function () {
                 POPUP.hide(groupDeleteWarningPop);
             }
         });
@@ -91,16 +92,26 @@ var customGroups = (function(){
         checkboxEl.classList.add('disabled');
 
         if (isChecked) {
-      customGroupsAjax.addConsumerToGroup(groupId, consumerId, function() {
+            customGroupsAjax.addConsumerToGroup(groupId, consumerId, function () {
                 checkboxEl.classList.remove('disabled');
                 updateCustomGroupData();
             });
         } else {
-      customGroupsAjax.removeConsumerFromGroup(groupId, consumerId, function() {
+            customGroupsAjax.removeConsumerFromGroup(groupId, consumerId, function () {
                 checkboxEl.classList.remove('disabled');
                 updateCustomGroupData();
             });
         }
+    };
+
+    function publicAvailableCheckboxEvent(inputEl, checkboxEl) {
+        const isPublicAvailable = inputEl.checked == true ? 'Y' : 'N';
+        const groupId = inputEl.dataset.groupId;
+
+        customGroupsAjax.updatePublicAvailable(groupId, isPublicAvailable, function () {
+            updateCustomGroupData();
+        });
+
     };
 
     function groupDeleteEvent(el) {
@@ -120,6 +131,16 @@ var customGroups = (function(){
 
         //updateCustomGroupData(function() {
         if (customGroupData !== undefined && customGroupData.length > 0) {
+            if (isAdmin) {
+                var itemHead = document.createElement('div'); 
+                itemHead.classList.add('customGroup');
+                var textHead = document.createElement('h3');
+                textHead.classList.add('headText');
+                textHead.innerHTML = 'Publicly Available';
+                itemHead.appendChild(textHead);
+                GROUP_LIST.appendChild(itemHead);
+            }
+
             customGroupData.forEach(cg => {
                 var item = document.createElement('div');
                 item.classList.add('customGroup');
@@ -134,8 +155,8 @@ var customGroups = (function(){
                     var itemAction = input.buildCheckbox({
                         className: 'groupCheckbox',
                         isChecked: isConsumerGroupMember.length > 0 ? true : false,
-              attributes: [{key: 'data-group-id', value: cg.RetrieveID}],
-              callback: () => groupCheckboxEvent(event.target,itemAction)
+                        attributes: [{ key: 'data-group-id', value: cg.RetrieveID }],
+                        callback: () => groupCheckboxEvent(event.target, itemAction)
                     });
                 } else {
                     var itemAction = button.build({
@@ -143,7 +164,7 @@ var customGroups = (function(){
                         style: 'secondary',
                         type: 'text',
                         classNames: ['groupDelete'],
-              attributes: [{key: 'data-group-id', value: cg.RetrieveID}],
+                        attributes: [{ key: 'data-group-id', value: cg.RetrieveID }],
                         callback: () => groupDeleteEvent(itemAction)
                     });
 
@@ -153,7 +174,14 @@ var customGroups = (function(){
                         style: 'secondary',
                         attributes: [{ key: 'data-group-id', value: cg.RetrieveID }],
                         callback: () => addToGroupEvent(manageConsumerAction)
-                    }); 
+                    });
+
+                    var publicAvailableAction = input.buildCheckbox({
+                        className: 'groupCheckbox',
+                        isChecked: cg.Public == 'Y' ? true : false,
+                        attributes: [{ key: 'data-group-id', value: cg.RetrieveID }],
+                        callback: () => publicAvailableCheckboxEvent(event.target, publicAvailableAction) 
+                    });
                 }
 
 
@@ -165,6 +193,7 @@ var customGroups = (function(){
                     var btnWrap = document.createElement('div');
                     btnWrap.classList.add('groupBtnWrap');
                     btnWrap.appendChild(manageConsumerAction);
+                    btnWrap.appendChild(publicAvailableAction);
                     btnWrap.appendChild(itemAction);
                     item.appendChild(btnWrap);
                 }
@@ -187,6 +216,7 @@ var customGroups = (function(){
         return GROUP_LIST;
     }
     function showAddNewGroupPopup() {
+        ispubliclyAvailableChecked = 'N';
         var newGroupPop = POPUP.build({
             classNames: 'addGroupPopup'
         });
@@ -203,6 +233,12 @@ var customGroups = (function(){
             classNames: ['disabled', 'newGroupBtn']
         });
 
+        publiclyAvailablechkBox = input.buildCheckbox({
+            text: 'Publicly Available',
+            id: 'chkPubliclyAvailable',
+            style: 'secondary',
+        });
+
         addNewGroupInput.addEventListener('keyup', event => {
             newGroupName = event.target.value;
 
@@ -213,7 +249,7 @@ var customGroups = (function(){
             }
         });
         addNewGroupBtn.addEventListener('click', event => {
-            customGroupsAjax.addCustomGroup(newGroupName, locationId, async function (results) {
+            customGroupsAjax.addCustomGroup(newGroupName, locationId, ispubliclyAvailableChecked, async function (results) {
                 newGroupID = results[0].CustomGroupID;
                 results = (await customGroupsAjax.getConsumerGroups(locationId)).getConsumerGroupsJSONResult;
                 roster2.setRosterGroups(results);
@@ -226,7 +262,15 @@ var customGroups = (function(){
             });
         });
 
+        publiclyAvailablechkBox.addEventListener('change', event => {
+            if (event.target.checked)
+                ispubliclyAvailableChecked = 'Y';
+            else
+                ispubliclyAvailableChecked = 'N';
+        });
+
         newGroupPop.appendChild(addNewGroupInput);
+        newGroupPop.appendChild(publiclyAvailablechkBox);
         newGroupPop.appendChild(addNewGroupBtn);
 
         POPUP.show(newGroupPop);
@@ -242,7 +286,7 @@ var customGroups = (function(){
             icon: 'arrowBack',
             type: 'text',
             style: 'secondary',
-      callback: function() {
+            callback: function () {
                 roster2.loadRosterInfo();
             }
         });

@@ -28,9 +28,9 @@ namespace Anywhere.service.Data
             return isIndividualAbsentObj;
         }
 
-        public AddCustomGroup[] addCustomGroupJSON(string groupName, string locationId, string token)
+        public AddCustomGroup[] addCustomGroupJSON(string groupName, string locationId, string token, string ispubliclyAvailableChecked)
         {
-            string customGroupString = dg.addCustomGroupJSON(groupName, locationId, token);
+            string customGroupString = dg.addCustomGroupJSON(groupName, locationId, token, ispubliclyAvailableChecked);
             AddCustomGroup[] customGroupObj = js.Deserialize<AddCustomGroup[]>(customGroupString);
             return customGroupObj;
         }
