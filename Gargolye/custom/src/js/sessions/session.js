@@ -149,6 +149,8 @@ $.session.defaultMoneyManagementLocation;
 $.session.defaultMoneyManagementLocationValue;
 $.session.defaultOODLocation;
 $.session.defaultOODLocationValue;
+$.session.defaultOutcomesLocation;
+$.session.defaultOutcomesLocationValue;
 $.session.defaultPlanLocation;
 $.session.defaultPlanLocationName;
 $.session.defaultPlanGroupValue;
@@ -703,10 +705,10 @@ function setSessionVariables() {
                 $.session.incidentTrackingReviewedBy = true;
             } else if (tmpPerm == 'Email Incident') {
                 $.session.incidentTrackingEmailIncident = true;
-      } else if (
-        $.session.isPSI == false &&
-        (tmpPerm == 'Case Load' || tmpPerm == 'Caseload' || tmpPerm == 'Caseload only')
-      ) {
+            } else if (
+                $.session.isPSI == false &&
+                (tmpPerm == 'Case Load' || tmpPerm == 'Caseload' || tmpPerm == 'Caseload only')
+            ) {
                 $.session.incidentTrackingCaseLoad = true;
             } else {
                 $.session.incidentTrackingViewPerm.push(tmpPerm.replace('View ', '').toLowerCase());
@@ -819,10 +821,10 @@ function setSessionVariables() {
             if (tmpPerm == 'View' || $.session.isPSI == true) {
                 $.session.schedulingView = true;
             }
-      if (tmpPerm == 'Security' || $.session.isPSI == true) {
-        $.session.schedulingSecurity = true;
+            if (tmpPerm == 'Security' || $.session.isPSI == true) {
+                $.session.schedulingSecurity = true;
+            }
         }
-    }
 
         // Anywhere Forms
         if (tmpWindow == 'Anywhere Forms' || $.session.isPSI == true) {
@@ -879,98 +881,98 @@ function setSessionVariables() {
 
         // Consumer Finance
         if (tmpWindow == 'Anywhere Consumer Finances' || $.session.isPSI == true) {
-          if (tmpPerm == 'Update' || $.session.isPSI == true) {
-            $.session.CFUpdate = true;
-          }
-          if (tmpPerm == 'Delete' || $.session.isPSI == true) {
-            $.session.CFDelete = true;
-          }
-          if (tmpPerm == 'View' || $.session.isPSI == true) {
-            $('#cfAccountDiv').removeClass('disabledModule');
-            $('#consumerfinancessettingsdiv').removeClass('disabledModule');
-            $.session.CFView = true;
-          }
-          if (tmpPerm == 'Insert' || $.session.isPSI == true) {
-            $.session.CFInsert = true;
-          }
-          if (tmpPerm == 'Add Payee' || $.session.isPSI == true) {
-            $.session.CFADDPayee = true;
-          }
-          if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
-            $.session.CFEditAccountEntries = true;
-          }
-          if (tmpPerm == 'Insert Accounts' || $.session.isPSI == true) {
-            $.session.CFInsertAccounts = true;
-          }
-          if (tmpPerm == 'Update Edit Accounts' || $.session.isPSI == true) {
-            $.session.CFUpdateEditAccounts = true;
-          }
-          if (tmpPerm == 'View Edit Accounts' || $.session.isPSI == true) {
-            $('#cfEditAccountDiv').removeClass('disabledModule');
-            $('#consumerfinancessettingsdiv').removeClass('disabledModule');
-            $.session.CFViewEditAccounts = true;
-          }
+            if (tmpPerm == 'Update' || $.session.isPSI == true) {
+                $.session.CFUpdate = true;
+            }
+            if (tmpPerm == 'Delete' || $.session.isPSI == true) {
+                $.session.CFDelete = true;
+            }
+            if (tmpPerm == 'View' || $.session.isPSI == true) {
+                $('#cfAccountDiv').removeClass('disabledModule');
+                $('#consumerfinancessettingsdiv').removeClass('disabledModule');
+                $.session.CFView = true;
+            }
+            if (tmpPerm == 'Insert' || $.session.isPSI == true) {
+                $.session.CFInsert = true;
+            }
+            if (tmpPerm == 'Add Payee' || $.session.isPSI == true) {
+                $.session.CFADDPayee = true;
+            }
+            if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
+                $.session.CFEditAccountEntries = true;
+            }
+            if (tmpPerm == 'Insert Accounts' || $.session.isPSI == true) {
+                $.session.CFInsertAccounts = true;
+            }
+            if (tmpPerm == 'Update Edit Accounts' || $.session.isPSI == true) {
+                $.session.CFUpdateEditAccounts = true;
+            }
+            if (tmpPerm == 'View Edit Accounts' || $.session.isPSI == true) {
+                $('#cfEditAccountDiv').removeClass('disabledModule');
+                $('#consumerfinancessettingsdiv').removeClass('disabledModule');
+                $.session.CFViewEditAccounts = true;
+            }
 
-          if (tmpPerm == 'View Checking' || $.session.isPSI == true) {
-            $.session.CFViewChecking = true;
-          }
+            if (tmpPerm == 'View Checking' || $.session.isPSI == true) {
+                $.session.CFViewChecking = true;
+            }
 
-          if (tmpPerm == 'View Credit Card' || $.session.isPSI == true) {
-            $.session.CFViewCraditCard = true;
-          }
+            if (tmpPerm == 'View Credit Card' || $.session.isPSI == true) {
+                $.session.CFViewCraditCard = true;
+            }
 
-          if (tmpPerm == 'View Food Stamps' || $.session.isPSI == true) {
-            $.session.CFViewFoodStamp = true;
-          }
+            if (tmpPerm == 'View Food Stamps' || $.session.isPSI == true) {
+                $.session.CFViewFoodStamp = true;
+            }
 
-          if (tmpPerm == 'View Petty Cash' || $.session.isPSI == true) {
-            $.session.CFViewPettyCash = true;
-          }
+            if (tmpPerm == 'View Petty Cash' || $.session.isPSI == true) {
+                $.session.CFViewPettyCash = true;
+            }
 
-          if (tmpPerm == 'View Savings' || $.session.isPSI == true) {
-            $.session.CFViewShaving = true;
-          }
-          if (tmpPerm == 'View Christmas Club' || $.session.isPSI == true) {
-            $.session.CFViewChristmasClub = true;
-          }
-          if (tmpPerm == 'View System 2018.3A' || $.session.isPSI == true) {
-            $.session.CFViewSystem20183A = true;
-          }
-          if (tmpPerm == 'View System 2018.3' || $.session.isPSI == true) {
-            $.session.CFViewSystem20183 = true;
-          }
-          if (tmpPerm == 'View Ohio EBT' || $.session.isPSI == true) {
-            $.session.CFViewOhioEBT = true;
-          }
-          if (tmpPerm == 'View Food Stamp Debit Card EBT' || $.session.isPSI == true) {
-            $.session.CFViewViewFoodStampDebitCardEBT = true;
-          }
-      if ($.session.isPSI == false && (tmpPerm == 'Case Load' || tmpPerm == 'Caseload' || tmpPerm == 'Caseload only')) {
-            $.session.ConsumerFinanceCaseLoad = true;
-          }
+            if (tmpPerm == 'View Savings' || $.session.isPSI == true) {
+                $.session.CFViewShaving = true;
+            }
+            if (tmpPerm == 'View Christmas Club' || $.session.isPSI == true) {
+                $.session.CFViewChristmasClub = true;
+            }
+            if (tmpPerm == 'View System 2018.3A' || $.session.isPSI == true) {
+                $.session.CFViewSystem20183A = true;
+            }
+            if (tmpPerm == 'View System 2018.3' || $.session.isPSI == true) {
+                $.session.CFViewSystem20183 = true;
+            }
+            if (tmpPerm == 'View Ohio EBT' || $.session.isPSI == true) {
+                $.session.CFViewOhioEBT = true;
+            }
+            if (tmpPerm == 'View Food Stamp Debit Card EBT' || $.session.isPSI == true) {
+                $.session.CFViewViewFoodStampDebitCardEBT = true;
+            }
+            if ($.session.isPSI == false && (tmpPerm == 'Case Load' || tmpPerm == 'Caseload' || tmpPerm == 'Caseload only')) {
+                $.session.ConsumerFinanceCaseLoad = true;
+            }
 
-          // if ($.session.UserId === 'ash') {
-          //   $.session.CFUpdate = true;
-          //   $.session.CFDelete = true;
-          //   $.session.CFView = true;
-          //   $.session.CFInsert = true;
-          //   $.session.CFADDPayee = true;
-          //   $.session.CFEditAccountEntries = true;
-          //   $.session.CFInsertAccounts = true;
-          //   $.session.CFUpdateEditAccounts = true;
-          //   $.session.CFViewEditAccounts = true;
-          //   $.session.CFViewChecking = true;
-          //   $.session.CFViewCraditCard = true;
-          //   $.session.CFViewFoodStamp = true;
-          //   $.session.CFViewPettyCash = true;
-          //   $.session.CFViewShaving = true;
-          //   $.session.CFViewChristmasClub = true;
-          //   $.session.CFViewSystem20183A = true;
-          //   $.session.CFViewSystem20183 = true;
-          //   $.session.CFViewOhioEBT = true;
-          //   $.session.CFViewViewFoodStampDebitCardEBT = true;
-          //   $.session.ConsumerFinanceCaseLoad = true;
-          // }
+            // if ($.session.UserId === 'ash') {
+            //   $.session.CFUpdate = true;
+            //   $.session.CFDelete = true;
+            //   $.session.CFView = true;
+            //   $.session.CFInsert = true;
+            //   $.session.CFADDPayee = true;
+            //   $.session.CFEditAccountEntries = true;
+            //   $.session.CFInsertAccounts = true;
+            //   $.session.CFUpdateEditAccounts = true;
+            //   $.session.CFViewEditAccounts = true;
+            //   $.session.CFViewChecking = true;
+            //   $.session.CFViewCraditCard = true;
+            //   $.session.CFViewFoodStamp = true;
+            //   $.session.CFViewPettyCash = true;
+            //   $.session.CFViewShaving = true;
+            //   $.session.CFViewChristmasClub = true;
+            //   $.session.CFViewSystem20183A = true;
+            //   $.session.CFViewSystem20183 = true;
+            //   $.session.CFViewOhioEBT = true;
+            //   $.session.CFViewViewFoodStampDebitCardEBT = true;
+            //   $.session.ConsumerFinanceCaseLoad = true;
+            // }
         }
 
         //Reset Password
@@ -1806,7 +1808,6 @@ function setDefaultValue(type, value, event, name) {
             break;
         case 10:
             typeName = 'Default OOD Location';
-            debugger;
             $('#OOD10').text(event.srcElement.text);
             if (value != 0 && name != null) {
                 createCookie('defaultOODLocationName', name, 10);
@@ -1815,7 +1816,20 @@ function setDefaultValue(type, value, event, name) {
                 saveDefaultLocationValueAjax('10', value);
             } else {
                 createCookie('defaultOODLocationName', 'Remember Last Location', 10);
-                saveDefaultLocationNameAjax('10', 'Remember Last Location'); 
+                saveDefaultLocationNameAjax('10', 'Remember Last Location');
+            }
+            break;
+        case 11:
+            typeName = 'Default Outcomes Location';
+            $('#Outcomes11').text(event.srcElement.text);
+            if (value != 0 && name != null) {
+                createCookie('defaultOutcomesLocationName', name, 11);
+                createCookie('defaultOutcomesLocationValue', value, 11);
+                saveDefaultLocationNameAjax('11', name);
+                saveDefaultLocationValueAjax('11', value);
+            } else {
+                createCookie('defaultOutcomesLocationName', 'Remember Last Location', 11);
+                saveDefaultLocationNameAjax('11', 'Remember Last Location');
             }
             break;
     }

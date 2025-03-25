@@ -943,6 +943,9 @@ const roster2 = (function () {
         if ($.loadedApp === 'OOD') {
             if (defaults.rememberLastLocation('OOD')) defaults.setLocation('OOD', selectedLocationId); 
         }
+        if ($.loadedApp === 'outcomes') {
+            if (defaults.rememberLastLocation('outcomes')) defaults.setLocation('outcomes', selectedLocationId);
+        }
         if ($.loadedApp === 'plan') {
             if (defaults.rememberLastLocation('plan')) defaults.setLocation('plan', selectedLocationId);
         }
@@ -1459,7 +1462,7 @@ const roster2 = (function () {
                 } else {
                     rosterLocations = rosterLocations ?? (await getRosterLocationsData());
                     const selectedLocationObj = rosterLocations.filter(loc => locationId === loc.ID);
-                    selectedLocationName = selectedLocationObj[0].Name;
+                    selectedLocationName = selectedLocationObj[0]?.Name;
                     selectedLocationId = locationId;
                 }
             }
