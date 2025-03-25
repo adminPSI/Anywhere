@@ -97,6 +97,13 @@ namespace Anywhere.service.Data
 
         }
 
+        public class Position
+        {
+            [DataMember(Order = 0)]
+            public string position { get; set; }
+
+        }
+
         [DataContract]
         public class ContactType
         {
@@ -575,6 +582,25 @@ namespace Anywhere.service.Data
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
                     ReferenceNumber[] referenceNumbers = js.Deserialize<ReferenceNumber[]>(Odg.getConsumerReferenceNumbers(consumerIds, startDate, endDate, formNumber, transaction));
                     return referenceNumbers;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public Position[] getConsumerPositions(string token, string consumerIds, string startDate, string endDate)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    Position[] positions = js.Deserialize<Position[]>(Odg.getConsumerPositions(consumerIds, startDate, endDate, transaction));
+                    return positions;
                 }
                 catch (Exception ex)
                 {

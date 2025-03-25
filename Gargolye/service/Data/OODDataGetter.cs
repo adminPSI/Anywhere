@@ -246,6 +246,25 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string getConsumerPositions(string consumerIds, string startDate, string endDate, DistributedTransaction transaction)
+        {
+
+            try
+            {
+                logger.debug("getConsumerPositions ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[3];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerIds", DbType.String, consumerIds);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDate", DbType.String, startDate);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDate", DbType.String, endDate);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getConsumerPositions(?, ?, ?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_OOD_getConsumerPositions()");
+                throw ex;
+            }
+        }
 
         // Consumer Service Codes data for OOD Services Popup
         public string getConsumerServiceCodes(string consumerId, string serviceDate, DistributedTransaction transaction)
