@@ -568,7 +568,7 @@ namespace OODForms
                 string MiddleName = string.Empty;
 
                 string VRCounselor = "";
-                if (referenceNumber == "")
+                if (referenceNumber != "")
                 {
                     // Gets values for Direct Service and Staff Name and Initials
                     DataSet ds = oodfdg.OODForm8GetDirectStaff(referenceNumber, startDate, endDate);
@@ -704,6 +704,8 @@ namespace OODForms
                         string wages = string.Format("{0}", row["wages"].ToString().Trim());
                         string firstDayOfWork = string.Format("{0}", row["firstDayOfWork"].ToString().Trim());
                         string firstPaycheck = string.Format("{0}", row["firstPaycheck"].ToString().Trim());
+                        string hoursPerWeek = string.Format("{0}", row["hoursPerWeek"].ToString().Trim());
+
 
                         string firstDayOfWorkDateFormattedString = string.Empty;
                         string firstPaycheckFormattedString = string.Empty;
@@ -728,6 +730,7 @@ namespace OODForms
                             ("Phone Number", phoneNumber),
                             ("Supervisors Name", ""),
                             ("Wages", wages),
+                            ("Hours_Week", hoursPerWeek),
                             ("First Day of Work_af_date", firstDayOfWorkDateFormattedString),
                             ("Date of 1st Paycheck_af_date", firstPaycheckFormattedString),
                             ("Dropdown20", "Hourly"),
@@ -750,7 +753,7 @@ namespace OODForms
 
                 Attachment attachment = new Attachment
                 {
-                    filename = "Form6",
+                    filename = "Form5",
                     data = pdfStream
                 };
 

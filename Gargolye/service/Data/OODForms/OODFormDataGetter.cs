@@ -880,7 +880,7 @@ namespace OODForms
             sb.Append("e.name AS employerName, ");
             sb.Append("(COALESCE(e.address1, '') || ' ' || COALESCE(e.address2, '') || ', ' || COALESCE(e.city, '') || ', ' || COALESCE(e.state, '') || ' ' || COALESCE(e.zip_code, '')) AS employerAddress, ");
             sb.Append("e.county AS county, ");
-            sb.Append("e.primary_phone AS phoneNumber, ");
+            sb.Append("'(' + SUBSTRING(e.primary_phone, 1, 3) + ') ' + SUBSTRING(e.primary_phone, 4, 3) + '-' + SUBSTRING(e.primary_phone, 7, 4) + ' ' + SUBSTRING(e.primary_phone, 11, 4) AS phoneNumber, ");
             sb.Append("w.wages_per_hour AS wages, ");
             sb.Append("SUM(CAST(DATEDIFF(MINUTE, ws.start_time, ws.end_time) AS FLOAT) / 60.0) AS hoursPerWeek, ");
             sb.Append("ep.start_date AS firstDayOfWork, ");
@@ -888,10 +888,8 @@ namespace OODForms
             sb.Append("FROM dba.em_employee_position ep ");
             sb.Append("LEFT OUTER JOIN dba.employer e ON ep.Employer_ID = e.employer_ID ");
             sb.Append("LEFT OUTER JOIN dba.em_wages w ON w.Position_ID = ep.position_ID ");
-            sb.Append("AND (");
-            sb.Append("    (w.start_date <= ep.end_date OR ep.end_date IS NULL) ");
-            sb.Append("    AND (w.end_date >= ep.start_date OR w.end_date IS NULL) ");
-            sb.Append(") ");
+            sb.AppendFormat("AND w.start_date <= '{0}' ", StartDate);
+            sb.AppendFormat("AND (w.end_date >= '{0}' OR w.end_date IS NULL) ", EndDate);
             sb.Append("LEFT OUTER JOIN dba.em_work_schedule ws ON ws.Position_ID = ep.position_ID ");
             sb.Append("LEFT OUTER JOIN dba.people p ON ep.people_id = p.id ");
             sb.Append("LEFT OUTER JOIN dba.Code_Table ct ON ct.code = ep.position_code ");
