@@ -23,6 +23,7 @@ using System.Security.Cryptography;
 using static log4net.Appender.RollingFileAppender;
 using System.Web.UI.MobileControls;
 using static Anywhere.service.Data.AnywhereWorker;
+using System.Runtime.InteropServices.ComTypes;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -876,20 +877,20 @@ namespace OODForms
         public DataSet GetForm5PositionData(string position, string consumerId, string StartDate, string EndDate)
         {
             sb.Clear();
-            sb.Append("SELECT ");
-            sb.Append("e.name AS employerName, ");
+            sb.Append("SELECT e.name AS employerName, ");
             sb.Append("(COALESCE(e.address1, '') || ' ' || COALESCE(e.address2, '') || ', ' || COALESCE(e.city, '') || ', ' || COALESCE(e.state, '') || ' ' || COALESCE(e.zip_code, '')) AS employerAddress, ");
             sb.Append("e.county AS county, ");
             sb.Append("'(' + SUBSTRING(e.primary_phone, 1, 3) + ') ' + SUBSTRING(e.primary_phone, 4, 3) + '-' + SUBSTRING(e.primary_phone, 7, 4) + ' ' + SUBSTRING(e.primary_phone, 11, 4) AS phoneNumber, ");
             sb.Append("w.wages_per_hour AS wages, ");
             sb.Append("SUM(CAST(DATEDIFF(MINUTE, ws.start_time, ws.end_time) AS FLOAT) / 60.0) AS hoursPerWeek, ");
             sb.Append("ep.start_date AS firstDayOfWork, ");
-            sb.Append("ep.date_first_paycheck AS firstPaycheck ");
+            sb.Append("ep.date_first_paycheck AS firstPaycheck, ");
+            sb.Append("ep.Supervisor_Name AS supervisorName ");
             sb.Append("FROM dba.em_employee_position ep ");
             sb.Append("LEFT OUTER JOIN dba.employer e ON ep.Employer_ID = e.employer_ID ");
             sb.Append("LEFT OUTER JOIN dba.em_wages w ON w.Position_ID = ep.position_ID ");
-            sb.AppendFormat("AND w.start_date <= '{0}' ", StartDate);
-            sb.AppendFormat("AND (w.end_date >= '{0}' OR w.end_date IS NULL) ", EndDate);
+            sb.AppendFormat("AND w.start_date >= '{0}' ", StartDate);
+            sb.AppendFormat("AND (w.end_date <= '{0}' OR w.end_date IS NULL) ", EndDate);
             sb.Append("LEFT OUTER JOIN dba.em_work_schedule ws ON ws.Position_ID = ep.position_ID ");
             sb.Append("LEFT OUTER JOIN dba.people p ON ep.people_id = p.id ");
             sb.Append("LEFT OUTER JOIN dba.Code_Table ct ON ct.code = ep.position_code ");
@@ -903,7 +904,26 @@ namespace OODForms
             sb.Append("e.name, e.address1, e.address2, e.city, e.state, e.zip_code, ");
             sb.Append("e.county, e.primary_phone, ");
             sb.Append("w.wages_per_hour, ");
-            sb.Append("ep.start_date, ep.date_first_paycheck;");
+            sb.Append("ep.start_date, ep.date_first_paycheck, ep.supervisor_name;");
+
+            return di.SelectRowsDS(sb.ToString());
+        }
+
+        public DataSet getJobDutiesData(string position, string consumerId, string startDate, string endDate)
+        {
+            sb.Clear();
+            sb.Append("SELECT LIST(dba.EM_Job_Task.Task_Notes, ', ') AS CombinedTaskNotes ");
+            sb.Append("FROM EM_Job_Task ");
+            sb.Append("LEFT OUTER JOIN EM_Employee_Position on EM_Employee_Position.position_id = EM_Job_Task.position_id ");
+            sb.Append("LEFT OUTER JOIN people on people.id = EM_Employee_Position.people_id ");
+            sb.Append("LEFT OUTER JOIN dba.Code_Table ct ON ct.code = EM_Employee_Position.position_code ");
+            sb.Append("WHERE Task_Number > 7 ");
+            sb.AppendFormat("AND people.Consumer_id = {0} ", consumerId);
+            sb.AppendFormat("AND EM_Employee_Position.start_date <= '{0}' ", startDate);
+            sb.AppendFormat("AND (EM_Employee_Position.end_date >= '{0}' OR EM_Employee_Position.end_date IS NULL) ", endDate);
+            sb.Append("AND ct.Table_ID = 'Employment_Info' ");
+            sb.Append("AND ct.Field_ID = 'Position' ");
+            sb.AppendFormat("AND ct.caption = '{0}' ", position);
 
             return di.SelectRowsDS(sb.ToString());
         }
