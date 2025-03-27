@@ -660,7 +660,7 @@ namespace OODForms
                 DateTime enddate = DateTime.ParseExact(endDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 string strEndDate = enddate.ToString("MM/dd/yyyy");
 
-                //List<string> fieldNamesview = GetAllFieldNames(reportpath);
+                List<string> fieldNamesview = GetAllFieldNames(reportpath);
 
                 var fieldData = new List<(string fieldName, string value)>
                 {
@@ -691,21 +691,36 @@ namespace OODForms
 
                 if (position != "")
                 {
-                    ds3 = oodfdg.GetForm5PositionData(position, consumerId, startDate, endDate);
-                    if (ds3.Tables.Count > 0)
+                    DataSet ds4 = new DataSet();
+                    DataSet ds5 = new DataSet();
+
+                    ds4 = oodfdg.GetForm5PositionData(position, consumerId, startDate, endDate);
+                    ds5 = oodfdg.getJobDutiesData(position, consumerId, startDate, endDate);
+
+                    string jobDuties = string.Empty;
+                    if (ds5.Tables.Count > 0)
                     {
-                        DataTable dt2 = ds3.Tables[0];
-                        row = dt2.Rows[0];
+                        DataTable dt5 = ds5.Tables[0];
+                        DataRow row5 = dt5.Rows[0];
 
-                        string employerName = string.Format("{0}", row["employerName"].ToString().Trim());
-                        string employerAddress = string.Format("{0}", row["employerAddress"].ToString().Trim());
-                        string county = string.Format("{0}", row["county"].ToString().Trim());
-                        string phoneNumber = string.Format("{0}", row["phoneNumber"].ToString().Trim());
-                        string wages = string.Format("{0}", row["wages"].ToString().Trim());
-                        string firstDayOfWork = string.Format("{0}", row["firstDayOfWork"].ToString().Trim());
-                        string firstPaycheck = string.Format("{0}", row["firstPaycheck"].ToString().Trim());
-                        string hoursPerWeek = string.Format("{0}", row["hoursPerWeek"].ToString().Trim());
+                        jobDuties = string.Format("{0}", row5["CombinedTaskNotes"].ToString().Trim());
+                    }
 
+
+                    if (ds4.Tables.Count > 0)
+                    {
+                        DataTable dt4 = ds4.Tables[0];
+                        DataRow row4 = dt4.Rows[0];
+
+                        string employerName = string.Format("{0}", row4["employerName"].ToString().Trim());
+                        string employerAddress = string.Format("{0}", row4["employerAddress"].ToString().Trim());
+                        string county = string.Format("{0}", row4["county"].ToString().Trim());
+                        string phoneNumber = string.Format("{0}", row4["phoneNumber"].ToString().Trim());
+                        string wages = string.Format("{0}", row4["wages"].ToString().Trim());
+                        string firstDayOfWork = string.Format("{0}", row4["firstDayOfWork"].ToString().Trim());
+                        string firstPaycheck = string.Format("{0}", row4["firstPaycheck"].ToString().Trim());
+                        string hoursPerWeek = string.Format("{0}", row4["hoursPerWeek"].ToString().Trim());
+                        string supervisorsName = string.Format("{0}", row4["supervisorName"].ToString().Trim());
 
                         string firstDayOfWorkDateFormattedString = string.Empty;
                         string firstPaycheckFormattedString = string.Empty;
@@ -734,6 +749,9 @@ namespace OODForms
                             ("First Day of Work_af_date", firstDayOfWorkDateFormattedString),
                             ("Date of 1st Paycheck_af_date", firstPaycheckFormattedString),
                             ("Dropdown20", "Hourly"),
+                            ("Supervisors Name", supervisorsName),
+                            ("Job Title", position),
+                            ("Job Duties", jobDuties)
                         };
 
                         // Iterate through the field data and set values
