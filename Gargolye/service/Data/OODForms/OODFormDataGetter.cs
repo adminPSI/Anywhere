@@ -919,8 +919,8 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.Code_Table ct ON ct.code = EM_Employee_Position.position_code ");
             sb.Append("WHERE Task_Number > 7 ");
             sb.AppendFormat("AND people.Consumer_id = {0} ", consumerId);
-            sb.AppendFormat("AND EM_Employee_Position.start_date <= '{0}' ", startDate);
-            sb.AppendFormat("AND (EM_Employee_Position.end_date >= '{0}' OR EM_Employee_Position.end_date IS NULL) ", endDate);
+            sb.AppendFormat("AND EM_Job_Task.start_date <= '{0}' ", startDate);
+            sb.AppendFormat("AND (EM_Job_Task.end_date >= '{0}' OR EM_Job_Task.end_date IS NULL) ", endDate);
             sb.Append("AND ct.Table_ID = 'Employment_Info' ");
             sb.Append("AND ct.Field_ID = 'Position' ");
             sb.AppendFormat("AND ct.caption = '{0}' ", position);
