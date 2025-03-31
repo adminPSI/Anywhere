@@ -9,13 +9,14 @@ const EVENT_TYPES = {
   6: 'Appointments Shifts', // blankish, red, blue, green, orange, purple, yellow
 };
 const EVENT_COLORS = {
-  red: '#BE0000',
-  blue: '#5E9BCD',
-  green: '#2CB167',
-  orange: '#F37F2C',
-  purple: '#8C7EE3',
-  yellow: '#DED896',
-  defaultMuted: '#CACACA',
+  red: [210, 40, 40],
+  blue: [120, 170, 215],
+  green: [70, 190, 120],
+  orange: [250, 145, 70],
+  purple: [155, 140, 235],
+  yellow: [235, 230, 170],
+  white: [255, 255, 255],
+  defaultMute: [220, 220, 220],
 };
 
 const SchedulingCalendar = (function () {
@@ -1279,23 +1280,24 @@ const SchedulingCalendar = (function () {
     POPUP.show(shiftPopup);
   }
   async function saveUpdateShift(data) {
-    let res = await schedulingAjax.saveOrUpdateShift({
+    const res = await schedulingAjax.saveOrUpdateShift({
       ...data,
     });
 
-    const parsedRes = JSON.parse(res);
+    let parsedRes = JSON.parse(res);
+    parsedRes = parsedRes.map(item => item.ShiftID);
 
-    // calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
+    calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
 
-    // const newEvents = calendarEvents.filter(calEvent => res.includes(calEvent.eventId));
+    const newEvents = calendarEvents.filter(calEvent => parsedRes.includes(calEvent.eventId));
 
-    // newEvents.forEach(event => {
-    //   if (!isNew) {
-    //     ScheduleCalendar.updateEvent({ ...event });
-    //   } else {
-    //     ScheduleCalendar.addEvent({ ...event });
-    //   }
-    // });
+    newEvents.forEach(event => {
+      if (data.saveUpdateFlag === 'U') {
+        ScheduleCalendar.updateEvent({ ...event });
+      } else {
+        ScheduleCalendar.addEvent({ ...event });
+      }
+    });
   }
 
   // Appointments: EVENT_TYPE 6
@@ -1407,11 +1409,11 @@ const SchedulingCalendar = (function () {
   }
   function getEventColor(typeId, color) {
     if (typeId === 3) {
-      return '#FFFFFF';
+      return EVENT_COLORS[white];
     }
 
     if (!color) {
-      return '#CACACA';
+      return EVENT_COLORS[defaultMute];
     }
 
     return EVENT_COLORS[color];
@@ -1641,14 +1643,12 @@ const SchedulingCalendar = (function () {
       type: 'date',
       label: 'From Date',
       style: 'secondary',
-      value: filterValues.activityStartDate,
     });
     const toDateInput = input.build({
       id: 'toDateInput',
       type: 'date',
       label: 'To Date',
       style: 'secondary',
-      value: filterValues.activityEndDate,
     });
     const notifyEmployees = input.buildCheckbox({
       text: 'Notify Employees',
@@ -1772,6 +1772,8 @@ const SchedulingCalendar = (function () {
       style: 'secondary',
     });
 
+    dropdownEle.classList.add('mainLocationDropdown');
+
     dropdownEle.addEventListener('change', async event => {
       selectedLocationId = event.target.options[event.target.selectedIndex].value;
 
@@ -1788,6 +1790,8 @@ const SchedulingCalendar = (function () {
       label: 'Employee:',
       style: 'secondary',
     });
+
+    dropdownEle.classList.add('mainEmployeeDropdown');
 
     dropdownEle.addEventListener('change', async event => {
       selectedEmployeeId = event.target.options[event.target.selectedIndex].value;
@@ -1902,12 +1906,12 @@ const SchedulingCalendar = (function () {
     const radioDiv = document.createElement('div');
     const yesRadio = input.buildRadio({
       text: 'Yes',
-      name: 'viewOpenShifts',
+      name: 'yes',
       isChecked: false,
     });
     const noRadio = input.buildRadio({
       text: 'No',
-      name: 'viewOpenShifts',
+      name: 'no',
       isChecked: true,
     });
     radioDiv.appendChild(yesRadio);
@@ -1916,9 +1920,7 @@ const SchedulingCalendar = (function () {
     radioDiv.addEventListener('change', async e => {
       console.log(e.target);
 
-      viewOptionShifts = e.target.text.toLowerCase();
-
-      // if USER don't have security key they are only ever viewing their own schedule
+      viewOptionShifts = e.target.name.toLowerCase();
 
       if (viewOptionShifts === 'no') {
         if (selectedEmployeeId === 'none') {
@@ -1972,7 +1974,6 @@ const SchedulingCalendar = (function () {
     colLeft.appendChild(locationDropdownEle);
     colLeft.appendChild(employeeDropdownEle);
     colLeft.appendChild(shiftTypeDropdownEle);
-
     colRight.appendChild(openShiftViewToggleEle);
     colRight.appendChild(newShiftButtonEle);
     colRight.appendChild(pubUnpubButtonEle);

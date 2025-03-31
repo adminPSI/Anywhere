@@ -65,6 +65,14 @@ function isDateWithinSpan(dirtyDate, rangeObj) {
 function isSameDay(dirtyDate, dirtySelectedDate) {
   return dates.isEqual(dirtyDate, dirtySelectedDate);
 }
+function rgba([r, g, b], a = 1) {
+  const mix = channel => Math.round(channel + (255 - channel) * a);
+  const newR = mix(r);
+  const newG = mix(g);
+  const newB = mix(b);
+
+  return `rgb(${newR}, ${newG}, ${newB})`;
+}
 
 class Calendar {
   constructor(opts) {
@@ -84,8 +92,10 @@ class Calendar {
 
     this.eventCache = null;
     this.eventCacheBackup = null;
-    this.monthEventDOMCache = null;
+    this.monthDayCache = null;
     this.eventGroupDOMCache = {};
+
+    this.eventBackgroundWhiteMixPercent = 0.3;
 
     this.rootEle = document.createElement('div');
     this.calendarEle = document.createElement('div');
@@ -124,7 +134,7 @@ class Calendar {
     const eventCellEle = document.createElement('div');
     eventCellEle.className = 'eventCellEle';
     eventCellEle.id = `e-${event.eventId}`;
-    eventCellEle.style.backgroundColor = event.color;
+    eventCellEle.style.backgroundColor = rgba(event.color, this.eventBackgroundWhiteMixPercent);
     eventCellEle.setAttribute('data-event-id', event.eventId);
     eventCellEle.setAttribute('data-type-id', event.typeId);
 
@@ -192,7 +202,7 @@ class Calendar {
 
   // Views
   renderMonthView() {
-    this.monthEventDOMCache = {};
+    this.monthDayCache = {};
 
     const containerEle = document.createElement('div');
     containerEle.className = 'month-view';
@@ -241,11 +251,22 @@ class Calendar {
       dayCellEle.setAttribute('data-datetime', timeStamp);
 
       const dayEventCellEle = document.createElement('div');
+      dayEventCellEle.className = 'eventWrap';
+
+      const dayEventCountEle = document.createElement('span');
+      dayEventCountEle.className = 'eventCountWrap';
 
       dayCellEle.appendChild(dayEventCellEle);
+      dayCellEle.appendChild(dayEventCountEle);
+
       weekWrapEle.appendChild(dayCellEle);
+
       containerEle.appendChild(weekWrapEle);
-      this.monthEventDOMCache[dateISO] = dayEventCellEle;
+
+      this.monthDayCache[dateISO] = {
+        eventWrapEle: dayEventCellEle,
+        eventCountWrapEle: dayEventCountEle,
+      };
 
       if (!dates.isSameMonth(day, this.currentDate)) {
         dayCellEle.classList.add('notSameMonth');
@@ -362,14 +383,38 @@ class Calendar {
   renderMonthEvents() {
     if (!this.eventCache) return;
 
-    Object.values(this.monthEventDOMCache).forEach(div => (div.innerHTML = ''));
+    Object.values(this.monthDayCache).forEach(day => {
+      day.eventWrapEle.innerHTML = '';
+      day.eventCountWrapEle.innerHTML = '';
+    });
 
     this.eventCache
       .filter(e => isDateWithinSpan(e.date, this.dateRange))
+      .sort((a, b) => new Date(a.date) > new Date(b.date))
       .map(event => {
         const eventDate = new Date(event.date);
         const dateISO = dates.formatISO(eventDate);
 
+        // Count View
+        const groupKey = event.color.join('');
+        if (!this.monthDayCache[dateISO][groupKey]) {
+          this.monthDayCache[dateISO][groupKey] = {};
+          this.monthDayCache[dateISO][groupKey].count = 0;
+          this.monthDayCache[dateISO][groupKey].countEle = document.createElement('p');
+          this.monthDayCache[dateISO][groupKey].countEle.className = 'eventCount';
+          this.monthDayCache[dateISO][groupKey].countEle.style.backgroundColor = rgba(
+            event.color,
+            this.eventBackgroundWhiteMixPercent,
+          );
+
+          this.monthDayCache[dateISO].eventCountWrapEle.classList.add('show');
+          this.monthDayCache[dateISO].eventCountWrapEle.appendChild(this.monthDayCache[dateISO][groupKey].countEle);
+        }
+
+        this.monthDayCache[dateISO][groupKey].count++;
+        this.monthDayCache[dateISO][groupKey].countEle.innerHTML = this.monthDayCache[dateISO][groupKey].count;
+
+        // Event View
         const startTime = dates.convertFromMilitary(event.startTime.split(' ')[1]);
         const endTime = dates.convertFromMilitary(event.endTime.split(' ')[1]);
 
@@ -377,13 +422,14 @@ class Calendar {
         eventCellEle.id = `e-${event.eventId}`;
         eventCellEle.setAttribute('data-event-id', event.eventId);
         eventCellEle.setAttribute('data-type-id', event.typeId);
-        eventCellEle.style.backgroundColor = event.color;
+        eventCellEle.style.backgroundColor = rgba(event.color, this.eventBackgroundWhiteMixPercent);
         eventCellEle.className = 'eventCellEle';
         eventCellEle.innerHTML = `
-          <p class="eventTime">${startTime} - ${endTime} ${event.length}</p>
+          <p class="eventTime">${startTime}</p>
+          <p class="eventName">${event.locationName}</p>
         `;
 
-        this.monthEventDOMCache[dateISO].appendChild(eventCellEle);
+        this.monthDayCache[dateISO].eventWrapEle.appendChild(eventCellEle);
       });
   }
   renderWeekEvents() {
@@ -415,7 +461,11 @@ class Calendar {
   renderMonthEventsAsGroups() {
     if (!this.eventCache) return;
 
-    Object.values(this.monthEventDOMCache).forEach(div => (div.innerHTML = ''));
+    Object.values(this.monthDayCache).forEach(day => {
+      day.eventWrapEle.innerHTML = '';
+      day.eventCountEle.innerHTML = '';
+      day.eventsCount = 0;
+    });
 
     this.eventGroupDOMCache = {};
     this.eventGroupDOMCount = {};
@@ -432,7 +482,7 @@ class Calendar {
 
           this.eventGroupDOMCount[groupByKey] = 0;
           this.eventGroupDOMCache[groupByKey] = groupWrapEle;
-          this.monthEventDOMCache[dateISO].appendChild(groupWrapEle);
+          this.monthDayCache[dateISO].eventWrapEle.appendChild(groupWrapEle);
         }
 
         this.eventGroupDOMCache[groupByKey].innerHTML = `
@@ -494,6 +544,154 @@ class Calendar {
 
         this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
       });
+  }
+  //
+  addEvent(newEvent) {
+    if (this.eventCacheBackup) {
+      this.eventCacheBackup.push(newEvent);
+    } else {
+      this.eventCache.push(newEvent);
+    }
+
+    if (this.currentView === 'week') {
+      if (this.customGroupingOn) {
+        // Grouping
+        const groupByKey = newEvent[this.customGroupOptions.groupBy];
+        const groupByName = newEvent[this.customGroupOptions.groupName];
+
+        if (!this.eventGroupDOMCache[groupByKey]) {
+          const groupWrapEle = this.buildGroupWrap(groupByKey, groupByName);
+          this.weekWrapEle.appendChild(groupWrapEle);
+          this.eventGroupDOMCache[groupByKey] = groupWrapEle;
+        }
+
+        // Event
+        const eventCellEle = this.buildEventCell(newEvent);
+        this.setEventPosition(newEvent, eventCellEle);
+        this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
+      } else {
+        const eventCellEle = this.buildEventCell(newEvent);
+        this.setEventPosition(newEvent, eventCellEle);
+        this.weekEventsWrapEle.appendChild(eventCellEle);
+      }
+
+      return;
+    }
+
+    if (this.currentView === 'day') {
+      if (this.customGroupingOn) {
+        // Grouping
+        const groupByKey = newEvent[this.customGroupOptions.groupBy];
+        const groupByName = newEvent[this.customGroupOptions.groupName];
+
+        if (!this.eventGroupDOMCache[groupByKey]) {
+          const groupWrapEle = this.buildGroupWrap(groupByKey, groupByName);
+          this.dayWrapEle.appendChild(groupWrapEle);
+          this.eventGroupDOMCache[groupByKey] = groupWrapEle;
+        }
+
+        // Event
+        const eventCellEle = this.buildEventCell(newEvent);
+        this.setEventPosition(newEvent, eventCellEle);
+        this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
+      } else {
+        const eventCellEle = this.buildEventCell(newEvent);
+        this.setEventPosition(newEvent, eventCellEle);
+        this.dayEventsWrapEle.appendChild(eventCellEle);
+      }
+      return;
+    }
+
+    if (this.currentView === 'month') {
+      if (this.customGroupingOn) {
+      } else {
+        const eventDate = new Date(newEvent.date);
+        const dateISO = dates.formatISO(eventDate);
+
+        const startTime = dates.convertFromMilitary(newEvent.startTime.split(' ')[1]);
+        const endTime = dates.convertFromMilitary(newEvent.endTime.split(' ')[1]);
+
+        const eventCellEle = document.createElement('div');
+        eventCellEle.id = `e-${newEvent.eventId}`;
+        eventCellEle.setAttribute('data-event-id', newEvent.eventId);
+        eventCellEle.setAttribute('data-type-id', newEvent.typeId);
+        eventCellEle.style.backgroundColor = rgba(event.color, this.eventBackgroundWhiteMixPercent);
+        eventCellEle.className = 'eventCellEle';
+        eventCellEle.innerHTML = `
+          <p class="eventTime">${startTime} - ${endTime} ${newEvent.length}</p>
+        `;
+
+        this.monthDayCache[dateISO].eventWrapEle.appendChild(eventCellEle);
+      }
+
+      return;
+    }
+  }
+  updateEvent(updatedEvent) {
+    let oldEvent;
+
+    if (this.eventCacheBackup) {
+      this.eventCacheBackup.forEach((event, index) => {
+        if (event.eventId === updatedEvent.eventId) {
+          oldEvent = { ...event };
+          event = { ...updatedEvent };
+        }
+      });
+    } else {
+      this.eventCache.forEach((event, index) => {
+        if (event.eventId === updatedEvent.eventId) {
+          oldEvent = { ...event };
+          event = { ...updatedEvent };
+        }
+      });
+    }
+
+    const eventCell = this.calendarEle.getElementById(`e-${updatedEvent.eventId}`);
+
+    // See if there was a date change that took it out of view
+    const isStillInRange = isDateWithinSpan(updatedEvent.date, this.dateRange);
+    if (!isStillInRange) {
+      eventCell.remove();
+    }
+
+    if (this.currentView === 'month') {
+      return;
+    }
+
+    // Update cell group type and color
+    if (this.currentView === 'week' || this.currentView === 'day') {
+      eventCell.setAttribute('data-type-id', updatedEvent.typeId);
+      eventCell.style.backgroundColor = updatedEvent.color;
+    }
+
+    // Check if it needs moved
+    if (this.customGroupingOn) {
+      if (updatedEvent.locationId !== oldEvent.locationId) {
+        const newGroup = this.calendarEle.getElementById(`g-${updatedEvent.locationId}`);
+        newGroup.appendChild(eventCell);
+
+        this.setEventPosition(updatedEvent, eventCell);
+      }
+
+      if (oldEvent.date !== updatedEvent.date) {
+        this.setEventPosition(updatedEvent, eventCell);
+      }
+    } else {
+      const oldStartDate = new Date(oldEvent.startTime);
+      const oldEndDate = new Date(oldEvent.endTime);
+      const newStartDate = new Date(updatedEvent.startTime);
+      const newEndDate = new Date(updatedEvent.endTime);
+
+      const sameStart = oldStartDate.getTime() === newStartDate.getTime();
+      const sameEnd = oldEndDate.getTime() === newEndDate.getTime();
+
+      if (oldEvent.date !== updatedEvent.date || !sameStart || !sameEnd) {
+        this.setEventPosition(updatedEvent, eventCell);
+      }
+    }
+
+    // Refresh inner HTML markup
+    this.renderEventCellContent(updatedEvent, eventCell);
   }
 
   // Event Listeners
@@ -606,8 +804,8 @@ class Calendar {
     this.navBtnEle['next'].setAttribute('data-nav', 'next');
     this.navBtnEle['prev'].setAttribute('data-nav', 'prev');
     this.navBtnEle['today'].setAttribute('data-nav', 'today');
-    this.navBtnEle['next'].textContent = 'Next >>';
-    this.navBtnEle['prev'].textContent = '<< Prev';
+    this.navBtnEle['next'].textContent = '>>';
+    this.navBtnEle['prev'].textContent = '<<';
     this.navBtnEle['today'].textContent = 'Today';
 
     const viewToggleWrap = document.createElement('div');
@@ -654,153 +852,7 @@ class Calendar {
       this.eventCache = this.eventCache.filter(e => e.eventId !== id);
     }
   }
-  addEvent(newEvent) {
-    if (this.eventCacheBackup) {
-      this.eventCacheBackup.push(newEvent);
-    } else {
-      this.eventCache.push(newEvent);
-    }
-
-    if (this.currentView === 'week') {
-      if (this.customGroupingOn) {
-        // Grouping
-        const groupByKey = newEvent[this.customGroupOptions.groupBy];
-        const groupByName = newEvent[this.customGroupOptions.groupName];
-
-        if (!this.eventGroupDOMCache[groupByKey]) {
-          const groupWrapEle = this.buildGroupWrap(groupByKey, groupByName);
-          this.weekWrapEle.appendChild(groupWrapEle);
-          this.eventGroupDOMCache[groupByKey] = groupWrapEle;
-        }
-
-        // Event
-        const eventCellEle = this.buildEventCell(newEvent);
-        this.setEventPosition(newEvent, eventCellEle);
-        this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
-      } else {
-        const eventCellEle = this.buildEventCell(newEvent);
-        this.setEventPosition(newEvent, eventCellEle);
-        this.weekEventsWrapEle.appendChild(eventCellEle);
-      }
-
-      return;
-    }
-
-    if (this.currentView === 'day') {
-      if (this.customGroupingOn) {
-        // Grouping
-        const groupByKey = newEvent[this.customGroupOptions.groupBy];
-        const groupByName = newEvent[this.customGroupOptions.groupName];
-
-        if (!this.eventGroupDOMCache[groupByKey]) {
-          const groupWrapEle = this.buildGroupWrap(groupByKey, groupByName);
-          this.dayWrapEle.appendChild(groupWrapEle);
-          this.eventGroupDOMCache[groupByKey] = groupWrapEle;
-        }
-
-        // Event
-        const eventCellEle = this.buildEventCell(newEvent);
-        this.setEventPosition(newEvent, eventCellEle);
-        this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
-      } else {
-        const eventCellEle = this.buildEventCell(newEvent);
-        this.setEventPosition(newEvent, eventCellEle);
-        this.dayEventsWrapEle.appendChild(eventCellEle);
-      }
-      return;
-    }
-
-    if (this.currentView === 'month') {
-      if (this.customGroupingOn) {
-      } else {
-        const eventDate = new Date(newEvent.date);
-        const dateISO = dates.formatISO(eventDate);
-
-        const startTime = dates.convertFromMilitary(newEvent.startTime.split(' ')[1]);
-        const endTime = dates.convertFromMilitary(newEvent.endTime.split(' ')[1]);
-
-        const eventCellEle = document.createElement('div');
-        eventCellEle.id = `e-${newEvent.eventId}`;
-        eventCellEle.setAttribute('data-event-id', newEvent.eventId);
-        eventCellEle.setAttribute('data-type-id', newEvent.typeId);
-        eventCellEle.style.backgroundColor = newEvent.color;
-        eventCellEle.className = 'eventCellEle';
-        eventCellEle.innerHTML = `
-          <p class="eventTime">${startTime} - ${endTime} ${newEvent.length}</p>
-        `;
-
-        this.monthEventDOMCache[dateISO].appendChild(eventCellEle);
-      }
-
-      return;
-    }
-  }
-  updateEvent(updatedEvent) {
-    let oldEvent;
-
-    if (this.eventCacheBackup) {
-      this.eventCacheBackup.forEach((event, index) => {
-        if (event.eventId === updatedEvent.eventId) {
-          oldEvent = { ...event };
-          event = { ...updatedEvent };
-        }
-      });
-    } else {
-      this.eventCache.forEach((event, index) => {
-        if (event.eventId === updatedEvent.eventId) {
-          oldEvent = { ...event };
-          event = { ...updatedEvent };
-        }
-      });
-    }
-
-    const eventCell = this.calendarEle.getElementById(`e-${updatedEvent.eventId}`);
-
-    // See if there was a date change that took it out of view
-    const isStillInRange = isDateWithinSpan(updatedEvent.date, this.dateRange);
-    if (!isStillInRange) {
-      eventCell.remove();
-    }
-
-    if (this.currentView === 'month') {
-      return;
-    }
-
-    // Update cell group type and color
-    if (this.currentView === 'week' || this.currentView === 'day') {
-      eventCell.setAttribute('data-type-id', updatedEvent.typeId);
-      eventCell.style.backgroundColor = updatedEvent.color;
-    }
-
-    // Check if it needs moved
-    if (this.customGroupingOn) {
-      if (updatedEvent.locationId !== oldEvent.locationId) {
-        const newGroup = this.calendarEle.getElementById(`g-${updatedEvent.locationId}`);
-        newGroup.appendChild(eventCell);
-
-        this.setEventPosition(updatedEvent, eventCell);
-      }
-
-      if (oldEvent.date !== updatedEvent.date) {
-        this.setEventPosition(updatedEvent, eventCell);
-      }
-    } else {
-      const oldStartDate = new Date(oldEvent.startTime);
-      const oldEndDate = new Date(oldEvent.endTime);
-      const newStartDate = new Date(updatedEvent.startTime);
-      const newEndDate = new Date(updatedEvent.endTime);
-
-      const sameStart = oldStartDate.getTime() === newStartDate.getTime();
-      const sameEnd = oldEndDate.getTime() === newEndDate.getTime();
-
-      if (oldEvent.date !== updatedEvent.date || !sameStart || !sameEnd) {
-        this.setEventPosition(updatedEvent, eventCell);
-      }
-    }
-
-    // Refresh inner HTML markup
-    this.renderEventCellContent(updatedEvent, eventCell);
-  }
+  addUpdateEvent(eventData) {}
   filterEventsBy(filterOptions) {
     if (filterOptions.resetFilter) {
       this.eventCache = [...this.eventCacheBackup];

@@ -818,7 +818,7 @@ function setSessionVariables() {
       if (tmpPerm == 'View' || $.session.isPSI == true) {
         $.session.schedulingView = true;
       }
-      if (tmpPerm == 'Security' || $.session.isPSI == true) {
+      if (tmpPerm == 'Scheduler' || $.session.isPSI == true) {
         $.session.schedulingSecurity = true;
       }
     }
