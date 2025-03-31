@@ -1056,7 +1056,7 @@ function getDefaultAnywhereSettings() {
       $.session.requireTimeEntryTransportationTimes = res.requireTimeEntryTransportationTimes;
       $.session.ohioEVVChangeDate = res.ohioEVVChangeDate;
       $.session.anyRequireEndTime = res.anyRequireEndTime;
-      $.session.anyUndocumentedServices = res.anyUndocumentedServices; 
+      $.session.anyUndocumentedServices = res.anyUndocumentedServices;
       $.session.automateSimpleBilling = res.automateSimpleBilling;
       $.session.useProgressNotes = res.useProgressNotes;
       $.session.applicationName = res.application;
@@ -1115,8 +1115,8 @@ function getDefaultAnywhereSettings() {
       $.session.defaultMoneyManagementLocation = res.defaultMoneyManagementLocationName;
       $.session.defaultOODLocationValue = res.defaultOODLocation;
       $.session.defaultOODLocation = res.defaultOODLocationName;
-        $.session.defaultOutcomesLocationValue = res.defaultOutcomesLocation;
-        $.session.defaultOutcomesLocation = res.defaultOutcomesLocationName;
+      $.session.defaultOutcomesLocationValue = res.defaultOutcomesLocation;
+      $.session.defaultOutcomesLocation = res.defaultOutcomesLocationName;
       //$.session.defaultDSTimeClockName = res.defaulttimeclocklocationname;
       //database state - Indiana or Ohio
       $.session.stateAbbreviation = res.stateAbbreviation;
@@ -1161,8 +1161,8 @@ function getDefaultAnywhereSettings() {
       $('#incidenttrackingdaysback').val($.session.defaultIncidentTrackingDaysBack);
 
       disableModules();
-      loadApp('home');
-      // loadApp('schedule');
+      // loadApp('home');
+      loadApp('schedule');
     },
     error: function (xhr, status, error) {
       //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);

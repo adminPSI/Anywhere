@@ -1951,6 +1951,39 @@ const SchedulingCalendar = (function () {
 
     return radioContainer;
   }
+  function buildFilter() {
+    const accordionWrapEle = document.createElement('div');
+    const accordionTriggerEle = document.createElement('div');
+    const accordionContentEle = document.createElement('div');
+    const contentWrapEle = document.createElement('div');
+
+    accordionWrapEle.className = 'navAccordion';
+    accordionTriggerEle.className = 'navAccordionTrigger';
+    accordionContentEle.className = 'navAccordionContent closed';
+    contentWrapEle.className = 'navAccordionContentWrapEle';
+
+    accordionTriggerEle.innerHTML = `${icons.keyArrowDown} <p>Filter Calendar</p>`;
+
+    accordionWrapEle.appendChild(accordionTriggerEle);
+    accordionWrapEle.appendChild(accordionContentEle);
+    accordionContentEle.appendChild(contentWrapEle);
+
+    locationDropdownEle = buildLocationDropdown();
+    employeeDropdownEle = buildEmployeeDropdown();
+    shiftTypeDropdownEle = buildShiftTypeDropdown();
+    openShiftViewToggleEle = buildOpenShiftViewToggleButton();
+
+    contentWrapEle.appendChild(locationDropdownEle);
+    contentWrapEle.appendChild(employeeDropdownEle);
+    contentWrapEle.appendChild(shiftTypeDropdownEle);
+    contentWrapEle.appendChild(openShiftViewToggleEle);
+
+    accordionTriggerEle.addEventListener('click', e => {
+      accordionContentEle.classList.toggle('closed');
+    });
+
+    return accordionWrapEle;
+  }
   function build() {
     const scheduleWrap = document.createElement('div');
     scheduleWrap.classList.add('scheduleWrap');
@@ -1958,34 +1991,37 @@ const SchedulingCalendar = (function () {
     const scheduleNav = document.createElement('div');
     scheduleNav.classList.add('scheduleNav');
 
-    const colLeft = document.createElement('div');
-    colLeft.classList.add('colLeft');
+    const scheduleFilter = buildFilter();
+
+    // const dropdownGroup = document.createElement('div');
+    // dropdownGroup.classList.add('dropdownGroup');
 
     const colRight = document.createElement('div');
     colRight.classList.add('colRight');
 
-    locationDropdownEle = buildLocationDropdown();
-    employeeDropdownEle = buildEmployeeDropdown();
-    openShiftViewToggleEle = buildOpenShiftViewToggleButton();
+    // locationDropdownEle = buildLocationDropdown();
+    // employeeDropdownEle = buildEmployeeDropdown();
+    // shiftTypeDropdownEle = buildShiftTypeDropdown();
+    // openShiftViewToggleEle = buildOpenShiftViewToggleButton();
     pubUnpubButtonEle = buildPubUnpubSchedulesButton();
-    shiftTypeDropdownEle = buildShiftTypeDropdown();
     newShiftButtonEle = buildNewShiftButton();
 
-    colLeft.appendChild(locationDropdownEle);
-    colLeft.appendChild(employeeDropdownEle);
-    colLeft.appendChild(shiftTypeDropdownEle);
-    colRight.appendChild(openShiftViewToggleEle);
+    // dropdownGroup.appendChild(locationDropdownEle);
+    // dropdownGroup.appendChild(employeeDropdownEle);
+    // dropdownGroup.appendChild(shiftTypeDropdownEle);
+    // colRight.appendChild(openShiftViewToggleEle);
     colRight.appendChild(newShiftButtonEle);
     colRight.appendChild(pubUnpubButtonEle);
 
     if (!$.session.schedulingSecurity) {
-      colLeft.removeChild(shiftTypeDropdownEle);
+      // dropdownGroup.removeChild(shiftTypeDropdownEle);
       colRight.removeChild(newShiftButtonEle);
       colRight.removeChild(pubUnpubButtonEle);
       employeeDropdownEle.classList.add('disabled');
     }
 
-    scheduleNav.appendChild(colLeft);
+    // scheduleNav.appendChild(dropdownGroup);
+    scheduleNav.appendChild(scheduleFilter);
     scheduleNav.appendChild(colRight);
     scheduleWrap.appendChild(scheduleNav);
     scheduleWrap.appendChild(ScheduleCalendar.rootEle);
@@ -2001,12 +2037,12 @@ const SchedulingCalendar = (function () {
 
     //!W remove after dev testing
     console.clear();
-    // $.session.schedulingUpdate = true;
-    // $.session.schedulingView = true;
-    // $.session.schedAllowCallOffRequests = 'Y';
-    // $.session.schedRequestOpenShifts = 'Y';
-    // $.session.hideAllScheduleButton = false;
-    // $.session.schedulingSecurity = true;
+    $.session.schedulingUpdate = true;
+    $.session.schedulingView = true;
+    $.session.schedAllowCallOffRequests = 'Y';
+    $.session.schedRequestOpenShifts = 'Y';
+    $.session.hideAllScheduleButton = false;
+    $.session.schedulingSecurity = true;
     //!W remove after dev testing
 
     selectedEmployeeId = $.session.PeopleId;

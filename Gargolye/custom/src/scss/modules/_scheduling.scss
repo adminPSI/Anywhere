@@ -2,7 +2,7 @@
 //*=====================================
 // Scheduling
 .scheduleWrap {
-  padding: 10px 0px;
+  padding: 0px;
 }
 .scheduleNav {
   display: flex;
@@ -10,45 +10,109 @@
   gap: 10px;
   justify-content: space-between;
 
+  .navAccordion {
+    width: 100%;
+
+    .navAccordionTrigger {
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+      min-height: 40px;
+      width: 100%;
+      border-bottom: 2px solid black;
+
+      svg {
+        width: 24px;
+      }
+    }
+
+    .navAccordionContent {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.3s ease-in;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      border-bottom: 2px solid black;
+
+      .navAccordionContentWrapEle {
+        display: flex;
+        flex-flow: row wrap;
+        gap: 10px;
+        width: 100%;
+        overflow: hidden;
+        padding: 20px 0 8px 0;
+        transition: padding 0.1s ease-in;
+      }
+
+      &.closed {
+        grid-template-rows: 0fr;
+
+        .navAccordionContentWrapEle {
+          padding: 0;
+        }
+      }
+    }
+  }
+
+  .mainLocationDropdown,
+  .mainEmployeeDropdown {
+    margin: 0 0 2px 0;
+  }
+
+  .mainLocationDropdown {
+    flex-grow: 3;
+  }
+  .mainEmployeeDropdown {
+    flex-grow: 2;
+  }
+  .shiftTypeWrap {
+    position: relative;
+    padding: 0 0 18px;
+    flex-grow: 1;
+
+    .dropdown {
+      margin: 0;
+    }
+
+    p {
+      position: absolute;
+      right: 0px;
+      bottom: 0px;
+      font-weight: $_normal;
+      font-size: 12px;
+
+      &.error {
+        color: $error;
+      }
+    }
+  }
+  .openShiftWrap {
+    display: flex;
+    column-gap: 8px;
+
+    p {
+      font-weight: $normal;
+      margin-bottom: 4px;
+    }
+
+    > div {
+      display: flex;
+      column-gap: 6px;
+      justify-content: space-evenly;
+
+      input {
+        margin-right: 2px;
+      }
+    }
+  }
+
   // Filtering (dropdowns, radio)
-  .colLeft {
+  .dropdownGroup {
     display: flex;
     flex-flow: row wrap;
     gap: 10px;
     width: 100%;
-
-    .mainLocationDropdown,
-    .mainEmployeeDropdown {
-      margin: 0 0 2px 0;
-    }
-
-    .mainLocationDropdown {
-      flex-grow: 3;
-    }
-    .mainEmployeeDropdown {
-      flex-grow: 2;
-    }
-    .shiftTypeWrap {
-      position: relative;
-      padding: 0 0 18px;
-      flex-grow: 1;
-
-      .dropdown {
-        margin: 0;
-      }
-
-      p {
-        position: absolute;
-        right: 0px;
-        bottom: 0px;
-        font-weight: $_normal;
-        font-size: 12px;
-
-        &.error {
-          color: $error;
-        }
-      }
-    }
   }
 
   .colRight {
@@ -66,18 +130,17 @@
     .pubUnpubButton {
       flex-grow: 1;
     }
-    .openShiftWrap {
-      display: flex;
-      column-gap: 10px;
+  }
 
-      p {
-        font-weight: $normal;
-        margin-bottom: 4px;
-      }
+  @media screen and (min-width: 600px) {
+    .navAccordion {
+      .navAccordionTrigger {
+        display: none;
 
-      > div {
-        display: flex;
-        justify-content: space-evenly;
+        .navAccordionContent,
+        .navAccordionContent.closed {
+          grid-template-rows: 1fr;
+        }
       }
     }
   }
@@ -183,6 +246,7 @@
 
   .day {
     background: $white;
+    overflow: hidden;
 
     &.notSameMonth {
       background: $gray;
@@ -199,9 +263,6 @@
     overflow: hidden;
 
     .eventCellEle {
-      // container-type: inline-size;
-      // container-name: event-cell;
-  
       cursor: pointer;
       display: flex;
       padding: 2px;
@@ -244,7 +305,7 @@
     }
   }
 
-  @media screen and (max-width: 500px) {
+  @media screen and (max-width: 600px) {
     .eventWrap {
       display: none;
     }
@@ -254,12 +315,6 @@
       justify-content: flex-end;
     }
   }
-
-  // @container event-cell (width < 150px) {
-  //   .eventTime {
-  //     display: none;
-  //   }
-  // }
 }
 // week & day view
 .calendar .week-view,
