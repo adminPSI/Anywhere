@@ -26,11 +26,11 @@ var customGroupsAjax = (function() {
         // });
     }
 
-    function addCustomGroup(groupName, locationId, callback) {
+    function addCustomGroup(groupName, locationId, ispubliclyAvailableChecked, callback) {
         $.ajax({
             type: 'POST',
             url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/addCustomGroupJSON/',
-            data: '{"groupName":"' + groupName + '","locationId":"' + locationId + '","token":"' + $.session.Token + '"}',
+            data: '{"groupName":"' + groupName + '","locationId":"' + locationId + '","token":"' + $.session.Token + '","ispubliclyAvailableChecked":"' + ispubliclyAvailableChecked + '"}',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
 			success: function(response, status, xhr) {
@@ -107,6 +107,20 @@ var customGroupsAjax = (function() {
         }
     }
 
+    function updatePublicAvailable(groupId, isPublicAvailable, callback) {
+        $.ajax({
+            type: 'POST',
+            url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updatePublicAvailable/',
+            data: '{"groupId":"' + groupId + '","isPublicAvailable":"' + isPublicAvailable + '"}',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (response, status, xhr) {
+                var res = JSON.stringify(response);
+                callback();
+            },
+        });
+    }
+
     return {
         // Old Ajax
         getConsumerGroups,
@@ -114,6 +128,7 @@ var customGroupsAjax = (function() {
         addConsumerToGroup,
         removeCustomGroup,
         removeConsumerFromGroup,
-        addConsumerToCustomGroup
+        addConsumerToCustomGroup,
+        updatePublicAvailable
     };
 })();

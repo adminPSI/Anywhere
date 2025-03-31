@@ -60,7 +60,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
                     pAWAttachObj[i].whereFrom = wfa.whereFrom;
                     pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
-                    //    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
+                    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
                     i++;
                 }
                 foreach (PlanAttachments wfa in planAttachmentsObj)

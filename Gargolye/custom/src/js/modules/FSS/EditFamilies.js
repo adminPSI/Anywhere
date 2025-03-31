@@ -144,7 +144,7 @@ const EditFamilies = (function () {
         SEARCH_WRAP = document.createElement('div');
         SEARCH_WRAP.classList.add('rosterSearch');
         SEARCH_INPUT = document.createElement('input');
-        SEARCH_INPUT.setAttribute('placeholder', 'search users');
+        SEARCH_INPUT.setAttribute('placeholder', 'search families');
         SEARCH_WRAP.appendChild(SEARCH_BTN);
         SEARCH_WRAP.appendChild(SEARCH_INPUT);
 

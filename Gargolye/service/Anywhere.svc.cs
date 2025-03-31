@@ -261,7 +261,7 @@ namespace Anywhere
 
         }
 
-        public RosterWorker.AddCustomGroup[] addCustomGroupJSON(string groupName, string locationId, string token)
+        public RosterWorker.AddCustomGroup[] addCustomGroupJSON(string groupName, string locationId, string token, string ispubliclyAvailableChecked)
         {
             char[] arr = groupName.ToCharArray();
             arr = Array.FindAll<char>(arr, (c => (char.IsLetterOrDigit(c) || char.IsWhiteSpace(c) || c == '-')));
@@ -270,7 +270,7 @@ namespace Anywhere
 
             // if (groupName.Length > 2)
             // {
-            return rosterWorker.addCustomGroupJSON(groupName, locationId, token);
+            return rosterWorker.addCustomGroupJSON(groupName, locationId, token, ispubliclyAvailableChecked);
             // }
             // else
             // {
@@ -291,6 +291,22 @@ namespace Anywhere
             {
                 logger.Error("groupId is not a number:" + groupId);
                 return "<error>Error parsing groupId</error>";
+            }
+        }
+
+        public string updatePublicAvailable(string groupId, string isPublicAvailable)
+        {
+            Int64 Num;
+            bool isNum = Int64.TryParse(groupId, out Num);
+
+            if (isNum)
+            {
+                return dg.updatePublicAvailable(groupId, isPublicAvailable);
+            }
+            else
+            {
+                logger.Error("GroupId is not a number:" + groupId + " " + isPublicAvailable);
+                return "<error>Error parsing GroupId</error>";
             }
         }
 
@@ -4501,9 +4517,9 @@ namespace Anywhere
             return fssw.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID);
         }
 
-        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID)
+        public UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling)
         {
-            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
+            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID, isSimpleBilling);
         }
 
         public void deleteAuthorization(string token, string authDetailId)

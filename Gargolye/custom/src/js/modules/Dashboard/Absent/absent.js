@@ -306,9 +306,9 @@ var absentWidget = (function() {
                 populateAbsentWidgetLocations(locations);
                 populateAbsentWidgetGroups(groups);
 
-                absentWidgetLocationName = locationList.find(l => l.id == absentWidgetLocationId).text;
-                absentWidgetGroupName = groupList.find(l => l.value == absentWidgetGroupId).text;
-                absentWidgetGroupCode = groupList.find(l => l.value == absentWidgetGroupId).id;
+                absentWidgetLocationName = locationList.find(l => l.id == absentWidgetLocationId)?.text;  
+                absentWidgetGroupName = groupList.find(l => l.value == absentWidgetGroupId)?.text;
+                absentWidgetGroupCode = groupList.find(l => l.value == absentWidgetGroupId)?.id;
 
                 absentWidgetAjax.getAbsentWidgetFilterDataAjax({
                     token: $.session.Token,

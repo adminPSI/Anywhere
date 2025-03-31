@@ -1886,6 +1886,10 @@ const dayServices = (function () {
         let dsEnabledConsumers;
         serviceDate = UTIL.getTodaysDate();
 
+        if ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices') {
+            filterGroupID = 'CAS';
+        }    
+
         //Check to see if CI should be enabled
         const checkCiPromise = new Promise(function (resolve, reject) {
             dayServiceAjax.getDateToCheckShowCI(res => {
@@ -2137,7 +2141,7 @@ const dayServices = (function () {
         dsCardArea.innerHTML = '';
 
         DOM.clearActionCenter();
-        locationCheck();
+        locationCheck();  
     }
 
     return {

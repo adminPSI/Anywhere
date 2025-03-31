@@ -149,6 +149,8 @@ $.session.defaultMoneyManagementLocation;
 $.session.defaultMoneyManagementLocationValue;
 $.session.defaultOODLocation;
 $.session.defaultOODLocationValue;
+$.session.defaultOutcomesLocation;
+$.session.defaultOutcomesLocationValue;
 $.session.defaultPlanLocation;
 $.session.defaultPlanLocationName;
 $.session.defaultPlanGroupValue;
@@ -393,6 +395,7 @@ $.session.requireTimeEntryTransportationTimes = 'N';
 $.session.ohioEVVChangeDate = '';
 $.session.anyRequireEndTime = '';
 $.session.anyUndocumentedServices = '';
+$.session.automateSimpleBilling = '';
 $(window).resize(function () {
   //resizeActionCenter();
 });
@@ -1805,7 +1808,6 @@ function setDefaultValue(type, value, event, name) {
       break;
     case 10:
       typeName = 'Default OOD Location';
-      debugger;
       $('#OOD10').text(event.srcElement.text);
       if (value != 0 && name != null) {
         createCookie('defaultOODLocationName', name, 10);
@@ -1815,6 +1817,19 @@ function setDefaultValue(type, value, event, name) {
       } else {
         createCookie('defaultOODLocationName', 'Remember Last Location', 10);
         saveDefaultLocationNameAjax('10', 'Remember Last Location');
+      }
+      break;
+    case 11:
+      typeName = 'Default Outcomes Location';
+      $('#Outcomes11').text(event.srcElement.text);
+      if (value != 0 && name != null) {
+        createCookie('defaultOutcomesLocationName', name, 11);
+        createCookie('defaultOutcomesLocationValue', value, 11);
+        saveDefaultLocationNameAjax('11', name);
+        saveDefaultLocationValueAjax('11', value);
+      } else {
+        createCookie('defaultOutcomesLocationName', 'Remember Last Location', 11);
+        saveDefaultLocationNameAjax('11', 'Remember Last Location');
       }
       break;
   }

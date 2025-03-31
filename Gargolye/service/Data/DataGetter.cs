@@ -267,17 +267,17 @@ namespace Anywhere.Data
         /// </summary>
         /// <param name="groupName"></param>
         /// <returns></returns>
-        public string addCustomGroupJSON(string groupName, string locationId, string token)
+        public string addCustomGroupJSON(string groupName, string locationId, string token, string ispubliclyAvailableChecked)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("AddCustomGroup");
             try
             {
-                return executeDataBaseCallJSON("CALL DBA.ANYW_Roster_AddCustomGroup('" + groupName + "','" + locationId + "','" + token + "');");
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Roster_AddCustomGroup('" + groupName + "','" + locationId + "','" + token + "','" + ispubliclyAvailableChecked + "');");
             }
             catch (Exception ex)
             {
-                logger.error("507", ex.Message + " ANYW_Roster_AddCustomGroup('" + groupName + "','" + locationId + "','" + token + "')", token);
+                logger.error("507", ex.Message + " ANYW_Roster_AddCustomGroup('" + groupName + "','" + locationId + "','" + token + "','" + ispubliclyAvailableChecked + "')", token);
                 return "507: Error Adding Custom to Group";
             }
         }
@@ -295,6 +295,22 @@ namespace Anywhere.Data
                 logger.error("508", ex.Message + " ANYW_Roster_RemoveCustomGroup('" + groupId + "')");
                 return "508: Error Removing Custom to Group";
             }
+        }
+
+        public string updatePublicAvailable(string groupId, string isPublicAvailable)
+        {
+            logger.debug("updatePublicAvailable");
+
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Roster_updatePublicAvailable('" + groupId + "','" + isPublicAvailable + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("506", ex.Message + " ANYW_Roster_updatePublicAvailable(" + groupId + "," + isPublicAvailable + ")");
+                return "506: Error update Public Available to Group";
+            }
+
         }
 
         public string addDayServiceActivityMassClockInConsumer(string token, string consumerIds, string serviceDate, string locationId, string startTime)
@@ -1366,7 +1382,7 @@ namespace Anywhere.Data
             {
                 logger.error("4WL", ex.Message + "ANYW_WaitingList_GetSupportingDocumentList(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "4WL: error ANYW_WaitingList_GetSupportingDocumentList";
-            }
+        }
         }
 
         public string getRelationshipsNameJSON(string token)
@@ -2645,7 +2661,7 @@ namespace Anywhere.Data
             {
                 logger.error("604", ex.Message + "ANYW_Settings_updateConnectWithPerson('" + token + "', '" + connectType + "')");
                 return "604: error updateConnectWithPerson";
-            }
+        }
         }
 
         public string updateConsumerNotesChecklistDaysBack(string token, string updatedChecklistDays)
@@ -3262,7 +3278,7 @@ namespace Anywhere.Data
             {
                 logger.error("631", ex.Message + "ANYW_Scheduling_GetRegions(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "631: error ANYW_Scheduling_GetRegions";
-            }
+        }
         }
 
         public string getSchedulingPeriodsDetails(string token, string startDate, string endDate)//Needs procedures in db still
@@ -7119,10 +7135,10 @@ namespace Anywhere.Data
                 return "636: error ANYW_GoalsAndServices__GetReviewPageGridSecondary";
             }
         }
-
+        
         public string getExclclamationIds( string startDate, string endDate,string frequency)
         {
-
+            
             List<string> list = new List<string>();
             list.Add(startDate);
             list.Add(endDate);
