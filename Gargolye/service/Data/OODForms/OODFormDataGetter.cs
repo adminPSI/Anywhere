@@ -889,8 +889,8 @@ namespace OODForms
             sb.Append("FROM dba.em_employee_position ep ");
             sb.Append("LEFT OUTER JOIN dba.employer e ON ep.Employer_ID = e.employer_ID ");
             sb.Append("LEFT OUTER JOIN dba.em_wages w ON w.Position_ID = ep.position_ID ");
-            sb.AppendFormat("AND w.start_date >= '{0}' ", StartDate);
-            sb.AppendFormat("AND (w.end_date <= '{0}' OR w.end_date IS NULL) ", EndDate);
+            sb.AppendFormat("AND w.start_date <= '{0}' ", StartDate);
+            sb.AppendFormat("AND (w.end_date >= '{0}' OR w.end_date IS NULL) ", EndDate);
             sb.Append("LEFT OUTER JOIN dba.em_work_schedule ws ON ws.Position_ID = ep.position_ID ");
             sb.Append("LEFT OUTER JOIN dba.people p ON ep.people_id = p.id ");
             sb.Append("LEFT OUTER JOIN dba.Code_Table ct ON ct.code = ep.position_code ");
