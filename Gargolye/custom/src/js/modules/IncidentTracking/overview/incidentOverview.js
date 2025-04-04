@@ -9,6 +9,7 @@ const incidentOverview = (function () {
     let applyFilterBtn;
     let alphaDropdown;
     let locationDropdown;
+    let groupDropdown;
     let consumerDropdown;
     let betaDropdown;
     let fromDateInput;
@@ -24,6 +25,10 @@ const incidentOverview = (function () {
     let categoryBtnWrap;
     let fromDateBtnWrap;
     let toDateBtnWrap;
+    let groupCodeSelected;
+    let groupIdSelected;
+    let locationIdSelected;
+
     // filter values for remembering
     let filterData = {
         alpha: null,
@@ -339,7 +344,7 @@ const incidentOverview = (function () {
     }
     function populateFilterDropdowns() {
         incidentTrackingAjax.getReviewPageLocations(populateLocationsDropdown);
-        //incidentTrackingAjax.getReviewPageLocations(populateConsumersDropdown);
+        populateGroupsDropdown('0');// populate group with all location 
         getConsumerDropdownData();
         incidentTrackingAjax.getIncidentCategories(populateCategoriesDropdown);
         incidentTrackingAjax.getITReviewPageEmployeeListAndSubList(
@@ -367,7 +372,7 @@ const incidentOverview = (function () {
         });
 
         alphaDropdown = dropdown.build({
-            dropdownId: 'locationDropdown',
+            dropdownId: 'alphaDropdown',
             label: 'Supervisor',
             style: 'secondary',
         });
@@ -376,18 +381,25 @@ const incidentOverview = (function () {
             label: 'Location',
             style: 'secondary',
         });
+
+        groupDropdown = dropdown.build({
+            dropdownId: 'groupDropdown',
+            label: 'Group',
+            style: 'secondary',
+            readonly: $.session.incidentTrackingViewCaseLoad,
+        });
         consumerDropdown = dropdown.build({
             dropdownId: 'consumerDropdown',
             label: 'Consumer',
             style: 'secondary',
         });
         betaDropdown = dropdown.build({
-            dropdownId: 'locationDropdown',
+            dropdownId: 'betaDropdown',
             label: 'Employee',
             style: 'secondary',
         });
         categoryDropdown = dropdown.build({
-            dropdownId: 'locationDropdown',
+            dropdownId: 'categoryDropdown',
             label: 'Category/Subcategory',
             style: 'secondary',
         });
@@ -419,6 +431,8 @@ const incidentOverview = (function () {
             filterPopup.appendChild(alphaDropdown);
         if (IsShow == 'ALL' || IsShow == 'locationBtn')
             filterPopup.appendChild(locationDropdown);
+        if (IsShow == 'ALL')
+            filterPopup.appendChild(groupDropdown);
         if (IsShow == 'ALL' || IsShow == 'consumerBtn')
             filterPopup.appendChild(consumerDropdown);
         if (IsShow == 'ALL' || IsShow == 'employeeBtn')
@@ -534,6 +548,19 @@ const incidentOverview = (function () {
             // temp cache data  
             tmpLocationId = selectedOption.value;
             tmpLocationName = selectedOption.innerHTML;
+            locationIdSelected = selectedOption.value == '%' ? '0' : selectedOption.value;
+            populateGroupsDropdown(retrieveData.locationId);
+            getConsumerDropdownData();
+        });
+        groupDropdown.addEventListener('change', async event => {
+            var selectedOption = event.target.options[event.target.selectedIndex];
+            retrieveData.groupId = selectedOption.value;
+            // temp cache data  
+            tmpGroupId = selectedOption.value.split('-')[1];
+            tmpGroupName = selectedOption.innerHTML;
+            groupCodeSelected = selectedOption.value.split('-')[0];
+            groupIdSelected = selectedOption.value.split('-')[1];
+            getConsumerDropdownData()
         });
         consumerDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
@@ -753,6 +780,35 @@ const incidentOverview = (function () {
         dropdown.populate(showDropdown, showDropdownData, filterData.show);
     }
 
+    async function populateGroupsDropdown(selectedLocationId) {
+        groupCodeObj = {};
+        const rosterGroups = (await customGroupsAjax.getConsumerGroups(selectedLocationId)).getConsumerGroupsJSONResult;
+
+        var data = rosterGroups.map(r => {
+            // dataObj for quick lookup
+            if (!groupCodeObj[r.GroupCode]) {
+                groupCodeObj[r.GroupCode] = {
+                    groupCode: r.GroupCode,
+                    groupName: r.GroupName,
+                    members: r.Members ? r.Members.split('|') : r.Members,
+                };
+            }
+
+            return {
+                value: `${r.GroupCode}-${r.RetrieveID}`,
+                text: r.GroupName,
+                attributes: [{ key: 'data-retrieveId', value: r.RetrieveID }],
+            };
+        });
+
+        if ($.session.incidentTrackingViewCaseLoad) {
+            dropdown.populate(groupDropdown, data, 'CAS-' + selectedLocationId);
+        } else {
+            dropdown.populate(groupDropdown, data);
+        }
+
+    }
+
     function populateConsumersDropdown() {
         populateDropdownData = consumerDropdownData.map(el => {
             return {
@@ -770,14 +826,17 @@ const incidentOverview = (function () {
         }
     }
 
-    function getConsumerDropdownData() {
-        return new Promise((resolve, reject) => {
-            caseNotesAjax.getConsumersForCNFilter(res => {
-                consumerDropdownData = res;
-                populateConsumersDropdown();
-                resolve('success');
-            });
-        });
+    async function getConsumerDropdownData() {
+        const getConsumerByGroupData = {
+            selectedGroupCode: groupCodeSelected,
+            selectedGroupId: groupIdSelected,
+            selectedLocationId: locationIdSelected,
+            selectedDate: UTIL.getTodaysDate(),
+            selectedActive: 'No',
+            isCaseLoad: $.session.incidentTrackingViewCaseLoad ? true : false
+        };
+        consumerDropdownData = (await rosterAjax.getConsumersByGroup(getConsumerByGroupData)).getConsumersByGroupJSONResult;
+        populateConsumersDropdown();
     }
 
     function populateCategoriesDropdown(res) {
@@ -957,9 +1016,9 @@ const incidentOverview = (function () {
             callback: () => {
                 POPUP.hide(importPopup);
                 selectedRelation = selectedRelation.filter(n => n);
-                emailString = selectedRelation.toString().replaceAll(",", ";");  
+                emailString = selectedRelation.toString().replaceAll(",", ";");
                 document.getElementById('toAddress').value = emailString;
-                incidentTrackingEmailData.toAddresses = emailString; 
+                incidentTrackingEmailData.toAddresses = emailString;
                 if (emailString == '')
                     emailSendBtn.classList.add('disabled');
                 else
@@ -1232,6 +1291,10 @@ const incidentOverview = (function () {
         retrieveData.viewCaseLoad = $.session.incidentTrackingViewCaseLoad;
         retrieveData.toDate = getToDateValue();
         retrieveData.fromDate = getFromDateValue();
+
+        groupCodeSelected = $.session.incidentTrackingViewCaseLoad ? 'CAS' : 'ALL';
+        groupIdSelected = '0';
+        locationIdSelected = '0';
 
         setupFiltering();
 
