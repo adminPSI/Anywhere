@@ -726,13 +726,13 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName)
+        public ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName, string isCaseLoad)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
-                    ConsumerFinanceEntriesWidget[] entries = js.Deserialize<ConsumerFinanceEntriesWidget[]>(Odg.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName, transaction));
+                    ConsumerFinanceEntriesWidget[] entries = js.Deserialize<ConsumerFinanceEntriesWidget[]>(Odg.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName, transaction, isCaseLoad));
 
                     return entries;
 
@@ -746,13 +746,13 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
-        public ConsumerName[] getCFWidgetConsumers(string token)
+        public ConsumerName[] getCFWidgetConsumers(string token, string isCaseLoad)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
-                    string consumerString = Odg.getCFWidgetConsumers(token, transaction);
+                    string consumerString = Odg.getCFWidgetConsumers(token, isCaseLoad, transaction);
                     ConsumerName[] consumerObj = js.Deserialize<ConsumerName[]>(consumerString);
                     return consumerObj;
 

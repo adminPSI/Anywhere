@@ -1839,12 +1839,13 @@ namespace Anywhere.Data
             }
         }
 
-        public string getMissingPlanSignatures(string token)
+        public string getMissingPlanSignatures(string token, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getMissingPlanSignatures");
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(isCaseLoad);
             string text = "CALL DBA.ANYW_Dashboard_GetPlansNeedingSignatures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -2156,18 +2157,18 @@ namespace Anywhere.Data
             }
         }
 
-        public string getClockedInConsumerNamesDayServicesJSON(string token, string locationId)
+        public string getClockedInConsumerNamesDayServicesJSON(string token, string locationId, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getClockedInConsumerNamesDayServices");
 
             try
             {
-                return executeDataBaseCallJSON("CALL DBA.ANYW_Dashboard_GetClockedInDayServicesConsumerNames('" + token + "', '" + locationId + "');");
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Dashboard_GetClockedInDayServicesConsumerNames('" + token + "', '" + locationId + "', '" + isCaseLoad + "');");
             }
             catch (Exception ex)
             {
-                logger.error("577", ex.Message + " ANYW_Dashboard_GetClockedInDayServicesConsumerNames('" + token + "', '" + locationId + "')", token);
+                logger.error("577", ex.Message + " ANYW_Dashboard_GetClockedInDayServicesConsumerNames('" + token + "', '" + locationId + "', '" + isCaseLoad + "')", token);
                 return "577: Error getting Clocked In Consumer Names At Day Services";
             }
         }
@@ -2909,18 +2910,18 @@ namespace Anywhere.Data
             }
         }
 
-        public string getConsumersWithUnreadNotesByEmployeeAndLocationPermission(string token, string locationId, string daysBackDate)
+        public string getConsumersWithUnreadNotesByEmployeeAndLocationPermission(string token, string locationId, string daysBackDate, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             if (IsDateValidFormat(daysBackDate) == false) return null;
-            logger.debug("getConsumersWithUnreadNotesByEmployeeAndLocation " + token + " " + locationId);
+            logger.debug("getConsumersWithUnreadNotesByEmployeeAndLocationPermission" + token + " " + locationId);
             try
             {
-                return executeDataBaseCallJSON("CALL DBA.ANYW_ConsumerNotes_SelectConsumersWithUnreadNotesByEmployeeAndLocationPermission('" + token + "', '" + locationId + "', '" + daysBackDate + "');");
+                return executeDataBaseCallJSON("CALL DBA.ANYW_ConsumerNotes_SelectConsumersWithUnreadNotesByEmployeeAndLocationPermission('" + token + "', '" + locationId + "', '" + daysBackDate + "', '" + isCaseLoad + "');");
             }
             catch (Exception ex)
             {
-                logger.error("616.5", ex.Message + " ANYW_ConsumerNotes_SelectConsumersWithUnreadNotesByEmployeeAndLocationPermission('" + token + "', '" + locationId + "', " + daysBackDate + ")");
+                logger.error("616.5", ex.Message + " ANYW_ConsumerNotes_SelectConsumersWithUnreadNotesByEmployeeAndLocationPermission('" + token + "', '" + locationId + "', " + daysBackDate + ", '" + isCaseLoad + "')");
                 return "616.5: error getting locations with unread notes";
             }
         }
@@ -4205,7 +4206,7 @@ namespace Anywhere.Data
             }
         }
 
-        public string remainingServicesWidgetFilter(string token, string outcomeType, string locationId, string group, string checkDate)
+        public string remainingServicesWidgetFilter(string token, string outcomeType, string locationId, string group, string checkDate, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getConsumerScheduleLocation ");
@@ -4215,6 +4216,7 @@ namespace Anywhere.Data
             list.Add(locationId);
             list.Add(group);
             list.Add(checkDate);
+            list.Add(isCaseLoad);
             string text = "CALL DBA.ANYW_Dashboard_RemainingServicesWidgetFilter(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
