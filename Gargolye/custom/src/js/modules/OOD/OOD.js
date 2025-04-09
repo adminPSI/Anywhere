@@ -1717,8 +1717,10 @@ const OOD = (() => {
             var hasErrors = [].slice.call(createfilterPopup.querySelectorAll('.error'));
             if ((hasErrors.length !== 0)) {
                 createfilterPopupCreateBTN.classList.add('disabled');
+                createfilterPopupCreateBTN.disabled = true;
             } else {
                 createfilterPopupCreateBTN.classList.remove('disabled');
+                createFilterPopupCreateBTN.disabled = false; 
             }
         // } else {
         //     let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");

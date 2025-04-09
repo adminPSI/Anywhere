@@ -878,7 +878,9 @@ namespace OODForms
         {
             sb.Clear();
             sb.Append("SELECT e.name AS employerName, ");
-            sb.Append("(COALESCE(e.address1, '') || ' ' || COALESCE(e.address2, '') || ', ' || COALESCE(e.city, '') || ', ' || COALESCE(e.state, '') || ' ' || COALESCE(e.zip_code, '')) AS employerAddress, ");
+            sb.Append("(COALESCE(e.address1, '') || " +
+                "CASE WHEN e.address2 IS NOT NULL AND TRIM(e.address2) <> '' THEN ' ' || e.address2 ELSE '' END || " +
+                "', ' || COALESCE(e.city, '') || ', ' || COALESCE(e.state, '') || ' ' || COALESCE(e.zip_code, '')) AS employerAddress, ");
             sb.Append("e.county AS county, ");
             sb.Append("'(' + SUBSTRING(e.primary_phone, 1, 3) + ') ' + SUBSTRING(e.primary_phone, 4, 3) + '-' + SUBSTRING(e.primary_phone, 7, 4) + ' ' + SUBSTRING(e.primary_phone, 11, 4) AS phoneNumber, ");
             sb.Append("w.wages_per_hour AS wages, ");
