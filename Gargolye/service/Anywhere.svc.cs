@@ -2036,9 +2036,9 @@ namespace Anywhere
             return fw.getFormType(token);
         }
 
-        public WorkflowWorker.PlanWorkflowWidgetData[] getPlanWorkflowWidgetData(string token, string responsiblePartyId)
+        public WorkflowWorker.PlanWorkflowWidgetData[] getPlanWorkflowWidgetData(string token, string responsiblePartyId, string isCaseLoad)
         {
-            return wfw.getPlanWorkflowWidgetData(token, responsiblePartyId);
+            return wfw.getPlanWorkflowWidgetData(token, responsiblePartyId, isCaseLoad);
         }
         public WorkflowWorker.WorkflowProcess[] getWorkflowProcesses(string token)
         {
@@ -2135,9 +2135,9 @@ namespace Anywhere
             return dashWork.getDashboardCaseNoteProductivity(token, daysBack);
         }
 
-        public DashboardWorker.RejectedWidget[] getDashboardCaseNotesRejected(string token, string daysBack)
+        public DashboardWorker.RejectedWidget[] getDashboardCaseNotesRejected(string token, string daysBack, string isCaseLoad)
         {
-            return dashWork.getDashboardCaseNotesRejected(token, daysBack);
+            return dashWork.getDashboardCaseNotesRejected(token, daysBack, isCaseLoad);
         }
 
         public DashboardWorker.RejectedWidget[] getDashboardGroupCaseNoteConsumerNames(string token, string groupNoteIds)
@@ -4367,9 +4367,9 @@ namespace Anywhere
             return esw.getESignerData(tempUserId);
         }
 
-        public RosterWorker.RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId)
+        public RosterWorker.RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId, string isCaseLoad)
         {
-            return rosterWorker.getRosterToDoListWidgetData(token, responsiblePartyId);
+            return rosterWorker.getRosterToDoListWidgetData(token, responsiblePartyId, isCaseLoad);
         }
 
         public ExtractedTables importedOutcomesPDFData(string token, string[] files)

@@ -16,6 +16,7 @@
                 data: JSON.stringify({
                     token: $.session.Token,
                     responsiblePartyId: peopleId,
+                    isCaseLoad: $.session.RosterCaseLoad 
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',

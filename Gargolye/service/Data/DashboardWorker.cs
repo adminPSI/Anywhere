@@ -82,9 +82,9 @@ namespace Anywhere.service.Data
             return cnProdWidgetObj;
         }
 
-        public RejectedWidget[] getDashboardCaseNotesRejected(string token, string daysBack)
+        public RejectedWidget[] getDashboardCaseNotesRejected(string token, string daysBack, string isCaseLoad)
         {
-            string cnRejectWidgetString = dg.getDashboardCaseNotesRejected(token, daysBack);
+            string cnRejectWidgetString = dg.getDashboardCaseNotesRejected(token, daysBack, isCaseLoad);
             RejectedWidget[] cnRejectWidgetObj = js.Deserialize<RejectedWidget[]>(cnRejectWidgetString);
             return cnRejectWidgetObj;
         }

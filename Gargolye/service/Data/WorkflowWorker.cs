@@ -2378,7 +2378,7 @@ namespace Anywhere.service.Data
             public string responsiblePartyId { get; set; }
         }
 
-        public PlanWorkflowWidgetData[] getPlanWorkflowWidgetData(string token, string responsiblePartyId)
+        public PlanWorkflowWidgetData[] getPlanWorkflowWidgetData(string token, string responsiblePartyId, string isCaseLoad)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -2388,7 +2388,7 @@ namespace Anywhere.service.Data
 
                     PlanWorkflowWidgetData[] planWidgetData = Array.FindAll(
                         js.Deserialize<PlanWorkflowWidgetData[]>(
-                            wfdg.getDashboardPlanWorkflowWidget(responsiblePartyId, transaction)
+                            wfdg.getDashboardPlanWorkflowWidget(responsiblePartyId, transaction, token, isCaseLoad)
                         ),
                         d => d.planActive == "True");
 

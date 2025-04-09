@@ -6400,13 +6400,14 @@ namespace Anywhere.Data
             }
         }
 
-        public string getDashboardCaseNotesRejected(string token, string daysBack)
+        public string getDashboardCaseNotesRejected(string token, string daysBack, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getDashboardCaseNotesRejected ");
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(daysBack);
+            list.Add(isCaseLoad);
             string text = "CALL DBA.ANYW_Dashboard_GetRejectedCaseNotes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -7348,12 +7349,14 @@ namespace Anywhere.Data
 
         }
 
-        public string getRosterToDoListWidgetData(string responsiblePartyId, string token)
+        public string getRosterToDoListWidgetData(string responsiblePartyId, string token, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getRosterToDoListWidgetData");
             List<string> list = new List<string>();
+            list.Add(token);
             list.Add(responsiblePartyId);
+            list.Add(isCaseLoad);
             string text = "CALL DBA.ANYW_Dashboard_RosterToDoListWidget(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

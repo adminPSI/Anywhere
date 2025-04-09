@@ -1355,7 +1355,7 @@ namespace Anywhere.service.Data
 
 
         #region WORKFLOW DASHBOARD WIDGETS        
-        public string getDashboardPlanWorkflowWidget(string responsiblePartyId, DistributedTransaction transaction)
+        public string getDashboardPlanWorkflowWidget(string responsiblePartyId, DistributedTransaction transaction, string token, string isCaseLoad)
         {
             // Plan Widget Data
             // returns plan data and workflow steps for a given responsible party (the peopleId of the user logged in)
@@ -1363,11 +1363,13 @@ namespace Anywhere.service.Data
             // for other widgets like supervisors that want to see incomplete steps and who is responsible
             try
             {
-                logger.debug("getDashboardPlanWorkflowWidget ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
-                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@responsiblePartyId", DbType.String, responsiblePartyId);
+                logger.debug("getDashboardPlanWorkflowWidget"); 
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[3];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@token", DbType.String, token);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@responsiblePartyId", DbType.String, responsiblePartyId);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@isCaseLoad", DbType.String, isCaseLoad);
                 // returns consumer plan and workflow step data 
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Dashboard_PlanWorkflowWidget(?)", args, ref transaction);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Dashboard_PlanWorkflowWidget(?,?,?)", args, ref transaction);
 
 
                 return convertToJSON(returnMsg);
