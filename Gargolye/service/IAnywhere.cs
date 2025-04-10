@@ -5922,6 +5922,14 @@ namespace Anywhere
           UriTemplate = "/getWidgetFilter/")]
         string getWidgetFilter(string token, string widgetId, string filterKey);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/updateNoteReviewResult/")]
+        string updateNoteReviewResult(string token, string userId, string reviewResult, string[] noteIds, string rejectReason);
+
     }
 
 

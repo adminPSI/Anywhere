@@ -1543,6 +1543,30 @@ namespace Anywhere.Data
             }
         }
 
+        public string updateNoteReviewResult(string token, string userId, string reviewResult, string[] noteIds, string rejectReason)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateNoteReviewResult");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(userId);
+            list.Add(reviewResult);
+            list.Add(rejectReason);
+            // idk how to do the list.Add() for array of strings (noteIds)
+
+            string text = "CALL DBA.ANYW_CaseNotes_UpdateNoteReviewResult(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+
+            try
+            {
+                return executeDataBaseCall(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("584", ex.Message + text);
+                return "584: Error updating note review results";
+            }
+        }
+
         public string getCaseLoadRestriction(string token)
         {
             if (tokenValidator(token) == false) return null;

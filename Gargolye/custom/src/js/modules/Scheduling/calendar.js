@@ -92,7 +92,10 @@ class Calendar {
 
     this.eventCache = null;
     this.eventCacheBackup = null;
+
     this.monthDayCache = null;
+    this.monthEventGroupCache = {};
+
     this.eventGroupDOMCache = {};
 
     this.eventBackgroundWhiteMixPercent = 0.3;
@@ -378,6 +381,7 @@ class Calendar {
 
     this.calendarEle.appendChild(containerEle);
   }
+  renderActivityView() {}
 
   // Events
   renderMonthEvents() {
@@ -386,6 +390,9 @@ class Calendar {
     Object.values(this.monthDayCache).forEach(day => {
       day.eventWrapEle.innerHTML = '';
       day.eventCountWrapEle.innerHTML = '';
+
+      day.groups = {};
+      day.shiftIds = [];
     });
 
     this.eventCache
@@ -395,24 +402,30 @@ class Calendar {
         const eventDate = new Date(event.date);
         const dateISO = dates.formatISO(eventDate);
 
+        // Cache ID
+        this.monthDayCache[dateISO].shiftIds.push(event.eventId);
+
         // Count View
         const groupKey = event.color.join('');
-        if (!this.monthDayCache[dateISO][groupKey]) {
-          this.monthDayCache[dateISO][groupKey] = {};
-          this.monthDayCache[dateISO][groupKey].count = 0;
-          this.monthDayCache[dateISO][groupKey].countEle = document.createElement('p');
-          this.monthDayCache[dateISO][groupKey].countEle.className = 'eventCount';
-          this.monthDayCache[dateISO][groupKey].countEle.style.backgroundColor = rgba(
+        if (!this.monthDayCache[dateISO].groups[groupKey]) {
+          this.monthDayCache[dateISO].groups[groupKey] = {};
+          this.monthDayCache[dateISO].groups[groupKey].count = 0;
+          this.monthDayCache[dateISO].groups[groupKey].countEle = document.createElement('p');
+          this.monthDayCache[dateISO].groups[groupKey].countEle.className = 'eventCount';
+          this.monthDayCache[dateISO].groups[groupKey].countEle.style.backgroundColor = rgba(
             event.color,
             this.eventBackgroundWhiteMixPercent,
           );
 
           this.monthDayCache[dateISO].eventCountWrapEle.classList.add('show');
-          this.monthDayCache[dateISO].eventCountWrapEle.appendChild(this.monthDayCache[dateISO][groupKey].countEle);
+          this.monthDayCache[dateISO].eventCountWrapEle.appendChild(
+            this.monthDayCache[dateISO].groups[groupKey].countEle,
+          );
         }
 
-        this.monthDayCache[dateISO][groupKey].count++;
-        this.monthDayCache[dateISO][groupKey].countEle.innerHTML = this.monthDayCache[dateISO][groupKey].count;
+        this.monthDayCache[dateISO].groups[groupKey].count++;
+        this.monthDayCache[dateISO].groups[groupKey].countEle.innerHTML =
+          this.monthDayCache[dateISO].groups[groupKey].count;
 
         // Event View
         const startTime = dates.convertFromMilitary(event.startTime.split(' ')[1]);
@@ -607,21 +620,6 @@ class Calendar {
       } else {
         const eventDate = new Date(newEvent.date);
         const dateISO = dates.formatISO(eventDate);
-
-        const startTime = dates.convertFromMilitary(newEvent.startTime.split(' ')[1]);
-        const endTime = dates.convertFromMilitary(newEvent.endTime.split(' ')[1]);
-
-        const eventCellEle = document.createElement('div');
-        eventCellEle.id = `e-${newEvent.eventId}`;
-        eventCellEle.setAttribute('data-event-id', newEvent.eventId);
-        eventCellEle.setAttribute('data-type-id', newEvent.typeId);
-        eventCellEle.style.backgroundColor = rgba(event.color, this.eventBackgroundWhiteMixPercent);
-        eventCellEle.className = 'eventCellEle';
-        eventCellEle.innerHTML = `
-          <p class="eventTime">${startTime} - ${endTime} ${newEvent.length}</p>
-        `;
-
-        this.monthDayCache[dateISO].eventWrapEle.appendChild(eventCellEle);
       }
 
       return;
@@ -839,6 +837,14 @@ class Calendar {
   getCurrentDate() {
     return this.currentDate;
   }
+  getShiftIdsByDay(dateISO) {
+    const shiftIds = this.monthDayCache[dateISO].shiftIds;
+    if (shiftIds) {
+      return [...shiftIds];
+    }
+
+    return [];
+  }
   removeEvent(id) {
     const eventToRemove = this.calendarEle.getElementById(`e-${id}`);
 
@@ -852,7 +858,9 @@ class Calendar {
       this.eventCache = this.eventCache.filter(e => e.eventId !== id);
     }
   }
-  addUpdateEvent(eventData) {}
+  addUpdateEvent(eventData) {
+    // determine if we should call addEvent or updateEvent
+  }
   filterEventsBy(filterOptions) {
     if (filterOptions.resetFilter) {
       this.eventCache = [...this.eventCacheBackup];

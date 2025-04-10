@@ -92,6 +92,14 @@ const SchedulingCalendar = (function () {
       btn.classList.add('disabled');
     }
   }
+  function rgba([r, g, b], a = 1) {
+    const mix = channel => Math.round(channel + (255 - channel) * a);
+    const newR = mix(r);
+    const newG = mix(g);
+    const newB = mix(b);
+
+    return `rgb(${newR}, ${newG}, ${newB})`;
+  }
 
   // Shift Call Off Request
   //-----------------------------------------------------------------------
@@ -790,7 +798,7 @@ const SchedulingCalendar = (function () {
     dropdown.populate(colorDropdown, dropdownData, defaultValue);
   }
 
-  function showShiftPopup(data, eventTypeID, isCopy) {
+  function showShiftPopup(data, eventTypeID, isCopy, onCloseCallback) {
     const checkRequiredFieldsShiftPopup = () => {
       let errors = [...shiftPopup.querySelectorAll('.error')];
 
@@ -802,6 +810,7 @@ const SchedulingCalendar = (function () {
     };
 
     const isNew = data && !isCopy ? false : true;
+    const readOnly = !isNew && !$.session.schedulingUpdate;
 
     const shiftData = data
       ? {
@@ -829,9 +838,13 @@ const SchedulingCalendar = (function () {
 
     const shiftPopup = POPUP.build({
       id: 'shiftDetailPopup',
+      hideX: readOnly ? false : true,
+      closeCallback: () => {
+        if (onCloseCallback) onCloseCallback();
+      },
     });
 
-    if (!isNew && !$.session.schedulingUpdate) {
+    if (readOnly) {
       const shiftDate = shiftData.serviceDate.split(' ')[0];
       let startTime = shiftData.startTime;
       let endTime = shiftData.endTime;
@@ -1014,6 +1027,8 @@ const SchedulingCalendar = (function () {
         });
 
         POPUP.hide(shiftPopup);
+
+        if (onCloseCallback) onCloseCallback();
       },
     });
 
@@ -1023,6 +1038,8 @@ const SchedulingCalendar = (function () {
       type: 'outlined',
       callback: () => {
         POPUP.hide(shiftPopup);
+
+        if (onCloseCallback) onCloseCallback();
       },
     });
 
@@ -1363,12 +1380,90 @@ const SchedulingCalendar = (function () {
     POPUP.show(popup);
   }
 
-  function showEventDetailsPopup({ eventTypeId, data, viewDate, isCopy }) {
+  // Event Group Popup
+  //-----------------------------------------------------------------------
+  function formatDateForHeader(dirtyDate) {
+    const getOrdinalSuffix = day => {
+      if (day > 3 && day < 21) return 'th';
+      switch (day % 10) {
+        case 1:
+          return 'st';
+        case 2:
+          return 'nd';
+        case 3:
+          return 'rd';
+        default:
+          return 'th';
+      }
+    };
+
+    const dateString = dirtyDate.toLocaleDateString('en-US', { weekday: 'long', day: '2-digit', month: 'long' });
+    const weekdayAndMonth = dateString.slice(0, -2);
+    const dayNumber = dateString.slice(-2);
+    const suffix = getOrdinalSuffix(dayNumber);
+    return `${weekdayAndMonth} ${parseInt(dayNumber)}${suffix}`;
+  }
+  function showShiftGroupPopup(events, dateISO) {
+    const eventLookup = {};
+
+    const shiftPopup = POPUP.build({
+      id: 'shiftGroupDetailPopup',
+    });
+
+    // header
+    const viewDate = new Date(dateISO);
+    const headerEle = document.createElement('p');
+    headerEle.className = 'groupDetailsHeader';
+    headerEle.innerHTML = formatDateForHeader(viewDate);
+    shiftPopup.appendChild(headerEle);
+
+    // events
+    const eventsWrapEle = document.createElement('div');
+    eventsWrapEle.className = 'groupEventsWrap';
+    shiftPopup.appendChild(eventsWrapEle);
+
+    events.forEach(event => {
+      const startTime = dates.convertFromMilitary(event.startTime);
+      const endTime = dates.convertFromMilitary(event.endTime);
+
+      const shiftEle = document.createElement('div');
+      shiftEle.className = 'eventCell';
+      shiftEle.setAttribute('data-event-id', event.shiftId);
+      shiftEle.setAttribute('data-type-id', event.typeId);
+      shiftEle.style.backgroundColor = rgba(event.colorCode, 0.3);
+      shiftEle.innerHTML = `
+        <p class="eventTime">${startTime} - ${endTime} ${event.length}</p>
+        <p class="eventName">${event.locationName}</p>
+      `;
+
+      eventsWrapEle.appendChild(shiftEle);
+
+      eventLookup[event.shiftId] = event;
+    });
+
+    eventsWrapEle.addEventListener('click', e => {
+      const eventId = e.target.dataset.eventId;
+      const eventTypeId = e.target.dataset.typeId;
+
+      showEventDetailsPopup(
+        {
+          eventTypeId,
+          data: eventLookup[eventId],
+          isCopy: false,
+        },
+        () => overlay.show(),
+      );
+    });
+
+    POPUP.show(shiftPopup);
+  }
+
+  function showEventDetailsPopup({ eventTypeId, data, viewDate, isCopy }, leaveOverlayOnClose = false) {
     if (eventTypeId === '6') {
       showAppointmentPopup(data);
     }
 
-    showShiftPopup(data, eventTypeId, isCopy);
+    showShiftPopup(data, eventTypeId, isCopy, leaveOverlayOnClose);
   }
   async function preLoadPopupData() {
     shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling({
@@ -1421,13 +1516,6 @@ const SchedulingCalendar = (function () {
   function formatServiceDate(serviceDate, dateScheduled) {
     let date = serviceDate ? serviceDate : dateScheduled;
     return date.split(' ')[0];
-    // I will let calendar handle formating
-    date = date.split(' ')[0].split('/');
-    const serviceYear = date[2];
-    const serviceMonth = UTIL.leadingZero(date[0]);
-    const serviceDay = UTIL.leadingZero(date[1]);
-
-    return `${serviceYear}-${serviceMonth}-${serviceDay}`;
   }
   function formatDescription(firstName, lastName) {
     if (!lastName || !firstName) return '';
@@ -1477,6 +1565,11 @@ const SchedulingCalendar = (function () {
       const description = formatDescription(sch.firstName, sch.lastName);
       const color = getEventColor(id, sch.color);
 
+      // store on cache obj
+      sch.typeId = id;
+      sch.colorCode = color;
+      sch.length = length;
+
       return {
         eventId: sch.shiftId,
         date: serviceDate,
@@ -1502,6 +1595,11 @@ const SchedulingCalendar = (function () {
       const startTime = `${serviceDate} ${appt.timeScheduled}`;
       const endTime = dates.addHours(startTime, 1);
       const color = getEventColor(id, appt.color);
+
+      // store on cache obj
+      sch.typeId = 6;
+      appt.colorCode = color;
+      appt.length = 1;
 
       return {
         eventId: appt.medTrackingId,
@@ -1537,6 +1635,18 @@ const SchedulingCalendar = (function () {
   }
   //
   function handleCalendarEventClick(eventTarget) {
+    if (eventTarget.classList.contains('day')) {
+      const dateISO = eventTarget.dataset.date;
+      const shiftIds = ScheduleCalendar.getShiftIdsByDay(dateISO);
+
+      if (!shiftIds || !shiftIds.length) return;
+
+      const targetEvents = [...appointments, ...schedules].filter(ev => shiftIds.includes(ev.shiftId));
+      showShiftGroupPopup(targetEvents, dateISO);
+
+      return;
+    }
+
     if (eventTarget.classList.contains('eventCellEle')) {
       const viewDate = ScheduleCalendar.getCurrentDate();
       const eventTypeId = eventTarget.dataset.typeId;
@@ -1548,6 +1658,8 @@ const SchedulingCalendar = (function () {
         viewDate,
         isCopy: false,
       });
+
+      return;
     }
 
     if (eventTarget.classList.contains('copyShiftIcon')) {
@@ -1561,6 +1673,8 @@ const SchedulingCalendar = (function () {
         viewDate,
         isCopy: true,
       });
+
+      return;
     }
   }
 
@@ -1978,6 +2092,12 @@ const SchedulingCalendar = (function () {
     contentWrapEle.appendChild(shiftTypeDropdownEle);
     contentWrapEle.appendChild(openShiftViewToggleEle);
 
+    if (!$.session.schedulingSecurity) {
+      contentWrapEle.removeChild(shiftTypeDropdownEle);
+
+      employeeDropdownEle.classList.add('disabled');
+    }
+
     accordionTriggerEle.addEventListener('click', e => {
       accordionContentEle.classList.toggle('closed');
     });
@@ -1993,34 +2113,20 @@ const SchedulingCalendar = (function () {
 
     const scheduleFilter = buildFilter();
 
-    // const dropdownGroup = document.createElement('div');
-    // dropdownGroup.classList.add('dropdownGroup');
-
     const colRight = document.createElement('div');
     colRight.classList.add('colRight');
 
-    // locationDropdownEle = buildLocationDropdown();
-    // employeeDropdownEle = buildEmployeeDropdown();
-    // shiftTypeDropdownEle = buildShiftTypeDropdown();
-    // openShiftViewToggleEle = buildOpenShiftViewToggleButton();
     pubUnpubButtonEle = buildPubUnpubSchedulesButton();
     newShiftButtonEle = buildNewShiftButton();
 
-    // dropdownGroup.appendChild(locationDropdownEle);
-    // dropdownGroup.appendChild(employeeDropdownEle);
-    // dropdownGroup.appendChild(shiftTypeDropdownEle);
-    // colRight.appendChild(openShiftViewToggleEle);
     colRight.appendChild(newShiftButtonEle);
     colRight.appendChild(pubUnpubButtonEle);
 
     if (!$.session.schedulingSecurity) {
-      // dropdownGroup.removeChild(shiftTypeDropdownEle);
       colRight.removeChild(newShiftButtonEle);
       colRight.removeChild(pubUnpubButtonEle);
-      employeeDropdownEle.classList.add('disabled');
     }
 
-    // scheduleNav.appendChild(dropdownGroup);
     scheduleNav.appendChild(scheduleFilter);
     scheduleNav.appendChild(colRight);
     scheduleWrap.appendChild(scheduleNav);
@@ -2037,12 +2143,12 @@ const SchedulingCalendar = (function () {
 
     //!W remove after dev testing
     console.clear();
-    $.session.schedulingUpdate = true;
-    $.session.schedulingView = true;
-    $.session.schedAllowCallOffRequests = 'Y';
-    $.session.schedRequestOpenShifts = 'Y';
-    $.session.hideAllScheduleButton = false;
-    $.session.schedulingSecurity = true;
+    // $.session.schedulingUpdate = true;
+    // $.session.schedulingView = true;
+    // $.session.schedAllowCallOffRequests = 'Y';
+    // $.session.schedRequestOpenShifts = 'Y';
+    // $.session.hideAllScheduleButton = false;
+    // $.session.schedulingSecurity = true;
     //!W remove after dev testing
 
     selectedEmployeeId = $.session.PeopleId;
@@ -2070,9 +2176,6 @@ const SchedulingCalendar = (function () {
     calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
     calendarAppointments = await getCalendarAppointments();
     ScheduleCalendar.renderEvents([...calendarEvents, ...calendarAppointments]);
-    // console.log('Schedules:', schedules);
-    // console.log('Events:', calendarEvents);
-    // console.log('Appointments:', calendarAppointments);
 
     preLoadPopupData();
   }

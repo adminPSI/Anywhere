@@ -11,6 +11,8 @@
   justify-content: space-between;
 
   .navAccordion {
+    background: rgba(200, 200, 200, 0.8);
+    border-radius: 4px;
     width: 100%;
 
     .navAccordionTrigger {
@@ -19,7 +21,7 @@
       column-gap: 10px;
       min-height: 40px;
       width: 100%;
-      border-bottom: 2px solid black;
+      padding: 0 0 0 8px;
 
       svg {
         width: 24px;
@@ -31,22 +33,24 @@
       grid-template-rows: 1fr;
       transition: grid-template-rows 0.3s ease-in;
       margin: 0;
-      padding: 0;
+      padding: 0px 6px 12px;
       overflow: hidden;
-      border-bottom: 2px solid black;
 
       .navAccordionContentWrapEle {
+        background: $white;
+        border-radius: 4px;
         display: flex;
         flex-flow: row wrap;
         gap: 10px;
         width: 100%;
         overflow: hidden;
-        padding: 20px 0 8px 0;
-        transition: padding 0.1s ease-in;
+        padding: 14px 8px 2px;
+        // transition: padding 0.1s ease-in;
       }
 
       &.closed {
         grid-template-rows: 0fr;
+        padding: 0;
 
         .navAccordionContentWrapEle {
           padding: 0;
@@ -90,6 +94,7 @@
   .openShiftWrap {
     display: flex;
     column-gap: 8px;
+    width: 100%;
 
     p {
       font-weight: $normal;
@@ -134,12 +139,19 @@
 
   @media screen and (min-width: 600px) {
     .navAccordion {
+      background: none;
+
       .navAccordionTrigger {
         display: none;
+      }
 
-        .navAccordionContent,
-        .navAccordionContent.closed {
-          grid-template-rows: 1fr;
+      .navAccordionContent,
+      .navAccordionContent.closed {
+        display: block;
+        padding: 0;
+
+        .navAccordionContentWrapEle {
+          padding: 14px 0 0;
         }
       }
     }
@@ -233,6 +245,13 @@
   }
 }
 // month view
+.mobileActive .calendar .month-view {
+  .day {
+    * {
+      pointer-events: none;
+    }
+  }
+}
 .calendar .month-view {
   display: grid;
   grid-gap: 2px;
@@ -562,6 +581,7 @@
 }
 #shiftDetailPopup {
   max-width: 450px;
+  max-height: 660px;
 
   h2 {
     margin: 0 0 10px 0;
@@ -577,6 +597,34 @@
     flex-flow: column nowrap;
     overflow-y: scroll;
     padding: 0;
+  }
+}
+#shiftGroupDetailPopup {
+  .groupDetailsHeader {
+    font-size: 18px;
+    font-weight: $normal;
+    margin: 0 0 10px;
+  }
+
+  .groupEventsWrap {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 6px;
+  }
+
+  .eventCell {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 4px 8px;
+
+    * {
+      pointer-events: none;
+    }
+
+    .eventTime,
+    .eventName {
+      font-size: 14px;
+    }
   }
 }
 #addIndividualPopup {

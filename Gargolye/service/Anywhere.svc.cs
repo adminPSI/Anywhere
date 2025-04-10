@@ -488,6 +488,11 @@ namespace Anywhere
             return caseNotesWorker.getCNPopulateFilterDropdowns(token, serviceCodeId);
         }
 
+        public string updateNoteReviewResult(string token, string userId, string reviewResult, string[] noteIds, string rejectReason)
+        {
+            return dg.updateNoteReviewResult(token, userId, reviewResult, noteIds, rejectReason);
+        }
+
         //case note filter
         public CaseNotesWorker.ConsumersForFilter[] getConsumersForCNFilter(string token, string caseLoadOnly)
         {
