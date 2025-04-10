@@ -504,6 +504,7 @@ namespace Anywhere.service.Data
 
         public OutcomesReviewGrid[] getOutcomesReviewGrid(string token, string consumerId, string objectiveDate)
         {
+            js.MaxJsonLength = Int32.MaxValue;
             string reviewGrid = dg.getOutcomesReviewGrid(token, consumerId, objectiveDate);
             OutcomesReviewGrid[] reviewGridObj = js.Deserialize<OutcomesReviewGrid[]>(reviewGrid);
             return reviewGridObj;
