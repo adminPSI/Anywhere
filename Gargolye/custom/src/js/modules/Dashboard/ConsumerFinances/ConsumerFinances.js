@@ -102,7 +102,8 @@
                 token: $.session.Token,
                 consumerName: cfWidgetConsumerName,
                 locationName: cfWidgetLocationName,
-                sortOrderName: cfWidgetSortOrderName
+                sortOrderName: cfWidgetSortOrderName,
+                isCaseLoad: $.session.ConsumerFinanceCaseLoad,
             }, populateConsumerFinanceResults);
 
             widgetSettingsAjax.setWidgetFilter('dashMoneyManagementwidget', 'consumer', cfWidgetConsumerName)
@@ -248,7 +249,7 @@
         eventSetup();
         populateCFWidgetDropdowns();
         ConsumerFinancesWidgetAjax.getLocationsForDashboardAbsent(populateCFWidgetLocations);
-        ConsumerFinancesWidgetAjax.getCFWidgetConsumers(populateCFWidgetConsumers);
+        ConsumerFinancesWidgetAjax.getCFWidgetConsumers($.session.ConsumerFinanceCaseLoad, populateCFWidgetConsumers);
 
         PROGRESS__ANYWHERE.init()
         PROGRESS__ANYWHERE.SPINNER.show(widgetBody, "Loading");
@@ -257,7 +258,8 @@
             token: $.session.Token,
             consumerName: cfWidgetConsumerName,
             locationName: cfWidgetLocationName,
-            sortOrderName: cfWidgetSortOrderName
+            sortOrderName: cfWidgetSortOrderName,
+            isCaseLoad: $.session.ConsumerFinanceCaseLoad,
         }, populateConsumerFinanceResults);
     }
 

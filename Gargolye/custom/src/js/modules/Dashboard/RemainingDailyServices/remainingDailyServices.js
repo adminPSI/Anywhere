@@ -100,7 +100,7 @@
             dropdownId: 'goalsWidgetGroups',
             label: 'Group',
             style: 'secondary',
-            readonly: false,
+            readonly: $.session.ServiceActivityCaseLoad,
         });
         applyFiltersBtn = button.build({
             text: 'Apply',
@@ -193,6 +193,11 @@
             text: 'Everyone',
         };
         dataArr.unshift(defaultGroup);
+        if ($.session.ServiceActivityCaseLoad) {
+            const caseLoadGroup = { id: '00', value: '00', text: 'Caseload' };
+            dataArr.unshift(caseLoadGroup);
+        }
+
         groupList = dataArr;
         if (!$.session.outcomesWidgetGroupId) $.session.outcomesWidgetGroupId = dataArr[0].value;
         if (!$.session.outcomesWidgetGroupName) $.session.outcomesWidgetGroupName = dataArr[0].text;
@@ -208,6 +213,7 @@
             date: null,
         };
         // for session variables
+        var oldGoalsDate;
         var oldOutcomesWidgetGoalsDate;
         var oldOutcomesWidgetOutcomeTypeId;
         var oldOutcomesWidgetOutcomeTypeName;
@@ -259,18 +265,22 @@
             oldFilter.location = filter.location;
             filter.location =
                 selectedOption.value === '%' ? '%' : UTIL.removeDecimals(selectedOption.value);
-            remainingDailyServicesWidgetAjax.populateGroupsFilter(selectedOption.value, function (groups) {
-                populateGroupsFilter(groups);
-            });
+            if (!$.session.ServiceActivityCaseLoad) {
+                remainingDailyServicesWidgetAjax.populateGroupsFilter(selectedOption.value, function (groups) {
+                    populateGroupsFilter(groups);
+                });
+            }
             //remainingDailyServicesWidgetAjax.populateFilteredList('%', filter.location, '%')//MIke
             //For remembering filter values
             oldOutcomeWidgetLocationId = $.session.outcomeWidgetLocationId;
             oldOutcomeWidgetLocationName = $.session.outcomeWidgetLocationName;
             $.session.outcomeWidgetLocationId = selectedOption.value;
             $.session.outcomeWidgetLocationName = selectedOption.text;
-            $.session.outcomesWidgetGroupId = '%';
-            $.session.outcomesWidgetGroupName = 'Everyone';
-            filter.group = '%';
+            if (!$.session.ServiceActivityCaseLoad) {
+                $.session.outcomesWidgetGroupId = '%';
+                $.session.outcomesWidgetGroupName = 'Everyone';
+                filter.group = '%';
+            } 
         });
         groupDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
@@ -359,11 +369,22 @@
         $.session.outcomesWidgetGroupId = filterGroupDefaultValue.getWidgetFilterResult;
         var filterOutcomeTypeDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashgoalswidget', 'outcomeType');
         $.session.outcomesWidgetOutcomeTypeId = filterOutcomeTypeDefaultValue.getWidgetFilterResult;
+        var isCaseLoad = $.session.ServiceActivityCaseLoad;
 
         if ($.session.outcomesWidgetOutcomeTypeId) filter.outcomeType = $.session.outcomesWidgetOutcomeTypeId;
         if ($.session.outcomeWidgetLocationId) filter.location = $.session.outcomeWidgetLocationId;
         if ($.session.outcomesWidgetGroupId) filter.group = $.session.outcomesWidgetGroupId;
 
+        if (isCaseLoad) {
+            filter.group = '00';
+            $.session.outcomesWidgetGroupId = '00';
+            $.session.outcomesWidgetGroupName = 'Caseload';
+        }
+        if (!isCaseLoad && $.session.outcomesWidgetGroupId == '00') {
+            filter.group = '%';
+            $.session.outcomesWidgetGroupId = '%';
+            $.session.outcomesWidgetGroupName = 'Everyone';          
+        }
         buildFilterPopup();
         eventSetup();
 

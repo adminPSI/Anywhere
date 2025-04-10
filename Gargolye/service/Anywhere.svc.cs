@@ -765,9 +765,9 @@ namespace Anywhere
             return singleEntryWorker.getEmployeeListAndCountInfoJSON(token, supervisorId);
         }
 
-        public DashboardWorker.MissingPlanSignaturesObj[] getMissingPlanSignatures(string token)
+        public DashboardWorker.MissingPlanSignaturesObj[] getMissingPlanSignatures(string token, string isCaseLoad)
         {
-            return dashWork.getMissingPlanSignatures(token);
+            return dashWork.getMissingPlanSignatures(token, isCaseLoad);
         }
 
         public DashboardWorker.SingleEntryCountObj[] getSingleEntryCountInfoJSON(string token)
@@ -841,9 +841,9 @@ namespace Anywhere
             return dg.saveDefaultLocationName(token, switchCase, locationName);
         }
 
-        public DashboardWorker.DSClockedInConsumers[] getClockedInConsumerNamesDayServicesJSON(string token, string locationId)
+        public DashboardWorker.DSClockedInConsumers[] getClockedInConsumerNamesDayServicesJSON(string token, string locationId,string isCaseLoad)
         {
-            return dashWork.getClockedInConsumerNamesDayServicesJSON(token, locationId);
+            return dashWork.getClockedInConsumerNamesDayServicesJSON(token, locationId, isCaseLoad);
         }
 
         public DashboardWorker.DSClockedInStaff[] getClockedInStaffNamesDayServicesJSON(string token, string locationId)
@@ -1180,9 +1180,9 @@ namespace Anywhere
             return dg.getConsumersWithUnreadNotesByEmployeeAndLocation(token, locationId);
         }
 
-        public string getConsumersWithUnreadNotesByEmployeeAndLocationPermission(string token, string locationId, string daysBackDate)
+        public string getConsumersWithUnreadNotesByEmployeeAndLocationPermission(string token, string locationId, string daysBackDate, string isCaseLoad)
         {
-            return dg.getConsumersWithUnreadNotesByEmployeeAndLocationPermission(token, locationId, daysBackDate);
+            return dg.getConsumersWithUnreadNotesByEmployeeAndLocationPermission(token, locationId, daysBackDate, isCaseLoad);
         }
 
         public string checkIfLocationHasUnreadNotes(string token, string locationId, string daysBackDate)
@@ -1385,9 +1385,9 @@ namespace Anywhere
             return anywhereWorker.populateConsumerSchedule(token, locationId, consumerId);
         }
 
-        public AnywhereWorker.RemainingServiceWidgetData[] remainingServicesWidgetFilter(string token, string outcomeType, string locationId, string group, string checkDate)
+        public AnywhereWorker.RemainingServiceWidgetData[] remainingServicesWidgetFilter(string token, string outcomeType, string locationId, string group, string checkDate, string isCaseLoad)
         {
-            return anywhereWorker.remainingServicesWidgetFilter(token, outcomeType, locationId, group, checkDate);
+            return anywhereWorker.remainingServicesWidgetFilter(token, outcomeType, locationId, group, checkDate, isCaseLoad);
         }
 
         public AnywhereWorker.OutcomeTypesRemainingServiceWidgetData[] populateOutcomeTypesRemainingServicesWidgetFilter(string token)
@@ -1430,9 +1430,9 @@ namespace Anywhere
             return iTW.GetITDashboardWidgetData(token, viewCaseLoad);
         }
 
-        public IncidentTrackingWorker.IncidentTrackingReviewTableData[] getITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
+        public IncidentTrackingWorker.IncidentTrackingReviewTableData[] getITReviewTableData(string token, string locationId, string groupId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
-            return iTW.GetITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
+            return iTW.GetITReviewTableData(token, locationId, groupId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
         }
 
         public string updateIncidentTrackingDaysBack(string token, string updatedReviewDays)
@@ -2041,9 +2041,9 @@ namespace Anywhere
             return fw.getFormType(token);
         }
 
-        public WorkflowWorker.PlanWorkflowWidgetData[] getPlanWorkflowWidgetData(string token, string responsiblePartyId)
+        public WorkflowWorker.PlanWorkflowWidgetData[] getPlanWorkflowWidgetData(string token, string responsiblePartyId, string isCaseLoad)
         {
-            return wfw.getPlanWorkflowWidgetData(token, responsiblePartyId);
+            return wfw.getPlanWorkflowWidgetData(token, responsiblePartyId, isCaseLoad);
         }
         public WorkflowWorker.WorkflowProcess[] getWorkflowProcesses(string token)
         {
@@ -2140,9 +2140,9 @@ namespace Anywhere
             return dashWork.getDashboardCaseNoteProductivity(token, daysBack);
         }
 
-        public DashboardWorker.RejectedWidget[] getDashboardCaseNotesRejected(string token, string daysBack)
+        public DashboardWorker.RejectedWidget[] getDashboardCaseNotesRejected(string token, string daysBack, string isCaseLoad)
         {
-            return dashWork.getDashboardCaseNotesRejected(token, daysBack);
+            return dashWork.getDashboardCaseNotesRejected(token, daysBack, isCaseLoad);
         }
 
         public DashboardWorker.RejectedWidget[] getDashboardGroupCaseNoteConsumerNames(string token, string groupNoteIds)
@@ -4135,12 +4135,12 @@ namespace Anywhere
             return cf.getEditAccount(token, consumerId, accountPermission);
         }
 
-        public ConsumerFinancesWorker.ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName)
+        public ConsumerFinancesWorker.ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName, string isCaseLoad)
         {
-            return cf.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName);
+            return cf.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName, isCaseLoad);
         }
 
-        public ConsumerFinancesWorker.ConsumerName[] getCFWidgetConsumers(string token)
+        public ConsumerFinancesWorker.ConsumerName[] getCFWidgetConsumers(string token, string isCaseLoad)
         {
             if (token == null)
             {
@@ -4148,7 +4148,7 @@ namespace Anywhere
                 return null;
             }
 
-            return cf.getCFWidgetConsumers(token);
+            return cf.getCFWidgetConsumers(token, isCaseLoad);
         }
 
         //Plan Validation
@@ -4372,9 +4372,9 @@ namespace Anywhere
             return esw.getESignerData(tempUserId);
         }
 
-        public RosterWorker.RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId)
+        public RosterWorker.RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId, string isCaseLoad)
         {
-            return rosterWorker.getRosterToDoListWidgetData(token, responsiblePartyId);
+            return rosterWorker.getRosterToDoListWidgetData(token, responsiblePartyId, isCaseLoad);
         }
 
         public ExtractedTables importedOutcomesPDFData(string token, string[] files)

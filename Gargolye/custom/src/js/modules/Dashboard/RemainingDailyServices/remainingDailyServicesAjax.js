@@ -1,5 +1,5 @@
 ﻿var remainingDailyServicesWidgetAjax = (function() {
-	function makeAjaxCall(url, successFunction, outcomeType, locationId, group, checkDate) {
+	function makeAjaxCall(url, successFunction, outcomeType, locationId, group, checkDate, isCaseLoad) {
 		var todaydate = UTIL.getTodaysDate();
 		var data = {};
 		data.token = $.session.Token;
@@ -25,6 +25,8 @@
 		else {
 			data.checkDate = todaydate;
 		}
+		if (isCaseLoad != null)
+			data.isCaseLoad = isCaseLoad
  
 
 		// data.checkDate = "2020-03-26"
@@ -58,6 +60,7 @@
 			null,
 			null,
 			null,
+			null,
 			null
 		);
 	}
@@ -69,6 +72,7 @@
 				var res = response.populateLocationsRemainingServicesWidgetFilterResult;
 				callback(res);
 			},
+			null,
 			null,
 			null,
 			null,
@@ -86,6 +90,7 @@
 			null,
 			locationId,
 			null,
+			null,
 			null
 		);
 	}
@@ -101,7 +106,8 @@
 			outcomeType,
 			locationId,
 			group,
-			checkDate
+			checkDate,
+			$.session.ServiceActivityCaseLoad,
 		);
 	}
 

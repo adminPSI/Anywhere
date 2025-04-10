@@ -428,9 +428,9 @@ namespace Anywhere.service.Data
             public string SatEnd2 { get; set; }
         }
 
-        public RemainingServiceWidgetData[] remainingServicesWidgetFilter(string token, string outcomeType, string locationId, string group, string checkDate)
+        public RemainingServiceWidgetData[] remainingServicesWidgetFilter(string token, string outcomeType, string locationId, string group, string checkDate, string isCaseLoad)
         {
-            string widgetDataString = dg.remainingServicesWidgetFilter(token, outcomeType, locationId, group, checkDate);
+            string widgetDataString = dg.remainingServicesWidgetFilter(token, outcomeType, locationId, group, checkDate, isCaseLoad);
             RemainingServiceWidgetData[] widgetData = js.Deserialize<RemainingServiceWidgetData[]>(widgetDataString);
             return widgetData;//test
         }

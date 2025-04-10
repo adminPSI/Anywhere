@@ -140,9 +140,9 @@ namespace Anywhere.service.Data
             return consumerPlanYearInfoObj[0];
         }
 
-        public RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId)
+        public RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId, string isCaseLoad)
         {
-            string rosterToDoListDataString = dg.getRosterToDoListWidgetData(responsiblePartyId, token);
+            string rosterToDoListDataString = dg.getRosterToDoListWidgetData(responsiblePartyId, token, isCaseLoad);
             RosterToDoListWidgetData[] rosterToDoListObj = js.Deserialize<RosterToDoListWidgetData[]>(rosterToDoListDataString);
             return rosterToDoListObj;
         }

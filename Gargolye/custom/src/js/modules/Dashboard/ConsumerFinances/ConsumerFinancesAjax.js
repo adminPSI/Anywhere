@@ -27,7 +27,7 @@
         });
     }
 
-    function getCFWidgetConsumers(callback) {
+    function getCFWidgetConsumers(isCaseLoad,callback) {
         if (consumerArray.length > 0) {
             callback(consumerArray);
             return;
@@ -40,7 +40,7 @@
                 $.webServer.address + ':' +
                 $.webServer.port + '/' +
                 $.webServer.serviceName + '/getCFWidgetConsumers/',
-            data: '{"token":"' + $.session.Token + '"}',
+            data: '{"isCaseLoad":"' + isCaseLoad + '","token":"' + $.session.Token + '"}',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (response, status, xhr) {
