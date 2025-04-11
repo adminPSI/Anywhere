@@ -1626,6 +1626,10 @@ const OOD = (() => {
             if (event.target.value !== '') {
                 createFilterValues.serviceDateStart = event.target.value;
                 populatecreateReferenceNumberDropdown(formNumber);
+
+                if (formNumber == '5') {
+                    populateCreatePositionDropdown();
+                }
             } else {
                 event.target.value = createFilterValues.serviceDateStart;
                 
@@ -1644,6 +1648,10 @@ const OOD = (() => {
             if (event.target.value !== '') { 
                 createFilterValues.serviceDateEnd = event.target.value;
                 populatecreateReferenceNumberDropdown(formNumber);
+
+                if (formNumber == '5') {
+                    populateCreatePositionDropdown();
+                }
             } else {
                 event.target.value = createFilterValues.serviceDateEnd;
                 
