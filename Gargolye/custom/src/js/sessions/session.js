@@ -707,13 +707,13 @@ function setSessionVariables() {
                 $.session.incidentTrackingReviewedBy = true;
             } else if (tmpPerm == 'Email Incident') {
                 $.session.incidentTrackingEmailIncident = true;
-            } else if (
-                $.session.isPSI == false &&
-                (tmpPerm == 'Case Load' || tmpPerm == 'Caseload' || tmpPerm == 'Caseload only')
-            ) {
-                $.session.incidentTrackingCaseLoad = true;
             } else {
-                $.session.incidentTrackingViewPerm.push(tmpPerm.replace('View ', '').toLowerCase());
+                if (tmpPerm != 'Case Load') // if case load key apply record is not showing so we put if condition
+                    $.session.incidentTrackingViewPerm.push(tmpPerm.replace('View ', '').toLowerCase());
+            }
+            // due to else if condition case load key is not apply write saparate condition for caseload 
+            if ($.session.isPSI == false && (tmpPerm == 'Case Load' || tmpPerm == 'Caseload' || tmpPerm == 'Caseload only')) {
+                $.session.incidentTrackingCaseLoad = true;
             }
         }
 
