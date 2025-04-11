@@ -340,7 +340,7 @@ var notesOverview = (function () {
     if ($.session.applicationName === 'Gatekeeper') btnWrap.appendChild(cnReportBtn);
     if ($.session.applicationName === 'Advisor') btnWrap.appendChild(cnADVReportBtn);
     DOM.ACTIONCENTER.appendChild(btnWrap);
-    DOM.ACTIONCENTER.appendChild(multiSelectBtns);
+    if (true) DOM.ACTIONCENTER.appendChild(multiSelectBtns);
     DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
     const filteredBy = initFilterDisplay();
     DOM.ACTIONCENTER.appendChild(filteredBy);

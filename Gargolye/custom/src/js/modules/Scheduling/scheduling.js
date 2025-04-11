@@ -2095,7 +2095,8 @@ const SchedulingCalendar = (function () {
     if (!$.session.schedulingSecurity) {
       contentWrapEle.removeChild(shiftTypeDropdownEle);
 
-      employeeDropdownEle.classList.add('disabled');
+      //employeeDropdownEle.classList.add('disabled');
+      input.disableInputField(employeeDropdownEle);
     }
 
     accordionTriggerEle.addEventListener('click', e => {
