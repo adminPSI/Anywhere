@@ -93,7 +93,7 @@ const incidentOverview = (function () {
             btnWrap.appendChild(locationBtnWrap);
             document.getElementById('locationBtn').innerHTML = 'Location: ' + filterData.locationName;
         }
-            
+        debugger;      
         if (filterData.groupName === null || filterData.groupName === 'All' || filterData.groupName === 'EVERYONE') {
             btnWrap.appendChild(groupBtnWrap);
             btnWrap.removeChild(groupBtnWrap);

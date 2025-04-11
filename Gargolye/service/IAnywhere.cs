@@ -5397,6 +5397,30 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getAssessmentEntriesById/")]
+        AuthorizationWorker.AssessmentEntries[] getAssessmentEntriesById(string token, string registerId, string lastUpdate);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/insertUpdateAssessmentInfo/")]
+        AuthorizationWorker.assessmentOverlaps[] insertUpdateAssessmentInfo(string regId, string startDate, string endDate, string methodology, string score, string behaviorModifier, string medicalModifier, string DCModifier, string complexCareModifier, string priorAuthReceivedDate, string priorAuthAppliedDate, string priorAuthAmount, string userId, string lastUpdateDate);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/getFundingRange/")]
+        AuthorizationWorker.fundingRange[] getFundingRange(string token, string consumerId, string methodology, string score, string startDate);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
                BodyStyle = WebMessageBodyStyle.Wrapped,
                ResponseFormat = WebMessageFormat.Json,
                RequestFormat = WebMessageFormat.Json,
@@ -5808,7 +5832,7 @@ namespace Anywhere
                  ResponseFormat = WebMessageFormat.Json,
                  RequestFormat = WebMessageFormat.Json,
                  UriTemplate = "/getFamilyMembers/")]
-        FSSWorker.Members[] getFamilyMembers(string token, string familyID); 
+        FSSWorker.Members[] getFamilyMembers(string token, string familyID);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

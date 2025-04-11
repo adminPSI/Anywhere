@@ -86,6 +86,7 @@ namespace Anywhere.service.Data.Authorization
             public string priorAuthApplied { get; set; }
             public string priorAuthReceived { get; set; }
             public string priorAuthAmount { get; set; }
+            public string lastUpdate { get; set; }            
         }
 
         public class Score
@@ -114,9 +115,9 @@ namespace Anywhere.service.Data.Authorization
             public string localNumber { get; set; }
             public string contact { get; set; }
             public string phone { get; set; }
-            public string goodStanding { get; set; }        
+            public string goodStanding { get; set; }
             public string takingNewReferrals { get; set; }
-            public string homeServices { get; set; }           
+            public string homeServices { get; set; }
             public string fundingSource { get; set; }
             public string serviceCode { get; set; }
         }
@@ -124,7 +125,7 @@ namespace Anywhere.service.Data.Authorization
         public class VendorGeneralEntry
         {
             public string vendorID { get; set; }
-            public string name { get; set; }      
+            public string name { get; set; }
             public string contactName { get; set; }
             public string contactPhone { get; set; }
             public string contactEmail { get; set; }
@@ -159,7 +160,7 @@ namespace Anywhere.service.Data.Authorization
 
         public class DropdownValue
         {
-            public string ID { get; set; } 
+            public string ID { get; set; }
             public string Code { get; set; }
             public string Description { get; set; }
 
@@ -167,7 +168,7 @@ namespace Anywhere.service.Data.Authorization
 
         public class vendorService
         {
-            public string fundingSource { get; set; } 
+            public string fundingSource { get; set; }
             public string serviceCode { get; set; }
             public string serviceDescription { get; set; }
         }
@@ -181,19 +182,19 @@ namespace Anywhere.service.Data.Authorization
             public string assessmentAcuityScore { get; set; }
             public string startDate { get; set; }
             public string endDate { get; set; }
-            public string UCR { get; set; }           
+            public string UCR { get; set; }
         }
 
         public class vendorProviderType
         {
-            public string ProviderType { get; set; }       
+            public string ProviderType { get; set; }
             public string startDate { get; set; }
             public string endDate { get; set; }
             public string Notes { get; set; }
         }
 
         public class vendorCertifiction
-        { 
+        {
             public string Certifiction { get; set; }
             public string startDate { get; set; }
             public string endDate { get; set; }
@@ -206,6 +207,17 @@ namespace Anywhere.service.Data.Authorization
             public string dueDate { get; set; }
             public string completedDate { get; set; }
             public string responsibleStaff { get; set; }
+        }
+
+        public class fundingRange
+        {
+            public string fundingRangeHigh { get; set; }
+            public string fundingRangeLow { get; set; }
+        }
+
+        public class assessmentOverlaps
+        {
+            public string isExistingRecord { get; set; }
         }
 
         public PageData getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
@@ -488,14 +500,14 @@ namespace Anywhere.service.Data.Authorization
             }
         }
 
-        
-       public LandingPageData[] authorizationGetLandingPageData(string token)
-       {
+
+        public LandingPageData[] authorizationGetLandingPageData(string token)
+        {
             string landingPageString = adg.authorizationGetLandingPageData(token);
             js.MaxJsonLength = Int32.MaxValue;
             LandingPageData[] landingPageObj = js.Deserialize<LandingPageData[]>(landingPageString);
             return landingPageObj;
-       }
+        }
 
         public VendorInfo[] getVendorInfo(string token, string vendor, string DDNumber, string localNumber, string goodStanding, string homeServices, string takingNewReferrals, string fundingSource, string serviceCode)
         {
@@ -666,6 +678,56 @@ namespace Anywhere.service.Data.Authorization
                     throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
                 }
             }
+        }
+
+        public AssessmentEntries[] getAssessmentEntriesById(string token, string registerId, string lastUpdate)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    AssessmentEntries[] assessmentEntryObj = js.Deserialize<AssessmentEntries[]>(adg.getAssessmentEntriesById(token, registerId, lastUpdate, transaction));
+                    return assessmentEntryObj;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+        public assessmentOverlaps[] insertUpdateAssessmentInfo(string regId, string startDate, string endDate, string methodology, string score, string behaviorModifier, string medicalModifier, string DCModifier, string complexCareModifier, string priorAuthReceivedDate, string priorAuthAppliedDate, string priorAuthAmount, string userId, string lastUpdateDate)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    assessmentOverlaps[] assessmentEntryObj = js.Deserialize<assessmentOverlaps[]>(adg.insertUpdateAssessmentInfo(regId, startDate, endDate, methodology, score, behaviorModifier, medicalModifier, DCModifier, complexCareModifier, priorAuthReceivedDate, priorAuthAppliedDate, priorAuthAmount, userId, lastUpdateDate, transaction));
+                    return assessmentEntryObj;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public fundingRange[] getFundingRange(string token, string consumerId, string methodology, string score, string startDate)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    fundingRange[] fundingRangeObj = js.Deserialize<fundingRange[]>(adg.getFundingRange(token, consumerId, methodology, score, startDate, transaction));
+                    return fundingRangeObj;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }           
         }
 
     }

@@ -4115,6 +4115,21 @@ namespace Anywhere
             return authWorker.getVenderLocationReviewEntries(token, vendorID);
         }
 
+        public AuthorizationWorker.AssessmentEntries[] getAssessmentEntriesById(string token, string registerId, string lastUpdate)
+        {
+            return authWorker.getAssessmentEntriesById(token, registerId, lastUpdate);
+        }
+
+        public AuthorizationWorker.assessmentOverlaps[] insertUpdateAssessmentInfo(string regId, string startDate, string endDate, string methodology, string score, string behaviorModifier, string medicalModifier, string DCModifier, string complexCareModifier, string priorAuthReceivedDate, string priorAuthAppliedDate, string priorAuthAmount, string userId, string lastUpdateDate)
+        {
+            return authWorker.insertUpdateAssessmentInfo(regId, startDate, endDate, methodology, score, behaviorModifier, medicalModifier, DCModifier, complexCareModifier, priorAuthReceivedDate, priorAuthAppliedDate, priorAuthAmount, userId, lastUpdateDate);
+        }
+
+        public AuthorizationWorker.fundingRange[] getFundingRange(string token, string consumerId, string methodology, string score, string startDate)
+        {
+            return authWorker.getFundingRange(token, consumerId, methodology, score, startDate);
+        }
+
         public ConsumerFinancesWorker.EditAccountInfo[] getEditAccountInfoById(string token, string accountId)
         {
             return cf.getEditAccountInfoById(token, accountId);
@@ -4433,8 +4448,8 @@ namespace Anywhere
                 anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             } else
             {
-                dg.addOutcomePlanNow(token, consumerId);
-                anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            dg.addOutcomePlanNow(token, consumerId);
+            anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             }
             
             
