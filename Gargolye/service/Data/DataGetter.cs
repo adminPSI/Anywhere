@@ -1542,17 +1542,34 @@ namespace Anywhere.Data
                 return "500.1: error ANYW_CaseNotes_PopulateFilterDropdowns";
             }
         }
-
-        public string updateNoteReviewResult(string token, string userId, string reviewResult, string[] noteIds, string rejectReason)
+        public string getRejectionReasonDropdownData(string token)
         {
             if (tokenValidator(token) == false) return null;
+            logger.debug("getSingleEntryCountInfo");
+
+            string text = "CALL DBA.ANYW_CaseNotes_RejectReasonDropdowns('" + token + "')";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("500.1", ex.Message + "ANYW_CaseNotes_RejectReasonDropdowns('" + token + "')");
+                return "500.1: error ANYW_CaseNotes_RejectReasonDropdowns";
+            }
+        }
+
+        public string updateNoteReviewResult(string token, string userId, string reviewResult, string noteId, string rejectReason)
+        {
+            if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(rejectReason) == false) return null;
             logger.debug("updateNoteReviewResult");
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(userId);
             list.Add(reviewResult);
             list.Add(rejectReason);
-            // idk how to do the list.Add() for array of strings (noteIds)
+            list.Add(noteId);
 
             string text = "CALL DBA.ANYW_CaseNotes_UpdateNoteReviewResult(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
 

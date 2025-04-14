@@ -158,6 +158,19 @@ class Calendar {
       <p class="copyShiftIcon">${icons.copyShift}</p>
     `;
   }
+  renderMonthEventCellContent(event, eventCellEle) {
+    const startTime = dates.convertFromMilitary(event.startTime.split(' ')[1]);
+
+    eventCellEle.id = `e-${event.eventId}`;
+    eventCellEle.setAttribute('data-event-id', event.eventId);
+    eventCellEle.setAttribute('data-type-id', event.typeId);
+    eventCellEle.style.backgroundColor = rgba(event.color, this.eventBackgroundWhiteMixPercent);
+    eventCellEle.className = 'eventCellEle';
+    eventCellEle.innerHTML = `
+      <p class="eventTime">${startTime}</p>
+      <p class="eventName">${event.locationName}</p>
+    `;
+  }
   buildGroupWrap(groupByKey, groupByName) {
     const groupWrapEle = document.createElement('div');
     groupWrapEle.id = `g-${groupByKey}`;
@@ -428,19 +441,8 @@ class Calendar {
           this.monthDayCache[dateISO].groups[groupKey].count;
 
         // Event View
-        const startTime = dates.convertFromMilitary(event.startTime.split(' ')[1]);
-        const endTime = dates.convertFromMilitary(event.endTime.split(' ')[1]);
-
         const eventCellEle = document.createElement('div');
-        eventCellEle.id = `e-${event.eventId}`;
-        eventCellEle.setAttribute('data-event-id', event.eventId);
-        eventCellEle.setAttribute('data-type-id', event.typeId);
-        eventCellEle.style.backgroundColor = rgba(event.color, this.eventBackgroundWhiteMixPercent);
-        eventCellEle.className = 'eventCellEle';
-        eventCellEle.innerHTML = `
-          <p class="eventTime">${startTime}</p>
-          <p class="eventName">${event.locationName}</p>
-        `;
+        renderMonthEventCellContent(event, eventCellEle);
 
         this.monthDayCache[dateISO].eventWrapEle.appendChild(eventCellEle);
       });
