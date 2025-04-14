@@ -280,7 +280,7 @@
                 $.session.outcomesWidgetGroupId = '%';
                 $.session.outcomesWidgetGroupName = 'Everyone';
                 filter.group = '%';
-            } 
+            }
         });
         groupDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
@@ -389,6 +389,12 @@
         eventSetup();
 
         remainingDailyServicesWidgetAjax.populateOutcomeTypesFilter(function (outcomes) {
+            var isOutcomeAvailable = outcomes.find(x => x.Id == filter.outcomeType);
+            if (isOutcomeAvailable == undefined) {
+                filter.outcomeType = '%';
+                $.session.outcomesWidgetOutcomeTypeId = '%';
+                $.session.outcomesWidgetOutcomeTypeName = 'ALL';
+            }
             remainingDailyServicesWidgetAjax.populateLocationsFilter(function (locations) {
                 remainingDailyServicesWidgetAjax.populateGroupsFilter(filter.location, function (groups) {
                     remainingDailyServicesWidgetAjax.populateFilteredList(
@@ -396,7 +402,7 @@
                         filter.location,
                         filter.group,
                         filter.date,
-                        function (list) {
+                        function (list) {                          
                             populateOutcomeTypesFilter(outcomes);
                             populateLocationsFilter(locations);
                             populateGroupsFilter(groups);
