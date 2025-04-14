@@ -339,6 +339,12 @@ const incidentOverview = (function () {
             retrieveData.locationId = '%';
             filterData.location = '%';
             locationIdSelected = '%';
+            // When the Location filter is cleared out via the X on the page, also clear out and remove the Group filter automatically  
+            filterData.groupName = 'All';
+            retrieveData.groupId = '%';
+            groupIdSelected = '%';
+            groupCodeSelected = 'All';
+            filterData.group = '%';
         }
         if (closeFilter == 'groupBtn') {
             filterData.groupName = 'All';
