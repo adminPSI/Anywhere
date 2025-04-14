@@ -1300,6 +1300,184 @@ namespace OODForms
             }
         }
 
+        public string generateForm9(string token, string referenceNumber, long VendorID, string consumerId, String startDate, String endDate, string userId, string loggedInUserPersonId)
+        {
+            try
+            {
+                OODFormDataGetter oodfdg = new OODFormDataGetter();
+                string pdfTronKeyResult = oodfdg.getPDFTronKey(token);
+                LicenseResponse[] pdfTronKey = JsonConvert.DeserializeObject<LicenseResponse[]>(pdfTronKeyResult);
+                pdftron.PDFNet.Initialize(pdfTronKey[0].PDFTronKey);
+
+                string crpath = oodfdg.getFormTemplatePath(token);
+                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+                string path = pathdatalist[0].path;
+                string crname = "Vocational_Evaluation.pdf";
+                string reportpath = string.Format(path, crname);
+                string personCompletingReport = string.Empty;
+
+                PDFDoc form9Template = new PDFDoc(reportpath);
+
+                // Gather Data for the Person Completing the Report
+
+
+                //string loggedInUserPersonId = oodfdg.getPersonCompletingReportName(token);
+                //personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                //string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+
+                DataTable dt;
+                DataRow row;
+
+                dt = oodfdg.GetNamesAndGoal(consumerId).Tables[0];
+                row = dt.Rows[0];
+
+                string ProviderName = string.Format("{0}", row["providerName"].ToString().Trim());
+                string ConsumerName = string.Format("{0}", row["consumerName"].ToString().Trim());
+                string IPEGoal = string.Format("{0}", row["IPEGoal"].ToString().Trim());
+
+                string Staff = string.Empty;
+                string StaffWithInitals = string.Empty;
+                string OODStaff = string.Empty;
+                string MiddleName = string.Empty;
+
+                string VRCounselor = "";
+                if (referenceNumber != "")
+                {
+                    // Gets values for Direct Service and Staff Name and Initials
+                    DataSet ds = oodfdg.OODForm8GetDirectStaff(referenceNumber, startDate, endDate);
+
+                    if (ds.Tables.Count > 0)
+                    {
+                        DataTable dt2 = ds.Tables[0];
+                        foreach (DataRow row2 in dt2.Rows)
+                        {
+                            if (row2["First_Name"].ToString().Trim().Length > 0 && row2["Last_Name"].ToString().Trim().Length > 0)
+                            {
+                                Staff = String.Format("{0} {1} ", row2["First_Name"], row2["Last_Name"]);
+                                MiddleName = row2["Middle_Name"].ToString();
+                                OODStaff += String.Format("{0}, ", Staff.Trim());
+                            }
+
+                            if (Staff.ToString().Trim().Length > 0)
+                            {
+                                StaffWithInitals += String.Format("{0}{1}, ", Staff, row2["Initials"].ToString());
+                            }
+                        }
+                    }
+
+                    // Gets values for VR Counselor 
+                    DataSet dsVR = oodfdg.OODForm6GetVRCounselor(referenceNumber, consumerId, startDate, endDate);
+
+                    if (dsVR.Tables.Count > 0 && dsVR.Tables[0].Rows.Count > 0)
+                    {
+                        if (!string.IsNullOrEmpty(dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString()))
+                        {
+                            VRCounselor = dsVR.Tables[0].Rows[0]["VR_CounselorContractor"].ToString();
+                        }
+                        else
+                        {
+                            VRCounselor = "";
+                        }
+                    }
+                }
+
+                string service = "";
+                DataSet dsService = oodfdg.OODForm6GetService(referenceNumber, consumerId, startDate, endDate);
+
+                if (dsService.Tables.Count > 0 && dsService.Tables[0].Rows.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(dsService.Tables[0].Rows[0]["service"].ToString()))
+                    {
+                        service = dsService.Tables[0].Rows[0]["service"].ToString();
+                    }
+                    else
+                    {
+                        service = "PBJD Tier I";
+                    }
+                }
+
+                string bilingual = "";  // SAMLevel
+                string SAMLevel = "";  // bilingualSupplement
+                DataSet dsSAMandBilingual = oodfdg.OODForm6GetSAMandBilingual(referenceNumber, consumerId, startDate, endDate, userId);
+
+                if (dsSAMandBilingual.Tables.Count > 0 && dsSAMandBilingual.Tables[0].Rows.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString()))
+                    {
+                        SAMLevel = dsSAMandBilingual.Tables[0].Rows[0]["SAMLevel"].ToString();
+                    }
+                    else
+                    {
+                        SAMLevel = "";
+                    }
+                }
+
+                DataSet ds3 = new DataSet();
+
+                if (!string.IsNullOrEmpty(loggedInUserPersonId))
+                {
+                    ds3 = oodfdg.getPersonCompletingReport(token, loggedInUserPersonId);
+                }
+
+                if (ds3.Tables.Count > 0 && ds3.Tables[0].Rows.Count > 0)
+                {
+                    personCompletingReport = String.Format("{0} {1} ", ds3.Tables[0].Rows[0]["First_Name"], ds3.Tables[0].Rows[0]["Last_Name"]);
+                }
+
+                DateTime currentDate = DateTime.Now;
+                string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
+                string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
+                string invoiceDate = currentDate.ToString("MM/dd/yyyy");
+                DateTime startdate = DateTime.ParseExact(startDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                string strStartDate = startdate.ToString("MM/dd/yyyy");
+                DateTime enddate = DateTime.ParseExact(endDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                string strEndDate = enddate.ToString("MM/dd/yyyy");
+
+                List<string> fieldNamesview = GetAllFieldNames(reportpath);
+
+                var fieldData = new List<(string fieldName, string value)>
+                {
+                    ("Provider Name", ProviderName),
+                    ("Individuals Name", ConsumerName),
+                    ("Direct Service Staff Name", ""), //06/14/2024 -- StaffWithInitals replaced by "" for this release (2024.2)
+                    ("Person Completing Report", personCompletingReport),
+                    ("VR CounselorCoordinator", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
+                    ("Authorization", referenceNumber),
+                    ("Provider_Invoice_Number", invoiceNumber),
+                    ("Date1_af_date", invoiceDate),
+                    ("Date2_af_date", strStartDate),
+                    ("Date3_af_date", strEndDate),
+                };
+
+                // Iterate through the field data and set values
+                foreach (var (fieldName, value) in fieldData)
+                {
+                    Field field = form9Template.GetField(fieldName);
+                    field.SetValue(value);
+
+                    // resets a value on the pdf so all fields show (otherwise the fields may not show correctly on finished pdf)
+                    field.RefreshAppearance();
+                }
+
+                MemoryStream pdfStream = new MemoryStream();
+                form9Template.Save(pdfStream, SDFDoc.SaveOptions.e_linearized);
+
+                Attachment attachment = new Attachment
+                {
+                    filename = "Form9",
+                    data = pdfStream
+                };
+
+                DisplayAttachmentPDF(attachment);
+
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+        }
+
         public string generateForm10(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId, string loggedInUserPersonId)
         {
             try

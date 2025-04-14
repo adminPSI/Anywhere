@@ -896,6 +896,10 @@ const OOD = (() => {
                 case 8:
                     sentStatus = await OODAjax.generateForm8(data);
                     break;
+
+                case 9:
+                    sentStatus = await OODAjax.generateForm9(data);
+                    break;
     
                 case 10:
                     sentStatus = await OODAjax.generateForm10(data);
@@ -1021,6 +1025,7 @@ const OOD = (() => {
         const form5Btn = buildIndividualFormBtn('Form 5 - Job Search Assistance Parts 2 & 3', 5);
         const form6Btn = buildIndividualFormBtn('Form 6 - Tier1 and JD Plan', 6);
         const form8Btn = buildIndividualFormBtn('Form 8 - Work Activities and Assessment', 8);
+        const form9Btn = buildIndividualFormBtn('Form 9 - Vocational Evaluation', 9);
         const form10Btn = buildIndividualFormBtn('Form 10 - Transportation', 10);
         const form16Btn = buildIndividualFormBtn('Form 16 - Summer Youth Experience', 16);
 
@@ -1029,6 +1034,7 @@ const OOD = (() => {
         popup.appendChild(form5Btn);
         popup.appendChild(form6Btn);
         popup.appendChild(form8Btn);
+        popup.appendChild(form9Btn);
         popup.appendChild(form10Btn);
         popup.appendChild(form16Btn);
 
@@ -1575,7 +1581,7 @@ const OOD = (() => {
 
         // build popup
   
-        if (formNumber != '3' && formNumber != '4' && formNumber != '5') {
+        if (formNumber != '3' && formNumber != '4' && formNumber != '5' && formNumber != '9') {
             createfilterPopup.appendChild(employeeDropdown);
         }
    
@@ -1707,7 +1713,7 @@ const OOD = (() => {
     if (formNumber != '3') {
        let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
 
-       if (formNumber != '5') {
+       if (formNumber != '5' && formNumber != '9') {
             if (createreferenceNumbersDropDown.value === '' || createreferenceNumbersDropDown.value === '%') { 
                 createreferenceNumbersDropDown.parentElement.classList.add('error');
                 createfilterPopupCreateBTN.classList.add('disabled'); 
