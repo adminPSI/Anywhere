@@ -147,6 +147,51 @@ namespace Anywhere.service.Data
             return rosterToDoListObj;
         }
 
+        public ConsumerDemographicsInformation[] getConsumerDemographicsInformation(long ConsumerId)
+        {
+            string cDIString = "";
+            cDIString = dg.getConsumerDemographicsInformation(ConsumerId);
+            ConsumerDemographicsInformation[] waitingLists = js.Deserialize<ConsumerDemographicsInformation[]>(cDIString);
+
+            return waitingLists;
+        }
+
+        public ConsumerServiceLocation[] getConsumerServiceLocation(long ConsumerId)
+        {
+            string cDIString = "";
+            cDIString = dg.getConsumerServiceLocation(ConsumerId);
+            ConsumerServiceLocation[] waitingLists = js.Deserialize<ConsumerServiceLocation[]>(cDIString);
+
+            return waitingLists;
+        }
+
+        public ConsumerRelationship[] getConsumerIndividualRelationships(long ConsumerId)
+        {
+            string cDIString = "";
+            cDIString = dg.getConsumerIndividualRelationships(ConsumerId);
+            ConsumerRelationship[] waitingLists = js.Deserialize<ConsumerRelationship[]>(cDIString);
+
+            return waitingLists;
+        }
+
+        public ConsumerCatagories[] getConsumerCategories(long ConsumerId)
+        {
+            string cDIString = "";
+            cDIString = dg.getConsumerCategories(ConsumerId);
+            ConsumerCatagories[] waitingLists = js.Deserialize<ConsumerCatagories[]>(cDIString);
+
+            return waitingLists;
+        }
+
+        public ConsumerAppointmnets[] getConsumerAppointmnets(long ConsumerId)
+        {
+            string cDIString = "";
+            cDIString = dg.getConsumerAppointmnets(ConsumerId);
+            ConsumerAppointmnets[] waitingLists = js.Deserialize<ConsumerAppointmnets[]>(cDIString);
+
+            return waitingLists;
+        }
+
         public class MobileCarrierDropdown
         {
             public string carrierName { get; set; }
@@ -296,6 +341,139 @@ namespace Anywhere.service.Data
             public string personID { get; set; }
             public string name { get; set; }
             public string statusCode { get; set; }
+        }
+
+        public class ConsumerDemographicsInformation
+        {
+            public string ConsumerId { get; set; }
+            public string firstname { get; set; }
+            public string lastname { get; set; }
+            public string nickname { get; set; }
+            public string middlename { get; set; }
+            public string primaryphone { get; set; }
+            public string secondaryphone { get; set; }
+            public string addressone { get; set; }
+            public string addresstwo { get; set; }
+            public string mailcity { get; set; }
+            public string mailstate { get; set; }
+            public string mailzipcode { get; set; }
+            public string email { get; set; }
+            public string residentialAddressEffectiveDate { get; set; }
+            public string county { get; set; }
+            public string SSN { get; set; }
+            public string MedicaidNumber { get; set; }
+            public string MedicareNumber { get; set; }
+            public string ResidentNumber { get; set; }
+            public string consumerNumber { get; set; }
+            public string billingNumber { get; set; }
+            public string contractNumber { get; set; }
+            public string areaConsumerNumber { get; set; }
+            public string activeDate { get; set; }
+            public string inactiveDate { get; set; }
+            public string DOB { get; set; }
+            public string maritalStatus { get; set; }
+            public string gender { get; set; }
+            public string courtLegalInvolvement { get; set; }
+            public string communicationType { get; set; }
+            public string firstProcedureDate { get; set; }
+            public string secondProcedureDate { get; set; }
+            public string eMarConsumer { get; set; }
+            public string race { get; set; }
+            public string language { get; set; }
+            public string generation { get; set; }
+            public string educationLevel { get; set; }
+            public string otherSource { get; set; }
+            public string eMarMadCart { get; set; }
+            public string DNRFile { get; set; }
+            public string eMARVisible { get; set; }
+            public string NPI { get; set; }
+            public string payrollId { get; set; }
+            public string salesforceId { get; set; }
+            public string enrollmentNumber { get; set; }
+            public string caseNumber { get; set; }
+        }
+
+        public class ConsumerServiceLocation
+        {
+            public string SunStartTime { get; set; }
+            public string monStartTime { get; set; }
+            public string tuesStartTime { get; set; }
+            public string wedStartTime { get; set; }
+            public string thurStartTime { get; set; }
+            public string friStartTime { get; set; }
+            public string satStartTime { get; set; }
+            public string sunEndTime { get; set; }
+            public string monEndTime { get; set; }
+            public string tuesEndTime { get; set; }
+            public string wedEndTime { get; set; }
+            public string thurEndTime { get; set; }
+            public string friEndTime { get; set; }
+            public string satEndTime { get; set; }
+            public string sunDStype { get; set; }
+            public string monDSType { get; set; }
+            public string tueDSType { get; set; }
+            public string wedDSType { get; set; }
+            public string thuDSType { get; set; }
+            public string friDSType { get; set; }
+            public string satDSType { get; set; }
+            public string sunStartTime2 { get; set; }
+            public string monStartTime2 { get; set; }
+            public string tueStartTime2 { get; set; }
+            public string wedStartTime2 { get; set; }
+            public string thurStartTime2 { get; set; }
+            public string friStartTime2 { get; set; }
+            public string satStartTime2 { get; set; }
+            public string sunEndTime2 { get; set; }
+            public string monEndTime2 { get; set; }
+            public string tueEndTime2 { get; set; }
+            public string wedEndTime2 { get; set; }
+            public string thurEndTime2 { get; set; }
+            public string friEndTime2 { get; set; }
+            public string satEndTime2 { get; set; }
+            public string sunDSType2 { get; set; }
+            public string monDSType2 { get; set; }
+            public string tueDSType2 { get; set; }
+            public string wedDSType2 { get; set; }
+            public string thuDSType2 { get; set; }
+            public string friDSType2 { get; set; }
+            public string satDSType2 { get; set; }
+            public string locationId { get; set; }
+            public string locationName { get; set; }
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+            public string consumerType { get; set; }
+            public string notes { get; set; }
+            public string LocationStatus { get; set; }
+            public string defaultGroup { get; set; }
+            public string MRC { get; set; }
+        }
+
+        public class ConsumerRelationship
+        {
+            public string personId { get; set; }
+            public string relationshipType { get; set; }
+            public string name { get; set; }
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+        }
+
+        public class ConsumerCatagories
+        {
+            public string categoryID { get; set; }
+            public string categoryName { get; set; }
+        }
+
+        public class ConsumerAppointmnets
+        {
+            public string trackingId { get; set; }
+            public string appointmentDate { get; set; }
+            public string appointmentTime { get; set; }
+            public string appointmentType { get; set; }
+            public string provider { get; set; }
+            public string employee { get; set; }
+            public string treatment { get; set; }
+            public string reason { get; set; }
+            public string notes { get; set; }
         }
 
     }

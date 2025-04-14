@@ -5397,9 +5397,9 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-          BodyStyle = WebMessageBodyStyle.Wrapped,
-          ResponseFormat = WebMessageFormat.Json,
-          RequestFormat = WebMessageFormat.Json,
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getAssessmentEntriesById/")]
         AuthorizationWorker.AssessmentEntries[] getAssessmentEntriesById(string token, string registerId, string lastUpdate);
 
@@ -5832,7 +5832,7 @@ namespace Anywhere
                  ResponseFormat = WebMessageFormat.Json,
                  RequestFormat = WebMessageFormat.Json,
                  UriTemplate = "/getFamilyMembers/")]
-        FSSWorker.Members[] getFamilyMembers(string token, string familyID);
+        FSSWorker.Members[] getFamilyMembers(string token, string familyID); 
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5954,6 +5954,45 @@ namespace Anywhere
           UriTemplate = "/updateNoteReviewResult/")]
         string updateNoteReviewResult(string token, string userId, string reviewResult, string[] noteIds, string rejectReason);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/getConsumerDemographicsInformation/")]
+        RosterWorker.ConsumerDemographicsInformation[] getConsumerDemographicsInformation(long ConsumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getConsumerServiceLocation/")]
+        RosterWorker.ConsumerServiceLocation[] getConsumerServiceLocation(long ConsumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getConsumerIndividualRelationships/")]
+        RosterWorker.ConsumerRelationship[] getConsumerIndividualRelationships(long ConsumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getConsumerCategories/")]
+        RosterWorker.ConsumerCatagories[] getConsumerCategories(long ConsumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getConsumerAppointmnets/")]
+        RosterWorker.ConsumerAppointmnets[] getConsumerAppointmnets(long ConsumerId);
     }
 
 
