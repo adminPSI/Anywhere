@@ -5954,6 +5954,14 @@ namespace Anywhere
           UriTemplate = "/updateNoteReviewResult/")]
         string updateNoteReviewResult(string token, string userId, string reviewResult, string[] noteIds, string rejectReason);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getRejectionReasonDropdownData/")]
+        string getRejectionReasonDropdownData(string token);
+
     }
 
 

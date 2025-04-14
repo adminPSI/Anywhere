@@ -490,7 +490,7 @@ namespace Anywhere
 
         public string updateNoteReviewResult(string token, string userId, string reviewResult, string[] noteIds, string rejectReason)
         {
-            return dg.updateNoteReviewResult(token, userId, reviewResult, noteIds, rejectReason);
+            return caseNotesWorker.updateNoteReviewResult(token, userId, reviewResult, noteIds, rejectReason);
         }
 
         //case note filter

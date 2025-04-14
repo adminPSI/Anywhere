@@ -67,6 +67,16 @@ namespace Anywhere.service.Data
             return filteredObj;
         }
 
+        public string updateNoteReviewResult(string token, string userId, string reviewResult, string[] noteIds, string rejectReason)
+        {
+            foreach (string noteIdStr in noteIds)
+            {
+                dg.updateNoteReviewResult(token, userId, reviewResult, noteIdStr, rejectReason);
+            }
+
+            return "success";
+        }
+
         public ConsumerSpecificVendors[] getConsumerSpecificVendorsJSON(string token, string consumerId, string serviceDate)
         {
             string vendorsString = dg.getConsumerSpecificVendorsJSON(token, consumerId, serviceDate);
@@ -128,6 +138,20 @@ namespace Anywhere.service.Data
             string dropdownString = dg.getCNPopulateFilterDropdowns(token, serviceCodeId);
             FilterDropdownValues[] dropdownObj = js.Deserialize<FilterDropdownValues[]>(dropdownString);
             return dropdownObj;
+        }
+
+        public RejectionReasonDropdownValues[] getRejectionReasonDropdownData(string token)
+        {
+            string dropdownString = dg.getRejectionReasonDropdownData(token);
+            RejectionReasonDropdownValues[] dropdownObj = js.Deserialize<RejectionReasonDropdownValues[]>(dropdownString);
+            return dropdownObj;
+        }
+
+        public class RejectionReasonDropdownValues
+        {
+            public string note_code { get; set; }
+            public string caption { get; set; }
+            public string dropdown { get; set; }
         }
 
         public class FilterDropdownValues

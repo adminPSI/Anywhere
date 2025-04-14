@@ -2235,7 +2235,8 @@ const Scheduling = (function () {
     btnWrap.appendChild(schedulingCalendarBtn);
     btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
-    if ($.session.schedulingView === false && $.session.schedulingUpdate === true) {
+    if ($.session.schedulingView === true && $.session.schedulingUpdate === false) {
+    } else {
       btnWrap.appendChild(schedulingRequestTimeOffBtn);
       btnWrap.appendChild(schedulingApproveRequestBtn);
     }

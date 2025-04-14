@@ -348,8 +348,117 @@ var notesOverview = (function () {
 
   // Table
   //---------------------------------------------
+  // multiselect
   let enableMultiEdit = false;
   let selectedRows = [];
+  let rejectionReasons = [];
+  function resetMultiSelect() {
+    mulitSelectBtn.classList.remove('enabled');
+    mulitSelectBtn.classList.remove('disabled');
+    selectAllBtn.classList.remove('enabled');
+    enableMultiEdit = false;
+    enableSelectAll = false;
+
+    selectedRows = [];
+
+    const highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+    highlightedRows.forEach(row => row.classList.remove('selected'));
+  }
+  function buildRejectionReasonDropdown() {
+    const rejectDropdown = dropdown.build({
+      dropdownId: 'rejectReasonDropdown',
+      label: 'Rejection Reason',
+      style: 'secondary',
+    });
+
+    let dropdownData = rejectionReasons.map(reason => {});
+
+    dropdown.populate(rejectDropdown, dropdownData);
+
+    return rejectDropdown;
+  }
+  function showRejectionReasonPopup(callback) {
+    let rejectReason;
+
+    const popup = POPUP.build({
+      classNames: 'rejectionReasonPopup',
+    });
+
+    const rejectReasonDropdown = buildRejectionReasonDropdown();
+    rejectReasonDropdown.addEventListener('change', () => {
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      rejectReason = selectedOption.value;
+    });
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+
+    const applyBtn = button.build({
+      text: 'Apply',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        callback();
+        ACTION_NAV.hide();
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'Cancel',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        resetMultiSelect();
+      },
+    });
+
+    btnWrap.appendChild(applyBtn);
+    btnWrap.appendChild(cancelBtn);
+    popup.appendChild(rejectReasonDropdown);
+    popup.appendChild(btnWrap);
+
+    POPUP.show(popup);
+  }
+  function showConfimPassRejectPopup(messageText, callback) {
+    const popup = POPUP.build({
+      classNames: 'confimPassRejectPopup',
+    });
+
+    const message = document.createElement('p');
+    message.innerHTML = messageText;
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+
+    const yesBtn = button.build({
+      text: 'Yes',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        callback();
+        ACTION_NAV.hide();
+      },
+    });
+    const noBtn = button.build({
+      text: 'No',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        ACTION_NAV.hide();
+        resetMultiSelect();
+      },
+    });
+
+    btnWrap.appendChild(yesBtn);
+    btnWrap.appendChild(noBtn);
+    popup.appendChild(message);
+    popup.appendChild(btnWrap);
+
+    POPUP.show(popup);
+  }
   function handleActionNavEvent(target) {
     var targetAction = target.dataset.actionNav;
 
@@ -360,17 +469,54 @@ var notesOverview = (function () {
       return;
     }
 
-    switch (targetAction) {
-      case 'pass': {
-        //TODO: ajax call to 'pass'
-        ACTION_NAV.hide();
-        break;
-      }
-      case 'deleteEntries': {
-        //TODO: ajax call to 'reject'
-        ACTION_NAV.hide();
-        break;
-      }
+    let success;
+
+    if (targetAction === 'pass') {
+      const passMessage = 'Are you sure you want to set the selected case notes as passed?';
+      showConfimPassRejectPopup(passMessage, async () => {
+        success = await caseNotesAjax.passRejectCaseNotes({
+          userId: '',
+          reviewResults: 'P',
+          noteIds: selectedRows,
+          rejectReason: '',
+        });
+      });
+    }
+
+    if (targetAction === 'reject') {
+      const rejectMessage = 'Are you sure you want to reject all of the selected case notes?';
+      showConfimPassRejectPopup(rejectMessage, async () => {
+        if ($.session.applicationName === 'Gatekeeper') {
+          showRejectionReasonPopup(async rejectReason => {
+            success = await caseNotesAjax.passRejectCaseNotes({
+              userId: '',
+              reviewResults: 'R',
+              noteIds: selectedRows,
+              rejectReason: rejectReason,
+            });
+          });
+          return;
+        }
+
+        success = await caseNotesAjax.passRejectCaseNotes({
+          userId: '',
+          reviewResults: 'R',
+          noteIds: selectedRows,
+          rejectReason: '',
+        });
+      });
+    }
+
+    if (success) {
+      successfulSave.show('SAVED');
+      setTimeout(function () {
+        successfulSave.hide();
+      }, 1000);
+    } else {
+      failSave.show('ERROR SAVING');
+      setTimeout(function () {
+        failSave.hide();
+      }, 1000);
     }
   }
   function setupActionNav() {
@@ -482,7 +628,7 @@ var notesOverview = (function () {
         }
       } else {
         event.target.classList.add('selected');
-        selectedRows.push(entryId);
+        selectedRows.push(caseNoteId);
       }
 
       return;
@@ -591,7 +737,6 @@ var notesOverview = (function () {
       }
       var consumerId = td.consumerid.split('.')[0];
       isSSANote = td.isSSANote;
-      // just for GK - JMM 3/18
       attachcount = td.attachcount;
 
       noteIds.push(caseNoteId);
@@ -649,17 +794,36 @@ var notesOverview = (function () {
       'User Updated',
       'Group',
       'Attach',
+      'Review Status',
     ];
-    var ADVcolumnheadings = ['Service Date', 'Start Time', 'End Time', 'Name', 'Date Created', 'User Updated', 'Group'];
-    $.session.applicationName === 'Gatekeeper'
-      ? (thiscolumnheadings = GKcolumnheadings)
-      : (thiscolumnheadings = ADVcolumnheadings);
+    var ADVcolumnheadings = [
+      'Service Date',
+      'Start Time',
+      'End Time',
+      'Name',
+      'Date Created',
+      'User Updated',
+      'Group',
+      'Review Status',
+    ];
+
+    if ($.session.applicationName === 'Gatekeeper') {
+      thiscolumnheadings = GKcolumnheadings;
+    } else {
+      thiscolumnheadings = ADVcolumnheadings;
+    }
 
     overviewTable = table.build({
       tableId: 'caseNotesReviewTable',
       columnHeadings: thiscolumnheadings,
       endIcon: !attachcount || attachcount === '  ' || attachcount === '0' ? false : true,
     });
+
+    if ($.session.applicationName === 'Gatekeeper') {
+      overviewTable.classList.add('gatekeeperCols');
+    } else {
+      overviewTable.classList.add('advisorCols');
+    }
 
     // Set the data type for each header, for sorting purposes
     const headers = overviewTable.querySelectorAll('.header div');
@@ -670,9 +834,8 @@ var notesOverview = (function () {
     headers[4].setAttribute('data-type', 'date'); // Date Created
     headers[5].setAttribute('data-type', 'string'); // User Updated
     headers[6].setAttribute('data-type', 'number'); // Group
-    // headers[7].setAttribute("data-type", "string"); // Attach Icon
+    headers[7].setAttribute('data-type', 'string'); // Review Status
 
-    // overviewTable.addEventListener('click', handleTableEvents);
     DOM.ACTIONCENTER.appendChild(overviewTable);
 
     // Call function to allow table sorting by clicking on a header.
@@ -798,9 +961,6 @@ var notesOverview = (function () {
       promArray.push(caseloadRestrictionPromise);
     }
 
-    //FILTER DROPDOWN DATA
-    //==========================
-    //biller Dropdown
     const getBillersListPromise = new Promise(function (resolve, reject) {
       caseNotesAjax.getBillersListForDropDown(res => {
         billers = res;
@@ -809,7 +969,15 @@ var notesOverview = (function () {
     });
     promArray.push(getBillersListPromise);
 
-    Promise.all(promArray).then(function () {
+    const rejectionReasonsPromise = new Promise(function (resolve, reject) {
+      caseNotesAjax.getRejectionReasonDropdownData(res => {
+        rejectionReasons = res;
+        resolve('success');
+      });
+    });
+    promArray.push(rejectionReasonsPromise);
+
+    Promise.all(promArray).then(async function () {
       callback();
     });
   }
