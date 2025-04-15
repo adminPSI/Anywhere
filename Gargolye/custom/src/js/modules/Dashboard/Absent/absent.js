@@ -195,7 +195,7 @@ var absentWidget = (function() {
         });
         UTIL.findAndSlice(data, 'Everyone', 'text');
         const defaultGroup = {
-            id: '%',
+            id: 'ALL',
             value: '0',
             text: 'EVERYONE',
         };
@@ -334,11 +334,11 @@ var absentWidget = (function() {
                 absentWidgetLocationName = locationList.find(l => l.id == absentWidgetLocationId)?.text;
                 absentWidgetGroupName = groupList.find(l => l.value == absentWidgetGroupId)?.text;
                 absentWidgetGroupCode = groupList.find(l => l.value == absentWidgetGroupId)?.id;
-            
+             
                 absentWidgetAjax.getAbsentWidgetFilterDataAjax({
                     token: $.session.Token,
                     absentDate: absentWidgetDate,
-                    absentLocationId: absentWidgetLocationId,
+                    absentLocationId: absentWidgetLocationId, 
                     absentGroupCode: absentWidgetGroupCode,
                     custGroupId: absentWidgetGroupId,
                     isCaseLoad: $.session.RosterCaseLoad,
