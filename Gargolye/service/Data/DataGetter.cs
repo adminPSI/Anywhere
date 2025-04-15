@@ -267,17 +267,17 @@ namespace Anywhere.Data
         /// </summary>
         /// <param name="groupName"></param>
         /// <returns></returns>
-        public string addCustomGroupJSON(string groupName, string locationId, string token)
+        public string addCustomGroupJSON(string groupName, string locationId, string token, string ispubliclyAvailableChecked)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("AddCustomGroup");
             try
             {
-                return executeDataBaseCallJSON("CALL DBA.ANYW_Roster_AddCustomGroup('" + groupName + "','" + locationId + "','" + token + "');");
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Roster_AddCustomGroup('" + groupName + "','" + locationId + "','" + token + "','" + ispubliclyAvailableChecked + "');");
             }
             catch (Exception ex)
             {
-                logger.error("507", ex.Message + " ANYW_Roster_AddCustomGroup('" + groupName + "','" + locationId + "','" + token + "')", token);
+                logger.error("507", ex.Message + " ANYW_Roster_AddCustomGroup('" + groupName + "','" + locationId + "','" + token + "','" + ispubliclyAvailableChecked + "')", token);
                 return "507: Error Adding Custom to Group";
             }
         }
@@ -295,6 +295,22 @@ namespace Anywhere.Data
                 logger.error("508", ex.Message + " ANYW_Roster_RemoveCustomGroup('" + groupId + "')");
                 return "508: Error Removing Custom to Group";
             }
+        }
+
+        public string updatePublicAvailable(string groupId, string isPublicAvailable)
+        {
+            logger.debug("updatePublicAvailable");
+
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Roster_updatePublicAvailable('" + groupId + "','" + isPublicAvailable + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("506", ex.Message + " ANYW_Roster_updatePublicAvailable(" + groupId + "," + isPublicAvailable + ")");
+                return "506: Error update Public Available to Group";
+            }
+
         }
 
         public string addDayServiceActivityMassClockInConsumer(string token, string consumerIds, string serviceDate, string locationId, string startTime)
@@ -1366,7 +1382,7 @@ namespace Anywhere.Data
             {
                 logger.error("4WL", ex.Message + "ANYW_WaitingList_GetSupportingDocumentList(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "4WL: error ANYW_WaitingList_GetSupportingDocumentList";
-            }
+        }
         }
 
         public string getRelationshipsNameJSON(string token)
@@ -1524,6 +1540,47 @@ namespace Anywhere.Data
             {
                 logger.error("500.1", ex.Message + "ANYW_CaseNotes_PopulateFilterDropdowns(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "500.1: error ANYW_CaseNotes_PopulateFilterDropdowns";
+            }
+        }
+        public string getRejectionReasonDropdownData(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getSingleEntryCountInfo");
+
+            string text = "CALL DBA.ANYW_CaseNotes_RejectReasonDropdowns('" + token + "')";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("500.1", ex.Message + "ANYW_CaseNotes_RejectReasonDropdowns('" + token + "')");
+                return "500.1: error ANYW_CaseNotes_RejectReasonDropdowns";
+            }
+        }
+
+        public string updateNoteReviewResult(string token, string userId, string reviewResult, string noteId, string rejectReason)
+        {
+            if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(rejectReason) == false) return null;
+            logger.debug("updateNoteReviewResult");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(userId);
+            list.Add(reviewResult);
+            list.Add(rejectReason);
+            list.Add(noteId);
+
+            string text = "CALL DBA.ANYW_CaseNotes_UpdateNoteReviewResult(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+
+            try
+            {
+                return executeDataBaseCall(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("584", ex.Message + text);
+                return "584: Error updating note review results";
             }
         }
 
@@ -1823,12 +1880,13 @@ namespace Anywhere.Data
             }
         }
 
-        public string getMissingPlanSignatures(string token)
+        public string getMissingPlanSignatures(string token, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getMissingPlanSignatures");
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(isCaseLoad);
             string text = "CALL DBA.ANYW_Dashboard_GetPlansNeedingSignatures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -2140,18 +2198,18 @@ namespace Anywhere.Data
             }
         }
 
-        public string getClockedInConsumerNamesDayServicesJSON(string token, string locationId)
+        public string getClockedInConsumerNamesDayServicesJSON(string token, string locationId, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getClockedInConsumerNamesDayServices");
 
             try
             {
-                return executeDataBaseCallJSON("CALL DBA.ANYW_Dashboard_GetClockedInDayServicesConsumerNames('" + token + "', '" + locationId + "');");
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Dashboard_GetClockedInDayServicesConsumerNames('" + token + "', '" + locationId + "', '" + isCaseLoad + "');");
             }
             catch (Exception ex)
             {
-                logger.error("577", ex.Message + " ANYW_Dashboard_GetClockedInDayServicesConsumerNames('" + token + "', '" + locationId + "')", token);
+                logger.error("577", ex.Message + " ANYW_Dashboard_GetClockedInDayServicesConsumerNames('" + token + "', '" + locationId + "', '" + isCaseLoad + "')", token);
                 return "577: Error getting Clocked In Consumer Names At Day Services";
             }
         }
@@ -2645,7 +2703,7 @@ namespace Anywhere.Data
             {
                 logger.error("604", ex.Message + "ANYW_Settings_updateConnectWithPerson('" + token + "', '" + connectType + "')");
                 return "604: error updateConnectWithPerson";
-            }
+        }
         }
 
         public string updateConsumerNotesChecklistDaysBack(string token, string updatedChecklistDays)
@@ -2893,18 +2951,18 @@ namespace Anywhere.Data
             }
         }
 
-        public string getConsumersWithUnreadNotesByEmployeeAndLocationPermission(string token, string locationId, string daysBackDate)
+        public string getConsumersWithUnreadNotesByEmployeeAndLocationPermission(string token, string locationId, string daysBackDate, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             if (IsDateValidFormat(daysBackDate) == false) return null;
-            logger.debug("getConsumersWithUnreadNotesByEmployeeAndLocation " + token + " " + locationId);
+            logger.debug("getConsumersWithUnreadNotesByEmployeeAndLocationPermission" + token + " " + locationId);
             try
             {
-                return executeDataBaseCallJSON("CALL DBA.ANYW_ConsumerNotes_SelectConsumersWithUnreadNotesByEmployeeAndLocationPermission('" + token + "', '" + locationId + "', '" + daysBackDate + "');");
+                return executeDataBaseCallJSON("CALL DBA.ANYW_ConsumerNotes_SelectConsumersWithUnreadNotesByEmployeeAndLocationPermission('" + token + "', '" + locationId + "', '" + daysBackDate + "', '" + isCaseLoad + "');");
             }
             catch (Exception ex)
             {
-                logger.error("616.5", ex.Message + " ANYW_ConsumerNotes_SelectConsumersWithUnreadNotesByEmployeeAndLocationPermission('" + token + "', '" + locationId + "', " + daysBackDate + ")");
+                logger.error("616.5", ex.Message + " ANYW_ConsumerNotes_SelectConsumersWithUnreadNotesByEmployeeAndLocationPermission('" + token + "', '" + locationId + "', " + daysBackDate + ", '" + isCaseLoad + "')");
                 return "616.5: error getting locations with unread notes";
             }
         }
@@ -3262,7 +3320,7 @@ namespace Anywhere.Data
             {
                 logger.error("631", ex.Message + "ANYW_Scheduling_GetRegions(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "631: error ANYW_Scheduling_GetRegions";
-            }
+        }
         }
 
         public string getSchedulingPeriodsDetails(string token, string startDate, string endDate)//Needs procedures in db still
@@ -4189,7 +4247,7 @@ namespace Anywhere.Data
             }
         }
 
-        public string remainingServicesWidgetFilter(string token, string outcomeType, string locationId, string group, string checkDate)
+        public string remainingServicesWidgetFilter(string token, string outcomeType, string locationId, string group, string checkDate, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getConsumerScheduleLocation ");
@@ -4199,6 +4257,7 @@ namespace Anywhere.Data
             list.Add(locationId);
             list.Add(group);
             list.Add(checkDate);
+            list.Add(isCaseLoad);
             string text = "CALL DBA.ANYW_Dashboard_RemainingServicesWidgetFilter(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -4398,13 +4457,14 @@ namespace Anywhere.Data
             }
         }
 
-        public string getITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
+        public string getITReviewTableData(string token, string locationId, string groupId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getITReviewTableData ");
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(locationId);
+            list.Add(groupId);
             list.Add(consumerId);
             list.Add(employeeId);
             list.Add(supervisorId);
@@ -6382,13 +6442,14 @@ namespace Anywhere.Data
             }
         }
 
-        public string getDashboardCaseNotesRejected(string token, string daysBack)
+        public string getDashboardCaseNotesRejected(string token, string daysBack, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getDashboardCaseNotesRejected ");
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(daysBack);
+            list.Add(isCaseLoad);
             string text = "CALL DBA.ANYW_Dashboard_GetRejectedCaseNotes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -7119,10 +7180,10 @@ namespace Anywhere.Data
                 return "636: error ANYW_GoalsAndServices__GetReviewPageGridSecondary";
             }
         }
-
+        
         public string getExclclamationIds( string startDate, string endDate,string frequency)
         {
-
+            
             List<string> list = new List<string>();
             list.Add(startDate);
             list.Add(endDate);
@@ -7330,12 +7391,14 @@ namespace Anywhere.Data
 
         }
 
-        public string getRosterToDoListWidgetData(string responsiblePartyId, string token)
+        public string getRosterToDoListWidgetData(string responsiblePartyId, string token, string isCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getRosterToDoListWidgetData");
             List<string> list = new List<string>();
+            list.Add(token);
             list.Add(responsiblePartyId);
+            list.Add(isCaseLoad);
             string text = "CALL DBA.ANYW_Dashboard_RosterToDoListWidget(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

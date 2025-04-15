@@ -104,6 +104,34 @@ namespace Anywhere.service.Data.FSS
             public string name { get; set; }
         }
 
+        public class UtilizationBillable
+        {
+            public string previousPaid { get; set; }
+            public string currentPaid { get; set; }
+            public string isReceivable { get; set; }
+            public string isSuccess { get; set; }
+        }
+
+        public class FSSAuthorizationDetail
+        {
+            public string FSS_Authorization_Detail_ID { get; set; }
+            public string FSS_Authorization_ID { get; set; }
+            public string ID { get; set; }
+            public string Service_ID { get; set; }
+            public string Vendor_ID { get; set; }
+            public string Encumbered_Amount { get; set; }
+            public string Paid_Amount { get; set; }
+            public string Voucher { get; set; }
+            public string Notes { get; set; }
+            public string Start_Date { get; set; }
+            public string End_Date { get; set; }
+            public string remote_location { get; set; }
+            public string User_ID { get; set; }
+            public string Last_Update { get; set; }
+            public string Date_Paid { get; set; }
+        }
+
+
         public FSSWorker.FSSPageData getFSSPageData(string token, string familyName, string primaryPhone, string address, string appName, string consumerID)
         {
             FSSPageData pageData = new FSSPageData();
@@ -295,10 +323,100 @@ namespace Anywhere.service.Data.FSS
             return objString;
         }
 
-        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID)
+        public UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling)
         {
-            string objString = fdg.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
-            return objString;
+            UtilizationBillable billable = new UtilizationBillable();
+            billable.previousPaid = "";
+            billable.currentPaid = "";
+            billable.isReceivable = "";
+            billable.isSuccess = "";
+            try
+            {
+                fdg.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
+
+                string utilizationData = getUtilization(authID);
+                FSSAuthorizationDetail[] familyUtilizationData = js.Deserialize<FSSAuthorizationDetail[]>(utilizationData);
+
+
+                if (isSimpleBilling == "Y" && paidAmount != "" && datePaid != "" && familyUtilizationData.Length > 0)
+                {
+                    if (!string.IsNullOrEmpty(vendor))
+                    {
+                        string isReceivable = getIsReceivable(vendor);
+                        UtilizationBillable[] billableReceivable = js.Deserialize<UtilizationBillable[]>(isReceivable);
+                        billable.isReceivable = billableReceivable[0].isReceivable;
+                    }
+                    else
+                    {
+                        billable.isReceivable = "N";
+                    }
+
+                    billable.currentPaid = string.IsNullOrEmpty(paidAmount) ? "0" : paidAmount;
+
+                    foreach (FSSAuthorizationDetail data in familyUtilizationData)
+                    {
+                        if (data.Encumbered_Amount != encumbered || data.ID != familyMember || data.Service_ID != serviceCode || data.Paid_Amount != paidAmount || data.Date_Paid != datePaid || data.Vendor_ID != vendor)
+                        {
+                            data.Paid_Amount = data.Paid_Amount != paidAmount ? "0" : data.Paid_Amount;
+                            int perviousAmt = string.IsNullOrEmpty(data.Paid_Amount) ? 0 : Convert.ToInt32(data.Paid_Amount);
+                            int currentAmt = string.IsNullOrEmpty(paidAmount) ? 0 : Convert.ToInt32(paidAmount);
+                            
+                            billable.previousPaid = perviousAmt.ToString();
+
+                            if (perviousAmt == 0 && currentAmt > 0)
+                            {
+                                string notes = string.IsNullOrWhiteSpace(data.Notes) ? data.Voucher : data.Notes;
+                                fdg.insertSimpleBilling(token, data.Vendor_ID, data.User_ID, data.ID, data.Paid_Amount, data.Date_Paid, notes, data.Service_ID);
+                            }
+                        }
+                    }
+                    billable.isSuccess = "Y";
+                }
+          
+                return billable;
+            }
+            catch (Exception)
+            {
+                billable.isSuccess = "N";
+                return billable;
+            }
+
+        }
+
+        public string getIsReceivable(string vendor)
+        {
+            try
+            {
+                string jsonResult = "";
+                sb.Clear();
+                sb.AppendFormat("select vendor.default_receivable as isReceivable from dba.vendor where vendor.Vendor_ID = '{0}' ", vendor);
+                DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+                jsonResult = DataTableToJSONWithJSONNet(dt);
+                return jsonResult;
+            }
+            catch (Exception ex)
+            {
+                return String.Empty;
+            }
+        }
+
+        public string getUtilization(string AuthId)
+        {
+            try
+            {
+                string jsonResult = "";
+                sb.Clear();
+                sb.Append("SELECT FSS_Authorization_Detail_ID,FSS_Authorization_ID,ID,Service_ID,Vendor_ID,Encumbered_Amount,Paid_Amount,Voucher,Notes,Start_Date,End_Date,remote_location,User_ID,Last_Update,Date_Paid from dba.FSS_Authorization_Detail where ");
+                sb.AppendFormat("FSS_Authorization_ID = '{0}' ", AuthId);
+
+                DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+                jsonResult = DataTableToJSONWithJSONNet(dt);
+                return jsonResult;
+            }
+            catch (Exception ex)
+            {
+                return String.Empty;
+            }
         }
 
         public void deleteAuthorization(string token, string authDetailId)

@@ -267,7 +267,7 @@ var FSSAjax = (function () {
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
-            return data.insertUtilizationResult;
+            return data;
         } catch (error) {
             console.log(error.responseText);
         }

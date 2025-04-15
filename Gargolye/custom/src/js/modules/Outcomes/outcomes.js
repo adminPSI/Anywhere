@@ -2523,6 +2523,17 @@ const outcomes = (function () {
     }
 
     function init() {
+        let defaultOutcomesLocation = defaults.getLocation('outcomes');
+        if (defaultOutcomesLocation === '') {
+            defaults.setLocation('outcomes', 0); 
+            defaultOutcomesLocation = '0';
+        }
+        roster2.miniRosterinit(
+            {
+                locationId: defaultOutcomesLocation, 
+                locationName: '',
+            },
+        );
         initLoad = true;
         loadLandingPage();
     }

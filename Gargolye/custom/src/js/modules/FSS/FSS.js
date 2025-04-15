@@ -1,6 +1,6 @@
 const FSS = (() => {
     //Inputs
-    var selectedConsumer; 
+    var selectedConsumer;
     let fSSData;
     //filter
     let filterValues;
@@ -9,7 +9,7 @@ const FSS = (() => {
     let filesList = [];
     let backBtn;
     // DOM
-    let pageWrap; 
+    let pageWrap;
     let overviewTable;
     //--
     let filterPopup;
@@ -487,14 +487,14 @@ const FSS = (() => {
                 fSSData.pageDataChild[familyID].forEach(child => {
                     const fundingSourceID = child.fundingSourceID;
                     const fID = child.familyId;
-                    const authId = child.authId; 
+                    const authId = child.authId;
                     const coPay = child.coPay == null ? '0.0' : child.coPay;
                     const encumbered = child.encumbered == null ? '0.0' : child.encumbered;
                     const amtPaid = child.amtPaid == null ? '0.0' : child.amtPaid;
                     const balance = child.balance == null ? '0.0' : child.balance;
                     const allocation = child.allocation == null ? '0.0' : child.allocation;
                     const funding = child.funding == null ? '' : child.funding;
-                    const subDataRow = document.createElement('div'); 
+                    const subDataRow = document.createElement('div');
                     var startDate =
                         child.startDate == null || ''
                             ? ''
@@ -548,7 +548,7 @@ const FSS = (() => {
                     <div>Service Code</div>
                     <div>Vendor</div>
                     <div>Encumbered</div>
-                    <div>Paid amount</div>
+                    <div>Paid Amt.</div>
                     <div>Date Paid</div>
                     <div></div>
                         `;
@@ -582,7 +582,7 @@ const FSS = (() => {
                             <div>${familyMember}</div>
                             <div>${serviceCode}</div>
                             <div>${Vendor}</div>
-                            <div>${encumbered}</div> 
+                            <div>${encumbered}</div>   
                             <div>${paidAmt}</div>
                             <div>${paidDate}</div>
                             `;
@@ -733,7 +733,7 @@ const FSS = (() => {
 
         fundingSourceDropdown = dropdown.build({
             id: 'fundingSourceDropdown',
-            label: "Payee",
+            label: "Funding Source",
             dropdownId: "fundingSourceDropdown",
         });
 
@@ -1003,7 +1003,7 @@ const FSS = (() => {
         UtilizationRequiredFieldsOfPopup();
     }
 
-    function UtilizationPopupEventListeners() {       
+    function UtilizationPopupEventListeners() {
         encumberedInputs.addEventListener('input', event => {
             encumberedInputsVal = event.target.value;
         });
@@ -1114,7 +1114,9 @@ const FSS = (() => {
     }
 
     async function saveUtilizationData(familyId, authId) {
-        await FSSAjax.insertUtilization({
+        const {
+            insertUtilizationResult: utilizationResult,
+        } = await FSSAjax.insertUtilization({
             token: $.session.Token,
             encumbered: encumberedInputsVal,
             familyMember: familyMemberDropdownVal,
@@ -1126,15 +1128,61 @@ const FSS = (() => {
             familyID: familyId,
             authID: authId,
             consumerID: selectedConsumersId,
+            isSimpleBilling: $.session.automateSimpleBilling,
         });
-        applyFilter();
+ 
+        if ($.session.automateSimpleBilling == 'Y' && utilizationResult.isSuccess != '') {
+            simpalBillingMessagePopup(utilizationResult);
+        } else {
+            applyFilter();
+        }
     }
 
-    function formatDate(date) {
-        if (!date) return '';
-
-        return UTIL.abbreviateDateYear(UTIL.formatDateFromIso(date.split('T')[0]));
+    function simpalBillingMessagePopup(utilizationResult) {
+        const ConfPOPUP = POPUP.build({
+            hideX: true,
+        });
+        const okBtn = button.build({
+            text: 'OK',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                POPUP.hide(ConfPOPUP);
+                applyFilter();
+            },
+        });
+        okBtn.style.width = '100%';
+        const message = document.createElement('p');
+        let previousPaid = Number(utilizationResult.previousPaid)
+        let currentPaid = Number(utilizationResult.currentPaid)
+        if (previousPaid === 0 && currentPaid > 0) {
+            if (utilizationResult.isSuccess == 'N') {
+                message.innerText = 'Insert, Failed.  Could not create new Simple_Billing_Entry record. Please contact Primary Solutions.';
+            }
+            else if (utilizationResult.isSuccess == 'Y' && utilizationResult.isReceivable == 'Y') {
+                message.innerText = 'County simple billing entry created… An entry has been created in County Simple Billing Entry. You will need to go to the County Simple Billing Entry window to Validate & Archive this transaction.';
+            }
+            else if (utilizationResult.isSuccess == 'Y' && utilizationResult.isReceivable == 'N') {
+                message.innerText = 'Simple billing entry created. An entry has been created in Simple Billing Entry. You will need to go to the Simple Billing Entry window to Validate & Archive this transaction.';
+            }
+        } else if (previousPaid > 0 && currentPaid === 0 && utilizationResult.isReceivable == 'N') {
+            message.innerText = 'Simple billing entry needs deleted. No changes have been made in Simple Billing. Make sure that you delete any existing Simple Billing entries.';
+        } else if (previousPaid > 0 && currentPaid === 0 && utilizationResult.isReceivable == 'Y') {
+            message.innerText = 'County simple billing entry needs deleted. No changes have been made in County Simple Billing. Make sure that you delete any existing County Simple Billing entries.';
+        } else if (previousPaid > 0 && currentPaid > 0 && utilizationResult.isReceivable == 'N') {
+            message.innerText = 'Simple billing entry needs modified. No changes have been made in Simple Billing. Make sure that you modify the existing Simple Billing entry to reflect the modified information.'; 
+        } else if (previousPaid > 0 && currentPaid > 0 && utilizationResult.isReceivable == 'Y') {
+            message.innerText = 'County simple billing entry needs modified. No changes have been made in County Simple Billing. Make sure that you modify the existing County Simple Billing entry to reflect the modified information.';
+        }
+         
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        ConfPOPUP.appendChild(message);
+        ConfPOPUP.appendChild(okBtn);
+        okBtn.focus();
+        POPUP.show(ConfPOPUP);
     }
+
     function init() {
         setActiveModuleAttribute('FSS');
         DOM.clearActionCenter();

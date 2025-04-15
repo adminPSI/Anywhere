@@ -315,7 +315,31 @@ namespace Anywhere.service.Data.FSS
             }
         }
 
+        public string insertSimpleBilling(string token, string vendorID, string userID, string familyID, string paidAmount, string datePaid, string notes, string serviceID)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("InsertSimpleBilling");
+            List<string> list = new List<string>();
+            list.Add(vendorID);
+            list.Add(userID);
+            list.Add(familyID);
+            list.Add(paidAmount);
+            list.Add(datePaid);
+            list.Add(notes);
+            list.Add(serviceID);
 
+
+            string text = "CALL DBA.ANYW_FSS_InsertSimpleBilling(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("677", ex.Message + "ANYW_FSS_InsertSimpleBilling(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "677: error ANYW_FSS_InsertSimpleBilling";
+            }
+        }
 
         public string executeDataBaseCallJSON(string storedProdCall)
         {

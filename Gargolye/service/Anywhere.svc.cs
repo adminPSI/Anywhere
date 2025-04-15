@@ -261,7 +261,7 @@ namespace Anywhere
 
         }
 
-        public RosterWorker.AddCustomGroup[] addCustomGroupJSON(string groupName, string locationId, string token)
+        public RosterWorker.AddCustomGroup[] addCustomGroupJSON(string groupName, string locationId, string token, string ispubliclyAvailableChecked)
         {
             char[] arr = groupName.ToCharArray();
             arr = Array.FindAll<char>(arr, (c => (char.IsLetterOrDigit(c) || char.IsWhiteSpace(c) || c == '-')));
@@ -270,7 +270,7 @@ namespace Anywhere
 
             // if (groupName.Length > 2)
             // {
-            return rosterWorker.addCustomGroupJSON(groupName, locationId, token);
+            return rosterWorker.addCustomGroupJSON(groupName, locationId, token, ispubliclyAvailableChecked);
             // }
             // else
             // {
@@ -291,6 +291,22 @@ namespace Anywhere
             {
                 logger.Error("groupId is not a number:" + groupId);
                 return "<error>Error parsing groupId</error>";
+            }
+        }
+
+        public string updatePublicAvailable(string groupId, string isPublicAvailable)
+        {
+            Int64 Num;
+            bool isNum = Int64.TryParse(groupId, out Num);
+
+            if (isNum)
+            {
+                return dg.updatePublicAvailable(groupId, isPublicAvailable);
+            }
+            else
+            {
+                logger.Error("GroupId is not a number:" + groupId + " " + isPublicAvailable);
+                return "<error>Error parsing GroupId</error>";
             }
         }
 
@@ -470,6 +486,16 @@ namespace Anywhere
         public CaseNotesWorker.FilterDropdownValues[] getCNPopulateFilterDropdowns(string token, string serviceCodeId)
         {
             return caseNotesWorker.getCNPopulateFilterDropdowns(token, serviceCodeId);
+        }
+
+        public CaseNotesWorker.RejectionReasonDropdownValues[] getRejectionReasonDropdownData(string token)
+        {
+            return caseNotesWorker.getRejectionReasonDropdownData(token);
+        }
+
+        public string updateNoteReviewResult(string token, string userId, string reviewResult, string[] noteIds, string rejectReason)
+        {
+            return caseNotesWorker.updateNoteReviewResult(token, userId, reviewResult, noteIds, rejectReason);
         }
 
         //case note filter
@@ -744,9 +770,9 @@ namespace Anywhere
             return singleEntryWorker.getEmployeeListAndCountInfoJSON(token, supervisorId);
         }
 
-        public DashboardWorker.MissingPlanSignaturesObj[] getMissingPlanSignatures(string token)
+        public DashboardWorker.MissingPlanSignaturesObj[] getMissingPlanSignatures(string token, string isCaseLoad)
         {
-            return dashWork.getMissingPlanSignatures(token);
+            return dashWork.getMissingPlanSignatures(token, isCaseLoad);
         }
 
         public DashboardWorker.SingleEntryCountObj[] getSingleEntryCountInfoJSON(string token)
@@ -820,9 +846,9 @@ namespace Anywhere
             return dg.saveDefaultLocationName(token, switchCase, locationName);
         }
 
-        public DashboardWorker.DSClockedInConsumers[] getClockedInConsumerNamesDayServicesJSON(string token, string locationId)
+        public DashboardWorker.DSClockedInConsumers[] getClockedInConsumerNamesDayServicesJSON(string token, string locationId,string isCaseLoad)
         {
-            return dashWork.getClockedInConsumerNamesDayServicesJSON(token, locationId);
+            return dashWork.getClockedInConsumerNamesDayServicesJSON(token, locationId, isCaseLoad);
         }
 
         public DashboardWorker.DSClockedInStaff[] getClockedInStaffNamesDayServicesJSON(string token, string locationId)
@@ -1159,9 +1185,9 @@ namespace Anywhere
             return dg.getConsumersWithUnreadNotesByEmployeeAndLocation(token, locationId);
         }
 
-        public string getConsumersWithUnreadNotesByEmployeeAndLocationPermission(string token, string locationId, string daysBackDate)
+        public string getConsumersWithUnreadNotesByEmployeeAndLocationPermission(string token, string locationId, string daysBackDate, string isCaseLoad)
         {
-            return dg.getConsumersWithUnreadNotesByEmployeeAndLocationPermission(token, locationId, daysBackDate);
+            return dg.getConsumersWithUnreadNotesByEmployeeAndLocationPermission(token, locationId, daysBackDate, isCaseLoad);
         }
 
         public string checkIfLocationHasUnreadNotes(string token, string locationId, string daysBackDate)
@@ -1364,9 +1390,9 @@ namespace Anywhere
             return anywhereWorker.populateConsumerSchedule(token, locationId, consumerId);
         }
 
-        public AnywhereWorker.RemainingServiceWidgetData[] remainingServicesWidgetFilter(string token, string outcomeType, string locationId, string group, string checkDate)
+        public AnywhereWorker.RemainingServiceWidgetData[] remainingServicesWidgetFilter(string token, string outcomeType, string locationId, string group, string checkDate, string isCaseLoad)
         {
-            return anywhereWorker.remainingServicesWidgetFilter(token, outcomeType, locationId, group, checkDate);
+            return anywhereWorker.remainingServicesWidgetFilter(token, outcomeType, locationId, group, checkDate, isCaseLoad);
         }
 
         public AnywhereWorker.OutcomeTypesRemainingServiceWidgetData[] populateOutcomeTypesRemainingServicesWidgetFilter(string token)
@@ -1409,9 +1435,9 @@ namespace Anywhere
             return iTW.GetITDashboardWidgetData(token, viewCaseLoad);
         }
 
-        public IncidentTrackingWorker.IncidentTrackingReviewTableData[] getITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
+        public IncidentTrackingWorker.IncidentTrackingReviewTableData[] getITReviewTableData(string token, string locationId, string groupId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
-            return iTW.GetITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
+            return iTW.GetITReviewTableData(token, locationId, groupId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
         }
 
         public string updateIncidentTrackingDaysBack(string token, string updatedReviewDays)
@@ -2020,9 +2046,9 @@ namespace Anywhere
             return fw.getFormType(token);
         }
 
-        public WorkflowWorker.PlanWorkflowWidgetData[] getPlanWorkflowWidgetData(string token, string responsiblePartyId)
+        public WorkflowWorker.PlanWorkflowWidgetData[] getPlanWorkflowWidgetData(string token, string responsiblePartyId, string isCaseLoad)
         {
-            return wfw.getPlanWorkflowWidgetData(token, responsiblePartyId);
+            return wfw.getPlanWorkflowWidgetData(token, responsiblePartyId, isCaseLoad);
         }
         public WorkflowWorker.WorkflowProcess[] getWorkflowProcesses(string token)
         {
@@ -2119,9 +2145,9 @@ namespace Anywhere
             return dashWork.getDashboardCaseNoteProductivity(token, daysBack);
         }
 
-        public DashboardWorker.RejectedWidget[] getDashboardCaseNotesRejected(string token, string daysBack)
+        public DashboardWorker.RejectedWidget[] getDashboardCaseNotesRejected(string token, string daysBack, string isCaseLoad)
         {
-            return dashWork.getDashboardCaseNotesRejected(token, daysBack);
+            return dashWork.getDashboardCaseNotesRejected(token, daysBack, isCaseLoad);
         }
 
         public DashboardWorker.RejectedWidget[] getDashboardGroupCaseNoteConsumerNames(string token, string groupNoteIds)
@@ -4094,6 +4120,21 @@ namespace Anywhere
             return authWorker.getVenderLocationReviewEntries(token, vendorID);
         }
 
+        public AuthorizationWorker.AssessmentEntries[] getAssessmentEntriesById(string token, string registerId, string lastUpdate)
+        {
+            return authWorker.getAssessmentEntriesById(token, registerId, lastUpdate);
+        }
+
+        public AuthorizationWorker.assessmentOverlaps[] insertUpdateAssessmentInfo(string regId, string startDate, string endDate, string methodology, string score, string behaviorModifier, string medicalModifier, string DCModifier, string complexCareModifier, string priorAuthReceivedDate, string priorAuthAppliedDate, string priorAuthAmount, string userId, string lastUpdateDate)
+        {
+            return authWorker.insertUpdateAssessmentInfo(regId, startDate, endDate, methodology, score, behaviorModifier, medicalModifier, DCModifier, complexCareModifier, priorAuthReceivedDate, priorAuthAppliedDate, priorAuthAmount, userId, lastUpdateDate);
+        }
+
+        public AuthorizationWorker.fundingRange[] getFundingRange(string token, string consumerId, string methodology, string score, string startDate)
+        {
+            return authWorker.getFundingRange(token, consumerId, methodology, score, startDate);
+        }
+
         public ConsumerFinancesWorker.EditAccountInfo[] getEditAccountInfoById(string token, string accountId)
         {
             return cf.getEditAccountInfoById(token, accountId);
@@ -4114,12 +4155,12 @@ namespace Anywhere
             return cf.getEditAccount(token, consumerId, accountPermission);
         }
 
-        public ConsumerFinancesWorker.ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName)
+        public ConsumerFinancesWorker.ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName, string isCaseLoad)
         {
-            return cf.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName);
+            return cf.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName, isCaseLoad);
         }
 
-        public ConsumerFinancesWorker.ConsumerName[] getCFWidgetConsumers(string token)
+        public ConsumerFinancesWorker.ConsumerName[] getCFWidgetConsumers(string token, string isCaseLoad)
         {
             if (token == null)
             {
@@ -4127,7 +4168,7 @@ namespace Anywhere
                 return null;
             }
 
-            return cf.getCFWidgetConsumers(token);
+            return cf.getCFWidgetConsumers(token, isCaseLoad);
         }
 
         //Plan Validation
@@ -4351,9 +4392,9 @@ namespace Anywhere
             return esw.getESignerData(tempUserId);
         }
 
-        public RosterWorker.RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId)
+        public RosterWorker.RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId, string isCaseLoad)
         {
-            return rosterWorker.getRosterToDoListWidgetData(token, responsiblePartyId);
+            return rosterWorker.getRosterToDoListWidgetData(token, responsiblePartyId, isCaseLoad);
         }
 
         public ExtractedTables importedOutcomesPDFData(string token, string[] files)
@@ -4412,8 +4453,8 @@ namespace Anywhere
                 anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             } else
             {
-                dg.addOutcomePlanNow(token, consumerId);
-                anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+            dg.addOutcomePlanNow(token, consumerId);
+            anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             }
             
             
@@ -4501,9 +4542,9 @@ namespace Anywhere
             return fssw.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID);
         }
 
-        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID)
+        public UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling)
         {
-            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
+            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID, isSimpleBilling);
         }
 
         public void deleteAuthorization(string token, string authDetailId)

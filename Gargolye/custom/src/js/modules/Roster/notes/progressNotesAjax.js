@@ -47,6 +47,7 @@ var progressNotesAjax = (function() {
 
 	function getConsumersWithUnreadNotesByEmployeeAndLocationPermission(locationId, callback) {
 		var daysBackDate = convertDaysBack($.session.defaultProgressNoteReviewDays);
+		var isCaseLoad = $.session.RosterCaseLoad;
 		$.ajax({
 			type: 'POST',
 			url:
@@ -58,7 +59,7 @@ var progressNotesAjax = (function() {
 				'/' +
 				$.webServer.serviceName +
 				'/getConsumersWithUnreadNotesByEmployeeAndLocationPermission/',
-			data: '{"token":"' + $.session.Token + '", "locationId":"' + locationId + '", "daysBackDate":"' + daysBackDate + '"}',
+			data: '{"token":"' + $.session.Token + '", "locationId":"' + locationId + '", "daysBackDate":"' + daysBackDate + '", "isCaseLoad":"' + isCaseLoad + '"}', 
 			contentType: 'application/json; charset=utf-8',
 			dataType: 'json',
 			success: function(response, status, xhr) {

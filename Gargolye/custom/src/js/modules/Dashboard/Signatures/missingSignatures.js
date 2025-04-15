@@ -72,9 +72,16 @@ const signatureWidget = (function () {
             text: 'Everyone',
         };
         dropdownData.unshift(defaultGroup);
-        groupList = dropdownData;
+        if ($.session.PlanCaseLoad) {
+            const caseLoadGroup = { id: '%', value: '00', text: 'Caseload' };
+            dropdownData.unshift(caseLoadGroup);
+        }
 
-        dropdown.populate(groupDropdown, dropdownData, signatureWidgetGroupId);
+        groupList = dropdownData;
+        if ($.session.PlanCaseLoad)
+            dropdown.populate(groupDropdown, dropdownData, '00');
+        else
+            dropdown.populate(groupDropdown, dropdownData, signatureWidgetGroupId);
     }
 
     function splitName(fullName) {
@@ -104,7 +111,7 @@ const signatureWidget = (function () {
             dropdownId: 'missingSignaturesGroup',
             label: 'Group',
             style: 'secondary',
-            readonly: false,
+            readonly: $.session.PlanCaseLoad,
         });
         applyFiltersBtn = button.build({
             text: 'Apply',
@@ -153,14 +160,14 @@ const signatureWidget = (function () {
             // update
             signatureWidgetLocationId = selectedOption.value;
             signatureWidgetLocationName = selectedOption.innerHTML;
-
-            groupDropdownData = await missingSignatureAjax.getGroupsDropdownData(
-                selectedOption.value,
-            );
-            signatureWidgetGroupId = '%';
-            signatureWidgetGroupName = 'Everyone';
-            populateGroupDropdown(groupDropdownData);
-
+            if (!$.session.PlanCaseLoad) {
+                groupDropdownData = await missingSignatureAjax.getGroupsDropdownData(
+                    selectedOption.value,
+                );
+                signatureWidgetGroupId = '%';
+                signatureWidgetGroupName = 'Everyone';
+                populateGroupDropdown(groupDropdownData);
+            }
         });
         groupDropdown.addEventListener('change', event => {
             const selectedOption = event.target.options[event.target.selectedIndex];
@@ -359,11 +366,17 @@ const signatureWidget = (function () {
         if (!signatureWidgetLocationId) signatureWidgetLocationId = '%';
         if (!signatureWidgetLocationName) signatureWidgetLocationName = 'ALL';
 
+        if ($.session.PlanCaseLoad) {
+            signatureWidgetGroupCode = '00';
+            signatureWidgetGroupId = '%';
+            signatureWidgetGroupName = 'Caseload';
+        }
+
         buildFilterPopup();
         displayFilteredBy();
         eventSetup();
 
-        missingSignatureAjax.getMissingPlanSignatures({ token: $.session.Token }, async res => {
+        missingSignatureAjax.getMissingPlanSignatures({ token: $.session.Token, isCaseLoad: $.session.PlanCaseLoad }, async res => {
             missingSignatureData = res;
             filteredSignatures = missingSignatureData.filter(ms => {
                 return (
@@ -379,8 +392,15 @@ const signatureWidget = (function () {
             );
             populateLocationDropdown(locationDropdownData);
             populateGroupDropdown(groupDropdownData);
-            signatureWidgetGroupName = groupList.find(l => l.value == signatureWidgetGroupId)?.text;
-            signatureWidgetGroupCode = groupList.find(l => l.value == signatureWidgetGroupId)?.id;
+            if ($.session.PlanCaseLoad) {
+                signatureWidgetGroupCode = '00';
+                signatureWidgetGroupId = '%';
+                signatureWidgetGroupName = 'Caseload';
+            }
+            else {
+                signatureWidgetGroupName = groupList.find(l => l.value == signatureWidgetGroupId)?.text;
+                signatureWidgetGroupCode = groupList.find(l => l.value == signatureWidgetGroupId)?.id;
+            }          
             signatureWidgetLocationName = locationList.find(l => l.value == signatureWidgetLocationId)?.text;
             displayFilteredBy();
         });

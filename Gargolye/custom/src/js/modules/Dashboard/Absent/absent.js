@@ -46,7 +46,7 @@ var absentWidget = (function() {
             dropdownId: 'absentWidgetGroups',
             label: 'Group',
             style: 'secondary',
-            readonly: false
+            readonly: $.session.RosterCaseLoad
         });
         applyFiltersBtn = button.build({
             text: 'Apply',
@@ -90,19 +90,22 @@ var absentWidget = (function() {
 
             // cache old values
             oldLocationName = absentWidgetLocationName;
-            oldLocationId = absentWidgetLocationId;
-            oldGroupId = absentWidgetGroupId;
-            oldGoupCode = absentWidgetGroupCode;
-            oldGroupName = absentWidgetGroupName;
+            oldLocationId = absentWidgetLocationId;           
             //When changing the date - locations get reset, so also reset the ID and Name back to all - which is the default value
             absentWidgetLocationId = "000";
             absentWidgetLocationName = "ALL";
-            absentWidgetGroupId = '0';
-            absentWidgetGroupCode = 'ALL';
-            absentWidgetGroupName = 'Everyone';
-
             absentWidgetAjax.getLocationsForDashboardAbsent(populateAbsentWidgetLocations);
-            absentWidgetAjax.getConsumerGroupsForDashboardAbsent(absentWidgetLocationId, populateAbsentWidgetGroups);
+             
+            // if case load apply group dorpdown must be caseload not repopulated 
+            if ($.session.RosterCaseLoad == false) {
+                oldGroupId = absentWidgetGroupId;
+                oldGoupCode = absentWidgetGroupCode;
+                oldGroupName = absentWidgetGroupName;
+                absentWidgetGroupId = '0';
+                absentWidgetGroupCode = 'ALL';
+                absentWidgetGroupName = 'Everyone';
+                absentWidgetAjax.getConsumerGroupsForDashboardAbsent(absentWidgetLocationId, populateAbsentWidgetGroups);
+            }
         });
         locationDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
@@ -112,15 +115,19 @@ var absentWidget = (function() {
             // update session variables
             absentWidgetLocationName = selectedOption.innerHTML;
             absentWidgetLocationId = selectedOption.value;
-            // reset group session variables since location dropdown change updates group dropdown values
-            oldGroupId = absentWidgetGroupId;
-            oldGoupCode = absentWidgetGroupCode;
-            oldGroupName = absentWidgetGroupName;
-            absentWidgetGroupId = '0';
-            absentWidgetGroupCode = 'ALL';
-            absentWidgetGroupName = 'Everyone';
-            // update group dropdown
-            absentWidgetAjax.getConsumerGroupsForDashboardAbsent(absentWidgetLocationId, populateAbsentWidgetGroups);
+
+            // if case load apply group dorpdown must be caseload not repopulated 
+            if ($.session.RosterCaseLoad == false) {
+                // reset group session variables since location dropdown change updates group dropdown values
+                oldGroupId = absentWidgetGroupId;
+                oldGoupCode = absentWidgetGroupCode;
+                oldGroupName = absentWidgetGroupName;
+                absentWidgetGroupId = '0';
+                absentWidgetGroupCode = 'ALL';
+                absentWidgetGroupName = 'Everyone';
+                // update group dropdown 
+                absentWidgetAjax.getConsumerGroupsForDashboardAbsent(absentWidgetLocationId, populateAbsentWidgetGroups);
+            }          
         });
         groupDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
@@ -142,13 +149,14 @@ var absentWidget = (function() {
             consumerList.innerHTML = '';
             PROGRESS__ANYWHERE.init()
             PROGRESS__ANYWHERE.SPINNER.show(consumerList, "Loading");
-
+        
             absentWidgetAjax.getAbsentWidgetFilterDataAjax({
                 token: $.session.Token,
                 absentDate: absentWidgetDate,
                 absentLocationId: absentWidgetLocationId,
                 absentGroupCode: absentWidgetGroupCode,
-                custGroupId: absentWidgetGroupId
+                custGroupId: absentWidgetGroupId,
+                isCaseLoad: $.session.RosterCaseLoad,
             }, populateAbsentWidgetResults);
             widgetSettingsAjax.setWidgetFilter('dashabsentconsumers', 'location', absentWidgetLocationId);
             widgetSettingsAjax.setWidgetFilter('dashabsentconsumers', 'group', absentWidgetGroupId);
@@ -187,11 +195,17 @@ var absentWidget = (function() {
         });
         UTIL.findAndSlice(data, 'Everyone', 'text');
         const defaultGroup = {
-            id: '%',
+            id: 'ALL',
             value: '0',
             text: 'EVERYONE',
         };
         data.unshift(defaultGroup);
+
+        if ($.session.RosterCaseLoad) {
+            const caseLoadGroup = { id: 'CAS', value: '00', text: 'Caseload' };
+            data.unshift(caseLoadGroup);
+        }
+
 
         var defaultVal = absentWidgetGroupId
 
@@ -286,6 +300,7 @@ var absentWidget = (function() {
         absentWidgetLocationId = filterLocationDefaultValue.getWidgetFilterResult;
         var filterGroupDefaultValue = await widgetSettingsAjax.getWidgetFilter('dashabsentconsumers', 'group');
         absentWidgetGroupId = filterGroupDefaultValue.getWidgetFilterResult;
+        var isCaseLoad = $.session.RosterCaseLoad;
 
         if (!absentWidgetDate) absentWidgetDate = UTIL.getTodaysDate();
         if (!absentWidgetLocationId) absentWidgetLocationId = '000';
@@ -293,6 +308,16 @@ var absentWidget = (function() {
         if (!absentWidgetGroupId) absentWidgetGroupId = '0';
         if (!absentWidgetGroupName) absentWidgetGroupName = 'Everyone';
         if (!absentWidgetGroupCode) absentWidgetGroupCode = 'ALL';
+
+        if (isCaseLoad) absentWidgetGroupId = '00';
+        if (isCaseLoad) absentWidgetGroupName = 'Caseload';
+        if (isCaseLoad) absentWidgetGroupCode = 'CAS';
+        // To handle if caseload security key apply and than remove  that time caseload widget setting value not applying 
+        if (!isCaseLoad && absentWidgetGroupId == '00') {
+            absentWidgetGroupId = '0';
+            absentWidgetGroupName = 'Everyone';
+            absentWidgetGroupCode = 'ALL'; 
+        }
 
         buildFilterPopup();
         displayFilteredBy();
@@ -306,16 +331,17 @@ var absentWidget = (function() {
                 populateAbsentWidgetLocations(locations);
                 populateAbsentWidgetGroups(groups);
 
-                absentWidgetLocationName = locationList.find(l => l.id == absentWidgetLocationId).text;
-                absentWidgetGroupName = groupList.find(l => l.value == absentWidgetGroupId).text;
-                absentWidgetGroupCode = groupList.find(l => l.value == absentWidgetGroupId).id;
-
+                absentWidgetLocationName = locationList.find(l => l.id == absentWidgetLocationId)?.text;
+                absentWidgetGroupName = groupList.find(l => l.value == absentWidgetGroupId)?.text;
+                absentWidgetGroupCode = groupList.find(l => l.value == absentWidgetGroupId)?.id;
+             
                 absentWidgetAjax.getAbsentWidgetFilterDataAjax({
                     token: $.session.Token,
                     absentDate: absentWidgetDate,
-                    absentLocationId: absentWidgetLocationId,
+                    absentLocationId: absentWidgetLocationId, 
                     absentGroupCode: absentWidgetGroupCode,
-                    custGroupId: absentWidgetGroupId
+                    custGroupId: absentWidgetGroupId,
+                    isCaseLoad: $.session.RosterCaseLoad,
                 }, populateAbsentWidgetResults);
             });
         });

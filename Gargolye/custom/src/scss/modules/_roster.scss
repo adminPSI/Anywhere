@@ -1259,87 +1259,116 @@
     }
 }
 
+.headText {
+    margin-left: 58%;  
+
+    @media screen and (min-width: 560px) {
+        margin-left: 78%;       
+    }
+}
+
 .groupBtnWrap {
-    display: contents;
+    display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
     margin: 0;
-    width: 21%;
+    width: 40%;
+
+    .checkbox-mtd {
+        margin-top: 8px !important;
+    }
+
+    
+
+    .checkbox {
+        & > span {
+            pointer-events: all;
+
+            &:after {
+                top: 4px !important;
+            }
+        }
+    }
 
     @media screen and (min-width: 560px) {
         display: flex;
+
+        .headText {
+            margin-left: 79%; 
+            font-weight: 500;
+        }
     }
 }
 
-.massSelectbtnWrap {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
-    float: right;
-}
-
-.marginRight10px{
-    margin-right: 10px; 
-}
-
-.editRelationshipInputWrap {  
-    display: flow;
-
-    .width4Per, .width23Per, .width22Per {
-        width: 97%;
+    .massSelectbtnWrap {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        float: right;
     }
 
-    @media screen and (min-width: 560px) {
+    .marginRight10px{
+        margin-right: 10px;
+    }
+
+    .editRelationshipInputWrap {
+        display: flow;
+
+        .width4Per, .width23Per, .width22Per {
+            width: 97%;
+        }
+
+        @media screen and (min-width: 560px) {
+            display: flex;
+            justify-content: space-between;
+
+            .width4Per {
+                width: 4%;
+            }
+
+            .width23Per {
+                width: 23.5%;
+            }
+
+            .width22Per {
+                width: 22%;
+            }
+        }
+    }
+
+    .editRelationshipBtnWrap {
         display: flex;
         justify-content: space-between;
 
-        .width4Per {
-            width: 4%;
-        }
-
-        .width23Per {
-            width: 23.5%;
-        }
-
-        .width22Per {
-            width: 22%;
+        .btn {
+            width:30%;
         }
     }
-}
 
-.editRelationshipBtnWrap {
-    display: flex;
-    justify-content: space-between;
+    .popupHeader {
+        background: #366a98;
+        color: #fff;
+        font-size: 1.125rem;
+        padding: 5px 5px 0px 1px;
+        margin-bottom: 15px;
+        margin-top: -30px;
 
-    .btn {
-        width:30%; 
+        .checkbox-mtd {
+            color: white !important;
+            font-size: 14px !important;
+        }
+
+        .checkbox-mtd > span:after {
+            left: 1px;
+            top: 2px;
+        }
+
+        .checkbox-mtd:before {
+            border: 2px solid white;
+        }
+
+        .checkbox-mtd > input:checked + span:after {
+            border-color: white !important;
+        }
     }
-}
-
-.popupHeader {
-    background: #366a98;
-    color: #fff;
-    font-size: 1.125rem;
-    padding: 5px 5px 0px 1px;
-    margin-bottom: 15px;
-    margin-top: -30px;
-
-    .checkbox-mtd {
-        color: white !important;
-        font-size: 14px !important;
-    }
-
-    .checkbox-mtd > span:after {
-        left: 1px;
-        top: 2px;
-    }
-
-    .checkbox-mtd:before {
-        border: 2px solid white;
-    }
-
-    .checkbox-mtd > input:checked + span:after {
-        border-color: white !important;
-    }
-}
 

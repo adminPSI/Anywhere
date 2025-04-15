@@ -2,7 +2,7 @@
 //*=====================================
 // Scheduling
 .scheduleWrap {
-  padding: 10px 0px;
+  padding: 0px;
 }
 .scheduleNav {
   display: flex;
@@ -10,57 +10,150 @@
   gap: 10px;
   justify-content: space-between;
 
-  .colLeft {
-    display: flex;
-    gap: 10px;
-    flex-grow: 1;
+  .navAccordion {
+    background: rgba(200, 200, 200, 0.8);
+    border-radius: 4px;
+    width: 100%;
 
-    > div {
-      flex-grow: 2;
+    .navAccordionTrigger {
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+      min-height: 40px;
+      width: 100%;
+      padding: 0 0 0 8px;
 
-      &:first-child {
-        flex-grow: 3;
-      }
-      &:last-child {
-        flex-grow: 1;
+      svg {
+        width: 24px;
       }
     }
 
-    .shiftTypeWrap {
-      position: relative;
+    .navAccordionContent {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.3s ease-in;
+      margin: 0;
+      padding: 0px 6px 12px;
+      overflow: hidden;
 
-      p {
-        position: absolute;
-        right: 0px;
-        bottom: 0px;
-        font-weight: $_normal;
+      .navAccordionContentWrapEle {
+        background: $white;
+        border-radius: 4px;
+        display: flex;
+        flex-flow: row wrap;
+        gap: 10px;
+        width: 100%;
+        overflow: hidden;
+        padding: 14px 8px 2px;
+        // transition: padding 0.1s ease-in;
+      }
 
-        &.error {
-          color: $error;
+      &.closed {
+        grid-template-rows: 0fr;
+        padding: 0;
+
+        .navAccordionContentWrapEle {
+          padding: 0;
         }
       }
     }
   }
 
+  .mainLocationDropdown,
+  .mainEmployeeDropdown {
+    margin: 0 0 2px 0;
+  }
+
+  .mainLocationDropdown {
+    flex-grow: 3;
+  }
+  .mainEmployeeDropdown {
+    flex-grow: 2;
+  }
+  .shiftTypeWrap {
+    position: relative;
+    padding: 0 0 18px;
+    flex-grow: 1;
+
+    .dropdown {
+      margin: 0;
+    }
+
+    p {
+      position: absolute;
+      right: 0px;
+      bottom: 0px;
+      font-weight: $_normal;
+      font-size: 12px;
+
+      &.error {
+        color: $error;
+      }
+    }
+  }
+  .openShiftWrap {
+    display: flex;
+    column-gap: 8px;
+    width: 100%;
+
+    p {
+      font-weight: $normal;
+      margin-bottom: 4px;
+    }
+
+    > div {
+      display: flex;
+      column-gap: 6px;
+      justify-content: space-evenly;
+
+      input {
+        margin-right: 2px;
+      }
+    }
+  }
+
+  // Filtering (dropdowns, radio)
+  .dropdownGroup {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 10px;
+    width: 100%;
+  }
+
   .colRight {
     display: flex;
+    flex-flow: row wrap;
     gap: 10px;
+
+    button {
+      margin: 0;
+    }
 
     .newShiftButton {
       flex-grow: 1;
     }
-    .openShiftWrap {
-      p {
-        margin-bottom: 4px;
-      }
-
-      > div {
-        display: flex;
-        justify-content: space-evenly;
-      }
-    }
     .pubUnpubButton {
       flex-grow: 1;
+    }
+  }
+
+  @media screen and (min-width: 600px) {
+    .navAccordion {
+      background: none;
+
+      .navAccordionTrigger {
+        display: none;
+      }
+
+      .navAccordionContent,
+      .navAccordionContent.closed {
+        display: block;
+        padding: 0;
+
+        .navAccordionContentWrapEle {
+          padding: 14px 0 0;
+        }
+      }
     }
   }
 }
@@ -73,19 +166,27 @@
 }
 .calendarHeader {
   display: flex;
+  flex-flow: row wrap;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 10px;
+  row-gap: 6px;
+  margin-bottom: 6px;
 }
 .calendarTitleEle {
   font-size: 32px;
   font-weight: 500;
+  flex-grow: 1;
 }
 .calendarNav {
   display: flex;
+  flex-flow: row nowrap;
   align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
 
   .viewToggle {
+    display: flex;
+    flex-flow: row nowrap;
     background: $black;
     border-radius: 2px;
     padding: 2px;
@@ -111,8 +212,8 @@
 
   .dateNav {
     display: flex;
+    flex-flow: row nowrap;
     justify-content: space-between;
-    margin-right: 20px;
     order: 0;
 
     button {
@@ -144,6 +245,13 @@
   }
 }
 // month view
+.mobileActive .calendar .month-view {
+  .day {
+    * {
+      pointer-events: none;
+    }
+  }
+}
 .calendar .month-view {
   display: grid;
   grid-gap: 2px;
@@ -157,9 +265,73 @@
 
   .day {
     background: $white;
+    overflow: hidden;
 
     &.notSameMonth {
       background: $gray;
+    }
+
+    > p {
+      text-align: right;
+      padding-right: 4px;
+      padding-top: 4px;
+    }
+  }
+
+  .eventWrap {
+    overflow: hidden;
+
+    .eventCellEle {
+      cursor: pointer;
+      display: flex;
+      padding: 2px;
+  
+      p {
+        font-size: 14px;
+      }
+  
+      .eventTime {
+        font-weight: $light;
+        margin: 0 10px 0 0;
+        white-space: nowrap;
+      }
+  
+      .eventName {
+        font-weight: $normal;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+  
+      * {
+        pointer-events: none;
+      }
+    }
+  }
+
+  .eventCountWrap {
+    display: none;
+
+    .eventCount {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .eventWrap {
+      display: none;
+    }
+    .eventCountWrap.show {
+      display: flex;
+      gap: 2px;
+      justify-content: flex-end;
     }
   }
 }
@@ -171,6 +343,11 @@
     padding: 2px;
     position: relative;
     z-index: 2;
+
+    .eventTime,
+    .eventName {
+      font-size: 14px;
+    }
 
     .eventTime,
     .eventName,
@@ -404,6 +581,7 @@
 }
 #shiftDetailPopup {
   max-width: 450px;
+  max-height: 660px;
 
   h2 {
     margin: 0 0 10px 0;
@@ -419,6 +597,34 @@
     flex-flow: column nowrap;
     overflow-y: scroll;
     padding: 0;
+  }
+}
+#shiftGroupDetailPopup {
+  .groupDetailsHeader {
+    font-size: 18px;
+    font-weight: $normal;
+    margin: 0 0 10px;
+  }
+
+  .groupEventsWrap {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 6px;
+  }
+
+  .eventCell {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 4px 8px;
+
+    * {
+      pointer-events: none;
+    }
+
+    .eventTime,
+    .eventName {
+      font-size: 14px;
+    }
   }
 }
 #addIndividualPopup {

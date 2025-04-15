@@ -28,9 +28,9 @@ namespace Anywhere.service.Data
             return isIndividualAbsentObj;
         }
 
-        public AddCustomGroup[] addCustomGroupJSON(string groupName, string locationId, string token)
+        public AddCustomGroup[] addCustomGroupJSON(string groupName, string locationId, string token, string ispubliclyAvailableChecked)
         {
-            string customGroupString = dg.addCustomGroupJSON(groupName, locationId, token);
+            string customGroupString = dg.addCustomGroupJSON(groupName, locationId, token, ispubliclyAvailableChecked);
             AddCustomGroup[] customGroupObj = js.Deserialize<AddCustomGroup[]>(customGroupString);
             return customGroupObj;
         }
@@ -140,9 +140,9 @@ namespace Anywhere.service.Data
             return consumerPlanYearInfoObj[0];
         }
 
-        public RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId)
+        public RosterToDoListWidgetData[] getRosterToDoListWidgetData(string token, string responsiblePartyId, string isCaseLoad)
         {
-            string rosterToDoListDataString = dg.getRosterToDoListWidgetData(responsiblePartyId, token);
+            string rosterToDoListDataString = dg.getRosterToDoListWidgetData(responsiblePartyId, token, isCaseLoad);
             RosterToDoListWidgetData[] rosterToDoListObj = js.Deserialize<RosterToDoListWidgetData[]>(rosterToDoListDataString);
             return rosterToDoListObj;
         }

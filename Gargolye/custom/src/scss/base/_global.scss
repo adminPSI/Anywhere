@@ -20,6 +20,10 @@
     background: #f1f1f1;
 }
 
+// :root {
+//   interpolate-size: allow-keywords;
+// }
+
 body {
     -webkit-overflow-scrolling: touch !important;
     background: $bg-light;

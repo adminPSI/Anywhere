@@ -26,9 +26,9 @@ namespace Anywhere.service.Data
             return singleEntryCountObj;
         }
 
-        public MissingPlanSignaturesObj[] getMissingPlanSignatures(string token)
+        public MissingPlanSignaturesObj[] getMissingPlanSignatures(string token, string isCaseLoad)
         {
-            string missingSignaturesString = dg.getMissingPlanSignatures(token);
+            string missingSignaturesString = dg.getMissingPlanSignatures(token, isCaseLoad);
             MissingPlanSignaturesObj[] missingSignaturesObj = js.Deserialize<MissingPlanSignaturesObj[]>(missingSignaturesString);
             return missingSignaturesObj;
         }
@@ -54,9 +54,9 @@ namespace Anywhere.service.Data
             return staffActivityObj;
         }
 
-        public DSClockedInConsumers[] getClockedInConsumerNamesDayServicesJSON(string token, string serviceDate)
+        public DSClockedInConsumers[] getClockedInConsumerNamesDayServicesJSON(string token, string serviceDate, string isCaseLoad)
         {
-            string clockedInConsumerNameString = dg.getClockedInConsumerNamesDayServicesJSON(token, serviceDate);
+            string clockedInConsumerNameString = dg.getClockedInConsumerNamesDayServicesJSON(token, serviceDate, isCaseLoad);
             DSClockedInConsumers[] clockedInConsumerNameObj = js.Deserialize<DSClockedInConsumers[]>(clockedInConsumerNameString);
             return clockedInConsumerNameObj;
         }
@@ -82,9 +82,9 @@ namespace Anywhere.service.Data
             return cnProdWidgetObj;
         }
 
-        public RejectedWidget[] getDashboardCaseNotesRejected(string token, string daysBack)
+        public RejectedWidget[] getDashboardCaseNotesRejected(string token, string daysBack, string isCaseLoad)
         {
-            string cnRejectWidgetString = dg.getDashboardCaseNotesRejected(token, daysBack);
+            string cnRejectWidgetString = dg.getDashboardCaseNotesRejected(token, daysBack, isCaseLoad);
             RejectedWidget[] cnRejectWidgetObj = js.Deserialize<RejectedWidget[]>(cnRejectWidgetString);
             return cnRejectWidgetObj;
         }

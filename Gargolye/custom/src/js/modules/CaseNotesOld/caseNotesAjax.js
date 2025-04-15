@@ -1,4 +1,4 @@
-var caseNotesAjax = (function () {
+const caseNotesAjax = (function () {
   // GET
   function getFilteredCaseNotesList(data, callback) {
     const spinner = PROGRESS.SPINNER.get('Loading Overlaps...');
@@ -24,7 +24,7 @@ var caseNotesAjax = (function () {
       overlaps: data.overlaps,
       noteText: data.noteText !== '' ? `%${data.noteText}%` : '',
       applicationName: $.session.applicationName,
-      outcomeServiceMonitoring: data.outcomeServiceMonitoring
+      outcomeServiceMonitoring: data.outcomeServiceMonitoring,
     };
     if (data.overlaps === 'Y') {
       reviewTable.innerHTML = '';
@@ -226,8 +226,8 @@ var caseNotesAjax = (function () {
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {
-     //  var res = JSON.stringify(response);
-       var res = response.getReviewRequiredForCaseManagerResult;
+        //  var res = JSON.stringify(response);
+        var res = response.getReviewRequiredForCaseManagerResult;
         callback(res);
       },
     });
@@ -316,6 +316,32 @@ var caseNotesAjax = (function () {
       },
     });
   }
+  async function getRejectionReasonDropdownData() {
+    // getRejectionReasonDropdownData
+    try {
+      const res = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getRejectionReasonDropdownData/',
+        data: JSON.stringify({
+          token: $.session.Token,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return res.getRejectionReasonDropdownDataResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   function caseNoteOverlapCheck(data, callback) {
     // data = {consumerId, startTime, endTime, serviceDate, caseManagerId, noteId, groupNoteId}
     $.ajax({
@@ -357,7 +383,7 @@ var caseNotesAjax = (function () {
   }
 
   // SAVE, UPDATE, DELETE
-    function saveSingleCaseNote(data, callback) {
+  function saveSingleCaseNote(data, callback) {
     // saveCaseNote
     data = {
       token: $.session.Token,
@@ -381,7 +407,7 @@ var caseNotesAjax = (function () {
       casenotemileage: data.casenotemileage,
       casenotetraveltime: data.casenotetraveltime,
       documentationTime: data.documentationTime,
-      outcomeServiceMonitoring: data.serviceMonitoring
+      outcomeServiceMonitoring: data.serviceMonitoring,
     };
     return $.ajax({
       type: 'POST',
@@ -1056,6 +1082,34 @@ var caseNotesAjax = (function () {
       },
     });
   }
+  async function passRejectCaseNotes(retrieveData) {
+    // updateNoteReviewResult
+    // token, userId, reviewResult, []noteIds, rejectReason
+    try {
+      const res = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/updateNoteReviewResult/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          ...retrieveData,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return res.updateNoteReviewResultResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return {
     getConsumersThatCanHaveMileage,
@@ -1068,6 +1122,7 @@ var caseNotesAjax = (function () {
     getGroupNoteId,
     getServiceLocationsForCaseNoteDropDown,
     getCaseLoadRestriction,
+    getRejectionReasonDropdownData,
     // saving & updating
     caseNoteOverlapCheck,
     saveSingleCaseNote,
@@ -1089,5 +1144,6 @@ var caseNotesAjax = (function () {
     generateCNTimeAnalysisReport,
     checkIfCNReportExists,
     viewCaseNoteReport,
+    passRejectCaseNotes,
   };
 })();

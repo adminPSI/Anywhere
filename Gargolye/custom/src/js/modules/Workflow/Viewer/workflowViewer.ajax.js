@@ -169,7 +169,8 @@ const WorkflowViewerAjax = (() => {
           '/getPlanWorkflowWidgetData/',
         data: JSON.stringify({
           token: $.session.Token,
-          responsiblePartyId: peopleId,
+            responsiblePartyId: peopleId,
+            isCaseLoad: $.session.PlanCaseLoad
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',

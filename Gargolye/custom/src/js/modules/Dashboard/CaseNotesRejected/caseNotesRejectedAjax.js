@@ -4,7 +4,7 @@ const CN_RejectedWidgetAjax = (function() {
 		$.ajax({
 			type: 'POST',
 			url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getDashboardCaseNotesRejected/',
-			data: '{"token":"' + $.session.Token + '", "daysBack":"' + daysBack + '"}',
+			data: '{"token":"' + $.session.Token + '", "daysBack":"' + daysBack + '", "isCaseLoad":"' + $.session.CaseNotesCaseloadRestriction + '"}', 
 			contentType: 'application/json; charset=utf-8',
 			dataType: 'json',
 			success: function(response, status, xhr) {

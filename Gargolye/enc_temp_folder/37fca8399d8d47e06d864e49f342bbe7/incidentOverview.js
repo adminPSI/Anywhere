@@ -93,7 +93,7 @@ const incidentOverview = (function () {
             btnWrap.appendChild(locationBtnWrap);
             document.getElementById('locationBtn').innerHTML = 'Location: ' + filterData.locationName;
         }
-            
+        debugger;      
         if (filterData.groupName === null || filterData.groupName === 'All' || filterData.groupName === 'EVERYONE') {
             btnWrap.appendChild(groupBtnWrap);
             btnWrap.removeChild(groupBtnWrap);
@@ -339,14 +339,6 @@ const incidentOverview = (function () {
             retrieveData.locationId = '%';
             filterData.location = '%';
             locationIdSelected = '%';
-            // When the Location filter is cleared out via the X on the page, also clear out and remove the Group filter automatically  
-            if (!$.session.incidentTrackingCaseLoad) {
-                filterData.groupName = 'All';
-                retrieveData.groupId = '%';
-                groupIdSelected = '%';
-                groupCodeSelected = 'All';
-                filterData.group = '%';
-            }
         }
         if (closeFilter == 'groupBtn') {
             filterData.groupName = 'All';

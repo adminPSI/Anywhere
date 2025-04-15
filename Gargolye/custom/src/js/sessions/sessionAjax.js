@@ -1057,6 +1057,7 @@ function getDefaultAnywhereSettings() {
       $.session.ohioEVVChangeDate = res.ohioEVVChangeDate;
       $.session.anyRequireEndTime = res.anyRequireEndTime;
       $.session.anyUndocumentedServices = res.anyUndocumentedServices;
+      $.session.automateSimpleBilling = res.automateSimpleBilling;
       $.session.useProgressNotes = res.useProgressNotes;
       $.session.applicationName = res.application;
       $.session.portraitPath = res.portraitPath;
@@ -1114,6 +1115,8 @@ function getDefaultAnywhereSettings() {
       $.session.defaultMoneyManagementLocation = res.defaultMoneyManagementLocationName;
       $.session.defaultOODLocationValue = res.defaultOODLocation;
       $.session.defaultOODLocation = res.defaultOODLocationName;
+      $.session.defaultOutcomesLocationValue = res.defaultOutcomesLocation;
+      $.session.defaultOutcomesLocation = res.defaultOutcomesLocationName;
       //$.session.defaultDSTimeClockName = res.defaulttimeclocklocationname;
       //database state - Indiana or Ohio
       $.session.stateAbbreviation = res.stateAbbreviation;

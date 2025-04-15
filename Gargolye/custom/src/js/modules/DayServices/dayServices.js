@@ -339,8 +339,8 @@ const dayServices = (function () {
         if (selectedGroupName === 'Everyone') {
             selectedGroupNameBtnWrap.style.display = 'none';
         } else {
-            if (document.getElementById('selectedGroupNameBtn') != null)
-                document.getElementById('selectedGroupNameBtn').innerHTML = 'Group: ' + selectedGroupName;
+            if (document.getElementById('groupNameBtn') != null)
+                document.getElementById('groupNameBtn').innerHTML = 'Group: ' + selectedGroupName;
             selectedGroupNameBtnWrap.style.display = 'inherit';
         }
         return currentFilterDisplay;
@@ -375,19 +375,19 @@ const dayServices = (function () {
         });
 
         selectedGroupNameBtn = button.build({
-            id: 'selectedGroupNameBtn',
+            id: 'groupNameBtn',
             text: 'Group: ' + selectedGroupName,
             style: 'secondary',
             type: 'text',
             classNames: 'filterSelectionBtn',
-            callback: () => { dayServicesFilterPopup('selectedGroupNameBtn') },
+            callback: () => { dayServicesFilterPopup('groupNameBtn') },
         });
         selectedGroupNameCloseBtn = button.build({
             icon: 'Delete',
             style: 'secondary',
             type: 'text',
             classNames: 'filterCloseBtn',
-            callback: () => { closeFilter('selectedGroupNameBtn') },
+            callback: () => { closeFilter('groupNameBtn') },
         });
 
         btnWrap = document.createElement('div');
@@ -415,7 +415,7 @@ const dayServices = (function () {
     }
 
     function closeFilter(closeFilter) {
-        if (closeFilter == 'selectedGroupNameBtn') {
+        if (closeFilter == 'groupNameBtn') {
             selectedGroupName = 'Everyone';
             temp__groupID = 'ALL'; 
         }
@@ -573,7 +573,7 @@ const dayServices = (function () {
             filterPopup.appendChild(filterDateInput);
         if (IsShow == 'ALL' || IsShow == 'locationBtn')
             filterPopup.appendChild(filterLocationDropdown);
-        if (IsShow == 'ALL' || IsShow == 'selectedGroupNameBtn')
+        if (IsShow == 'ALL' || IsShow == 'groupNameBtn')
             filterPopup.appendChild(filterGroupDropdown);
         filterPopup.appendChild(btnWrap);
         POPUP.show(filterPopup);
@@ -1886,6 +1886,10 @@ const dayServices = (function () {
         let dsEnabledConsumers;
         serviceDate = UTIL.getTodaysDate();
 
+        if ($.session.DayServiceCaseLoad === true && $.loadedApp === 'dayservices') {
+            filterGroupID = 'CAS';
+        }    
+
         //Check to see if CI should be enabled
         const checkCiPromise = new Promise(function (resolve, reject) {
             dayServiceAjax.getDateToCheckShowCI(res => {
@@ -2137,7 +2141,7 @@ const dayServices = (function () {
         dsCardArea.innerHTML = '';
 
         DOM.clearActionCenter();
-        locationCheck();
+        locationCheck();  
     }
 
     return {

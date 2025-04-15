@@ -77,9 +77,25 @@ const assessmentHistory = (() => {
         filterRow = document.createElement('div');
         filterRow.classList.add('filterElement');
 
+        const newAssessmentBtn = button.build({
+            text: 'Add New Assessment',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'newEntryBtn',
+            callback: async () => {
+                if (!newAssessmentBtn.classList.contains('disabled')) {
+                    NewAssessment.init(selectedConsumers[selectedConsumers.length - 1])
+                }
+            },
+        });
+
         const filteredBy = buildFilteredBy();
         filterRow.appendChild(filteredBy);
         landingPage.appendChild(filterRow);
+
+        if ($.session.insertAssessmentHistory)
+            landingPage.appendChild(newAssessmentBtn);
+
         assessmentEntriesTable = await buildAssessmentEntriesTable();
 
         // Set the data type for each header, for sorting purposes
@@ -143,19 +159,27 @@ const assessmentHistory = (() => {
     }
 
     function populateTable(results) {
+        if (!results) return;
         let tableData = results.map((entry) => ({
             values: [entry.startDate == '' || entry.startDate == undefined ? '' : moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' || entry.endDate == undefined ? '' : moment(entry.endDate).format('MM/DD/YYYY'),
             entry.methodology, entry.score, entry.behaviorMod, entry.medicalMod, entry.DCMod, entry.CCMod, entry.priorAuthApplied == '' ? '' : moment(entry.priorAuthApplied).format('MM/DD/YYYY'),
             entry.priorAuthReceived == '' ? '' : moment(entry.priorAuthReceived).format('MM/DD/YYYY'), entry.priorAuthAmount == '' ? '' : '$' + numberWithCommas(entry.priorAuthAmount)],
             attributes: [{ key: 'Id', value: entry.ID }],
+            onClick: () => {               
+                handleAssessmentTableEvents(entry.ID, moment(entry.lastUpdate).format('YYYY-MM-DD HH:mm:ss'))
+            },
         }));
-        table.populate(assessmentEntriesTable, tableData); 
+        table.populate(assessmentEntriesTable, tableData);
         if (!groupedHistory[activeGroup + 1]) {
             document.getElementById('loadMoreBtn').style.display = 'none';
         }
         else {
             document.getElementById('loadMoreBtn').style.display = 'block';
         }
+    }
+
+    function handleAssessmentTableEvents(Id, lastUpdate) {
+        NewAssessment.init(selectedConsumers[selectedConsumers.length - 1], Id, lastUpdate)
     }
 
     function pouplateHistory() {

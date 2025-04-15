@@ -915,5 +915,76 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string getAssessmentEntriesById(string token, string registerId, string lastUpdate, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getAssessmentEntriesById");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@registerId", DbType.String, registerId);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@lastUpdate", DbType.String, lastUpdate);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getAssessmentEntriesById(?,?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getAssessmentEntriesById()");
+                throw ex;
+            }
+        }
+
+        public string insertUpdateAssessmentInfo(string regId, string startDate, string endDate, string methodology, string score, string behaviorModifier, string medicalModifier, string DCModifier, 
+            string complexCareModifier, string priorAuthReceivedDate, string priorAuthAppliedDate, string priorAuthAmount, string userId, string lastUpdateDate, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("insertUpdateAssessmentInfo ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[14];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@regId", DbType.String, regId);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDate", DbType.String, startDate);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDate", DbType.String, endDate);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@methodology", DbType.String, methodology);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@score", DbType.String, score);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@behaviorModifier", DbType.String, behaviorModifier);
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@medicalModifier", DbType.String, medicalModifier);
+                args[7] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@DCModifier", DbType.String, DCModifier);
+                args[8] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@complexCareModifier", DbType.String, complexCareModifier);
+                args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthReceivedDate", DbType.String, priorAuthReceivedDate);
+                args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthAppliedDate", DbType.String, priorAuthAppliedDate);
+                args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthAmount", DbType.String, priorAuthAmount);
+                args[12] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
+                args[13] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@lastUpdateDate", DbType.String, lastUpdateDate);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_insertUpdateAssessmentInfo(?, ? ,?, ?, ?, ? ,?, ?, ?, ? ,?, ? ,?, ?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("7ADG", ex.Message + "ANYW_Authorization_insertUpdateAssessmentInfo()");
+                throw ex;
+            }
+        }
+
+        public string getFundingRange(string token, string consumerId, string methodology, string score, string startDate, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getFundingRange");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[4];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerId", DbType.String, consumerId);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@methodology", DbType.String, methodology);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@score", DbType.String, score);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDate", DbType.String, startDate);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_GetFundingRange(?,?,?,?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getFundingRange()");
+                throw ex;
+            }
+        }
+
     }
 }

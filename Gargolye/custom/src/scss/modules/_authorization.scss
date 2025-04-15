@@ -246,6 +246,18 @@
         font-weight: 500 !important;
     }
 
+    .assessmentPageWrap {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        margin: 0;
+
+        > div {
+            flex-grow: 1;
+            margin: 0 5px 20px;
+            width: 45%;
+        }
+    }
 
     #assessmentHistoryTable {
         .table__row {
@@ -398,7 +410,7 @@
             }
 
             > div:nth-child(6) {
-                display: none; 
+                display: none;
             }
 
             @media screen and (min-width: 800px) {
@@ -587,5 +599,11 @@
             max-width: 300px;
             margin: 30px auto 100px;
         }
+    }
+
+    .errorStyle {
+        margin-top: -30px !important;
+        margin-left: 13px !important;
+        margin-bottom: 13px !important; 
     }
 }

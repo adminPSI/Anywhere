@@ -152,6 +152,22 @@ var defaultsAjax = (function () {
                     saveDefaultLocationNameAjax("10", "Remember Last Location");
                 }
                 break;
+            case 11:
+                typeName = "Default Outcomes Location";
+                if (value != 0 && name != null) {
+                    createCookie("defaultOutcomesLocationName", name, 11);
+                    createCookie("defaultOutcomesLocationValue", value, 11);
+                    saveDefaultLocationNameAjax("11", name);
+                    saveDefaultLocationValueAjax("11", value);
+                } else {
+                    createCookie(
+                        "defaultOutcomesLocationName",
+                        "Remember Last Location",
+                        11
+                    );
+                    saveDefaultLocationNameAjax("11", "Remember Last Location");
+                }
+                break;
         }
 
         setDefaultLoc(type, value);
