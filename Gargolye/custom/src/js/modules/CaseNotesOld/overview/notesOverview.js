@@ -418,8 +418,8 @@ var notesOverview = (function () {
       style: 'secondary',
       callback: function () {
         POPUP.hide(popup);
+        resetMultiSelect();
         callback(rejectReason);
-        ACTION_NAV.hide();
       },
     });
     const cancelBtn = button.build({
@@ -456,8 +456,8 @@ var notesOverview = (function () {
       style: 'secondary',
       callback: function () {
         POPUP.hide(popup);
+        resetMultiSelect();
         callback();
-        ACTION_NAV.hide();
       },
     });
     const noBtn = button.build({
@@ -466,7 +466,6 @@ var notesOverview = (function () {
       style: 'secondary',
       callback: function () {
         POPUP.hide(popup);
-        ACTION_NAV.hide();
         resetMultiSelect();
       },
     });
@@ -494,7 +493,7 @@ var notesOverview = (function () {
       const passMessage = 'Are you sure you want to set the selected case notes as passed?';
       showConfimPassRejectPopup(passMessage, async () => {
         success = await caseNotesAjax.passRejectCaseNotes({
-          userId: '',
+          userId: $.session.PeopleId,
           reviewResults: 'P',
           noteIds: selectedRows,
           rejectReason: '',
@@ -502,6 +501,8 @@ var notesOverview = (function () {
 
         showSuccessFailPopup(success);
       });
+
+      ACTION_NAV.hide();
 
       return;
     }
@@ -512,7 +513,7 @@ var notesOverview = (function () {
         if ($.session.applicationName === 'Gatekeeper') {
           showRejectionReasonPopup(async rejectReason => {
             success = await caseNotesAjax.passRejectCaseNotes({
-              userId: '',
+              userId: $.session.PeopleId,
               reviewResults: 'R',
               noteIds: selectedRows,
               rejectReason: rejectReason,
@@ -524,7 +525,7 @@ var notesOverview = (function () {
         }
 
         success = await caseNotesAjax.passRejectCaseNotes({
-          userId: '',
+          userId: $.session.PeopleId,
           reviewResults: 'R',
           noteIds: selectedRows,
           rejectReason: '',
@@ -532,6 +533,8 @@ var notesOverview = (function () {
 
         showSuccessFailPopup(success);
       });
+
+      ACTION_NAV.hide();
 
       return;
     }
