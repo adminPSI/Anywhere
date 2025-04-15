@@ -149,9 +149,8 @@ namespace Anywhere.service.Data
 
         public class RejectionReasonDropdownValues
         {
-            public string note_code { get; set; }
-            public string caption { get; set; }
-            public string dropdown { get; set; }
+            public string rejectionCode { get; set; }
+            public string rejectionCaption { get; set; }
         }
 
         public class FilterDropdownValues

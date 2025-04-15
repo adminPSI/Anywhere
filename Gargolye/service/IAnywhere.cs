@@ -5960,7 +5960,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getRejectionReasonDropdownData/")]
-        string getRejectionReasonDropdownData(string token);
+        CaseNotesWorker.RejectionReasonDropdownValues[] getRejectionReasonDropdownData(string token);
 
     }
 

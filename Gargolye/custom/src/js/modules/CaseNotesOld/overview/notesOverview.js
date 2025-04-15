@@ -371,7 +371,12 @@ var notesOverview = (function () {
       style: 'secondary',
     });
 
-    let dropdownData = rejectionReasons.map(reason => {});
+    let dropdownData = rejectionReasons.map(reason => {
+      return {
+        value: reason.rejectionCode,
+        text: `${reason.rejectionCode} - ${reason.rejectionCaption}`,
+      };
+    });
 
     dropdown.populate(rejectDropdown, dropdownData);
 
