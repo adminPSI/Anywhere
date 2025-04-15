@@ -1734,7 +1734,7 @@ const OOD = (() => {
                 createfilterPopupCreateBTN.disabled = true;
             } else {
                 createfilterPopupCreateBTN.classList.remove('disabled');
-                createFilterPopupCreateBTN.disabled = false; 
+                createfilterPopupCreateBTN.disabled = false; 
             }
         // } else {
         //     let createreferenceNumbersDropDown = document.getElementById("createreferenceNumbersDropdown");
