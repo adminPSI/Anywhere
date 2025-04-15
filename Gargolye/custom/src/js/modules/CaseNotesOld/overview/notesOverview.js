@@ -350,6 +350,7 @@ var notesOverview = (function () {
   //---------------------------------------------
   // multiselect
   let enableMultiEdit = false;
+  let enableSelectAll = false;
   let selectedRows = [];
   let rejectionReasons = [];
   function resetMultiSelect() {
@@ -363,6 +364,19 @@ var notesOverview = (function () {
 
     const highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
     highlightedRows.forEach(row => row.classList.remove('selected'));
+  }
+  function showSuccessFailPopup(success) {
+    if (success) {
+      successfulSave.show('SAVED');
+      setTimeout(function () {
+        successfulSave.hide();
+      }, 1000);
+    } else {
+      failSave.show('ERROR SAVING');
+      setTimeout(function () {
+        failSave.hide();
+      }, 1000);
+    }
   }
   function buildRejectionReasonDropdown() {
     const rejectDropdown = dropdown.build({
@@ -404,7 +418,7 @@ var notesOverview = (function () {
       style: 'secondary',
       callback: function () {
         POPUP.hide(popup);
-        callback();
+        callback(rejectReason);
         ACTION_NAV.hide();
       },
     });
@@ -485,7 +499,11 @@ var notesOverview = (function () {
           noteIds: selectedRows,
           rejectReason: '',
         });
+
+        showSuccessFailPopup(success);
       });
+
+      return;
     }
 
     if (targetAction === 'reject') {
@@ -499,6 +517,8 @@ var notesOverview = (function () {
               noteIds: selectedRows,
               rejectReason: rejectReason,
             });
+
+            showSuccessFailPopup(success);
           });
           return;
         }
@@ -509,19 +529,11 @@ var notesOverview = (function () {
           noteIds: selectedRows,
           rejectReason: '',
         });
-      });
-    }
 
-    if (success) {
-      successfulSave.show('SAVED');
-      setTimeout(function () {
-        successfulSave.hide();
-      }, 1000);
-    } else {
-      failSave.show('ERROR SAVING');
-      setTimeout(function () {
-        failSave.hide();
-      }, 1000);
+        showSuccessFailPopup(success);
+      });
+
+      return;
     }
   }
   function setupActionNav() {
@@ -569,7 +581,7 @@ var notesOverview = (function () {
 
       selectedRows = [];
 
-      var rows = [].slice.call(document.querySelectorAll('.table__row'));
+      var rows = [].slice.call(document.querySelectorAll('.table__body .table__row'));
       rows.forEach(r => {
         r.classList.add('selected');
         selectedRows.push(r.id);
@@ -974,15 +986,10 @@ var notesOverview = (function () {
     });
     promArray.push(getBillersListPromise);
 
-    const rejectionReasonsPromise = new Promise(function (resolve, reject) {
-      caseNotesAjax.getRejectionReasonDropdownData(res => {
-        rejectionReasons = res;
-        resolve('success');
-      });
-    });
-    promArray.push(rejectionReasonsPromise);
-
     Promise.all(promArray).then(async function () {
+      if ($.session.applicationName === 'Gatekeeper') {
+        rejectionReasons = await caseNotesAjax.getRejectionReasonDropdownData();
+      }
       callback();
     });
   }
