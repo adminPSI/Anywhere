@@ -1,7 +1,7 @@
 const individualDemographics = (() => {
     function unload() {
         _DOM.ACTIONCENTER.removeAttribute('data-ui');
-        WaitingListAssessment.unload();
+        individualAssessment.unload();
     }
 
     async function load(selectedConsumer) {

@@ -714,7 +714,7 @@ const UTIL = (function () {
     function toggleMenuItemHighlight(appName) {
         var current = document.querySelector('.menu__button.active');
         var target;
-
+        _DOM.ACTIONCENTER.removeAttribute('data-ui'); 
         DOM.removeHeaderOpacity();
         function toggleHighlight() {
             if (target === current) return;

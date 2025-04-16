@@ -728,11 +728,17 @@ const demographics = (function () {
 
         detailBtn = button.build({
             text: '',
-            icon: 'forwardArrow',
+            icon: 'forwardArrow', 
             style: 'secondary',
             type: 'text',
             classNames: 'floatRight',  
-            callback: () => { individualDemographics.init(selectedConsumer) },
+            callback: () => {
+                const modalOverlay = document.querySelector('.overlay');
+                modalOverlay.classList.remove('modal'); 
+                var header = document.querySelector('.site-header');
+                header.classList.remove('fadeOut');  
+                individualDemographics.init(selectedConsumer);
+            },
         }); 
 
         const pathToEmployment = buildPathToEmployment();

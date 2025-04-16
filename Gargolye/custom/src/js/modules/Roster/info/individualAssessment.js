@@ -455,7 +455,7 @@ const individualAssessment = (() => {
         const primaryButtonWrap = _DOM.createElement('div');
         backButton.renderTo(primaryButtonWrap);
         moduleHeader.appendChild(primaryButtonWrap);
-
+        var previousTarget = null;
         // Build TOC
         for (section in sections) {
             const className = 'section';
@@ -464,7 +464,21 @@ const individualAssessment = (() => {
             tocSection.appendChild(tocSectionLink);
             tableOfContents.appendChild(tocSection);
             tocSection.classList.toggle('hiddenPage', !sections[section].enabled);
-            tocLinks[section] = tocSection;
+            tocLinks[section] = tocSection; 
+
+            
+            if (section == 'ContactInfo') {
+                tocSection.classList.add('backgroundColor');
+                previousTarget = tocSection; 
+            }
+                           
+            tocSection.addEventListener('click', e => {  
+                if (previousTarget) {
+                    previousTarget.classList.remove('backgroundColor');
+                }
+                e.currentTarget.classList.add('backgroundColor');
+                previousTarget = e.currentTarget; 
+            });
 
             // Build Form
             const sectionWrap = _DOM.createElement('div', { id: section, class: 'wlPage' });
@@ -522,6 +536,10 @@ const individualAssessment = (() => {
 
         tableOfContents = _DOM.createElement('div', { class: 'demographicesListTableOFContents' });
         assessmentWrap = _DOM.createElement('div', { class: 'demographicesListAssessment' });
+
+        assessmentWrap.addEventListener('scroll', e => {
+           
+        });
 
         moduleBody.appendChild(tableOfContents);
         moduleBody.appendChild(assessmentWrap);
@@ -1084,7 +1102,8 @@ const individualAssessment = (() => {
             );
         });
 
-        backButton.onClick(() => {
+        backButton.onClick(() => {  
+            _DOM.ACTIONCENTER.removeAttribute('data-ui'); 
             roster2.loadRosterInfo();
         });
 
