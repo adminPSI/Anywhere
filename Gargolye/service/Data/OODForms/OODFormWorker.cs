@@ -1444,7 +1444,7 @@ namespace OODForms
                     ("VR CounselorCoordinator", VRCounselor), // persons.first_name & persons.last_name of person_id on consumer_services_master table for selected service
                     ("Authorization", referenceNumber),
                     ("Provider_Invoice_Number", invoiceNumber),
-                    ("Date1_af_date", invoiceDate),
+                    ("Date4_af_date", invoiceDate),
                     ("Date2_af_date", strStartDate),
                     ("Date3_af_date", strEndDate),
                 };

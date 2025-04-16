@@ -1341,6 +1341,8 @@ const OOD = (() => {
             value: referencenumber.referenceNumber,
             text: referencenumber.referenceNumber,
         }));
+
+        data.sort((a, b) => a.text.localeCompare(b.text));
         data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
         dropdown.populate('referenceNumbersDropdown', data, filterValues.referenceNumber);
        // dropdown.populate('createreferenceNumbersDropdown', data, filterValues.referenceNumber);
@@ -1358,6 +1360,8 @@ const OOD = (() => {
             value: referencenumber.referenceNumber,
             text: referencenumber.referenceNumber,
         }));
+
+        data.sort((a, b) => a.text.localeCompare(b.text));
         data.unshift({ id: null, value: '%', text: '' }); //ADD Blank value
        // dropdown.populate('referenceNumbersDropdown', data, filterValues.referenceNumber);
        
