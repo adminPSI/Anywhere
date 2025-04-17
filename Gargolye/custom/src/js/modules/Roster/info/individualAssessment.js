@@ -188,7 +188,7 @@ const individualAssessment = (() => {
                 },
                 {
                     id: 'dIMaritalStatus',
-                    type: 'select',
+                    type: 'text',
                     label: 'Marital Status',
                     disabled: true,
                 },
@@ -464,20 +464,20 @@ const individualAssessment = (() => {
             tocSection.appendChild(tocSectionLink);
             tableOfContents.appendChild(tocSection);
             tocSection.classList.toggle('hiddenPage', !sections[section].enabled);
-            tocLinks[section] = tocSection; 
+            tocLinks[section] = tocSection;
 
-            
+
             if (section == 'ContactInfo') {
                 tocSection.classList.add('backgroundColor');
-                previousTarget = tocSection; 
+                previousTarget = tocSection;
             }
-                           
-            tocSection.addEventListener('click', e => {  
+
+            tocSection.addEventListener('click', e => {
                 if (previousTarget) {
                     previousTarget.classList.remove('backgroundColor');
                 }
                 e.currentTarget.classList.add('backgroundColor');
-                previousTarget = e.currentTarget; 
+                previousTarget = e.currentTarget;
             });
 
             // Build Form
@@ -538,7 +538,7 @@ const individualAssessment = (() => {
         assessmentWrap = _DOM.createElement('div', { class: 'demographicesListAssessment' });
 
         assessmentWrap.addEventListener('scroll', e => {
-           
+
         });
 
         moduleBody.appendChild(tableOfContents);
@@ -555,342 +555,343 @@ const individualAssessment = (() => {
         };
     }
     function initComponents(selectedConsumer) {
+        // Locations
+        locationsTable = new Table({
+            columnSortable: false,
+            allowDelete: false,
+            headings: [
+                {
+                    text: 'Location',
+                    type: 'string',
+                },
+                {
+                    text: 'Start Date',
+                    type: 'string',
+                },
+                {
+                    text: 'End Date',
+                    type: 'string',
+                },
+                {
+                    text: 'Type',
+                    type: 'string',
+                },
+            ],
+        });
+
+        locationsForm = new Form({
+            hideAllButtons: true,
+            fields: [
+                {
+                    type: 'text',
+                    label: 'Location',
+                    id: 'lLocations',
+                    disabled: true,
+                },
+                {
+                    type: 'date',
+                    label: 'Start Date',
+                    id: 'lStartDate',
+                    disabled: true,
+                },
+                {
+                    type: 'date',
+                    label: 'End Date',
+                    id: 'lEndDate',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'Status',
+                    id: 'lStatus',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'Default Day Service Type',
+                    id: 'lDefaultType',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'Default Group',
+                    id: 'lDefaultGroup',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Sun Start',
+                    id: 'lSunStart',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Mon Start',
+                    id: 'lMonStart',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Tues Start',
+                    id: 'lTuesStart',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Wed Start',
+                    id: 'lWedStart',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Thurs Start',
+                    id: 'lThursStart',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Fri Start',
+                    id: 'lFriStart',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Sat Start',
+                    id: 'lSatStart',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Sun End',
+                    id: 'lSunEnd',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Mon End',
+                    id: 'lMonEnd',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Tues End',
+                    id: 'lTuesEnd',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Wed End',
+                    id: 'lWedEnd',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Thurs End',
+                    id: 'lThursEnd',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Fri End',
+                    id: 'lFriEnd',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Sat End',
+                    id: 'lSatEnd',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeSun',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeMon',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeTues',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeWed',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeThurs',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeFri',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeSat',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Sun Start',
+                    id: 'lSunStart2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Mon Start',
+                    id: 'lMonStart2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Tues Start',
+                    id: 'lTuesStart2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Wed Start',
+                    id: 'lWedStart2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Thurs Start',
+                    id: 'lThursStart2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Fri Start',
+                    id: 'lFriStart2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Sat Start',
+                    id: 'lSatStart2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Sun End',
+                    id: 'lSunEnd2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Mon End',
+                    id: 'lMonEnd2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Tues End',
+                    id: 'lTuesEnd2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Wed End',
+                    id: 'lWedEnd2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Thurs End',
+                    id: 'lThursEnd2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Fri End',
+                    id: 'lFriEnd2',
+                    disabled: true,
+                },
+                {
+                    type: 'time',
+                    label: 'Sat End',
+                    id: 'lSatEnd2',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeSun2',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeMon2',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeTues2',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeWed2',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeThurs2',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeFri2',
+                    disabled: true,
+                },
+                {
+                    type: 'text',
+                    label: 'DS Type',
+                    id: 'lDSTypeSat2',
+                    disabled: true,
+                },
+                {
+                    id: 'lMRC',
+                    type: 'radiogroup',
+                    disabled: true,
+                    groupLabel: `Include in MRC?`,
+                    fields: [
+                        { type: 'radio', label: 'Yes', value: 'yes', id: 'Y' },
+                        { type: 'radio', label: 'No', value: 'no', id: 'N' },
+                    ],
+                },
+                {
+                    id: 'lNotes',
+                    label: 'Notes',
+                    fullscreen: true,
+                    type: 'textarea',
+                    disabled: true,
+                },
+
+            ],
+        });
+
         if ($.session.applicationName === 'Advisor') {
-            // Locations
-            locationsTable = new Table({
-                columnSortable: false,
-                allowDelete: false,
-                headings: [
-                    {
-                        text: 'Location',
-                        type: 'string',
-                    },
-                    {
-                        text: 'Start Date',
-                        type: 'string',
-                    },
-                    {
-                        text: 'End Date',
-                        type: 'string',
-                    },
-                    {
-                        text: 'Type',
-                        type: 'string',
-                    },
-                ],
-            });
-
-            locationsForm = new Form({
-                hideAllButtons: true,
-                fields: [
-                    {
-                        type: 'text',
-                        label: 'Location',
-                        id: 'lLocations',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Start Date',
-                        id: 'lStartDate',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'End Date',
-                        id: 'lEndDate',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'Status',
-                        id: 'lStatus',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'Default Day Service Type',
-                        id: 'lDefaultType',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'Default Group',
-                        id: 'lDefaultGroup',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Sun Start',
-                        id: 'lSunStart',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Mon Start',
-                        id: 'lMonStart',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Tues Start',
-                        id: 'lTuesStart',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Wed Start',
-                        id: 'lWedStart',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Thurs Start',
-                        id: 'lThursStart',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Fri Start',
-                        id: 'lFriStart',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Sat Start',
-                        id: 'lSatStart',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Sun End',
-                        id: 'lSunEnd',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Mon End',
-                        id: 'lMonEnd',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Tues End',
-                        id: 'lTuesEnd',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Wed End',
-                        id: 'lWedEnd',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Thurs End',
-                        id: 'lThursEnd',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Fri End',
-                        id: 'lFriEnd',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Sat End',
-                        id: 'lSatEnd',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeSun',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeMon',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeTues',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeWed',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeThurs',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeFri',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeSat',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Sun Start',
-                        id: 'lSunStart2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Mon Start',
-                        id: 'lMonStart2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Tues Start',
-                        id: 'lTuesStart2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Wed Start',
-                        id: 'lWedStart2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Thurs Start',
-                        id: 'lThursStart2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Fri Start',
-                        id: 'lFriStart2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Sat Start',
-                        id: 'lSatStart2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Sun End',
-                        id: 'lSunEnd2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Mon End',
-                        id: 'lMonEnd2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Tues End',
-                        id: 'lTuesEnd2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Wed End',
-                        id: 'lWedEnd2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Thurs End',
-                        id: 'lThursEnd2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Fri End',
-                        id: 'lFriEnd2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'date',
-                        label: 'Sat End',
-                        id: 'lSatEnd2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeSun2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeMon2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeTues2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeWed2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeThurs2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeFri2',
-                        disabled: true,
-                    },
-                    {
-                        type: 'text',
-                        label: 'DS Type',
-                        id: 'lDSTypeSat2',
-                        disabled: true,
-                    },
-                    {
-                        id: 'lMRC',
-                        type: 'radiogroup',
-                        disabled: true,
-                        groupLabel: `Include in MRC?`,
-                        fields: [
-                            { type: 'radio', label: 'Yes', value: 'yes', id: 'Y' },
-                            { type: 'radio', label: 'No', value: 'no', id: 'N' },
-                        ],
-                    },
-                    {
-                        id: 'lNotes',
-                        label: 'Notes',
-                        fullscreen: true,
-                        type: 'textarea',
-                        disabled: true,
-                    },
-
-                ],
-            });
 
             relationshipTable = new Table({
                 columnSortable: false,
@@ -1102,10 +1103,25 @@ const individualAssessment = (() => {
             );
         });
 
-        backButton.onClick(() => {  
-            _DOM.ACTIONCENTER.removeAttribute('data-ui'); 
+        backButton.onClick(() => {
+            _DOM.ACTIONCENTER.removeAttribute('data-ui');
             roster2.loadRosterInfo();
         });
+
+    }
+    function showHideSections() {
+        if ($.session.applicationName === 'Advisor') {
+            wlForms['PersonalNumbers'].inputs['pNConsumerNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewConsumerNumber);
+            wlForms['PersonalNumbers'].inputs['pNSSN'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewSSN);
+            wlForms['PersonalNumbers'].inputs['pNMedicaidNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewMedicaid);
+            wlForms['PersonalNumbers'].inputs['pNMedicareNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewMedicare);
+            wlForms['PersonalNumbers'].inputs['pNResidentNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewResident);
+
+            wlForms['DemographicInfo'].inputs['dIDateofBirth'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewDOB);
+            wlForms['DemographicInfo'].inputs['dIeMAREligible'].rootElement.classList.toggle('hiddenPage', !$.session.emarVisible);
+            wlForms['DemographicInfo'].inputs['dIMedCart'].rootElement.classList.toggle('hiddenPage', !$.session.emarVisible);
+            wlForms['DemographicInfo'].inputs['dIDNROnFile'].rootElement.classList.toggle('hiddenPage', !$.session.emarVisible);
+        }
 
     }
 
@@ -1174,6 +1190,8 @@ const individualAssessment = (() => {
             appoinmentTable.populate(Object.values(wlAppoinment));
             appoinmentForm.form.classList.add('hiddenPage');
         }
+
+        showHideSections();
     }
 
     return { init, unload };

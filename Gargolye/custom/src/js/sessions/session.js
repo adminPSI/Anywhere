@@ -314,6 +314,7 @@ $.session.transportationAddRoute = false;
 $.session.transportationCaseLoad = false;
 // eMAR
 $.session.emarView = false;
+$.session.emarVisible = false;
 $.session.emarCaseLoad = false;
 // Speech To Text
 $.session.sttEnabled = false;
@@ -2091,11 +2092,12 @@ function disableModules() {
         //Leave module on
     } else {
         $('#transportationsettingsdiv').css('display', 'none');
-    }
+    }  
     if ($.session.emarPermission == 'Anywhere_eMAR') {
+        $.session.emarVisible = true;
         //Leave module on
     } else {
-        $('#emarsettingsdiv').css('display', 'none');
+        $('#emarsettingsdiv').css('display', 'none');       
     }
     if ($.session.formsPermission == 'Anywhere_Forms') {
         //Leave module on
