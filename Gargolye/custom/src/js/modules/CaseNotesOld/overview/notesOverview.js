@@ -340,7 +340,7 @@ var notesOverview = (function () {
     if ($.session.applicationName === 'Gatekeeper') btnWrap.appendChild(cnReportBtn);
     if ($.session.applicationName === 'Advisor') btnWrap.appendChild(cnADVReportBtn);
     DOM.ACTIONCENTER.appendChild(btnWrap);
-    if (true) DOM.ACTIONCENTER.appendChild(multiSelectBtns);
+    if ($.session.CaseNotesReview) DOM.ACTIONCENTER.appendChild(multiSelectBtns);
     DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
     const filteredBy = initFilterDisplay();
     DOM.ACTIONCENTER.appendChild(filteredBy);
@@ -353,6 +353,7 @@ var notesOverview = (function () {
   let enableSelectAll = false;
   let selectedRows = [];
   let rejectionReasons = [];
+  //Review
   function resetMultiSelect() {
     mulitSelectBtn.classList.remove('enabled');
     mulitSelectBtn.classList.remove('disabled');
@@ -633,22 +634,37 @@ var notesOverview = (function () {
     // show row details and/or go to note review
     var caseNoteId = event.target.id;
     var consumerId = event.target.dataset.consumerId;
+    var caseManagerId = event.target.dataset.casemanagerid;
     var isSSANote = event.target.dataset.isssanote;
+    var reviewRequired = event.target.dataset.required;
+    var reviewResult = event.target.dataset.result;
+    var corrected = event.target.dataset.corrected;
     var isSelected = event.target.classList.contains('selected');
 
     if (enableMultiEdit) {
-      if (isSelected) {
-        event.target.classList.remove('selected');
-        selectedRows = selectedRows.filter(sr => sr !== caseNoteId);
-        if (enableSelectAll) {
-          enableSelectAll = false;
-          mulitSelectBtn.classList.remove('disabled');
-          mulitSelectBtn.classList.add('enabled');
-          selectAllBtn.classList.remove('enabled');
+      // user clicks on a white row
+      // WHERE case_notes.review_required = 'Y' AND ((case_notes.review_results = 'N')
+      // OR (case_notes.review_results = 'R' AND case_notes.corrected = 'Y')) AND the people.id in Gatekeeper (persons.person_id in Advisor) of the logged in user
+      // DOES NOT EQUAL case_notes.case_manager_id on the record in the grid on this page
+      // $.session.PersonId
+      // select it by changing the row color from white to green
+      if (
+        (reviewRequired === 'Y' && reviewResult === 'N') ||
+        (reviewResult === 'R' && corrected === 'Y' && $.session.PersonId === caseManagerId)
+      ) {
+        if (isSelected) {
+          event.target.classList.remove('selected');
+          selectedRows = selectedRows.filter(sr => sr !== caseNoteId);
+          if (enableSelectAll) {
+            enableSelectAll = false;
+            mulitSelectBtn.classList.remove('disabled');
+            mulitSelectBtn.classList.add('enabled');
+            selectAllBtn.classList.remove('enabled');
+          }
+        } else {
+          event.target.classList.add('selected');
+          selectedRows.push(caseNoteId);
         }
-      } else {
-        event.target.classList.add('selected');
-        selectedRows.push(caseNoteId);
       }
 
       return;
@@ -740,18 +756,22 @@ var notesOverview = (function () {
       groupCounts[groupId]++;
     });
 
-    var data = tableData.map(td => {
-      var hasOverlap = false;
-      var originalupdateTrim = td.originalupdate.split('T')[0];
-      var servicedate = UTIL.formatDateFromIso(td.servicedate.split('T')[0]);
-      var starttime = UTIL.convertFromMilitary(td.starttime);
-      var endtime = UTIL.convertFromMilitary(td.endtime);
-      var name = `${td.lastname}, ${td.firstname}`;
-      var originalUpdate = UTIL.formatDateFromIso(originalupdateTrim);
-      var lastUpdateBy = td.lastupdatedby;
-      // var groupCount = groupCounts[td.groupnoteid] === '' ? '0' : groupCounts[td.groupnoteid];
-      var groupCount = td.numberInGroup;
-      var caseNoteId = td.casenoteid.split('.')[0];
+    const data = tableData.map(td => {
+      console.log(td);
+      const caseNoteId = td.casenoteid.split('.')[0];
+      const casemanagerid = td.casemanagerid;
+      const originalupdateTrim = td.originalupdate.split('T')[0];
+      const originalUpdate = UTIL.formatDateFromIso(originalupdateTrim);
+      const servicedate = UTIL.formatDateFromIso(td.servicedate.split('T')[0]);
+      const starttime = UTIL.convertFromMilitary(td.starttime);
+      const endtime = UTIL.convertFromMilitary(td.endtime);
+      const name = `${td.lastname}, ${td.firstname}`;
+      const lastUpdateBy = td.lastupdatedby;
+      const groupCount = td.numberInGroup;
+      const reviewRequired = td.review_required;
+      const reviewResult = td.review_result;
+      const corrected = td.corrected;
+      let hasOverlap = false;
       if (overLapIds !== null) {
         if (overLapIds.includes(caseNoteId)) hasOverlap = true;
       }
@@ -761,13 +781,13 @@ var notesOverview = (function () {
 
       noteIds.push(caseNoteId);
 
-      var thisendIcon;
-      var GKendIcon =
+      const GKendIcon =
         !attachcount || attachcount === '  ' || attachcount === '0'
           ? `<p style="display:none;">XXX</p>`
           : `${icons['attachment']}`;
-      var ADVendIcon = null;
+      const ADVendIcon = null;
 
+      let thisendIcon;
       if ($.session.applicationName === 'Gatekeeper') {
         thisendIcon = GKendIcon;
       } else {
@@ -781,6 +801,10 @@ var notesOverview = (function () {
         attributes: [
           { key: 'data-consumer-id', value: consumerId },
           { key: 'data-isssanote', value: isSSANote },
+          { key: 'data-required', value: reviewRequired },
+          { key: 'data-result', value: reviewResult },
+          { key: 'data-casemanagerid', value: casemanagerid },
+          { key: 'data-corrected', value: corrected },
         ],
         endIcon: thisendIcon,
         endIconCallback: e => {

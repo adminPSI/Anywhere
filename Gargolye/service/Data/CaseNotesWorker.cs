@@ -244,7 +244,10 @@ namespace Anywhere.service.Data
             public string serviceName { get; set; }
             public string locationName { get; set; }
             public string originalUserFullName { get; set; }
-            
+            public string review_required { get; set; }
+            public string review_result { get; set; }
+            public string corrected { get; set; }
+
 
             public List<string> overlaps { get; set; }
         }

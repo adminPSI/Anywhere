@@ -154,8 +154,16 @@ class Calendar {
     eventCellEle.innerHTML = `
       <p class="eventTime">${startTime} - ${endTime} ${event.length}</p>
       <p class="eventName">${event.name}</p>
-      <p class="pubUnpubIcon">${icon}</p>
-      <p class="copyShiftIcon">${icons.copyShift}</p>
+      <div class="eventDetails">
+      ${event.consumers
+        .split(',')
+        .map(c => `<p>${c}</p>`)
+        .join('')}
+      </div>
+      <p class="eventIcons">
+        <span class="pubUnpubIcon">${icon}</span>
+        ${$.session.schedulingSecurity ? `<span class="copyShiftIcon">${icons.copyShift}</span>` : ``}
+      </p>
     `;
   }
   renderMonthEventCellContent(event, eventCellEle) {
@@ -442,7 +450,7 @@ class Calendar {
 
         // Event View
         const eventCellEle = document.createElement('div');
-        renderMonthEventCellContent(event, eventCellEle);
+        this.renderMonthEventCellContent(event, eventCellEle);
 
         this.monthDayCache[dateISO].eventWrapEle.appendChild(eventCellEle);
       });
@@ -466,7 +474,7 @@ class Calendar {
     if (!this.eventCache) return;
 
     this.eventCache
-      .filter(e => isSameDay(e.date, this.selectedDate))
+      .filter(e => isSameDay(new Date(e.date), this.currentDate))
       .map(event => {
         const eventCellEle = this.buildEventCell(event);
         this.setEventPosition(event, eventCellEle);
@@ -541,7 +549,7 @@ class Calendar {
     if (!this.eventCache) return;
 
     this.eventCache
-      .filter(e => isSameDay(e.date, this.selectedDate))
+      .filter(e => isSameDay(new Date(e.date), this.currentDate))
       .map(event => {
         // Grouping
         const groupByKey = event[this.customGroupOptions.groupBy];
@@ -865,23 +873,24 @@ class Calendar {
   }
   filterEventsBy(filterOptions) {
     if (filterOptions.resetFilter) {
-      this.eventCache = [...this.eventCacheBackup];
-      this.eventCacheBackup = null;
-
-      if (this.customGroupingOn) {
-        this.renderGroupedEvents();
-      } else {
-        this.renderEvents();
+      if (this.eventCacheBackup) {
+        this.eventCache = [...this.eventCacheBackup];
+        this.eventCacheBackup = null;
       }
-      return;
+    } else {
+      this.eventCacheBackup = [...this.eventCache];
+
+      const { filterKey, filterCheck } = filterOptions;
+      this.eventCache = this.eventCache.filter(event => {
+        return filterCheck(event[filterKey]);
+      });
     }
 
-    this.eventCacheBackup = [...this.eventCache];
-
-    const { filterKey, filterCheck } = filterOptions;
-    this.eventCache = this.eventCache.filter(event => {
-      return filterCheck(event[filterKey]);
-    });
+    if (this.customGroupingOn) {
+      this.renderGroupedEvents();
+    } else {
+      this.renderEvents();
+    }
   }
   renderGroupedEvents(events, groupOptions) {
     if (events) {

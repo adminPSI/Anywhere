@@ -43,7 +43,7 @@ const SchedulingCalendar = (function () {
   let selectedLocationId;
   let selectedEmployeeId;
   let selectedShiftType;
-  let viewOptionShifts = 'yes';
+  let viewOptionShifts = 'no';
 
   // Shift Popups
   let shiftEmployees;
@@ -844,7 +844,7 @@ const SchedulingCalendar = (function () {
       },
     });
 
-    if (readOnly) {
+    if (!$.session.schedulingSecurity) {
       const shiftDate = shiftData.serviceDate.split(' ')[0];
       let startTime = shiftData.startTime;
       let endTime = shiftData.endTime;
@@ -905,6 +905,8 @@ const SchedulingCalendar = (function () {
           </div>
         </div>
       `;
+
+      return;
     }
 
     if (isCopy) {
@@ -1577,13 +1579,14 @@ const SchedulingCalendar = (function () {
         endTime: endTime,
         length: length,
         description: description,
-        name: sch.lastName,
+        name: id === '3' ? 'Open Shift' : sch.lastName,
         typeId: id,
         typeName: type,
         locationId: sch.locationId,
         locationName: sch.locationName,
         publishedDate: sch.publishDate,
         color: color,
+        consumers: sch.consumerNames,
       };
     });
   }
@@ -2020,13 +2023,17 @@ const SchedulingCalendar = (function () {
     const radioDiv = document.createElement('div');
     const yesRadio = input.buildRadio({
       text: 'Yes',
-      name: 'yes',
-      isChecked: false,
+      id: 'yes',
+      name: 'openShift',
+      isChecked: viewOptionShifts === 'yes' ? true : false,
+      attributes: [{ key: 'value', value: 'yes' }],
     });
     const noRadio = input.buildRadio({
       text: 'No',
-      name: 'no',
-      isChecked: true,
+      id: 'no',
+      name: 'openShift',
+      isChecked: viewOptionShifts === 'yes' ? false : true,
+      attributes: [{ key: 'value', value: 'no' }],
     });
     radioDiv.appendChild(yesRadio);
     radioDiv.appendChild(noRadio);
@@ -2034,7 +2041,7 @@ const SchedulingCalendar = (function () {
     radioDiv.addEventListener('change', async e => {
       console.log(e.target);
 
-      viewOptionShifts = e.target.name.toLowerCase();
+      viewOptionShifts = e.target.id.toLowerCase();
 
       if (viewOptionShifts === 'no') {
         if (selectedEmployeeId === 'none') {
@@ -2043,7 +2050,7 @@ const SchedulingCalendar = (function () {
           renderCalendarEvents();
         }
 
-        const filterCheck = value => value === 3;
+        const filterCheck = value => value !== 3;
         ScheduleCalendar.filterEventsBy({ filterKey: 'typeId', filterCheck });
       } else {
         ScheduleCalendar.filterEventsBy({ resetFilter: true });
@@ -2055,7 +2062,7 @@ const SchedulingCalendar = (function () {
 
       if (!$.session.schedulingSecurity) {
         const includeOpenShiftLocations = viewOptionShifts === 'yes' ? 'Y' : 'N';
-        locations = await schedulingAjax.getLocationDropdownForScheduling(includeOpenShiftLocations);
+        locations = await schedulingAjax.getLocationDropdownForSchedulingNew(includeOpenShiftLocations);
         populateLocationDropdown();
       }
     });
@@ -2178,6 +2185,11 @@ const SchedulingCalendar = (function () {
     calendarAppointments = await getCalendarAppointments();
     ScheduleCalendar.renderEvents([...calendarEvents, ...calendarAppointments]);
 
+    if (viewOptionShifts === 'no') {
+      const filterCheck = value => value !== 3;
+      ScheduleCalendar.filterEventsBy({ filterKey: 'typeId', filterCheck });
+    }
+
     preLoadPopupData();
   }
 
@@ -2199,7 +2211,8 @@ const Scheduling = (function () {
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
-      text: 'View Calendar Web2Cal',
+      //text: 'View Calendar Web2Cal',
+      text: 'View Calendar',
       style: 'secondary',
       type: 'contained',
       callback: function () {
@@ -2232,7 +2245,7 @@ const Scheduling = (function () {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
 
-    btnWrap.appendChild(schedulingCalendarBtn);
+    //btnWrap.appendChild(schedulingCalendarBtn);
     btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === true && $.session.schedulingUpdate === false) {

@@ -349,6 +349,15 @@
       font-size: 14px;
     }
 
+    .eventIcons {
+      display:  flex;
+      flex-flow: row nowrap;
+      column-gap: 6px;
+      position: absolute;
+      bottom: 0px;
+      right: 0px;
+    }
+
     .eventTime,
     .eventName,
     .pubUnpubIcon,
@@ -478,6 +487,10 @@
     //==================================================
     .dayEvents {
       display: contents;
+
+      .eventCellEle {
+        grid-column: 2;
+      }
     }
 
     .timeSlot {
@@ -492,38 +505,102 @@
       grid-column: 2 / 3;
     }
 
-    .timeSlot:nth-of-type(n) {
-      grid-row: calc(var(--index) * 2 + 1);
+    .timeSlot:nth-child(1),
+    .daySlot:nth-child(2) {
+      grid-row: 1;
     }
-    .daySlot:nth-of-type(n) {
-      grid-row: calc(var(--index) * 2 + 2);
+    .timeSlot:nth-child(3),
+    .daySlot:nth-child(4) {
+      grid-row: 2;
     }
-
-    /* Assign correct row (hour) based on index */
-    // .daySlot:nth-child(n + 2):nth-child(-n + 8) { grid-row: 1 / 2; } /* 12:00 AM */
-    // .daySlot:nth-child(n + 10):nth-child(-n + 16) { grid-row: 2 / 3; } /* 1:00 AM */
-    // .daySlot:nth-child(n + 18):nth-child(-n + 24) { grid-row: 3 / 4; } /* 2:00 AM */
-    // .daySlot:nth-child(n + 26):nth-child(-n + 32) { grid-row: 4 / 5; } /* 3:00 AM */
-    // .daySlot:nth-child(n + 34):nth-child(-n + 40) { grid-row: 5 / 6; } /* 4:00 AM */
-    // .daySlot:nth-child(n + 42):nth-child(-n + 48) { grid-row: 6 / 7; } /* 5:00 AM */
-    // .daySlot:nth-child(n + 50):nth-child(-n + 56) { grid-row: 7 / 8; } /* 6:00 AM */
-    // .daySlot:nth-child(n + 58):nth-child(-n + 64) { grid-row: 8 / 9; } /* 7:00 AM */
-    // .daySlot:nth-child(n + 66):nth-child(-n + 72) { grid-row: 9 / 10; } /* 8:00 AM */
-    // .daySlot:nth-child(n + 74):nth-child(-n + 80) { grid-row: 10 / 11; } /* 9:00 AM */
-    // .daySlot:nth-child(n + 82):nth-child(-n + 88) { grid-row: 11 / 12; } /* 10:00 AM */
-    // .daySlot:nth-child(n + 90):nth-child(-n + 96) { grid-row: 12 / 13; } /* 11:00 AM */
-    // .daySlot:nth-child(n + 98):nth-child(-n + 104) { grid-row: 13 / 14; } /* 12:00 PM */
-    // .daySlot:nth-child(n + 106):nth-child(-n + 112) { grid-row: 14 / 15; } /* 1:00 PM */
-    // .daySlot:nth-child(n + 114):nth-child(-n + 120) { grid-row: 15 / 16; } /* 2:00 PM */
-    // .daySlot:nth-child(n + 122):nth-child(-n + 128) { grid-row: 16 / 17; } /* 3:00 PM */
-    // .daySlot:nth-child(n + 130):nth-child(-n + 136) { grid-row: 17 / 18; } /* 4:00 PM */
-    // .daySlot:nth-child(n + 138):nth-child(-n + 144) { grid-row: 18 / 19; } /* 5:00 PM */
-    // .daySlot:nth-child(n + 146):nth-child(-n + 152) { grid-row: 19 / 20; } /* 6:00 PM */
-    // .daySlot:nth-child(n + 154):nth-child(-n + 160) { grid-row: 20 / 21; } /* 7:00 PM */
-    // .daySlot:nth-child(n + 162):nth-child(-n + 168) { grid-row: 21 / 22; } /* 8:00 PM */
-    // .daySlot:nth-child(n + 170):nth-child(-n + 176) { grid-row: 22 / 23; } /* 9:00 PM */
-    // .daySlot:nth-child(n + 178):nth-child(-n + 184) { grid-row: 23 / 24; } /* 10:00 PM */
-    // .daySlot:nth-child(n + 186):nth-child(-n + 192) { grid-row: 24 / 25; } /* 11:00 PM */
+    .timeSlot:nth-child(5),
+    .daySlot:nth-child(6) {
+      grid-row: 3;
+    }
+    .timeSlot:nth-child(7),
+    .daySlot:nth-child(8) {
+      grid-row: 4;
+    }
+    .timeSlot:nth-child(9),
+    .daySlot:nth-child(10) {
+      grid-row: 5;
+    }
+    .timeSlot:nth-child(11),
+    .daySlot:nth-child(12) {
+      grid-row: 6;
+    }
+    .timeSlot:nth-child(13),
+    .daySlot:nth-child(14) {
+      grid-row: 7;
+    }
+    .timeSlot:nth-child(15),
+    .daySlot:nth-child(16) {
+      grid-row: 8;
+    }
+    .timeSlot:nth-child(17),
+    .daySlot:nth-child(18) {
+      grid-row: 9;
+    }
+    .timeSlot:nth-child(19),
+    .daySlot:nth-child(20) {
+      grid-row: 10;
+    }
+    .timeSlot:nth-child(21),
+    .daySlot:nth-child(22) {
+      grid-row: 11;
+    }
+    .timeSlot:nth-child(23),
+    .daySlot:nth-child(24) {
+      grid-row: 12;
+    }
+    .timeSlot:nth-child(25),
+    .daySlot:nth-child(26) {
+      grid-row: 13;
+    }
+    .timeSlot:nth-child(27),
+    .daySlot:nth-child(28) {
+      grid-row: 14;
+    }
+    .timeSlot:nth-child(29),
+    .daySlot:nth-child(30) {
+      grid-row: 15;
+    }
+    .timeSlot:nth-child(31),
+    .daySlot:nth-child(32) {
+      grid-row: 16;
+    }
+    .timeSlot:nth-child(33),
+    .daySlot:nth-child(34) {
+      grid-row: 17;
+    }
+    .timeSlot:nth-child(35),
+    .daySlot:nth-child(36) {
+      grid-row: 18;
+    }
+    .timeSlot:nth-child(37),
+    .daySlot:nth-child(38) {
+      grid-row: 19;
+    }
+    .timeSlot:nth-child(39),
+    .daySlot:nth-child(40) {
+      grid-row: 20;
+    }
+    .timeSlot:nth-child(41),
+    .daySlot:nth-child(42) {
+      grid-row: 21;
+    }
+    .timeSlot:nth-child(43),
+    .daySlot:nth-child(44) {
+      grid-row: 22;
+    }
+    .timeSlot:nth-child(45),
+    .daySlot:nth-child(46) {
+      grid-row: 23;
+    }
+    .timeSlot:nth-child(47),
+    .daySlot:nth-child(48) {
+      grid-row: 24;
+    }
 
     .dayEvents {
       display: contents;
