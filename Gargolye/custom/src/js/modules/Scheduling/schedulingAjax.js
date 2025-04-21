@@ -275,7 +275,7 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-  async function publishUnpublishSchedules(retrieveData) {
+  async function publishUnpublishSchedules(retrieveData, pubOrUnpub) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -287,9 +287,10 @@ const schedulingAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/publishUnpublishSchedules/',
+          '/publishShift/',
         data: JSON.stringify({
           token: $.session.Token,
+          publish: pubOrUnpub,
           ...retrieveData,
         }),
         contentType: 'application/json; charset=utf-8',

@@ -39,11 +39,11 @@ const SchedulingCalendar = (function () {
   let rosterCache;
 
   // GLOBALS
-  let currentCalView = 'month';
+  let currentCalView;
   let selectedLocationId;
   let selectedEmployeeId;
   let selectedShiftType;
-  let viewOptionShifts = 'no';
+  let viewOptionShifts;
 
   // Shift Popups
   let shiftEmployees;
@@ -99,6 +99,15 @@ const SchedulingCalendar = (function () {
     const newB = mix(b);
 
     return `rgb(${newR}, ${newG}, ${newB})`;
+  }
+  function sortEmployeeString(a, b) {
+    const [aLast, aFirst] = a.text.split(',').map(s => s.trim());
+    const [bLast, bFirst] = b.text.split(',').map(s => s.trim());
+
+    const lastCmp = aLast.localeCompare(bLast, undefined, { sensitivity: 'base' });
+    if (lastCmp !== 0) return lastCmp;
+
+    return aFirst.localeCompare(bFirst, undefined, { sensitivity: 'base' });
   }
 
   // Shift Call Off Request
@@ -385,8 +394,8 @@ const SchedulingCalendar = (function () {
   //
   function populateRegionDropdown(regionDropdown) {
     const dropdownData = regions.map(r => ({
-      value: r,
-      text: r,
+      value: r.regionId,
+      text: r.description,
     }));
 
     dropdownData.unshift({
@@ -625,7 +634,83 @@ const SchedulingCalendar = (function () {
 
     spinner.remove();
   }
-  //
+  // Shift Group Popup
+  function formatDateForHeader(dirtyDate) {
+    const getOrdinalSuffix = day => {
+      if (day > 3 && day < 21) return 'th';
+      switch (day % 10) {
+        case 1:
+          return 'st';
+        case 2:
+          return 'nd';
+        case 3:
+          return 'rd';
+        default:
+          return 'th';
+      }
+    };
+
+    const dateString = dirtyDate.toLocaleDateString('en-US', { weekday: 'long', day: '2-digit', month: 'long' });
+    const weekdayAndMonth = dateString.slice(0, -2);
+    const dayNumber = dateString.slice(-2);
+    const suffix = getOrdinalSuffix(dayNumber);
+    return `${weekdayAndMonth} ${parseInt(dayNumber)}${suffix}`;
+  }
+  function showShiftGroupPopup(events, dateISO) {
+    const eventLookup = {};
+
+    const shiftPopup = POPUP.build({
+      id: 'shiftGroupDetailPopup',
+    });
+
+    // header
+    const viewDate = new Date(dateISO);
+    const headerEle = document.createElement('p');
+    headerEle.className = 'groupDetailsHeader';
+    headerEle.innerHTML = formatDateForHeader(viewDate);
+    shiftPopup.appendChild(headerEle);
+
+    // events
+    const eventsWrapEle = document.createElement('div');
+    eventsWrapEle.className = 'groupEventsWrap';
+    shiftPopup.appendChild(eventsWrapEle);
+
+    events.forEach(event => {
+      const startTime = dates.convertFromMilitary(event.startTime);
+      const endTime = dates.convertFromMilitary(event.endTime);
+
+      const shiftEle = document.createElement('div');
+      shiftEle.className = 'eventCell';
+      shiftEle.setAttribute('data-event-id', event.shiftId);
+      shiftEle.setAttribute('data-type-id', event.typeId);
+      shiftEle.style.backgroundColor = rgba(event.colorCode, 0.3);
+      shiftEle.innerHTML = `
+        <p class="eventTime">${startTime} - ${endTime} ${event.length}</p>
+        <p class="eventName">${event.locationName}</p>
+      `;
+
+      eventsWrapEle.appendChild(shiftEle);
+
+      eventLookup[event.shiftId] = event;
+    });
+
+    eventsWrapEle.addEventListener('click', e => {
+      const eventId = e.target.dataset.eventId;
+      const eventTypeId = e.target.dataset.typeId;
+
+      showEventDetailsPopup(
+        {
+          eventTypeId,
+          data: eventLookup[eventId],
+          isCopy: false,
+        },
+        () => overlay.show(),
+      );
+    });
+
+    POPUP.show(shiftPopup);
+  }
+  // Single Shift Popup
   class WeekViewDatePicker {
     constructor(opts) {
       this.onDateChange = opts.onDateChange;
@@ -764,16 +849,7 @@ const SchedulingCalendar = (function () {
     dropdown.populate(locationDropdown, dropdownData, defaultValue);
   }
   function populateShiftEmployeeDropdown(employeeDropdown, defaultValue = '') {
-    let dropdownData = [
-      {
-        value: '%',
-        text: 'All',
-      },
-      {
-        value: $.session.PeopleId,
-        text: `${$.session.Name}, ${$.session.LName}`,
-      },
-    ];
+    let dropdownData = [];
 
     shiftEmployees.forEach(d =>
       dropdownData.push({
@@ -782,17 +858,28 @@ const SchedulingCalendar = (function () {
       }),
     );
 
+    dropdownData.sort(sortEmployeeString);
+
+    dropdownData.unshift({
+      value: $.session.PeopleId,
+      text: `${$.session.LName}, ${$.session.Name}`,
+    });
+    dropdownData.unshift({
+      value: '',
+      text: '',
+    });
+
     dropdown.populate(employeeDropdown, dropdownData, defaultValue);
   }
   function populateShiftColorDropdown(colorDropdown, defaultValue = '') {
     const dropdownData = [
       { value: '', text: '' }, // default gray
-      { value: 'red', text: 'red' },
-      { value: 'blue', text: 'blue' },
-      { value: 'green', text: 'green' },
-      { value: 'orange', text: 'orange' },
-      { value: 'purple', text: 'purple' },
-      { value: 'yellow', text: 'yellow' },
+      { value: 'blue', text: 'Blue' },
+      { value: 'green', text: 'Green' },
+      { value: 'orange', text: 'Orange' },
+      { value: 'purple', text: 'Purple' },
+      { value: 'red', text: 'Red' },
+      { value: 'yellow', text: 'Yellow' },
     ];
 
     dropdown.populate(colorDropdown, dropdownData, defaultValue);
@@ -1382,84 +1469,6 @@ const SchedulingCalendar = (function () {
     POPUP.show(popup);
   }
 
-  // Event Group Popup
-  //-----------------------------------------------------------------------
-  function formatDateForHeader(dirtyDate) {
-    const getOrdinalSuffix = day => {
-      if (day > 3 && day < 21) return 'th';
-      switch (day % 10) {
-        case 1:
-          return 'st';
-        case 2:
-          return 'nd';
-        case 3:
-          return 'rd';
-        default:
-          return 'th';
-      }
-    };
-
-    const dateString = dirtyDate.toLocaleDateString('en-US', { weekday: 'long', day: '2-digit', month: 'long' });
-    const weekdayAndMonth = dateString.slice(0, -2);
-    const dayNumber = dateString.slice(-2);
-    const suffix = getOrdinalSuffix(dayNumber);
-    return `${weekdayAndMonth} ${parseInt(dayNumber)}${suffix}`;
-  }
-  function showShiftGroupPopup(events, dateISO) {
-    const eventLookup = {};
-
-    const shiftPopup = POPUP.build({
-      id: 'shiftGroupDetailPopup',
-    });
-
-    // header
-    const viewDate = new Date(dateISO);
-    const headerEle = document.createElement('p');
-    headerEle.className = 'groupDetailsHeader';
-    headerEle.innerHTML = formatDateForHeader(viewDate);
-    shiftPopup.appendChild(headerEle);
-
-    // events
-    const eventsWrapEle = document.createElement('div');
-    eventsWrapEle.className = 'groupEventsWrap';
-    shiftPopup.appendChild(eventsWrapEle);
-
-    events.forEach(event => {
-      const startTime = dates.convertFromMilitary(event.startTime);
-      const endTime = dates.convertFromMilitary(event.endTime);
-
-      const shiftEle = document.createElement('div');
-      shiftEle.className = 'eventCell';
-      shiftEle.setAttribute('data-event-id', event.shiftId);
-      shiftEle.setAttribute('data-type-id', event.typeId);
-      shiftEle.style.backgroundColor = rgba(event.colorCode, 0.3);
-      shiftEle.innerHTML = `
-        <p class="eventTime">${startTime} - ${endTime} ${event.length}</p>
-        <p class="eventName">${event.locationName}</p>
-      `;
-
-      eventsWrapEle.appendChild(shiftEle);
-
-      eventLookup[event.shiftId] = event;
-    });
-
-    eventsWrapEle.addEventListener('click', e => {
-      const eventId = e.target.dataset.eventId;
-      const eventTypeId = e.target.dataset.typeId;
-
-      showEventDetailsPopup(
-        {
-          eventTypeId,
-          data: eventLookup[eventId],
-          isCopy: false,
-        },
-        () => overlay.show(),
-      );
-    });
-
-    POPUP.show(shiftPopup);
-  }
-
   function showEventDetailsPopup({ eventTypeId, data, viewDate, isCopy }, leaveOverlayOnClose = false) {
     if (eventTypeId === '6') {
       showAppointmentPopup(data);
@@ -1683,7 +1692,7 @@ const SchedulingCalendar = (function () {
 
   // Pub/Sub Popup
   //-----------------------------------------------------------------------
-  function populateLocationPubUnpubDropdown() {
+  function populateLocationPubUnpubDropdown(dropdownEle) {
     const dropdownData = locations
       .map(d => ({
         value: d.locationId,
@@ -1700,25 +1709,10 @@ const SchedulingCalendar = (function () {
       text: '',
     });
 
-    selectedLocationId = dropdownData[0].value;
-
-    dropdown.populate(locationDropdownEle, dropdownData, selectedLocationId);
+    dropdown.populate(dropdownEle, dropdownData, '');
   }
-  function populateEmployeePubUnpubDropdown(dropdown) {
-    let dropdownData = [
-      {
-        value: '',
-        text: '',
-      },
-      {
-        value: '%',
-        text: 'All',
-      },
-      {
-        value: $.session.PeopleId,
-        text: `${$.session.Name}, ${$.session.LName}`,
-      },
-    ];
+  function populateEmployeePubUnpubDropdown(dropdownEle) {
+    let dropdownData = [];
 
     if ($.session.schedulingUpdate) {
       employees.forEach(d =>
@@ -1727,12 +1721,26 @@ const SchedulingCalendar = (function () {
           text: d.EmployeeName,
         }),
       );
+
+      dropdownData.sort(sortEmployeeString);
     }
 
-    dropdown.populate(dropdown, dropdownData, '');
+    dropdownData.unshift({
+      value: $.session.PeopleId,
+      text: `${$.session.LName}, ${$.session.Name}`,
+    });
+    dropdownData.unshift({
+      value: '%',
+      text: 'All',
+    });
+    dropdownData.unshift({
+      value: '',
+      text: '',
+    });
+
+    dropdown.populate(dropdownEle, dropdownData, '');
   }
   function showPubUnpubSchedulesPopup() {
-    //! Values are required for all fields.
     const data = {
       locationId: '',
       employeeId: '',
@@ -1742,7 +1750,8 @@ const SchedulingCalendar = (function () {
     };
 
     const pubUnpubPopup = POPUP.build({
-      id: 'shiftDetailPopup',
+      id: 'pubUnpubPopup',
+      header: 'Publish Schedules',
     });
 
     const locationDropdown = dropdown.build({
@@ -1769,6 +1778,7 @@ const SchedulingCalendar = (function () {
     });
     const notifyEmployees = input.buildCheckbox({
       text: 'Notify Employees',
+      id: 'notifyEmployee',
       isChecked: false,
     });
 
@@ -1777,57 +1787,106 @@ const SchedulingCalendar = (function () {
     fromDateInput.classList.add('error');
     toDateInput.classList.add('error');
 
-    // Event Listener
-    pubUnpubPopup.addEventListener('change', e => {
-      if (e.target === locationDropdown) {
-        const selectedOption = e.target.options[e.target.selectedIndex];
-        data.locationId = selectedOption.value;
-      }
-      if (e.target === employeeDropdown) {
-        const selectedOption = e.target.options[e.target.selectedIndex];
-        data.employeeId = selectedOption.value;
-      }
-      if (e.target === fromDateInput) {
-        data.fromDate = e.target.value;
-      }
-      if (e.target === toDateInput) {
-        data.toDate = e.target.value;
-      }
-      if (e.target === notifyEmployees) {
-      }
-    });
+    const dateWrap = document.createElement('div');
+    dateWrap.classList.add('dateWrap');
+    dateWrap.appendChild(fromDateInput);
+    dateWrap.appendChild(toDateInput);
 
     const buttonWrap = document.createElement('div');
-    const savebtn = button.build({
-      text: 'UnpubPopuplish',
+    buttonWrap.classList.add('btnWrap');
+    const publishBtn = button.build({
+      text: 'Publish',
       style: 'secondary',
       type: 'contained',
       callback: () => {
         POPUP.hide(pubUnpubPopup);
-        schedulingAjax.publishUnpublishSchedules(data);
+        schedulingAjax.publishUnpublishSchedules(data, 'T');
       },
     });
-    const cancelbtn = button.build({
+    const unpublishBtn = button.build({
       text: 'Un-publish',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        POPUP.hide(pubUnpubPopup);
+        schedulingAjax.publishUnpublishSchedules(data, 'F');
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'Cancel',
       style: 'secondary',
       type: 'outlined',
       callback: () => {
         POPUP.hide(pubUnpubPopup);
       },
     });
-    buttonWrap.appendChild(savebtn);
-    buttonWrap.appendChild(cancelbtn);
+    buttonWrap.appendChild(publishBtn);
+    buttonWrap.appendChild(unpublishBtn);
+    buttonWrap.appendChild(cancelBtn);
 
     pubUnpubPopup.appendChild(locationDropdown);
     pubUnpubPopup.appendChild(employeeDropdown);
-    pubUnpubPopup.appendChild(fromDateInput);
-    pubUnpubPopup.appendChild(toDateInput);
+    pubUnpubPopup.appendChild(dateWrap);
     pubUnpubPopup.appendChild(notifyEmployees);
-
     pubUnpubPopup.appendChild(buttonWrap);
 
     populateLocationPubUnpubDropdown(locationDropdown);
     populateEmployeePubUnpubDropdown(employeeDropdown);
+
+    // Event Listener
+    pubUnpubPopup.addEventListener('change', e => {
+      if (e.target.id === 'locationDropdown') {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        data.locationId = selectedOption.value;
+
+        if (data.locationId) {
+          locationDropdown.classList.remove('error');
+        } else {
+          locationDropdown.classList.add('error');
+        }
+
+        return;
+      }
+      if (e.target.id === 'employeeDropdown') {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        data.employeeId = selectedOption.value;
+
+        if (data.employeeId) {
+          employeeDropdown.classList.remove('error');
+        } else {
+          employeeDropdown.classList.add('error');
+        }
+
+        return;
+      }
+      if (e.target.id === 'fromDateInput') {
+        data.fromDate = e.target.value;
+
+        if (data.fromDate) {
+          fromDateInput.classList.remove('error');
+        } else {
+          fromDateInput.classList.add('error');
+        }
+
+        return;
+      }
+      if (e.target.id === 'toDateInput') {
+        data.toDate = e.target.value;
+
+        if (data.toDate) {
+          toDateInput.classList.remove('error');
+        } else {
+          toDateInput.classList.add('error');
+        }
+
+        return;
+      }
+      if (e.target.id === 'notifyEmployee') {
+        data.notifyEmployee = e.target.checked ? 'T' : 'F';
+
+        return;
+      }
+    });
 
     POPUP.show(pubUnpubPopup);
   }
@@ -1852,16 +1911,7 @@ const SchedulingCalendar = (function () {
     dropdown.populate(locationDropdownEle, dropdownData, selectedLocationId);
   }
   function populateEmployeeDropdown() {
-    let dropdownData = [
-      {
-        value: '%',
-        text: 'All',
-      },
-      {
-        value: $.session.PeopleId,
-        text: `${$.session.Name}, ${$.session.LName}`,
-      },
-    ];
+    let dropdownData = [];
 
     if ($.session.schedulingUpdate) {
       employees.forEach(d =>
@@ -1870,9 +1920,20 @@ const SchedulingCalendar = (function () {
           text: d.EmployeeName,
         }),
       );
+
+      dropdownData.sort(sortEmployeeString);
     }
 
-    if ((viewOptionShifts = 'yes')) {
+    dropdownData.unshift({
+      value: $.session.PeopleId,
+      text: `${$.session.LName}, ${$.session.Name}`,
+    });
+    dropdownData.unshift({
+      value: '%',
+      text: 'All',
+    });
+
+    if (viewOptionShifts === 'yes') {
       dropdownData.unshift({
         id: '',
         value: 'none',
@@ -2209,8 +2270,8 @@ const Scheduling = (function () {
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
-      //text: 'View Calendar Web2Cal',
-      text: 'View Calendar',
+      text: 'View Calendar Web2Cal',
+      // text: 'View Calendar',
       style: 'secondary',
       type: 'contained',
       callback: function () {
@@ -2243,7 +2304,7 @@ const Scheduling = (function () {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
 
-    //btnWrap.appendChild(schedulingCalendarBtn);
+    btnWrap.appendChild(schedulingCalendarBtn);
     btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === true && $.session.schedulingUpdate === false) {

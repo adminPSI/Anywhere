@@ -740,6 +740,21 @@
     }
   }
 }
+#pubUnpubPopup {
+  .btnWrap {
+    margin: 10px 0 0 0;
+    row-gap: 6px;
+  }
+
+  .dateWrap {
+    display: flex;
+    column-gap: 6px;
+
+    > div {
+      flex-grow: 1;
+    }
+  }
+}
 // roster stuff for popups
 #shiftDetailPopup,
 #addIndividualPopup {
