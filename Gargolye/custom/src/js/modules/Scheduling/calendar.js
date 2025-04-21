@@ -157,7 +157,7 @@ class Calendar {
       <div class="eventDetails">
       ${event.consumers
         .split(',')
-        .map(c => `<p>${c}</p>`)
+        .map(c => `<p>${c.split('|')[0]}</p>`)
         .join('')}
       </div>
       <p class="eventIcons">

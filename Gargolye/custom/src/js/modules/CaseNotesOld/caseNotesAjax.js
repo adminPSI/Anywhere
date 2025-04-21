@@ -43,44 +43,6 @@ const caseNotesAjax = (function () {
         '/' +
         $.webServer.serviceName +
         '/caseNotesFilteredSearchJSON/',
-      //     data:
-      //         '{"token":"' +
-      //         $.session.Token +
-      //         '", "billerId":"' +
-      //         data.billerId +
-      //         '", "consumerId":"' +
-      //         data.consumer +
-      //         '", "serviceStartDate":"' +
-      //         data.serviceDateStart +
-      //         '", "serviceEndDate":"' +
-      //         data.serviceDateEnd +
-      //         '", "dateEnteredStart":"' +
-      //         data.enteredDateStart +
-      //         '", "dateEnteredEnd":"' +
-      //         data.enteredDateEnd +
-      //         '", "billingCode":"' +
-      //         data.billingCode +
-      //         '", "reviewStatus":"' +
-      //         data.reviewStatus +
-      //         '", "location":"' +
-      //         data.location +
-      //         '", "service":"' +
-      //         data.service +
-      //         '", "need":"' +
-      //         data.need +
-      //         '", "contact":"' +
-      //         data.contact +
-      //         '", "confidential":"' +
-      //         data.confidential +
-      //         '", "billed":"' +
-      //         data.billed +
-      //         '", "attachments":"' +
-      //         data.attachments +
-      //         '", "overlaps":"' +
-      //         data.overlaps +
-      //         '", "noteText":"' +
-      //         data.noteText +
-      // '"}',
       data: JSON.stringify(submitData),
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',

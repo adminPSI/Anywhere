@@ -821,7 +821,7 @@ const SchedulingCalendar = (function () {
           startTime: data.startTime,
           endTime: data.endTime,
           notifyEmployee: 'N',
-          consumerNames: data.consumerNames === '' ? [] : data.consumerNames.split(','), // [name|id]
+          consumerNames: data.consumerNames === '' ? [] : data.consumerNames.split(','),
           date: [data.serviceDate.split(' ')[0]],
         }
       : {
@@ -845,16 +845,16 @@ const SchedulingCalendar = (function () {
     });
 
     if (!$.session.schedulingSecurity) {
-      const shiftDate = shiftData.serviceDate.split(' ')[0];
-      let startTime = shiftData.startTime;
-      let endTime = shiftData.endTime;
+      const shiftDate = data.serviceDate.split(' ')[0];
+      let startTime = data.startTime;
+      let endTime = data.endTime;
       startTime = dates.convertFromMilitary(startTime);
       endTime = dates.convertFromMilitary(endTime);
-      const consumers = shiftData.consumerNames;
-      const location = shiftData.locationName;
-      const shiftNotes = shiftData.shiftNotes;
-      const workCode = `${shiftData.workCode} - ${shiftData.workCodeDescription}`;
-      let shiftType = shiftData.shiftType;
+      const consumers = data.consumerNames;
+      const location = data.locationName;
+      const shiftNotes = data.shiftNotes;
+      const workCode = `${data.workCode} - ${data.workCodeDescription}`;
+      let shiftType = data.shiftType;
       shiftType =
         shiftType === 'A'
           ? 'Awake'
@@ -1506,11 +1506,11 @@ const SchedulingCalendar = (function () {
   }
   function getEventColor(typeId, color) {
     if (typeId === 3) {
-      return EVENT_COLORS[white];
+      return EVENT_COLORS.white;
     }
 
     if (!color) {
-      return EVENT_COLORS[defaultMute];
+      return EVENT_COLORS.defaultMute;
     }
 
     return EVENT_COLORS[color];
@@ -2048,15 +2048,13 @@ const SchedulingCalendar = (function () {
           selectedEmployeeId = $.session.PeopleId;
 
           renderCalendarEvents();
+        } else {
+          const filterCheck = value => value !== 3;
+          ScheduleCalendar.filterEventsBy({ filterKey: 'typeId', filterCheck });
         }
-
-        const filterCheck = value => value !== 3;
-        ScheduleCalendar.filterEventsBy({ filterKey: 'typeId', filterCheck });
       } else {
         ScheduleCalendar.filterEventsBy({ resetFilter: true });
       }
-
-      renderCalendarEvents();
 
       populateEmployeeDropdown();
 
