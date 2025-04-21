@@ -27,6 +27,7 @@ const individualAssessment = (() => {
     let categoryTable;
     let appoinmentTable;
     let tempConsumer;
+    let rowClickedId;
 
     const sections = {
         ContactInfo: {
@@ -108,7 +109,7 @@ const individualAssessment = (() => {
                 },
             ],
         },
-        PersonalNumbers: {
+        PersonalIdentificationNumbers: {
             name: 'Personal Identification Numbers',
             dbtable: 'WLA_Personal_Identification_Numbers',
             enabled: true,
@@ -251,19 +252,7 @@ const individualAssessment = (() => {
                     type: 'text',
                     label: 'eMAR Eligible',
                     disabled: true,
-                },
-                {
-                    id: 'dIMedCart',
-                    type: 'text',
-                    label: 'MedCart',
-                    disabled: true,
-                },
-                {
-                    id: 'dIDNROnFile',
-                    type: 'text',
-                    label: 'DNR On File?',
-                    disabled: true,
-                },
+                },              
             ],
         },
         Locations: {
@@ -278,8 +267,8 @@ const individualAssessment = (() => {
             name: 'Categories',
             enabled: $.session.applicationName === 'Advisor' ? false : true,
         },
-        Appointmnets: {
-            name: 'Appointmnets',
+        Appointments: {
+            name: 'Appointments',
             enabled: $.session.applicationName === 'Advisor' ? false : true,
         },
     };
@@ -324,7 +313,7 @@ const individualAssessment = (() => {
         wlRelationship = {};
         if (relation.length > 0) {
             for (const rel of relation) {
-                wlRelationship[rel.personId] = {
+                wlRelationship[rel.rowNum] = {
                     id: rel.personId,
                     values: [rel.relationshipType, rel.name, moment(rel.startDate).format('MM/DD/YY'), rel.endDate == '' ? '' : moment(rel.endDate).format('MM/DD/YY')],
                 };
@@ -334,7 +323,7 @@ const individualAssessment = (() => {
         wlCategory = {};
         if (categ.length > 0) {
             for (const cat of categ) {
-                wlCategory[cat.categoryID] = {
+                wlCategory[cat.rowNum] = { 
                     id: cat.categoryID,
                     values: [cat.categoryName],
                 };
@@ -352,7 +341,7 @@ const individualAssessment = (() => {
         }
 
         wlFormInfo['ContactInfo'].id = wlLinkID;
-        wlFormInfo['PersonalNumbers'].id = wlLinkID;
+        wlFormInfo['PersonalIdentificationNumbers'].id = wlLinkID;
         wlFormInfo['DemographicInfo'].id = wlLinkID;
 
 
@@ -371,7 +360,7 @@ const individualAssessment = (() => {
                 cIPhone2: assessmentData.secondaryphone ? formatPhoneNumber(assessmentData.secondaryphone) : '',
                 cIEmail: assessmentData.email,
             },
-            PersonalNumbers: {
+            PersonalIdentificationNumbers: {
                 pNConsumerNumber: assessmentData.consumerNumber,
                 pNBillingNumber: assessmentData.billingNumber,
                 pNSSN: assessmentData.SSN,
@@ -396,8 +385,6 @@ const individualAssessment = (() => {
                 dISecondProcedureDate: assessmentData.secondProcedureDate,
                 dIOtherSource: assessmentData.otherSource,
                 dIeMAREligible: assessmentData.eMarConsumer,
-                dIMedCart: assessmentData.eMarMadCart,
-                dIDNROnFile: assessmentData.DNRFile,
             },
         };
 
@@ -508,7 +495,7 @@ const individualAssessment = (() => {
                     continue;
                 }
 
-                if (section === 'Appointmnets') {
+                if (section === 'Appointments') {
                     appoinmentTable.renderTo(sectionWrap);
                     appoinmentForm.renderTo(sectionWrap);
                     assessmentWrap.appendChild(sectionWrap);
@@ -550,7 +537,7 @@ const individualAssessment = (() => {
     function initFormInfo() {
         return {
             ContactInfo: { dbtable: 'WLA_Contact_Information' },
-            PersonalNumbers: { dbtable: 'WLA_Personal_Identification_Numbers' },
+            PersonalIdentificationNumbers: { dbtable: 'WLA_Personal_Identification_Numbers' },
             DemographicInfo: { dbtable: 'WLA_Demographic_Information' },
         };
     }
@@ -893,7 +880,7 @@ const individualAssessment = (() => {
 
         if ($.session.applicationName === 'Advisor') {
 
-            relationshipTable = new Table({
+            relationshipTable = new Table({              
                 columnSortable: false,
                 allowDelete: false,
                 headings: [
@@ -1023,10 +1010,15 @@ const individualAssessment = (() => {
     }
 
     function attachEvents() {
-        locationsTable.onRowClick(rowId => {
-            locationsForm.form.classList.remove('hiddenPage');
+        locationsTable.onRowClick(rowId => {  
+            if (rowId == rowClickedId && !locationsForm.form.classList.contains('hiddenPage')) {
+                locationsForm.form.classList.add('hiddenPage');
+            } else {
+                locationsForm.form.classList.remove('hiddenPage'); 
+            }          
             locationsForm.clear();
             const rowData = locationData.find(l => l.locationId == rowId);
+            rowClickedId = rowId;
             locationsForm.populate(
                 {
                     lLocations: rowData.locationName,
@@ -1110,17 +1102,15 @@ const individualAssessment = (() => {
 
     }
     function showHideSections() {
-        if ($.session.applicationName === 'Advisor') {
-            wlForms['PersonalNumbers'].inputs['pNConsumerNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewConsumerNumber);
-            wlForms['PersonalNumbers'].inputs['pNSSN'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewSSN);
-            wlForms['PersonalNumbers'].inputs['pNMedicaidNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewMedicaid);
-            wlForms['PersonalNumbers'].inputs['pNMedicareNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewMedicare);
-            wlForms['PersonalNumbers'].inputs['pNResidentNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewResident);
+        if ($.session.applicationName === 'Advisor') {  
+            wlForms['PersonalIdentificationNumbers'].inputs['pNConsumerNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewConsumerNumber);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNSSN'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewSSN);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNMedicaidNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewMedicaid);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNMedicareNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewMedicare);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNResidentNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewResident);
 
             wlForms['DemographicInfo'].inputs['dIDateofBirth'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewDOB);
             wlForms['DemographicInfo'].inputs['dIeMAREligible'].rootElement.classList.toggle('hiddenPage', !$.session.emarVisible);
-            wlForms['DemographicInfo'].inputs['dIMedCart'].rootElement.classList.toggle('hiddenPage', !$.session.emarVisible);
-            wlForms['DemographicInfo'].inputs['dIDNROnFile'].rootElement.classList.toggle('hiddenPage', !$.session.emarVisible);
         }
 
     }

@@ -1465,7 +1465,7 @@
             }
         }
 
-        #PersonalNumbers {
+        #PersonalIdentificationNumbers {
             order: 2;
 
             .inputGroup.time,
@@ -1499,7 +1499,7 @@
                 width: calc(32% - 5px) !important;
             }
 
-            .inputGroup.date, .inputGroup.time,  
+            .inputGroup.date, .inputGroup.time,
             .inputGroup.select, .inputGroup.text {
                 width: calc(13% - 5px);
             }
@@ -1521,7 +1521,7 @@
             }
         }
 
-        #Appointmnets {
+        #Appointments {
             order: 7;
 
             .ui_table {
@@ -1535,7 +1535,7 @@
         }
     }
 
-    .demographicesListTableOFContents {
+    .demographicesListTableOFContents { 
         display: flex;
         flex-flow: column;
         min-width: 19%;
