@@ -1455,7 +1455,7 @@
             order: 1;
 
             .inputGroup.time,
-            .inputGroup.number, .inputGroup.text {
+            S .inputGroup.number, .inputGroup.text, .inputGroup.date {
                 width: calc(50% - 5px);
             }
 
@@ -1513,7 +1513,7 @@
             }
         }
 
-        #Categories {
+        #Categories, #Classifications { 
             order: 6;
 
             .ui_table {
@@ -1521,7 +1521,7 @@
             }
         }
 
-        #Appointments {
+        #Appointments, #Intake {
             order: 7;
 
             .ui_table {
@@ -1535,7 +1535,7 @@
         }
     }
 
-    .demographicesListTableOFContents { 
+    .demographicesListTableOFContents {
         display: flex;
         flex-flow: column;
         min-width: 19%;

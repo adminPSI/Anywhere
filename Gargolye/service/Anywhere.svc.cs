@@ -4586,5 +4586,15 @@ namespace Anywhere
         {
             return rosterWorker.getConsumerAppointmnets(ConsumerId);
         }
+
+        public RosterWorker.ConsumerClassifications[] getConsumerClassifications(long ConsumerId)
+        {
+            return rosterWorker.getConsumerClassifications(ConsumerId);
+        }
+
+        public RosterWorker.ConsumerIntake[] getConsumerIntake(long ConsumerId)
+        {
+            return rosterWorker.getConsumerIntake(ConsumerId);
+        }
     }
 }

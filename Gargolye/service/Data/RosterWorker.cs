@@ -13,6 +13,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Collections.Generic;
 using System.Linq;
 using static Anywhere.service.Data.PlanReport;
+using DocumentFormat.OpenXml.Bibliography;
 
 namespace Anywhere.service.Data
 {
@@ -188,6 +189,24 @@ namespace Anywhere.service.Data
             string cDIString = "";
             cDIString = dg.getConsumerAppointmnets(ConsumerId);
             ConsumerAppointmnets[] waitingLists = js.Deserialize<ConsumerAppointmnets[]>(cDIString);
+
+            return waitingLists;
+        }
+
+        public ConsumerClassifications[] getConsumerClassifications(long ConsumerId)
+        {
+            string cDIString = "";
+            cDIString = dg.getConsumerClassifications(ConsumerId);
+            ConsumerClassifications[] waitingLists = js.Deserialize<ConsumerClassifications[]>(cDIString);
+
+            return waitingLists;
+        }
+
+        public ConsumerIntake[] getConsumerIntake(long ConsumerId)
+        {
+            string cDIString = "";
+            cDIString = dg.getConsumerIntake(ConsumerId);
+            ConsumerIntake[] waitingLists = js.Deserialize<ConsumerIntake[]>(cDIString);
 
             return waitingLists;
         }
@@ -371,6 +390,7 @@ namespace Anywhere.service.Data
             public string activeDate { get; set; }
             public string inactiveDate { get; set; }
             public string DOB { get; set; }
+            public string title { get; set; }
             public string maritalStatus { get; set; }
             public string gender { get; set; }
             public string courtLegalInvolvement { get; set; }
@@ -391,6 +411,22 @@ namespace Anywhere.service.Data
             public string salesforceId { get; set; }
             public string enrollmentNumber { get; set; }
             public string caseNumber { get; set; }
+
+            public string primaryFundingSource { get; set; }
+            public string planYearStartMonth { get; set; }
+            public string planYearStartDay  { get; set; }
+            public string planYearEndMonth { get; set; }
+            public string planYearEndDay { get; set; }
+            public string otherLanguage { get; set; }
+            public string languageAtHome { get; set; }
+            public string otherLanguageAtHome { get; set; }
+            public string ethnicity { get; set; }
+            public string religion { get; set; }
+            public string livingArrangementCategory { get; set; }
+            public string livingArrangementSubcategory { get; set; }
+            public string facilityName { get; set; }
+            public string facilityNumber { get; set; }
+            public string site { get; set; }
         }
 
         public class ConsumerServiceLocation
@@ -455,12 +491,15 @@ namespace Anywhere.service.Data
             public string name { get; set; }
             public string startDate { get; set; }
             public string endDate { get; set; }
+            public string rowNum { get; set; }
+
         }
 
         public class ConsumerCatagories
         {
             public string categoryID { get; set; }
             public string categoryName { get; set; }
+            public string rowNum { get; set; }
         }
 
         public class ConsumerAppointmnets
@@ -474,6 +513,24 @@ namespace Anywhere.service.Data
             public string treatment { get; set; }
             public string reason { get; set; }
             public string notes { get; set; }
+        }
+
+        public class ConsumerClassifications
+        {
+            public string description { get; set; }
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+            public string rowNum { get; set; }
+        }
+
+        public class ConsumerIntake
+        {
+            public string fundingPreference { get; set; }
+            public string locationPreference { get; set; }
+            public string housingPreference { get; set; }
+            public string intensityofService { get; set; }
+            public string SDD { get; set; }
+            public string onsetOfDisabilityAge { get; set; }
         }
 
     }

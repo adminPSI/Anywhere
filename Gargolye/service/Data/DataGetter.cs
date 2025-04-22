@@ -7730,5 +7730,37 @@ namespace Anywhere.Data
                 return "742: error ANYW_Dashboard_getWidgetFilter";
             }
         }
+
+        public string getConsumerClassifications(long ConsumerId)
+        {
+            List<string> list = new List<string>();
+            list.Add(ConsumerId.ToString());
+            string text = "CALL DBA.ANYW_Demographics_getConsumerClassifications(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_Demographics_getConsumerClassifications(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_Demographics_getConsumerClassifications";
+            }
+        }
+
+        public string getConsumerIntake(long ConsumerId)
+        {
+            List<string> list = new List<string>();
+            list.Add(ConsumerId.ToString());
+            string text = "CALL DBA.ANYW_Demographics_getConsumerIntake(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_Demographics_getConsumerIntake(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_Demographics_getConsumerIntake";
+            }
+        }
     }
 }

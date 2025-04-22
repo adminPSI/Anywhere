@@ -26,6 +26,7 @@ const individualAssessment = (() => {
     let relationshipTable;
     let categoryTable;
     let appoinmentTable;
+    let classificationsTable;
     let tempConsumer;
     let rowClickedId;
 
@@ -50,6 +51,12 @@ const individualAssessment = (() => {
                 {
                     id: 'cILastName',
                     label: 'Last Name',
+                    type: 'text',
+                    disabled: true,
+                },
+                {
+                    id: 'cIGeneration',
+                    label: 'Generation',
                     type: 'text',
                     disabled: true,
                 },
@@ -86,6 +93,18 @@ const individualAssessment = (() => {
                 {
                     id: 'cIZip',
                     label: 'Zip',
+                    type: 'text',
+                    disabled: true,
+                },
+                {
+                    id: 'cIResidentialAddressEffectiveDate',
+                    label: 'Residential Address Effective Date',
+                    type: 'date',
+                    disabled: true,
+                },
+                {
+                    id: 'cIResidentialCounty',
+                    label: 'Residential County',
                     type: 'text',
                     disabled: true,
                 },
@@ -162,12 +181,42 @@ const individualAssessment = (() => {
                     type: 'text',
                     disabled: true,
                 },
+                {
+                    id: 'pNNPI',
+                    label: 'NPI',
+                    type: 'text',
+                    disabled: true,
+                },
+                {
+                    id: 'pNPayrollID',
+                    label: 'Payroll ID',
+                    type: 'text',
+                    disabled: true,
+                },
+                {
+                    id: 'pNSalesforceID',
+                    label: 'Salesforce ID',
+                    type: 'text',
+                    disabled: true,
+                },
+                {
+                    id: 'pNEnrollmentNumber',
+                    label: 'Enrollment Number',
+                    type: 'text',
+                    disabled: true,
+                },
+                {
+                    id: 'pNCaseNumber',
+                    label: 'Case Number',
+                    type: 'text',
+                    disabled: true,
+                },
             ],
         },
         DemographicInfo: {
             name: 'Demographic Info',
             dbtable: 'WLA_Demographic_Information',
-            enabled: $.session.applicationName === 'Advisor' ? false : true,
+            enabled: true,
             formElements: [
                 {
                     id: 'dIActiveDate',
@@ -188,6 +237,12 @@ const individualAssessment = (() => {
                     disabled: true,
                 },
                 {
+                    id: 'dITitle',
+                    type: 'text',
+                    label: 'Title',
+                    disabled: true,
+                },
+                {
                     id: 'dIMaritalStatus',
                     type: 'text',
                     label: 'Marital Status',
@@ -200,9 +255,105 @@ const individualAssessment = (() => {
                     disabled: true,
                 },
                 {
+                    id: 'dIPrimaryFundingSource',
+                    type: 'text',
+                    label: 'Primary Funding Source',
+                    disabled: true,
+                },
+                {
+                    id: 'dIPlanYearStartMonth',
+                    type: 'text',
+                    label: 'Plan Year Start Month',
+                    disabled: true,
+                },
+                {
+                    id: 'dIPlanYearStartDay',
+                    type: 'text',
+                    label: 'Plan Year Start Day',
+                    disabled: true,
+                },
+                {
+                    id: 'dIPlanYearEndMonth',
+                    type: 'text',
+                    label: 'Plan Year End Month',
+                    disabled: true,
+                },
+                {
+                    id: 'dIPlanYearEndDay',
+                    type: 'text',
+                    label: 'Plan Year End Day',
+                    disabled: true,
+                },
+                {
+                    id: 'dIPrimaryLanguage',
+                    type: 'text',
+                    label: 'Primary Language',
+                    disabled: true,
+                },
+                {
+                    id: 'dIOtherLanguage',
+                    type: 'text',
+                    label: 'Other Language',
+                    disabled: true,
+                },
+                {
+                    id: 'dIPrimaryLanguageatHome',
+                    type: 'text',
+                    label: 'Primary Language at Home',
+                    disabled: true,
+                },
+                {
+                    id: 'dIOtherLanguageatHome',
+                    type: 'text',
+                    label: 'Other Language at Home ',
+                    disabled: true,
+                },
+                {
                     id: 'dIRace',
                     type: 'text',
                     label: 'Race',
+                    disabled: true,
+                },
+                {
+                    id: 'dIEthnicity',
+                    type: 'text',
+                    label: 'Ethnicity',
+                    disabled: true,
+                },
+                {
+                    id: 'dIReligion',
+                    type: 'text',
+                    label: 'Religion',
+                    disabled: true,
+                },
+                {
+                    id: 'dILivingArrangementCategory',
+                    type: 'text',
+                    label: 'Living Arrangement Category',
+                    disabled: true,
+                },
+                {
+                    id: 'dILivingArrangementSubcategory',
+                    type: 'text',
+                    label: 'Living Arrangement Subcategory',
+                    disabled: true,
+                },
+                {
+                    id: 'dIFacilityName',
+                    type: 'text',
+                    label: 'Facility Name',
+                    disabled: true,
+                },
+                {
+                    id: 'dIFacilityNumber',
+                    type: 'text',
+                    label: 'Facility Number',
+                    disabled: true,
+                },
+                {
+                    id: 'dISite',
+                    type: 'text',
+                    label: 'Site',
                     disabled: true,
                 },
                 {
@@ -252,24 +403,72 @@ const individualAssessment = (() => {
                     type: 'text',
                     label: 'eMAR Eligible',
                     disabled: true,
-                },              
+                },
             ],
         },
         Locations: {
             name: 'Locations',
-            enabled: $.session.applicationName === 'Advisor' ? false : true,
+            enabled: true,
         },
         Relationships: {
             name: 'Relationships',
-            enabled: $.session.applicationName === 'Advisor' ? false : true,
+            enabled: true,
         },
         Categories: {
             name: 'Categories',
-            enabled: $.session.applicationName === 'Advisor' ? false : true,
+            enabled: true,
         },
         Appointments: {
             name: 'Appointments',
-            enabled: $.session.applicationName === 'Advisor' ? false : true,
+            enabled: true,
+        },
+        Classifications: {
+            name: 'Classifications',
+            enabled: true,
+        },
+        Intake: {
+            name: 'Intake',
+            enabled: true,
+            dbtable: 'WLA_Intake_Information',
+            formElements: [
+                {
+                    id: 'iNFundingPreference',
+                    type: 'text',
+                    label: 'Funding Preference',
+                    disabled: true,
+                },
+                {
+                    id: 'iNLocationPreference',
+                    type: 'text',
+                    label: 'Location Preference',
+                    disabled: true,
+                },
+                {
+                    id: 'iNHousingPreference',
+                    type: 'text',
+                    label: 'Housing Preference',
+                    disabled: true,
+                },
+                {
+                    id: 'iNIntensityEstimate',
+                    type: 'text',
+                    label: 'Intensity Estimate',
+                    disabled: true,
+                },
+                {
+                    id: 'iNSDD',
+                    type: 'text',
+                    label: 'SDD',
+                    disabled: true,
+                },
+                {
+                    id: 'iNOnsetofDisabilityAge',
+                    type: 'text',
+                    label: 'Onset of Disability Age',
+                    disabled: true,
+                },
+
+            ],
         },
     };
 
@@ -286,6 +485,7 @@ const individualAssessment = (() => {
         wlRelationship = undefined;
         wlCategory = undefined;
         wlAppoinment = undefined;
+        wlClassifications = undefined;
     }
 
     // REVIEW / EDIT
@@ -294,19 +494,34 @@ const individualAssessment = (() => {
         var assessmentData = opts.wlData;
         var locations = opts.locations;
         var relation = opts.relationship;
-        var categ = opts.categories;
-        var appoint = opts.appointment;
+
+        if ($.session.applicationName === 'Advisor') {
+            var categ = opts.categories;
+            var appoint = opts.appointment;
+        } else {
+            var classific = opts.classifications;
+            var intakeData = opts.intake;
+        }
 
         if (!assessmentData) return '';
 
         wlLinkID = assessmentData.ConsumerId;
         wlLocations = {};
         if (locations.length > 0) {
-            for (const loc of locations) {
-                wlLocations[loc.locationId] = {
-                    id: loc.locationId,
-                    values: [loc.locationName, moment(loc.startDate).format('MM/DD/YY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YY'), loc.consumerType],
-                };
+            if ($.session.applicationName === 'Advisor') {
+                for (const loc of locations) {
+                    wlLocations[loc.locationId] = {
+                        id: loc.locationId,
+                        values: [loc.locationName, moment(loc.startDate).format('MM/DD/YY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YY'), loc.consumerType],
+                    };
+                }
+            } else {
+                for (const loc of locations) {
+                    wlLocations[loc.locationId] = {
+                        id: loc.locationId,
+                        values: [loc.locationName, moment(loc.startDate).format('MM/DD/YY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YY')],
+                    };
+                }
             }
         }
 
@@ -320,23 +535,35 @@ const individualAssessment = (() => {
             }
         }
 
-        wlCategory = {};
-        if (categ.length > 0) {
-            for (const cat of categ) {
-                wlCategory[cat.rowNum] = { 
-                    id: cat.categoryID,
-                    values: [cat.categoryName],
-                };
+        if ($.session.applicationName === 'Advisor') {
+            wlCategory = {};
+            if (categ.length > 0) {
+                for (const cat of categ) {
+                    wlCategory[cat.rowNum] = {
+                        id: cat.categoryID,
+                        values: [cat.categoryName],
+                    };
+                }
             }
-        }
 
-        wlAppoinment = {};
-        if (appoint.length > 0) {
-            for (const apt of appoint) {
-                wlAppoinment[apt.trackingId] = {
-                    id: apt.trackingId,
-                    values: [apt.appointmentDate == '' ? '' : moment(apt.appointmentDate).format('MM/DD/YY'), apt.appointmentTime == '' ? '' : UTIL.convertFromMilitary(apt.appointmentTime), apt.appointmentType, apt.provider],
-                };
+            wlAppoinment = {};
+            if (appoint.length > 0) {
+                for (const apt of appoint) {
+                    wlAppoinment[apt.trackingId] = {
+                        id: apt.trackingId,
+                        values: [apt.appointmentDate == '' ? '' : moment(apt.appointmentDate).format('MM/DD/YY'), apt.appointmentTime == '' ? '' : UTIL.convertFromMilitary(apt.appointmentTime), apt.appointmentType, apt.provider],
+                    };
+                }
+            }
+        } else {
+            wlClassifications = {};
+            if (classific.length > 0) {
+                for (const cla of classific) {
+                    wlClassifications[cla.rowNum] = {
+                        id: cla.rowNum,
+                        values: [cla.description, moment(cla.startDate).format('MM/DD/YY'), cla.endDate == '' ? '' : moment(cla.endDate).format('MM/DD/YY')],
+                    };
+                }
             }
         }
 
@@ -350,12 +577,15 @@ const individualAssessment = (() => {
                 cIFirstName: assessmentData.firstname,
                 cIMiddleName: assessmentData.middlename,
                 cILastName: assessmentData.lastname,
+                cIGeneration: assessmentData.generation,
                 cINickName: assessmentData.nickname,
                 cIAddress1: assessmentData.addressone,
                 cIAddress2: assessmentData.addresstwo,
                 cICity: assessmentData.mailcity,
                 cIState: assessmentData.mailstate,
                 cIZip: assessmentData.mailzipcode ? formatZipCode(assessmentData.mailzipcode) : '',
+                cIResidentialAddressEffectiveDate: assessmentData.residentialAddressEffectiveDate,
+                cIResidentialCounty: assessmentData.county,
                 cIPhone1: assessmentData.primaryphone ? formatPhoneNumber(assessmentData.primaryphone) : '',
                 cIPhone2: assessmentData.secondaryphone ? formatPhoneNumber(assessmentData.secondaryphone) : '',
                 cIEmail: assessmentData.email,
@@ -369,14 +599,36 @@ const individualAssessment = (() => {
                 pNMedicareNumber: assessmentData.MedicareNumber,
                 pNResidentNumber: assessmentData.ResidentNumber,
                 pNAreaConsumerNumber: assessmentData.areaConsumerNumber,
+                pNNPI: assessmentData.NPI,
+                pNPayrollID: assessmentData.payrollId,
+                pNSalesforceID: assessmentData.salesforceId,
+                pNEnrollmentNumber: assessmentData.enrollmentNumber,
+                pNCaseNumber: assessmentData.caseNumber,
             },
             DemographicInfo: {
                 dIActiveDate: assessmentData.activeDate,
                 dIInactiveDate: assessmentData.inactiveDate,
                 dIDateofBirth: assessmentData.DOB,
+                dITitle: assessmentData.title,
                 dIMaritalStatus: assessmentData.maritalStatus,
                 dIGender: assessmentData.gender,
+                dIPrimaryFundingSource: assessmentData.primaryFundingSource,
+                dIPlanYearStartMonth: assessmentData.planYearStartMonth,
+                dIPlanYearStartDay: assessmentData.planYearStartDay,
+                dIPlanYearEndMonth: assessmentData.planYearEndMonth,
+                dIPlanYearEndDay: assessmentData.planYearEndDay,
+                dIPrimaryLanguage: assessmentData.language,
+                dIOtherLanguage: assessmentData.otherLanguage,
+                dIPrimaryLanguageatHome: assessmentData.languageAtHome,
+                dIOtherLanguageatHome: assessmentData.otherLanguageAtHome,
                 dIRace: assessmentData.race,
+                dIEthnicity: assessmentData.ethnicity,
+                dIReligion: assessmentData.religion,
+                dILivingArrangementCategory: assessmentData.livingArrangementCategory,
+                dILivingArrangementSubcategory: assessmentData.livingArrangementSubcategory,
+                dIFacilityName: assessmentData.facilityName,
+                dIFacilityNumber: assessmentData.facilityNumber,
+                dISite: assessmentData.site,
                 dILanguagePreference: assessmentData.language,
                 dIEducationLevel: assessmentData.educationLevel,
                 dICourtLegalInvolvement: assessmentData.courtLegalInvolvement,
@@ -385,6 +637,14 @@ const individualAssessment = (() => {
                 dISecondProcedureDate: assessmentData.secondProcedureDate,
                 dIOtherSource: assessmentData.otherSource,
                 dIeMAREligible: assessmentData.eMarConsumer,
+            },
+            Intake: {
+                iNFundingPreference: $.session.applicationName !== 'Advisor' ? intakeData.fundingPreference : '',
+                iNLocationPreference: $.session.applicationName !== 'Advisor' ? intakeData.locationPreference : '',
+                iNHousingPreference: $.session.applicationName !== 'Advisor' ? intakeData.housingPreference : '',
+                iNIntensityEstimate: $.session.applicationName !== 'Advisor' ? intakeData.intensityofService : '',
+                iNSDD: $.session.applicationName !== 'Advisor' ? intakeData.SDD : '',
+                iNOnsetofDisabilityAge: $.session.applicationName !== 'Advisor' ? intakeData.onsetOfDisabilityAge : '',
             },
         };
 
@@ -445,6 +705,13 @@ const individualAssessment = (() => {
         var previousTarget = null;
         // Build TOC
         for (section in sections) {
+            if ($.session.applicationName !== 'Advisor' && (section === 'Categories' || section === 'Appointments')) {
+                continue;
+            }
+            if ($.session.applicationName === 'Advisor' && (section === 'Classifications' || section === 'Intake')) {
+                continue;
+            }
+
             const className = 'section';
             const tocSection = _DOM.createElement('p', { class: [className, section] });
             const tocSectionLink = _DOM.createElement('a', { href: `#${section}`, text: sections[section].name });
@@ -475,32 +742,36 @@ const individualAssessment = (() => {
             sectionWrap.appendChild(sectionHeader);
             sectionWrap.classList.toggle('hiddenPage', !sections[section].enabled);
 
-            if ($.session.applicationName === 'Advisor') {
-                if (section === 'Locations') {
-                    locationsTable.renderTo(sectionWrap);
-                    locationsForm.renderTo(sectionWrap);
-                    assessmentWrap.appendChild(sectionWrap);
-                    continue;
-                }
+            if (section === 'Locations') {
+                locationsTable.renderTo(sectionWrap);
+                locationsForm.renderTo(sectionWrap);
+                assessmentWrap.appendChild(sectionWrap);
+                continue;
+            }
 
-                if (section === 'Relationships') {
-                    relationshipTable.renderTo(sectionWrap);
-                    assessmentWrap.appendChild(sectionWrap);
-                    continue;
-                }
+            if (section === 'Relationships') {
+                relationshipTable.renderTo(sectionWrap);
+                assessmentWrap.appendChild(sectionWrap);
+                continue;
+            }
 
-                if (section === 'Categories') {
-                    categoryTable.renderTo(sectionWrap);
-                    assessmentWrap.appendChild(sectionWrap);
-                    continue;
-                }
+            if (section === 'Categories') {
+                categoryTable.renderTo(sectionWrap);
+                assessmentWrap.appendChild(sectionWrap);
+                continue;
+            }
 
-                if (section === 'Appointments') {
-                    appoinmentTable.renderTo(sectionWrap);
-                    appoinmentForm.renderTo(sectionWrap);
-                    assessmentWrap.appendChild(sectionWrap);
-                    continue;
-                }
+            if (section === 'Appointments') {
+                appoinmentTable.renderTo(sectionWrap);
+                appoinmentForm.renderTo(sectionWrap);
+                assessmentWrap.appendChild(sectionWrap);
+                continue;
+            }
+
+            if (section === 'Classifications') {
+                classificationsTable.renderTo(sectionWrap);
+                assessmentWrap.appendChild(sectionWrap);
+                continue;
             }
 
             if (sections[section].formElements) {
@@ -539,357 +810,353 @@ const individualAssessment = (() => {
             ContactInfo: { dbtable: 'WLA_Contact_Information' },
             PersonalIdentificationNumbers: { dbtable: 'WLA_Personal_Identification_Numbers' },
             DemographicInfo: { dbtable: 'WLA_Demographic_Information' },
+            Intake: { dbtable: 'WLA_Intake_Information' },
         };
     }
     function initComponents(selectedConsumer) {
         // Locations
-        locationsTable = new Table({
-            columnSortable: false,
-            allowDelete: false,
-            headings: [
-                {
-                    text: 'Location',
-                    type: 'string',
-                },
-                {
-                    text: 'Start Date',
-                    type: 'string',
-                },
-                {
-                    text: 'End Date',
-                    type: 'string',
-                },
-                {
-                    text: 'Type',
-                    type: 'string',
-                },
-            ],
-        });
-
-        locationsForm = new Form({
-            hideAllButtons: true,
-            fields: [
-                {
-                    type: 'text',
-                    label: 'Location',
-                    id: 'lLocations',
-                    disabled: true,
-                },
-                {
-                    type: 'date',
-                    label: 'Start Date',
-                    id: 'lStartDate',
-                    disabled: true,
-                },
-                {
-                    type: 'date',
-                    label: 'End Date',
-                    id: 'lEndDate',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'Status',
-                    id: 'lStatus',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'Default Day Service Type',
-                    id: 'lDefaultType',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'Default Group',
-                    id: 'lDefaultGroup',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Sun Start',
-                    id: 'lSunStart',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Mon Start',
-                    id: 'lMonStart',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Tues Start',
-                    id: 'lTuesStart',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Wed Start',
-                    id: 'lWedStart',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Thurs Start',
-                    id: 'lThursStart',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Fri Start',
-                    id: 'lFriStart',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Sat Start',
-                    id: 'lSatStart',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Sun End',
-                    id: 'lSunEnd',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Mon End',
-                    id: 'lMonEnd',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Tues End',
-                    id: 'lTuesEnd',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Wed End',
-                    id: 'lWedEnd',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Thurs End',
-                    id: 'lThursEnd',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Fri End',
-                    id: 'lFriEnd',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Sat End',
-                    id: 'lSatEnd',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeSun',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeMon',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeTues',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeWed',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeThurs',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeFri',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeSat',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Sun Start',
-                    id: 'lSunStart2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Mon Start',
-                    id: 'lMonStart2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Tues Start',
-                    id: 'lTuesStart2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Wed Start',
-                    id: 'lWedStart2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Thurs Start',
-                    id: 'lThursStart2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Fri Start',
-                    id: 'lFriStart2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Sat Start',
-                    id: 'lSatStart2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Sun End',
-                    id: 'lSunEnd2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Mon End',
-                    id: 'lMonEnd2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Tues End',
-                    id: 'lTuesEnd2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Wed End',
-                    id: 'lWedEnd2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Thurs End',
-                    id: 'lThursEnd2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Fri End',
-                    id: 'lFriEnd2',
-                    disabled: true,
-                },
-                {
-                    type: 'time',
-                    label: 'Sat End',
-                    id: 'lSatEnd2',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeSun2',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeMon2',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeTues2',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeWed2',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeThurs2',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeFri2',
-                    disabled: true,
-                },
-                {
-                    type: 'text',
-                    label: 'DS Type',
-                    id: 'lDSTypeSat2',
-                    disabled: true,
-                },
-                {
-                    id: 'lMRC',
-                    type: 'radiogroup',
-                    disabled: true,
-                    groupLabel: `Include in MRC?`,
-                    fields: [
-                        { type: 'radio', label: 'Yes', value: 'yes', id: 'Y' },
-                        { type: 'radio', label: 'No', value: 'no', id: 'N' },
-                    ],
-                },
-                {
-                    id: 'lNotes',
-                    label: 'Notes',
-                    fullscreen: true,
-                    type: 'textarea',
-                    disabled: true,
-                },
-
-            ],
-        });
-
         if ($.session.applicationName === 'Advisor') {
-
-            relationshipTable = new Table({              
+            locationsTable = new Table({
                 columnSortable: false,
                 allowDelete: false,
                 headings: [
                     {
-                        text: 'Relationship Type',
+                        text: 'Location',
                         type: 'string',
                     },
                     {
-                        text: 'Name',
+                        text: 'Start Date',
+                        type: 'string',
+                    },
+                    {
+                        text: 'End Date',
+                        type: 'string',
+                    },
+                    {
+                        text: 'Type',
+                        type: 'string',
+                    },
+                ],
+            });
+
+            locationsForm = new Form({
+                hideAllButtons: true,
+                fields: [
+                    {
+                        type: 'text',
+                        label: 'Location',
+                        id: 'lLocations',
+                        disabled: true,
+                    },
+                    {
+                        type: 'date',
+                        label: 'Start Date',
+                        id: 'lStartDate',
+                        disabled: true,
+                    },
+                    {
+                        type: 'date',
+                        label: 'End Date',
+                        id: 'lEndDate',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'Status',
+                        id: 'lStatus',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'Default Day Service Type',
+                        id: 'lDefaultType',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'Default Group',
+                        id: 'lDefaultGroup',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sun Start',
+                        id: 'lSunStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Mon Start',
+                        id: 'lMonStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Tues Start',
+                        id: 'lTuesStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Wed Start',
+                        id: 'lWedStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Thurs Start',
+                        id: 'lThursStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Fri Start',
+                        id: 'lFriStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sat Start',
+                        id: 'lSatStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sun End',
+                        id: 'lSunEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Mon End',
+                        id: 'lMonEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Tues End',
+                        id: 'lTuesEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Wed End',
+                        id: 'lWedEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Thurs End',
+                        id: 'lThursEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Fri End',
+                        id: 'lFriEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sat End',
+                        id: 'lSatEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeSun',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeMon',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeTues',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeWed',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeThurs',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeFri',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeSat',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sun Start',
+                        id: 'lSunStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Mon Start',
+                        id: 'lMonStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Tues Start',
+                        id: 'lTuesStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Wed Start',
+                        id: 'lWedStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Thurs Start',
+                        id: 'lThursStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Fri Start',
+                        id: 'lFriStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sat Start',
+                        id: 'lSatStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sun End',
+                        id: 'lSunEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Mon End',
+                        id: 'lMonEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Tues End',
+                        id: 'lTuesEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Wed End',
+                        id: 'lWedEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Thurs End',
+                        id: 'lThursEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Fri End',
+                        id: 'lFriEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sat End',
+                        id: 'lSatEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeSun2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeMon2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeTues2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeWed2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeThurs2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeFri2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'text',
+                        label: 'DS Type',
+                        id: 'lDSTypeSat2',
+                        disabled: true,
+                    },
+                    {
+                        id: 'lMRC',
+                        type: 'radiogroup',
+                        disabled: true,
+                        groupLabel: `Include in MRC?`,
+                        fields: [
+                            { type: 'radio', label: 'Yes', value: 'yes', id: 'Y' },
+                            { type: 'radio', label: 'No', value: 'no', id: 'N' },
+                        ],
+                    },
+                    {
+                        id: 'lNotes',
+                        label: 'Notes',
+                        fullscreen: true,
+                        type: 'textarea',
+                        disabled: true,
+                    },
+
+                ],
+            });
+        } else {
+            locationsTable = new Table({
+                columnSortable: false,
+                allowDelete: false,
+                headings: [
+                    {
+                        text: 'Location',
                         type: 'string',
                     },
                     {
@@ -903,6 +1170,224 @@ const individualAssessment = (() => {
                 ],
             });
 
+            locationsForm = new Form({
+                hideAllButtons: true,
+                fields: [
+                    {
+                        type: 'text',
+                        label: 'Location',
+                        id: 'lLocations',
+                        disabled: true,
+                    },
+                    {
+                        type: 'date',
+                        label: 'Start Date',
+                        id: 'lStartDate',
+                        disabled: true,
+                    },
+                    {
+                        type: 'date',
+                        label: 'End Date',
+                        id: 'lEndDate',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sun Start',
+                        id: 'lSunStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Mon Start',
+                        id: 'lMonStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Tues Start',
+                        id: 'lTuesStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Wed Start',
+                        id: 'lWedStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Thurs Start',
+                        id: 'lThursStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Fri Start',
+                        id: 'lFriStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sat Start',
+                        id: 'lSatStart',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sun End',
+                        id: 'lSunEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Mon End',
+                        id: 'lMonEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Tues End',
+                        id: 'lTuesEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Wed End',
+                        id: 'lWedEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Thurs End',
+                        id: 'lThursEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Fri End',
+                        id: 'lFriEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sat End',
+                        id: 'lSatEnd',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sun Start',
+                        id: 'lSunStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Mon Start',
+                        id: 'lMonStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Tues Start',
+                        id: 'lTuesStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Wed Start',
+                        id: 'lWedStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Thurs Start',
+                        id: 'lThursStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Fri Start',
+                        id: 'lFriStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sat Start',
+                        id: 'lSatStart2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sun End',
+                        id: 'lSunEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Mon End',
+                        id: 'lMonEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Tues End',
+                        id: 'lTuesEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Wed End',
+                        id: 'lWedEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Thurs End',
+                        id: 'lThursEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Fri End',
+                        id: 'lFriEnd2',
+                        disabled: true,
+                    },
+                    {
+                        type: 'time',
+                        label: 'Sat End',
+                        id: 'lSatEnd2',
+                        disabled: true,
+                    },
+                ],
+            });
+        }
+
+
+        relationshipTable = new Table({
+            columnSortable: false,
+            allowDelete: false,
+            headings: [
+                {
+                    text: 'Relationship Type',
+                    type: 'string',
+                },
+                {
+                    text: 'Name',
+                    type: 'string',
+                },
+                {
+                    text: 'Start Date',
+                    type: 'string',
+                },
+                {
+                    text: 'End Date',
+                    type: 'string',
+                },
+            ],
+        });
+
+        if ($.session.applicationName === 'Advisor') {
             categoryTable = new Table({
                 columnSortable: false,
                 allowDelete: false,
@@ -992,6 +1477,25 @@ const individualAssessment = (() => {
                     },
                 ],
             });
+        } else {
+            classificationsTable = new Table({
+                columnSortable: false,
+                allowDelete: false,
+                headings: [
+                    {
+                        text: 'Classification',
+                        type: 'string',
+                    },
+                    {
+                        text: 'Start Date',
+                        type: 'string',
+                    },
+                    {
+                        text: 'End Date',
+                        type: 'string',
+                    },
+                ],
+            });
         }
         // Back to overview
         backButton = new Button({
@@ -1010,91 +1514,132 @@ const individualAssessment = (() => {
     }
 
     function attachEvents() {
-        locationsTable.onRowClick(rowId => {  
+        locationsTable.onRowClick(rowId => {
             if (rowId == rowClickedId && !locationsForm.form.classList.contains('hiddenPage')) {
                 locationsForm.form.classList.add('hiddenPage');
             } else {
-                locationsForm.form.classList.remove('hiddenPage'); 
-            }          
+                locationsForm.form.classList.remove('hiddenPage');
+            }
             locationsForm.clear();
             const rowData = locationData.find(l => l.locationId == rowId);
             rowClickedId = rowId;
-            locationsForm.populate(
-                {
-                    lLocations: rowData.locationName,
-                    lStartDate: rowData.startDate,
-                    lEndDate: rowData.endDate,
-                    lStatus: rowData.LocationStatus,
-                    lDefaultType: rowData.consumerType,
-                    lDefaultGroup: rowData.defaultGroup,
-                    lSunStart: rowData.SunStartTime,
-                    lMonStart: rowData.monStartTime,
-                    lTuesStart: rowData.tuesStartTime,
-                    lWedStart: rowData.wedStartTime,
-                    lThursStart: rowData.thurStartTime,
-                    lFriStart: rowData.friStartTime,
-                    lSatStart: rowData.satStartTime,
-                    lSunEnd: rowData.sunEndTime,
-                    lMonEnd: rowData.monEndTime,
-                    lTuesEnd: rowData.tuesEndTime,
-                    lWedEnd: rowData.wedEndTime,
-                    lThursEnd: rowData.thurEndTime,
-                    lFriEnd: rowData.friEndTime,
-                    lSatEnd: rowData.satEndTime,
-                    lDSTypeSun: rowData.sunDStype,
-                    lDSTypeMon: rowData.monDSType,
-                    lDSTypeTues: rowData.tueDSType,
-                    lDSTypeWed: rowData.wedDSType,
-                    lDSTypeThurs: rowData.thuDSType,
-                    lDSTypeFri: rowData.friDSType,
-                    lDSTypeSat: rowData.satDSType,
-                    lSunStart2: rowData.sunStartTime2,
-                    lMonStart2: rowData.monStartTime2,
-                    lTuesStart2: rowData.tueStartTime2,
-                    lWedStart2: rowData.wedStartTime2,
-                    lThursStart2: rowData.thurStartTime2,
-                    lFriStart2: rowData.friStartTime2,
-                    lSatStart2: rowData.satStartTime2,
-                    lSunEnd2: rowData.sunEndTime2,
-                    lMonEnd2: rowData.monEndTime2,
-                    lTuesEnd2: rowData.tueEndTime2,
-                    lWedEnd2: rowData.wedEndTime2,
-                    lThursEnd2: rowData.thurEndTime2,
-                    lFriEnd2: rowData.friEndTime2,
-                    lSatEnd2: rowData.satEndTime2,
-                    lDSTypeSun2: rowData.sunDSType2,
-                    lDSTypeMon2: rowData.monDSType2,
-                    lDSTypeTues2: rowData.tueDSType2,
-                    lDSTypeWed2: rowData.wedDSType2,
-                    lDSTypeThurs2: rowData.thuDSType2,
-                    lDSTypeFri2: rowData.friDSType2,
-                    lDSTypeSat2: rowData.satDSType2,
-                    lNotes: rowData.notes,
-                    lMRC: rowData.MRC,
-                },
-                rowId,
-            );
+
+            if ($.session.applicationName === 'Advisor') {
+                locationsForm.populate(
+                    {
+                        lLocations: rowData.locationName,
+                        lStartDate: rowData.startDate,
+                        lEndDate: rowData.endDate,
+                        lStatus: rowData.LocationStatus,
+                        lDefaultType: rowData.consumerType,
+                        lDefaultGroup: rowData.defaultGroup,
+                        lSunStart: rowData.SunStartTime,
+                        lMonStart: rowData.monStartTime,
+                        lTuesStart: rowData.tuesStartTime,
+                        lWedStart: rowData.wedStartTime,
+                        lThursStart: rowData.thurStartTime,
+                        lFriStart: rowData.friStartTime,
+                        lSatStart: rowData.satStartTime,
+                        lSunEnd: rowData.sunEndTime,
+                        lMonEnd: rowData.monEndTime,
+                        lTuesEnd: rowData.tuesEndTime,
+                        lWedEnd: rowData.wedEndTime,
+                        lThursEnd: rowData.thurEndTime,
+                        lFriEnd: rowData.friEndTime,
+                        lSatEnd: rowData.satEndTime,
+                        lDSTypeSun: rowData.sunDStype,
+                        lDSTypeMon: rowData.monDSType,
+                        lDSTypeTues: rowData.tueDSType,
+                        lDSTypeWed: rowData.wedDSType,
+                        lDSTypeThurs: rowData.thuDSType,
+                        lDSTypeFri: rowData.friDSType,
+                        lDSTypeSat: rowData.satDSType,
+                        lSunStart2: rowData.sunStartTime2,
+                        lMonStart2: rowData.monStartTime2,
+                        lTuesStart2: rowData.tueStartTime2,
+                        lWedStart2: rowData.wedStartTime2,
+                        lThursStart2: rowData.thurStartTime2,
+                        lFriStart2: rowData.friStartTime2,
+                        lSatStart2: rowData.satStartTime2,
+                        lSunEnd2: rowData.sunEndTime2,
+                        lMonEnd2: rowData.monEndTime2,
+                        lTuesEnd2: rowData.tueEndTime2,
+                        lWedEnd2: rowData.wedEndTime2,
+                        lThursEnd2: rowData.thurEndTime2,
+                        lFriEnd2: rowData.friEndTime2,
+                        lSatEnd2: rowData.satEndTime2,
+                        lDSTypeSun2: rowData.sunDSType2,
+                        lDSTypeMon2: rowData.monDSType2,
+                        lDSTypeTues2: rowData.tueDSType2,
+                        lDSTypeWed2: rowData.wedDSType2,
+                        lDSTypeThurs2: rowData.thuDSType2,
+                        lDSTypeFri2: rowData.friDSType2,
+                        lDSTypeSat2: rowData.satDSType2,
+                        lNotes: rowData.notes,
+                        lMRC: rowData.MRC,
+                    },
+                    rowId,
+                );
+            } else {
+                locationsForm.populate(
+                    {
+                        lLocations: rowData.locationName,
+                        lStartDate: rowData.startDate,
+                        lEndDate: rowData.endDate,
+                        lSunStart: rowData.SunStartTime,
+                        lMonStart: rowData.monStartTime,
+                        lTuesStart: rowData.tuesStartTime,
+                        lWedStart: rowData.wedStartTime,
+                        lThursStart: rowData.thurStartTime,
+                        lFriStart: rowData.friStartTime,
+                        lSatStart: rowData.satStartTime,
+                        lSunEnd: rowData.sunEndTime,
+                        lMonEnd: rowData.monEndTime,
+                        lTuesEnd: rowData.tuesEndTime,
+                        lWedEnd: rowData.wedEndTime,
+                        lThursEnd: rowData.thurEndTime,
+                        lFriEnd: rowData.friEndTime,
+                        lSatEnd: rowData.satEndTime,
+                        lSunStart2: rowData.sunStartTime2,
+                        lMonStart2: rowData.monStartTime2,
+                        lTuesStart2: rowData.tueStartTime2,
+                        lWedStart2: rowData.wedStartTime2,
+                        lThursStart2: rowData.thurStartTime2,
+                        lFriStart2: rowData.friStartTime2,
+                        lSatStart2: rowData.satStartTime2,
+                        lSunEnd2: rowData.sunEndTime2,
+                        lMonEnd2: rowData.monEndTime2,
+                        lTuesEnd2: rowData.tueEndTime2,
+                        lWedEnd2: rowData.wedEndTime2,
+                        lThursEnd2: rowData.thurEndTime2,
+                        lFriEnd2: rowData.friEndTime2,
+                        lSatEnd2: rowData.satEndTime2,
+                    },
+                    rowId,
+                );
+            }
         });
 
-        appoinmentTable.onRowClick(rowId => {
-            appoinmentForm.form.classList.remove('hiddenPage');
-            appoinmentForm.clear();
-            const rowData = appoinmentData.find(a => a.trackingId == rowId);
-            appoinmentForm.populate(
-                {
-                    aAppointmentDate: rowData.appointmentDate,
-                    aAppointmentTime: rowData.appointmentTime,
-                    aAppointmentType: rowData.appointmentType,
-                    aProvider: rowData.provider,
-                    aEmployee: rowData.employee,
-                    aTreatment: rowData.treatment,
-                    aReason: rowData.reason,
-                    aNotes: rowData.notes,
-                },
-                rowId,
-            );
-        });
-
+        if ($.session.applicationName === 'Advisor') {
+            appoinmentTable.onRowClick(rowId => {
+                appoinmentForm.form.classList.remove('hiddenPage');
+                appoinmentForm.clear();
+                const rowData = appoinmentData.find(a => a.trackingId == rowId);
+                appoinmentForm.populate(
+                    {
+                        aAppointmentDate: rowData.appointmentDate,
+                        aAppointmentTime: rowData.appointmentTime,
+                        aAppointmentType: rowData.appointmentType,
+                        aProvider: rowData.provider,
+                        aEmployee: rowData.employee,
+                        aTreatment: rowData.treatment,
+                        aReason: rowData.reason,
+                        aNotes: rowData.notes,
+                    },
+                    rowId,
+                );
+            });
+        }
         backButton.onClick(() => {
             _DOM.ACTIONCENTER.removeAttribute('data-ui');
             roster2.loadRosterInfo();
@@ -1102,15 +1647,69 @@ const individualAssessment = (() => {
 
     }
     function showHideSections() {
-        if ($.session.applicationName === 'Advisor') {  
-            wlForms['PersonalIdentificationNumbers'].inputs['pNConsumerNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewConsumerNumber);
-            wlForms['PersonalIdentificationNumbers'].inputs['pNSSN'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewSSN);
-            wlForms['PersonalIdentificationNumbers'].inputs['pNMedicaidNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewMedicaid);
-            wlForms['PersonalIdentificationNumbers'].inputs['pNMedicareNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewMedicare);
-            wlForms['PersonalIdentificationNumbers'].inputs['pNResidentNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewResident);
+        wlForms['PersonalIdentificationNumbers'].inputs['pNSSN'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewSSN);
+        wlForms['PersonalIdentificationNumbers'].inputs['pNMedicaidNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewMedicaid);
+        wlForms['PersonalIdentificationNumbers'].inputs['pNResidentNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewResident);
 
+        if ($.session.applicationName === 'Advisor') {
+            wlForms['PersonalIdentificationNumbers'].inputs['pNConsumerNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewConsumerNumber);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNMedicareNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewMedicare);
             wlForms['DemographicInfo'].inputs['dIDateofBirth'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewDOB);
             wlForms['DemographicInfo'].inputs['dIeMAREligible'].rootElement.classList.toggle('hiddenPage', !$.session.emarVisible);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNNPI'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNPayrollID'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNSalesforceID'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNEnrollmentNumber'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNCaseNumber'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['ContactInfo'].inputs['cIResidentialAddressEffectiveDate'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['ContactInfo'].inputs['cIResidentialCounty'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dITitle'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIPrimaryFundingSource'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIPlanYearStartMonth'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIPlanYearStartDay'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIPlanYearEndMonth'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIPlanYearEndDay'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIPrimaryLanguage'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIOtherLanguage'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIPrimaryLanguageatHome'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIOtherLanguageatHome'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIEthnicity'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIReligion'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dILivingArrangementCategory'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dILivingArrangementSubcategory'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIFacilityName'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIFacilityNumber'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dISite'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['ContactInfo'].inputs['cIGeneration'].rootElement.classList.toggle('hiddenPage', true);
+           
+            wlForms['ContactInfo'].inputs['cIAddress1'].labelEle.innerHTML = 'Address1';
+            wlForms['ContactInfo'].inputs['cIAddress2'].labelEle.innerHTML = 'Address2';
+            wlForms['ContactInfo'].inputs['cIPhone1'].labelEle.innerHTML = 'Phone 1';
+            wlForms['ContactInfo'].inputs['cIPhone2'].labelEle.innerHTML = 'Phone 2';
+            wlForms['PersonalIdentificationNumbers'].inputs['pNConsumerNumber'].labelEle.innerHTML = 'Consumer Number';
+
+        }
+        else {
+            wlForms['PersonalIdentificationNumbers'].inputs['pNConsumerNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewLocalId);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNBillingNumber'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNContractNumber'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNAreaConsumerNumber'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIActiveDate'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIInactiveDate'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dILanguagePreference'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIEducationLevel'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dICourtLegalInvolvement'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dICommunicationType'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIFirstProcedureDate'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dISecondProcedureDate'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIOtherSource'].rootElement.classList.toggle('hiddenPage', true);
+            wlForms['DemographicInfo'].inputs['dIeMAREligible'].rootElement.classList.toggle('hiddenPage', true);
+
+            wlForms['ContactInfo'].inputs['cIAddress1'].labelEle.innerHTML = 'Residential Address1';
+            wlForms['ContactInfo'].inputs['cIAddress2'].labelEle.innerHTML = 'Residential Address2';
+            wlForms['ContactInfo'].inputs['cIPhone1'].labelEle.innerHTML = 'Primary Phone';
+            wlForms['ContactInfo'].inputs['cIPhone2'].labelEle.innerHTML = 'Cell Phone';
+            wlForms['PersonalIdentificationNumbers'].inputs['pNConsumerNumber'].labelEle.innerHTML = 'Local ID';
         }
 
     }
@@ -1146,11 +1745,13 @@ const individualAssessment = (() => {
         tocLinks = {};
         wlDocuments = [];
         wlLocations = {};
+        wlClassifications = {};
         wlAppoinment = {};
         wlRelationship = {};
         wlCategory = {};
+
+        locationData = opts.locations;
         if ($.session.applicationName === 'Advisor') {
-            locationData = opts.locations;
             appoinmentData = opts.appointment;
         }
         wlFormInfo = initFormInfo();
@@ -1162,23 +1763,27 @@ const individualAssessment = (() => {
         initComponents(opts.wlData);
         loadPage();
 
-        if ($.session.applicationName === 'Advisor') {
-            attachEvents();
-        }
+        attachEvents();
 
         for (section in wlData) {
+            if ($.session.applicationName === 'Advisor' && section === 'Intake') {
+                continue;
+            }
             wlForms[section].populate(wlData[section]);
         }
 
-        if ($.session.applicationName === 'Advisor') {
-            locationsTable.populate(Object.values(wlLocations));
-            locationsForm.form.classList.add('hiddenPage');
+        locationsTable.populate(Object.values(wlLocations));
+        locationsForm.form.classList.add('hiddenPage');
+        relationshipTable.populate(Object.values(wlRelationship));
 
-            relationshipTable.populate(Object.values(wlRelationship));
+        if ($.session.applicationName === 'Advisor') {
             categoryTable.populate(Object.values(wlCategory));
 
             appoinmentTable.populate(Object.values(wlAppoinment));
             appoinmentForm.form.classList.add('hiddenPage');
+        }
+        else {
+            classificationsTable.populate(Object.values(wlClassifications));
         }
 
         showHideSections();

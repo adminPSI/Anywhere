@@ -5993,6 +5993,22 @@ namespace Anywhere
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/getConsumerAppointmnets/")]
         RosterWorker.ConsumerAppointmnets[] getConsumerAppointmnets(long ConsumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getConsumerClassifications/")]
+        RosterWorker.ConsumerClassifications[] getConsumerClassifications(long ConsumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getConsumerIntake/")]
+        RosterWorker.ConsumerIntake[] getConsumerIntake(long ConsumerId);
     }
 
 
