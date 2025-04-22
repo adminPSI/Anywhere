@@ -407,11 +407,14 @@ const SchedulingCalendar = (function () {
   }
   function showFilterEmployeePopup(onSaveCallbackFunc) {
     const opts = {
-      1: false,
-      2: false,
-      3: false,
-      4: false,
-      5: false,
+      locationId: false,
+      includeTrainedOnly: false,
+      //
+      maxWeeklyHours: false,
+      minTimeBetweenShifts: false,
+      shiftStartTime: false,
+      shiftEndTime: false,
+      region: false,
     };
 
     const employeePopup = POPUP.build({
@@ -425,39 +428,39 @@ const SchedulingCalendar = (function () {
       <div class="employeeOptionsContainer">
 
         <div class="employeeOption">
-          <input type="checkbox" name="location" />
+          <input id="includeTrainedOnly" type="checkbox" name="location" checked />
           <div class="label">
             <p>Only include employees trained at the location</p>
           </div>
         </div>
 
         <div class="employeeOption">
-          <input type="checkbox" name="hour" />
+          <input id="maxWeeklyHours"  type="checkbox" name="hour" />
           <div class="label nestedInput">
             <p>Exclude employees that would have more than</p>
-            <input type="number" name="hours" />
+            <input id="maxWeeklyHours"  type="number" name="hours" />
             <p> hours for the work week</p>
           </div>
         </div>
 
         <div class="employeeOption">
-          <input type="checkbox" name="minute" />
+          <input id="locationOpt" type="checkbox" name="minute" />
           <div class="label nestedInput">
             <p>Exclude employees that have a shift less than</p>
-            <input type="number" name="minutes" />
+            <input id="locationOpt" type="number" name="minutes" />
             <p>minutes before this one</p>
           </div>
         </div>
 
         <div class="employeeOption">
-          <input type="checkbox" name="overlap" />
+          <input id="locationOpt" type="checkbox" name="overlap" checked/>
           <div class="label">
             <p>Exclude employees who have a day off that overlaps with this shift</p>
           </div>
         </div>
 
         <div class="employeeOption">
-          <input type="checkbox" name="region" />
+          <input id="locationOpt" type="checkbox" name="region" />
           <div class="label">
             <p>Only show employees from this region:</p>
           </div>
@@ -2270,8 +2273,8 @@ const Scheduling = (function () {
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
-      text: 'View Calendar Web2Cal',
-      // text: 'View Calendar',
+      // text: 'View Calendar Web2Cal',
+      text: 'View Calendar',
       style: 'secondary',
       type: 'contained',
       callback: function () {
@@ -2304,7 +2307,7 @@ const Scheduling = (function () {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
 
-    btnWrap.appendChild(schedulingCalendarBtn);
+    // btnWrap.appendChild(schedulingCalendarBtn);
     btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === true && $.session.schedulingUpdate === false) {

@@ -340,7 +340,7 @@ var notesOverview = (function () {
     if ($.session.applicationName === 'Gatekeeper') btnWrap.appendChild(cnReportBtn);
     if ($.session.applicationName === 'Advisor') btnWrap.appendChild(cnADVReportBtn);
     DOM.ACTIONCENTER.appendChild(btnWrap);
-    if ($.session.CaseNotesReview) DOM.ACTIONCENTER.appendChild(multiSelectBtns);
+    //!if ($.session.CaseNotesReview) DOM.ACTIONCENTER.appendChild(multiSelectBtns);
     DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
     const filteredBy = initFilterDisplay();
     DOM.ACTIONCENTER.appendChild(filteredBy);
@@ -837,8 +837,8 @@ var notesOverview = (function () {
       'Date Created',
       'User Updated',
       'Group',
+      //!'Review Status',
       'Attach',
-      'Review Status',
     ];
     var ADVcolumnheadings = [
       'Service Date',
@@ -848,7 +848,7 @@ var notesOverview = (function () {
       'Date Created',
       'User Updated',
       'Group',
-      'Review Status',
+      //!'Review Status',
     ];
 
     if ($.session.applicationName === 'Gatekeeper') {
@@ -878,7 +878,7 @@ var notesOverview = (function () {
     headers[4].setAttribute('data-type', 'date'); // Date Created
     headers[5].setAttribute('data-type', 'string'); // User Updated
     headers[6].setAttribute('data-type', 'number'); // Group
-    headers[7].setAttribute('data-type', 'string'); // Review Status
+    //!headers[7].setAttribute('data-type', 'string'); // Review Status
 
     DOM.ACTIONCENTER.appendChild(overviewTable);
 
