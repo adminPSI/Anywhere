@@ -29,6 +29,38 @@ const individualAssessment = (() => {
     let classificationsTable;
     let tempConsumer;
     let rowClickedId;
+    let listClick = true;
+    let previousTarget = null;
+
+    const observerCallback = entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && listClick == false) {
+                const sectionId = entry.target.id;
+                for (let i = 0; i < tableOfContents.childNodes.length; i++) {
+                    const child = tableOfContents.childNodes[i];
+                    if (child.classList.contains(sectionId)) {
+                        child.classList.add('backgroundColor');
+                        child.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center',
+                            inline: 'nearest'
+                        });
+                        previousTarget = child;
+                    } else {
+                        child.classList.remove('backgroundColor');
+                    }
+                }
+            }
+        });
+        listClick = false;
+    };
+
+    const observer = new IntersectionObserver(observerCallback, {
+        root: DOM.ACTIONCENTER,
+        rootMargin: '0px 0px 0px 0px',
+        threshold: 0.08,
+    });
+
 
     const sections = {
         ContactInfo: {
@@ -593,7 +625,7 @@ const individualAssessment = (() => {
             PersonalIdentificationNumbers: {
                 pNConsumerNumber: assessmentData.consumerNumber,
                 pNBillingNumber: assessmentData.billingNumber,
-                pNSSN: assessmentData.SSN,
+                pNSSN: assessmentData.SSN ? formatSSN(assessmentData.SSN) : '',
                 pNContractNumber: assessmentData.contractNumber,
                 pNMedicaidNumber: assessmentData.MedicaidNumber,
                 pNMedicareNumber: assessmentData.MedicareNumber,
@@ -613,9 +645,9 @@ const individualAssessment = (() => {
                 dIMaritalStatus: assessmentData.maritalStatus,
                 dIGender: assessmentData.gender,
                 dIPrimaryFundingSource: assessmentData.primaryFundingSource,
-                dIPlanYearStartMonth: assessmentData.planYearStartMonth,
+                dIPlanYearStartMonth: assessmentData.planYearStartMonth ? getMonthName(assessmentData.planYearStartMonth) : '',
                 dIPlanYearStartDay: assessmentData.planYearStartDay,
-                dIPlanYearEndMonth: assessmentData.planYearEndMonth,
+                dIPlanYearEndMonth: assessmentData.planYearEndMonth ? getMonthName(assessmentData.planYearEndMonth) : '',
                 dIPlanYearEndDay: assessmentData.planYearEndDay,
                 dIPrimaryLanguage: assessmentData.language,
                 dIOtherLanguage: assessmentData.otherLanguage,
@@ -702,7 +734,6 @@ const individualAssessment = (() => {
         const primaryButtonWrap = _DOM.createElement('div');
         backButton.renderTo(primaryButtonWrap);
         moduleHeader.appendChild(primaryButtonWrap);
-        var previousTarget = null;
         // Build TOC
         for (section in sections) {
             if ($.session.applicationName !== 'Advisor' && (section === 'Categories' || section === 'Appointments')) {
@@ -732,6 +763,7 @@ const individualAssessment = (() => {
                 }
                 e.currentTarget.classList.add('backgroundColor');
                 previousTarget = e.currentTarget;
+                listClick = true;
             });
 
             // Build Form
@@ -741,7 +773,7 @@ const individualAssessment = (() => {
             });
             sectionWrap.appendChild(sectionHeader);
             sectionWrap.classList.toggle('hiddenPage', !sections[section].enabled);
-
+            observer.observe(sectionWrap);
             if (section === 'Locations') {
                 locationsTable.renderTo(sectionWrap);
                 locationsForm.renderTo(sectionWrap);
@@ -1681,7 +1713,7 @@ const individualAssessment = (() => {
             wlForms['DemographicInfo'].inputs['dIFacilityNumber'].rootElement.classList.toggle('hiddenPage', true);
             wlForms['DemographicInfo'].inputs['dISite'].rootElement.classList.toggle('hiddenPage', true);
             wlForms['ContactInfo'].inputs['cIGeneration'].rootElement.classList.toggle('hiddenPage', true);
-           
+
             wlForms['ContactInfo'].inputs['cIAddress1'].labelEle.innerHTML = 'Address1';
             wlForms['ContactInfo'].inputs['cIAddress2'].labelEle.innerHTML = 'Address2';
             wlForms['ContactInfo'].inputs['cIPhone1'].labelEle.innerHTML = 'Phone 1';
@@ -1736,6 +1768,24 @@ const individualAssessment = (() => {
         } else {
             return zip.slice(0, 5) + '-' + zip.slice(5);
         }
+    }
+
+    function formatSSN(ssn) {
+        let SSN = stringAdd(ssn, 3, '-');
+        SSN = stringAdd(SSN, 6, '-');
+        return SSN;
+    }
+
+    function stringAdd(string, start, newSubStr) {
+        return string.slice(0, start) + newSubStr + string.slice(start);
+    }
+
+    function getMonthName(monthNumber) {
+        const monthNames = ["Month",
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        return monthNames[monthNumber];
     }
 
     async function init(opts) {
