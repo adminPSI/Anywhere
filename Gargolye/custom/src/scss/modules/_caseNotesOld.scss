@@ -268,137 +268,126 @@
   }
   // Note Overview Table
   #caseNotesReviewTable {
-    &.gatekeeperCols {
+    &.multiSelectEnabled {
       .table__row {
-        > div:nth-child(8) {
-          // attach icom
-          flex-basis: 100px;
-          justify-content: left;
-          max-width: 100px;
-        }
-        > div:nth-child(9) {
-          // review status
-          flex-basis: 100px;
-          justify-content: left;
-          max-width: 100px;
+        &[data-selectable="false"] {
+          cursor: none;
+          pointer-events: none;
         }
       }
     }
+  }
+  #caseNotesReviewTable {
+    // &.gatekeeperCols {
+    //   .table__row {
+    //     > div:nth-child(8) {
+    //       // attach icom
+    //       flex-basis: 100px;
+    //       justify-content: left;
+    //       max-width: 100px;
+    //     }
+    //     > div:nth-child(9) {
+    //       // review status
+    //       flex-basis: 100px;
+    //       justify-content: left;
+    //       max-width: 100px;
+    //     }
+    //   }
+    // }
 
-    &.advisorCols {
-      > div:nth-child(8) {
-        // review status
-        flex-basis: 100px;
-        justify-content: left;
-        max-width: 100px;
-      }
-    }
+    // &.advisorCols {
+    //   > div:nth-child(8) {
+    //     // review status
+    //     flex-basis: 100px;
+    //     justify-content: left;
+    //     max-width: 100px;
+    //   }
+    // }
 
     .table__row {
       &.selected {
         background: $secondary;
       }
-      
-      > div {
-        flex-grow: 1;
-      }
 
       > div:last-child {
         margin: 0;
       }
-
       > div:nth-child(1) {
         // service date
-        flex-basis: 100px;
+        flex-grow: 1;
         justify-content: left;
-        max-width: 100px;
+        flex-basis: 110px;
+        max-width: 120px;
       }
-
       > div:nth-child(2) {
         // start time
-        flex-basis: 100px;
+        flex-grow: 1;
         justify-content: left;
+        flex-basis: 90px;
         max-width: 100px;
       }
-
       > div:nth-child(3) {
         // end time
-        flex-basis: 100px;
+        flex-grow: 1;
         justify-content: left;
+        flex-basis: 90px;
         max-width: 100px;
       }
-
       > div:nth-child(4) {
         // name
-        flex-basis: 225px;
+        flex-grow: 1;
         justify-content: left;
-        max-width: 225px;
+        flex-basis: 240px;
+        max-width: 250px;
       }
-
       > div:nth-child(5) {
         // date created
-        //  display: none;
-        flex-basis: 225px;
+        flex-grow: 1;
         justify-content: left;
-        max-width: 225px;
+        flex-basis: 110px;
+        max-width: 120px;
       }
-      //
-
       > div:nth-child(6) {
         // user updated
-        // display: none;
-        flex-basis: 225px;
+        flex-grow: 1;
         justify-content: left;
-        max-width: 225px;
+        flex-basis: 190px;
+        max-width: 200px;
       }
-
       > div:nth-child(7) {
         // group count
-        //  display: none;
-        flex-basis: 225px;
+        flex-grow: 1;
+        // justify-content: left;
+        flex-basis: 70px;
+        max-width: 80px;
+      }
+      > div:nth-child(8) {
+        // review result
+        flex-grow: 1;
         justify-content: left;
-        max-width: 225px;
+        flex-basis: 90px;
+        max-width: 100px;
       }
 
       @media screen and (max-width: 560px) {
-        > div:nth-child(1) {
-          // service date
-          display: block;
-        }
-
-        > div:nth-child(2) {
-          // start time
-          display: block;
-        }
-
         > div:nth-child(3) {
           // end time
           display: none;
         }
-
-        > div:nth-child(4) {
-          // name
-          display: block;
-        }
-
         > div:nth-child(5) {
           // date created
           display: none;
         }
-        //
-
         > div:nth-child(6) {
           // user updated
           // display: none;
           display: none;
         }
-
         > div:nth-child(7) {
           // group count
           //  display: none;
           display: none;
         }
-
         > div:nth-child(8) {
           // attach icom
           // display: none;

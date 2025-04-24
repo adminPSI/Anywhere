@@ -340,7 +340,7 @@ var notesOverview = (function () {
     if ($.session.applicationName === 'Gatekeeper') btnWrap.appendChild(cnReportBtn);
     if ($.session.applicationName === 'Advisor') btnWrap.appendChild(cnADVReportBtn);
     DOM.ACTIONCENTER.appendChild(btnWrap);
-    //!if ($.session.CaseNotesReview) DOM.ACTIONCENTER.appendChild(multiSelectBtns);
+    //if ($.session.CaseNotesReview) DOM.ACTIONCENTER.appendChild(multiSelectBtns);
     DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
     const filteredBy = initFilterDisplay();
     DOM.ACTIONCENTER.appendChild(filteredBy);
@@ -353,7 +353,7 @@ var notesOverview = (function () {
   let enableSelectAll = false;
   let selectedRows = [];
   let rejectionReasons = [];
-  //Review
+  //
   function resetMultiSelect() {
     mulitSelectBtn.classList.remove('enabled');
     mulitSelectBtn.classList.remove('disabled');
@@ -419,7 +419,6 @@ var notesOverview = (function () {
       style: 'secondary',
       callback: function () {
         POPUP.hide(popup);
-        resetMultiSelect();
         callback(rejectReason);
       },
     });
@@ -457,7 +456,6 @@ var notesOverview = (function () {
       style: 'secondary',
       callback: function () {
         POPUP.hide(popup);
-        resetMultiSelect();
         callback();
       },
     });
@@ -494,13 +492,15 @@ var notesOverview = (function () {
       const passMessage = 'Are you sure you want to set the selected case notes as passed?';
       showConfimPassRejectPopup(passMessage, async () => {
         success = await caseNotesAjax.passRejectCaseNotes({
-          userId: $.session.PeopleId,
-          reviewResults: 'P',
+          userId: $.session.UserId,
+          reviewResult: 'P',
           noteIds: selectedRows,
           rejectReason: '',
         });
 
         showSuccessFailPopup(success);
+        resetMultiSelect();
+        getTableData();
       });
 
       ACTION_NAV.hide();
@@ -514,25 +514,28 @@ var notesOverview = (function () {
         if ($.session.applicationName === 'Gatekeeper') {
           showRejectionReasonPopup(async rejectReason => {
             success = await caseNotesAjax.passRejectCaseNotes({
-              userId: $.session.PeopleId,
-              reviewResults: 'R',
+              userId: $.session.UserId,
+              reviewResult: 'R',
               noteIds: selectedRows,
               rejectReason: rejectReason,
             });
 
             showSuccessFailPopup(success);
+            resetMultiSelect();
+            getTableData();
           });
-          return;
         }
 
         success = await caseNotesAjax.passRejectCaseNotes({
-          userId: $.session.PeopleId,
-          reviewResults: 'R',
+          userId: $.session.UserId,
+          reviewResult: 'R',
           noteIds: selectedRows,
           rejectReason: '',
         });
 
         showSuccessFailPopup(success);
+        resetMultiSelect();
+        getTableData();
       });
 
       ACTION_NAV.hide();
@@ -561,6 +564,7 @@ var notesOverview = (function () {
     enableMultiEdit = !enableMultiEdit;
 
     mulitSelectBtn.classList.toggle('enabled');
+    overviewTable.classList.toggle('multiSelectEnabled');
 
     if (enableMultiEdit) {
       ACTION_NAV.show();
@@ -627,44 +631,63 @@ var notesOverview = (function () {
 
     return btnWrap;
   }
+  function isRowSelectable(reviewRequired, reviewResult, caseManagerId, corrected) {
+    //? user clicks on a white row
+    //? WHERE case_notes.review_required = 'Y' AND ((case_notes.review_results = 'N')
+    //? OR (case_notes.review_results = 'R' AND case_notes.corrected = 'Y')) AND the people.id in Gatekeeper (persons.person_id in Advisor) of the logged in user
+    //? DOES NOT EQUAL case_notes.case_manager_id on the record in the grid on this page
+    if ($.session.PeopleId !== caseManagerId) {
+      if ($.session.applicationName === 'Gatekeeper') {
+        if ((reviewRequired === 'Y' && reviewResult === 'N') || (reviewResult === 'R' && corrected === 'Y')) {
+          return 'true';
+        }
+      } else {
+        if ((reviewRequired === 'Y' && reviewResult === 'N') || reviewResult === 'R') {
+          return 'true';
+        }
+      }
+    }
+
+    // if ($.session.applicationName === 'Gatekeeper') {
+    //   if (
+    //     (reviewRequired === 'Y' && reviewResult === 'N') ||
+    //     (reviewResult === 'R' && corrected === 'Y' && $.session.PeopleId !== caseManagerId)
+    //   ) {
+    //     return 'true';
+    //   }
+    // } else {
+    //   if (
+    //     (reviewRequired === 'Y' && reviewResult === 'N') ||
+    //     (reviewResult === 'R' && $.session.PeopleId !== caseManagerId)
+    //   ) {
+    //     return 'true';
+    //   }
+    // }
+
+    return 'false';
+  }
   //
   function handleTableEvents(event) {
     var isRow = event.target.classList.contains('table__row');
     if (!isRow) return;
     // show row details and/or go to note review
     var caseNoteId = event.target.id;
-    var consumerId = event.target.dataset.consumerId;
-    var caseManagerId = event.target.dataset.casemanagerid;
     var isSSANote = event.target.dataset.isssanote;
-    var reviewRequired = event.target.dataset.required;
-    var reviewResult = event.target.dataset.result;
-    var corrected = event.target.dataset.corrected;
     var isSelected = event.target.classList.contains('selected');
 
     if (enableMultiEdit) {
-      // user clicks on a white row
-      // WHERE case_notes.review_required = 'Y' AND ((case_notes.review_results = 'N')
-      // OR (case_notes.review_results = 'R' AND case_notes.corrected = 'Y')) AND the people.id in Gatekeeper (persons.person_id in Advisor) of the logged in user
-      // DOES NOT EQUAL case_notes.case_manager_id on the record in the grid on this page
-      // $.session.PersonId
-      // select it by changing the row color from white to green
-      if (
-        (reviewRequired === 'Y' && reviewResult === 'N') ||
-        (reviewResult === 'R' && corrected === 'Y' && $.session.PersonId === caseManagerId)
-      ) {
-        if (isSelected) {
-          event.target.classList.remove('selected');
-          selectedRows = selectedRows.filter(sr => sr !== caseNoteId);
-          if (enableSelectAll) {
-            enableSelectAll = false;
-            mulitSelectBtn.classList.remove('disabled');
-            mulitSelectBtn.classList.add('enabled');
-            selectAllBtn.classList.remove('enabled');
-          }
-        } else {
-          event.target.classList.add('selected');
-          selectedRows.push(caseNoteId);
+      if (isSelected) {
+        event.target.classList.remove('selected');
+        selectedRows = selectedRows.filter(sr => sr !== caseNoteId);
+        if (enableSelectAll) {
+          enableSelectAll = false;
+          mulitSelectBtn.classList.remove('disabled');
+          mulitSelectBtn.classList.add('enabled');
+          selectAllBtn.classList.remove('enabled');
         }
+      } else {
+        event.target.classList.add('selected');
+        selectedRows.push(caseNoteId);
       }
 
       return;
@@ -757,9 +780,9 @@ var notesOverview = (function () {
     });
 
     const data = tableData.map(td => {
-      console.log(td);
+      const consumerId = td.consumerid.split('.')[0];
       const caseNoteId = td.casenoteid.split('.')[0];
-      const casemanagerid = td.casemanagerid;
+      const casemanagerid = td.casemanagerid.split('.')[0];
       const originalupdateTrim = td.originalupdate.split('T')[0];
       const originalUpdate = UTIL.formatDateFromIso(originalupdateTrim);
       const servicedate = UTIL.formatDateFromIso(td.servicedate.split('T')[0]);
@@ -771,11 +794,20 @@ var notesOverview = (function () {
       const reviewRequired = td.review_required;
       const reviewResult = td.review_result;
       const corrected = td.corrected;
+      const isSelectable = isRowSelectable(reviewRequired, reviewResult, casemanagerid, corrected);
+
+      // c.  User case_notes.review_results to determine the value in this new column.  If case_notes.review_results = 'N', display 'Not Reviewed'.
+      // If case_notes.review_results = 'P', display 'Passed'.  If case_notes.review_results = 'R', display 'Rejected'.
+      let reviewResultString = '';
+      if (reviewRequired === 'Y') {
+        reviewResultString = reviewResult === 'N' ? 'Not Reviewed' : reviewResult === 'P' ? 'Passed' : 'Rejected';
+      }
+
       let hasOverlap = false;
       if (overLapIds !== null) {
         if (overLapIds.includes(caseNoteId)) hasOverlap = true;
       }
-      var consumerId = td.consumerid.split('.')[0];
+
       isSSANote = td.isSSANote;
       attachcount = td.attachcount;
 
@@ -795,16 +827,22 @@ var notesOverview = (function () {
       }
 
       return {
-        values: [servicedate, starttime, endtime, name, originalUpdate, lastUpdateBy, groupCount],
+        values: [
+          servicedate,
+          starttime,
+          endtime,
+          name,
+          originalUpdate,
+          lastUpdateBy,
+          groupCount,
+          //reviewResultString,
+        ],
         id: caseNoteId,
         overlap: hasOverlap,
         attributes: [
           { key: 'data-consumer-id', value: consumerId },
           { key: 'data-isssanote', value: isSSANote },
-          { key: 'data-required', value: reviewRequired },
-          { key: 'data-result', value: reviewResult },
-          { key: 'data-casemanagerid', value: casemanagerid },
-          { key: 'data-corrected', value: corrected },
+          { key: 'data-selectable', value: isSelectable },
         ],
         endIcon: thisendIcon,
         endIconCallback: e => {
@@ -817,8 +855,6 @@ var notesOverview = (function () {
           caseNotesAjax.getCaseNoteAttachmentsList(caseNoteId, function (results) {
             attachmentPopup();
             if (results.length !== 0) populateExistingAttachments(results);
-
-            //cnAttachment.init([], results, '', caseNoteId);
           });
         },
         onClick: handleTableEvents,
@@ -837,7 +873,7 @@ var notesOverview = (function () {
       'Date Created',
       'User Updated',
       'Group',
-      //!'Review Status',
+      //'Review Status',
       'Attach',
     ];
     var ADVcolumnheadings = [
@@ -848,7 +884,7 @@ var notesOverview = (function () {
       'Date Created',
       'User Updated',
       'Group',
-      //!'Review Status',
+      //'Review Status',
     ];
 
     if ($.session.applicationName === 'Gatekeeper') {
@@ -878,7 +914,7 @@ var notesOverview = (function () {
     headers[4].setAttribute('data-type', 'date'); // Date Created
     headers[5].setAttribute('data-type', 'string'); // User Updated
     headers[6].setAttribute('data-type', 'number'); // Group
-    //!headers[7].setAttribute('data-type', 'string'); // Review Status
+    //headers[7].setAttribute('data-type', 'string'); // Review Status
 
     DOM.ACTIONCENTER.appendChild(overviewTable);
 
@@ -1189,7 +1225,6 @@ var notesOverview = (function () {
     const header = document.createElement('h5');
     header.innerText = 'Select an attachment to view:';
     reviewAttachmentList.appendChild(header);
-    //console.table(reviewAttachments)
 
     reviewAttachments.forEach(attachment => {
       const fileContainer = document.createElement('div');
