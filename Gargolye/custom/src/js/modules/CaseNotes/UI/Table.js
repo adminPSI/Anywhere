@@ -247,12 +247,13 @@
             this.lastDirection = direction;
 
             //* replace table rows with sorted ones
-            const clonedTableBody = this.table.tBodies[0].cloneNode();
+            const clonedTableBody = this.table.tBodies[0]; 
+            //const clonedTableBody = this.table.tBodies[0].cloneNode(); //  remove cloneNode() because event listner not work with clone 
 
-            for (let i = 0; i < rows.length; i++) {
+            for (let i = 0; i < rows.length; i++) {                             
                 clonedTableBody.appendChild(rows[i]);
-            }
-
+            }     
+          
             this.table.replaceChild(clonedTableBody, this.table.tBodies[0]);
         });
 
