@@ -1455,13 +1455,13 @@
             order: 1;
 
             .inputGroup.time,
-            S .inputGroup.number, .inputGroup.text, .inputGroup.date {
+            .inputGroup.number, .inputGroup.text, .inputGroup.date {
                 width: calc(50% - 5px);
             }
 
             .inputGroup.cIState,
             .inputGroup.cIZip {
-                width: calc(24% - 5px) !important;
+                width: calc(24.6% - 5px) !important;   
             }
         }
 

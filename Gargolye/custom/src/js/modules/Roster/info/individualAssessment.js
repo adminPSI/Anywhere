@@ -849,7 +849,7 @@ const individualAssessment = (() => {
         // Locations
         if ($.session.applicationName === 'Advisor') {
             locationsTable = new Table({
-                columnSortable: false,
+                columnSortable: true,
                 allowDelete: false,
                 headings: [
                     {
@@ -1184,7 +1184,7 @@ const individualAssessment = (() => {
             });
         } else {
             locationsTable = new Table({
-                columnSortable: false,
+                columnSortable: true,  
                 allowDelete: false,
                 headings: [
                     {
@@ -1397,7 +1397,7 @@ const individualAssessment = (() => {
 
 
         relationshipTable = new Table({
-            columnSortable: false,
+            columnSortable: true,
             allowDelete: false,
             headings: [
                 {
@@ -1421,7 +1421,7 @@ const individualAssessment = (() => {
 
         if ($.session.applicationName === 'Advisor') {
             categoryTable = new Table({
-                columnSortable: false,
+                columnSortable: true,
                 allowDelete: false,
                 headings: [
                     {
@@ -1432,7 +1432,7 @@ const individualAssessment = (() => {
             });
 
             appoinmentTable = new Table({
-                columnSortable: false,
+                columnSortable: true,
                 allowDelete: false,
                 headings: [
                     {
@@ -1511,7 +1511,7 @@ const individualAssessment = (() => {
             });
         } else {
             classificationsTable = new Table({
-                columnSortable: false,
+                columnSortable: true,
                 allowDelete: false,
                 headings: [
                     {
@@ -1821,7 +1821,7 @@ const individualAssessment = (() => {
             }
             wlForms[section].populate(wlData[section]);
         }
-
+       
         locationsTable.populate(Object.values(wlLocations));
         locationsForm.form.classList.add('hiddenPage');
         relationshipTable.populate(Object.values(wlRelationship));
