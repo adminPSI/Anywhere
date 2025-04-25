@@ -482,6 +482,7 @@ namespace Anywhere.service.Data
             public string LocationStatus { get; set; }
             public string defaultGroup { get; set; }
             public string MRC { get; set; }
+            public string rowNum { get; set; }
         }
 
         public class ConsumerRelationship

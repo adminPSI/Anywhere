@@ -543,16 +543,16 @@ const individualAssessment = (() => {
         if (locations.length > 0) {
             if ($.session.applicationName === 'Advisor') {
                 for (const loc of locations) {
-                    wlLocations[loc.locationId] = {
+                    wlLocations[loc.rowNum] = {
                         id: loc.locationId,
-                        values: [loc.locationName, moment(loc.startDate).format('MM/DD/YYYY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YYYY'), loc.consumerType],
+                        values: [loc.locationName, loc.startDate == '' ? '' :  moment(loc.startDate).format('MM/DD/YYYY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YYYY'), loc.consumerType],
                     };
                 }
             } else {
-                for (const loc of locations) {
-                    wlLocations[loc.locationId] = {
+                for (const loc of locations) {   
+                    wlLocations[loc.rowNum] = {
                         id: loc.locationId,
-                        values: [loc.locationName, moment(loc.startDate).format('MM/DD/YYYY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YYYY')],
+                        values: [loc.locationName, loc.startDate == '' ? '' : moment(loc.startDate).format('MM/DD/YYYY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YYYY')],
                     };
                 }
             }
@@ -563,7 +563,7 @@ const individualAssessment = (() => {
             for (const rel of relation) {
                 wlRelationship[rel.rowNum] = {
                     id: rel.personId,
-                    values: [rel.relationshipType, rel.name, moment(rel.startDate).format('MM/DD/YYYY'), rel.endDate == '' ? '' : moment(rel.endDate).format('MM/DD/YYYY')],
+                    values: [rel.relationshipType, rel.name, rel.startDate == '' ? '' : moment(rel.startDate).format('MM/DD/YYYY'), rel.endDate == '' ? '' : moment(rel.endDate).format('MM/DD/YYYY')],
                 };
             }
         }
@@ -594,7 +594,7 @@ const individualAssessment = (() => {
                 for (const cla of classific) {
                     wlClassifications[cla.rowNum] = {
                         id: cla.rowNum,
-                        values: [cla.description, moment(cla.startDate).format('MM/DD/YYYY'), cla.endDate == '' ? '' : moment(cla.endDate).format('MM/DD/YYYY')],
+                        values: [cla.description, cla.startDate == '' ? '' : moment(cla.startDate).format('MM/DD/YYYY'), cla.endDate == '' ? '' : moment(cla.endDate).format('MM/DD/YYYY')],
                     };
                 }
             }
