@@ -1614,42 +1614,48 @@ const individualAssessment = (() => {
                     rowId,
                 );
             } else {
-                locationsForm.populate(
-                    {
-                        lLocations: rowData.locationName,
-                        lStartDate: rowData.startDate,
-                        lEndDate: rowData.endDate,
-                        lSunStart: rowData.SunStartTime,
-                        lMonStart: rowData.monStartTime,
-                        lTuesStart: rowData.tuesStartTime,
-                        lWedStart: rowData.wedStartTime,
-                        lThursStart: rowData.thurStartTime,
-                        lFriStart: rowData.friStartTime,
-                        lSatStart: rowData.satStartTime,
-                        lSunEnd: rowData.sunEndTime,
-                        lMonEnd: rowData.monEndTime,
-                        lTuesEnd: rowData.tuesEndTime,
-                        lWedEnd: rowData.wedEndTime,
-                        lThursEnd: rowData.thurEndTime,
-                        lFriEnd: rowData.friEndTime,
-                        lSatEnd: rowData.satEndTime,
-                        lSunStart2: rowData.sunStartTime2,
-                        lMonStart2: rowData.monStartTime2,
-                        lTuesStart2: rowData.tueStartTime2,
-                        lWedStart2: rowData.wedStartTime2,
-                        lThursStart2: rowData.thurStartTime2,
-                        lFriStart2: rowData.friStartTime2,
-                        lSatStart2: rowData.satStartTime2,
-                        lSunEnd2: rowData.sunEndTime2,
-                        lMonEnd2: rowData.monEndTime2,
-                        lTuesEnd2: rowData.tueEndTime2,
-                        lWedEnd2: rowData.wedEndTime2,
-                        lThursEnd2: rowData.thurEndTime2,
-                        lFriEnd2: rowData.friEndTime2,
-                        lSatEnd2: rowData.satEndTime2,
-                    },
-                    rowId,
-                );
+                if ($.session.viewLocationSchedulesKey) {
+                    locationsForm.populate(
+                        {
+                            lLocations: rowData.locationName,
+                            lStartDate: rowData.startDate,
+                            lEndDate: rowData.endDate,
+                            lSunStart: rowData.SunStartTime,
+                            lMonStart: rowData.monStartTime,
+                            lTuesStart: rowData.tuesStartTime,
+                            lWedStart: rowData.wedStartTime,
+                            lThursStart: rowData.thurStartTime,
+                            lFriStart: rowData.friStartTime,
+                            lSatStart: rowData.satStartTime,
+                            lSunEnd: rowData.sunEndTime,
+                            lMonEnd: rowData.monEndTime,
+                            lTuesEnd: rowData.tuesEndTime,
+                            lWedEnd: rowData.wedEndTime,
+                            lThursEnd: rowData.thurEndTime,
+                            lFriEnd: rowData.friEndTime,
+                            lSatEnd: rowData.satEndTime,
+                            lSunStart2: rowData.sunStartTime2,
+                            lMonStart2: rowData.monStartTime2,
+                            lTuesStart2: rowData.tueStartTime2,
+                            lWedStart2: rowData.wedStartTime2,
+                            lThursStart2: rowData.thurStartTime2,
+                            lFriStart2: rowData.friStartTime2,
+                            lSatStart2: rowData.satStartTime2,
+                            lSunEnd2: rowData.sunEndTime2,
+                            lMonEnd2: rowData.monEndTime2,
+                            lTuesEnd2: rowData.tueEndTime2,
+                            lWedEnd2: rowData.wedEndTime2,
+                            lThursEnd2: rowData.thurEndTime2,
+                            lFriEnd2: rowData.friEndTime2,
+                            lSatEnd2: rowData.satEndTime2,
+                        },
+                        rowId,
+                    );
+                }
+                else {
+                    locationsForm.form.classList.add('hiddenPage');
+                }
+               
             }
         });
 
@@ -1730,6 +1736,8 @@ const individualAssessment = (() => {
 
         }
         else {
+            wlForms['DemographicInfo'].inputs['dIDateofBirth'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewDOB);
+            wlForms['PersonalIdentificationNumbers'].inputs['pNMedicareNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewMedicare);
             wlForms['PersonalIdentificationNumbers'].inputs['pNConsumerNumber'].rootElement.classList.toggle('hiddenPage', !$.session.DemographicsViewLocalId);
             wlForms['PersonalIdentificationNumbers'].inputs['pNBillingNumber'].rootElement.classList.toggle('hiddenPage', true);
             wlForms['PersonalIdentificationNumbers'].inputs['pNContractNumber'].rootElement.classList.toggle('hiddenPage', true);
