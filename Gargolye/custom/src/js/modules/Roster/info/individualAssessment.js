@@ -582,7 +582,7 @@ const individualAssessment = (() => {
             wlAppoinment = {};
             if (appoint.length > 0) {
                 for (const apt of appoint) {
-                    wlAppoinment[apt.trackingId] = {
+                    wlAppoinment[apt.rowNum] = {
                         id: apt.trackingId,
                         values: [apt.appointmentDate == '' ? '' : moment(apt.appointmentDate).format('MM/DD/YYYY'), apt.appointmentTime == '' ? '' : UTIL.convertFromMilitary(apt.appointmentTime), apt.appointmentType, apt.provider],
                     };

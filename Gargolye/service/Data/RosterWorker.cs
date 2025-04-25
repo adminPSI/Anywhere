@@ -514,6 +514,7 @@ namespace Anywhere.service.Data
             public string treatment { get; set; }
             public string reason { get; set; }
             public string notes { get; set; }
+            public string rowNum { get; set; }
         }
 
         public class ConsumerClassifications
