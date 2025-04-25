@@ -31,6 +31,7 @@ const individualAssessment = (() => {
     let rowClickedId;
     let listClick = true;
     let previousTarget = null;
+    let appontmentRowClickedId;
 
     const observerCallback = entries => {
         entries.forEach(entry => {
@@ -544,14 +545,14 @@ const individualAssessment = (() => {
                 for (const loc of locations) {
                     wlLocations[loc.locationId] = {
                         id: loc.locationId,
-                        values: [loc.locationName, moment(loc.startDate).format('MM/DD/YY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YY'), loc.consumerType],
+                        values: [loc.locationName, moment(loc.startDate).format('MM/DD/YYYY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YYYY'), loc.consumerType],
                     };
                 }
             } else {
                 for (const loc of locations) {
                     wlLocations[loc.locationId] = {
                         id: loc.locationId,
-                        values: [loc.locationName, moment(loc.startDate).format('MM/DD/YY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YY')],
+                        values: [loc.locationName, moment(loc.startDate).format('MM/DD/YYYY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YYYY')],
                     };
                 }
             }
@@ -562,7 +563,7 @@ const individualAssessment = (() => {
             for (const rel of relation) {
                 wlRelationship[rel.rowNum] = {
                     id: rel.personId,
-                    values: [rel.relationshipType, rel.name, moment(rel.startDate).format('MM/DD/YY'), rel.endDate == '' ? '' : moment(rel.endDate).format('MM/DD/YY')],
+                    values: [rel.relationshipType, rel.name, moment(rel.startDate).format('MM/DD/YYYY'), rel.endDate == '' ? '' : moment(rel.endDate).format('MM/DD/YYYY')],
                 };
             }
         }
@@ -583,7 +584,7 @@ const individualAssessment = (() => {
                 for (const apt of appoint) {
                     wlAppoinment[apt.trackingId] = {
                         id: apt.trackingId,
-                        values: [apt.appointmentDate == '' ? '' : moment(apt.appointmentDate).format('MM/DD/YY'), apt.appointmentTime == '' ? '' : UTIL.convertFromMilitary(apt.appointmentTime), apt.appointmentType, apt.provider],
+                        values: [apt.appointmentDate == '' ? '' : moment(apt.appointmentDate).format('MM/DD/YYYY'), apt.appointmentTime == '' ? '' : UTIL.convertFromMilitary(apt.appointmentTime), apt.appointmentType, apt.provider],
                     };
                 }
             }
@@ -593,7 +594,7 @@ const individualAssessment = (() => {
                 for (const cla of classific) {
                     wlClassifications[cla.rowNum] = {
                         id: cla.rowNum,
-                        values: [cla.description, moment(cla.startDate).format('MM/DD/YY'), cla.endDate == '' ? '' : moment(cla.endDate).format('MM/DD/YY')],
+                        values: [cla.description, moment(cla.startDate).format('MM/DD/YYYY'), cla.endDate == '' ? '' : moment(cla.endDate).format('MM/DD/YYYY')],
                     };
                 }
             }
@@ -858,11 +859,11 @@ const individualAssessment = (() => {
                     },
                     {
                         text: 'Start Date',
-                        type: 'string',
+                        type: 'date',
                     },
                     {
                         text: 'End Date',
-                        type: 'string',
+                        type: 'date',
                     },
                     {
                         text: 'Type',
@@ -1184,7 +1185,7 @@ const individualAssessment = (() => {
             });
         } else {
             locationsTable = new Table({
-                columnSortable: true,  
+                columnSortable: true,
                 allowDelete: false,
                 headings: [
                     {
@@ -1193,11 +1194,11 @@ const individualAssessment = (() => {
                     },
                     {
                         text: 'Start Date',
-                        type: 'string',
+                        type: 'date',
                     },
                     {
                         text: 'End Date',
-                        type: 'string',
+                        type: 'date',
                     },
                 ],
             });
@@ -1410,11 +1411,11 @@ const individualAssessment = (() => {
                 },
                 {
                     text: 'Start Date',
-                    type: 'string',
+                    type: 'date',
                 },
                 {
                     text: 'End Date',
-                    type: 'string',
+                    type: 'date',
                 },
             ],
         });
@@ -1437,11 +1438,11 @@ const individualAssessment = (() => {
                 headings: [
                     {
                         text: 'Appointment Date',
-                        type: 'string',
+                        type: 'date',
                     },
                     {
                         text: 'Time',
-                        type: 'string',
+                        type: 'date',
                     },
                     {
                         text: 'Type',
@@ -1520,11 +1521,11 @@ const individualAssessment = (() => {
                     },
                     {
                         text: 'Start Date',
-                        type: 'string',
+                        type: 'date',
                     },
                     {
                         text: 'End Date',
-                        type: 'string',
+                        type: 'date',
                     },
                 ],
             });
@@ -1654,9 +1655,16 @@ const individualAssessment = (() => {
 
         if ($.session.applicationName === 'Advisor') {
             appoinmentTable.onRowClick(rowId => {
-                appoinmentForm.form.classList.remove('hiddenPage');
+                if (rowId == appontmentRowClickedId && !appoinmentForm.form.classList.contains('hiddenPage')) {
+                    appoinmentForm.form.classList.add('hiddenPage');
+                } else {
+                    appoinmentForm.form.classList.remove('hiddenPage');
+                }
+
                 appoinmentForm.clear();
                 const rowData = appoinmentData.find(a => a.trackingId == rowId);
+                appontmentRowClickedId = rowId; 
+
                 appoinmentForm.populate(
                     {
                         aAppointmentDate: rowData.appointmentDate,
@@ -1821,7 +1829,7 @@ const individualAssessment = (() => {
             }
             wlForms[section].populate(wlData[section]);
         }
-       
+
         locationsTable.populate(Object.values(wlLocations));
         locationsForm.form.classList.add('hiddenPage');
         relationshipTable.populate(Object.values(wlRelationship));

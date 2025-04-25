@@ -85,7 +85,7 @@
 
         this._build();
         this._setupEvents();
-        this._columnSort();   
+        this._columnSort();
         // this.table = table ref
         // this.table.tHead = table header
         // this.table.tFoot = table footer
@@ -192,7 +192,7 @@
     /**
      * Sort by column header
      */
-    Table.prototype._columnSort = function () { 
+    Table.prototype._columnSort = function () {
         this.table.classList.add('colSort');
 
         this.table.tHead.addEventListener('click', e => {
@@ -203,6 +203,7 @@
 
             let direction = !this.lastDirection ? 'asc' : this.lastDirection === 'asc' ? 'desc' : 'asc';
             let datetime;
+            let stringVal;
 
             if (this.lastHeading) {
                 this.lastHeading.classList.remove(this.lastDirection);
@@ -218,6 +219,9 @@
                 if (e.target.getAttribute('data-type') === 'date') {
                     datetime = true;
                 }
+                if (e.target.getAttribute('data-type') === 'string') {
+                    stringVal = true;
+                }
             }
 
             //* sort table rows
@@ -226,15 +230,20 @@
                 let cb = b.cells[colIndex].textContent;
 
                 if (datetime) {
-                    ca = new Date(ca).getTime();
-                    cb = new Date(cb).getTime();
+                    ca = Date.parse(ca.replace(' ', ''))
+                    cb = Date.parse(cb.replace(' ', ''))
                 } else {
                     ca = ca.replace(/(\$|\,|\s|%)/g, '');
                     cb = cb.replace(/(\$|\,|\s|%)/g, '');
                 }
 
-                ca = !isNaN(ca) ? parseInt(ca, 10) : ca;
-                cb = !isNaN(cb) ? parseInt(cb, 10) : cb;
+                if (stringVal) {
+                    ca = ca.toLowerCase();
+                    cb = cb.toLowerCase();
+                }
+
+                //ca = !isNaN(ca) ? parseInt(ca, 10) : ca;
+               // cb = !isNaN(cb) ? parseInt(cb, 10) : cb;  
 
                 if (direction === 'asc') {
                     return ca > cb ? 1 : -1;
@@ -247,13 +256,13 @@
             this.lastDirection = direction;
 
             //* replace table rows with sorted ones
-            const clonedTableBody = this.table.tBodies[0]; 
+            const clonedTableBody = this.table.tBodies[0];
             //const clonedTableBody = this.table.tBodies[0].cloneNode(); //  remove cloneNode() because event listner not work with clone 
 
-            for (let i = 0; i < rows.length; i++) {                             
+            for (let i = 0; i < rows.length; i++) {
                 clonedTableBody.appendChild(rows[i]);
-            }     
-          
+            }
+
             this.table.replaceChild(clonedTableBody, this.table.tBodies[0]);
         });
 
@@ -320,7 +329,7 @@
             // populate row
             row.values.forEach((rd, i) => {
                 const dataType = this.options.headings[i]?.type ?? '';
-                rd = dataType === 'date' ? formatDate(rd) : rd;
+                //rd = dataType === 'date' ? formatDate(rd) : rd;  
                 const cell = _DOM.createElement('td', { text: rd, 'data-type': dataType });
                 rowEle.appendChild(cell);
             });
