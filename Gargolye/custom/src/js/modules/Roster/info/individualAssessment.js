@@ -439,6 +439,10 @@ const individualAssessment = (() => {
                 },
             ],
         },
+        Classifications: {
+            name: 'Classifications',
+            enabled: true,
+        },
         Locations: {
             name: 'Locations',
             enabled: true,
@@ -455,8 +459,8 @@ const individualAssessment = (() => {
             name: 'Appointments',
             enabled: true,
         },
-        Classifications: {
-            name: 'Classifications',
+        GKLocations: {
+            name: 'Locations',
             enabled: true,
         },
         Intake: {
@@ -545,11 +549,11 @@ const individualAssessment = (() => {
                 for (const loc of locations) {
                     wlLocations[loc.rowNum] = {
                         id: loc.locationId,
-                        values: [loc.locationName, loc.startDate == '' ? '' :  moment(loc.startDate).format('MM/DD/YYYY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YYYY'), loc.consumerType],
+                        values: [loc.locationName, loc.startDate == '' ? '' : moment(loc.startDate).format('MM/DD/YYYY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YYYY'), loc.consumerType],
                     };
                 }
             } else {
-                for (const loc of locations) {   
+                for (const loc of locations) {
                     wlLocations[loc.rowNum] = {
                         id: loc.locationId,
                         values: [loc.locationName, loc.startDate == '' ? '' : moment(loc.startDate).format('MM/DD/YYYY'), loc.endDate == '' ? '' : moment(loc.endDate).format('MM/DD/YYYY')],
@@ -737,10 +741,13 @@ const individualAssessment = (() => {
         moduleHeader.appendChild(primaryButtonWrap);
         // Build TOC
         for (section in sections) {
-            if ($.session.applicationName !== 'Advisor' && (section === 'Categories' || section === 'Appointments')) {
+            if ($.session.applicationName !== 'Advisor' && (section === 'Categories' || section === 'Appointments' || section === 'Locations')) {
                 continue;
             }
-            if ($.session.applicationName === 'Advisor' && (section === 'Classifications' || section === 'Intake')) {
+            if ($.session.applicationName === 'Advisor' && (section === 'Classifications' || section === 'Intake' || section === 'GKLocations')) {
+                continue;
+            }
+            if ($.session.applicationName === 'Advisor' && $.session.DemographicsRelationshipsView == false && section === 'Relationships') {
                 continue;
             }
 
@@ -770,12 +777,19 @@ const individualAssessment = (() => {
             // Build Form
             const sectionWrap = _DOM.createElement('div', { id: section, class: 'wlPage' });
             const sectionHeader = _DOM.createElement('h2', {
-                text: _UTIL.convertCamelCaseToTitle(section),
+                text: _UTIL.convertCamelCaseToTitle(sections[section].name),
             });
             sectionWrap.appendChild(sectionHeader);
             sectionWrap.classList.toggle('hiddenPage', !sections[section].enabled);
             observer.observe(sectionWrap);
             if (section === 'Locations') {
+                locationsTable.renderTo(sectionWrap);
+                locationsForm.renderTo(sectionWrap);
+                assessmentWrap.appendChild(sectionWrap);
+                continue;
+            }
+
+            if (section === 'GKLocations') {
                 locationsTable.renderTo(sectionWrap);
                 locationsForm.renderTo(sectionWrap);
                 assessmentWrap.appendChild(sectionWrap);
@@ -1556,65 +1570,64 @@ const individualAssessment = (() => {
             locationsForm.clear();
             const rowData = locationData.find(l => l.locationId == rowId);
             rowClickedId = rowId;
-
-            if ($.session.applicationName === 'Advisor') {
-                locationsForm.populate(
-                    {
-                        lLocations: rowData.locationName,
-                        lStartDate: rowData.startDate,
-                        lEndDate: rowData.endDate,
-                        lStatus: rowData.LocationStatus,
-                        lDefaultType: rowData.consumerType,
-                        lDefaultGroup: rowData.defaultGroup,
-                        lSunStart: rowData.SunStartTime,
-                        lMonStart: rowData.monStartTime,
-                        lTuesStart: rowData.tuesStartTime,
-                        lWedStart: rowData.wedStartTime,
-                        lThursStart: rowData.thurStartTime,
-                        lFriStart: rowData.friStartTime,
-                        lSatStart: rowData.satStartTime,
-                        lSunEnd: rowData.sunEndTime,
-                        lMonEnd: rowData.monEndTime,
-                        lTuesEnd: rowData.tuesEndTime,
-                        lWedEnd: rowData.wedEndTime,
-                        lThursEnd: rowData.thurEndTime,
-                        lFriEnd: rowData.friEndTime,
-                        lSatEnd: rowData.satEndTime,
-                        lDSTypeSun: rowData.sunDStype,
-                        lDSTypeMon: rowData.monDSType,
-                        lDSTypeTues: rowData.tueDSType,
-                        lDSTypeWed: rowData.wedDSType,
-                        lDSTypeThurs: rowData.thuDSType,
-                        lDSTypeFri: rowData.friDSType,
-                        lDSTypeSat: rowData.satDSType,
-                        lSunStart2: rowData.sunStartTime2,
-                        lMonStart2: rowData.monStartTime2,
-                        lTuesStart2: rowData.tueStartTime2,
-                        lWedStart2: rowData.wedStartTime2,
-                        lThursStart2: rowData.thurStartTime2,
-                        lFriStart2: rowData.friStartTime2,
-                        lSatStart2: rowData.satStartTime2,
-                        lSunEnd2: rowData.sunEndTime2,
-                        lMonEnd2: rowData.monEndTime2,
-                        lTuesEnd2: rowData.tueEndTime2,
-                        lWedEnd2: rowData.wedEndTime2,
-                        lThursEnd2: rowData.thurEndTime2,
-                        lFriEnd2: rowData.friEndTime2,
-                        lSatEnd2: rowData.satEndTime2,
-                        lDSTypeSun2: rowData.sunDSType2,
-                        lDSTypeMon2: rowData.monDSType2,
-                        lDSTypeTues2: rowData.tueDSType2,
-                        lDSTypeWed2: rowData.wedDSType2,
-                        lDSTypeThurs2: rowData.thuDSType2,
-                        lDSTypeFri2: rowData.friDSType2,
-                        lDSTypeSat2: rowData.satDSType2,
-                        lNotes: rowData.notes,
-                        lMRC: rowData.MRC,
-                    },
-                    rowId,
-                );
-            } else {
-                if ($.session.viewLocationSchedulesKey) {
+            if ($.session.viewLocationSchedulesKey) {
+                if ($.session.applicationName === 'Advisor') {
+                    locationsForm.populate(
+                        {
+                            lLocations: rowData.locationName,
+                            lStartDate: rowData.startDate,
+                            lEndDate: rowData.endDate,
+                            lStatus: rowData.LocationStatus,
+                            lDefaultType: rowData.consumerType,
+                            lDefaultGroup: rowData.defaultGroup,
+                            lSunStart: rowData.SunStartTime,
+                            lMonStart: rowData.monStartTime,
+                            lTuesStart: rowData.tuesStartTime,
+                            lWedStart: rowData.wedStartTime,
+                            lThursStart: rowData.thurStartTime,
+                            lFriStart: rowData.friStartTime,
+                            lSatStart: rowData.satStartTime,
+                            lSunEnd: rowData.sunEndTime,
+                            lMonEnd: rowData.monEndTime,
+                            lTuesEnd: rowData.tuesEndTime,
+                            lWedEnd: rowData.wedEndTime,
+                            lThursEnd: rowData.thurEndTime,
+                            lFriEnd: rowData.friEndTime,
+                            lSatEnd: rowData.satEndTime,
+                            lDSTypeSun: rowData.sunDStype,
+                            lDSTypeMon: rowData.monDSType,
+                            lDSTypeTues: rowData.tueDSType,
+                            lDSTypeWed: rowData.wedDSType,
+                            lDSTypeThurs: rowData.thuDSType,
+                            lDSTypeFri: rowData.friDSType,
+                            lDSTypeSat: rowData.satDSType,
+                            lSunStart2: rowData.sunStartTime2,
+                            lMonStart2: rowData.monStartTime2,
+                            lTuesStart2: rowData.tueStartTime2,
+                            lWedStart2: rowData.wedStartTime2,
+                            lThursStart2: rowData.thurStartTime2,
+                            lFriStart2: rowData.friStartTime2,
+                            lSatStart2: rowData.satStartTime2,
+                            lSunEnd2: rowData.sunEndTime2,
+                            lMonEnd2: rowData.monEndTime2,
+                            lTuesEnd2: rowData.tueEndTime2,
+                            lWedEnd2: rowData.wedEndTime2,
+                            lThursEnd2: rowData.thurEndTime2,
+                            lFriEnd2: rowData.friEndTime2,
+                            lSatEnd2: rowData.satEndTime2,
+                            lDSTypeSun2: rowData.sunDSType2,
+                            lDSTypeMon2: rowData.monDSType2,
+                            lDSTypeTues2: rowData.tueDSType2,
+                            lDSTypeWed2: rowData.wedDSType2,
+                            lDSTypeThurs2: rowData.thuDSType2,
+                            lDSTypeFri2: rowData.friDSType2,
+                            lDSTypeSat2: rowData.satDSType2,
+                            lNotes: rowData.notes,
+                            lMRC: rowData.MRC,
+                        },
+                        rowId,
+                    );
+                } else {
                     locationsForm.populate(
                         {
                             lLocations: rowData.locationName,
@@ -1652,10 +1665,9 @@ const individualAssessment = (() => {
                         rowId,
                     );
                 }
-                else {
-                    locationsForm.form.classList.add('hiddenPage');
-                }
-               
+            }
+            else {
+                locationsForm.form.classList.add('hiddenPage');
             }
         });
 
@@ -1669,7 +1681,7 @@ const individualAssessment = (() => {
 
                 appoinmentForm.clear();
                 const rowData = appoinmentData.find(a => a.trackingId == rowId);
-                appontmentRowClickedId = rowId; 
+                appontmentRowClickedId = rowId;
 
                 appoinmentForm.populate(
                     {
