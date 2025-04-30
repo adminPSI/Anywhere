@@ -296,9 +296,9 @@ const schedulingAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      return result.publishUnpublishSchedulesResult;
+      return result.publishShiftResult;
     } catch (error) {
-      throw new Error(error.responseText);
+      return error;
     }
   }
 

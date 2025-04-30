@@ -186,6 +186,7 @@ namespace Anywhere.service.Data
             public string phrase_id { get; set; }
             public string phrase { get; set; }
             public string phrase_shortcut { get; set; }
+            public string Public { get; set; }
         }
 
         public class ServiceLocationData

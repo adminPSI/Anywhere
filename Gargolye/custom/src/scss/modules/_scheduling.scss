@@ -307,6 +307,20 @@
         pointer-events: none;
       }
     }
+
+    .eventCellGroupEle {
+      cursor: pointer;
+      display: flex;
+      padding: 2px;
+
+      p {
+        font-size: 14px;
+      }
+
+      * {
+        pointer-events: none;
+      }
+    }
   }
 
   .eventCountWrap {

@@ -196,13 +196,13 @@ namespace Anywhere.service.Data.FSS
                 string jsonResult = "";
                 sb.Clear();
 
-                sb.Append("select ROW_NUMBER() OVER(ORDER BY fa.FSS_Authorization_ID) AS itemnum, fa.FSS_Authorization_ID as authId, fa.FSS_Family_ID as familyId, Start_Date as startDate, End_Date as endDate, Copay as coPay, Allocation_Amount as allocation, ");
+                sb.Append("select ROW_NUMBER() OVER(ORDER BY fa.Start_Date desc) AS itemnum, fa.FSS_Authorization_ID as authId, fa.FSS_Family_ID as familyId, Start_Date as startDate, End_Date as endDate, Copay as coPay, Allocation_Amount as allocation, ");
                 sb.Append("(select sum(fad.encumbered_amount) from dba.fss_authorization_detail as fad where fad.FSS_Authorization_ID = fa.FSS_Authorization_ID) as 'encumbered', ");
                 sb.Append("(select sum(fad.paid_amount) from dba.fss_authorization_detail as fad where fad.FSS_Authorization_ID = fa.FSS_Authorization_ID) as 'amtPaid' , ");
                 sb.Append("(allocation - ISNULL(encumbered, 0) - ISNULL(amtPaid, 0)) as 'balance' , ");
                 sb.Append("(select fsi.description from dba.funding_source_info as fsi where fsi.funding_source_id = fa.funding_source_id) as 'funding' , ");
                 sb.Append("(select fsi.Funding_Source_ID from dba.funding_source_info as fsi where fsi.funding_source_id = fa.funding_source_id) as 'fundingSourceID' ");
-                sb.Append("from dba.fss_authorizations fa ");
+                sb.Append("from dba.fss_authorizations fa order by Start_Date desc");
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);
@@ -289,9 +289,9 @@ namespace Anywhere.service.Data.FSS
             return seByDateObj;
         }
 
-        public dropdowns[] getFamilyMembersDropDown(string token)
+        public dropdowns[] getFamilyMembersDropDown(string familyId)
         {
-            string objString = fdg.getFamilyMembersDropDown(token);
+            string objString = fdg.getFamilyMembersDropDown(familyId);
             dropdowns[] seByDateObj = js.Deserialize<dropdowns[]>(objString);
             return seByDateObj;
         }

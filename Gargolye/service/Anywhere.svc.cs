@@ -1669,9 +1669,14 @@ namespace Anywhere
             return caseNotesWorker.getCustomPhrases(token, showAll);
         }
 
-        public string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic)
+        public string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic, string phraseId)
         {
-            return dg.insertCustomPhrase(token, shortcut, phrase, makePublic);
+            return dg.insertCustomPhrase(token, shortcut, phrase, makePublic, phraseId);
+        }
+
+        public string deleteCustomPhrase(string token, string phraseId)
+        {
+            return dg.deleteCustomPhrase(token, phraseId);
         }
 
         public string getlocationsWithConsumersWithUnreadNotes(string token, string daysBackDate)
@@ -4524,9 +4529,9 @@ namespace Anywhere
             return fssw.getFunding(token);
         }
 
-        public FSSWorker.dropdowns[] getFamilyMembersDropDown(string token)
+        public FSSWorker.dropdowns[] getFamilyMembersDropDown(string familyId)
         {
-            return fssw.getFamilyMembersDropDown(token);
+            return fssw.getFamilyMembersDropDown(familyId);
         }
         public FSSWorker.dropdowns[] getServiceCodes(string fundingSourceID)
         {

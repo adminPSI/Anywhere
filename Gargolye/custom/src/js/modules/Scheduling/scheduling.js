@@ -71,11 +71,11 @@ const SchedulingCalendar = (function () {
     rosterCache = undefined;
 
     // GLOBALS
-    currentCalView = 'month';
+    currentCalView = undefined;
     selectedLocationId = undefined;
     selectedEmployeeId = undefined;
     selectedShiftType = undefined;
-    viewOptionShifts = 'yes';
+    viewOptionShifts = undefined;
 
     // Shift Popups
     shiftEmployees = undefined;
@@ -108,6 +108,19 @@ const SchedulingCalendar = (function () {
     if (lastCmp !== 0) return lastCmp;
 
     return aFirst.localeCompare(bFirst, undefined, { sensitivity: 'base' });
+  }
+  function showSuccessFailPopup(success) {
+    if (success) {
+      successfulSave.show('SAVED');
+      setTimeout(function () {
+        successfulSave.hide();
+      }, 1000);
+    } else {
+      failSave.show('ERROR SAVING');
+      setTimeout(function () {
+        failSave.hide();
+      }, 1000);
+    }
   }
 
   // Shift Call Off Request
@@ -405,13 +418,15 @@ const SchedulingCalendar = (function () {
 
     dropdown.populate(regionDropdown, dropdownData);
   }
-  function showFilterEmployeePopup(onSaveCallbackFunc) {
+  function showFilterEmployeePopup(onSaveCallbackFunc, { locationId, startTime, endTime }) {
     const opts = {
-      1: false,
-      2: false,
-      3: false,
-      4: false,
-      5: false,
+      locationId: locationId,
+      includeTrainedOnly: 0,
+      maxWeeklyHours: -1,
+      minTimeBetweenShifts: -1,
+      shiftStartTime: startTime,
+      shiftEndTime: endTime,
+      region: 'ALL',
     };
 
     const employeePopup = POPUP.build({
@@ -425,39 +440,39 @@ const SchedulingCalendar = (function () {
       <div class="employeeOptionsContainer">
 
         <div class="employeeOption">
-          <input type="checkbox" name="location" />
+          <input id="includeTrainedOnly" type="checkbox" name="location" checked />
           <div class="label">
             <p>Only include employees trained at the location</p>
           </div>
         </div>
 
         <div class="employeeOption">
-          <input type="checkbox" name="hour" />
+          <input id="maxWeeklyHours"  type="checkbox" name="hour" />
           <div class="label nestedInput">
             <p>Exclude employees that would have more than</p>
-            <input type="number" name="hours" />
+            <input id="maxWeeklyHoursValue"  type="number" name="hours" />
             <p> hours for the work week</p>
           </div>
         </div>
 
         <div class="employeeOption">
-          <input type="checkbox" name="minute" />
+          <input id="minTimeBetweenShifts" type="checkbox" name="minute" />
           <div class="label nestedInput">
             <p>Exclude employees that have a shift less than</p>
-            <input type="number" name="minutes" />
+            <input id="minTimeBetweenShiftsValue" type="number" name="minutes" />
             <p>minutes before this one</p>
           </div>
         </div>
 
         <div class="employeeOption">
-          <input type="checkbox" name="overlap" />
+          <input id="locationOpt" type="checkbox" name="overlap" checked/>
           <div class="label">
             <p>Exclude employees who have a day off that overlaps with this shift</p>
           </div>
         </div>
 
         <div class="employeeOption">
-          <input type="checkbox" name="region" />
+          <input id="region" type="checkbox" name="region" />
           <div class="label">
             <p>Only show employees from this region:</p>
           </div>
@@ -480,13 +495,7 @@ const SchedulingCalendar = (function () {
         employeePopup.remove();
 
         shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling({
-          locationId: '0',
-          includeTrainedOnly: 0,
-          region: 'ALL',
-          maxWeeklyHours: -1,
-          shiftStartTime: '00:00:00',
-          shiftEndTime: '00:00:00',
-          minTimeBetweenShifts: -1,
+          ...opts,
         });
 
         onSaveCallbackFunc(shiftEmployees);
@@ -503,7 +512,7 @@ const SchedulingCalendar = (function () {
     });
 
     employeePopup.addEventListener('change', e => {
-      console.log('employeeOptions', e.target, e.target.checked);
+      console.log('employeeOptions', e.target, e.target.name, e.target.checked);
     });
 
     const buttonWrap = document.createElement('div');
@@ -853,7 +862,7 @@ const SchedulingCalendar = (function () {
 
     shiftEmployees.forEach(d =>
       dropdownData.push({
-        value: d.Person_Id,
+        value: d.Person_ID,
         text: d.EmployeeName,
       }),
     );
@@ -1213,15 +1222,18 @@ const SchedulingCalendar = (function () {
     });
     shiftPopup.addEventListener('click', async e => {
       if (e.target === filterEmployeesBtn) {
-        showFilterEmployeePopup(newEmployeeData => {
-          if (!newEmployeeData) return;
+        showFilterEmployeePopup(
+          newEmployeeData => {
+            if (!newEmployeeData) return;
 
-          if (!newEmployeeData.find(empData => empData.Person_Id === shiftData.employeeId)) {
-            shiftData.employeeId = '';
-          }
+            if (!newEmployeeData.find(empData => empData.Person_Id === shiftData.employeeId)) {
+              shiftData.employeeId = '';
+            }
 
-          populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
-        });
+            populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
+          },
+          { locationId: shiftData.locationId, startTime: shiftData.startTime, endTime: shiftData.endTime },
+        );
       }
       if (e.target === addIndividualBtn) {
         const datesSelectedCount = shiftData.date.length > 0 ? null : shiftData.date[0];
@@ -1596,6 +1608,7 @@ const SchedulingCalendar = (function () {
         publishedDate: sch.publishDate,
         color: color,
         consumers: sch.consumerNames,
+        personId: sch.personID,
       };
     });
   }
@@ -1607,6 +1620,8 @@ const SchedulingCalendar = (function () {
       const startTime = `${serviceDate} ${appt.timeScheduled}`;
       const endTime = dates.addHours(startTime, 1);
       const color = getEventColor(id, appt.color);
+
+      console.log(appt);
 
       // store on cache obj
       sch.typeId = 6;
@@ -1714,7 +1729,7 @@ const SchedulingCalendar = (function () {
   function populateEmployeePubUnpubDropdown(dropdownEle) {
     let dropdownData = [];
 
-    if ($.session.schedulingUpdate) {
+    if ($.session.schedulingSecurity) {
       employees.forEach(d =>
         dropdownData.push({
           value: d.Person_Id,
@@ -1723,15 +1738,21 @@ const SchedulingCalendar = (function () {
       );
 
       dropdownData.sort(sortEmployeeString);
+    } else {
+      dropdownData.unshift({
+        value: $.session.PeopleId,
+        text: `${$.session.LName}, ${$.session.Name}`,
+      });
     }
 
     dropdownData.unshift({
-      value: $.session.PeopleId,
-      text: `${$.session.LName}, ${$.session.Name}`,
-    });
-    dropdownData.unshift({
       value: '%',
       text: 'All',
+    });
+    dropdownData.unshift({
+      id: '',
+      value: 'none',
+      text: '(none)',
     });
     dropdownData.unshift({
       value: '',
@@ -1798,18 +1819,20 @@ const SchedulingCalendar = (function () {
       text: 'Publish',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
+      callback: async () => {
         POPUP.hide(pubUnpubPopup);
-        schedulingAjax.publishUnpublishSchedules(data, 'T');
+        const success = await schedulingAjax.publishUnpublishSchedules(data, 'T');
+        showSuccessFailPopup(success);
       },
     });
     const unpublishBtn = button.build({
       text: 'Un-publish',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
+      callback: async () => {
         POPUP.hide(pubUnpubPopup);
-        schedulingAjax.publishUnpublishSchedules(data, 'F');
+        const success = await schedulingAjax.publishUnpublishSchedules(data, 'F');
+        showSuccessFailPopup(success);
       },
     });
     const cancelBtn = button.build({
@@ -1913,7 +1936,7 @@ const SchedulingCalendar = (function () {
   function populateEmployeeDropdown() {
     let dropdownData = [];
 
-    if ($.session.schedulingUpdate) {
+    if ($.session.schedulingSecurity) {
       employees.forEach(d =>
         dropdownData.push({
           value: d.Person_Id,
@@ -1922,12 +1945,13 @@ const SchedulingCalendar = (function () {
       );
 
       dropdownData.sort(sortEmployeeString);
+    } else {
+      dropdownData.unshift({
+        value: $.session.PeopleId,
+        text: `${$.session.LName}, ${$.session.Name}`,
+      });
     }
 
-    dropdownData.unshift({
-      value: $.session.PeopleId,
-      text: `${$.session.LName}, ${$.session.Name}`,
-    });
     dropdownData.unshift({
       value: '%',
       text: 'All',
@@ -2003,14 +2027,15 @@ const SchedulingCalendar = (function () {
 
     dropdownEle.addEventListener('change', event => {
       selectedShiftType = event.target.options[event.target.selectedIndex].value;
-      // filter out events based off selectedShiftType
+
       if (selectedShiftType === '0') {
         ScheduleCalendar.filterEventsBy({
           resetFilter: true,
+          filterKey: 'publishedDate',
         });
       }
 
-      const filterCheck = selectedShiftType === '1' ? value => value !== '' : value => value === '';
+      const filterCheck = selectedShiftType === '1' ? value => !!value : value => !value;
       ScheduleCalendar.filterEventsBy({ filterKey: 'publishedDate', filterCheck });
     });
 
@@ -2100,8 +2125,6 @@ const SchedulingCalendar = (function () {
     radioDiv.appendChild(noRadio);
 
     radioDiv.addEventListener('change', async e => {
-      console.log(e.target);
-
       viewOptionShifts = e.target.id.toLowerCase();
 
       if (viewOptionShifts === 'no') {
@@ -2114,7 +2137,7 @@ const SchedulingCalendar = (function () {
           ScheduleCalendar.filterEventsBy({ filterKey: 'typeId', filterCheck });
         }
       } else {
-        ScheduleCalendar.filterEventsBy({ resetFilter: true });
+        ScheduleCalendar.filterEventsBy({ resetFilter: true, filterKey: 'typeId' });
       }
 
       populateEmployeeDropdown();
@@ -2218,6 +2241,8 @@ const SchedulingCalendar = (function () {
     // $.session.schedulingSecurity = true;
     //!W remove after dev testing
 
+    viewOptionShifts = 'no';
+    currentCalView = 'month';
     selectedEmployeeId = $.session.PeopleId;
     rosterCache = {};
 
@@ -2234,9 +2259,6 @@ const SchedulingCalendar = (function () {
     employees = await schedulingAjax.getEmployeesForScheduling($.session.UserId);
     populateEmployeeDropdown();
 
-    //! if user does not have the security key for Scheduling, the values in the Location dropdown
-    //! should only show locations where the logged in user is assigned to a shift.
-    //! **Mike checks this in backend**
     locations = await schedulingAjax.getLocationDropdownForSchedulingNew('N');
     populateLocationDropdown();
 
@@ -2270,8 +2292,8 @@ const Scheduling = (function () {
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
-      text: 'View Calendar Web2Cal',
-      // text: 'View Calendar',
+      // text: 'View Calendar Web2Cal',
+      text: 'View Calendar',
       style: 'secondary',
       type: 'contained',
       callback: function () {
@@ -2304,7 +2326,7 @@ const Scheduling = (function () {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
 
-    btnWrap.appendChild(schedulingCalendarBtn);
+    // btnWrap.appendChild(schedulingCalendarBtn);
     btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === true && $.session.schedulingUpdate === false) {
