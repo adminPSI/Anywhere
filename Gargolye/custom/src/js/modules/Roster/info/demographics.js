@@ -732,11 +732,8 @@ const demographics = (function () {
             style: 'secondary',
             type: 'text',
             classNames: 'floatRight',  
-            callback: () => {
-                const modalOverlay = document.querySelector('.overlay');
-                modalOverlay.classList.remove('modal'); 
-                var header = document.querySelector('.site-header');
-                header.classList.remove('fadeOut');  
+            callback: () => {              
+                consumerInfo.closeCard(); 
                 individualDemographics.init(selectedConsumer);
             },
         }); 
