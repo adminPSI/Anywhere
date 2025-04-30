@@ -1177,6 +1177,7 @@ const SchedulingCalendar = (function () {
       includeOverlaps: 1,
       maxWeeklyHours: -1,
       minTimeBetweenShifts: -1,
+      shiftdate: data.date ? data.date : [],
       shiftStartTime: '00:00:00',
       shiftEndTime: '00:00:00',
       region: '%',
@@ -1189,6 +1190,8 @@ const SchedulingCalendar = (function () {
       selectedDates: [...shiftData.date],
       onDateChange(newDateArray) {
         shiftData.date = [...newDateArray];
+        filterShiftEmployeesOpts.shiftdate = shiftData.date.join(',');
+        updateShiftEmployees();
 
         checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
       },

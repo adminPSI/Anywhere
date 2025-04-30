@@ -204,6 +204,11 @@ const schedulingAjax = (function () {
     if (!data.locationId) {
       data.includeTrainedOnly = 0;
     }
+    if (!data.shiftdate) {
+      data.includeOverlaps = 0;
+      data.maxWeeklyHours = -1;
+      data.minTimeBetweenShifts = -1;
+    }
 
     try {
       const result = await $.ajax({
