@@ -133,7 +133,7 @@
     }
     dialog.modal.overlapWarning {
         padding: 14px 10px;
-
+        text-align:center; 
         p {
             margin-bottom: 20px;
         }
@@ -312,7 +312,7 @@
 
         .button {
             &--icon {
-                padding: 0 13px 0 15% !important; 
+                padding: 0 13px 0 15% !important;
             }
         }
     }
@@ -337,8 +337,6 @@
             flex-grow: 0;
         }
         .phrase {
-            //border: 2px solid $black;
-            box-shadow: $shadow-m2;
             border-radius: 6px;
             cursor: pointer;
             display: flex;
@@ -353,8 +351,17 @@
             .shortcut {
                 font-weight: $_bold;
             }
-            // .phraseText {
-            // }
+
+        }
+
+        .wrapPhrase {
+            box-shadow: $shadow-m2;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            margin: 0 8px 10px 0;
+            padding: 4px;
+            align-items: center;
         }
         button.button {
             margin: 20px 12px 15px 12px;

@@ -5787,22 +5787,39 @@ namespace Anywhere.Data
             }
         }
 
-        public string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic)
+        public string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic, string phraseId)
         {
             if (tokenValidator(token) == false) return null;
             if (stringInjectionValidator(shortcut) == false) return null;
             if (stringInjectionValidator(phrase) == false) return null;
-            logger.debug("getCustomPhrases" + token);
+            logger.debug("insertCustomPhrase" + token);
             try
             {
-                return executeDataBaseCall("CALL DBA.ANYW_CaseNotes_InsertCustomPhrases('" + token + "', '" + shortcut + "', '" + phrase + "', '" + makePublic + "');", "results", "results");
+                return executeDataBaseCall("CALL DBA.ANYW_CaseNotes_InsertCustomPhrases('" + token + "', '" + shortcut + "', '" + phrase + "', '" + makePublic + "', '" + phraseId + "');", "results", "results");
             }
             catch (Exception ex)
             {
-                logger.error("716", ex.Message + " ANYW_CaseNotes_InsertCustomPhrases('" + token + "', '" + shortcut + "', '" + phrase + "', '" + makePublic + "')");
+                logger.error("716", ex.Message + " ANYW_CaseNotes_InsertCustomPhrases('" + token + "', '" + shortcut + "', '" + phrase + "', '" + makePublic + "', '" + phraseId + "')");
                 return "716: Error insertCustomPhrase";
             }
         }
+
+        public string deleteCustomPhrase(string token, string phraseId)
+        {
+            if (tokenValidator(token) == false) return null;
+           
+            logger.debug("deleteCustomPhrase" + token);
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_CaseNotes_DeleteCustomPhrase('" + token + "', '" + phraseId + "');", "results", "results");
+            }
+            catch (Exception ex)
+            {
+                logger.error("716", ex.Message + " ANYW_CaseNotes_DeleteCustomPhrase('" + token + "', '" + phraseId + "')");
+                return "716: Error deleteCustomPhrase";
+            }
+        }
+
 
         //Case note filter 
         public string getConsumersForCNFilter(string token, string caseLoadOnly)

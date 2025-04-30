@@ -2436,7 +2436,15 @@ namespace Anywhere
                 ResponseFormat = WebMessageFormat.Json,
                 RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/insertCustomPhrase/")]
-        string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic);
+        string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic, string phraseId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/deleteCustomPhrase/")]
+        string deleteCustomPhrase(string token, string phraseId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
