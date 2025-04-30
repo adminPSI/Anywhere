@@ -194,18 +194,17 @@ namespace Anywhere.service.Data.FSS
 
         }
 
-        public string getFamilyMembersDropDown(string token)
-        {
-            if (tokenValidator(token) == false) return null;
-            logger.debug("getFamilyMembersDropDown" + token);
+        public string getFamilyMembersDropDown(string familyId)
+        {         
+            logger.debug("getFamilyMembersDropDown" + familyId);
             try
             {
-                return executeDataBaseCallJSON("CALL DBA.ANYW_FSS_getFamilyDropDown();");
+                return executeDataBaseCallJSON("CALL DBA.ANYW_FSS_getFamilyDropDown('" + familyId + "');");
 
             }
             catch (Exception ex)
             {
-                logger.error("561", ex.Message + " ANYW_FSS_getFamilyDropDown( '" + token + "')");
+                logger.error("561", ex.Message + " ANYW_FSS_getFamilyDropDown( '" + familyId + "')");
                 return "561: Error getting ANYW_FSS_getFamilyDropDown";
             }
 

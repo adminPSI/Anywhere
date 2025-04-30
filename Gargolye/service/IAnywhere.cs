@@ -2436,7 +2436,15 @@ namespace Anywhere
                 ResponseFormat = WebMessageFormat.Json,
                 RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/insertCustomPhrase/")]
-        string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic);
+        string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic, string phraseId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/deleteCustomPhrase/")]
+        string deleteCustomPhrase(string token, string phraseId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4388,7 +4396,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getEmployeeDropdown/")]
-        AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly);
+        AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly, int includeOverlaps);
 
 
         [OperationContract]
@@ -5880,7 +5888,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getFamilyMembersDropDown/")]
-        FSSWorker.dropdowns[] getFamilyMembersDropDown(string token);
+        FSSWorker.dropdowns[] getFamilyMembersDropDown(string familyId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

@@ -273,7 +273,7 @@ var FSSAjax = (function () {
         }
     }
 
-    async function getFamilyMembersDropDown() {
+    async function getFamilyMembersDropDown(familyId) {  
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -287,8 +287,8 @@ var FSSAjax = (function () {
                     $.webServer.serviceName +
                     '/getFamilyMembersDropDown/',
                 data:
-                    '{"token":"' +
-                    $.session.Token +
+                    '{"familyId":"' +
+                    familyId +
                     '"}',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',

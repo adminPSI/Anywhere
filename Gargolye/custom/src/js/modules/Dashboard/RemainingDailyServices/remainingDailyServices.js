@@ -389,6 +389,12 @@
         eventSetup();
 
         remainingDailyServicesWidgetAjax.populateOutcomeTypesFilter(function (outcomes) {
+            var isOutcomeAvailable = outcomes.find(x => x.Id == filter.outcomeType);
+            if (isOutcomeAvailable == undefined) {
+                filter.outcomeType = '%';
+                $.session.outcomesWidgetOutcomeTypeId = '%';
+                $.session.outcomesWidgetOutcomeTypeName = 'ALL';
+            }
             remainingDailyServicesWidgetAjax.populateLocationsFilter(function (locations) {
                 remainingDailyServicesWidgetAjax.populateGroupsFilter(filter.location, function (groups) {
                     remainingDailyServicesWidgetAjax.populateFilteredList(
