@@ -129,8 +129,8 @@ class Calendar {
   // Helpers
   updateHeader(prevDate) {
     if (
-      prevDate.getMonth() !== this.currentDate.getMonth() ||
-      prevDate.getFullYear() !== this.currentDate.getFullYear()
+      prevDate &&
+      (prevDate.getMonth() !== this.currentDate.getMonth() || prevDate.getFullYear() !== this.currentDate.getFullYear())
     ) {
       this.calendarTitleEle.textContent = `${
         MONTH_NAMES[this.currentDate.getMonth()]
@@ -189,18 +189,15 @@ class Calendar {
   }
   setEventPosition(event, eventCellEle) {
     if (this.currentView === 'week') {
+      const eventDate = new Date(event.date);
+      const dayIndex = eventDate.getDay();
+      const gridColumnStart = dayIndex + 2;
+
       if (this.customGroupingOn) {
-        const eventDate = new Date(event.date);
-        const dayIndex = eventDate.getDay();
-        const gridColumnStart = dayIndex + 2;
         eventCellEle.style.gridColumn = `${gridColumnStart} / span 1`;
       } else {
-        const eventDate = new Date(event.date);
         const startDate = new Date(event.startTime);
         const endDate = new Date(event.endTime);
-
-        const dayIndex = eventDate.getDay();
-        const gridColumnStart = dayIndex + 2;
 
         const startHour = startDate.getHours();
         const endHour = endDate.getHours();
@@ -211,13 +208,17 @@ class Calendar {
       }
     }
     if (this.currentView === 'day') {
-      const startDate = new Date(event.startTime);
-      const endDate = new Date(event.endTime);
-      const startHour = startDate.getHours();
-      const endHour = endDate.getHours();
-      const gridRowStart = startHour + 1;
-      const gridRowEnd = endHour + 2;
-      eventCellEle.style.gridRow = `${gridRowStart} / ${gridRowEnd}`;
+      if (this.customGroupingOn) {
+        //
+      } else {
+        const startDate = new Date(event.startTime);
+        const endDate = new Date(event.endTime);
+        const startHour = startDate.getHours();
+        const endHour = endDate.getHours();
+        const gridRowStart = startHour + 1;
+        const gridRowEnd = endHour + 2;
+        eventCellEle.style.gridRow = `${gridRowStart} / ${gridRowEnd}`;
+      }
     }
   }
   // month
@@ -768,6 +769,25 @@ class Calendar {
     // Refresh inner HTML markup
     this.renderEventCellContent(updatedEvent, eventCell);
   }
+  //
+  filterEvents() {
+    if (Object.keys(this.filters).length === 0) {
+      if (this.eventCacheBackup) {
+        this.eventCache = [...this.eventCacheBackup];
+        this.eventCacheBackup = null;
+      }
+    } else {
+      if (!this.eventCacheBackup) {
+        this.eventCacheBackup = [...this.eventCache];
+      }
+
+      this.eventCache = this.eventCacheBackup.filter(event => {
+        return Object.entries(this.filters).every(([key, func]) => {
+          return func(event[key]);
+        });
+      });
+    }
+  }
 
   // Event Listeners
   handleViewChange(newView) {
@@ -945,22 +965,7 @@ class Calendar {
       this.filters[filterKey] = filterCheck;
     }
 
-    if (Object.keys(this.filters).length === 0) {
-      if (this.eventCacheBackup) {
-        this.eventCache = [...this.eventCacheBackup];
-        this.eventCacheBackup = null;
-      }
-    } else {
-      if (!this.eventCacheBackup) {
-        this.eventCacheBackup = [...this.eventCache];
-      }
-
-      this.eventCache = this.eventCacheBackup.filter(event => {
-        return Object.entries(this.filters).every(([key, func]) => {
-          return func(event[key]);
-        });
-      });
-    }
+    this.filterEvents();
 
     if (this.customGroupingOn) {
       this.renderGroupedEvents();
@@ -969,8 +974,14 @@ class Calendar {
     }
   }
   renderGroupedEvents(events, groupOptions) {
+    if (!groupOptions || !groupOptions.groupBy || !groupOptions.groupName) {
+      console.error('no group options provided to renderGroupedEvents');
+    }
+
     if (events) {
       this.eventCache = events;
+      this.eventCacheBackup = null;
+      this.filterEvents();
     }
 
     if (groupOptions) {
@@ -994,6 +1005,8 @@ class Calendar {
   renderEvents(events) {
     if (events) {
       this.eventCache = events;
+      this.eventCacheBackup = null;
+      this.filterEvents();
     }
 
     if (this.customGroupingOn) {

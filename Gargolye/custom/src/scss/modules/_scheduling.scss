@@ -66,9 +66,11 @@
 
   .mainLocationDropdown {
     flex-grow: 3;
+    max-width: 400px;
   }
   .mainEmployeeDropdown {
     flex-grow: 2;
+    max-width: 400px;
   }
   .shiftTypeWrap {
     position: relative;
@@ -156,9 +158,6 @@
       }
     }
   }
-}
-#locationDropdown {
-  min-width: 200px;
 }
 // Calendar
 .calendarWrap {
@@ -636,6 +635,10 @@
   .prevWeekBtn,
   .nextWeekBtn {
     min-width: 20px;
+
+    * {
+      pointer-events: none;
+    }
   }
 
   .weekWrap {
@@ -729,7 +732,10 @@
 #filterEmployeePopup {
   border: 2px solid black;
 
-  //.employeeOptionsContainer {}
+  .popupTitle {
+    margin: 0 0 10px 0;
+  }
+
   .employeeOption {
     display: flex;
     flex-flow: row nowrap;
