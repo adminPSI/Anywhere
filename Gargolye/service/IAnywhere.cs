@@ -4388,7 +4388,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getEmployeeDropdown/")]
-        AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly);
+        AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly, int includeOverlaps);
 
 
         [OperationContract]
