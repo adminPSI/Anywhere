@@ -13,23 +13,21 @@
         grid-template-columns: auto 340px;
         grid-template-rows: auto auto minmax(900px, 1220px) auto;
         grid-template-areas:
-      'header header'
-      'nav nav'
-      'form roster'
-      'cards cards';
+            'header header' 'nav nav' 'form roster' 'cards cards';
         justify-items: stretch;
     }
+
     @container actioncenter (max-width: 768px) {
         .caseNotesModule {
             grid-template-rows: auto auto minmax(auto, 1500px) auto;
         }
     }
+
     @container actioncenter (min-width: 1000px) {
         .caseNotesModule {
             grid-template-rows: auto auto minmax(auto, 1050px) auto;
         }
     }
-
     // HEADER
     .caseNotesHeader {
         display: flex;
@@ -46,7 +44,6 @@
             font-weight: $_bold;
         }
     }
-
     // DATE NAV
     .caseNotesDateNav {
         background: $white;
@@ -56,7 +53,6 @@
         top: 0px;
         z-index: 99;
     }
-
     // ROSTER
     .caseNotesRosterPicker {
         box-shadow: $shadow-m2;
@@ -72,7 +68,6 @@
             }
         }
     }
-
     // FORM
     .caseNotesForm {
         container-type: inline-size;
@@ -102,13 +97,16 @@
         .inputGroup.number {
             width: calc(50% - 5px);
         }
+
         .inputGroup.checkbox {
             width: 100%;
         }
+
         .inputGroup.textarea {
             height: 200px;
             position: relative;
         }
+
         .inputGroup.location,
         .inputGroup.service,
         .inputGroup.need,
@@ -117,11 +115,11 @@
             width: calc(50% - 5px);
         }
     }
+
     dialog.dialog.toast[open] {
         display: flex;
         align-items: center;
         justify-content: space-between;
-
         background: $gray;
         max-width: 600px;
         padding: 4px 10px;
@@ -131,14 +129,15 @@
             text-align: center;
         }
     }
+
     dialog.modal.overlapWarning {
         padding: 14px 10px;
-        text-align:center; 
+        text-align: center;
+
         p {
             margin-bottom: 20px;
         }
     }
-
     // DOC TIMER
     .caseNotesTimer {
         align-items: center;
@@ -159,6 +158,7 @@
             margin-right: 4px;
         }
     }
+
     dialog.modal.timerAutoStart {
         padding: 14px 10px;
 
@@ -166,7 +166,6 @@
             margin-bottom: 20px;
         }
     }
-
     // OVERVIEW
     .caseNotesOverview {
         border-radius: 6px;
@@ -189,10 +188,7 @@
                 grid-template-columns: minmax(90px, 100px) minmax(90px, 100px) 1fr 2fr 2fr;
                 grid-template-rows: auto;
                 grid-template-areas:
-          'starttime endtime duration nothing buttons'
-          'consumer consumer consumer consumer consumer'
-          'serviceInfo serviceInfo serviceInfo serviceInfo serviceInfo'
-          'note note note note note';
+                    'starttime endtime duration nothing buttons' 'consumer consumer consumer consumer consumer' 'serviceInfo serviceInfo serviceInfo serviceInfo serviceInfo' 'note note note note note';
                 row-gap: 10px;
             }
 
@@ -209,18 +205,22 @@
             .startTime {
                 grid-area: starttime;
             }
+
             .endTime {
                 grid-area: endtime;
             }
+
             .startTime,
             .endTime {
                 span:last-child {
                     font-size: $px17;
                 }
             }
+
             .duration {
                 grid-area: duration;
             }
+
             .consumer {
                 align-items: center;
                 display: flex;
@@ -239,15 +239,18 @@
                     order: 1;
                 }
             }
+
             .serviceInfo {
                 grid-area: serviceInfo;
                 font-size: $px18;
                 width: 100%;
             }
+
             .noteText {
                 grid-area: note;
                 width: 100%;
             }
+
             .button-wrap {
                 grid-area: buttons;
                 column-gap: 6px;
@@ -257,7 +260,6 @@
                     width: auto;
                 }
             }
-
             // labeling
             .withLabel {
                 font-size: $px20;
@@ -265,6 +267,7 @@
                 position: relative;
                 margin: 20px 8px 0 0;
             }
+
             .withLabel::before {
                 font-size: $px12;
                 font-weight: $_normal;
@@ -272,24 +275,28 @@
                 top: -14px;
                 left: 0px;
             }
+
             .startTime::before {
                 content: 'Start Time';
             }
+
             .endTime::before {
                 content: 'End Time';
             }
+
             .duration::before {
                 content: 'Total';
             }
+
             .location::before {
                 content: 'Location';
             }
+
             .enteredBy::before {
                 content: 'Entered By';
             }
         }
     }
-
     // INACTIVITY WARNING
     dialog.modal.inactivityWarning {
         padding: 14px 10px;
@@ -331,11 +338,13 @@
             padding: 0px 4px 0 12px;
             flex-grow: 1;
         }
+
         .phraseView {
             margin: 0 0 10px 0;
             padding: 20px 10px 15px;
             flex-grow: 0;
         }
+
         .phrase {
             border-radius: 6px;
             cursor: pointer;
@@ -351,7 +360,6 @@
             .shortcut {
                 font-weight: $_bold;
             }
-
         }
 
         .wrapPhrase {
@@ -362,11 +370,17 @@
             margin: 0 8px 10px 0;
             padding: 4px;
             align-items: center;
+
+            .svgIcon {
+                color: rgb(54, 106, 152);                
+            }
         }
+
         button.button {
             margin: 20px 12px 15px 12px;
         }
     }
+
     dialog.modal.addPhrases[open] {
         height: 60%;
         min-height: 300px;
@@ -374,7 +388,6 @@
         width: 80%;
         min-width: 400px;
         max-width: 535px;
-
         padding: 14px 10px;
 
         form {
@@ -383,6 +396,7 @@
             .inputGroup.checkbox {
                 margin: 0 0 10px;
             }
+
             .inputGroup.textarea {
                 height: 150px;
             }

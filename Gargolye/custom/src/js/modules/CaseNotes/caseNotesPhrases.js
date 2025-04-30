@@ -256,7 +256,7 @@
                 this.PhrasesInstance.AddPhrases.addPhraseForm.inputs['shortcut'].setValue(this.phrasesData[e.target.id].shortcut);
                 this.PhrasesInstance.AddPhrases.addPhraseForm.inputs['phrase'].setValue(this.phrasesData[e.target.id].phrase);
                 if (this.phrasesData[e.target.id].public === 'Y')
-                    this.PhrasesInstance.AddPhrases.addPhraseForm.inputs['public'].checked = true;
+                    this.PhrasesInstance.AddPhrases.addPhraseForm.inputs['public'].setValue(this.phrasesData[e.target.id].public);
                 this.PhrasesInstance.AddPhrases.addPhraseForm.inputs['phraseId'].setValue(e.target.id);
                 this.PhrasesInstance.AddPhrases.show();
             }
