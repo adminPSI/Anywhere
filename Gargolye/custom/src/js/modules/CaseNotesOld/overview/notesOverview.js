@@ -340,7 +340,7 @@ var notesOverview = (function () {
     if ($.session.applicationName === 'Gatekeeper') btnWrap.appendChild(cnReportBtn);
     if ($.session.applicationName === 'Advisor') btnWrap.appendChild(cnADVReportBtn);
     DOM.ACTIONCENTER.appendChild(btnWrap);
-    //if ($.session.CaseNotesReview) DOM.ACTIONCENTER.appendChild(multiSelectBtns);
+    if ($.session.CaseNotesReview) DOM.ACTIONCENTER.appendChild(multiSelectBtns);
     DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
     const filteredBy = initFilterDisplay();
     DOM.ACTIONCENTER.appendChild(filteredBy);
@@ -566,12 +566,6 @@ var notesOverview = (function () {
     mulitSelectBtn.classList.toggle('enabled');
     overviewTable.classList.toggle('multiSelectEnabled');
 
-    if (enableMultiEdit) {
-      ACTION_NAV.show();
-    } else {
-      ACTION_NAV.hide();
-    }
-
     selectedRows = [];
     var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
     highlightedRows.forEach(row => row.classList.remove('selected'));
@@ -582,22 +576,31 @@ var notesOverview = (function () {
     selectAllBtn.classList.toggle('enabled');
 
     if (enableSelectAll) {
-      ACTION_NAV.show();
       enableMultiEdit = true;
       mulitSelectBtn.classList.add('disabled');
       mulitSelectBtn.classList.remove('enabled');
+      overviewTable.classList.add('multiSelectEnabled');
+      selectAllBtn.querySelector('span').textContent = 'Select None';
 
       selectedRows = [];
 
       var rows = [].slice.call(document.querySelectorAll('.table__body .table__row'));
       rows.forEach(r => {
-        r.classList.add('selected');
-        selectedRows.push(r.id);
+        if (r.dataset.selectable === 'true') {
+          r.classList.add('selected');
+          selectedRows.push(r.id);
+        }
       });
+
+      if (selectedRows.length > 0) {
+        ACTION_NAV.show();
+      }
     } else {
       ACTION_NAV.hide();
       enableMultiEdit = false;
       mulitSelectBtn.classList.remove('disabled');
+      overviewTable.classList.remove('multiSelectEnabled');
+      selectAllBtn.querySelector('span').textContent = 'Select All';
 
       selectedRows = [];
 
@@ -688,6 +691,12 @@ var notesOverview = (function () {
       } else {
         event.target.classList.add('selected');
         selectedRows.push(caseNoteId);
+      }
+
+      if (selectedRows.length === 0) {
+        ACTION_NAV.hide();
+      } else {
+        ACTION_NAV.show();
       }
 
       return;
@@ -796,8 +805,6 @@ var notesOverview = (function () {
       const corrected = td.corrected;
       const isSelectable = isRowSelectable(reviewRequired, reviewResult, casemanagerid, corrected);
 
-      // c.  User case_notes.review_results to determine the value in this new column.  If case_notes.review_results = 'N', display 'Not Reviewed'.
-      // If case_notes.review_results = 'P', display 'Passed'.  If case_notes.review_results = 'R', display 'Rejected'.
       let reviewResultString = '';
       if (reviewRequired === 'Y') {
         reviewResultString = reviewResult === 'N' ? 'Not Reviewed' : reviewResult === 'P' ? 'Passed' : 'Rejected';
@@ -827,16 +834,7 @@ var notesOverview = (function () {
       }
 
       return {
-        values: [
-          servicedate,
-          starttime,
-          endtime,
-          name,
-          originalUpdate,
-          lastUpdateBy,
-          groupCount,
-          //reviewResultString,
-        ],
+        values: [servicedate, starttime, endtime, name, originalUpdate, lastUpdateBy, groupCount, reviewResultString],
         id: caseNoteId,
         overlap: hasOverlap,
         attributes: [
@@ -873,7 +871,7 @@ var notesOverview = (function () {
       'Date Created',
       'User Updated',
       'Group',
-      //'Review Status',
+      'Review Status',
       'Attach',
     ];
     var ADVcolumnheadings = [
@@ -884,7 +882,7 @@ var notesOverview = (function () {
       'Date Created',
       'User Updated',
       'Group',
-      //'Review Status',
+      'Review Status',
     ];
 
     if ($.session.applicationName === 'Gatekeeper') {
@@ -914,7 +912,7 @@ var notesOverview = (function () {
     headers[4].setAttribute('data-type', 'date'); // Date Created
     headers[5].setAttribute('data-type', 'string'); // User Updated
     headers[6].setAttribute('data-type', 'number'); // Group
-    //headers[7].setAttribute('data-type', 'string'); // Review Status
+    headers[7].setAttribute('data-type', 'string'); // Review Status
 
     DOM.ACTIONCENTER.appendChild(overviewTable);
 

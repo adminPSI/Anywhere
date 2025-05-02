@@ -66,9 +66,11 @@
 
   .mainLocationDropdown {
     flex-grow: 3;
+    max-width: 400px;
   }
   .mainEmployeeDropdown {
     flex-grow: 2;
+    max-width: 400px;
   }
   .shiftTypeWrap {
     position: relative;
@@ -156,9 +158,6 @@
       }
     }
   }
-}
-#locationDropdown {
-  min-width: 200px;
 }
 // Calendar
 .calendarWrap {
@@ -312,9 +311,16 @@
       cursor: pointer;
       display: flex;
       padding: 2px;
+      margin: 0 0 4px 0;
 
       p {
         font-size: 14px;
+
+        .groupName {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
 
       * {
@@ -354,9 +360,14 @@
 .calendar .day-view {
   .eventCellEle {
     cursor: pointer;
+    min-height: 60px;
     padding: 2px;
     position: relative;
     z-index: 2;
+
+    &.withIcons {
+      min-height: 80px;
+    }
 
     .eventTime,
     .eventName {
@@ -395,10 +406,15 @@
     grid-column: 1/-1;
 
     .eventGroup-label {
-      color: $white;
+      background: $white;
+      color: $black;
       text-align: right;
-      padding: 4px 6px 4px 0px;
+      padding: 4px 6px 4px;
       grid-column: 1 / 2;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 }
@@ -636,6 +652,10 @@
   .prevWeekBtn,
   .nextWeekBtn {
     min-width: 20px;
+
+    * {
+      pointer-events: none;
+    }
   }
 
   .weekWrap {
@@ -729,7 +749,10 @@
 #filterEmployeePopup {
   border: 2px solid black;
 
-  //.employeeOptionsContainer {}
+  .popupTitle {
+    margin: 0 0 10px 0;
+  }
+
   .employeeOption {
     display: flex;
     flex-flow: row nowrap;
