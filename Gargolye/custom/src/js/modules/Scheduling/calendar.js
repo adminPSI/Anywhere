@@ -156,6 +156,10 @@ class Calendar {
     const isPublished = event.publishedDate;
     const icon = isPublished ? icons.show : icons.eyeClose;
 
+    if ($.session.schedulingSecurity) {
+      eventCellEle.classList.add('withIcons');
+    }
+
     eventCellEle.innerHTML = `
       <p class="eventTime">${startTime} - ${endTime} ${event.length}</p>
       <p class="eventName">${event.name}</p>
@@ -179,10 +183,12 @@ class Calendar {
   buildGroupWrap(groupByKey, groupByName) {
     const groupWrapEle = document.createElement('div');
     groupWrapEle.id = `g-${groupByKey}`;
-    const groupLabelEle = document.createElement('div');
     groupWrapEle.className = 'eventGroup';
+
+    const groupLabelEle = document.createElement('div');
     groupLabelEle.className = 'eventGroup-label';
-    groupLabelEle.textContent = groupByName;
+    groupLabelEle.innerHTML = `<p>${groupByName}</p>`;
+
     groupWrapEle.appendChild(groupLabelEle);
 
     return groupWrapEle;
@@ -209,7 +215,7 @@ class Calendar {
     }
     if (this.currentView === 'day') {
       if (this.customGroupingOn) {
-        //
+        eventCellEle.style.gridColumn = `2`;
       } else {
         const startDate = new Date(event.startTime);
         const endDate = new Date(event.endTime);
@@ -231,7 +237,7 @@ class Calendar {
   }
   updateMonthGroupContent(groupByKey, groupByName) {
     this.monthEventGroupCache[groupByKey].innerHTML = `
-      <p>${groupByName} <span>(${++this.monthEventGroupDOMCount[groupByKey]})</span></p>
+      <p><span class="groupName">${groupByName}</span> <span>(${++this.monthEventGroupDOMCount[groupByKey]})</span></p>
     `;
   }
   renderMonthEventCellContent(event, eventCellEle) {
@@ -974,10 +980,6 @@ class Calendar {
     }
   }
   renderGroupedEvents(events, groupOptions) {
-    if (!groupOptions || !groupOptions.groupBy || !groupOptions.groupName) {
-      console.error('no group options provided to renderGroupedEvents');
-    }
-
     if (events) {
       this.eventCache = events;
       this.eventCacheBackup = null;

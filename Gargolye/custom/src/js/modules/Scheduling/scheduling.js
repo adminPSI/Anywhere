@@ -2506,8 +2506,8 @@ const Scheduling = (function () {
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
-      text: 'View Calendar Web2Cal',
-      // text: 'View Calendar',
+      // text: 'View Calendar Web2Cal',
+      text: 'View Calendar',
       style: 'secondary',
       type: 'contained',
       callback: function () {
@@ -2540,7 +2540,7 @@ const Scheduling = (function () {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
 
-    btnWrap.appendChild(schedulingCalendarBtn);
+    // btnWrap.appendChild(schedulingCalendarBtn);
     btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === true && $.session.schedulingUpdate === false) {

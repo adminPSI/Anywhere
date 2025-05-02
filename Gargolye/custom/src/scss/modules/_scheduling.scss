@@ -311,9 +311,16 @@
       cursor: pointer;
       display: flex;
       padding: 2px;
+      margin: 0 0 4px 0;
 
       p {
         font-size: 14px;
+
+        .groupName {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
 
       * {
@@ -353,9 +360,14 @@
 .calendar .day-view {
   .eventCellEle {
     cursor: pointer;
+    min-height: 60px;
     padding: 2px;
     position: relative;
     z-index: 2;
+
+    &.withIcons {
+      min-height: 80px;
+    }
 
     .eventTime,
     .eventName {
@@ -394,10 +406,15 @@
     grid-column: 1/-1;
 
     .eventGroup-label {
-      color: $white;
+      background: $white;
+      color: $black;
       text-align: right;
-      padding: 4px 6px 4px 0px;
+      padding: 4px 6px 4px;
       grid-column: 1 / 2;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 }

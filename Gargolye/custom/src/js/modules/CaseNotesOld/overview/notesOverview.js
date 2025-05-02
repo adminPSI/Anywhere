@@ -566,12 +566,6 @@ var notesOverview = (function () {
     mulitSelectBtn.classList.toggle('enabled');
     overviewTable.classList.toggle('multiSelectEnabled');
 
-    // if (enableMultiEdit) {
-    //   ACTION_NAV.show();
-    // } else {
-    //   ACTION_NAV.hide();
-    // }
-
     selectedRows = [];
     var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
     highlightedRows.forEach(row => row.classList.remove('selected'));
@@ -586,6 +580,7 @@ var notesOverview = (function () {
       mulitSelectBtn.classList.add('disabled');
       mulitSelectBtn.classList.remove('enabled');
       overviewTable.classList.add('multiSelectEnabled');
+      selectAllBtn.querySelector('span').textContent = 'Select None';
 
       selectedRows = [];
 
@@ -605,6 +600,7 @@ var notesOverview = (function () {
       enableMultiEdit = false;
       mulitSelectBtn.classList.remove('disabled');
       overviewTable.classList.remove('multiSelectEnabled');
+      selectAllBtn.querySelector('span').textContent = 'Select All';
 
       selectedRows = [];
 
