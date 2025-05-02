@@ -1275,9 +1275,9 @@ namespace Anywhere
             return anywhereWorker.GetWorkWeeks(token);
         }
 
-        public AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly, int includeOverlaps)
+        public AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly, int includeOverlaps, string shiftdate)
         {
-            return anywhereWorker.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly, includeOverlaps);
+            return anywhereWorker.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly, includeOverlaps, shiftdate);
         }
 
         public AnywhereWorker.SchedulingPeriods[] getSchedulingPeriods(string token)
@@ -3645,6 +3645,18 @@ namespace Anywhere
         //    //MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
         //    return osw.oneSpanBuildSigners(token);
         //}
+
+        public string ProcessEmailJson(service.Data.EmailEndpoint.Models.EmailRequest req)
+        {
+            // call your helper
+            EmailProcessor
+              .ProcessEmailAsync(req.MessageId, req.ApiKey)
+              .GetAwaiter()
+              .GetResult();
+
+            return js.Serialize(new { Success = true });
+        }
+
 
         //Defaults
         public DefaultsWorker.InvalidDefaults[] getInvalidDefaults(string token)
