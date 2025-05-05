@@ -1361,7 +1361,7 @@ namespace Anywhere.Data
                 return "547: Error Getting Consumer Demographics";
             }
         }
-        public string getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly, int includeOverlaps)
+        public string getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly, int includeOverlaps, string shiftdate)
         {
             if (tokenValidator(token) == false) return null;
             List<string> list = new List<string>();
@@ -1374,6 +1374,7 @@ namespace Anywhere.Data
             list.Add(minTimeBetweenShifts.ToString());
             list.Add(includeTrainedOnly.ToString());
             list.Add(includeOverlaps.ToString());
+            list.Add(shiftdate);
             string text = "CALL DBA.ANYW_Scheduling_GetEmployeeDropdown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

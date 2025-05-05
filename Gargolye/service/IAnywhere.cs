@@ -5970,6 +5970,16 @@ namespace Anywhere
           UriTemplate = "/getRejectionReasonDropdownData/")]
         CaseNotesWorker.RejectionReasonDropdownValues[] getRejectionReasonDropdownData(string token);
 
+        [OperationContract]
+        [WebInvoke(
+          Method = "POST",
+          UriTemplate = "/email/process",
+          RequestFormat = WebMessageFormat.Json,
+          ResponseFormat = WebMessageFormat.Json,
+          BodyStyle = WebMessageBodyStyle.Bare)]
+        string ProcessEmailJson(service.Data.EmailEndpoint.Models.EmailRequest req);
+
+
     }
 
 

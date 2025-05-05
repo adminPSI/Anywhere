@@ -339,10 +339,10 @@ namespace Anywhere.service.Data
             return SchedulingData;
         }
 
-        public EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly, int includeOverlaps)
+        public EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly, int includeOverlaps, string shiftdate)
         {
             js.MaxJsonLength = Int32.MaxValue;
-            string empDropdown = dg.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly, includeOverlaps);
+            string empDropdown = dg.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly, includeOverlaps, shiftdate);
             EmployeeDropdown[] empDropdownObj = js.Deserialize<EmployeeDropdown[]>(empDropdown);
             return empDropdownObj;
         }

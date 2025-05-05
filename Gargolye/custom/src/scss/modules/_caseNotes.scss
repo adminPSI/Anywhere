@@ -324,7 +324,7 @@
         }
     }
     // PHRASES POPUPS
-    dialog.modal.insertPhrases[open] {
+    dialog.modal.insertPhrases[open], dialog.modal.editPhrases[open] {
         height: 60%;
         min-height: 300px;
         max-height: 450px;
@@ -372,7 +372,7 @@
             align-items: center;
 
             .svgIcon {
-                color: rgb(54, 106, 152);                
+                color: rgb(54, 106, 152);
             }
         }
 
