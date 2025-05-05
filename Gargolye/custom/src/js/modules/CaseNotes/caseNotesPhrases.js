@@ -1,6 +1,7 @@
 (function (global, factory) {
     global.CaseNotesPhrases = factory();
 })(this, function () {
+    let IsEdit;
     //=======================================
     // ADDING NEW PHRASES
     //---------------------------------------
@@ -107,7 +108,7 @@
             this.close();
 
             // update phrases list for inserting
-            await this.PhrasesInstance.InsertPhrases.fetchData(); 
+            await this.PhrasesInstance.InsertPhrases.fetchData();
             this.PhrasesInstance.InsertPhrases.populate();
         });
         this.addPhraseForm.onChange(event => {
@@ -167,7 +168,7 @@
         this.showAllPhrases = _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
         this.showAllPhrases = this.showAllPhrases === 'Y' ? true : false;
 
-        this.dialog = new Dialog({ className: 'insertPhrases' });
+        this.dialog = new Dialog({ className: IsEdit ? 'editPhrases' : 'insertPhrases' }); 
 
         this.showAllPhrasesToggle = new Checkbox({
             id: 'phraseView',
@@ -246,7 +247,7 @@
      * @function
      */
     CaseNotesInsertPhrases.prototype.onPhraseSelect = function (cb) {
-        const handleClick = async e => {      
+        const handleClick = async e => {
             if (cb != undefined && e.target.dataset.target === 'phrase') {
                 cb(this.phrasesData[e.target.id].phrase);
                 this.phraseWrap.removeEventListener('click', handleClick);
@@ -270,11 +271,11 @@
                 }
                 const continueSave = await overlapPopup.show(
                     message,
-                );    
+                );
 
                 if (continueSave !== 'confirm') {
                     return;
-                }  
+                }
 
                 await _UTIL.fetchData('deleteCustomPhrase', {
                     phraseId: e.target.id
@@ -354,10 +355,11 @@
      * @constructor
      * @returns {CaseNotesPhrases}
      */
-    function CaseNotesPhrases() {
+    function CaseNotesPhrases(isEdit) {
         // Data Init
         this.AddPhrases = new CaseNotesAddPhrases(this);
         this.InsertPhrases = new CaseNotesInsertPhrases(this);
+        IsEdit = isEdit;
 
         this._build();
     }

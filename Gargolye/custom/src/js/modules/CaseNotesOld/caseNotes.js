@@ -32,7 +32,7 @@ var caseNotes = (function () {
             callback: async () => {
                 _DOM.ACTIONCENTER.setAttribute('data-UI', true);
                 _DOM.setActiveModuleAttribute('casenotes2.0');
-                cnPhrases = new CaseNotesPhrases();
+                cnPhrases = new CaseNotesPhrases(true);
                 cnPhrases.renderTo(_DOM.ACTIONCENTER);
                 await cnPhrases.InsertPhrases.fetchData();
                 cnPhrases.InsertPhrases.populate();
@@ -41,7 +41,7 @@ var caseNotes = (function () {
 
                 // below code for when user click outside of popup , popup will closed and change module new caseload to old caseload
                 document.addEventListener('click', function (event) {
-                    const dialog = document.getElementsByClassName('insertPhrases');
+                    const dialog = document.getElementsByClassName('editPhrases'); 
                     if (dialog != null && dialog[0] != undefined && dialog[0].className === event.target.className) {
                         _DOM.ACTIONCENTER.removeAttribute('data-ui');                       
                         setActiveModuleAttribute('casenotes');
