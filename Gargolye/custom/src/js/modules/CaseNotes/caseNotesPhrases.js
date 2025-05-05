@@ -246,8 +246,8 @@
      * @function
      */
     CaseNotesInsertPhrases.prototype.onPhraseSelect = function (cb) {
-        const handleClick = async e => {            
-            if (e.target.dataset.target === 'phrase') {
+        const handleClick = async e => {      
+            if (cb != undefined && e.target.dataset.target === 'phrase') {
                 cb(this.phrasesData[e.target.id].phrase);
                 this.phraseWrap.removeEventListener('click', handleClick);
             }
