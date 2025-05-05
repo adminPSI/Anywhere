@@ -39,6 +39,7 @@ const NewAssessment = (() => {
     let lowFundingRange;
     let messagetext;
     let messageErrortext;
+    let isDateCorrect;
 
 
     async function init(selectedConsumers, registerId = undefined, lastUpdate = '') {
@@ -398,14 +399,18 @@ const NewAssessment = (() => {
 
         if (dateStart.value === '') {
             startDateInput.classList.add('error');
+            isDateCorrect = false;
         } else {
             startDateInput.classList.remove('error');
+            isDateCorrect = true;
         }
 
         if (dateEnd.value === '' || dateStart.value > dateEnd.value) {
             endDateInput.classList.add('error');
+            isDateCorrect = false;
         } else {
             endDateInput.classList.remove('error');
+            isDateCorrect = true;
         }
 
         if (method.value === '') {
@@ -443,12 +448,12 @@ const NewAssessment = (() => {
         } else {
             complexCareModifierDropdown.classList.remove('error');
         }
-  
+
         if ((priorAuthRec.value != '' && priorAuthRec.value > dateEnd.value) || (priorAuthRec.value != '' && priorAuthApp.value != '' && priorAuthApp.value > priorAuthRec.value) ){ 
             priorAuthReceivedDateInput.classList.add('error');
         } else {
             priorAuthReceivedDateInput.classList.remove('error');
-        } 
+        }
 
         setBtnStatusOfNewEntry();
     }
@@ -488,11 +493,23 @@ const NewAssessment = (() => {
             startDate = event.target.value;
             isChangedValue = true;
             checkRequiredFieldsOfNewAssessment();
+            if (isDateCorrect)
+                findFundingRange();
+            else {
+                document.getElementById('fundingRangeMaxInput').value = '';
+                document.getElementById('fundingRangeLowInput').value = '';
+            }
         });
         endDateInput.addEventListener('input', event => {
             endDate = event.target.value;
             isChangedValue = true;
             checkRequiredFieldsOfNewAssessment();
+            if (isDateCorrect)
+                findFundingRange();
+            else {
+                document.getElementById('fundingRangeMaxInput').value = '';
+                document.getElementById('fundingRangeLowInput').value = ''; 
+            }
         });
 
         methodologyDropdown.addEventListener('change', event => {
