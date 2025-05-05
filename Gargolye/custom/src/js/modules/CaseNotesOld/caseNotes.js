@@ -32,6 +32,7 @@ var caseNotes = (function () {
             callback: async () => {
                 _DOM.ACTIONCENTER.setAttribute('data-UI', true);
                 _DOM.setActiveModuleAttribute('casenotes2.0');
+                _DOM.ACTIONCENTER.classList.add('actioncenterCaseNote');
                 cnPhrases = new CaseNotesPhrases(true);
                 cnPhrases.renderTo(_DOM.ACTIONCENTER);
                 await cnPhrases.InsertPhrases.fetchData();
@@ -43,7 +44,8 @@ var caseNotes = (function () {
                 document.addEventListener('click', function (event) {
                     const dialog = document.getElementsByClassName('editPhrases'); 
                     if (dialog != null && dialog[0] != undefined && dialog[0].className === event.target.className) {
-                        _DOM.ACTIONCENTER.removeAttribute('data-ui');                       
+                        _DOM.ACTIONCENTER.removeAttribute('data-ui');    
+                        _DOM.ACTIONCENTER.classList.remove('actioncenterCaseNote'); 
                         setActiveModuleAttribute('casenotes');
                         DOM.clearActionCenter();
                         caseNotes.load();  

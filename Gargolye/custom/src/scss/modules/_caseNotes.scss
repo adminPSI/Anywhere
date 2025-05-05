@@ -2,6 +2,11 @@
     background: $white;
 }
 
+.actioncenterCaseNote {
+    padding: 10px 0 20px !important;
+    width: 96% !important;
+}
+
 [data-active-module='casenotes2.0'] {
     container: actioncenter / inline-size;
     background: $white;
