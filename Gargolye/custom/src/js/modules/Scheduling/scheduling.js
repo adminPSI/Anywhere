@@ -2107,7 +2107,7 @@ const SchedulingCalendar = (function () {
       text: 'All',
     });
 
-    selectedLocationId = dropdownData[1].value;
+    selectedLocationId = '%';
 
     dropdown.populate(locationDropdownEle, dropdownData, selectedLocationId);
   }
@@ -2476,7 +2476,7 @@ const SchedulingCalendar = (function () {
 
     calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
     calendarAppointments = await getCalendarAppointments();
-    ScheduleCalendar.renderEvents([...calendarEvents, ...calendarAppointments]);
+    renderCalendarEvents();
 
     if (viewOptionShifts === 'no') {
       const filterCheck = value => value !== 3;
