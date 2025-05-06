@@ -515,9 +515,9 @@ const FSS = (() => {
             <div>${startDate}</div>     
             <div>${endDate}</div>
             <div>${coPay}</div>
-            <div>${allocation}</div>
-            <div>${encumbered}</div> 
-             <div>${amtPaid}</div>
+            <div>$ ${allocation}</div>
+            <div>$${encumbered}</div> 
+             <div>$${amtPaid}</div> 
             <div>${balance}</div>
             <div>${funding}</div> 
 
@@ -962,8 +962,8 @@ const FSS = (() => {
             type: 'contained',
             callback: async () => {
                 if (!UAPPLY_BTN.classList.contains('disabled')) {
-                    await saveUtilizationData(familyId, authId);
-                    POPUP.hide(UtilizationPopup);
+                    POPUP.hide(UtilizationPopup); 
+                    await saveUtilizationData(familyId, authId);                 
                 }
             },
         });
@@ -998,7 +998,7 @@ const FSS = (() => {
         UtilizationPopup.appendChild(popupbtnWrap);
 
         POPUP.show(UtilizationPopup);
-        UtilizationDropdownPopulate(fundingSourceID);
+        UtilizationDropdownPopulate(familyId,fundingSourceID);
         UtilizationPopupEventListeners();
         UtilizationRequiredFieldsOfPopup();
     }
@@ -1065,10 +1065,10 @@ const FSS = (() => {
         setUtilizationBtnStatusOfPopup();
     }
 
-    async function UtilizationDropdownPopulate(fundingSourceID) {
+    async function UtilizationDropdownPopulate(familyId,fundingSourceID) {
         const {
             getFamilyMembersDropDownResult: FamilyMembers,
-        } = await FSSAjax.getFamilyMembersDropDown();
+        } = await FSSAjax.getFamilyMembersDropDown(familyId);
 
         let familyMembersData = FamilyMembers.map((familyMembers) => ({
             id: familyMembers.id,

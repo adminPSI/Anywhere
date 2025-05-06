@@ -47,32 +47,43 @@ const SchedulingCalendar = (function () {
 
   // Shift Popups
   let shiftEmployees;
-  let filterShiftEmployeesOpts;
   let regions;
-  let shiftDateForCall;
-  let detailsLocationId;
+  var shiftDateForCall;
+  var detailsLocationId;
 
-  function compareObjects(obj1, obj2) {
-    if (obj1 === obj2) return true;
+  function resetModule() {
+    // DOM
+    ScheduleCalendar = undefined;
+    locationDropdownEle = undefined;
+    employeeDropdownEle = undefined;
+    shiftTypeDropdownEle = undefined;
+    shiftTypeNote = undefined;
+    pubUnpubButtonEle = undefined;
+    newShiftButtonEle = undefined;
 
-    const keys1 = Object.keys(obj1);
-    const keys2 = Object.keys(obj2);
+    // DATA
+    schedules = undefined;
+    appointments = undefined;
+    calendarEvents = undefined;
+    calendarAppointments = undefined;
+    locations = undefined;
+    employees = undefined;
+    rosterCache = undefined;
 
-    if (keys1.length !== keys2.length) {
-      return false;
-    }
+    // GLOBALS
+    currentCalView = undefined;
+    selectedLocationId = undefined;
+    selectedEmployeeId = undefined;
+    selectedShiftType = undefined;
+    viewOptionShifts = undefined;
 
-    for (const key of keys1) {
-      if (!Object.prototype.hasOwnProperty.call(obj2, key)) {
-        return false;
-      }
-      if (obj1[key] !== obj2[key]) {
-        return false;
-      }
-    }
-
-    return true;
+    // Shift Popups
+    shiftEmployees = undefined;
+    regions = undefined;
+    shiftDateForCall = undefined;
+    detailsLocationId = undefined;
   }
+
   function checkRequiredFields(btn) {
     var hasErrors = [].slice.call(document.querySelectorAll('.error'));
     if (hasErrors.length === 0) {
@@ -407,165 +418,15 @@ const SchedulingCalendar = (function () {
 
     dropdown.populate(regionDropdown, dropdownData);
   }
-  function buildLocationFilter(includeTrainedOnly) {
-    // <div class="employeeOption">
-    // ${locationCheck.outerHTML}
-    //   <div class="label">
-    //     <p>Only include employees trained at the location</p>
-    //   </div>
-    // </div>
-
-    const employeeOption = document.createElement('div');
-    employeeOption.className = 'employeeOption';
-
-    const locationCheck = document.createElement('input');
-    locationCheck.type = 'checkbox';
-    locationCheck.name = 'location';
-    locationCheck.checked = includeTrainedOnly === 1 ? true : false;
-
-    const label = document.createElement('div');
-    label.className = 'label';
-    label.innerHTML = `<p>Only include employees trained at the location</p>`;
-
-    employeeOption.appendChild(locationCheck);
-    employeeOption.appendChild(label);
-
-    return { locationFilter: employeeOption };
-  }
-  function buildHoursFilter() {
-    // <div class="employeeOption">
-    // ${hoursCheck.outerHTML}
-    //   <div class="label nestedInput">
-    //     <p>Exclude employees that would have more than</p>
-    //     ${hoursInput.outerHTML}
-    //     <p> hours for the work week</p>
-    //   </div>
-    // </div>
-
-    const employeeOption = document.createElement('div');
-    employeeOption.className = 'employeeOption';
-
-    const hoursCheck = document.createElement('input');
-    hoursCheck.type = 'checkbox';
-    hoursCheck.name = 'hour';
-
-    const hoursInput = document.createElement('input');
-    hoursInput.type = 'number';
-    hoursInput.name = 'hours';
-
-    const label = document.createElement('div');
-    label.className = 'label nestedInput';
-    const labelText1 = document.createElement('p');
-    labelText1.innerHTML = `<p>Exclude employees that would have more than</p>`;
-    const labelText2 = document.createElement('p');
-    labelText2.innerHTML = `<p> hours for the work week</p>`;
-
-    label.appendChild(labelText1);
-    label.appendChild(hoursInput);
-    label.appendChild(labelText2);
-
-    employeeOption.appendChild(hoursCheck);
-    employeeOption.appendChild(label);
-
-    return {
-      hoursFilter: employeeOption,
-      hoursCheck,
-      hoursInput,
-    };
-  }
-  function buildMinutesFilter() {
-    // <div class="employeeOption">
-    // ${minutesCheck.outerHTML}
-    //   <div class="label nestedInput">
-    //     <p>Exclude employees that have a shift less than</p>
-    //     ${minutesInput.outerHTML}
-    //     <p>minutes before this one</p>
-    //   </div>
-    // </div>
-
-    const employeeOption = document.createElement('div');
-    employeeOption.className = 'employeeOption';
-
-    const minutesCheck = document.createElement('input');
-    minutesCheck.type = 'checkbox';
-    minutesCheck.name = 'minute';
-
-    const minutesInput = document.createElement('input');
-    minutesInput.type = 'number';
-    minutesInput.name = 'minutes';
-
-    const label = document.createElement('div');
-    label.className = 'label nestedInput';
-    const labelText1 = document.createElement('p');
-    labelText1.innerHTML = `<p>Exclude employees that have a shift less than</p>`;
-    const labelText2 = document.createElement('p');
-    labelText2.innerHTML = `<p> minutes before this one</p>`;
-
-    label.appendChild(labelText1);
-    label.appendChild(minutesInput);
-    label.appendChild(labelText2);
-
-    employeeOption.appendChild(minutesCheck);
-    employeeOption.appendChild(label);
-
-    return {
-      minutesFilter: employeeOption,
-      minutesCheck,
-      minutesInput,
-    };
-  }
-  function buildOverlapFilter(includeOverlaps) {
-    // <div class="employeeOption">
-    // ${overlapCheck.outerHTML}
-    //   <div class="label">
-    //     <p>Exclude employees who have a day off that overlaps with this shift</p>
-    //   </div>
-    // </div>
-
-    const employeeOption = document.createElement('div');
-    employeeOption.className = 'employeeOption';
-
-    const overlapCheck = document.createElement('input');
-    overlapCheck.type = 'checkbox';
-    overlapCheck.name = 'overlap';
-    overlapCheck.checked = includeOverlaps === 1 ? true : false;
-
-    const label = document.createElement('div');
-    label.className = 'label';
-    label.innerHTML = `<p>Exclude employees who have a day off that overlaps with this shift</p>`;
-
-    employeeOption.appendChild(overlapCheck);
-    employeeOption.appendChild(label);
-
-    return { overlapFilter: employeeOption };
-  }
-  function buildRegionFilter() {
-    // <div class="employeeOption">
-    // ${regionCheck.outerHTML}
-    //   <div class="label">
-    //     <p>Only show employees from this region:</p>
-    //   </div>
-    // </div>
-
-    const employeeOption = document.createElement('div');
-    employeeOption.className = 'employeeOption';
-
-    const regionCheck = document.createElement('input');
-    regionCheck.type = 'checkbox';
-    regionCheck.name = 'region';
-
-    const label = document.createElement('div');
-    label.className = 'label';
-    label.innerHTML = `<p>Only include employees trained at the location</p>`;
-
-    employeeOption.appendChild(regionCheck);
-    employeeOption.appendChild(label);
-
-    return { regionFilter: employeeOption };
-  }
-  function showFilterEmployeePopup(onSaveCallbackFunc) {
+  function showFilterEmployeePopup(onSaveCallbackFunc, { locationId, startTime, endTime }) {
     const opts = {
-      ...filterShiftEmployeesOpts,
+      locationId: locationId,
+      includeTrainedOnly: 0,
+      maxWeeklyHours: -1,
+      minTimeBetweenShifts: -1,
+      shiftStartTime: startTime,
+      shiftEndTime: endTime,
+      region: 'ALL',
     };
 
     const employeePopup = POPUP.build({
@@ -573,31 +434,58 @@ const SchedulingCalendar = (function () {
       hideX: true,
     });
 
-    const title = document.createElement('p');
-    title.className = 'popupTitle';
-    title.textContent = 'Select employee options';
+    employeePopup.innerHTML = `
+      <p>Select employee options</p>
 
-    const optionsContainer = document.createElement('div');
-    optionsContainer.className = 'employeeOptionsContainer';
+      <div class="employeeOptionsContainer">
 
-    const { locationFilter } = buildLocationFilter(opts.includeTrainedOnly);
-    const { hoursFilter, hoursInput } = buildHoursFilter();
-    const { minutesFilter, minutesInput } = buildMinutesFilter();
-    const { overlapFilter } = buildOverlapFilter(opts.includeOverlaps);
-    const { regionFilter } = buildRegionFilter();
+        <div class="employeeOption">
+          <input id="includeTrainedOnly" type="checkbox" name="location" checked />
+          <div class="label">
+            <p>Only include employees trained at the location</p>
+          </div>
+        </div>
+
+        <div class="employeeOption">
+          <input id="maxWeeklyHours"  type="checkbox" name="hour" />
+          <div class="label nestedInput">
+            <p>Exclude employees that would have more than</p>
+            <input id="maxWeeklyHoursValue"  type="number" name="hours" />
+            <p> hours for the work week</p>
+          </div>
+        </div>
+
+        <div class="employeeOption">
+          <input id="minTimeBetweenShifts" type="checkbox" name="minute" />
+          <div class="label nestedInput">
+            <p>Exclude employees that have a shift less than</p>
+            <input id="minTimeBetweenShiftsValue" type="number" name="minutes" />
+            <p>minutes before this one</p>
+          </div>
+        </div>
+
+        <div class="employeeOption">
+          <input id="locationOpt" type="checkbox" name="overlap" checked/>
+          <div class="label">
+            <p>Exclude employees who have a day off that overlaps with this shift</p>
+          </div>
+        </div>
+
+        <div class="employeeOption">
+          <input id="region" type="checkbox" name="region" />
+          <div class="label">
+            <p>Only show employees from this region:</p>
+          </div>
+        </div>
+
+      </div>
+    `;
+
     const regionDropdown = dropdown.build({
       dropdownId: 'regionDropdown',
       label: 'Region',
       style: 'secondary',
     });
-    input.disableInputField(regionDropdown);
-
-    optionsContainer.appendChild(locationFilter);
-    optionsContainer.appendChild(hoursFilter);
-    optionsContainer.appendChild(minutesFilter);
-    optionsContainer.appendChild(overlapFilter);
-    optionsContainer.appendChild(regionFilter);
-    optionsContainer.appendChild(regionDropdown);
 
     const savebtn = button.build({
       text: 'Update Employee List',
@@ -605,8 +493,12 @@ const SchedulingCalendar = (function () {
       type: 'contained',
       callback: async () => {
         employeePopup.remove();
-        filterShiftEmployeesOpts = { ...opts };
-        onSaveCallbackFunc();
+
+        shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling({
+          ...opts,
+        });
+
+        onSaveCallbackFunc(shiftEmployees);
       },
     });
     const cancelbtn = button.build({
@@ -615,48 +507,12 @@ const SchedulingCalendar = (function () {
       type: 'contained',
       callback: async () => {
         employeePopup.remove();
+        onSaveCallbackFunc();
       },
     });
 
     employeePopup.addEventListener('change', e => {
       console.log('employeeOptions', e.target, e.target.name, e.target.checked);
-
-      if (e.target.name === 'location') {
-        opts.includeTrainedOnly = e.target.checked ? 1 : 0;
-      }
-      if (e.target.name === 'hour') {
-        if (e.target.checked) {
-          input.enableInputField(hoursInput);
-        } else {
-          input.disableInputField(hoursInput);
-        }
-      }
-      if (e.target.name === 'hours') {
-        opts.maxWeeklyHours = e.target.value;
-      }
-      if (e.target.name === 'minute') {
-        if (e.target.checked) {
-          input.enableInputField(minutesInput);
-        } else {
-          input.disableInputField(minutesInput);
-        }
-      }
-      if (e.target.name === 'minutes') {
-        opts.minTimeBetweenShifts = e.target.value;
-      }
-      if (e.target.name === 'overlap') {
-        opts.includeOverlaps = e.target.checked ? 1 : 0;
-      }
-      if (e.target.name === 'region') {
-        if (e.target.checked) {
-          input.enableInputField(regionDropdown);
-        } else {
-          input.disableInputField(regionDropdown);
-        }
-      }
-      if (e.target.id === 'regionDropdown') {
-        opts.region = e.target.options[e.target.selectedIndex].value;
-      }
     });
 
     const buttonWrap = document.createElement('div');
@@ -664,8 +520,7 @@ const SchedulingCalendar = (function () {
     buttonWrap.appendChild(savebtn);
     buttonWrap.appendChild(cancelbtn);
 
-    employeePopup.appendChild(title);
-    employeePopup.appendChild(optionsContainer);
+    employeePopup.appendChild(regionDropdown);
     employeePopup.appendChild(buttonWrap);
 
     populateRegionDropdown(regionDropdown);
@@ -686,7 +541,7 @@ const SchedulingCalendar = (function () {
       const daysBackDate = dates.subDays(todaysDate, $.session.defaultProgressNoteReviewDays);
       const data = await _UTIL.fetchData('getConsumersByGroupJSON', {
         groupCode: 'All',
-        retrieveId: selectedLocationId,
+        retrieveId: '0',
         serviceDate: filterDate,
         daysBackDate: dates.formatISO(daysBackDate, { representation: 'date' }),
         isActive: 'No',
@@ -1039,7 +894,7 @@ const SchedulingCalendar = (function () {
     dropdown.populate(colorDropdown, dropdownData, defaultValue);
   }
 
-  async function showShiftPopup(data, eventTypeID, isCopy, onCloseCallback) {
+  function showShiftPopup(data, eventTypeID, isCopy, onCloseCallback) {
     const checkRequiredFieldsShiftPopup = () => {
       let errors = [...shiftPopup.querySelectorAll('.error')];
 
@@ -1158,40 +1013,12 @@ const SchedulingCalendar = (function () {
       shiftPopup.appendChild(copyHeading);
     }
 
-    // Shift Employees
-    const updateShiftEmployees = async () => {
-      shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling(filterShiftEmployeesOpts);
-
-      if (
-        !shiftEmployees.find(empData => empData.Person_Id === shiftData.employeeId) &&
-        shiftData.employeeId !== $.session.PeopleId
-      ) {
-        shiftData.employeeId = '';
-      }
-
-      populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
-    };
-    filterShiftEmployeesOpts = {
-      locationId: shiftData.locationId,
-      includeTrainedOnly: 1,
-      includeOverlaps: 1,
-      maxWeeklyHours: -1,
-      minTimeBetweenShifts: -1,
-      shiftdate: data.date ? data.date : [],
-      shiftStartTime: '00:00:00',
-      shiftEndTime: '00:00:00',
-      region: '%',
-    };
-    shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling(filterShiftEmployeesOpts);
-
     const defaultDate = ScheduleCalendar.getCurrentDate();
     const shiftDateSelect = new WeekViewDatePicker({
       defaultDate: defaultDate,
       selectedDates: [...shiftData.date],
       onDateChange(newDateArray) {
         shiftData.date = [...newDateArray];
-        filterShiftEmployeesOpts.shiftdate = shiftData.date.join(',');
-        updateShiftEmployees();
 
         checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
       },
@@ -1327,7 +1154,6 @@ const SchedulingCalendar = (function () {
       if (e.target.parentElement === locationDropdown) {
         const selectedOption = e.target.options[e.target.selectedIndex];
         shiftData.locationId = selectedOption.value;
-        filterShiftEmployeesOpts.locationId = shiftData.locationId;
 
         if (shiftData.locationId === '') {
           locationDropdown.classList.add('error');
@@ -1337,10 +1163,10 @@ const SchedulingCalendar = (function () {
           employeeDropdown.classList.remove('disabled');
         }
 
-        // Clear employee & update dropdown
+        // Reset employee dropdown
+        populateShiftEmployeeDropdown(employeeDropdown);
         shiftData.employeeId = '';
         employeeDropdown.classList.add('error');
-        updateShiftEmployees();
 
         // Clear out consumers
         shiftData.consumerNames = [];
@@ -1364,7 +1190,6 @@ const SchedulingCalendar = (function () {
       }
       if (e.target.parentElement === startTimeInput) {
         shiftData.startTime = e.target.value;
-        filterShiftEmployeesOpts.shiftStartTime = shiftData.startTime;
 
         if (!shiftData.startTime || (shiftData.endTime && shiftData.startTime > shiftData.endTime)) {
           startTimeInput.classList.add('error');
@@ -1374,13 +1199,10 @@ const SchedulingCalendar = (function () {
           if (shiftData.endTime) {
             endTimeInput.classList.remove('error');
           }
-
-          updateShiftEmployees();
         }
       }
       if (e.target.parentElement === endTimeInput) {
         shiftData.endTime = e.target.value;
-        filterShiftEmployeesOpts.shiftEndTime = shiftData.endTime;
 
         if (!shiftData.endTime || (shiftData.startTime && shiftData.endTime < shiftData.startTime)) {
           endTimeInput.classList.add('error');
@@ -1390,8 +1212,6 @@ const SchedulingCalendar = (function () {
           if (shiftData.startTime) {
             startTimeInput.classList.remove('error');
           }
-
-          updateShiftEmployees();
         }
       }
       if (e.target.parentElement === notifyEmployee) {
@@ -1402,7 +1222,18 @@ const SchedulingCalendar = (function () {
     });
     shiftPopup.addEventListener('click', async e => {
       if (e.target === filterEmployeesBtn) {
-        showFilterEmployeePopup(updateShiftEmployees);
+        showFilterEmployeePopup(
+          newEmployeeData => {
+            if (!newEmployeeData) return;
+
+            if (!newEmployeeData.find(empData => empData.Person_Id === shiftData.employeeId)) {
+              shiftData.employeeId = '';
+            }
+
+            populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
+          },
+          { locationId: shiftData.locationId, startTime: shiftData.startTime, endTime: shiftData.endTime },
+        );
       }
       if (e.target === addIndividualBtn) {
         const datesSelectedCount = shiftData.date.length > 0 ? null : shiftData.date[0];
@@ -1657,6 +1488,19 @@ const SchedulingCalendar = (function () {
 
     showShiftPopup(data, eventTypeId, isCopy, leaveOverlayOnClose);
   }
+  async function preLoadPopupData() {
+    shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling({
+      locationId: '0',
+      includeTrainedOnly: 0,
+      region: 'ALL',
+      maxWeeklyHours: -1,
+      shiftStartTime: '00:00:00',
+      shiftEndTime: '00:00:00',
+      minTimeBetweenShifts: -1,
+    });
+
+    regions = await schedulingAjax.getRegionDropdown();
+  }
 
   // Calendar
   //-----------------------------------------------------------------------
@@ -1722,12 +1566,12 @@ const SchedulingCalendar = (function () {
   async function getCalendarEvents(locationID = '%', peopleID = '%') {
     schedules = await schedulingAjax.getSchedulesForSchedulingModuleNew(locationID, peopleID);
 
-    const eventsArray = schedules.map(sch => {
+    return schedules.map(sch => {
       const timeRegEx = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/;
       const isStartTimeValid = timeRegEx.test(sch.startTime);
       const isEndTimeValid = timeRegEx.test(sch.endTime);
 
-      if (!isStartTimeValid || !isEndTimeValid || sch.serviceDate === '') {
+      if (!isStartTimeValid || !isEndTimeValid || res.serviceDate === '') {
         return;
       }
 
@@ -1767,20 +1611,11 @@ const SchedulingCalendar = (function () {
         personId: sch.personID,
       };
     });
-
-    if (selectedLocationId === '%') {
-      return eventsArray.filter(event => {
-        const hasLoc = locations.find(loc => loc.locationId === event.locationId);
-        return hasLoc ? true : false;
-      });
-    }
-
-    return eventsArray;
   }
   async function getCalendarAppointments() {
     appointments = await schedulingAjax.getScheduleApptInformationNew();
 
-    const appointmentArray = appointments.map(appt => {
+    return appointments.map(appt => {
       const serviceDate = formatServiceDate(appt.serviceDate, appt.dateScheduled);
       const startTime = `${serviceDate} ${appt.timeScheduled}`;
       const endTime = dates.addHours(startTime, 1);
@@ -1809,15 +1644,6 @@ const SchedulingCalendar = (function () {
         color: color,
       };
     });
-
-    if (selectedLocationId === '%') {
-      return appointmentArray.filter(appt => {
-        const hasLoc = locations.find(loc => loc.locationId === appt.locationId);
-        return hasLoc ? true : false;
-      });
-    }
-
-    return appointmentArray;
   }
   function renderCalendarEvents() {
     if (selectedLocationId === '%') {
@@ -1860,10 +1686,6 @@ const SchedulingCalendar = (function () {
         isCopy: false,
       });
 
-      return;
-    }
-
-    if (eventTarget.classList.contains('eventCellGroupEle')) {
       return;
     }
 
@@ -2211,8 +2033,6 @@ const SchedulingCalendar = (function () {
           resetFilter: true,
           filterKey: 'publishedDate',
         });
-
-        return;
       }
 
       const filterCheck = selectedShiftType === '1' ? value => !!value : value => !value;
@@ -2408,39 +2228,6 @@ const SchedulingCalendar = (function () {
     ScheduleCalendar.renderCalendar();
   }
 
-  function resetModule() {
-    // DOM
-    ScheduleCalendar = undefined;
-    locationDropdownEle = undefined;
-    employeeDropdownEle = undefined;
-    shiftTypeDropdownEle = undefined;
-    shiftTypeNote = undefined;
-    pubUnpubButtonEle = undefined;
-    newShiftButtonEle = undefined;
-
-    // DATA
-    schedules = undefined;
-    appointments = undefined;
-    calendarEvents = undefined;
-    calendarAppointments = undefined;
-    locations = undefined;
-    employees = undefined;
-    rosterCache = {};
-
-    // GLOBALS
-    currentCalView = undefined;
-    selectedLocationId = undefined;
-    selectedEmployeeId = undefined;
-    selectedShiftType = undefined;
-    viewOptionShifts = undefined;
-
-    // Shift Popups
-    shiftEmployees = [];
-    filterShiftEmployeesOpts = undefined;
-    regions = [];
-    shiftDateForCall = undefined;
-    detailsLocationId = undefined;
-  }
   async function init() {
     resetModule();
 
@@ -2457,6 +2244,7 @@ const SchedulingCalendar = (function () {
     viewOptionShifts = 'no';
     currentCalView = 'month';
     selectedEmployeeId = $.session.PeopleId;
+    rosterCache = {};
 
     ScheduleCalendar = new Calendar({
       defaultView: currentCalView,
@@ -2483,9 +2271,7 @@ const SchedulingCalendar = (function () {
       ScheduleCalendar.filterEventsBy({ filterKey: 'typeId', filterCheck });
     }
 
-    if ($.session.schedulingSecurity) {
-      regions = await schedulingAjax.getRegionDropdown();
-    }
+    preLoadPopupData();
   }
 
   return {

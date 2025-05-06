@@ -488,9 +488,14 @@ namespace Anywhere
             return caseNotesWorker.getCNPopulateFilterDropdowns(token, serviceCodeId);
         }
 
+        public CaseNotesWorker.RejectionReasonDropdownValues[] getRejectionReasonDropdownData(string token)
+        {
+            return caseNotesWorker.getRejectionReasonDropdownData(token);
+        }
+
         public string updateNoteReviewResult(string token, string userId, string reviewResult, string[] noteIds, string rejectReason)
         {
-            return dg.updateNoteReviewResult(token, userId, reviewResult, noteIds, rejectReason);
+            return caseNotesWorker.updateNoteReviewResult(token, userId, reviewResult, noteIds, rejectReason);
         }
 
         //case note filter
@@ -1270,9 +1275,9 @@ namespace Anywhere
             return anywhereWorker.GetWorkWeeks(token);
         }
 
-        public AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly)
+        public AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly, int includeOverlaps, string shiftdate)
         {
-            return anywhereWorker.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly);
+            return anywhereWorker.getEmployeeDropdown(token, locationId, region, maxWeeklyHours, shiftStartTime, shiftEndTime, minTimeBetweenShifts, includeTrainedOnly, includeOverlaps, shiftdate);
         }
 
         public AnywhereWorker.SchedulingPeriods[] getSchedulingPeriods(string token)
@@ -1664,9 +1669,14 @@ namespace Anywhere
             return caseNotesWorker.getCustomPhrases(token, showAll);
         }
 
-        public string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic)
+        public string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic, string phraseId)
         {
-            return dg.insertCustomPhrase(token, shortcut, phrase, makePublic);
+            return dg.insertCustomPhrase(token, shortcut, phrase, makePublic, phraseId);
+        }
+
+        public string deleteCustomPhrase(string token, string phraseId)
+        {
+            return dg.deleteCustomPhrase(token, phraseId);
         }
 
         public string getlocationsWithConsumersWithUnreadNotes(string token, string daysBackDate)
@@ -3636,6 +3646,18 @@ namespace Anywhere
         //    return osw.oneSpanBuildSigners(token);
         //}
 
+        public string ProcessEmailJson(service.Data.EmailEndpoint.Models.EmailRequest req)
+        {
+            // call your helper
+            EmailProcessor
+              .ProcessEmailAsync(req.MessageId, req.ApiKey)
+              .GetAwaiter()
+              .GetResult();
+
+            return js.Serialize(new { Success = true });
+        }
+
+
         //Defaults
         public DefaultsWorker.InvalidDefaults[] getInvalidDefaults(string token)
         {
@@ -4519,9 +4541,9 @@ namespace Anywhere
             return fssw.getFunding(token);
         }
 
-        public FSSWorker.dropdowns[] getFamilyMembersDropDown(string token)
+        public FSSWorker.dropdowns[] getFamilyMembersDropDown(string familyId)
         {
-            return fssw.getFamilyMembersDropDown(token);
+            return fssw.getFamilyMembersDropDown(familyId);
         }
         public FSSWorker.dropdowns[] getServiceCodes(string fundingSourceID)
         {

@@ -196,13 +196,13 @@ namespace Anywhere.service.Data.FSS
                 string jsonResult = "";
                 sb.Clear();
 
-                sb.Append("select ROW_NUMBER() OVER(ORDER BY fa.FSS_Authorization_ID) AS itemnum, fa.FSS_Authorization_ID as authId, fa.FSS_Family_ID as familyId, Start_Date as startDate, End_Date as endDate, Copay as coPay, Allocation_Amount as allocation, ");
+                sb.Append("select ROW_NUMBER() OVER(ORDER BY fa.Start_Date desc) AS itemnum, fa.FSS_Authorization_ID as authId, fa.FSS_Family_ID as familyId, Start_Date as startDate, End_Date as endDate, Copay as coPay, Allocation_Amount as allocation, ");
                 sb.Append("(select sum(fad.encumbered_amount) from dba.fss_authorization_detail as fad where fad.FSS_Authorization_ID = fa.FSS_Authorization_ID) as 'encumbered', ");
                 sb.Append("(select sum(fad.paid_amount) from dba.fss_authorization_detail as fad where fad.FSS_Authorization_ID = fa.FSS_Authorization_ID) as 'amtPaid' , ");
                 sb.Append("(allocation - ISNULL(encumbered, 0) - ISNULL(amtPaid, 0)) as 'balance' , ");
                 sb.Append("(select fsi.description from dba.funding_source_info as fsi where fsi.funding_source_id = fa.funding_source_id) as 'funding' , ");
                 sb.Append("(select fsi.Funding_Source_ID from dba.funding_source_info as fsi where fsi.funding_source_id = fa.funding_source_id) as 'fundingSourceID' ");
-                sb.Append("from dba.fss_authorizations fa ");
+                sb.Append("from dba.fss_authorizations fa order by Start_Date desc");
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);
@@ -289,9 +289,9 @@ namespace Anywhere.service.Data.FSS
             return seByDateObj;
         }
 
-        public dropdowns[] getFamilyMembersDropDown(string token)
+        public dropdowns[] getFamilyMembersDropDown(string familyId)
         {
-            string objString = fdg.getFamilyMembersDropDown(token);
+            string objString = fdg.getFamilyMembersDropDown(familyId);
             dropdowns[] seByDateObj = js.Deserialize<dropdowns[]>(objString);
             return seByDateObj;
         }
@@ -332,14 +332,16 @@ namespace Anywhere.service.Data.FSS
             billable.isSuccess = "";
             try
             {
-                fdg.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
-
+                // Simple Billing Entry functionality 
                 string utilizationData = getUtilization(authID);
                 FSSAuthorizationDetail[] familyUtilizationData = js.Deserialize<FSSAuthorizationDetail[]>(utilizationData);
 
 
+                //If the user provides a Date Paid and a Paid Amount in the popup in mockup #7 above, insert a record into Gatekeeper's billing module.
+                // If Simple Billing ‘Y’ and there is at least one row on the Family Utilization tab then
                 if (isSimpleBilling == "Y" && paidAmount != "" && datePaid != "" && familyUtilizationData.Length > 0)
-                {
+                {                   
+                    // variable to see if vendor is receivable, which means entry will be inserted into County Simple Billing Entry
                     if (!string.IsNullOrEmpty(vendor))
                     {
                         string isReceivable = getIsReceivable(vendor);
@@ -353,26 +355,30 @@ namespace Anywhere.service.Data.FSS
 
                     billable.currentPaid = string.IsNullOrEmpty(paidAmount) ? "0" : paidAmount;
 
+                    //at least one row on the Family Utilization tab then Loop through the rows
                     foreach (FSSAuthorizationDetail data in familyUtilizationData)
                     {
+                        // make sure the row was modified in some way
                         if (data.Encumbered_Amount != encumbered || data.ID != familyMember || data.Service_ID != serviceCode || data.Paid_Amount != paidAmount || data.Date_Paid != datePaid || data.Vendor_ID != vendor)
                         {
-                            data.Paid_Amount = data.Paid_Amount != paidAmount ? "0" : data.Paid_Amount;
-                            int perviousAmt = string.IsNullOrEmpty(data.Paid_Amount) ? 0 : Convert.ToInt32(data.Paid_Amount);
-                            int currentAmt = string.IsNullOrEmpty(paidAmount) ? 0 : Convert.ToInt32(paidAmount);
+                            decimal perviousAmt = string.IsNullOrEmpty(data.Paid_Amount) ? 0 : Convert.ToDecimal(data.Paid_Amount) == Convert.ToDecimal(paidAmount) ? 0 : Convert.ToDecimal(data.Paid_Amount);                         
+                            decimal currentAmt = string.IsNullOrEmpty(paidAmount) ? 0 : Convert.ToDecimal(paidAmount);
                             
                             billable.previousPaid = perviousAmt.ToString();
 
+                            // check to see if paid amount is going from $0 to a new value that is greater than 0, then create the simple billing entry with info from window
                             if (perviousAmt == 0 && currentAmt > 0)
                             {
+                                // insert a new row into the datastore so row can be added to simple billing window
                                 string notes = string.IsNullOrWhiteSpace(data.Notes) ? data.Voucher : data.Notes;
-                                fdg.insertSimpleBilling(token, data.Vendor_ID, data.User_ID, data.ID, data.Paid_Amount, data.Date_Paid, notes, data.Service_ID);
+                                fdg.insertSimpleBilling(token, vendor, userId, familyMember, paidAmount, datePaid, notes, serviceCode);
+                                break;
                             }
                         }
                     }
                     billable.isSuccess = "Y";
                 }
-          
+                fdg.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
                 return billable;
             }
             catch (Exception)
@@ -407,7 +413,8 @@ namespace Anywhere.service.Data.FSS
                 string jsonResult = "";
                 sb.Clear();
                 sb.Append("SELECT FSS_Authorization_Detail_ID,FSS_Authorization_ID,ID,Service_ID,Vendor_ID,Encumbered_Amount,Paid_Amount,Voucher,Notes,Start_Date,End_Date,remote_location,User_ID,Last_Update,Date_Paid from dba.FSS_Authorization_Detail where ");
-                sb.AppendFormat("FSS_Authorization_ID = '{0}' ", AuthId);
+                sb.AppendFormat(" FSS_Authorization_ID = '{0}' ", AuthId);
+                sb.Append(" order by Last_Update desc");
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);

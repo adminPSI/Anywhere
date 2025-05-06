@@ -79,7 +79,6 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-
   async function saveOrUpdateShift(retrieveData) {
     // date: '01/01/2015, 01/02/2025'
     // consumerId: '123, 123, 123'
@@ -200,7 +199,16 @@ const schedulingAjax = (function () {
     // maxWeeklyHours: -1, // -1 for null
     // shiftStartTime: '00:00:00',
     // shiftEndTime: '00:00:00',
-    // minTimeBetweenShifts: null, // -1 for null
+    // minTimeBetweenShifts: -1, // -1 for null
+    const data = { ...retrieveData };
+    if (!data.locationId) {
+      data.includeTrainedOnly = 0;
+    }
+    if (!data.shiftdate) {
+      data.includeOverlaps = 0;
+      data.maxWeeklyHours = -1;
+      data.minTimeBetweenShifts = -1;
+    }
 
     try {
       const result = await $.ajax({
@@ -216,7 +224,7 @@ const schedulingAjax = (function () {
           '/getEmployeeDropdown/',
         data: JSON.stringify({
           token: $.session.Token,
-          ...retrieveData,
+          ...data,
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
@@ -275,7 +283,7 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-  async function publishUnpublishSchedules(retrieveData) {
+  async function publishUnpublishSchedules(retrieveData, pubOrUnpub) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -287,21 +295,20 @@ const schedulingAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/publishUnpublishSchedules/',
+          '/publishShift/',
         data: JSON.stringify({
           token: $.session.Token,
+          publish: pubOrUnpub,
           ...retrieveData,
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      return result.publishUnpublishSchedulesResult;
+      return result.publishShiftResult;
     } catch (error) {
-      throw new Error(error.responseText);
+      return error;
     }
   }
-
-  //
   async function requestDaysOffSchedulingAjax(insertData) {
     //insertData must include token, personId, dates, fromTime, toTime, reason, employeeNotifiedId, status
     try {

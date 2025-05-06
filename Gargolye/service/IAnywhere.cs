@@ -2436,7 +2436,15 @@ namespace Anywhere
                 ResponseFormat = WebMessageFormat.Json,
                 RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/insertCustomPhrase/")]
-        string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic);
+        string insertCustomPhrase(string token, string shortcut, string phrase, string makePublic, string phraseId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/deleteCustomPhrase/")]
+        string deleteCustomPhrase(string token, string phraseId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4388,7 +4396,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getEmployeeDropdown/")]
-        AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly);
+        AnywhereWorker.EmployeeDropdown[] getEmployeeDropdown(string token, string locationId, string region, int maxWeeklyHours, string shiftStartTime, string shiftEndTime, int minTimeBetweenShifts, int includeTrainedOnly, int includeOverlaps, string shiftdate);
 
 
         [OperationContract]
@@ -5397,9 +5405,9 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-               BodyStyle = WebMessageBodyStyle.Wrapped,
-               ResponseFormat = WebMessageFormat.Json,
-               RequestFormat = WebMessageFormat.Json,
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getAssessmentEntriesById/")]
         AuthorizationWorker.AssessmentEntries[] getAssessmentEntriesById(string token, string registerId, string lastUpdate);
 
@@ -5832,7 +5840,7 @@ namespace Anywhere
                  ResponseFormat = WebMessageFormat.Json,
                  RequestFormat = WebMessageFormat.Json,
                  UriTemplate = "/getFamilyMembers/")]
-        FSSWorker.Members[] getFamilyMembers(string token, string familyID); 
+        FSSWorker.Members[] getFamilyMembers(string token, string familyID);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5880,7 +5888,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getFamilyMembersDropDown/")]
-        FSSWorker.dropdowns[] getFamilyMembersDropDown(string token);
+        FSSWorker.dropdowns[] getFamilyMembersDropDown(string familyId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5956,59 +5964,22 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
-         BodyStyle = WebMessageBodyStyle.Wrapped,
-         ResponseFormat = WebMessageFormat.Json,
-         RequestFormat = WebMessageFormat.Json,
-         UriTemplate = "/getConsumerDemographicsInformation/")]
-        RosterWorker.ConsumerDemographicsInformation[] getConsumerDemographicsInformation(long ConsumerId);
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getRejectionReasonDropdownData/")]
+        CaseNotesWorker.RejectionReasonDropdownValues[] getRejectionReasonDropdownData(string token);
 
         [OperationContract]
-        [WebInvoke(Method = "POST",
-        BodyStyle = WebMessageBodyStyle.Wrapped,
-        ResponseFormat = WebMessageFormat.Json,
-        RequestFormat = WebMessageFormat.Json,
-        UriTemplate = "/getConsumerServiceLocation/")]
-        RosterWorker.ConsumerServiceLocation[] getConsumerServiceLocation(long ConsumerId);
+        [WebInvoke(
+          Method = "POST",
+          UriTemplate = "/email/process",
+          RequestFormat = WebMessageFormat.Json,
+          ResponseFormat = WebMessageFormat.Json,
+          BodyStyle = WebMessageBodyStyle.Bare)]
+        string ProcessEmailJson(service.Data.EmailEndpoint.Models.EmailRequest req);
 
-        [OperationContract]
-        [WebInvoke(Method = "POST",
-        BodyStyle = WebMessageBodyStyle.Wrapped,
-        ResponseFormat = WebMessageFormat.Json,
-        RequestFormat = WebMessageFormat.Json,
-        UriTemplate = "/getConsumerIndividualRelationships/")]
-        RosterWorker.ConsumerRelationship[] getConsumerIndividualRelationships(long ConsumerId);
 
-        [OperationContract]
-        [WebInvoke(Method = "POST",
-        BodyStyle = WebMessageBodyStyle.Wrapped,
-        ResponseFormat = WebMessageFormat.Json,
-        RequestFormat = WebMessageFormat.Json,
-        UriTemplate = "/getConsumerCategories/")]
-        RosterWorker.ConsumerCatagories[] getConsumerCategories(long ConsumerId);
-
-        [OperationContract]
-        [WebInvoke(Method = "POST",
-        BodyStyle = WebMessageBodyStyle.Wrapped,
-        ResponseFormat = WebMessageFormat.Json,
-        RequestFormat = WebMessageFormat.Json,
-        UriTemplate = "/getConsumerAppointmnets/")]
-        RosterWorker.ConsumerAppointmnets[] getConsumerAppointmnets(long ConsumerId);
-
-        [OperationContract]
-        [WebInvoke(Method = "POST",
-        BodyStyle = WebMessageBodyStyle.Wrapped,
-        ResponseFormat = WebMessageFormat.Json,
-        RequestFormat = WebMessageFormat.Json,
-        UriTemplate = "/getConsumerClassifications/")]
-        RosterWorker.ConsumerClassifications[] getConsumerClassifications(long ConsumerId);
-
-        [OperationContract]
-        [WebInvoke(Method = "POST",
-        BodyStyle = WebMessageBodyStyle.Wrapped,
-        ResponseFormat = WebMessageFormat.Json,
-        RequestFormat = WebMessageFormat.Json,
-        UriTemplate = "/getConsumerIntake/")]
-        RosterWorker.ConsumerIntake[] getConsumerIntake(long ConsumerId);
     }
 
 

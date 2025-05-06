@@ -340,7 +340,7 @@ var notesOverview = (function () {
     if ($.session.applicationName === 'Gatekeeper') btnWrap.appendChild(cnReportBtn);
     if ($.session.applicationName === 'Advisor') btnWrap.appendChild(cnADVReportBtn);
     DOM.ACTIONCENTER.appendChild(btnWrap);
-    if (true) DOM.ACTIONCENTER.appendChild(multiSelectBtns);
+    if ($.session.CaseNotesReview) DOM.ACTIONCENTER.appendChild(multiSelectBtns);
     DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
     const filteredBy = initFilterDisplay();
     DOM.ACTIONCENTER.appendChild(filteredBy);
@@ -348,8 +348,134 @@ var notesOverview = (function () {
 
   // Table
   //---------------------------------------------
+  // multiselect
   let enableMultiEdit = false;
+  let enableSelectAll = false;
   let selectedRows = [];
+  let rejectionReasons = [];
+  //
+  function resetMultiSelect() {
+    mulitSelectBtn.classList.remove('enabled');
+    mulitSelectBtn.classList.remove('disabled');
+    selectAllBtn.classList.remove('enabled');
+    enableMultiEdit = false;
+    enableSelectAll = false;
+
+    selectedRows = [];
+
+    const highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+    highlightedRows.forEach(row => row.classList.remove('selected'));
+  }
+  function showSuccessFailPopup(success) {
+    if (success) {
+      successfulSave.show('SAVED');
+      setTimeout(function () {
+        successfulSave.hide();
+      }, 1000);
+    } else {
+      failSave.show('ERROR SAVING');
+      setTimeout(function () {
+        failSave.hide();
+      }, 1000);
+    }
+  }
+  function buildRejectionReasonDropdown() {
+    const rejectDropdown = dropdown.build({
+      dropdownId: 'rejectReasonDropdown',
+      label: 'Rejection Reason',
+      style: 'secondary',
+    });
+
+    let dropdownData = rejectionReasons.map(reason => {
+      return {
+        value: reason.rejectionCode,
+        text: `${reason.rejectionCode} - ${reason.rejectionCaption}`,
+      };
+    });
+
+    dropdown.populate(rejectDropdown, dropdownData);
+
+    return rejectDropdown;
+  }
+  function showRejectionReasonPopup(callback) {
+    let rejectReason;
+
+    const popup = POPUP.build({
+      classNames: 'rejectionReasonPopup',
+    });
+
+    const rejectReasonDropdown = buildRejectionReasonDropdown();
+    rejectReasonDropdown.addEventListener('change', () => {
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      rejectReason = selectedOption.value;
+    });
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+
+    const applyBtn = button.build({
+      text: 'Apply',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        callback(rejectReason);
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'Cancel',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        resetMultiSelect();
+      },
+    });
+
+    btnWrap.appendChild(applyBtn);
+    btnWrap.appendChild(cancelBtn);
+    popup.appendChild(rejectReasonDropdown);
+    popup.appendChild(btnWrap);
+
+    POPUP.show(popup);
+  }
+  function showConfimPassRejectPopup(messageText, callback) {
+    const popup = POPUP.build({
+      classNames: 'confimPassRejectPopup',
+    });
+
+    const message = document.createElement('p');
+    message.innerHTML = messageText;
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+
+    const yesBtn = button.build({
+      text: 'Yes',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        callback();
+      },
+    });
+    const noBtn = button.build({
+      text: 'No',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        resetMultiSelect();
+      },
+    });
+
+    btnWrap.appendChild(yesBtn);
+    btnWrap.appendChild(noBtn);
+    popup.appendChild(message);
+    popup.appendChild(btnWrap);
+
+    POPUP.show(popup);
+  }
   function handleActionNavEvent(target) {
     var targetAction = target.dataset.actionNav;
 
@@ -360,17 +486,61 @@ var notesOverview = (function () {
       return;
     }
 
-    switch (targetAction) {
-      case 'pass': {
-        //TODO: ajax call to 'pass'
-        ACTION_NAV.hide();
-        break;
-      }
-      case 'deleteEntries': {
-        //TODO: ajax call to 'reject'
-        ACTION_NAV.hide();
-        break;
-      }
+    let success;
+
+    if (targetAction === 'pass') {
+      const passMessage = 'Are you sure you want to set the selected case notes as passed?';
+      showConfimPassRejectPopup(passMessage, async () => {
+        success = await caseNotesAjax.passRejectCaseNotes({
+          userId: $.session.UserId,
+          reviewResult: 'P',
+          noteIds: selectedRows,
+          rejectReason: '',
+        });
+
+        showSuccessFailPopup(success);
+        resetMultiSelect();
+        getTableData();
+      });
+
+      ACTION_NAV.hide();
+
+      return;
+    }
+
+    if (targetAction === 'reject') {
+      const rejectMessage = 'Are you sure you want to reject all of the selected case notes?';
+      showConfimPassRejectPopup(rejectMessage, async () => {
+        if ($.session.applicationName === 'Gatekeeper') {
+          showRejectionReasonPopup(async rejectReason => {
+            success = await caseNotesAjax.passRejectCaseNotes({
+              userId: $.session.UserId,
+              reviewResult: 'R',
+              noteIds: selectedRows,
+              rejectReason: rejectReason,
+            });
+
+            showSuccessFailPopup(success);
+            resetMultiSelect();
+            getTableData();
+          });
+        }
+
+        success = await caseNotesAjax.passRejectCaseNotes({
+          userId: $.session.UserId,
+          reviewResult: 'R',
+          noteIds: selectedRows,
+          rejectReason: '',
+        });
+
+        showSuccessFailPopup(success);
+        resetMultiSelect();
+        getTableData();
+      });
+
+      ACTION_NAV.hide();
+
+      return;
     }
   }
   function setupActionNav() {
@@ -394,12 +564,7 @@ var notesOverview = (function () {
     enableMultiEdit = !enableMultiEdit;
 
     mulitSelectBtn.classList.toggle('enabled');
-
-    if (enableMultiEdit) {
-      ACTION_NAV.show();
-    } else {
-      ACTION_NAV.hide();
-    }
+    overviewTable.classList.toggle('multiSelectEnabled');
 
     selectedRows = [];
     var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
@@ -411,22 +576,31 @@ var notesOverview = (function () {
     selectAllBtn.classList.toggle('enabled');
 
     if (enableSelectAll) {
-      ACTION_NAV.show();
       enableMultiEdit = true;
       mulitSelectBtn.classList.add('disabled');
       mulitSelectBtn.classList.remove('enabled');
+      overviewTable.classList.add('multiSelectEnabled');
+      selectAllBtn.querySelector('span').textContent = 'Select None';
 
       selectedRows = [];
 
-      var rows = [].slice.call(document.querySelectorAll('.table__row'));
+      var rows = [].slice.call(document.querySelectorAll('.table__body .table__row'));
       rows.forEach(r => {
-        r.classList.add('selected');
-        selectedRows.push(r.id);
+        if (r.dataset.selectable === 'true') {
+          r.classList.add('selected');
+          selectedRows.push(r.id);
+        }
       });
+
+      if (selectedRows.length > 0) {
+        ACTION_NAV.show();
+      }
     } else {
       ACTION_NAV.hide();
       enableMultiEdit = false;
       mulitSelectBtn.classList.remove('disabled');
+      overviewTable.classList.remove('multiSelectEnabled');
+      selectAllBtn.querySelector('span').textContent = 'Select All';
 
       selectedRows = [];
 
@@ -460,13 +634,47 @@ var notesOverview = (function () {
 
     return btnWrap;
   }
+  function isRowSelectable(reviewRequired, reviewResult, caseManagerId, corrected) {
+    //? user clicks on a white row
+    //? WHERE case_notes.review_required = 'Y' AND ((case_notes.review_results = 'N')
+    //? OR (case_notes.review_results = 'R' AND case_notes.corrected = 'Y')) AND the people.id in Gatekeeper (persons.person_id in Advisor) of the logged in user
+    //? DOES NOT EQUAL case_notes.case_manager_id on the record in the grid on this page
+    if ($.session.PeopleId !== caseManagerId) {
+      if ($.session.applicationName === 'Gatekeeper') {
+        if ((reviewRequired === 'Y' && reviewResult === 'N') || (reviewResult === 'R' && corrected === 'Y')) {
+          return 'true';
+        }
+      } else {
+        if ((reviewRequired === 'Y' && reviewResult === 'N') || reviewResult === 'R') {
+          return 'true';
+        }
+      }
+    }
+
+    // if ($.session.applicationName === 'Gatekeeper') {
+    //   if (
+    //     (reviewRequired === 'Y' && reviewResult === 'N') ||
+    //     (reviewResult === 'R' && corrected === 'Y' && $.session.PeopleId !== caseManagerId)
+    //   ) {
+    //     return 'true';
+    //   }
+    // } else {
+    //   if (
+    //     (reviewRequired === 'Y' && reviewResult === 'N') ||
+    //     (reviewResult === 'R' && $.session.PeopleId !== caseManagerId)
+    //   ) {
+    //     return 'true';
+    //   }
+    // }
+
+    return 'false';
+  }
   //
   function handleTableEvents(event) {
     var isRow = event.target.classList.contains('table__row');
     if (!isRow) return;
     // show row details and/or go to note review
     var caseNoteId = event.target.id;
-    var consumerId = event.target.dataset.consumerId;
     var isSSANote = event.target.dataset.isssanote;
     var isSelected = event.target.classList.contains('selected');
 
@@ -482,7 +690,13 @@ var notesOverview = (function () {
         }
       } else {
         event.target.classList.add('selected');
-        selectedRows.push(entryId);
+        selectedRows.push(caseNoteId);
+      }
+
+      if (selectedRows.length === 0) {
+        ACTION_NAV.hide();
+      } else {
+        ACTION_NAV.show();
       }
 
       return;
@@ -574,35 +788,45 @@ var notesOverview = (function () {
       groupCounts[groupId]++;
     });
 
-    var data = tableData.map(td => {
-      var hasOverlap = false;
-      var originalupdateTrim = td.originalupdate.split('T')[0];
-      var servicedate = UTIL.formatDateFromIso(td.servicedate.split('T')[0]);
-      var starttime = UTIL.convertFromMilitary(td.starttime);
-      var endtime = UTIL.convertFromMilitary(td.endtime);
-      var name = `${td.lastname}, ${td.firstname}`;
-      var originalUpdate = UTIL.formatDateFromIso(originalupdateTrim);
-      var lastUpdateBy = td.lastupdatedby;
-      // var groupCount = groupCounts[td.groupnoteid] === '' ? '0' : groupCounts[td.groupnoteid];
-      var groupCount = td.numberInGroup;
-      var caseNoteId = td.casenoteid.split('.')[0];
+    const data = tableData.map(td => {
+      const consumerId = td.consumerid.split('.')[0];
+      const caseNoteId = td.casenoteid.split('.')[0];
+      const casemanagerid = td.casemanagerid.split('.')[0];
+      const originalupdateTrim = td.originalupdate.split('T')[0];
+      const originalUpdate = UTIL.formatDateFromIso(originalupdateTrim);
+      const servicedate = UTIL.formatDateFromIso(td.servicedate.split('T')[0]);
+      const starttime = UTIL.convertFromMilitary(td.starttime);
+      const endtime = UTIL.convertFromMilitary(td.endtime);
+      const name = `${td.lastname}, ${td.firstname}`;
+      const lastUpdateBy = td.lastupdatedby;
+      const groupCount = td.numberInGroup;
+      const reviewRequired = td.review_required;
+      const reviewResult = td.review_result;
+      const corrected = td.corrected;
+      const isSelectable = isRowSelectable(reviewRequired, reviewResult, casemanagerid, corrected);
+
+      let reviewResultString = '';
+      if (reviewRequired === 'Y') {
+        reviewResultString = reviewResult === 'N' ? 'Not Reviewed' : reviewResult === 'P' ? 'Passed' : 'Rejected';
+      }
+
+      let hasOverlap = false;
       if (overLapIds !== null) {
         if (overLapIds.includes(caseNoteId)) hasOverlap = true;
       }
-      var consumerId = td.consumerid.split('.')[0];
+
       isSSANote = td.isSSANote;
-      // just for GK - JMM 3/18
       attachcount = td.attachcount;
 
       noteIds.push(caseNoteId);
 
-      var thisendIcon;
-      var GKendIcon =
+      const GKendIcon =
         !attachcount || attachcount === '  ' || attachcount === '0'
           ? `<p style="display:none;">XXX</p>`
           : `${icons['attachment']}`;
-      var ADVendIcon = null;
+      const ADVendIcon = null;
 
+      let thisendIcon;
       if ($.session.applicationName === 'Gatekeeper') {
         thisendIcon = GKendIcon;
       } else {
@@ -610,12 +834,13 @@ var notesOverview = (function () {
       }
 
       return {
-        values: [servicedate, starttime, endtime, name, originalUpdate, lastUpdateBy, groupCount],
+        values: [servicedate, starttime, endtime, name, originalUpdate, lastUpdateBy, groupCount, reviewResultString],
         id: caseNoteId,
         overlap: hasOverlap,
         attributes: [
           { key: 'data-consumer-id', value: consumerId },
           { key: 'data-isssanote', value: isSSANote },
+          { key: 'data-selectable', value: isSelectable },
         ],
         endIcon: thisendIcon,
         endIconCallback: e => {
@@ -628,8 +853,6 @@ var notesOverview = (function () {
           caseNotesAjax.getCaseNoteAttachmentsList(caseNoteId, function (results) {
             attachmentPopup();
             if (results.length !== 0) populateExistingAttachments(results);
-
-            //cnAttachment.init([], results, '', caseNoteId);
           });
         },
         onClick: handleTableEvents,
@@ -648,18 +871,37 @@ var notesOverview = (function () {
       'Date Created',
       'User Updated',
       'Group',
+      'Review Status',
       'Attach',
     ];
-    var ADVcolumnheadings = ['Service Date', 'Start Time', 'End Time', 'Name', 'Date Created', 'User Updated', 'Group'];
-    $.session.applicationName === 'Gatekeeper'
-      ? (thiscolumnheadings = GKcolumnheadings)
-      : (thiscolumnheadings = ADVcolumnheadings);
+    var ADVcolumnheadings = [
+      'Service Date',
+      'Start Time',
+      'End Time',
+      'Name',
+      'Date Created',
+      'User Updated',
+      'Group',
+      'Review Status',
+    ];
+
+    if ($.session.applicationName === 'Gatekeeper') {
+      thiscolumnheadings = GKcolumnheadings;
+    } else {
+      thiscolumnheadings = ADVcolumnheadings;
+    }
 
     overviewTable = table.build({
       tableId: 'caseNotesReviewTable',
       columnHeadings: thiscolumnheadings,
       endIcon: !attachcount || attachcount === '  ' || attachcount === '0' ? false : true,
     });
+
+    if ($.session.applicationName === 'Gatekeeper') {
+      overviewTable.classList.add('gatekeeperCols');
+    } else {
+      overviewTable.classList.add('advisorCols');
+    }
 
     // Set the data type for each header, for sorting purposes
     const headers = overviewTable.querySelectorAll('.header div');
@@ -670,9 +912,8 @@ var notesOverview = (function () {
     headers[4].setAttribute('data-type', 'date'); // Date Created
     headers[5].setAttribute('data-type', 'string'); // User Updated
     headers[6].setAttribute('data-type', 'number'); // Group
-    // headers[7].setAttribute("data-type", "string"); // Attach Icon
+    headers[7].setAttribute('data-type', 'string'); // Review Status
 
-    // overviewTable.addEventListener('click', handleTableEvents);
     DOM.ACTIONCENTER.appendChild(overviewTable);
 
     // Call function to allow table sorting by clicking on a header.
@@ -798,9 +1039,6 @@ var notesOverview = (function () {
       promArray.push(caseloadRestrictionPromise);
     }
 
-    //FILTER DROPDOWN DATA
-    //==========================
-    //biller Dropdown
     const getBillersListPromise = new Promise(function (resolve, reject) {
       caseNotesAjax.getBillersListForDropDown(res => {
         billers = res;
@@ -809,7 +1047,10 @@ var notesOverview = (function () {
     });
     promArray.push(getBillersListPromise);
 
-    Promise.all(promArray).then(function () {
+    Promise.all(promArray).then(async function () {
+      if ($.session.applicationName === 'Gatekeeper') {
+        rejectionReasons = await caseNotesAjax.getRejectionReasonDropdownData();
+      }
       callback();
     });
   }
@@ -982,7 +1223,6 @@ var notesOverview = (function () {
     const header = document.createElement('h5');
     header.innerText = 'Select an attachment to view:';
     reviewAttachmentList.appendChild(header);
-    //console.table(reviewAttachments)
 
     reviewAttachments.forEach(attachment => {
       const fileContainer = document.createElement('div');

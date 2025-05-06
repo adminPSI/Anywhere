@@ -1,541 +1,542 @@
 [data-active-module='casenotes'] {
-    .consumerSearch {
-        border-radius: $r-sm;
-        box-shadow: $shadow-m1;
-        flex-basis: 48%;
-        flex-grow: 1;
-        height: 46px;
-        position: relative;
-        overflow: hidden;
+  .consumerSearch {
+    border-radius: $r-sm;
+    box-shadow: $shadow-m1;
+    flex-basis: 48%;
+    flex-grow: 1;
+    height: 46px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 25px;
+
+    button {
+      box-shadow: none;
+      height: 100%;
+      margin: 0;
+      position: absolute;
+      width: 100%;
+      z-index: 2;
+    }
+
+    input {
+      box-shadow: none;
+      border: $w-md solid $primary;
+      border-left: none;
+      border-radius: $r-sm;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      height: 100%;
+      text-indent: 10px;
+      position: absolute;
+      right: 0;
+      width: 90%;
+      z-index: 1;
+    }
+  }
+
+  .consumerSearch.searchOpen {
+    button {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      padding: 0 5px;
+      width: 10%;
+
+      svg {
+        margin: 0;
+      }
+
+      span {
+        display: none;
+      }
+    }
+  }
+
+  .consumerSearch {
+    margin-bottom: 25px;
+  }
+
+  .caseNotes {
+    &__consumer {
+      border-radius: $r-sm;
+      box-shadow: $shadow-m1;
+      margin: 0 0 20px;
+      overflow: hidden;
+
+      .consumerCard {
+        border-radius: 0;
+        box-shadow: none;
+        flex-flow: row nowrap;
+
+        .portrait {
+          padding: 0;
+          width: 60px;
+
+          img {
+            position: relative;
+          }
+        }
+
+        .details {
+          flex-grow: 1;
+          padding: 10px;
+        }
+      }
+    }
+
+    #noConsumerMessage {
+      margin-bottom: 20px;
+      text-align: center;
+      color: $red;
+    }
+  }
+
+  #batchedMessage {
+    margin-bottom: 20px;
+    font-style: italic;
+    text-align: center;
+    color: $orange;
+  }
+
+  #creditMessage {
+    margin-bottom: 20px;
+    font-style: italic;
+    text-align: center;
+    color: $orange;
+  }
+
+  .cnCurrentFilterDisplay {
+    font-weight: 500;
+
+    span {
+      color: $primary;
+    }
+
+    margin-bottom: 10px;
+  }
+
+  .caseNoteCard {
+    &__details {
+      .groupNoteDisplay {
         margin-bottom: 25px;
+        font-style: italic;
+      }
+
+      @media screen and (min-width: 1000px) {
+        // display: flex;
+        // flex-flow: row wrap;
+        display: grid;
+        grid-template-columns: repeat(2, 50%);
+
+        > div {
+          margin: 0 1%;
+        }
+
+        .caseNoteSave {
+          margin: 0 1%;
+        }
+      }
+
+      .btnWrap {
+        max-height: 50pc;
 
         button {
-            box-shadow: none;
-            height: 100%;
-            margin: 0;
-            position: absolute;
-            width: 100%;
-            z-index: 2;
+          flex-basis: 31%;
         }
 
-        input {
-            box-shadow: none;
-            border: $w-md solid $primary;
-            border-left: none;
-            border-radius: $r-sm;
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-            height: 100%;
-            text-indent: 10px;
-            position: absolute;
-            right: 0;
-            width: 90%;
-            z-index: 1;
+        @media screen and (max-width: 440px) {
+          svg {
+            display: none;
+          }
         }
+
+        @media screen and (min-width: 1000px) and (max-width: 1100px) {
+          svg {
+            display: none;
+          }
+        }
+      }
     }
 
-    .consumerSearch.searchOpen {
-        button {
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-            padding: 0 5px;
-            width: 10%;
-
-            svg {
-                margin: 0;
-            }
-
-            span {
-                display: none;
-            }
-        }
+    .checkbox {
+      margin: 0 0 20px;
     }
-
-    .consumerSearch {
-        margin-bottom: 25px;
+    // .caseNoteSave {
+    //   width: 100%;
+    // }
+    margin-bottom: 15px;
+  }
+  //Warninig Popup
+  //remove "X"
+  #warningPopup {
+    // .closePopupBtn {
+    //   display: none;
+    // }
+    p {
+      text-align: center;
+      margin-bottom: 15px;
     }
+  }
 
-    .caseNotes {
-        &__consumer {
-            border-radius: $r-sm;
-            box-shadow: $shadow-m1;
-            margin: 0 0 20px;
-            overflow: hidden;
+  .cnbtnWrap {
+    display: flex;
 
-            .consumerCard {
-                border-radius: 0;
-                box-shadow: none;
-                flex-flow: row nowrap;
-
-                .portrait {
-                    padding: 0;
-                    width: 60px;
-
-                    img {
-                        position: relative;
-                    }
-                }
-
-                .details {
-                    flex-grow: 1;
-                    padding: 10px;
-                }
-            }
-        }
-
-        #noConsumerMessage {
-            margin-bottom: 20px;
-            text-align: center;
-            color: $red;
-        }
+    > button {
+      flex-grow: 1;
     }
-
-    #batchedMessage {
-        margin-bottom: 20px;
-        font-style: italic;
-        text-align: center;
-        color: $orange;
-    }
-
-    #creditMessage {
-        margin-bottom: 20px;
-        font-style: italic;
-        text-align: center;
-        color: $orange;
-    }
-
-    .cnCurrentFilterDisplay {
-        font-weight: 500;
-
-        span {
-            color: $primary;
-        }
-
-        margin-bottom: 10px;
-    }
-
-    .caseNoteCard {
-        &__details {
-            .groupNoteDisplay {
-                margin-bottom: 25px;
-                font-style: italic;
-            }
-
-            @media screen and (min-width: 1000px) {
-                // display: flex;
-                // flex-flow: row wrap;
-                display: grid;
-                grid-template-columns: repeat(2, 50%);
-
-                > div {
-                    margin: 0 1%;
-                }
-
-                .caseNoteSave {
-                    margin: 0 1%;
-                }
-            }
-
-            .btnWrap {
-                max-height: 50pc;
-
-                button {
-                    flex-basis: 31%;
-                }
-
-                @media screen and (max-width: 440px) {
-                    svg {
-                        display: none;
-                    }
-                }
-
-                @media screen and (min-width: 1000px) and (max-width: 1100px) {
-                    svg {
-                        display: none;
-                    }
-                }
-            }
-        }
-
-        .checkbox {
-            margin: 0 0 20px;
-        }
-        // .caseNoteSave {
-        //   width: 100%;
-        // }
-        margin-bottom: 15px;
-    }
-    //Warninig Popup
-    //remove "X"
-    #warningPopup {
-        // .closePopupBtn {
-        //   display: none;
-        // }
-        p {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-    }
-
-    .cnbtnWrap {
-        display: flex;
-
-        > button {
-            flex-grow: 1;
-        }
-        /*> button:first-child {
+    /*> button:first-child {
             margin-right: 15px;
         }*/
+  }
+
+  .cnbtnWrap {
+    button {
+      width: 30%;
+      margin-right: 4px;
+
+      &.enabled {
+        background: $secondary;
+        border: none;
+        color: $font-light;
+      }
+    }
+  }
+  // Case Notes Note textarea auto expand
+  .caseNoteCard__details {
+    div.textarea {
+      margin: 0 10px 20px;
+      height: auto;
+      min-height: 100px;
+
+      textarea.autosize {
+        height: auto;
+        min-height: 100px;
+      }
+    }
+  }
+  //Doc Time Section
+  #docTime {
+    .inputWrap {
+      display: flex;
+      flex-flow: row;
+      margin: 0 0 10px;
+
+      .input-field {
+        flex-grow: 1;
+        margin: 0 1% 0 0;
+
+        &:last-child() {
+          margin: 0;
+        }
+      }
+    }
+  }
+  // New Case Note (SSA) -- Attachment Btn and Confidential Checkbox
+  .inputSSAWrap {
+    display: flow;
+    margin: 0 0 5px;
+    width: 100%;
+
+    .checkbox-mtd {
+      margin: 0 0 13px !important;
+      width: 180%;
     }
 
-    .cnbtnWrap {
-        button {
-            width: 30%;
-            margin-right: 4px;
+    button {
+      flex-grow: 1;
+      margin: 0 20px 0 30px;
+      width: 140%;
+      margin-bottom: 15%;
 
-            &.enabled {
-                background: $secondary;
-                border: none;
-                color: $font-light;
-            }
-        }
-    }
-    // Case Notes Note textarea auto expand
-    .caseNoteCard__details {
-        div.textarea {
-            margin: 0 10px 20px;
-            height: auto;
-            min-height: 100px;
-
-            textarea.autosize {
-                height: auto;
-                min-height: 100px;
-            }
-        }
-    }
-    //Doc Time Section
-    #docTime {
-        .inputWrap {
-            display: flex;
-            flex-flow: row;
-            margin: 0 0 10px;
-
-            .input-field {
-                flex-grow: 1;
-                margin: 0 1% 0 0;
-
-                &:last-child() {
-                    margin: 0;
-                }
-            }
-        }
-    }
-    // New Case Note (SSA) -- Attachment Btn and Confidential Checkbox
-    .inputSSAWrap {
-        display: flow;
-        margin: 0 0 5px;
-        width: 100%;
-
-        .checkbox-mtd {
-            margin: 0 0 13px !important;
-            width: 180%;
-        }
-
-        button {
-            flex-grow: 1;
-            margin: 0 20px 0 30px;
-            width: 140%;
-            margin-bottom: 15%;
-
-            &:last-child() {
-                margin: 0;
-            }
-        }
-
-        @media screen and (min-width: 560px) {
-            display: flex;
-            flex-flow: row wrap;
-            justify-content: space-between;
-
-            button {
-                width: 80%;
-            }
-
-            .checkbox-mtd {
-                width: 102% !important;
-            }
-        }
-    }
-    // Note Overview Table
-    #caseNotesReviewTable {
-        .table__row {
-            // &.hidden {
-            //     display: none;
-            // }
-            // &.selected {
-            //     background: $secondary;
-            // }
-
-            > div {
-                // display: flex;
-                flex-grow: 1;
-                // margin: 0 5px 0 0;
-            }
-
-            > div:last-child {
-                margin: 0;
-            }
-
-            > div:nth-child(1) {
-                // service date
-                flex-basis: 225px;
-                justify-content: left;
-                max-width: 225px;
-            }
-
-            > div:nth-child(2) {
-                // start time
-                flex-basis: 225px;
-                justify-content: left;
-                max-width: 225px;
-            }
-
-            > div:nth-child(3) {
-                // end time
-                flex-basis: 225px;
-                justify-content: left;
-                max-width: 225px;
-            }
-
-            > div:nth-child(4) {
-                // name
-                flex-basis: 225px;
-                justify-content: left;
-                max-width: 225px;
-            }
-
-            > div:nth-child(5) {
-                // date created
-                //  display: none;
-                flex-basis: 225px;
-                justify-content: left;
-                max-width: 225px;
-            }
-            //
-
-            > div:nth-child(6) {
-                // user updated
-                // display: none;
-                flex-basis: 225px;
-                justify-content: left;
-                max-width: 225px;
-            }
-
-            > div:nth-child(7) {
-                // group count
-                //  display: none;
-                flex-basis: 225px;
-                justify-content: left;
-                max-width: 225px;
-            }
-
-            > div:nth-child(8) {
-                // attach icom
-                // display: none;
-                flex-basis: 100px;
-                justify-content: left;
-                max-width: 100px;
-            }
-
-
-            @media screen and (max-width: 560px) {
-                > div:nth-child(1) {
-                    // service date
-                    display: block;
-                }
-
-                > div:nth-child(2) {
-                    // start time
-                    display: block;
-                }
-
-                > div:nth-child(3) {
-                    // end time
-                    display: none;
-                }
-
-                > div:nth-child(4) {
-                    // name
-                    display: block;
-                }
-
-                > div:nth-child(5) {
-                    // date created
-                    display: none;
-                }
-                //
-
-                > div:nth-child(6) {
-                    // user updated
-                    // display: none;
-                    display: none;
-                }
-
-                > div:nth-child(7) {
-                    // group count
-                    //  display: none;
-                    display: none;
-                }
-
-                > div:nth-child(8) {
-                    // attach icom
-                    // display: none;
-                    display: none;
-                }
-            }
-        }
+      &:last-child() {
+        margin: 0;
+      }
     }
 
-    .hidden {
-        display: none;
+    @media screen and (min-width: 560px) {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-between;
+
+      button {
+        width: 80%;
+      }
+
+      .checkbox-mtd {
+        width: 102% !important;
+      }
     }
-    //Phrase
-    #phrasesPopup {
-        .fullPhraseDisplay {
-            text-align: center;
-            padding-bottom: 10px;
-            font-weight: $thin;
-            font-style: italic;
+  }
+  // Note Overview Table
+  #caseNotesReviewTable {
+    &.multiSelectEnabled {
+      .table__row {
+        &[data-selectable="false"] {
+          cursor: none;
+          pointer-events: none;
         }
+      }
+    }
+  }
+  #caseNotesReviewTable {
+    // &.gatekeeperCols {
+    //   .table__row {
+    //     > div:nth-child(8) {
+    //       // attach icom
+    //       flex-basis: 100px;
+    //       justify-content: left;
+    //       max-width: 100px;
+    //     }
+    //     > div:nth-child(9) {
+    //       // review status
+    //       flex-basis: 100px;
+    //       justify-content: left;
+    //       max-width: 100px;
+    //     }
+    //   }
+    // }
 
-        #phraseDropdown {
-            padding-right: 38px;
+    // &.advisorCols {
+    //   > div:nth-child(8) {
+    //     // review status
+    //     flex-basis: 100px;
+    //     justify-content: left;
+    //     max-width: 100px;
+    //   }
+    // }
+
+    .table__row {
+      &.selected {
+        background: $secondary;
+      }
+
+      > div:last-child {
+        margin: 0;
+      }
+      > div:nth-child(1) {
+        // service date
+        flex-grow: 1;
+        justify-content: left;
+        flex-basis: 110px;
+        max-width: 120px;
+      }
+      > div:nth-child(2) {
+        // start time
+        flex-grow: 1;
+        justify-content: left;
+        flex-basis: 90px;
+        max-width: 100px;
+      }
+      > div:nth-child(3) {
+        // end time
+        flex-grow: 1;
+        justify-content: left;
+        flex-basis: 90px;
+        max-width: 100px;
+      }
+      > div:nth-child(4) {
+        // name
+        flex-grow: 1;
+        justify-content: left;
+        flex-basis: 240px;
+        max-width: 250px;
+      }
+      > div:nth-child(5) {
+        // date created
+        flex-grow: 1;
+        justify-content: left;
+        flex-basis: 110px;
+        max-width: 120px;
+      }
+      > div:nth-child(6) {
+        // user updated
+        flex-grow: 1;
+        justify-content: left;
+        flex-basis: 190px;
+        max-width: 200px;
+      }
+      > div:nth-child(7) {
+        // group count
+        flex-grow: 1;
+        // justify-content: left;
+        flex-basis: 70px;
+        max-width: 80px;
+      }
+      > div:nth-child(8) {
+        // review result
+        flex-grow: 1;
+        justify-content: left;
+        flex-basis: 90px;
+        max-width: 100px;
+      }
+
+      @media screen and (max-width: 560px) {
+        > div:nth-child(3) {
+          // end time
+          display: none;
         }
-
-        #phraseInsertBtn {
-            width: 85%;
-            margin-left: auto;
-            margin-right: auto;
+        > div:nth-child(5) {
+          // date created
+          display: none;
         }
-
-        .cn__phraseRadioDiv {
-            display: inline-flex;
-            margin: 8px 0 8px;
-
-            :first-child {
-                padding-right: 20px;
-            }
+        > div:nth-child(6) {
+          // user updated
+          // display: none;
+          display: none;
         }
+        > div:nth-child(7) {
+          // group count
+          //  display: none;
+          display: none;
+        }
+        > div:nth-child(8) {
+          // attach icom
+          // display: none;
+          display: none;
+        }
+      }
+    }
+  }
+
+  .hidden {
+    display: none;
+  }
+  //Phrase
+  #phrasesPopup {
+    .fullPhraseDisplay {
+      text-align: center;
+      padding-bottom: 10px;
+      font-weight: $thin;
+      font-style: italic;
     }
 
-    .card.editPhrases {
-        max-width: 600px;
+    #phraseDropdown {
+      padding-right: 38px;
     }
 
-    #cnAttachmentPopup {
-        .attachmentContainer {
-            display: flex;
-
-            .attachmentInput {
-                padding: 0 0 19px 5px;
-            }
-        }
-
-        .newAttachmentList,
-        .reviewAttachmentList {
-            .newAttachmentContainer,
-            .reviewAttachmentContainer {
-                display: flex;
-
-                button {
-                    margin-bottom: 10px;
-                }
-
-                p {
-                    padding-top: 5px;
-                    padding-bottom: 5px;
-                }
-
-                &.deleteAttachment {
-                    color: $font-error;
-                    text-decoration: line-through;
-                }
-            }
-
-            .reviewAttachmentContainer {
-                cursor: pointer;
-            }
-        }
+    #phraseInsertBtn {
+      width: 85%;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .hasAttachments {
-        background: $bg-dark2;
+    .cn__phraseRadioDiv {
+      display: inline-flex;
+      margin: 8px 0 8px;
+
+      :first-child {
+        padding-right: 20px;
+      }
+    }
+  }
+
+  .card.editPhrases {
+    max-width: 600px;
+  }
+
+  #cnAttachmentPopup {
+    .attachmentContainer {
+      display: flex;
+
+      .attachmentInput {
+        padding: 0 0 19px 5px;
+      }
     }
 
-    .caseNoteReviewFilterPopup {
-        .filterDateWrap {
-            justify-content: space-between;
-        }
-
-        .filterDateWrap > div {
-            width: 48%;
-            // max-width: 49%;
-            // min-width: 135px;
-            > input {
-                font-size: 0.87rem;
-            }
-        }
-
-        .cboxContainer {
-            display: grid;
-
-            .checkbox > span:after {
-                //left: -23px;
-                left: 352px;
-            }
-            // .btnWrap {
-            //   margin-top: 10px;
-            // }
-        }
-
-        .checkbox-mtd::before {
-            content: '';
-            box-sizing: border-box;
-            border: 2 px solid rgba(0, 0, 0, 0.6);
-            border-radius: 2 px;
-            display: inline-block;
-            height: 20 px;
-            margin: 0 6 px 0 0;
-            transition: border-color 0.2s, background-color 0.2s;
-            vertical-align: top;
-            min-width: 20 px;
-            order: 2;
-        }
-    }
-
-    #showOverlapCheckbox {
+    .newAttachmentList,
+    .reviewAttachmentList {
+      .newAttachmentContainer,
+      .reviewAttachmentContainer {
         display: flex;
-        font-size: 14px;
-        justify-content: flex-end;
 
-        span {
-            width: auto;
-            margin-right: 6px;
+        button {
+          margin-bottom: 10px;
         }
-    }
 
-    .reviewMessage {
-        display: flex;
-        flex-direction: row;
-
-        .correctedCheckbox {
-            display: flex;
-            font-size: 14px;
-            margin: auto;
+        p {
+          padding-top: 5px;
+          padding-bottom: 5px;
         }
+
+        &.deleteAttachment {
+          color: $font-error;
+          text-decoration: line-through;
+        }
+      }
+
+      .reviewAttachmentContainer {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .hasAttachments {
+    background: $bg-dark2;
+  }
+
+  .caseNoteReviewFilterPopup {
+    .filterDateWrap {
+      justify-content: space-between;
     }
 
-    .width100Per {
-        width: 100%;
+    .filterDateWrap > div {
+      width: 48%;
+      // max-width: 49%;
+      // min-width: 135px;
+      > input {
+        font-size: 0.87rem;
+      }
     }
+
+    .cboxContainer {
+      display: grid;
+
+      .checkbox > span:after {
+        //left: -23px;
+        left: 352px;
+      }
+      // .btnWrap {
+      //   margin-top: 10px;
+      // }
+    }
+
+    .checkbox-mtd::before {
+      content: '';
+      box-sizing: border-box;
+      border: 2 px solid rgba(0, 0, 0, 0.6);
+      border-radius: 2 px;
+      display: inline-block;
+      height: 20 px;
+      margin: 0 6 px 0 0;
+      transition: border-color 0.2s, background-color 0.2s;
+      vertical-align: top;
+      min-width: 20 px;
+      order: 2;
+    }
+  }
+
+  #showOverlapCheckbox {
+    display: flex;
+    font-size: 14px;
+    justify-content: flex-end;
+
+    span {
+      width: auto;
+      margin-right: 6px;
+    }
+  }
+
+  .reviewMessage {
+    display: flex;
+    flex-direction: row;
+
+    .correctedCheckbox {
+      display: flex;
+      font-size: 14px;
+      margin: auto;
+    }
+  }
+
+  .width100Per {
+    width: 100%;
+  }
 }

@@ -1,6 +1,7 @@
 (function (global, factory) {
     global.CaseNotesPhrases = factory();
 })(this, function () {
+    let IsEdit;
     //=======================================
     // ADDING NEW PHRASES
     //---------------------------------------
@@ -47,6 +48,12 @@
                     id: 'phrase',
                     required: true,
                 },
+                {
+                    type: 'number',
+                    id: 'phraseId',
+                    defaultValue: 0,
+                    hidden: true,
+                },
             ],
             // buttons: [
             //   {
@@ -62,6 +69,10 @@
         this.addPhraseForm.renderTo(this.dialog.dialog);
 
         this.setupEvents();
+
+        // Overlap Popup
+        overlapPopup = new ConfirmationPopup({ className: 'overlapWarning' });
+        overlapPopup.renderTo(_DOM.ACTIONCENTER);
 
         return this;
     };
@@ -89,12 +100,13 @@
                 shortcut: formData.shortcut,
                 phrase: formData.phrase,
                 makePublic: formData.public === 'on' ? 'Y' : 'N',
+                phraseId: formData.phraseId
             });
             const success = data.insertCustomPhraseResult;
- 
+
             this.addPhraseForm.clear();
-            this.close();            
-            
+            this.close();
+
             // update phrases list for inserting
             await this.PhrasesInstance.InsertPhrases.fetchData();
             this.PhrasesInstance.InsertPhrases.populate();
@@ -156,7 +168,7 @@
         this.showAllPhrases = _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
         this.showAllPhrases = this.showAllPhrases === 'Y' ? true : false;
 
-        this.dialog = new Dialog({ className: 'insertPhrases' });
+        this.dialog = new Dialog({ className: IsEdit ? 'editPhrases' : 'insertPhrases' }); 
 
         this.showAllPhrasesToggle = new Checkbox({
             id: 'phraseView',
@@ -187,6 +199,9 @@
         });
 
         sortedKeys.forEach(id => {
+
+            const phraseWrapper = _DOM.createElement('div', { class: 'wrapPhrase' });
+
             const phrase = this.phrasesData[id].phrase;
             const shortcut = this.phrasesData[id].shortcut;
 
@@ -196,8 +211,21 @@
                 class: 'phrase',
                 'data-target': 'phrase',
             });
+            phraseEle.style.width = '80%';
+            phraseWrapper.appendChild(phraseEle);
 
-            this.phraseWrap.appendChild(phraseEle);
+            const editIcon = Icon.getIcon('edit');
+            editIcon.setAttribute('id', id);
+            editIcon.setAttribute('data-target', 'editPhrase');
+            phraseWrapper.appendChild(editIcon);
+
+            const deleteIcon = Icon.getIcon('delete');
+            deleteIcon.setAttribute('id', id);
+            deleteIcon.setAttribute('data-target', 'deletePhrase');
+            deleteIcon.style.width = '10%';
+            phraseWrapper.appendChild(deleteIcon);
+
+            this.phraseWrap.appendChild(phraseWrapper);
         });
     };
 
@@ -219,10 +247,43 @@
      * @function
      */
     CaseNotesInsertPhrases.prototype.onPhraseSelect = function (cb) {
-        const handleClick = e => {
-            if (e.target.dataset.target === 'phrase') {
+        const handleClick = async e => {
+            if (cb != undefined && e.target.dataset.target === 'phrase') {
                 cb(this.phrasesData[e.target.id].phrase);
                 this.phraseWrap.removeEventListener('click', handleClick);
+            }
+
+            if (e.target.dataset.target === 'editPhrase') {
+                this.PhrasesInstance.AddPhrases.addPhraseForm.inputs['shortcut'].setValue(this.phrasesData[e.target.id].shortcut);
+                this.PhrasesInstance.AddPhrases.addPhraseForm.inputs['phrase'].setValue(this.phrasesData[e.target.id].phrase);
+                if (this.phrasesData[e.target.id].public === 'Y')
+                    this.PhrasesInstance.AddPhrases.addPhraseForm.inputs['public'].setValue(this.phrasesData[e.target.id].public);
+                this.PhrasesInstance.AddPhrases.addPhraseForm.inputs['phraseId'].setValue(e.target.id);
+                this.PhrasesInstance.AddPhrases.show();
+            }
+
+            if (e.target.dataset.target === 'deletePhrase') {
+                let message;
+                if (this.phrasesData[e.target.id].public == 'N') {
+                    message = 'Are you sure you want to delete this phrase?'
+                } else {
+                    message = 'This is a public phrase and will not be available to anyone if it is deleted.\n Are you sure you want to delete this phrase?'
+                }
+                const continueSave = await overlapPopup.show(
+                    message,
+                );
+
+                if (continueSave !== 'confirm') {
+                    return;
+                }
+
+                await _UTIL.fetchData('deleteCustomPhrase', {
+                    phraseId: e.target.id
+                });
+                // update phrases list for inserting
+                await this.PhrasesInstance.InsertPhrases.fetchData();
+                this.PhrasesInstance.InsertPhrases.populate();
+
             }
         };
 
@@ -262,6 +323,7 @@
                 obj[phrase.phrase_id] = {
                     shortcut: phrase.phrase_shortcut,
                     phrase: phrase.phrase,
+                    public: phrase.Public,
                 };
             }
 
@@ -293,10 +355,11 @@
      * @constructor
      * @returns {CaseNotesPhrases}
      */
-    function CaseNotesPhrases() {
+    function CaseNotesPhrases(isEdit) {
         // Data Init
         this.AddPhrases = new CaseNotesAddPhrases(this);
         this.InsertPhrases = new CaseNotesInsertPhrases(this);
+        IsEdit = isEdit;
 
         this._build();
     }

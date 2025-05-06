@@ -67,6 +67,16 @@ namespace Anywhere.service.Data
             return filteredObj;
         }
 
+        public string updateNoteReviewResult(string token, string userId, string reviewResult, string[] noteIds, string rejectReason)
+        {
+            foreach (string noteIdStr in noteIds)
+            {
+                dg.updateNoteReviewResult(token, userId, reviewResult, noteIdStr, rejectReason);
+            }
+
+            return "success";
+        }
+
         public ConsumerSpecificVendors[] getConsumerSpecificVendorsJSON(string token, string consumerId, string serviceDate)
         {
             string vendorsString = dg.getConsumerSpecificVendorsJSON(token, consumerId, serviceDate);
@@ -130,6 +140,19 @@ namespace Anywhere.service.Data
             return dropdownObj;
         }
 
+        public RejectionReasonDropdownValues[] getRejectionReasonDropdownData(string token)
+        {
+            string dropdownString = dg.getRejectionReasonDropdownData(token);
+            RejectionReasonDropdownValues[] dropdownObj = js.Deserialize<RejectionReasonDropdownValues[]>(dropdownString);
+            return dropdownObj;
+        }
+
+        public class RejectionReasonDropdownValues
+        {
+            public string rejectionCode { get; set; }
+            public string rejectionCaption { get; set; }
+        }
+
         public class FilterDropdownValues
         {
             public string note_code { get; set; }
@@ -163,6 +186,7 @@ namespace Anywhere.service.Data
             public string phrase_id { get; set; }
             public string phrase { get; set; }
             public string phrase_shortcut { get; set; }
+            public string Public { get; set; }
         }
 
         public class ServiceLocationData
@@ -221,7 +245,10 @@ namespace Anywhere.service.Data
             public string serviceName { get; set; }
             public string locationName { get; set; }
             public string originalUserFullName { get; set; }
-            
+            public string review_required { get; set; }
+            public string review_result { get; set; }
+            public string corrected { get; set; }
+
 
             public List<string> overlaps { get; set; }
         }
