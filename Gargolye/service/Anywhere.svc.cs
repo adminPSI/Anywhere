@@ -4470,8 +4470,8 @@ namespace Anywhere
                 anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             } else
             {
-            dg.addOutcomePlanNow(token, consumerId);
-            anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
+                dg.addOutcomePlanNow(token, consumerId);
+                anywhereAttachmentWorker.viewOutcomePlanAttachment(token, consumerId);
             }
             
             
@@ -4584,5 +4584,39 @@ namespace Anywhere
             return pv.getISPValidationData(token, assessmentId);
         }
 
+        public RosterWorker.ConsumerDemographicsInformation[] getConsumerDemographicsInformation(long ConsumerId)
+        {
+            return rosterWorker.getConsumerDemographicsInformation(ConsumerId);
+        }
+
+        public RosterWorker.ConsumerServiceLocation[] getConsumerServiceLocation(long ConsumerId)
+        {
+            return rosterWorker.getConsumerServiceLocation(ConsumerId);
+        }
+
+        public RosterWorker.ConsumerRelationship[] getConsumerIndividualRelationships(long ConsumerId)
+        {
+            return rosterWorker.getConsumerIndividualRelationships(ConsumerId);
+        }
+
+        public RosterWorker.ConsumerCatagories[] getConsumerCategories(long ConsumerId)
+        {
+            return rosterWorker.getConsumerCategories(ConsumerId);
+        }
+
+        public RosterWorker.ConsumerAppointmnets[] getConsumerAppointmnets(long ConsumerId)
+        {
+            return rosterWorker.getConsumerAppointmnets(ConsumerId);
+        }
+
+        public RosterWorker.ConsumerClassifications[] getConsumerClassifications(long ConsumerId)
+        {
+            return rosterWorker.getConsumerClassifications(ConsumerId);
+        }
+
+        public RosterWorker.ConsumerIntake[] getConsumerIntake(long ConsumerId)
+        {
+            return rosterWorker.getConsumerIntake(ConsumerId);
+        }
     }
 }

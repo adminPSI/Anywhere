@@ -1,195 +1,195 @@
 const icons = {
-  // paperclip
-  attachment: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // paperclip
+    attachment: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M16.5 6.75v10.58c0 2.09-1.53 3.95-3.61 4.15-2.39.23-4.39-1.64-4.39-3.98V5.14c0-1.31.94-2.5 2.24-2.63 1.5-.15 2.76 1.02 2.76 2.49v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6.75c0-.41-.34-.75-.75-.75s-.75.34-.75.75v8.61c0 1.31.94 2.5 2.24 2.63 1.5.15 2.76-1.02 2.76-2.49V5.17c0-2.09-1.53-3.95-3.61-4.15C9.01.79 7 2.66 7 5v12.27c0 2.87 2.1 5.44 4.96 5.71 3.29.3 6.04-2.26 6.04-5.48V6.75c0-.41-.34-.75-.75-.75s-.75.34-.75.75z"/>
     </svg>`,
-  // location symbol with !
-  absent: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // location symbol with !
+    absent: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M12 2C8.14 2 5 5.14 5 9c0 4.17 4.42 9.92 6.23 12.11.4.48 1.13.48 1.53 0C14.58 18.92 19 13.17 19 9c0-3.86-3.14-7-7-7zm.88 13.75h-1.75V14h1.75v1.75zm.38-4.04c-.03.04-.06.09-.09.14-.02.04-.05.08-.07.12-.03.05-.05.1-.07.15-.02.04-.04.08-.05.13-.06.19-.1.4-.1.63h-1.76c0-.36.04-.66.11-.93h.02v-.06c.51-1.76 2.36-1.86 2.48-3.24.07-.85-.53-1.67-1.36-1.85-.91-.2-1.74.33-2.03 1.12-.11.33-.4.58-.76.58h-.16c-.55 0-.93-.53-.76-1.05.5-1.58 2.09-2.68 3.89-2.4 1.52.23 2.72 1.53 2.92 3.05.27 1.99-1.42 2.51-2.21 3.61z"/>
     </svg>`,
-  // plus sign *Adding/inserting records
-  add: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // plus sign *Adding/inserting records
+    add: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z"/>
     </svg>`,
-  arrowBack: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    arrowBack: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path d="m0,0l24,0l0,24l-24,0l0,-24z" fill="none"/>
       <path class="fill-path" transform="rotate(-180 11.891249656677246,11.99606990814209)" d="m16.01,11l-11.01,0c-0.55,0 -1,0.45 -1,1s0.45,1 1,1l11.01,0l0,1.79c0,0.45 0.54,0.67 0.85,0.35l2.78,-2.79c0.19,-0.2 0.19,-0.51 0,-0.71l-2.78,-2.79c-0.31,-0.32 -0.85,-0.09 -0.85,0.35l0,1.8z"/>
     </svg>`,
-  arrowNext: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    arrowNext: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M16.01 11H5c-.55 0-1 .45-1 1s.45 1 1 1h11.01v1.79c0 .45.54.67.85.35l2.78-2.79c.19-.2.19-.51 0-.71l-2.78-2.79c-.31-.32-.85-.09-.85.35V11z"/>
     </svg>`,
-  // notification bell
-  bell: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    // notification bell
+    bell: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M19.29 17.29L18 16v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-1.29 1.29c-.63.63-.19 1.71.7 1.71h13.17c.9 0 1.34-1.08.71-1.71zM16 17H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6zm-4 5c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2z"/>
     </svg>`,
-  // calendar *USAGE: Scheduling Module
-  calendar: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // calendar *USAGE: Scheduling Module
+    calendar: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z" />
       <path class="fill-path" d="M19 4h-1V3c0-.55-.45-1-1-1s-1 .45-1 1v1H8V3c0-.55-.45-1-1-1s-1 .45-1 1v1H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 15c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1V9h14v10zM7 11h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/>
     </svg>`,
-  camera: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    camera: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <circle class="fill-path" cx="12" cy="12" r="3"/>
       <path class="fill-path" d="M20 4h-3.17l-1.24-1.35c-.37-.41-.91-.65-1.47-.65H9.88c-.56 0-1.1.24-1.48.65L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
     </svg>`,
-  car: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    car: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01l-1.97 5.67c-.07.21-.11.43-.11.66v7.16c0 .83.67 1.5 1.5 1.5S6 20.33 6 19.5V19h12v.5c0 .82.67 1.5 1.5 1.5.82 0 1.5-.67 1.5-1.5v-7.16c0-.22-.04-.45-.11-.66l-1.97-5.67zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.27-3.82c.14-.4.52-.68.95-.68h9.56c.43 0 .81.28.95.68L19 11H5z"/>
     </svg>`,
-  // checkmark *USAGE: Done, Apply
-  checkmark: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // checkmark *USAGE: Done, Apply
+    checkmark: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0z" />
       <path class="fill-path" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
     </svg>`,
-  //Circle with horizontal line through center USAGE: clearing input fields
-  clear: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    //Circle with horizontal line through center USAGE: clearing input fields
+    clear: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M7 12c0 .55.45 1 1 1h8c.55 0 1-.45 1-1s-.45-1-1-1H8c-.55 0-1 .45-1 1zm5-10C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>  </svg>
     </svg>`,
-  close: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    close: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"/>
     </svg>`,
-  copy: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    copy: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path d="M0 0h24v24H0V0z" fill="none"/>
       <path class="fill-path" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
     </svg>`,
-  edit: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    edit: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path d="M0 0h24v24H0z" fill="none"/>
       <path class="fill-path" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
     </svg>`,
-  // trashcan
-  delete: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // trashcan
+    delete: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zm3.17-7.83c.39-.39 1.02-.39 1.41 0L12 12.59l1.42-1.42c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L13.41 14l1.42 1.42c.39.39.39 1.02 0 1.41-.39.39-1.02.39-1.41 0L12 15.41l-1.42 1.42c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41L10.59 14l-1.42-1.42c-.39-.38-.39-1.02 0-1.41zM15.5 4l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1h-2.5z"/>
     </svg>`,
-  // person with +
-  deSelectAll: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // person with +
+    deSelectAll: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="m0,0l24,0l0,24l-24,0l0,-24z"/>
       <path class="fill-path" d="m8,10l-3,0l-2,0l-3,0l0,2l3,0l2,0l3,0l0,-2zm10,1c1.66,0 2.99,-1.34 2.99,-3s-1.33,-3 -2.99,-3c-0.32,0 -0.63,0.05 -0.91,0.14c0.57,0.81 0.9,1.79 0.9,2.86s-0.34,2.04 -0.9,2.86c0.28,0.09 0.59,0.14 0.91,0.14zm-5,0c1.66,0 2.99,-1.34 2.99,-3s-1.33,-3 -2.99,-3c-1.66,0 -3,1.34 -3,3s1.34,3 3,3zm6.62,2.16c0.83,0.73 1.38,1.66 1.38,2.84l0,2l3,0l0,-2c0,-1.54 -2.37,-2.49 -4.38,-2.84zm-6.62,-0.16c-2,0 -6,1 -6,3l0,2l12,0l0,-2c0,-2 -4,-3 -6,-3z"/>
     </svg>`,
-  //Half Square with arrow pointing down into it. USAGE: Downloads
-  download: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    //Half Square with arrow pointing down into it. USAGE: Downloads
+    download: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M19 13v5c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1v-5c0-.55-.45-1-1-1s-1 .45-1 1v6c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-6c0-.55-.45-1-1-1s-1 .45-1 1zm-6-.33l1.88-1.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-3.59 3.59c-.39.39-1.02.39-1.41 0L7.7 12.2c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0L11 12.67V4c0-.55.45-1 1-1s1 .45 1 1v8.67z"/>
     </svg>`,
-  drag: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    drag: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path d="M0 0h24v24H0V0z" fill="none"/>
       <path class="fill-path" d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
     </svg>`,
-  edit: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    edit: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
     </svg>`,
-  eraser: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+    eraser: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
       <path class="fill-path" d="M21.35 30.6q.45.45 1.075.45t1.075-.45l4.5-4.5 4.55 4.55q.45.45 1.05.45.6 0 1.05-.45.45-.45.45-1.075t-.45-1.075L30.1 24l4.5-4.5q.45-.45.45-1.05 0-.6-.45-1.05-.45-.45-1.075-.45t-1.075.45L28 21.9l-4.55-4.55q-.45-.45-1.05-.425-.6.025-1.05.425-.45.4-.45 1.05t.45 1.1L25.9 24l-4.55 4.5q-.4.45-.4 1.075t.4 1.025ZM18 38q-1.1 0-2-.575-.9-.575-1.55-1.475L7.2 25.75q-.55-.75-.55-1.725 0-.975.55-1.775l7.25-10.2q.65-.9 1.55-1.475.9-.575 2-.575h21q1.25 0 2.125.875T42 13v22q0 1.25-.875 2.125T39 38ZM9.75 24l7.7 11H39V13H17.45ZM39 24V13v22Z"/>
   </svg>`,
-  //Filled in circle with !
-  error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    //Filled in circle with !
+    error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path class="fill-path" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 11c-.55 0-1-.45-1-1V8c0-.55.45-1 1-1s1 .45 1 1v4c0 .55-.45 1-1 1zm1 4h-2v-2h2v2z"/>
     </svg>`,
-  ellipsis: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    ellipsis: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
     </svg>`,
-  filter: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    filter: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M11 18h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM3 7c0 .55.45 1 1 1h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1zm4 6h10c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1z"/>
     </svg>`,
-  // circle with '?'
-  help: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // circle with '?'
+    help: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4z"/>
     </svg>`,
-  info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 15c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1s1 .45 1 1v4c0 .55-.45 1-1 1zm1-8h-2V7h2v2z"/>
     </svg>`,
-  keyArrowRight: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    keyArrowRight: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path class="fill-path" d="M9.29 15.88L13.17 12 9.29 8.12c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3c-.39.39-1.02.39-1.41 0-.38-.39-.39-1.03 0-1.42z"/>
     </svg>`,
-  keyArrowLeft: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    keyArrowLeft: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path class="fill-path" d="M14.71 15.88L10.83 12l3.88-3.88c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0L8.71 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .38-.39.39-1.03 0-1.42z"/>
     </svg>`,
-  keyArrowUp: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    keyArrowUp: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path class="fill-path" d="M8.12 14.71L12 10.83l3.88 3.88c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L12.7 8.71c-.39-.39-1.02-.39-1.41 0L6.7 13.3c-.39.39-.39 1.02 0 1.41.39.38 1.03.39 1.42 0z"/>
     </svg>`,
-  keyArrowDown: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    keyArrowDown: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path class="fill-path" d="M8.12 9.29L12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0z"/>
     </svg>`,
-  // quote box
-  message: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // quote box
+    message: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1z"/>
     </svg>`,
-  multiSelect: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    multiSelect: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2zM8 17h8c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1H8c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm1-8h6v6H9V9z"/>
     </svg>`,
-  // circle with slash
-  no: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // circle with slash
+    no: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM4 12c0-4.42 3.58-8 8-8 1.85 0 3.55.63 4.9 1.69L5.69 16.9C4.63 15.55 4 13.85 4 12zm8 8c-1.85 0-3.55-.63-4.9-1.69L18.31 7.1C19.37 8.45 20 10.15 20 12c0 4.42-3.58 8-8 8z"/>
     </svg>`,
-  note: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    note: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z" />
       <path class="fill-path" d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm1 14H8c-.55 0-1-.45-1-1s.45-1 1-1h5c.55 0 1 .45 1 1s-.45 1-1 1zm3-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1z"/>
     </svg>`,
-  openNew: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    openNew: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M18 19H6c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h5c.55 0 1-.45 1-1s-.45-1-1-1H5c-1.11 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-6c0-.55-.45-1-1-1s-1 .45-1 1v5c0 .55-.45 1-1 1zM14 4c0 .55.45 1 1 1h2.59l-9.13 9.13c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L19 6.41V9c0 .55.45 1 1 1s1-.45 1-1V4c0-.55-.45-1-1-1h-5c-.55 0-1 .45-1 1z"/>
     </svg>`,
-  // icon for new outcome button
-  outcomeNew: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // icon for new outcome button
+    outcomeNew: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M11 6v4.59H8.71c-.45 0-.67.54-.35.85l3.29 3.29c.2.2.51.2.71 0l3.29-3.29c.31-.31.09-.85-.35-.85H13V6c0-.55-.45-1-1-1s-1 .45-1 1zm-3.9 8c-.61 0-1.11.55-.99 1.15C6.65 17.91 9.08 20 12 20s5.35-2.09 5.89-4.85c.12-.6-.38-1.15-.99-1.15-.49 0-.88.35-.98.83C15.53 16.64 13.93 18 12 18s-3.53-1.36-3.91-3.17c-.1-.48-.5-.83-.99-.83z"/>
     </svg>`,
-  passwordShow: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    passwordShow: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path d="M0 0h24v24H0V0z" fill="none"/>
       <path class="fill-path" d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
     </svg>`,
-  passwordHide: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    passwordHide: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path d="M0 0h24v24H0V0zm0 0h24v24H0V0zm0 0h24v24H0V0zm0 0h24v24H0V0z" fill="none"/>
       <path class="fill-path" d="M12 6.5c2.76 0 5 2.24 5 5 0 .51-.1 1-.24 1.46l3.06 3.06c1.39-1.23 2.49-2.77 3.18-4.53C21.27 7.11 17 4 12 4c-1.27 0-2.49.2-3.64.57l2.17 2.17c.47-.14.96-.24 1.47-.24zM2.71 3.16c-.39.39-.39 1.02 0 1.41l1.97 1.97C3.06 7.83 1.77 9.53 1 11.5 2.73 15.89 7 19 12 19c1.52 0 2.97-.3 4.31-.82l2.72 2.72c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L4.13 3.16c-.39-.39-1.03-.39-1.42 0zM12 16.5c-2.76 0-5-2.24-5-5 0-.77.18-1.5.49-2.14l1.57 1.57c-.03.18-.06.37-.06.57 0 1.66 1.34 3 3 3 .2 0 .38-.03.57-.07L14.14 16c-.65.32-1.37.5-2.14.5zm2.97-5.33c-.15-1.4-1.25-2.49-2.64-2.64l2.64 2.64z"/>
     </svg>`,
-  people: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    people: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M16.5 12c1.38 0 2.49-1.12 2.49-2.5S17.88 7 16.5 7 14 8.12 14 9.5s1.12 2.5 2.5 2.5zM9 11c1.66 0 2.99-1.34 2.99-3S10.66 5 9 5 6 6.34 6 8s1.34 3 3 3zm7.5 3c-1.83 0-5.5.92-5.5 2.75V18c0 .55.45 1 1 1h9c.55 0 1-.45 1-1v-1.25c0-1.83-3.67-2.75-5.5-2.75zM9 13c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h6v-2.25c0-.85.33-2.34 2.37-3.47C10.5 13.1 9.66 13 9 13z"/>
     </svg>`,
-  //Floppy Disk *USAGE: Saving or Updating Records
-  save: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    //Floppy Disk *USAGE: Saving or Updating Records
+    save: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path"d="M17.59 3.59c-.38-.38-.89-.59-1.42-.59H5c-1.11 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7.83c0-.53-.21-1.04-.59-1.41l-2.82-2.83zM12 19c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm1-10H7c-1.1 0-2-.9-2-2s.9-2 2-2h6c1.1 0 2 .9 2 2s-.9 2-2 2z"/>
     </svg>`,
-  // search icon
-  search: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // search icon
+    search: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M15.5 14h-.79l-.28-.27c1.2-1.4 1.82-3.31 1.48-5.34-.47-2.78-2.79-5-5.59-5.34-4.23-.52-7.79 3.04-7.27 7.27.34 2.8 2.56 5.12 5.34 5.59 2.03.34 3.94-.28 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
     </svg>`,
-  // stamp icon/aproval
-  stamp: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+    // stamp icon/aproval
+    stamp: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
     <path class="fill-path" d="M160-80v-240q0-33 23.5-56.5T240-400h480q33 0 56.5 23.5T800-320v240H160Zm80-160h480v-80H240v80Zm240-160L280-680q0-83 58.5-141.5T480-880q83 0 141.5 58.5T680-680L480-400Zm0-112 120-168q0-50-35-85t-85-35q-50 0-85 35t-35 85l120 168Zm0-144Z"/>
   </svg>`,
-  //Filled in triangle with ! in center
-  warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    //Filled in triangle with ! in center
+    warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path class="fill-path" d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM12 14c-.55 0-1-.45-1-1v-2c0-.55.45-1 1-1s1 .45 1 1v2c0 .55-.45 1-1 1zm1 4h-2v-2h2v2z"/>
     </svg>`,
-  refresh: `
+    refresh: `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
       <path class="fill-path" d="M480-160q-133 0-226.5-93.5T160-480q0-133 93.5-226.5T480-800q85 0 149 34.5T740-671v-129h60v254H546v-60h168q-38-60-97-97t-137-37q-109 0-184.5 75.5T220-480q0 109 75.5 184.5T480-220q83 0 152-47.5T728-393h62q-29 105-115 169t-195 64Z"/>
     </svg>
   `,
-  selectAll: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    selectAll: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path d="M0 0h24v24H0z" fill="none"/>
       <path class="fill-path" d="M8 10H5V7H3v3H0v2h3v3h2v-3h3v-2zm10 1c1.66 0 2.99-1.34 2.99-3S19.66 5 18 5c-.32 0-.63.05-.91.14.57.81.9 1.79.9 2.86s-.34 2.04-.9 2.86c.28.09.59.14.91.14zm-5 0c1.66 0 2.99-1.34 2.99-3S14.66 5 13 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm6.62 2.16c.83.73 1.38 1.66 1.38 2.84v2h3v-2c0-1.54-2.37-2.49-4.38-2.84zM13 13c-2 0-6 1-6 3v2h12v-2c0-2-4-3-6-3z"/>
     </svg>`,
-  // Eyeball
-  show: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // Eyeball
+    show: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path d="M0 0h24v24H0z" fill="none"/>
       <path class="fill-path" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
     </svg>`,
@@ -198,87 +198,91 @@ const icons = {
   <path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/>
   </svg>
   `,
-  //Paper airplane (send email type of icon) USAGE: Data updates that notify users
-  send: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    //Paper airplane (send email type of icon) USAGE: Data updates that notify users
+    send: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <g transform ="rotate(-35) translate(-5 4)">
         <path class="fill-path" d="M3.4 20.4l17.45-7.48c.81-.35.81-1.49 0-1.84L3.4 3.6c-.66-.29-1.39.2-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"/>
       </g>
     </svg>`,
-  // Thumbs up
-  thumbUp: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // Thumbs up
+    thumbUp: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path fill="none" d="M0 0h24v24H0V0z"/>
     <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/>
   </svg>`,
-  // Thumbs down
-  thumbDown: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // Thumbs down
+    thumbDown: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path fill="none" d="M0 0h24v24H0V0z"/>
     <path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/>
   </svg>`,
-  // Thumbs Up and Down next to each other
-  thumbUpDown: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // Thumbs Up and Down next to each other
+    thumbUpDown: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path fill="none" d="M0 0h24v24H0V0z"/>
     <path d="M12 6c0-.55-.45-1-1-1H5.82l.66-3.18.02-.23c0-.31-.13-.59-.33-.8L5.38 0 .44 4.94C.17 5.21 0 5.59 0 6v6.5c0 .83.67 1.5 1.5 1.5h6.75c.62 0 1.15-.38 1.38-.91l2.26-5.29c.07-.17.11-.36.11-.55V6zm10.5 4h-6.75c-.62 0-1.15.38-1.38.91l-2.26 5.29c-.07.17-.11.36-.11.55V18c0 .55.45 1 1 1h5.18l-.66 3.18-.02.24c0 .31.13.59.33.8l.79.78 4.94-4.94c.27-.27.44-.65.44-1.06v-6.5c0-.83-.67-1.5-1.5-1.5z"/>
   </svg>`,
-  // Mic - Speech to text
-  microphone: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // Mic - Speech to text
+    microphone: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path fill="none" d="M0 0h24v24H0V0z"/>
     <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6.91 6c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"/>
    </svg>`,
-  // Mic that has its mic filled in - Speech to text
-  microphoneFilled: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // Mic that has its mic filled in - Speech to text
+    microphoneFilled: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path fill="none" d="M0 0h24v24H0V0z"/>
     <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"/>
    </svg>`,
-  // Medicine bottle - eMAR module icon
-  medicineBottle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // Medicine bottle - eMAR module icon
+    medicineBottle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path fill="none" d="M0 0h24v24H0V0z"/>
     <path d="M17,3H7C6.45,3,6,3.45,6,4v0c0,0.55,0.45,1,1,1h10c0.55,0,1-0.45,1-1v0C18,3.45,17.55,3,17,3z"/>
     <path d="M17,6H7C5.9,6,5,6.9,5,8v11c0,1.1,0.9,2,2,2h10c1.1,0,2-0.9,2-2V8C19,6.9,18.1,6,17,6z M14.5,15h-1v1 c0,0.83-0.67,1.5-1.5,1.5h0c-0.83,0-1.5-0.67-1.5-1.5v-1h-1C8.67,15,8,14.33,8,13.5v0C8,12.67,8.67,12,9.5,12h1v-1 c0-0.83,0.67-1.5,1.5-1.5h0c0.83,0,1.5,0.67,1.5,1.5v1h1c0.83,0,1.5,0.67,1.5,1.5v0C16,14.33,15.33,15,14.5,15z"/>
    </svg>`,
-  // Group of people - used in responsible party
-  peopleGroup: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // Group of people - used in responsible party
+    peopleGroup: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path fill="none" d="M0 0h24v24H0V0z"/>
     <path d="M12,12.75c1.63,0,3.07,0.39,4.24,0.9c1.08,0.48,1.76,1.56,1.76,2.73L18,17c0,0.55-0.45,1-1,1H7c-0.55,0-1-0.45-1-1l0-0.61 c0-1.18,0.68-2.26,1.76-2.73C8.93,13.14,10.37,12.75,12,12.75z M4,13c1.1,0,2-0.9,2-2c0-1.1-0.9-2-2-2s-2,0.9-2,2 C2,12.1,2.9,13,4,13z M5.13,14.1C4.76,14.04,4.39,14,4,14c-0.99,0-1.93,0.21-2.78,0.58C0.48,14.9,0,15.62,0,16.43L0,17 c0,0.55,0.45,1,1,1l3.5,0v-1.61C4.5,15.56,4.73,14.78,5.13,14.1z M20,13c1.1,0,2-0.9,2-2c0-1.1-0.9-2-2-2s-2,0.9-2,2 C18,12.1,18.9,13,20,13z M24,16.43c0-0.81-0.48-1.53-1.22-1.85C21.93,14.21,20.99,14,20,14c-0.39,0-0.76,0.04-1.13,0.1 c0.4,0.68,0.63,1.46,0.63,2.29V18l3.5,0c0.55,0,1-0.45,1-1L24,16.43z M12,6c1.66,0,3,1.34,3,3c0,1.66-1.34,3-3,3s-3-1.34-3-3 C9,7.34,10.34,6,12,6z"/>
    </svg>`,
-  // PDF Icon - used in Forms Module
-  PDFForm: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    // PDF Icon - used in Forms Module
+    PDFForm: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
   <path fill="none" d="M0 0h24v24H0V0z"/>
   <path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v1.25c0 .41-.34.75-.75.75s-.75-.34-.75-.75V8c0-.55.45-1 1-1H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2c-.28 0-.5-.22-.5-.5v-5c0-.28.22-.5.5-.5h2c.83 0 1.5.67 1.5 1.5v3zm4-3.75c0 .41-.34.75-.75.75H19v1h.75c.41 0 .75.34.75.75s-.34.75-.75.75H19v1.25c0 .41-.34.75-.75.75s-.75-.34-.75-.75V8c0-.55.45-1 1-1h1.25c.41 0 .75.34.75.75zM9 9.5h1v-1H9v1zM3 6c-.55 0-1 .45-1 1v13c0 1.1.9 2 2 2h13c.55 0 1-.45 1-1s-.45-1-1-1H5c-.55 0-1-.45-1-1V7c0-.55-.45-1-1-1zm11 5.5h1v-3h-1v3z"/>
  </svg>`,
-  attachmentSmall: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">   
+    attachmentSmall: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">   
       <path fill="none" d="M0 0h24v24H0V0z"/>
       <path class="fill-path" d="M16.5 6.75v10.58c0 2.09-1.53 3.95-3.61 4.15-2.39.23-4.39-1.64-4.39-3.98V5.14c0-1.31.94-2.5 2.24-2.63 1.5-.15 2.76 1.02 2.76 2.49v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6.75c0-.41-.34-.75-.75-.75s-.75.34-.75.75v8.61c0 1.31.94 2.5 2.24 2.63 1.5.15 2.76-1.02 2.76-2.49V5.17c0-2.09-1.53-3.95-3.61-4.15C9.01.79 7 2.66 7 5v12.27c0 2.87 2.1 5.44 4.96 5.71 3.29.3 6.04-2.26 6.04-5.48V6.75c0-.41-.34-.75-.75-.75s-.75.34-.75.75z"/>
     </svg>`,
-  phone: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    phone: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
     <path d="M14.89 23.654c-7.367 3.367-18.802-18.86-11.601-22.615l2.107-1.039 3.492 6.817-2.082 1.026c-2.189 1.174 2.37 10.08 4.609 8.994.091-.041 2.057-1.007 2.064-1.011l3.521 6.795c-.008.004-1.989.978-2.11 1.033zm-1.538-13.409l2.917.87c.223-.747.16-1.579-.24-2.317-.399-.739-1.062-1.247-1.808-1.469l-.869 2.916zm1.804-6.058c1.551.462 2.926 1.516 3.756 3.051.831 1.536.96 3.263.498 4.813l-1.795-.535c.325-1.091.233-2.306-.352-3.387-.583-1.081-1.551-1.822-2.643-2.146l.536-1.796zm.95-3.187c2.365.705 4.463 2.312 5.729 4.656 1.269 2.343 1.466 4.978.761 7.344l-1.84-.548c.564-1.895.406-4.006-.608-5.882-1.016-1.877-2.696-3.165-4.591-3.729l.549-1.841z"/>
     </svg>`,
-  Empty: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">   
+    Empty: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">   
       <path fill="none" d="M0 0h24v24H0V0z"/>
       </svg>`,
-  Email: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 30 22" > 
+    Email: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 30 22" > 
          <path fill="none" d="M0 0h24v24H0V0z"/>
         <path d="M29.94 6.68a1 1 0 0 0-.09-.18.94.94 0 0 0-.05-.11 1.6 1.6 0 0 0-.31-.24l-.17-.06H2.94a1 1 0 0 0-.21 0l-.17.06a1 1 0 0 0-.15.1 1 1 0 0 0-.15.13.93.93 0 0 0-.05.11.79.79 0 0 0-.21.39A.93.93 0 0 0 2 7v18a1 1 0 0 0 1 1h26a1 1 0 0 0 1-1V7a.93.93 0 0 0 0-.12 1 1 0 0 0-.06-.2ZM26.06 8 16 15.74 5.94 8ZM28 24H4V9l11.39 8.76a1 1 0 0 0 1.22 0L28 9Z"/>
         </svg >`,
-  Delete: `<svg xmlns=http://www.w3.org/2000/svg width="20" height="20" viewBox="0 0 24 24" >
+    Delete: `<svg xmlns=http://www.w3.org/2000/svg width="20" height="20" viewBox="0 0 24 24" >
         <path fill="none" d="M0 0h24v24H0V0z"/>
         <path fill="#727577" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Zm3.536-13.536a1 1 0 0 1 0 1.415L13.414 12l2.122 2.121a1 1 0 1 1-1.415 1.415L12 13.414l-2.121 2.122a1 1 0 1 1-1.415-1.415L10.586 12 8.464 9.879A1 1 0 1 1 9.88 8.464L12 10.586l2.121-2.122a1 1 0 0 1 1.415 0Z"/>
         </svg>`,
-  Gear: `<svg xmlns=http://www.w3.org/2000/svg width="20" height="20" viewBox="0 0 24 24" >
+    Gear: `<svg xmlns=http://www.w3.org/2000/svg width="20" height="20" viewBox="0 0 24 24" >
          <path fill="none" d="M0 0h24v24H0V0z"/>
         <path fill="#ced7d9" d="M21.32,9.55l-1.89-.63.89-1.78A1,1,0,0,0,20.13,6L18,3.87a1,1,0,0,0-1.15-.19l-1.78.89-.63-1.89A1,1,0,0,0,13.5,2h-3a1,1,0,0,0-.95.68L8.92,4.57,7.14,3.68A1,1,0,0,0,6,3.87L3.87,6a1,1,0,0,0-.19,1.15l.89,1.78-1.89.63A1,1,0,0,0,2,10.5v3a1,1,0,0,0,.68.95l1.89.63-.89,1.78A1,1,0,0,0,3.87,18L6,20.13a1,1,0,0,0,1.15.19l1.78-.89.63,1.89a1,1,0,0,0,.95.68h3a1,1,0,0,0,.95-.68l.63-1.89,1.78.89A1,1,0,0,0,18,20.13L20.13,18a1,1,0,0,0,.19-1.15l-.89-1.78,1.89-.63A1,1,0,0,0,22,13.5v-3A1,1,0,0,0,21.32,9.55ZM20,12.78l-1.2.4A2,2,0,0,0,17.64,16l.57,1.14-1.1,1.1L16,17.64a2,2,0,0,0-2.79,1.16l-.4,1.2H11.22l-.4-1.2A2,2,0,0,0,8,17.64l-1.14.57-1.1-1.1L6.36,16A2,2,0,0,0,5.2,13.18L4,12.78V11.22l1.2-.4A2,2,0,0,0,6.36,8L5.79,6.89l1.1-1.1L8,6.36A2,2,0,0,0,10.82,5.2l.4-1.2h1.56l.4,1.2A2,2,0,0,0,16,6.36l1.14-.57,1.1,1.1L17.64,8a2,2,0,0,0,1.16,2.79l1.2.4ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z"  class="color000000 svgShape" />
         </svg>`,
-  PDFFormWhite: `<svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 24 24">
+    PDFFormWhite: `<svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 24 24">
         <path fill="none" d="M0 0h24v24H0V0z"/>
         <path fill="#ced7d9" d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v1.25c0 .41-.34.75-.75.75s-.75-.34-.75-.75V8c0-.55.45-1 1-1H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2c-.28 0-.5-.22-.5-.5v-5c0-.28.22-.5.5-.5h2c.83 0 1.5.67 1.5 1.5v3zm4-3.75c0 .41-.34.75-.75.75H19v1h.75c.41 0 .75.34.75.75s-.34.75-.75.75H19v1.25c0 .41-.34.75-.75.75s-.75-.34-.75-.75V8c0-.55.45-1 1-1h1.25c.41 0 .75.34.75.75zM9 9.5h1v-1H9v1zM3 6c-.55 0-1 .45-1 1v13c0 1.1.9 2 2 2h13c.55 0 1-.45 1-1s-.45-1-1-1H5c-.55 0-1-.45-1-1V7c0-.55-.45-1-1-1zm11 5.5h1v-3h-1v3z" class="color000000 svgShape" />
         </svg>`,
-  workflow: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    workflow: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path d="M0 0h24v24H0z" fill="none"/>
                   <path class="fill-path" d="M18 4l-4 4h3v7c0 1.1-.9 2-2 2s-2-.9-2-2V8c0-2.21-1.79-4-4-4S5 5.79 5 8v7H2l4 4 4-4H7V8c0-1.1.9-2 2-2s2 .9 2 2v7c0 2.21 1.79 4 4 4s4-1.79 4-4V8h3l-4-4z"/>
-                </svg>`,
+                </svg>`,  
   copyShift: `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-  <path d="M120-220v-80h80v80h-80Zm0-140v-80h80v80h-80Zm0-140v-80h80v80h-80ZM260-80v-80h80v80h-80Zm100-160q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480Zm40 240v-80h80v80h-80Zm-200 0q-33 0-56.5-23.5T120-160h80v80Zm340 0v-80h80q0 33-23.5 56.5T540-80ZM120-640q0-33 23.5-56.5T200-720v80h-80Zm420 80Z"/>
+    <path d="M120-220v-80h80v80h-80Zm0-140v-80h80v80h-80Zm0-140v-80h80v80h-80ZM260-80v-80h80v80h-80Zm100-160q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480Zm40 240v-80h80v80h-80Zm-200 0q-33 0-56.5-23.5T120-160h80v80Zm340 0v-80h80q0 33-23.5 56.5T540-80ZM120-640q0-33 23.5-56.5T200-720v80h-80Zm420 80Z"/>
   </svg>
   `,
+    forwardArrow: `<svg xmlns=http://www.w3.org/2000/svg width="20" height="20" viewBox="0 0 24 24" >
+                    <path fill="none" d="M0 0h24v24H0V0z"/>
+                    <path fill="#366a98" d="M2.007,24h-2V16A9.007,9.007,0,0,1,9,7l4.843-.154V.432l9.287,9.293a3,3,0,0,1,0,4.242L13.845,23.26V16.846L9,17A7.006,7.006,0,0,0,2.007,24Z" />
+                   </svg >`,
 };

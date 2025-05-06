@@ -7647,6 +7647,86 @@ namespace Anywhere.Data
             }
         }
 
+        public string getConsumerDemographicsInformation(long ConsumerId)
+        {
+            List<string> list = new List<string>();
+            list.Add(ConsumerId.ToString());
+            string text = "CALL DBA.ANYW_Demographics_getConsumerDemographicsInformation(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_Demographics_getConsumerDemographicsInformation(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_Demographics_getConsumerDemographicsInformation";
+            }
+        }
+
+        public string getConsumerServiceLocation(long ConsumerId)
+        {
+            List<string> list = new List<string>();
+            list.Add(ConsumerId.ToString());
+            string text = "CALL DBA.ANYW_Demographics_getConsumerServiceLocation(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_Demographics_getConsumerServiceLocation(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_Demographics_getConsumerServiceLocation";
+            }
+        }
+
+        public string getConsumerIndividualRelationships(long ConsumerId)
+        {
+            List<string> list = new List<string>();
+            list.Add(ConsumerId.ToString());
+            string text = "CALL DBA.ANYW_Demographics_getConsumerIndividualRelationships(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_Demographics_getConsumerIndividualRelationships(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_Demographics_getConsumerIndividualRelationships";
+            }
+        }
+
+        public string getConsumerCategories(long ConsumerId)
+        {
+            List<string> list = new List<string>();
+            list.Add(ConsumerId.ToString());
+            string text = "CALL DBA.ANYW_Demographics_getConsumerCategories(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_Demographics_getConsumerCategories(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_Demographics_getConsumerCategories";
+            }
+        }
+
+        public string getConsumerAppointmnets(long ConsumerId)
+        {
+            List<string> list = new List<string>();
+            list.Add(ConsumerId.ToString());
+            string text = "CALL DBA.ANYW_Demographics_getConsumerAppointmnets(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_Demographics_getConsumerAppointmnets(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_Demographics_getConsumerAppointmnets";
+            }
+        }
+
         public void setWidgetFilter(string token, string widgetId, string filterKey, string filterValue)
         {
             logger.debug("setWidgetFilter");
@@ -7684,6 +7764,38 @@ namespace Anywhere.Data
             {
                 logger.error("742", ex.Message + "ANYW_Dashboard_getWidgetFilter(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "742: error ANYW_Dashboard_getWidgetFilter";
+            }
+        }
+
+        public string getConsumerClassifications(long ConsumerId)
+        {
+            List<string> list = new List<string>();
+            list.Add(ConsumerId.ToString());
+            string text = "CALL DBA.ANYW_Demographics_getConsumerClassifications(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_Demographics_getConsumerClassifications(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_Demographics_getConsumerClassifications";
+            }
+        }
+
+        public string getConsumerIntake(long ConsumerId)
+        {
+            List<string> list = new List<string>();
+            list.Add(ConsumerId.ToString());
+            string text = "CALL DBA.ANYW_Demographics_getConsumerIntake(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_Demographics_getConsumerIntake(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_Demographics_getConsumerIntake";
             }
         }
     }

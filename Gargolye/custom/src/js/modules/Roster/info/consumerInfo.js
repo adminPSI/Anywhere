@@ -13,7 +13,7 @@ const consumerInfo = (function () {
     let nextScreen = '';
     let backwordBtn;
     let forwardBtn;
-    let rosterList;
+    let rosterList;     
 
     // Edit relationship 
     let editRelationshipPopup;
@@ -23,7 +23,7 @@ const consumerInfo = (function () {
     let startDateInputN = [];
     let whoIsDropdownN = [];
     let endDateInputN = [];
-    let deleteBtnN = [];
+    let deleteBtnN = []; 
     let showInactive;
     let tempConsumer;
     let consumerRelationships = [];
@@ -1392,7 +1392,7 @@ const consumerInfo = (function () {
             case 'Demographics': {
                 targetSection = consumerInfoCard.querySelector('.demographicsSection');
                 rosterAjax.getConsumerDemographics(consumerId, function (results) {
-                    demographics.populate(targetSection, results[0], consumerId);
+                    demographics.populate(targetSection, results[0], consumerId, tempConsumer);
                 });
                 break;
             }
