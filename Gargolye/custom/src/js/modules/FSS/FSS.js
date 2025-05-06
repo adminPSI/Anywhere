@@ -962,8 +962,8 @@ const FSS = (() => {
             type: 'contained',
             callback: async () => {
                 if (!UAPPLY_BTN.classList.contains('disabled')) {
-                    await saveUtilizationData(familyId, authId);
-                    POPUP.hide(UtilizationPopup);
+                    POPUP.hide(UtilizationPopup); 
+                    await saveUtilizationData(familyId, authId);                 
                 }
             },
         });
