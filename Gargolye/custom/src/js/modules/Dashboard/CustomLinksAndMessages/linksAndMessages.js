@@ -204,7 +204,8 @@ var linksAndMessages = (function () {
             POPUP.hide(addMessagePopup);
         });
         messageInput.addEventListener('input', event => {
-            textMessage = event.target.value;
+            textMessage = event.target.value; 
+            textMessage = textMessage.replace(/'/g, "''"), 
             checkRequiredFieldsOfNewMessage();
         });
         expirationDate.addEventListener('input', event => {

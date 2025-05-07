@@ -22,6 +22,7 @@ const demographics = (function () {
     let dataLoad;
     let consumerIDLoad;
     let detailBtn;
+    let selectedConsumer;
 
     function stringAdd(string, start, newSubStr) {
         return string.slice(0, start) + newSubStr + string.slice(start);
@@ -147,7 +148,7 @@ const demographics = (function () {
             name === 'medicareNumber' ||
             name === 'residentNumber' ||
             name === 'localID'
-            // name === 'consumerNumber'
+           // name === 'consumerNumber'
         ) {
             input.type = 'number';
             input.pattern = '/^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/im';
@@ -182,7 +183,7 @@ const demographics = (function () {
         if (text.toLowerCase() === 'localid') {
             return 'Local ID';
         }
-
+        
         if (text.toLowerCase() === 'consumernumber') {
             return 'Consumer #';
         }
@@ -215,12 +216,12 @@ const demographics = (function () {
     function checkAlphabets(input) {
         for (const char of input) {
             if ((char >= "a" && char <= "z") ||
-                (char >= "A" && char <= "Z")) {
+                (char >= "A" && char <= "Z")) { 
                 return true;
             }
         }
-        return false;
-    }
+        return false; 
+    } 
 
     function formatDataForDisplay(data) {
         const pathToEmployment = data.pathToEmployment;
@@ -231,9 +232,9 @@ const demographics = (function () {
         const city = data.mailcity;
         const state = data.mailstate;
         const zip = data.mailzipcode ? formatZipCode(data.mailzipcode) : '';
-
+  
         // Contact Info 
-        const formattedPrimaryPhone = data.primaryphone == '' ? '' : formatPhoneNumber(data.primaryphone);
+        const formattedPrimaryPhone = data.primaryphone == '' ? '' : formatPhoneNumber(data.primaryphone);       
         primaryPhone = formattedPrimaryPhone == '' || checkAlphabets(formattedPrimaryPhone) == true ? '' : `${formattedPrimaryPhone} <a class="demoPhones" href=tel:+1${data.primaryphone}>${icons.phone}</a>`;
 
         const formattedSecondaryPhone = data.secondaryphone == '' ? '' : formatPhoneNumber(data.secondaryphone);
@@ -244,7 +245,7 @@ const demographics = (function () {
 
         const email = data.email == '' ? '' : `${data.email} <a class="demoPhones" href = "#" onclick = "emailOnClick('mailto:${data.email}');">${icons.Email}</a>`;
 
-
+       
         // Additional Info
         const dateOfBirth = formatDOB(data.DOB);
         const socialSecurityNumber = formatSSN(data.SSN);
@@ -334,7 +335,7 @@ const demographics = (function () {
         wrap.classList.add('inputGroupWrap', `${title.replaceAll(' ', '').toLowerCase()}`);
 
         const heading = document.createElement('h3');
-        heading.innerText = title;
+        heading.innerText = title;  
         wrap.appendChild(heading);
 
         wrap.addEventListener('click', e => {
@@ -519,28 +520,28 @@ const demographics = (function () {
                     applicationName: $.session.applicationName,
                 });
                 // show save icon
-                if (success) {
+                if (success) { 
                     saveIcon.innerHTML = icons['checkmark'];
                     saveIcon.classList.add('success');
                     viewElement.innerHTML = formatViewInnerHTML(name, e.target.value);
-
+ 
                     // below code Implement of Phone or email Icon does not immediately show when adding a phone or email #
-                    dataLoad.cellphone = name == 'cellPhone' ? saveValue : dataLoad.cellphone;
+                    dataLoad.cellphone = name == 'cellPhone' ? saveValue : dataLoad.cellphone;  
                     dataLoad.secondaryphone = name == 'secondaryPhone' ? saveValue : dataLoad.secondaryphone;
                     dataLoad.primaryphone = name == 'primaryPhone' ? saveValue : dataLoad.primaryphone;
-                    dataLoad.email = name == 'email' ? saveValue : dataLoad.email;
-                    dataLoad.addressone = name == 'addressOne' ? saveValue : dataLoad.addressone;
+                    dataLoad.email = name == 'email' ? saveValue : dataLoad.email;  
+                    dataLoad.addressone = name == 'addressOne' ? saveValue : dataLoad.addressone; 
                     dataLoad.addresstwo = name == 'addressTwo' ? saveValue : dataLoad.addresstwo;
-                    dataLoad.mailcity = name == 'city' ? saveValue : dataLoad.mailcity;
+                    dataLoad.mailcity = name == 'city' ? saveValue : dataLoad.mailcity; 
                     dataLoad.mailstate = name == 'state' ? saveValue : dataLoad.mailstate;
-                    dataLoad.mailzipcode = name == 'zip' ? saveValue : dataLoad.mailzipcode;
-                    dataLoad.MedicaidNumber = name == 'medicaidNumber' ? saveValue : dataLoad.MedicaidNumber;
-                    dataLoad.MedicareNumber = name == 'medicareNumber' ? saveValue : dataLoad.MedicareNumber;
-                    dataLoad.ResidentNumber = name == 'residentNumber' ? saveValue : dataLoad.ResidentNumber;
-                    dataLoad.DOB = name == 'dateOfBirth' ? saveValue : dataLoad.DOB;
-                    dataLoad.SSN = name == 'ssn' ? saveValue : dataLoad.SSN;
-                    dataLoad.localID = name == 'localID' ? saveValue : dataLoad.localID;
-                    populateDemographicsSection(sectionLoad, dataLoad, consumerIDLoad);
+                    dataLoad.mailzipcode = name == 'zip' ? saveValue : dataLoad.mailzipcode; 
+                    dataLoad.MedicaidNumber = name == 'medicaidNumber' ? saveValue : dataLoad.MedicaidNumber; 
+                    dataLoad.MedicareNumber = name == 'medicareNumber' ? saveValue : dataLoad.MedicareNumber; 
+                    dataLoad.ResidentNumber = name == 'residentNumber' ? saveValue : dataLoad.ResidentNumber; 
+                    dataLoad.DOB = name == 'dateOfBirth' ? saveValue : dataLoad.DOB; 
+                    dataLoad.SSN = name == 'ssn' ? saveValue : dataLoad.SSN; 
+                    dataLoad.localID = name == 'localID' ? saveValue : dataLoad.localID; 
+                    populateDemographicsSection(sectionLoad, dataLoad, consumerIDLoad);                         
                 } else {
                     saveIcon.innerHTML = icons['error'];
                     saveIcon.classList.add('error');
@@ -653,9 +654,9 @@ const demographics = (function () {
                 if ($.session.DemographicsViewResident) {
                     viewElements['residentNumber'].classList.remove('hidden');
                 }
-                if ($.session.DemographicsViewSSN) {
+               if ($.session.DemographicsViewSSN) {
                     viewElements['ssn'].classList.remove('hidden');
-                }
+               }
                 if ($.session.DemographicsViewConsumerNumber) {
                     viewElements['consumerNumber'].classList.remove('hidden');
                 }
@@ -712,10 +713,11 @@ const demographics = (function () {
         return groupWrap;
     }
 
-    function populateDemographicsSection(section, data, consumerID) {
-        sectionLoad = section;
+    function populateDemographicsSection(section, data, consumerID, tempConsumer) {  
+        sectionLoad = section; 
         dataLoad = data;
         consumerIDLoad = consumerID;
+        selectedConsumer = tempConsumer;
 
         consumerId = consumerID;
         demoData = formatDataForDisplay(data);
@@ -726,12 +728,15 @@ const demographics = (function () {
 
         detailBtn = button.build({
             text: '',
-            icon: 'forwardArrow',
+            icon: 'forwardArrow', 
             style: 'secondary',
             type: 'text',
-            classNames: 'floatRight',
-            callback: () => { },
-        });
+            classNames: 'floatRight',  
+            callback: () => {              
+                consumerInfo.closeCard(); 
+                individualDemographics.init(selectedConsumer);
+            },
+        }); 
 
         const pathToEmployment = buildPathToEmployment();
         const addressInfo = buildAddressInfo();
