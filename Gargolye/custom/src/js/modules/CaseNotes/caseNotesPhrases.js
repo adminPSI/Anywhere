@@ -94,11 +94,11 @@
     /**
      * @function
      */
-    CaseNotesAddPhrases.prototype.setupEvents = function () {
+    CaseNotesAddPhrases.prototype.setupEvents = function () {        
         this.addPhraseForm.onSubmit(async formData => {
             const data = await _UTIL.fetchData('insertCustomPhrase', {
-                shortcut: formData.shortcut,
-                phrase: formData.phrase,
+                shortcut: formData.shortcut = formData.shortcut.replace(/'/g, "''"), 
+                phrase: formData.phrase = formData.phrase.replace(/'/g, "''"),
                 makePublic: formData.public === 'on' ? 'Y' : 'N',
                 phraseId: formData.phraseId
             });
