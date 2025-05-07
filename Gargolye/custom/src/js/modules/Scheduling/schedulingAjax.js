@@ -201,6 +201,7 @@ const schedulingAjax = (function () {
     // shiftEndTime: '00:00:00',
     // minTimeBetweenShifts: -1, // -1 for null
     const data = { ...retrieveData };
+
     if (!data.locationId) {
       data.includeTrainedOnly = 0;
     }
@@ -209,6 +210,10 @@ const schedulingAjax = (function () {
       data.maxWeeklyHours = -1;
       data.minTimeBetweenShifts = -1;
     }
+
+    delete data.filterHours;
+    delete data.filterMinutes;
+    delete data.filterRegion;
 
     try {
       const result = await $.ajax({

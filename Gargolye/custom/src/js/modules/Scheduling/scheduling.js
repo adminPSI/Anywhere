@@ -395,10 +395,12 @@ const SchedulingCalendar = (function () {
   }
   //
   function populateRegionDropdown(regionDropdown) {
-    const dropdownData = regions.map(r => ({
-      value: r.regionId,
-      text: r.description,
-    }));
+    const dropdownData = regions
+      .map(r => ({
+        value: r.regionId,
+        text: r.description,
+      }))
+      .sort((a, b) => a.text.localeCompare(b.text));
 
     dropdownData.unshift({
       value: '',
@@ -432,7 +434,7 @@ const SchedulingCalendar = (function () {
 
     return { locationFilter: employeeOption };
   }
-  function buildHoursFilter() {
+  function buildHoursFilter(filterHours) {
     // <div class="employeeOption">
     // ${hoursCheck.outerHTML}
     //   <div class="label nestedInput">
@@ -446,6 +448,7 @@ const SchedulingCalendar = (function () {
     employeeOption.className = 'employeeOption';
 
     const hoursCheck = document.createElement('input');
+    hoursCheck.checked = filterHours === 1 ? true : false;
     hoursCheck.type = 'checkbox';
     hoursCheck.name = 'hour';
 
@@ -473,7 +476,7 @@ const SchedulingCalendar = (function () {
       hoursInput,
     };
   }
-  function buildMinutesFilter() {
+  function buildMinutesFilter(filterMinutes) {
     // <div class="employeeOption">
     // ${minutesCheck.outerHTML}
     //   <div class="label nestedInput">
@@ -487,6 +490,7 @@ const SchedulingCalendar = (function () {
     employeeOption.className = 'employeeOption';
 
     const minutesCheck = document.createElement('input');
+    minutesCheck.checked = filterMinutes === 1 ? true : false;
     minutesCheck.type = 'checkbox';
     minutesCheck.name = 'minute';
 
@@ -539,7 +543,7 @@ const SchedulingCalendar = (function () {
 
     return { overlapFilter: employeeOption };
   }
-  function buildRegionFilter() {
+  function buildRegionFilter(filterRegion) {
     // <div class="employeeOption">
     // ${regionCheck.outerHTML}
     //   <div class="label">
@@ -551,12 +555,13 @@ const SchedulingCalendar = (function () {
     employeeOption.className = 'employeeOption';
 
     const regionCheck = document.createElement('input');
+    regionCheck.checked = filterRegion === 1 ? true : false;
     regionCheck.type = 'checkbox';
     regionCheck.name = 'region';
 
     const label = document.createElement('div');
     label.className = 'label';
-    label.innerHTML = `<p>Only include employees trained at the location</p>`;
+    label.innerHTML = `<p>Only show employees from this region</p>`;
 
     employeeOption.appendChild(regionCheck);
     employeeOption.appendChild(label);
@@ -581,16 +586,25 @@ const SchedulingCalendar = (function () {
     optionsContainer.className = 'employeeOptionsContainer';
 
     const { locationFilter } = buildLocationFilter(opts.includeTrainedOnly);
-    const { hoursFilter, hoursInput } = buildHoursFilter();
-    const { minutesFilter, minutesInput } = buildMinutesFilter();
+    const { hoursFilter, hoursInput } = buildHoursFilter(opts.filterHours);
+    const { minutesFilter, minutesInput } = buildMinutesFilter(opts.filterMinutes);
     const { overlapFilter } = buildOverlapFilter(opts.includeOverlaps);
-    const { regionFilter } = buildRegionFilter();
+    const { regionFilter } = buildRegionFilter(opts.filterRegion);
     const regionDropdown = dropdown.build({
       dropdownId: 'regionDropdown',
       label: 'Region',
       style: 'secondary',
     });
-    input.disableInputField(regionDropdown);
+
+    if (opts.filterRegion === 0) {
+      input.disableInputField(regionDropdown);
+    }
+    if (opts.filterHours === 0) {
+      input.disableInputField(hoursInput);
+    }
+    if (opts.filterMinutes === 0) {
+      input.disableInputField(minutesInput);
+    }
 
     optionsContainer.appendChild(locationFilter);
     optionsContainer.appendChild(hoursFilter);
@@ -626,6 +640,8 @@ const SchedulingCalendar = (function () {
       }
       if (e.target.name === 'hour') {
         if (e.target.checked) {
+          opts.filterHours = e.target.checked ? 1 : 0;
+
           input.enableInputField(hoursInput);
         } else {
           input.disableInputField(hoursInput);
@@ -635,6 +651,8 @@ const SchedulingCalendar = (function () {
         opts.maxWeeklyHours = e.target.value;
       }
       if (e.target.name === 'minute') {
+        opts.filterMinutes = e.target.checked ? 1 : 0;
+
         if (e.target.checked) {
           input.enableInputField(minutesInput);
         } else {
@@ -648,6 +666,8 @@ const SchedulingCalendar = (function () {
         opts.includeOverlaps = e.target.checked ? 1 : 0;
       }
       if (e.target.name === 'region') {
+        opts.filterRegion = e.target.checked ? 1 : 0;
+
         if (e.target.checked) {
           input.enableInputField(regionDropdown);
         } else {
@@ -673,31 +693,30 @@ const SchedulingCalendar = (function () {
     POPUP.show(employeePopup);
   }
   //
-  async function getConsumersForIndivualPop(selectedDate) {
+  async function getConsumersForIndivualPop(selectedDate, selectedLocationID) {
     try {
       const todaysDate = selectedDate == undefined ? dates.getTodaysDateObj() : new Date(selectedDate);
       todaysDate.setHours(0, 0, 0, 0);
       const filterDate = dates.formatISO(todaysDate, { representation: 'date' });
 
-      if (rosterCache[filterDate]) {
-        return rosterCache[filterDate];
-      }
-
       const daysBackDate = dates.subDays(todaysDate, $.session.defaultProgressNoteReviewDays);
+      const retrieveId = selectedLocationID === '%' || selectedLocationID === '' ? '0' : selectedLocationID;
       const data = await _UTIL.fetchData('getConsumersByGroupJSON', {
         groupCode: 'All',
-        retrieveId: selectedLocationId,
+        retrieveId: retrieveId,
         serviceDate: filterDate,
         daysBackDate: dates.formatISO(daysBackDate, { representation: 'date' }),
         isActive: 'No',
       });
+
+      if (!data.getConsumersByGroupJSONResult) return [];
 
       const consumers = data.getConsumersByGroupJSONResult.reduce((acc, cv) => {
         acc[cv.id] = cv;
         return acc;
       }, {});
 
-      rosterCache[filterDate] = Object.values(consumers).sort((a, b) => {
+      const sortedConsumers = Object.values(consumers).sort((a, b) => {
         if (a.LN < b.LN) return -1;
         if (a.LN > b.LN) return 1;
 
@@ -707,12 +726,13 @@ const SchedulingCalendar = (function () {
         return 0;
       });
 
-      return rosterCache[filterDate];
+      return sortedConsumers;
     } catch (error) {
       console.log('uh oh something went horribly wrong :(', error.message);
+      return [];
     }
   }
-  async function showAddIndividualPopup(onSelectCallback, selectedConsumers, rosterDate) {
+  async function showAddIndividualPopup(onSelectCallback, selectedConsumers, rosterDate, selectedLocationID) {
     let newSelectedConsumers = [...selectedConsumers];
 
     const addIndividualPopup = POPUP.build({
@@ -738,6 +758,7 @@ const SchedulingCalendar = (function () {
       type: 'outlined',
       callback: () => {
         addIndividualPopup.remove();
+        onSelectCallback();
       },
     });
 
@@ -754,7 +775,7 @@ const SchedulingCalendar = (function () {
     const spinner = PROGRESS.SPINNER.get('Gathering Individuals...');
     consumerWrap.appendChild(spinner);
 
-    const consumersRes = await getConsumersForIndivualPop(rosterDate, newSelectedConsumers);
+    const consumersRes = await getConsumersForIndivualPop(rosterDate, selectedLocationID);
     consumersRes.forEach(c => {
       const consumerString = `${c.FN} ${c.LN}|${c.id}`;
 
@@ -991,10 +1012,11 @@ const SchedulingCalendar = (function () {
       }))
       .filter(l => !l.id);
 
-    dropdownData.unshift({
-      value: '%',
-      text: 'All',
-    });
+    // dropdownData.unshift({
+    //   value: '%',
+    //   text: 'All',
+    // });
+
     dropdownData.unshift({
       value: '',
       text: '',
@@ -1012,17 +1034,29 @@ const SchedulingCalendar = (function () {
       }),
     );
 
+    const dupUser = dropdownData.find(d => d.value === $.session.PeopleId);
+    if (!$.session.schedulingSecurity) {
+      dropdownData.unshift({
+        value: $.session.PeopleId,
+        text: `${$.session.LName}, ${$.session.Name}`,
+      });
+    }
+
     dropdownData.sort(sortEmployeeString);
 
     dropdownData.unshift({
-      value: $.session.PeopleId,
-      text: `${$.session.LName}, ${$.session.Name}`,
-    });
-    dropdownData.unshift({
-      value: '',
+      value: 'null',
       text: '',
     });
+    dropdownData.unshift({
+      id: '',
+      value: 'none',
+      text: '(none)',
+    });
 
+    if (defaultValue === '') {
+      defaultValue = 'null';
+    }
     dropdown.populate(employeeDropdown, dropdownData, defaultValue);
   }
   function populateShiftColorDropdown(colorDropdown, defaultValue = '') {
@@ -1177,10 +1211,14 @@ const SchedulingCalendar = (function () {
       includeOverlaps: 1,
       maxWeeklyHours: -1,
       minTimeBetweenShifts: -1,
-      shiftdate: data.date ? data.date : [],
+      shiftdate: shiftData.date,
       shiftStartTime: '00:00:00',
       shiftEndTime: '00:00:00',
       region: '%',
+      // just for checkboxes
+      filterHours: 0,
+      filterMinutes: 0,
+      filterRegion: 0,
     };
     shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling(filterShiftEmployeesOpts);
 
@@ -1348,7 +1386,7 @@ const SchedulingCalendar = (function () {
       }
       if (e.target.parentElement === employeeDropdown) {
         const selectedOption = e.target.options[e.target.selectedIndex];
-        shiftData.employeeId = selectedOption.value;
+        shiftData.employeeId = selectedOption.value === 'null' ? '' : selectedOption.value;
 
         if (shiftData.employeeId === '') {
           employeeDropdown.classList.add('error');
@@ -1410,33 +1448,37 @@ const SchedulingCalendar = (function () {
         shiftPopup.style.pointerEvents = 'none';
         showAddIndividualPopup(
           consumers => {
-            shiftData.consumerNames = [...consumers];
-            individualCardWrap.innerHTML = '';
-            if (shiftData.consumerNames.length > 0) {
-              const consumerNames = shiftData.consumerNames;
-              consumerNames.forEach(cn => {
-                const [name, id] = cn.split('|');
-                const [fName, lName] = name.split(' ');
+            if (consumers) {
+              shiftData.consumerNames = [...consumers];
+              individualCardWrap.innerHTML = '';
+              if (shiftData.consumerNames.length > 0) {
+                const consumerNames = shiftData.consumerNames;
+                consumerNames.forEach(cn => {
+                  const [name, id] = cn.split('|');
+                  const [fName, lName] = name.split(' ');
 
-                const gridAnimationWrapper = document.createElement('div');
-                gridAnimationWrapper.classList.add('rosterCardWrap');
+                  const gridAnimationWrapper = document.createElement('div');
+                  gridAnimationWrapper.classList.add('rosterCardWrap');
 
-                const rosterCard = new RosterCard({
-                  consumerId: id,
-                  firstName: fName,
-                  middleName: '',
-                  lastName: lName,
+                  const rosterCard = new RosterCard({
+                    consumerId: id,
+                    firstName: fName,
+                    middleName: '',
+                    lastName: lName,
+                  });
+
+                  rosterCard.renderTo(gridAnimationWrapper);
+                  individualCardWrap.appendChild(gridAnimationWrapper);
                 });
-
-                rosterCard.renderTo(gridAnimationWrapper);
-                individualCardWrap.appendChild(gridAnimationWrapper);
-              });
+              }
             }
+
             shiftPopup.style.opacity = 1;
             shiftPopup.style.pointerEvents = 'all';
           },
           shiftData.consumerNames,
           datesSelectedCount,
+          shiftData.locationId,
         );
       }
       if (e.target === callOffBtn) {
@@ -1756,7 +1798,7 @@ const SchedulingCalendar = (function () {
         endTime: endTime,
         length: length,
         description: description,
-        name: id === '3' ? 'Open Shift' : sch.lastName,
+        name: id === '3' ? 'Open Shift' : description,
         typeId: id,
         typeName: type,
         locationId: sch.locationId,
@@ -2187,9 +2229,9 @@ const SchedulingCalendar = (function () {
     shiftTypeNote.textContent = `Un-Publishsed Shifts: ${shiftCount}`;
 
     if (shiftCount === 0) {
-      shiftTypeNote.classList.add('error');
-    } else {
       shiftTypeNote.classList.remove('error');
+    } else {
+      shiftTypeNote.classList.add('error');
     }
   }
   function buildShiftTypeDropdown() {
@@ -2463,6 +2505,10 @@ const SchedulingCalendar = (function () {
       onEventClick: handleCalendarEventClick,
       onViewChange(newView) {
         currentCalView = newView;
+      },
+      onEventRender(eventsInView) {
+        const unpublishedEvents = eventsInView.filter(event => !event.publishedDate);
+        updateShiftTypeNote(unpublishedEvents.length);
       },
     });
 

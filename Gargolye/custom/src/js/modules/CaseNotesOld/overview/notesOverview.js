@@ -386,14 +386,19 @@ var notesOverview = (function () {
       style: 'secondary',
     });
 
-    let dropdownData = rejectionReasons.map(reason => {
+    const dropdownData = rejectionReasons.map(reason => {
       return {
         value: reason.rejectionCode,
         text: `${reason.rejectionCode} - ${reason.rejectionCaption}`,
       };
     });
 
-    dropdown.populate(rejectDropdown, dropdownData);
+    dropdownData.unshift({
+      value: '',
+      text: '',
+    });
+
+    dropdown.populate(rejectDropdown, dropdownData, '');
 
     return rejectDropdown;
   }
@@ -405,9 +410,14 @@ var notesOverview = (function () {
     });
 
     const rejectReasonDropdown = buildRejectionReasonDropdown();
-    rejectReasonDropdown.addEventListener('change', () => {
+    rejectReasonDropdown.addEventListener('change', e => {
       const selectedOption = e.target.options[e.target.selectedIndex];
       rejectReason = selectedOption.value;
+
+      if (rejectReason !== '') {
+        rejectReasonDropdown.classList.remove('error');
+        applyBtn.classList.remove('disabled');
+      }
     });
 
     const btnWrap = document.createElement('div');
@@ -424,13 +434,16 @@ var notesOverview = (function () {
     });
     const cancelBtn = button.build({
       text: 'Cancel',
-      type: 'contained',
+      type: 'outlined',
       style: 'secondary',
       callback: function () {
         POPUP.hide(popup);
         resetMultiSelect();
       },
     });
+
+    rejectReasonDropdown.classList.add('error');
+    applyBtn.classList.add('disabled');
 
     btnWrap.appendChild(applyBtn);
     btnWrap.appendChild(cancelBtn);
@@ -524,18 +537,18 @@ var notesOverview = (function () {
             resetMultiSelect();
             getTableData();
           });
+        } else {
+          success = await caseNotesAjax.passRejectCaseNotes({
+            userId: $.session.UserId,
+            reviewResult: 'R',
+            noteIds: selectedRows,
+            rejectReason: '',
+          });
+
+          showSuccessFailPopup(success);
+          resetMultiSelect();
+          getTableData();
         }
-
-        success = await caseNotesAjax.passRejectCaseNotes({
-          userId: $.session.UserId,
-          reviewResult: 'R',
-          noteIds: selectedRows,
-          rejectReason: '',
-        });
-
-        showSuccessFailPopup(success);
-        resetMultiSelect();
-        getTableData();
       });
 
       ACTION_NAV.hide();

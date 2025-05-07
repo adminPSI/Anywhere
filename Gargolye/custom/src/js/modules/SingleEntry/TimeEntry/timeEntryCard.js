@@ -2123,6 +2123,7 @@ var timeEntryCard = (function () {
     if (document.getElementById('reasonInput') != null && document.getElementById('reasonInput') != undefined) {
       if (!reasonCodeValue) {
         reasonCodeValue = '99 - Documentation on file supports manual change';
+        evvReasonCode = '99';
       }
       document.getElementById('reasonInput').value = reasonCodeValue;
     }

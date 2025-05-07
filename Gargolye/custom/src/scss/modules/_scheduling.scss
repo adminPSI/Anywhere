@@ -82,6 +82,7 @@
     }
 
     p {
+      color: $green;
       position: absolute;
       right: 0px;
       bottom: 0px;
@@ -364,6 +365,7 @@
     padding: 2px;
     position: relative;
     z-index: 2;
+    margin: 0 0 2px 0;
 
     &.withIcons {
       min-height: 80px;
