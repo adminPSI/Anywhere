@@ -3,7 +3,7 @@ const widgetSettings = (function () {
     let sectionreorder = [];
     let updatedListOrder = [];
     let widgetsContainer;
-    let newTable;
+    let newTable; 
 
     //let sectionBody;
     const sections = {
@@ -316,7 +316,7 @@ const widgetSettings = (function () {
             name: 'Rejected Case Notes',
             settings: { daysBack: 60 },
             showHide: '',
-            application: 'gk',
+            application: 'gk,adv', 
             order: 0,
             build: function () {
                 const saveID = 3;

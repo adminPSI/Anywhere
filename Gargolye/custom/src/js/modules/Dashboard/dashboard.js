@@ -563,14 +563,15 @@
         if (
             ($.session.isPSI == true && $.session.applicationName === 'Gatekeeper') ||
             ($.session.caseNotesPermission === 'Anywhere_CaseNotes' &&
-                $.session.applicationName === 'Gatekeeper')
+                $.session.applicationName === 'Gatekeeper') ||
+            ($.session.applicationName === 'Advisor' && $.session.CaseNotesView)  
         ) {
             (function loadCaseNotesCaseLoadWidget() {
                 var div = document.createElement('div');
                 div.setAttribute('data-show', showHide);
                 div.setAttribute('data-widgetId', widgetIds.caseNotesRejected);
                 div.id = 'casenotesrejected';
-                div.classList.add('widget');
+                div.classList.add('widget'); 
                 div.classList.add('caseNotesRejectedWidget');
                 div.innerHTML = html.caseNotesRejected;
                 widgets.push(div);
@@ -704,7 +705,7 @@
                 /*4*/ initCaseNotesCaseLoadWidget(); // Case Notes Case Load (GK Only) --- WidgetId 2
             }
             else if (widgetSetting.widgetName == 'Rejected Case Notes') {
-                /*5*/ initCaseNotesRejectedWidget(); // Case Notes Rejected (GK Only) --- WidgetId 2
+                /*5*/ initCaseNotesRejectedWidget(); // Case Notes Rejected (GK and ADV) --- WidgetId 2
             }
             else if (widgetSetting.widgetName == 'Plan To-Do List') {
                 /*6*/ initPlanWorkflowWidget(); // Plan Workflow To Do List Widget
