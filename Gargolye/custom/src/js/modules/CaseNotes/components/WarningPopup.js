@@ -39,6 +39,7 @@
         this.cancelButton = new Button({
             text: 'No',
             name: 'cancel',
+            styleType: 'outlined',  
             icon: 'close',
         });
 

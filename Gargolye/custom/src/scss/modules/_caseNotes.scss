@@ -136,11 +136,19 @@
     }
 
     dialog.modal.overlapWarning {
-        padding: 14px 10px;
+        padding: 35px 20px;
         text-align: center;
 
         p {
             margin-bottom: 20px;
+        }
+
+        .button {
+            padding: 0px 20%; 
+
+            .svgIcon {
+                display: none;
+            }
         }
     }
     // DOC TIMER
