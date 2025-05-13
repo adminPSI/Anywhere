@@ -1,5 +1,4 @@
-const EmploymentInformation = (() => {
-    var employmentPath;
+const EmploymentInformation = (() => {  
     let PositionId;
     let getEmployeeInfoByID = [];
     let peopleID;
@@ -18,13 +17,7 @@ const EmploymentInformation = (() => {
     let consumersID;
     let employerName;
     let positionName;
-    let selectedConsumersName;
-    let getEmployeepath = [];
-    let existingEndDate;
-    let isNewPositionEnable;
-    let currentStatus;
-    let pathToEmployment;
-    let pathToStartDate;
+    let selectedConsumersName;   
     let temptypeOfEmployment = '';
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
@@ -32,20 +25,11 @@ const EmploymentInformation = (() => {
         consumersID = ConsumersId;
         employerName = Name;
         positionName = PositionName;
-        selectedConsumersName = SelectedConsumersName;
-        getEmployeepath = await EmploymentAjax.getEmployeementPathAsync(ConsumersId);
+        selectedConsumersName = SelectedConsumersName;      
         if (PositionId != undefined) {
             getEmployeeInfoByID = await EmploymentAjax.getEmployeeInfoByIDAsync(PositionId);
         }
-
-        const result = await EmploymentAjax.isNewPositionEnableAsync(ConsumersId);
-        const { isNewPositionEnableResult } = result;
-        if (isNewPositionEnableResult[0].IsEmployeeEnable == '0') {
-            isNewPositionEnable = true;
-        }
-        else {
-            isNewPositionEnable = false;
-        }
+       
     }
 
     function getMarkup() {
@@ -56,9 +40,7 @@ const EmploymentInformation = (() => {
         return employeeInforWrap;
     }
 
-    function buildNewEmploymentForm() {
-        if (isNewPositionEnable)
-            createEmploymentPathPopupBtn();
+    function buildNewEmploymentForm() {      
         const employeeInfoDiv = document.createElement('div');
         employeeInfoDiv.classList.add('additionalQuestionWrap');
 
@@ -96,10 +78,6 @@ const EmploymentInformation = (() => {
             typeOfEmployment = '';
         }
 
-        employmentPath = getEmployeepath.getEmployeementPathResult.length > 0 ? getEmployeepath.getEmployeementPathResult[0].employmentPath : '';
-        existingPathID = getEmployeepath.getEmployeementPathResult[0] == undefined || getEmployeepath.getEmployeementPathResult[0].existingPathID == '' ? '' : getEmployeepath.getEmployeementPathResult[0].existingPathID;
-        existingStartDate = getEmployeepath.getEmployeementPathResult[0] == undefined || getEmployeepath.getEmployeementPathResult[0].existingStartDate == '' ? '' : moment(getEmployeepath.getEmployeementPathResult[0].existingStartDate).format('YYYY-MM-DD');
-        existingEndDate = getEmployeepath.getEmployeementPathResult[0] == undefined || getEmployeepath.getEmployeementPathResult[0].existingEndDate == '' ? '' : moment(getEmployeepath.getEmployeementPathResult[0].existingEndDate).format('YYYY-MM-DD');
         tempstartDatePosition = '';
         tempendDatePosition = '';
         tempposition = '';
@@ -220,15 +198,7 @@ const EmploymentInformation = (() => {
             type: 'outlined',
             callback: async () => { CancleValidate() },
         });
-        UPDATE_BTN = button.build({
-            text: 'Update',
-            style: 'secondary',
-            type: 'contained',
-            callback: () => {
-                updatePathPopupBtn()
-            },
-        });
-
+        
         const addEmployerBtn = button.build({
             text: '+ Add Employers',
             style: 'secondary',
@@ -248,38 +218,6 @@ const EmploymentInformation = (() => {
         });
 
         var LineBr = document.createElement('br');
-
-
-        const messageHeading = document.createElement('b');
-        messageHeading.classList.add('boldfont');
-        messageHeading.style.marginTop = '1%';
-        messageHeading.innerText = 'Path to Employment: '
-
-        const message = document.createElement('p');
-        if (employmentPath == '1')
-            message.innerText = ' 1 - I have a job but would like a better one or to move up.';
-        else if (employmentPath == '2')
-            message.innerText = ' 2 - I want a job! I need help to find one.';
-        else if (employmentPath == '3')
-            message.innerText = " 3 - I'm not sure about work. I need help to learn more.";
-        else if (employmentPath == '4')
-            message.innerText = " 4 - I don't think I want to work, but I may not know enough.";
-        else
-            message.innerText = '';
-        message.style.marginTop = '1%';
-        message.style.marginLeft = '1%';
-        var msgWrap = document.createElement('div');
-        msgWrap.classList.add('employmentMsgWrap');
-
-        msgWrap.appendChild(messageHeading);
-        msgWrap.appendChild(message);
-
-        if ($.session.EmploymentUpdate) {
-            UPDATE_BTN.style.marginLeft = '1%';
-            msgWrap.appendChild(UPDATE_BTN);
-        }
-
-        employeeInfoDiv.appendChild(msgWrap);
 
         const column1 = document.createElement('div')
         column1.classList.add('col-1')
@@ -599,189 +537,6 @@ const EmploymentInformation = (() => {
 
     }
 
-
-    function updatePathPopupBtn() {
-        employmentPath = '';
-        currentEndDate = existingEndDate;
-        newStartDate = '';
-        newEndDate = '';
-
-        updatePathPopup = POPUP.build({
-            classNames: ['rosterFilterPopup'],
-            hideX: true,
-        });
-
-        const heading = document.createElement('h2');
-        heading.style.marginTop = '-20px';
-        heading.style.marginBottom = '20px';
-        heading.innerText = 'Update Path to Employment';
-
-        // dropdowns & inputs
-        currentPathEndDate = input.build({
-            id: 'currentPathEndDate',
-            type: 'date',
-            label: 'Current Path End Date',
-            style: 'secondary',
-            value: currentEndDate,
-        });
-
-        newPathEmploymentDropdown = dropdown.build({
-            id: 'newPathEmploymentDropdown',
-            label: "New Path to Employment",
-            dropdownId: "newPathEmploymentDropdown",
-        });
-
-        newPathStartDate = input.build({
-            id: 'newPathStartDate',
-            type: 'date',
-            label: 'New Path Start Date',
-            style: 'secondary',
-            value: newStartDate,
-        });
-
-        newPathEndDate = input.build({
-            id: 'newPathEndDate',
-            type: 'date',
-            label: 'New Path End Date',
-            style: 'secondary',
-            value: newEndDate,
-        });
-
-        APPLY_BTN = button.build({
-            text: 'APPLY',
-            style: 'secondary',
-            type: 'contained',
-            callback: () => {
-                if (!APPLY_BTN.classList.contains('disabled')) {
-                    APPLY_BTN.classList.add('disabled');
-                    saveNewPathPopup();
-                }
-            }
-        });
-
-        CANCEL_BTN = button.build({
-            text: 'Cancel',
-            style: 'secondary',
-            type: 'outlined',
-        });
-
-        updatePathPopup.appendChild(heading);
-        updatePathPopup.appendChild(currentPathEndDate);
-
-        updatePathPopup.appendChild(newPathEmploymentDropdown);
-        updatePathPopup.appendChild(newPathStartDate);
-        updatePathPopup.appendChild(newPathEndDate);
-
-        var confirmMessage = document.createElement('div');
-        confirmMessage.innerHTML = `<h3 id="confirmMessage" class="confirmMessage password-warning"></h3>`;
-        updatePathPopup.appendChild(confirmMessage);
-
-        var popupbtnWrap = document.createElement('div');
-        popupbtnWrap.classList.add('btnWrap');
-        popupbtnWrap.appendChild(APPLY_BTN);
-        popupbtnWrap.appendChild(CANCEL_BTN);
-        updatePathPopup.appendChild(popupbtnWrap);
-
-        POPUP.show(updatePathPopup);
-        PopupEventListeners();
-        populateNewPathEmploymentDropdown('updatePath');
-        checkRequiredFieldsOfEmploymentPath();
-    }
-
-    function PopupEventListeners() {
-        newPathEmploymentDropdown.addEventListener('change', event => {
-            employmentPath = event.target.value;
-            checkRequiredFieldsOfEmploymentPath();
-        });
-
-        newPathStartDate.addEventListener('input', event => {
-            newStartDate = event.target.value;
-            checkRequiredFieldsOfEmploymentPath();
-        });
-        newPathEndDate.addEventListener('input', event => {
-            newEndDate = event.target.value;
-            checkRequiredFieldsOfEmploymentPath();
-        });
-        currentPathEndDate.addEventListener('input', event => {
-            currentEndDate = event.target.value;
-            checkRequiredFieldsOfEmploymentPath();
-        });
-
-        CANCEL_BTN.addEventListener('click', () => {
-            POPUP.hide(updatePathPopup);
-        });
-    }
-
-    function checkRequiredFieldsOfEmploymentPath() {
-        var newPathEmployment = newPathEmploymentDropdown.querySelector('#newPathEmploymentDropdown');
-        var newStartDate = newPathStartDate.querySelector('#newPathStartDate');
-        var newEndDate = newPathEndDate.querySelector('#newPathEndDate');
-        var CurrentEndDate = currentPathEndDate.querySelector('#currentPathEndDate');
-
-        if (newPathEmployment.value === '') {
-            newPathEmploymentDropdown.classList.add('errorPopup');
-        } else {
-            newPathEmploymentDropdown.classList.remove('errorPopup');
-        }
-
-        if (CurrentEndDate.value === '' || CurrentEndDate.value < existingStartDate) {
-            currentPathEndDate.classList.add('errorPopup');
-        } else {
-            currentPathEndDate.classList.remove('errorPopup');
-        }
-
-        if (newStartDate.value === '' || CurrentEndDate.value > newStartDate.value || (newEndDate.value != '' && newStartDate.value > newEndDate.value)) {
-            newPathStartDate.classList.add('errorPopup');
-        } else {
-            newPathStartDate.classList.remove('errorPopup');
-        }
-
-        setBtnStatusOfEmploymentPath();
-    }
-
-    function setBtnStatusOfEmploymentPath() {
-        var hasErrors = [].slice.call(document.querySelectorAll('.errorPopup'));
-        if (hasErrors.length !== 0) {
-            APPLY_BTN.classList.add('disabled');
-            return;
-        } else {
-            APPLY_BTN.classList.remove('disabled');
-        }
-    }
-
-    function populateNewPathEmploymentDropdown(pathName) {
-        const condfidentialDropdownData = ([
-            { id: 1, value: 1, text: "1 - I have a job but would like a better one or to move up." },
-            { id: 2, value: 2, text: "2 - I want a job! I need help to find one." },
-            { id: 3, value: 3, text: "3 - I'm not sure about work. I need help to learn more." },
-            { id: 4, value: 4, text: "4 - I don't think I want to work, but I may not know enough." },
-        ]);
-        condfidentialDropdownData.unshift({ id: null, value: '', text: '' });
-        if (pathName == 'updatePath')
-            dropdown.populate("newPathEmploymentDropdown", condfidentialDropdownData, employmentPath);
-        else
-            dropdown.populate("pathToEmploymentDropdown", condfidentialDropdownData, pathToEmployment);
-    }
-
-
-
-    async function saveNewPathPopup() {
-        const result = await EmploymentAjax.insertEmploymentPathAsync(employmentPath, newStartDate, newEndDate, currentEndDate, consumersID, $.session.UserId, existingPathID);
-        const { insertEmploymentPathResult } = result;
-        var messagetext = document.getElementById('confirmMessage');
-
-        messagetext.innerHTML = ``;
-        if (insertEmploymentPathResult.pathId == '-1') {
-            messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot be saved.';
-            messagetext.classList.add('password-error');
-        }
-        else {
-            NewEmployment.refreshEmployment(PositionId, employerName, positionName, selectedConsumersName, consumersID);
-            POPUP.hide(updatePathPopup);
-        }
-
-    }
-
     async function saveEmployeeInfo() {
         const result = await EmploymentAjax.insertEmploymentInfoAsync(startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, consumersID, $.session.UserId, PositionId, typeOfEmployment);
         const { insertEmploymentInfoResult } = result;
@@ -847,158 +602,7 @@ const EmploymentInformation = (() => {
         confirmPopup.appendChild(popupbtnWrap);
         YES_BTN.focus();
         POPUP.show(confirmPopup);
-    }
-
-
-    function createEmploymentPathPopupBtn() {
-        pathToStartDate = '';
-        pathToEmployment = '';
-        currentStatus = '';
-
-        createPathPopup = POPUP.build({
-            classNames: ['rosterFilterPopup'],
-            hideX: true,
-        });
-
-        // dropdowns & inputs
-        currentStatusDropdown = dropdown.build({
-            id: 'currentStatusDropdown',
-            label: "Current Status",
-            dropdownId: "currentStatusDropdown",
-        });
-
-        pathToEmploymentDropdown = dropdown.build({
-            id: 'pathToEmploymentDropdown',
-            label: "Path to Employment",
-            dropdownId: "pathToEmploymentDropdown",
-        });
-
-        pathToEmploymentStartDate = input.build({
-            id: 'pathToEmploymentStartDate',
-            type: 'date',
-            label: 'Path to Employment Start Date',
-            style: 'secondary',
-        });
-
-        CONTINUE_BTN = button.build({
-            text: 'continue',
-            style: 'secondary',
-            type: 'contained',
-            callback: () => {
-                if (!CONTINUE_BTN.classList.contains('disabled')) {
-                    CONTINUE_BTN.classList.add('disabled');
-                    createNewPath();
-                }
-            }
-        });
-
-        CREATE_PATH_CANCEL_BTN = button.build({
-            text: 'Cancel',
-            style: 'secondary',
-            type: 'outlined',
-        });
-
-        createPathPopup.appendChild(currentStatusDropdown);
-        createPathPopup.appendChild(pathToEmploymentDropdown);
-        createPathPopup.appendChild(pathToEmploymentStartDate);
-
-        var popupbtnWrap = document.createElement('div');
-        popupbtnWrap.classList.add('btnWrap');
-        popupbtnWrap.appendChild(CREATE_PATH_CANCEL_BTN);
-        popupbtnWrap.appendChild(CONTINUE_BTN);
-        createPathPopup.appendChild(popupbtnWrap);
-
-        POPUP.show(createPathPopup);
-        pathToEmploymentStartDate.classList.add('disabled');
-        createEmploymentPathPopupEventListeners();
-        populateNewPathEmploymentDropdown('createPath');
-        populateEmploymentStatusDropdowns();
-        checkRequiredFieldsOfCreateEmploymentPath();
-    }
-
-    function createEmploymentPathPopupEventListeners() {
-        currentStatusDropdown.addEventListener('change', event => {
-            currentStatus = event.target.value;
-            checkRequiredFieldsOfCreateEmploymentPath();
-        });
-        pathToEmploymentDropdown.addEventListener('change', event => {
-            pathToEmployment = event.target.value;
-            if (pathToEmployment == '') {
-                pathToEmploymentStartDate.classList.add('disabled');
-                pathToStartDate = '';
-                document.getElementById('pathToEmploymentStartDate').value = '';
-            }
-            else {
-                pathToEmploymentStartDate.classList.remove('disabled');
-            }
-            checkRequiredFieldsOfCreateEmploymentPath();
-        });
-
-        pathToEmploymentStartDate.addEventListener('input', event => {
-            if (pathToEmployment != '') {
-                pathToStartDate = event.target.value;
-            }
-            else {
-                document.getElementById('pathToEmploymentStartDate').value = '';
-                pathToStartDate = '';
-            }
-            checkRequiredFieldsOfCreateEmploymentPath();
-        });
-
-        CREATE_PATH_CANCEL_BTN.addEventListener('click', () => {
-            POPUP.hide(createPathPopup);
-            Employment.loadEmploymentLanding();
-        });
-    }
-
-    function checkRequiredFieldsOfCreateEmploymentPath() {
-        var currentSts = currentStatusDropdown.querySelector('#currentStatusDropdown');
-        var pathToEmp = pathToEmploymentDropdown.querySelector('#pathToEmploymentDropdown');
-        var pathStartDt = pathToEmploymentStartDate.querySelector('#pathToEmploymentStartDate');
-
-        if (currentSts.value === '') {
-            currentStatusDropdown.classList.add('errorPopup');
-        } else {
-            currentStatusDropdown.classList.remove('errorPopup');
-        }
-
-        if (pathToEmp.value != '' && pathStartDt.value === '') {
-            pathToEmploymentStartDate.classList.add('errorPopup');
-        } else {
-            pathToEmploymentStartDate.classList.remove('errorPopup');
-        }
-
-        setBtnStatusOfCreateEmploymentPath();
-    }
-
-    function setBtnStatusOfCreateEmploymentPath() {
-        var hasErrors = [].slice.call(document.querySelectorAll('.errorPopup'));
-        if (hasErrors.length !== 0) {
-            CONTINUE_BTN.classList.add('disabled');
-            return;
-        } else {
-            CONTINUE_BTN.classList.remove('disabled');
-        }
-    }
-    async function populateEmploymentStatusDropdowns() {
-        const {
-            getEmployeeStatusDropDownResult: EmpStatus,
-        } = await EmploymentAjax.getEmployeeStatusDropDownAsync();
-        let empStatus = EmpStatus.map((empStatus) => ({
-            id: empStatus.empStatusId,
-            value: empStatus.empStatusId,
-            text: empStatus.empStatusName
-        }));
-        empStatus.unshift({ id: null, value: '', text: '' });
-        dropdown.populate("currentStatusDropdown", empStatus, currentStatus);
-    }
-
-    async function createNewPath() {
-        const result = await EmploymentAjax.createNewEmploymentPathAsync(currentStatus, pathToEmployment, pathToStartDate, consumersID, $.session.UserId);
-        const { createNewEmploymentPathResult } = result;
-        POPUP.hide(createPathPopup);
-        NewEmployment.refreshEmployment(PositionId, employerName, positionName, selectedConsumersName, consumersID);
-    }
+    }    
 
     return {
         init,
