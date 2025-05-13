@@ -243,7 +243,7 @@ var FSSAjax = (function () {
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
-            return data.insertAuthorizationResult;
+            return data; 
         } catch (error) {
             console.log(error.responseText);
         }

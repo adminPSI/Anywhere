@@ -71,7 +71,7 @@
         this.setupEvents();
 
         // Overlap Popup
-        overlapPopup = new ConfirmationPopup({ className: 'overlapWarning' });
+        overlapPopup = new WarningPopup({ className: 'overlapWarning' });   
         overlapPopup.renderTo(_DOM.ACTIONCENTER);
 
         return this;

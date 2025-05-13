@@ -158,7 +158,7 @@ namespace Anywhere.service.Data.FSS
                 string jsonResult = "";
                 sb.Clear();
 
-                sb.Append("SELECT ff.FSS_Family_ID as familyId ,ff.Family_Name as familyName, ff.address1 + ' ' + ff.address2 + ' ' + ff.city + ' ' + ff.state + ' ' + ff.zip_code as address , ff.Primary_Phone as primaryPhone , ff.Notes as notes ");
+                sb.Append("SELECT ff.FSS_Family_ID as familyId ,ff.Family_Name as familyName, ff.address1 + ' ' + ff.address2 + ' ' + ff.city + ', ' + ff.state + ' ' + ff.zip_code as address , ff.Primary_Phone as primaryPhone , ff.Notes as notes ");
                 sb.Append("from dba.fss_family as ff ");
                 sb.AppendFormat("WHERE ff.FSS_Family_ID IN(select FSS_Family_ID from dba.fss_family_member where ID like '{0}' )", consumerID);
                 if (familyName == "%")
