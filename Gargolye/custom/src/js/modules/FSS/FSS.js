@@ -488,7 +488,7 @@ const FSS = (() => {
                     const fundingSourceID = child.fundingSourceID;
                     const fID = child.familyId;
                     const authId = child.authId;
-                    const coPay = child.coPay == null ? '0.00' : child.coPay;
+                    const coPay = child.coPay == null ? '0' : child.coPay;
                     const encumbered = child.encumbered == null ? '0.00' : parseFloat(child.encumbered).toFixed(2); 
                     const amtPaid = child.amtPaid == null ? '0.00' : parseFloat(child.amtPaid).toFixed(2);
                     const balance = child.balance == null ? '0.00' : parseFloat(child.balance).toFixed(2);
