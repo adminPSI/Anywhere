@@ -94,11 +94,11 @@ const EditFamilies = (function () {
     function populateTable(results, IsFirstLoad) {
         familyTableData = results.map(td => {
             var familyId = td.familyId;
-            var primaryPhone = td.primaryPhone;
+            var primaryPhone = !td.primaryPhone ? '' : FSS.formatPhoneNumber(td.primaryPhone) ;
             var familyName = td.familyName;
             var address = td.address;
             var Active = td.active;
-
+             
             const additionalInformation = viewEditFamilyBtn();
             additionalInformation.innerHTML = 'View/Edit Family';
 
@@ -136,10 +136,10 @@ const EditFamilies = (function () {
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('roster-top-nav');
 
-        SEARCH_BTN = buildSearchBtn();       
-        INACTIVE_CHKBOX = buildInactiveChkBox();     
+        SEARCH_BTN = buildSearchBtn();
+        INACTIVE_CHKBOX = buildInactiveChkBox();
         backBtn = backButton();
-       
+
         // custom search stuff
         SEARCH_WRAP = document.createElement('div');
         SEARCH_WRAP.classList.add('rosterSearch');
@@ -172,7 +172,7 @@ const EditFamilies = (function () {
             style: 'secondary',
             type: 'outlined',
             callback: async () => {
-                FSS.fSSLanding() 
+                FSS.fSSLanding()
             },
         });
     }

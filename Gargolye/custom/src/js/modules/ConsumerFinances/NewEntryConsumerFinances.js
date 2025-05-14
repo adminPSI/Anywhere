@@ -43,8 +43,10 @@ const NewEntryCF = (() => {
     let accountPermission;
     let tempAccountPer;
     let pageName;
+    let defaultAccount;
 
-    async function init() {
+    async function init(accountName = undefined) {
+        defaultAccount = accountName;
         buildNewEntryForm(registerId = undefined, attachment = undefined, attachmentID = undefined, IsNewRefresh = true);
     }
 
@@ -64,6 +66,7 @@ const NewEntryCF = (() => {
             amount = getAccountEntriesByIdResult[0].amount != '' ? parseFloat(getAccountEntriesByIdResult[0].amount).toFixed(2) : '';
             tempAmountval = getAccountEntriesByIdResult[0].amount;
             account = getAccountEntriesByIdResult[0].account;
+            defaultAccount = account;
             payee = getAccountEntriesByIdResult[0].payee;
             category = getAccountEntriesByIdResult[0].category;
             subCategory = getAccountEntriesByIdResult[0].subCategory;
@@ -321,7 +324,7 @@ const NewEntryCF = (() => {
         addNewCard.classList.add("card");
         const addNewCardBody = document.createElement("div");
         addNewCardBody.classList.add("card__body");
-        addNewCard.innerHTML = `<div class="card__header">${pageName} Entry</div>`; 
+        addNewCard.innerHTML = `<div class="card__header">${pageName} Entry</div>`;
         addNewCard.appendChild(addNewCardBody)
 
         column1.appendChild(addNewCard)
@@ -773,6 +776,10 @@ const NewEntryCF = (() => {
         if (data.length == 1) {
             account = data[0].value;
             accountID = data[0].id;
+        }
+        if (defaultAccount != '%' && defaultAccount != '' && defaultAccount != undefined) {  
+            account = defaultAccount;
+            accountID = data.find(a => a.value == defaultAccount).id;
         }
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);
@@ -1257,7 +1264,7 @@ const NewEntryCF = (() => {
         }
     }
 
-    async function populateSplitCategoryDropdown(categoryID) { 
+    async function populateSplitCategoryDropdown(categoryID) {
         const {
             getSplitCategoriesSubCategoriesResult: Category,
         } = await ConsumerFinancesAjax.getSplitCategoriesSubCategoriesAsync(categoryID);
@@ -1279,7 +1286,7 @@ const NewEntryCF = (() => {
             if (splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value != '')
                 sum += parseFloat(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value);
         }
-        totalAmount = parseFloat(sum).toFixed(2);  
+        totalAmount = parseFloat(sum).toFixed(2);
         document.getElementById('amountTotalInput').value = sum.toFixed(2);
         if (document.getElementById('newAmountInput').value == '') {
             document.getElementById('newAmountInput').value = sum.toFixed(2);
@@ -1417,7 +1424,7 @@ const NewEntryCF = (() => {
             tempAccountPer.push('Ohio EBT');
         }
         if ($.session.CFViewViewFoodStampDebitCardEBT) {
-            tempAccountPer.push('Food Stamp Debit Card EBT'); 
+            tempAccountPer.push('Food Stamp Debit Card EBT');
         }
 
         if (tempAccountPer.length > 0)

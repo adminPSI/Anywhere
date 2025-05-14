@@ -425,7 +425,7 @@ const FSS = (() => {
             const familyID = parent.familyId;
             var eventName;
             const notes = parent.notes == null ? '' : parent.notes;
-            const primaryPhone = parent.primaryPhone == null ? '' : parent.primaryPhone;
+            const primaryPhone = !parent.primaryPhone ? '' : formatPhoneNumber(parent.primaryPhone);
             const address = parent.address == null ? '' : parent.address;
             const familyName = parent.familyName == null ? '' : parent.familyName;
             const rowWrap = document.createElement('div');
@@ -488,21 +488,21 @@ const FSS = (() => {
                     const fundingSourceID = child.fundingSourceID;
                     const fID = child.familyId;
                     const authId = child.authId;
-                    const coPay = child.coPay == null ? '0.0' : child.coPay;
-                    const encumbered = child.encumbered == null ? '0.0' : child.encumbered;
-                    const amtPaid = child.amtPaid == null ? '0.0' : child.amtPaid;
-                    const balance = child.balance == null ? '0.0' : child.balance;
-                    const allocation = child.allocation == null ? '0.0' : child.allocation;
+                    const coPay = !child.coPay ? '0' : child.coPay;
+                    const encumbered = !child.encumbered ? '0.00' : parseFloat(child.encumbered).toFixed(2);
+                    const amtPaid = !child.amtPaid ? '0.00' : parseFloat(child.amtPaid).toFixed(2);
+                    const balance = !child.balance ? '0.00' : parseFloat(child.balance).toFixed(2);
+                    const allocation = !child.allocation ? '0.00' : parseFloat(child.allocation).toFixed(2);
                     const funding = child.funding == null ? '' : child.funding;
                     const subDataRow = document.createElement('div');
                     var startDate =
                         child.startDate == null || ''
                             ? ''
-                            : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(child.startDate.split('T')[0]));
+                            : moment(child.startDate).format('MM/DD/YYYY');
                     var endDate =
                         child.endDate == null || ''
                             ? ''
-                            : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(child.endDate.split('T')[0]));
+                            : moment(child.endDate).format('MM/DD/YYYY');
                     subDataRow.classList.add('fssTable__subDataRow', 'fssTable__dataRow');
                     const endIconSub = document.createElement('div');
                     endIconSub.classList.add('fssTable__endIcon');
@@ -518,7 +518,7 @@ const FSS = (() => {
             <div>$ ${allocation}</div>
             <div>$${encumbered}</div> 
              <div>$${amtPaid}</div> 
-            <div>${balance}</div>
+            <div>$${balance}</div>
             <div>${funding}</div> 
 
           `;
@@ -561,8 +561,8 @@ const FSS = (() => {
 
                         fSSData.pageDataSubChild[authId].forEach(subChild => {
                             const aID = subChild.authId;
-                            const encumbered = subChild.encumbered == null ? '0.0' : subChild.encumbered;
-                            const paidAmt = subChild.paidAmt == null ? '0.0' : subChild.paidAmt;
+                            const encumbered = subChild.encumbered == null ? '0.00' : parseFloat(subChild.encumbered).toFixed(2);
+                            const paidAmt = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2);
                             const Vendor = subChild.Vendor == null ? '' : subChild.Vendor;
                             const serviceCode = subChild.serviceCode == null ? '' : subChild.serviceCode;
                             const familyMember = subChild.familyMember == null ? '' : subChild.familyMember;
@@ -570,7 +570,7 @@ const FSS = (() => {
                             var paidDate =
                                 subChild.paidDate == null || ''
                                     ? ''
-                                    : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(subChild.paidDate.split('T')[0]));
+                                    : moment(subChild.paidDate).format('MM/DD/YYYY');
 
                             subChildDataRow.classList.add('fssTable__subChildDataRow', 'fssTable__dataRow');
                             const endIconSubChild = document.createElement('div');
@@ -582,8 +582,8 @@ const FSS = (() => {
                             <div>${familyMember}</div>
                             <div>${serviceCode}</div>
                             <div>${Vendor}</div>
-                            <div>${encumbered}</div>   
-                            <div>${paidAmt}</div>
+                            <div>$${encumbered}</div>   
+                            <div>$${paidAmt}</div>
                             <div>${paidDate}</div>
                             `;
                             if ($.session.FSSDelete == true) {
@@ -744,7 +744,6 @@ const FSS = (() => {
             callback: async () => {
                 if (!APPLY_BTN.classList.contains('disabled')) {
                     await saveAuthorizationData(familyId);
-                    POPUP.hide(authorizationPopup);
                 }
             },
         });
@@ -883,7 +882,9 @@ const FSS = (() => {
     }
 
     async function saveAuthorizationData(familyId) {
-        await FSSAjax.insertAuthorization({
+        const {
+            insertAuthorizationResult: Authorizationresult,
+        } = await FSSAjax.insertAuthorization({
             token: $.session.Token,
             coPay: coPayVal,
             allocation: allocationVal,
@@ -893,7 +894,17 @@ const FSS = (() => {
             userId: $.session.UserId,
             familyID: familyId,
         });
-        applyFilter();
+        const result = Authorizationresult.replace('@', '');
+        const jsonObject = JSON.parse(result);
+        if (jsonObject[0].nextAuthId == '-1') {
+            POPUP.hide(authorizationPopup);
+            overlapMessagePopup();
+        } else {
+            applyFilter();
+            POPUP.hide(authorizationPopup);
+        }
+
+
     }
 
     async function deleteAuthorizationData(authDetailId) {
@@ -902,6 +913,32 @@ const FSS = (() => {
             authDetailId: authDetailId,
         });
         applyFilter();
+    }
+
+    function overlapMessagePopup() {
+        const OverlapConfPOPUP = POPUP.build({
+            hideX: true,
+        });
+        const okBtn = button.build({
+            text: 'OK',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                POPUP.hide(OverlapConfPOPUP);
+                POPUP.show(authorizationPopup);
+            },
+        });
+        okBtn.style.width = '100%';
+        const message = document.createElement('p');
+
+        message.innerText = 'This record overlaps with another record with the same funding source.';
+
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        OverlapConfPOPUP.appendChild(message);
+        OverlapConfPOPUP.appendChild(okBtn);
+        okBtn.focus();
+        POPUP.show(OverlapConfPOPUP);
     }
 
 
@@ -962,8 +999,8 @@ const FSS = (() => {
             type: 'contained',
             callback: async () => {
                 if (!UAPPLY_BTN.classList.contains('disabled')) {
-                    POPUP.hide(UtilizationPopup); 
-                    await saveUtilizationData(familyId, authId);                 
+                    POPUP.hide(UtilizationPopup);
+                    await saveUtilizationData(familyId, authId);
                 }
             },
         });
@@ -998,7 +1035,7 @@ const FSS = (() => {
         UtilizationPopup.appendChild(popupbtnWrap);
 
         POPUP.show(UtilizationPopup);
-        UtilizationDropdownPopulate(familyId,fundingSourceID);
+        UtilizationDropdownPopulate(familyId, fundingSourceID);
         UtilizationPopupEventListeners();
         UtilizationRequiredFieldsOfPopup();
     }
@@ -1065,7 +1102,7 @@ const FSS = (() => {
         setUtilizationBtnStatusOfPopup();
     }
 
-    async function UtilizationDropdownPopulate(familyId,fundingSourceID) {
+    async function UtilizationDropdownPopulate(familyId, fundingSourceID) {
         const {
             getFamilyMembersDropDownResult: FamilyMembers,
         } = await FSSAjax.getFamilyMembersDropDown(familyId);
@@ -1130,7 +1167,7 @@ const FSS = (() => {
             consumerID: selectedConsumersId,
             isSimpleBilling: $.session.automateSimpleBilling,
         });
- 
+
         if ($.session.automateSimpleBilling == 'Y' && utilizationResult.isSuccess != '') {
             simpalBillingMessagePopup(utilizationResult);
         } else {
@@ -1165,22 +1202,43 @@ const FSS = (() => {
             else if (utilizationResult.isSuccess == 'Y' && utilizationResult.isReceivable == 'N') {
                 message.innerText = 'Simple billing entry created. An entry has been created in Simple Billing Entry. You will need to go to the Simple Billing Entry window to Validate & Archive this transaction.';
             }
+            else {
+                message.innerText = '';
+            }
         } else if (previousPaid > 0 && currentPaid === 0 && utilizationResult.isReceivable == 'N') {
             message.innerText = 'Simple billing entry needs deleted. No changes have been made in Simple Billing. Make sure that you delete any existing Simple Billing entries.';
         } else if (previousPaid > 0 && currentPaid === 0 && utilizationResult.isReceivable == 'Y') {
             message.innerText = 'County simple billing entry needs deleted. No changes have been made in County Simple Billing. Make sure that you delete any existing County Simple Billing entries.';
         } else if (previousPaid > 0 && currentPaid > 0 && utilizationResult.isReceivable == 'N') {
-            message.innerText = 'Simple billing entry needs modified. No changes have been made in Simple Billing. Make sure that you modify the existing Simple Billing entry to reflect the modified information.'; 
+            message.innerText = 'Simple billing entry needs modified. No changes have been made in Simple Billing. Make sure that you modify the existing Simple Billing entry to reflect the modified information.';
         } else if (previousPaid > 0 && currentPaid > 0 && utilizationResult.isReceivable == 'Y') {
             message.innerText = 'County simple billing entry needs modified. No changes have been made in County Simple Billing. Make sure that you modify the existing County Simple Billing entry to reflect the modified information.';
+        } else {
+            message.innerText = '';
         }
-         
+
         message.style.textAlign = 'center';
         message.style.marginBottom = '15px';
         ConfPOPUP.appendChild(message);
         ConfPOPUP.appendChild(okBtn);
         okBtn.focus();
-        POPUP.show(ConfPOPUP);
+        if (message.innerText != '')
+            POPUP.show(ConfPOPUP);
+    }
+
+    function formatPhoneNumber(number) {
+        if (!number) return;
+        const splitNumber = number
+            .replace(/[^\w\s]/gi, '')
+            .replaceAll(' ', '')
+            .replaceAll('x', '');
+
+        const phoneNumber = UTIL.formatPhoneNumber(splitNumber.substr(0, 10));
+        const phoneExt = splitNumber.substr(10);
+
+        const phone = phoneExt ? `${phoneNumber} (${phoneExt})` : `${phoneNumber}`;
+
+        return phone;
     }
 
     function init() {
@@ -1193,6 +1251,7 @@ const FSS = (() => {
         init,
         handleActionNavEvent,
         loadFSSLanding,
-        fSSLanding
+        fSSLanding,
+        formatPhoneNumber
     };
 })(); 

@@ -71,8 +71,8 @@
         this.setupEvents();
 
         // Overlap Popup
-        overlapPopup = new ConfirmationPopup({ className: 'overlapWarning' });
-        overlapPopup.renderTo(_DOM.ACTIONCENTER);
+        deleteWarningPopup = new WarningPopup({ className: 'overlapWarning' });   
+        deleteWarningPopup.renderTo(_DOM.ACTIONCENTER);  
 
         return this;
     };
@@ -269,7 +269,7 @@
                 } else {
                     message = 'This is a public phrase and will not be available to anyone if it is deleted.\n Are you sure you want to delete this phrase?'
                 }
-                const continueSave = await overlapPopup.show(
+                const continueSave = await deleteWarningPopup.show(
                     message,
                 );
 
