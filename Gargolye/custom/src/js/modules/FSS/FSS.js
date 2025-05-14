@@ -425,7 +425,7 @@ const FSS = (() => {
             const familyID = parent.familyId;
             var eventName;
             const notes = parent.notes == null ? '' : parent.notes;
-            const primaryPhone = parent.primaryPhone == null ? '' : formatPhoneNumber(parent.primaryPhone);
+            const primaryPhone = !parent.primaryPhone ? '' : formatPhoneNumber(parent.primaryPhone);
             const address = parent.address == null ? '' : parent.address;
             const familyName = parent.familyName == null ? '' : parent.familyName;
             const rowWrap = document.createElement('div');
@@ -488,11 +488,11 @@ const FSS = (() => {
                     const fundingSourceID = child.fundingSourceID;
                     const fID = child.familyId;
                     const authId = child.authId;
-                    const coPay = child.coPay == null ? '0' : child.coPay;
-                    const encumbered = child.encumbered == null ? '0.00' : parseFloat(child.encumbered).toFixed(2); 
-                    const amtPaid = child.amtPaid == null ? '0.00' : parseFloat(child.amtPaid).toFixed(2);
-                    const balance = child.balance == null ? '0.00' : parseFloat(child.balance).toFixed(2);
-                    const allocation = child.allocation == null ? '0.00' : parseFloat(child.allocation).toFixed(2) ;
+                    const coPay = !child.coPay ? '0' : child.coPay;
+                    const encumbered = !child.encumbered ? '0.00' : parseFloat(child.encumbered).toFixed(2);
+                    const amtPaid = !child.amtPaid ? '0.00' : parseFloat(child.amtPaid).toFixed(2);
+                    const balance = !child.balance ? '0.00' : parseFloat(child.balance).toFixed(2);
+                    const allocation = !child.allocation ? '0.00' : parseFloat(child.allocation).toFixed(2);
                     const funding = child.funding == null ? '' : child.funding;
                     const subDataRow = document.createElement('div');
                     var startDate =
@@ -1251,6 +1251,7 @@ const FSS = (() => {
         init,
         handleActionNavEvent,
         loadFSSLanding,
-        fSSLanding
+        fSSLanding,
+        formatPhoneNumber
     };
 })(); 

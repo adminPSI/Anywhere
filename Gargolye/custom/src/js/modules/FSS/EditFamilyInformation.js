@@ -7,14 +7,14 @@ const EditFamilyInformation = (() => {
     let familyName;
     let address1;
     let address2;
-    let city; 
+    let city;
     let state;
     let zip;
     let primaryPhone;
     let secondaryPhone;
     let email;
     let notes;
-    let active; 
+    let active;
 
 
     async function init(familyId, name) {
@@ -109,22 +109,30 @@ const EditFamilyInformation = (() => {
 
         primaryPhoneInput = input.build({
             id: 'primaryPhoneInput',
-            type: 'number',
             label: 'Primary Phone',
             style: 'secondary',
-            attributes: [{ key: 'maxlength', value: '12' }],
+            type: 'tel',
+            attributes: [
+                { key: 'maxlength', value: '19' },
+                { key: 'pattern', value: '[0-9]{3}-[0-9]{3}-[0-9]{4} ([0-9]{4})' },
+                { key: 'placeholder', value: '888-888-8888 (8888)' },
+            ],
             readonly: $.session.FSSUpdate == true ? false : true,
-            value: (primaryPhone) ? primaryPhone : '',
+            value: (primaryPhone) ? FSS.formatPhoneNumber(primaryPhone) : '',
         });
 
         secondaryPhoneInput = input.build({
             id: 'secondaryPhoneInput',
-            type: 'number',
             label: 'Secondary Phone',
             style: 'secondary',
-            attributes: [{ key: 'maxlength', value: '12' }],
+            type: 'tel',
+            attributes: [
+                { key: 'maxlength', value: '19' },
+                { key: 'pattern', value: '[0-9]{3}-[0-9]{3}-[0-9]{4} ([0-9]{4})' },
+                { key: 'placeholder', value: '888-888-8888 (8888)' },
+            ],
             readonly: $.session.FSSUpdate == true ? false : true,
-            value: (secondaryPhone) ? secondaryPhone : '',
+            value: (secondaryPhone) ? FSS.formatPhoneNumber(secondaryPhone) : '',
         });
 
         activeChk = input.buildCheckbox({
@@ -322,14 +330,40 @@ const EditFamilyInformation = (() => {
             getRequiredFieldsOfEmployeeInfo();
         });
         primaryPhoneInput.addEventListener('input', event => {
-            primaryPhone = event.target.value;
-            IsValueChanged = true;
+            if (event.target.value !== '' && validatePhone(event.target.value)) {
+                const phnDisp = FSS.formatPhoneNumber(event.target.value);
+                event.target.value = phnDisp;
+                primaryPhone = event.target.value.replace('-', '').replace('-', '').replace('(', '').replace(')', '').replace(' ', '');
+                primaryPhoneInput.classList.remove('error');
+            } else {
+                if (event.target.value === '') {
+                    primaryPhone = '';  
+                    primaryPhoneInput.classList.remove('error');
+                }
+                else {
+                    primaryPhoneInput.classList.add('error');
+                }
+            }
             getRequiredFieldsOfEmployeeInfo();
+            IsValueChanged = true;
         });
         secondaryPhoneInput.addEventListener('input', event => {
-            secondaryPhone = event.target.value;
-            IsValueChanged = true;
+            if (event.target.value !== '' && validatePhone(event.target.value)) {
+                const phnDisp = FSS.formatPhoneNumber(event.target.value);
+                event.target.value = phnDisp;
+                secondaryPhone = event.target.value.replace('-', '').replace('-', '').replace('(', '').replace(')', '').replace(' ', '');
+                secondaryPhoneInput.classList.remove('error');
+            } else {
+                if (event.target.value === '') {
+                    secondaryPhone = '';
+                    secondaryPhoneInput.classList.remove('error');
+                } else {
+                    secondaryPhoneInput.classList.add('error');
+                }
+
+            }
             getRequiredFieldsOfEmployeeInfo();
+            IsValueChanged = true;
         });
         activeChk.addEventListener('change', event => {
             active = event.target.checked == true ? 'Y' : 'N';
@@ -369,6 +403,13 @@ const EditFamilyInformation = (() => {
 
         EditFamilyHeader.refreshFamily(familyID, familyName, tabPositionIndex = 0);
 
+    }
+
+    function validatePhone(val) {
+        if (val === '') return true;
+
+        const genTelRegEx = new RegExp(/^\d{3}[- ]?\d{3}[- ]?\d{4}( x\d{4})?|x\d{4}$/im);
+        return genTelRegEx.test(val);
     }
 
     return {
