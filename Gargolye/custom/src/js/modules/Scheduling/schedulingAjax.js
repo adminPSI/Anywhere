@@ -79,6 +79,30 @@ const schedulingAjax = (function () {
       throw new Error(error.responseText);
     }
   }
+  async function getDayOfWeekScheduleAjaxNew() {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getDayOfWeekSchedule/',
+        data: JSON.stringify({
+          token: $.session.Token,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.getDayOfWeekScheduleResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
   async function saveOrUpdateShift(retrieveData) {
     // date: '01/01/2015, 01/02/2025'
     // consumerId: '123, 123, 123'
@@ -205,10 +229,12 @@ const schedulingAjax = (function () {
     if (!data.locationId) {
       data.includeTrainedOnly = 0;
     }
-    if (!data.shiftdate) {
+    if (data.shiftdate.length === 0) {
       data.includeOverlaps = 0;
       data.maxWeeklyHours = -1;
       data.minTimeBetweenShifts = -1;
+    } else {
+      data.shiftdate = data.shiftdate.map(date => dates.formatISO(new Date(date))).join(',');
     }
 
     delete data.filterHours;
@@ -657,6 +683,7 @@ const schedulingAjax = (function () {
     getSchedulesForSchedulingModuleNew,
     getScheduleApptInformationNew,
     getLocationDropdownForSchedulingNew,
+    getDayOfWeekScheduleAjaxNew,
     //
     saveOrUpdateShift,
     saveOrUpdateAppointment,

@@ -1496,13 +1496,15 @@ var noteSSA = (function () {
                     break;
             }
 
+            const showRejectionReason = reviewResults === 'R' && reviewRejectReason !== '';
             if (reviewRequired === 'Y' && $.session.applicationName === 'Gatekeeper') {
-                var reviewMessage = document.createElement('p');
-                reviewMessage.classList.add('reviewMessage');
-                reviewMessage.innerHTML = `
-        <br>Review Required for this Case Note <br> Review Results: ${reviewText} 
-        ${reviewRejectReason === '' ? '' : `<br> Rejection Reason: ${reviewRejectReason}`}`;
-                if (reviewResults === 'R') reviewMessage.appendChild(correctedCheckboxDiv);
+              var reviewMessage = document.createElement('p');
+              reviewMessage.classList.add('reviewMessage');
+              reviewMessage.innerHTML = `
+                <br>Review Required for this Case Note <br> Review Results: ${reviewText}
+                ${showRejectionReason ? `<br> Rejection Reason: ${reviewRejectReason}` : ''}
+              `;
+              if (reviewResults === 'R') reviewMessage.appendChild(correctedCheckboxDiv);
             }
 
             ////ADV does not have a rejection reason

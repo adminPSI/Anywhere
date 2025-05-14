@@ -81,25 +81,22 @@
 
     &__time,
     &__date,
-
     &__other {
         display: flex;
         flex-flow: row wrap;
         justify-content: space-between;
         margin: 0;
+        > div {
+            flex-grow: 1;
+            min-width: 280px;
+            margin: 0 5px 20px;
+            width: 45%;
+        }
     }
     &__date {
         > div {
             flex-grow: 1;
             min-width: 180px;
-            margin: 0 5px 20px;
-            width: 45%;
-        }
-    }
-    &__other {
-        > div {
-            flex-grow: 1;
-            min-width: 280px;
             margin: 0 5px 20px;
             width: 45%;
         }
@@ -117,73 +114,24 @@
         }
     }
     &__evv {
+        align-items: center;
         display: flex;
         flex-flow: row wrap;
-
-        .dropdown {
-            flex-grow: 1;
-        }
-        > div {
-            margin: 0 0 20px;
-        }
-
-        > label {
-            margin: 0 5px 20px;
-            align-self: flex-end;
-        }
-    }
-
-    &__evvLocationEvv {
-        display: flex;
-        flex-flow: row wrap;
-
-        .dropdown {
-            flex-grow: 1;
-        }
 
         > div {
             margin: 0 5px 20px;
         }
-
-        > label {
-            margin: 0 0 20px;
-            align-self: flex-end;
+        
+        .input-field {
+            flex-grow: 2;
+            min-width: 200px;
         }
-    }
-
-    &__LocationEvv {
-        display: flex;
-        flex-flow: row wrap;
-        width: 40%;
-
         .dropdown {
             flex-grow: 1;
+            min-width: 180px;
         }
-        > div {
-            margin: 0 0 20px;
-        }
-
-        > label {
-            margin: 0 5px 20px;
-            align-self: flex-end;
-        }
-    }
-
-    &__evvattestChk {
-        display: flex;
-        flex-flow: row wrap;
-
-        .dropdown {
-            flex-grow: 1;
-        }
-
-        > div {
-            margin: 0 0 20px;
-        }
-
-        > label {
-            margin: 0 5px 20px;
-            align-self: flex-end;
+        .checkbox {
+            margin: 0 5px 18px;
         }
     }
 
@@ -195,9 +143,11 @@
 
         &__timeEntry {
             width: 58%;
+            flex-grow: 1;
         }
         &__consumers {
             width: 42%;
+            max-width: 400px;
         }
         &__actions {
             width: 100%;

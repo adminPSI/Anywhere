@@ -447,7 +447,7 @@ class Calendar {
 
     const eventsWithinDate = [...this.eventCache].filter(e => isDateWithinSpan(e.date, this.dateRange));
     eventsWithinDate
-      .sort((a, b) => new Date(a.date) > new Date(b.date))
+      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime) || new Date(a.endTime) - new Date(b.endTime))
       .map(event => {
         const eventDate = new Date(event.date);
         const dateISO = dates.formatISO(eventDate);
@@ -492,11 +492,13 @@ class Calendar {
     if (!this.eventCache) return [];
 
     const eventsWithinDate = [...this.eventCache].filter(e => isDateWithinSpan(e.date, this.dateRange));
-    eventsWithinDate.map(event => {
-      const eventCellEle = this.buildEventCell(event);
-      this.setEventPosition(event, eventCellEle);
-      this.weekEventsWrapEle.appendChild(eventCellEle);
-    });
+    eventsWithinDate
+      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime) || new Date(a.endTime) - new Date(b.endTime))
+      .map(event => {
+        const eventCellEle = this.buildEventCell(event);
+        this.setEventPosition(event, eventCellEle);
+        this.weekEventsWrapEle.appendChild(eventCellEle);
+      });
 
     return eventsWithinDate;
   }
@@ -506,11 +508,13 @@ class Calendar {
     if (!this.eventCache) return [];
 
     const eventsWithinDate = [...this.eventCache].filter(e => isSameDay(new Date(e.date), this.currentDate));
-    eventsWithinDate.map(event => {
-      const eventCellEle = this.buildEventCell(event);
-      this.setEventPosition(event, eventCellEle);
-      this.dayEventsWrapEle.appendChild(eventCellEle);
-    });
+    eventsWithinDate
+      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime) || new Date(a.endTime) - new Date(b.endTime))
+      .map(event => {
+        const eventCellEle = this.buildEventCell(event);
+        this.setEventPosition(event, eventCellEle);
+        this.dayEventsWrapEle.appendChild(eventCellEle);
+      });
 
     return eventsWithinDate;
   }
@@ -555,23 +559,38 @@ class Calendar {
 
     if (!this.eventCache) return [];
 
+    const dayRowMap = {};
+
     const eventsWithinDate = [...this.eventCache].filter(e => isDateWithinSpan(e.date, this.dateRange));
-    eventsWithinDate.map(event => {
-      // Grouping
-      const groupByKey = event[this.customGroupOptions.groupBy];
-      const groupByName = event[this.customGroupOptions.groupName];
+    eventsWithinDate
+      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime) || new Date(a.endTime) - new Date(b.endTime))
+      .map(event => {
+        // Grouping
+        const groupByKey = event[this.customGroupOptions.groupBy];
+        const groupByName = event[this.customGroupOptions.groupName];
 
-      if (!this.eventGroupDOMCache[groupByKey]) {
-        const groupWrapEle = this.buildGroupWrap(groupByKey, groupByName);
-        this.weekWrapEle.appendChild(groupWrapEle);
-        this.eventGroupDOMCache[groupByKey] = groupWrapEle;
-      }
+        if (!this.eventGroupDOMCache[groupByKey]) {
+          const groupWrapEle = this.buildGroupWrap(groupByKey, groupByName);
+          this.weekWrapEle.appendChild(groupWrapEle);
+          this.eventGroupDOMCache[groupByKey] = groupWrapEle;
+        }
 
-      // Event
-      const eventCellEle = this.buildEventCell(event);
-      this.setEventPosition(event, eventCellEle);
-      this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
-    });
+        // Event
+        const eventCellEle = this.buildEventCell(event);
+        this.setEventPosition(event, eventCellEle);
+        this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
+
+        // custom row logic
+        if (!dayRowMap[event.date]) {
+          dayRowMap[event.date] = {
+            rowStart: 0,
+            rowEnd: 1,
+          };
+        }
+        const gridRowStart = ++dayRowMap[event.date].rowStart;
+        const gridRowEnd = ++dayRowMap[event.date].rowStart;
+        eventCellEle.style.gridRow = `${gridRowStart} / ${gridRowEnd}`;
+      });
 
     return eventsWithinDate;
   }
@@ -584,23 +603,25 @@ class Calendar {
     if (!this.eventCache) return [];
 
     const eventsWithinDate = [...this.eventCache].filter(e => isSameDay(new Date(e.date), this.currentDate));
-    eventsWithinDate.map(event => {
-      // Grouping
-      const groupByKey = event[this.customGroupOptions.groupBy];
-      const groupByName = event[this.customGroupOptions.groupName];
+    eventsWithinDate
+      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime) || new Date(a.endTime) - new Date(b.endTime))
+      .map(event => {
+        // Grouping
+        const groupByKey = event[this.customGroupOptions.groupBy];
+        const groupByName = event[this.customGroupOptions.groupName];
 
-      if (!this.eventGroupDOMCache[groupByKey]) {
-        const groupWrapEle = this.buildGroupWrap(groupByKey, groupByName);
-        this.dayWrapEle.appendChild(groupWrapEle);
-        this.eventGroupDOMCache[groupByKey] = groupWrapEle;
-      }
+        if (!this.eventGroupDOMCache[groupByKey]) {
+          const groupWrapEle = this.buildGroupWrap(groupByKey, groupByName);
+          this.dayWrapEle.appendChild(groupWrapEle);
+          this.eventGroupDOMCache[groupByKey] = groupWrapEle;
+        }
 
-      // Event
-      const eventCellEle = this.buildEventCell(event);
-      this.setEventPosition(event, eventCellEle);
+        // Event
+        const eventCellEle = this.buildEventCell(event);
+        this.setEventPosition(event, eventCellEle);
 
-      this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
-    });
+        this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
+      });
 
     return eventsWithinDate;
   }

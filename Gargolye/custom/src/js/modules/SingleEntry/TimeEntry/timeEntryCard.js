@@ -122,6 +122,7 @@ var timeEntryCard = (function () {
   var eVVChangeDate;
   var todayDate;
   var isEndTimeChangePermission;
+  let evvDateCheck;
 
   // Action Nav
   //------------------------------------
@@ -504,12 +505,23 @@ var timeEntryCard = (function () {
     hoursInput.value = '';
     endTimeClicks = 0;
 
-    const reasonCodeDropdown = reasonDropdown.querySelector('select');
-    reasonCodeDropdown.value = '';
-    //Hide evv reason code
-    document.querySelector('.timeCard__evv').style.display = 'none';
-    document.querySelector('.timeCard__evvattestChk').style.display = 'none';
-    reasonCodeDropdown.classList.remove('error');
+    // Hide evv reason code
+    if (evvDateCheck) {
+      reasonInput.style.display = 'none';
+    } else {
+      reasonDropdown.style.display = 'none';
+
+      const reasonCodeDropdown = reasonDropdown.querySelector('select');
+      reasonCodeDropdown.value = '';
+      reasonCodeDropdown.classList.remove('error');
+    }
+    attestCheckbox.style.display = 'none';
+
+    // const reasonCodeDropdown = reasonDropdown.querySelector('select');
+    // reasonCodeDropdown.value = '';
+    // reasonCodeDropdown.classList.remove('error');
+    // document.querySelector('.timeCard__evv').style.display = 'none';
+    // document.querySelector('.timeCard__evvattestChk').style.display = 'none';
     defaultTimesChanged = false;
     defaultStartTimeChanged = false;
     defaultEndTimeChanged = false;
@@ -1510,14 +1522,11 @@ var timeEntryCard = (function () {
           currentValue === '%' ||
           (currentValue === '' && reasonRequired && (!evvReasonCode || evvReasonCode === '%') && defaultTimesChanged)
         ) {
-          if (document.querySelector('.timeCard__evv').style.display !== 'none') {
+          if (reasonDropdown.style.display !== 'none') {
             reasonDropdown.classList.add('error');
           }
-
-          // roster2.toggleMiniRosterBtnVisible(false);
         } else {
           reasonDropdown.classList.remove('error');
-          // if (isBillable === 'Y') roster2.toggleMiniRosterBtnVisible(true);
         }
       }
     }
@@ -1738,11 +1747,15 @@ var timeEntryCard = (function () {
       }
 
       if (isEdit && defaultStartTimeChanged) {
-        reasonDropdown.classList.remove('disabled');
-        const reasonCodeDropdown = reasonDropdown.querySelector('select');
-        reasonCodeDropdown.value = '%';
-        evvReasonCode = '%';
-        reasonDropdown.classList.add('error');
+        if (evvDateCheck) {
+          // reason input is show instead of reason dropdown
+        } else {
+          reasonDropdown.classList.remove('disabled');
+          const reasonCodeDropdown = reasonDropdown.querySelector('select');
+          reasonCodeDropdown.value = '%';
+          evvReasonCode = '%';
+          reasonDropdown.classList.add('error');
+        }
       }
 
       await evvCheck();
@@ -1797,11 +1810,15 @@ var timeEntryCard = (function () {
       }
 
       if (isEdit && defaultTimesChanged) {
-        reasonDropdown.classList.remove('disabled');
-        const reasonCodeDropdown = reasonDropdown.querySelector('select');
-        reasonCodeDropdown.value = '%';
-        evvReasonCode = '%';
-        reasonDropdown.classList.add('error');
+        if (evvDateCheck) {
+          // reason input is show instead of reason dropdown
+        } else {
+          reasonDropdown.classList.remove('disabled');
+          const reasonCodeDropdown = reasonDropdown.querySelector('select');
+          reasonCodeDropdown.value = '%';
+          evvReasonCode = '%';
+          reasonDropdown.classList.add('error');
+        }
       }
 
       await evvCheck();
@@ -1832,9 +1849,7 @@ var timeEntryCard = (function () {
         undocumentedConsumerIDs.length > 0
       ) {
         await undocumentedServicesPopup(event, undocumentedConsumerIDs, 'SAVE');
-      }
-      ////////
-      else {
+      } else {
         await saveEvent(event);
       }
     });
@@ -1848,9 +1863,7 @@ var timeEntryCard = (function () {
         undocumentedConsumerIDs.length > 0
       ) {
         undocumentedServicesPopup(event, undocumentedConsumerIDs, 'SAVESUBMIT');
-      }
-      ////////
-      else {
+      } else {
         // Save entry first
         await saveAndSubmitEvent(event);
       }
@@ -2120,15 +2133,28 @@ var timeEntryCard = (function () {
       }
     }
 
-    if (document.getElementById('reasonInput') != null && document.getElementById('reasonInput') != undefined) {
-      if (!reasonCodeValue) {
-        reasonCodeValue = '99 - Documentation on file supports manual change';
-        evvReasonCode = '99';
-      }
-      document.getElementById('reasonInput').value = reasonCodeValue;
-    }
+    // const reasonInput = document.getElementById('reasonInput');
+    // if (reasonInput) {
+    //   if (!reasonCodeValue) {
+    //     reasonCodeValue = '99 - Documentation on file supports manual change';
+    //     evvReasonCode = '99';
+    //   }
+    //   reasonInput.value = reasonCodeValue;
+    // }
 
     populateLocationTypeDropdown();
+  }
+  function populateReasonInput() {
+    const reasonInput = document.getElementById('reasonInput');
+    if (reasonInput) {
+      if (!reasonCodeValue) {
+        reasonCodeValue = '99 - Documentation on file supports manual change';
+      }
+      if (!evvReasonCode) {
+        evvReasonCode = '99';
+      }
+      reasonInput.value = reasonCodeValue;
+    }
   }
 
   function populateLocationTypeDropdown() {
@@ -2252,7 +2278,6 @@ var timeEntryCard = (function () {
   async function evvCheck() {
     if (!isEdit) {
       if (startTime) {
-        // const timeChanged = startTime !== `${nowHour}:${nowMinutes}`
         await evvCheckConsumerEligibilityExistingConsumers();
         if (
           isBillable === 'Y' &&
@@ -2262,20 +2287,19 @@ var timeEntryCard = (function () {
           (reasonRequired === true || isEVVSingleEntry)
         ) {
           showEvv();
-          // evvCheckConsumerEligibilityExistingConsumers();
         } else {
-          document.querySelector('.timeCard__evv').style.display = 'none';
-          document.querySelector('.timeCard__evvattestChk').style.display = 'none';
-          reasonRequired = false;
+          hideEvv();
         }
       }
     } else {
-      //isEdit is true
       let wcObj = workCodeData.filter(wc => wc.workcodeid === workCode);
       wcServiceType = wcObj[0].serviceType;
+
       let ppObj = payPeriodData.filter(pp => pp.dateString === payPeriod.dateString);
       sendEvvData = ppObj[0].sendEvvData;
+
       await evvCheckConsumerEligibilityExistingConsumers();
+
       if (
         isBillable === 'Y' &&
         defaultTimesChanged &&
@@ -2285,17 +2309,11 @@ var timeEntryCard = (function () {
       ) {
         if (defaultEndTimeChanged || defaultTimesChanged) {
           showEvv();
-          // checkRequiredFields();
-          // await evvCheckConsumerEligibilityExistingConsumers();
         } else {
-          reasonRequired = false;
-          document.querySelector('.timeCard__evv').style.display = 'none';
-          document.querySelector('.timeCard__evvattestChk').style.display = 'none';
+          hideEvv();
         }
       } else {
-        reasonRequired = false;
-        document.querySelector('.timeCard__evv').style.display = 'none';
-        document.querySelector('.timeCard__evvattestChk').style.display = 'none';
+        hideEvv();
       }
     }
   }
@@ -2363,7 +2381,7 @@ var timeEntryCard = (function () {
         todayDate >= eVVChangeDate
       ) {
         populateLocationTypeDropdown();
-        document.querySelector('.timeCard__LocationEvv').style.display = 'flex';
+        locationTypeDropdown.style.display = 'flex';
         locationTypeCode = '1';
       }
     });
@@ -2400,15 +2418,41 @@ var timeEntryCard = (function () {
   }
 
   function showEvv() {
-    populateReasonCodeDropdown();
-    document.querySelector('.timeCard__evv').style.display = 'flex';
-    document.querySelector('.timeCard__evvattestChk').style.display = 'flex';
-    if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
-      document.querySelector('.timeCard__LocationEvv').style.display = 'flex';
+    if (evvDateCheck) {
+      locationTypeDropdown.style.display = 'flex';
+      reasonInput.style.display = 'flex';
+
       if (!locationTypeCode) {
         locationTypeCode = '1';
       }
+
+      populateReasonInput();
+    } else {
+      reasonDropdown.style.display = 'flex';
+      populateReasonCodeDropdown();
     }
+    attestCheckbox.style.display = 'inline-flex';
+
+    // populateReasonCodeDropdown();
+    // document.querySelector('.timeCard__evv').style.display = 'flex';
+    // document.querySelector('.timeCard__evvattestChk').style.display = 'flex';
+    // if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
+    //   document.querySelector('.timeCard__LocationEvv').style.display = 'flex';
+    //   if (!locationTypeCode) {
+    //     locationTypeCode = '1';
+    //   }
+    // }
+  }
+  function hideEvv() {
+    reasonRequired = false;
+
+    if (evvDateCheck) {
+      reasonInput.style.display = 'none';
+    } else {
+      reasonDropdown.style.display = 'none';
+    }
+
+    attestCheckbox.style.display = 'none';
   }
 
   function checkAttestStatus() {
@@ -2598,23 +2642,23 @@ var timeEntryCard = (function () {
     noteInput = buildNoteInput();
     rejectionReasonInput = buildRejectionReasonInput();
     attestCheckbox = buildAttestCheckbox();
-    // transportation
     transportationBtn = buildTransportationBtn();
 
     var wrap1 = document.createElement('div'); // dates
     var wrap2 = document.createElement('div'); // dropdowns
     var wrap3 = document.createElement('div'); // times
-    var wrap4 = document.createElement('div'); // evv
-    var wrap5 = document.createElement('div'); // location evv
-    var wrap6 = document.createElement('div'); // attestCheckbox
+    // var wrap4 = document.createElement('div'); // evv
+    // var wrap5 = document.createElement('div'); // location evv
+    // var wrap6 = document.createElement('div'); // attestCheckbox
     var wrap7 = document.createElement('div'); // evv + location evv
     wrap1.classList.add('timeCard__date');
     wrap2.classList.add('timeCard__other');
     wrap3.classList.add('timeCard__time');
-    wrap4.classList.add('timeCard__evv');
-    wrap5.classList.add('timeCard__LocationEvv');
-    wrap6.classList.add('timeCard__evvattestChk');
-    wrap7.classList.add('timeCard__evvLocationEvv');
+    // wrap4.classList.add('timeCard__evv');
+    // wrap5.classList.add('timeCard__LocationEvv');
+    // wrap6.classList.add('timeCard__evvattestChk');
+    wrap7.classList.add('timeCard__evv');
+    // wrap7.classList.add('timeCard__evvLocationEvv');
 
     //rejection reason should always be disabled!
     rejectionReasonInput.classList.add('disabled');
@@ -2622,50 +2666,46 @@ var timeEntryCard = (function () {
     // date wrap
     if (!isEdit) wrap1.appendChild(payPeriodDropdown);
     wrap1.appendChild(dateInput);
+
     // dropdown wrap
     wrap2.appendChild(workCodeDropdown);
     wrap2.appendChild(locationDropdown);
+
     // time wrap
     wrap3.appendChild(startTimeInput);
     wrap3.appendChild(endTimeInput);
-
     if ($.session.stateAbbreviation === 'IN') {
       wrap3.appendChild(communityCheckbox);
     }
-
     wrap3.appendChild(totalHoursInput);
 
     // evv wrap
     // hide evv stuff initially
-    eVVChangeDate = $.session.ohioEVVChangeDate != '' ? new Date($.session.ohioEVVChangeDate.split('-').join('/')) : '';
-    todayDate = new Date(UTIL.getTodaysDate().split('-').join('/'));
+    if (evvDateCheck) {
+      wrap7.appendChild(reasonInput);
+      wrap7.appendChild(locationTypeDropdown);
+    } else {
+      wrap7.appendChild(reasonDropdown);
+    }
+    wrap7.appendChild(attestCheckbox);
+
     if (defaultTimesChanged) {
-      wrap4.style.display = 'flex';
-      if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
-        wrap5.style.display = 'flex';
+      if (evvDateCheck) {
+        locationTypeDropdown.style.display = 'flex';
+        reasonInput.style.display = 'flex';
+      } else {
+        reasonDropdown.style.display = 'flex';
       }
-      wrap6.style.display = 'flex';
+      attestCheckbox.style.display = 'inline-flex';
     } else {
-      wrap4.style.display = 'none';
-      if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
-        wrap5.style.display = 'none';
+      if (evvDateCheck) {
+        locationTypeDropdown.style.display = 'none';
+        reasonInput.style.display = 'none';
+      } else {
+        reasonDropdown.style.display = 'none';
       }
-      wrap6.style.display = 'none';
+      attestCheckbox.style.display = 'none';
     }
-    if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
-      wrap4.appendChild(reasonInput);
-      wrap5.appendChild(locationTypeDropdown);
-    } else {
-      wrap4.appendChild(reasonDropdown);
-    }
-
-    wrap6.appendChild(attestCheckbox);
-    wrap7.appendChild(wrap4);
-    if (eVVChangeDate != '' && $.session.stateAbbreviation == 'OH' && todayDate >= eVVChangeDate) {
-      wrap7.appendChild(wrap5);
-    }
-
-    wrap7.appendChild(wrap6);
 
     section.appendChild(wrap1);
     section.appendChild(wrap2);
@@ -2756,6 +2796,11 @@ var timeEntryCard = (function () {
     var opts = options;
     isEdit = opts.isEdit;
     isAdminEdit = opts.isAdminEdit;
+
+    eVVChangeDate =
+      $.session.ohioEVVChangeDate !== '' ? new Date($.session.ohioEVVChangeDate.split('-').join('/')) : '';
+    todayDate = new Date(UTIL.getTodaysDate().split('-').join('/'));
+    evvDateCheck = eVVChangeDate !== '' && $.session.stateAbbreviation === 'OH' && todayDate >= eVVChangeDate;
 
     isEndTimeChangePermission = isOnlyEndTimeChangePermission;
     if (editData && editData.length > 0) {

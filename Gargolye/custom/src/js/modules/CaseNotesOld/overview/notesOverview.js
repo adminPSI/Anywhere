@@ -355,6 +355,7 @@ var notesOverview = (function () {
   let rejectionReasons = [];
   //
   function resetMultiSelect() {
+    overviewTable.classList.remove('multiSelectEnabled');
     mulitSelectBtn.classList.remove('enabled');
     mulitSelectBtn.classList.remove('disabled');
     selectAllBtn.classList.remove('enabled');
@@ -378,6 +379,19 @@ var notesOverview = (function () {
         failSave.hide();
       }, 1000);
     }
+  }
+  function showLoadingPopup(action) {
+    const popup = POPUP.build({
+      classNames: 'loadingPop',
+      hideX: true,
+    });
+
+    const spinner = PROGRESS.SPINNER.get(`${action} note(s).`);
+    popup.appendChild(spinner);
+
+    POPUP.show(popup);
+
+    return popup;
   }
   function buildRejectionReasonDropdown() {
     const rejectDropdown = dropdown.build({
@@ -504,6 +518,8 @@ var notesOverview = (function () {
     if (targetAction === 'pass') {
       const passMessage = 'Are you sure you want to set the selected case notes as passed?';
       showConfimPassRejectPopup(passMessage, async () => {
+        const loadingPopup = showLoadingPopup('Passing');
+
         success = await caseNotesAjax.passRejectCaseNotes({
           userId: $.session.UserId,
           reviewResult: 'P',
@@ -511,6 +527,7 @@ var notesOverview = (function () {
           rejectReason: '',
         });
 
+        POPUP.hide(loadingPopup);
         showSuccessFailPopup(success);
         resetMultiSelect();
         getTableData();
@@ -526,6 +543,7 @@ var notesOverview = (function () {
       showConfimPassRejectPopup(rejectMessage, async () => {
         if ($.session.applicationName === 'Gatekeeper') {
           showRejectionReasonPopup(async rejectReason => {
+            const loadingPopup = showLoadingPopup('Rejecting');
             success = await caseNotesAjax.passRejectCaseNotes({
               userId: $.session.UserId,
               reviewResult: 'R',
@@ -533,11 +551,13 @@ var notesOverview = (function () {
               rejectReason: rejectReason,
             });
 
+            POPUP.hide(loadingPopup);
             showSuccessFailPopup(success);
             resetMultiSelect();
             getTableData();
           });
         } else {
+          const loadingPopup = showLoadingPopup('Rejecting');
           success = await caseNotesAjax.passRejectCaseNotes({
             userId: $.session.UserId,
             reviewResult: 'R',
@@ -545,6 +565,7 @@ var notesOverview = (function () {
             rejectReason: '',
           });
 
+          POPUP.hide(loadingPopup);
           showSuccessFailPopup(success);
           resetMultiSelect();
           getTableData();
@@ -578,6 +599,10 @@ var notesOverview = (function () {
 
     mulitSelectBtn.classList.toggle('enabled');
     overviewTable.classList.toggle('multiSelectEnabled');
+
+    if (!enableMultiEdit) {
+      ACTION_NAV.hide();
+    }
 
     selectedRows = [];
     var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
@@ -651,36 +676,20 @@ var notesOverview = (function () {
     //? user clicks on a white row
     //? WHERE case_notes.review_required = 'Y' AND ((case_notes.review_results = 'N')
     //? OR (case_notes.review_results = 'R' AND case_notes.corrected = 'Y')) AND the people.id in Gatekeeper (persons.person_id in Advisor) of the logged in user
-    //? DOES NOT EQUAL case_notes.case_manager_id on the record in the grid on this page
+    //? DOES NOT EQUAL case_notes.case_manager_id on the record in the grid on this page, select it by changing the row color from white to green;
     if ($.session.PeopleId !== caseManagerId) {
       if ($.session.applicationName === 'Gatekeeper') {
         if ((reviewRequired === 'Y' && reviewResult === 'N') || (reviewResult === 'R' && corrected === 'Y')) {
-          return 'true';
+          return 'true'; // can select row GK
         }
       } else {
-        if ((reviewRequired === 'Y' && reviewResult === 'N') || reviewResult === 'R') {
-          return 'true';
+        if (reviewRequired === 'Y' && reviewResult === 'N') {
+          return 'true'; // can select row ADV
         }
       }
     }
 
-    // if ($.session.applicationName === 'Gatekeeper') {
-    //   if (
-    //     (reviewRequired === 'Y' && reviewResult === 'N') ||
-    //     (reviewResult === 'R' && corrected === 'Y' && $.session.PeopleId !== caseManagerId)
-    //   ) {
-    //     return 'true';
-    //   }
-    // } else {
-    //   if (
-    //     (reviewRequired === 'Y' && reviewResult === 'N') ||
-    //     (reviewResult === 'R' && $.session.PeopleId !== caseManagerId)
-    //   ) {
-    //     return 'true';
-    //   }
-    // }
-
-    return 'false';
+    return 'false'; // can NOT selct row
   }
   //
   function handleTableEvents(event) {

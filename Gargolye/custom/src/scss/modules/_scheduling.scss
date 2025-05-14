@@ -365,7 +365,6 @@
     padding: 2px;
     position: relative;
     z-index: 2;
-    margin: 0 0 2px 0;
 
     &.withIcons {
       min-height: 80px;
@@ -410,13 +409,18 @@
     .eventGroup-label {
       background: $white;
       color: $black;
-      text-align: right;
+      text-align: center;
       padding: 4px 6px 4px;
       grid-column: 1 / 2;
+      grid-row: 1 / span 99;
 
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+
+    .eventCellEle {
+      margin: 2px 0 2px;
     }
   }
 }
@@ -654,6 +658,7 @@
   .prevWeekBtn,
   .nextWeekBtn {
     min-width: 20px;
+    cursor: pointer;
 
     * {
       pointer-events: none;
@@ -795,7 +800,41 @@
   }
 }
 // roster stuff for popups
-#shiftDetailPopup,
+#shiftDetailPopup {
+  .rosterCard {
+    background: $primary;
+    color: $white;
+    display: flex;
+    column-gap: 10px;
+    cursor: pointer;
+    flex-flow: row nowrap;
+    overflow: hidden;
+    margin: 0 0 4px;
+
+    * {
+      pointer-events: none;
+    }
+
+    .portrait {
+      border-radius: 8px;
+      height: 60px;
+      width: 60px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .details {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      white-space: nowrap;
+    }
+  }
+}
 #addIndividualPopup {
   .rosterCardsWrap {
     display: flex;
@@ -804,6 +843,8 @@
     padding: 0 10px;
 
     .rosterCardWrap {
+      background: $primary;
+      color: $white;
       border-radius: 4px;
       display: grid;
       grid-template-rows: 1fr;
@@ -811,6 +852,7 @@
       padding: 4px 6px;
       position: relative;
       order: 3;
+      margin: 0 0 4px;
 
       &.isClosed:not(.selected) {
         grid-template-rows: 0fr;
@@ -825,7 +867,6 @@
 
       &.selected {
         background: rgba(129, 185, 65, 0.9);
-        color: $white;
         order: 1;
         margin: 0 0 6px;
       }
@@ -843,42 +884,36 @@
 
     .rosterCard {
       display: flex;
+      column-gap: 10px;
       cursor: pointer;
       flex-flow: row nowrap;
       overflow: hidden;
-
+  
       * {
         pointer-events: none;
       }
-
+  
       .portrait {
-        border-radius: 50%;
+        border-radius: 8px;
         height: 60px;
         width: 60px;
-
+        overflow: hidden;
+  
         img {
           width: 100%;
+          height: 100%;
         }
       }
-
+  
       .details {
         display: flex;
         flex-flow: column nowrap;
         justify-content: center;
         white-space: nowrap;
       }
-
-      .inactiveDetails {
-        display: flex;
-        flex-flow: column nowrap;
-        justify-content: center;
-        white-space: nowrap;
-        background: #f10927;
-        font-style: italic;
-        color: white;
-      }
     }
   }
+
   .btnWrap {
     margin: 10px 0;
   }

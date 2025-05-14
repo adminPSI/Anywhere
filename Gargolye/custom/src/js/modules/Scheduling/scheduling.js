@@ -921,7 +921,7 @@ const SchedulingCalendar = (function () {
         this.render();
         return;
       }
-      if (e.target === this.prevWeekNavBtn) {
+      if (e.target === this.nextWeekNavBtn) {
         this.weekStart = dates.addWeeks(this.weekStart, 1);
         this.weekEnd = dates.addWeeks(this.weekEnd, 1);
         this.daysToRender = dates.eachDayOfInterval({
@@ -958,6 +958,7 @@ const SchedulingCalendar = (function () {
 
     render() {
       const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      this.weekWrapEle.innerHTML = '';
 
       for (let index = 0; index < this.daysToRender.length; index++) {
         const dateWrapEle = document.createElement('div');
@@ -971,7 +972,7 @@ const SchedulingCalendar = (function () {
         const day = this.daysToRender[index].getDate();
         const year = this.daysToRender[index].getFullYear();
 
-        if (this.selectedDates.includes(`${month}/${day}/${year}`)) {
+        if (this.selectedDates.includes(dateString)) {
           dateWrapEle.classList.add('selected');
         }
 
@@ -1034,13 +1035,13 @@ const SchedulingCalendar = (function () {
       }),
     );
 
-    const dupUser = dropdownData.find(d => d.value === $.session.PeopleId);
-    if (!$.session.schedulingSecurity) {
-      dropdownData.unshift({
-        value: $.session.PeopleId,
-        text: `${$.session.LName}, ${$.session.Name}`,
-      });
-    }
+    // const dupUser = dropdownData.find(d => d.value === $.session.PeopleId);
+    // if (!dupUser) {
+    //   dropdownData.unshift({
+    //     value: $.session.PeopleId,
+    //     text: `${$.session.LName}, ${$.session.Name}`,
+    //   });
+    // }
 
     dropdownData.sort(sortEmployeeString);
 
@@ -1196,11 +1197,9 @@ const SchedulingCalendar = (function () {
     const updateShiftEmployees = async () => {
       shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling(filterShiftEmployeesOpts);
 
-      if (
-        !shiftEmployees.find(empData => empData.Person_Id === shiftData.employeeId) &&
-        shiftData.employeeId !== $.session.PeopleId
-      ) {
+      if (!shiftEmployees.find(empData => empData.Person_ID === shiftData.employeeId)) {
         shiftData.employeeId = '';
+        employeeDropdown.classList.add('error');
       }
 
       populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
@@ -1228,7 +1227,7 @@ const SchedulingCalendar = (function () {
       selectedDates: [...shiftData.date],
       onDateChange(newDateArray) {
         shiftData.date = [...newDateArray];
-        filterShiftEmployeesOpts.shiftdate = shiftData.date.join(',');
+        filterShiftEmployeesOpts.shiftdate = shiftData.date;
         updateShiftEmployees();
 
         checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
@@ -1303,9 +1302,6 @@ const SchedulingCalendar = (function () {
         const [name, id] = cn[0].split('|');
         const [first, last] = name.split(' ');
 
-        const gridAnimationWrapper = document.createElement('div');
-        gridAnimationWrapper.classList.add('rosterCardWrap');
-
         const rosterCard = new RosterCard({
           consumerId: id,
           firstName: first,
@@ -1313,8 +1309,7 @@ const SchedulingCalendar = (function () {
           lastName: last,
         });
 
-        rosterCard.renderTo(gridAnimationWrapper);
-        individualCardWrap.appendChild(gridAnimationWrapper);
+        rosterCard.renderTo(individualCardWrap);
       });
     }
 
@@ -1323,7 +1318,7 @@ const SchedulingCalendar = (function () {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        await saveUpdateShift({
+        const success = await saveUpdateShift({
           dateString: shiftData.date.join(','),
           consumerIdString: shiftData.consumerNames.map(n => n.split('|')[1]).join(','),
           startTime: shiftData.startTime,
@@ -1331,11 +1326,13 @@ const SchedulingCalendar = (function () {
           color: shiftData.color,
           locationId: shiftData.locationId,
           notifyEmployee: shiftData.notifyEmployee,
-          personId: selectedEmployeeId,
+          personId: shiftData.employeeId,
           saveUpdateFlag: isNew ? 'S' : 'U',
         });
 
         POPUP.hide(shiftPopup);
+
+        showSuccessFailPopup(success);
 
         if (onCloseCallback) onCloseCallback();
       },
@@ -2552,8 +2549,8 @@ const Scheduling = (function () {
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
-      // text: 'View Calendar Web2Cal',
-      text: 'View Calendar',
+      text: 'View Calendar Web2Cal',
+      // text: 'View Calendar',
       style: 'secondary',
       type: 'contained',
       callback: function () {
@@ -2586,7 +2583,7 @@ const Scheduling = (function () {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
 
-    // btnWrap.appendChild(schedulingCalendarBtn);
+    btnWrap.appendChild(schedulingCalendarBtn);
     btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === true && $.session.schedulingUpdate === false) {
