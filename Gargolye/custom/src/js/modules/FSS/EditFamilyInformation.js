@@ -333,8 +333,13 @@ const EditFamilyInformation = (() => {
             if (event.target.value !== '' && validatePhone(event.target.value)) {
                 const phnDisp = FSS.formatPhoneNumber(event.target.value);
                 event.target.value = phnDisp;
+                const allowDigitOnly = new RegExp(/^\d+$/);    
                 primaryPhone = event.target.value.replace('-', '').replace('-', '').replace('(', '').replace(')', '').replace(' ', '');
-                primaryPhoneInput.classList.remove('error');
+                if (allowDigitOnly.test(primaryPhone)) {
+                    primaryPhoneInput.classList.remove('error');
+                } else {
+                    primaryPhoneInput.classList.add('error');
+                }              
             } else {
                 if (event.target.value === '') {
                     primaryPhone = '';  
@@ -351,8 +356,13 @@ const EditFamilyInformation = (() => {
             if (event.target.value !== '' && validatePhone(event.target.value)) {
                 const phnDisp = FSS.formatPhoneNumber(event.target.value);
                 event.target.value = phnDisp;
+                const allowDigitOnly = new RegExp(/^\d+$/); 
                 secondaryPhone = event.target.value.replace('-', '').replace('-', '').replace('(', '').replace(')', '').replace(' ', '');
-                secondaryPhoneInput.classList.remove('error');
+                if (allowDigitOnly.test(secondaryPhone)) {
+                    secondaryPhoneInput.classList.remove('error');
+                } else {
+                    secondaryPhoneInput.classList.add('error');
+                }
             } else {
                 if (event.target.value === '') {
                     secondaryPhone = '';
@@ -410,7 +420,7 @@ const EditFamilyInformation = (() => {
 
         const genTelRegEx = new RegExp(/^\d{3}[- ]?\d{3}[- ]?\d{4}( x\d{4})?|x\d{4}$/im);
         return genTelRegEx.test(val);
-    }
+    } 
 
     return {
         init,

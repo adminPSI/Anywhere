@@ -515,7 +515,7 @@ const FSS = (() => {
             <div>${startDate}</div>     
             <div>${endDate}</div>
             <div>${coPay}</div>
-            <div>$ ${allocation}</div>
+            <div>$${allocation}</div>
             <div>$${encumbered}</div> 
              <div>$${amtPaid}</div> 
             <div>$${balance}</div>
