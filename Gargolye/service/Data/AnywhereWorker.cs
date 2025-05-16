@@ -627,11 +627,9 @@ namespace Anywhere.service.Data
             public string billableTransportation { get; set; }
             public string ohioEVVChangeDate { get; set; }
             public string anyRequireEndTime { get; set; }
-
             public string requireTimeEntryTransportationTimes { get; set; }
             public string anywhereFSSPermission { get; set; }
             public string RequireViewPlan { get; set; }
-
             public string defaultplanlocation { get; set; }
             public string defaultplanlocationname { get; set; }
             public string defaultplangroup { get; set; }
@@ -639,6 +637,10 @@ namespace Anywhere.service.Data
             public string defaultcontact { get; set; }
             public string anyUndocumentedServices { get; set; }
             public string automateSimpleBilling { get; set; }
+            public string defaultTimeEntrylocation { get; set; }
+            public string defaultTimeEntrylocationname { get; set; }
+            public string defaultTimeEntrygroup { get; set; }
+            public string defaultTimeEntrygroupname { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)

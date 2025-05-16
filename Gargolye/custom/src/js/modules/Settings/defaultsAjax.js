@@ -103,7 +103,7 @@ var defaultsAjax = (function () {
                     saveDefaultLocationNameAjax("7", "Remember Last Location");
                 }
                 break;
-            case 2:
+            case 8:
                 typeName = "Default Plan Location";
                 createCookie("defaultPlanGroupName", "Everyone", 7);
                 createCookie("defaultPlanGroupValue", "ALL", 7);
@@ -166,6 +166,39 @@ var defaultsAjax = (function () {
                         11
                     );
                     saveDefaultLocationNameAjax("11", "Remember Last Location");
+                }
+                break;
+            case 12:
+                typeName = "Default TimeEntry Location";
+                createCookie("defaultTimeEntryGroupName", "Everyone", 12);
+                createCookie("defaultTimeEntryGroupValue", "ALL", 12);
+                saveDefaultLocationNameAjax("12", "Everyone");
+                saveDefaultLocationValueAjax("12", "ALL");
+                $("#timeEntrygroup12").text("Everyone");
+                if (value != 0 && name != null) {
+                    getConsumerGroups(value, name);
+                    $.session.defaultTimeEntryLocation = value;
+                    createCookie("defaultTimeEntryLocationName", name, 12);
+                    saveDefaultLocationNameAjax("12", name);
+                } else {
+                    createCookie(
+                        "defaultTimeEntryLocationName",
+                        "Remember Last Location",
+                        12
+                    );
+                    saveDefaultLocationNameAjax("12", "Remember Last Location");
+                }
+                break;
+            case 13:
+                typeName = "Default TimeEntry Group";
+                if (value != 0 && name != null) {
+                    createCookie("defaultTimeEntryGroupName", name, 13);
+                    createCookie("defaultTimeEntryGroupValue", value, 13);
+                    saveDefaultLocationNameAjax("13", name);
+                    saveDefaultLocationValueAjax("13", value);
+                } else {
+                    createCookie("defaultTimeEntryGroupName", "Everyone", 13);
+                    saveDefaultLocationNameAjax("13", "Everyone");
                 }
                 break;
         }

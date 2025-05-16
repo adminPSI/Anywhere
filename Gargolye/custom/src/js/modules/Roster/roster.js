@@ -949,6 +949,9 @@ const roster2 = (function () {
         if ($.loadedApp === 'plan') {
             if (defaults.rememberLastLocation('plan')) defaults.setLocation('plan', selectedLocationId);
         }
+        if ($.loadedApp === 'timeEntry') {
+            if (defaults.rememberLastLocation('timeEntry')) defaults.setLocation('timeEntry', selectedLocationId);
+        }
     }
     async function filterApply() {
         customGroups.init(rosterGroups);
