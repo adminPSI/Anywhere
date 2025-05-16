@@ -157,6 +157,11 @@ $.session.defaultPlanLocationName;
 $.session.defaultPlanGroupValue;
 $.session.defaultPlanGroupName;
 $.session.defaultContact;
+
+$.session.defaultTimeEntryLocation;
+$.session.defaultTimeEntryLocationName;
+$.session.defaultTimeEntryGroupValue;
+$.session.defaultTimeEntryGroupName;
 //////////
 $.session.areInSalesForce = true;
 $.session.RosterDeleteAbsent = false;
@@ -1844,6 +1849,32 @@ function setDefaultValue(type, value, event, name) {
             } else {
                 createCookie('defaultOutcomesLocationName', 'Remember Last Location', 11);
                 saveDefaultLocationNameAjax('11', 'Remember Last Location');
+            }
+            break;
+        case 12:
+            typeName = 'Default TimeEntry Location';
+            $('#timeEntry12').text(event.srcElement.text);
+            if (value != 0 && name != null) {
+                createCookie('defaultTimeEntryLocationName', name, 12);
+                createCookie('defaultTimeEntryLocationValue', value, 12);
+                saveDefaultLocationNameAjax('12', name);
+                saveDefaultLocationValueAjax('12', value);
+            } else {
+                createCookie('defaultTimeEntrytLocationName', 'Remember Last Location', 12);
+                saveDefaultLocationNameAjax('12', 'Remember Last Location');
+            }
+            break;
+        case 13:
+            typeName = 'Default TimeEntry Group';
+            $('#timeEntrygroup13').text(event.srcElement.text);
+            if (value != 0 && name != null) {
+                createCookie('defaultTimeEntryGroupName', name, 13);
+                createCookie('defaultTimeEntryGroupValue', value, 13);
+                saveDefaultLocationNameAjax('13', name);
+                saveDefaultLocationValueAjax('13', value);
+            } else {
+                createCookie('defaultTimeEntryGroupName', 'Everyone', 13);
+                saveDefaultLocationNameAjax('13', 'Everyone');
             }
             break;
     }

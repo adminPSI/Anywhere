@@ -1103,6 +1103,10 @@ function getDefaultAnywhereSettings() {
       $.session.defaultPlanGroupValue = res.defaultplangroup;
       $.session.defaultPlanGroupName = res.defaultplangroupname;
       $.session.defaultContact = res.defaultcontact;
+      $.session.defaultTimeEntryLocation = res.defaultTimeEntrylocation;
+      $.session.defaultTimeEntryLocationName = res.defaultTimeEntrylocationname;
+      $.session.defaultTimeEntryGroupValue = res.defaultTimeEntrygroup;
+      $.session.defaultTimeEntryGroupName = res.defaultTimeEntrygroupname;
       $.session.defaultDayServiceLocation =
         res.defaultdayservicelocation === 'notDSCertified' ? '' : res.defaultdayservicelocation;
       $.session.defaultDayServiceLocationName = res.defaultdayservicelocationname;

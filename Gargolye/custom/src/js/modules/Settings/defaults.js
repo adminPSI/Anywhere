@@ -6,10 +6,10 @@ var defaults = (function () {
     var timeClockLocationDropdown;
     var WorkshopLocationDropdown;
     var moneyManagementLocationDropdown;
-    var OODLocationDropdown; 
+    var OODLocationDropdown;
     var outcomesLocationDropdown;
     var rosterRLLCheckBox;
-    var dayServicesRLLCheckBox; 
+    var dayServicesRLLCheckBox;
     var timeClockRLLCheckBox;
     var WorkshopRLLCheckBox;
     var moneyManagementRLLCheckBox;
@@ -22,6 +22,9 @@ var defaults = (function () {
     var planGroupDropdown;
     var planRLLCheckBox;
     var planConnectDropdown;
+    var timeEntryLocationDropdown;
+    var timeEntryGroupDropdown;
+    var timeEntryRLLCheckBox;
 
     // values
     var todaysDate = UTIL.getTodaysDate();
@@ -46,7 +49,10 @@ var defaults = (function () {
     var planGroup;
     var planGroupName;
     var planConnect;
-
+    var timeEntryRLL;
+    var timeEntryLocation;
+    var timeEntryGroup;
+    var timeEntryGroupName;
     var defaultRosterLocationFixed;
     //dropdown data
     var dayServiceDropdownData;
@@ -59,6 +65,8 @@ var defaults = (function () {
     var rosterGroupDropdownData;
     var planLocDropdownData;
     var planGroupDropdownData;
+    var timeEntryLocDropdownData;
+    var timeEntryGroupDropdownData;
     var communicationTypeDropdownData;
 
     function getLocation(module) {
@@ -112,6 +120,21 @@ var defaults = (function () {
             }
             case 'planGroupName': {
                 return $.session.defaultPlanGroupName;
+                break;
+            }
+            case 'timeEntry': {
+                return $.session.defaultTimeEntryLocation === 'null' ||
+                    $.session.defaultTimeEntryLocation === '0'
+                    ? ''
+                    : $.session.defaultTimeEntryLocation;
+                break;
+            }
+            case 'timeEntryGroup': {
+                return $.session.defaultTimeEntryGroupValue;
+                break;
+            }
+            case 'timeEntryGroupName': {
+                return $.session.defaultTimeEntryGroupName;
                 break;
             }
             default: {
@@ -195,6 +218,23 @@ var defaults = (function () {
                 defaultsAjax.saveDefaultLocationValue('11', outcomesLocation);
                 //reset session var for the current session
                 $.session.defaultOutcomesLocationValue = outcomesLocation;
+                break;
+            }
+            case 'timeEntry': {
+                timeEntryLocation = value;
+                defaultsAjax.saveDefaultLocationValue('12', timeEntryLocation);
+                //reset session var for the current session
+                $.session.defaultTimeEntryLocation = timeEntryLocation;
+                break;
+            }
+            case 'timeEntryGroup': {
+                timeEntryGroup = value;
+                timeEntryGroupName = name;
+                defaultsAjax.saveDefaultLocationValue('13', timeEntryGroup);
+                defaultsAjax.saveDefaultLocationName('13', timeEntryGroupName);
+                //reset session var for the current session
+                $.session.defaultTimeEntryGroupName = timeEntryGroupName;
+                $.session.defaultTimeEntryGroupValue = timeEntryGroup;
                 break;
             }
             default: {
@@ -286,6 +326,16 @@ var defaults = (function () {
                 } else {
                     defaultsAjax.saveDefaultLocationName('11', '');
                     $.session.defaultOutcomesLocation = '';
+                }
+                break;
+            }
+            case 'timeEntry': {
+                if (timeEntryRLL) {
+                    defaultsAjax.saveDefaultLocationName('12', 'Remember Last Location');
+                    $.session.defaultTimeEntryLocationName = 'Remember Last Location';
+                } else {
+                    defaultsAjax.saveDefaultLocationName('12', '');
+                    $.session.defaultTimeEntryLocationName = '';
                 }
                 break;
             }
@@ -529,6 +579,43 @@ var defaults = (function () {
             );
         });
 
+        var timeEntryLocPromise = new Promise(function (resolve, reject) {
+            defaultsAjax.getRosterLocations(loc => {
+                timeEntryLocDropdownData = loc.map(loc => {
+                    var id = `timeEntry-${loc.ID}`;
+                    var value = loc.ID;
+                    var text = loc.Name;
+                    return {
+                        id,
+                        value,
+                        text,
+                    };
+                });
+                if (getLocation('timeEntry') === '')
+                    timeEntryLocDropdownData.unshift({ id: 'timeEntry-0', value: null, text: 'ALL' });
+                resolve('success');
+            });
+        });
+
+        var timeEntryGroupPromise = new Promise(function (resolve, reject) {
+            defaultsAjax.getConsumerGroups(
+                $.session.defaultTimeEntryLocation === null || $.session.defaulTimeEntryLocation === undefined ? '0' : $.session.defaultTimeEntryLocation,
+                res => {
+                    timeEntryGroupDropdownData = res.map(group => {
+                        var id = `timeEntryGr-${group.GroupCode}-${group.RetrieveID}`;
+                        var value = `${group.GroupCode}-${group.RetrieveID}`;
+                        var text = group.GroupName;
+                        return {
+                            id,
+                            value,
+                            text,
+                        };
+                    });
+                    resolve('success');
+                },
+            );
+        });
+
         communicationTypeDropdownData = ([
             { value: '1', text: 'Letter / Mail.' },
             { value: '2', text: 'Phone Call.' },
@@ -549,7 +636,9 @@ var defaults = (function () {
             OODLocationPromise,
             outcomesLocationPromise,
             planLocPromise,
-            planGroupPromise
+            planGroupPromise,
+            timeEntryLocPromise,
+            timeEntryGroupPromise
         ]).then(() => {
             buildPage();
         });
@@ -595,6 +684,11 @@ var defaults = (function () {
             }
             case 'plan': {
                 if ($.session.defaultPlanLocationName === 'Remember Last Location') return true;
+                else return false;
+                break;
+            }
+            case 'timeEntry': {
+                if ($.session.defaultTimeEntryLocationName === 'Remember Last Location') return true;
                 else return false;
                 break;
             }
@@ -649,6 +743,25 @@ var defaults = (function () {
         });
     }
 
+    function repopulateTimeEntryGroupDropdown(loc) {
+        timeEntryGroupDropdown.classList.add('disabled');
+        timeEntryGroupDropdownData = null;
+        defaultsAjax.getConsumerGroups(loc, res => {
+            timeEntryGroupDropdownData = res.map(group => {
+                var id = `timeEntryGr-${group.GroupCode}-${group.RetrieveID}`;
+                var value = `${group.GroupCode}-${group.RetrieveID}`;
+                var text = group.GroupName;
+                return {
+                    id,
+                    value,
+                    text,
+                };
+            });
+            setLocation('timeEntryGroup', `CAS-${loc}`, 'Caseload');
+            dropdown.populate(timeEntryGroupDropdown, timeEntryGroupDropdownData, `CAS-${loc}`);
+            timeEntryGroupDropdown.classList.remove('disabled');
+        });
+    }
     function buildPage() {
         var defaultsPage = document.querySelector('.util-menu__defaults');
         defaultsPage.innerHTML = '';
@@ -716,6 +829,12 @@ var defaults = (function () {
         planSection.classList.add('settingMenuCard');
         planSectionHeader.classList.add('header');
         planSectionHeader.innerHTML = 'Plan';
+
+        var timeEntrySection = document.createElement('div');
+        var timeEntrySectionHeader = document.createElement('h3');
+        timeEntrySection.classList.add('settingMenuCard');
+        timeEntrySectionHeader.classList.add('header');
+        timeEntrySectionHeader.innerHTML = 'TimeEntry';
 
         rosterLocationDropdown = dropdown.build({
             dropdownId: 'defaultRosterLocation',
@@ -893,6 +1012,23 @@ var defaults = (function () {
             style: 'secondary',
         });
 
+        timeEntryLocationDropdown = dropdown.build({
+            dropdownId: 'defaultTimeEntryLocation',
+            label: 'Default Location',
+            style: 'secondary',
+        });
+        timeEntryRLLCheckBox = input.buildCheckbox({
+            text: 'Remember Last Location',
+            className: 'rllCheckBox',
+            style: 'secondary',
+            isChecked: timeEntryRLL,
+        });
+        timeEntryGroupDropdown = dropdown.build({
+            dropdownId: 'defaultTimeEntryGroup',
+            label: 'Default Group',
+            style: 'secondary',
+        });
+
         //Display for current menu
         defaultsPage.appendChild(currMenu);
 
@@ -907,6 +1043,8 @@ var defaults = (function () {
         if (outcomesRLL) outcomesLocationDropdown.classList.add('disabled');
         if (planRLL) planLocationDropdown.classList.add('disabled');
         if (planRLL) planGroupDropdown.classList.add('disabled');
+        if (timeEntryRLL) timeEntryLocationDropdown.classList.add('disabled');
+        if (timeEntryRLL) timeEntryGroupDropdown.classList.add('disabled');
 
         //checkbox div and wraper for right justification
         rosterChecboxDiv = document.createElement('div');
@@ -917,6 +1055,7 @@ var defaults = (function () {
         OODChecboxDiv = document.createElement('div');
         outcomesChecboxDiv = document.createElement('div');
         planChecboxDiv = document.createElement('div');
+        timeEntryChecboxDiv = document.createElement('div');
         rosterChecboxDiv.classList.add('checkboxWrap');
         dayServicesChecboxDiv.classList.add('checkboxWrap');
         timeClockChecboxDiv.classList.add('checkboxWrap');
@@ -925,6 +1064,7 @@ var defaults = (function () {
         OODChecboxDiv.classList.add('checkboxWrap');
         outcomesChecboxDiv.classList.add('checkboxWrap');
         planChecboxDiv.classList.add('checkboxWrap');
+        timeEntryChecboxDiv.classList.add('checkboxWrap');
 
         rosterChecboxDiv.appendChild(rosterRLLCheckBox);
         dayServicesChecboxDiv.appendChild(dayServicesRLLCheckBox);
@@ -934,6 +1074,7 @@ var defaults = (function () {
         moneyManagementChecboxDiv.appendChild(moneyManagementRLLCheckBox);
         OODChecboxDiv.appendChild(OODRLLCheckBox);
         planChecboxDiv.appendChild(planRLLCheckBox);
+        timeEntryChecboxDiv.appendChild(timeEntryRLLCheckBox);
 
         //roster settigns
         rosterSection.appendChild(rosterSectionHeader);
@@ -988,6 +1129,12 @@ var defaults = (function () {
         caseNotesSection.appendChild(caseNotesSectionHeader);
         caseNotesSection.appendChild(caseNotesDaysBackInput);
 
+        //timeEntry settigns
+        timeEntrySection.appendChild(timeEntrySectionHeader);
+        timeEntrySection.appendChild(timeEntryLocationDropdown);
+        timeEntrySection.appendChild(timeEntryChecboxDiv);
+        timeEntrySection.appendChild(timeEntryGroupDropdown);
+
         //plan settigns
         planSection.appendChild(planSectionHeader);
         planSection.appendChild(planLocationDropdown);
@@ -1000,6 +1147,7 @@ var defaults = (function () {
         defaultsPage.appendChild(dayServiceSection);
         defaultsPage.appendChild(outcomesSection);
         defaultsPage.appendChild(caseNotesSection);
+        defaultsPage.appendChild(timeEntrySection);
         defaultsPage.appendChild(planSection);
 
         if ($.session.dsCertified) defaultsPage.appendChild(timeClockSection);
@@ -1020,6 +1168,7 @@ var defaults = (function () {
         OODLocationDropdown.classList.add('defaultLocationDD');
         outcomesLocationDropdown.classList.add('defaultLocationDD');
         planLocationDropdown.classList.add('defaultLocationDD');
+        timeEntryLocationDropdown.classList.add('defaultLocationDD');
 
         //RESET roster group to all if they have roster remember last location enabled. this is incase they change location but their selected default group is not in that location
         if (rosterRLL && $.session.defaultRosterGroupValue !== 'ALL')
@@ -1080,6 +1229,18 @@ var defaults = (function () {
             $.session.defaultPlanGroupValue,
         );
 
+        dropdown.populate(
+            timeEntryLocationDropdown,
+            timeEntryLocDropdownData,
+            $.session.defaultTimeEntryLocation === 'null' ? '' : $.session.defaultTimeEntryLocation,
+        );
+
+        dropdown.populate(
+            timeEntryGroupDropdown,
+            timeEntryGroupDropdownData,
+            $.session.defaultTimeEntryGroupValue,
+        );
+
         if ($.session.defaultContact !== '')
             dropdown.populate(planConnectDropdown, communicationTypeDropdownData, $.session.defaultContact);
         else
@@ -1103,6 +1264,7 @@ var defaults = (function () {
         OODRLL = rememberLastLocation('OOD');
         outcomesRLL = rememberLastLocation('outcomes');
         planRLL = rememberLastLocation('plan');
+        timeEntryRLL = rememberLastLocation('timeEntry');
     }
 
     function addEventListeners() {
@@ -1238,6 +1400,37 @@ var defaults = (function () {
             defaultsAjax.updateConnectWithPerson(event.target.options[event.target.selectedIndex].value);
         });
         //=====
+        // TIME ENTRY
+        timeEntryLocationDropdown.addEventListener('change', () => {
+            setLocation('timeEntry', event.target.options[event.target.selectedIndex].value);
+            repopulateTimeEntryGroupDropdown(
+                event.target.options[event.target.selectedIndex].value,
+            );
+            setLocation('timeEntryGroup', 'ALL', 'Everyone');
+        });
+        timeEntryRLLCheckBox.addEventListener('change', () => {
+            timeEntryRLL = !timeEntryRLL;
+            setRememberLastLocation('timeEntry');
+
+            if (timeEntryRLL) {
+                groupDropdownOptions = document.getElementById('defaultTimeEntryGroup');
+                timeEntryLocationDropdown.classList.add('disabled');
+                timeEntryGroupDropdown.classList.add('disabled');
+                groupDropdownOptions.selectedIndex = 'ALL';
+                setLocation('timeEntryGroup', 'ALL', 'Everyone');
+            } else {
+                timeEntryLocationDropdown.classList.remove('disabled');
+                timeEntryGroupDropdown.classList.remove('disabled');
+            }
+        });
+        timeEntryGroupDropdown.addEventListener('change', () => {
+            setLocation(
+                'timeEntryGroup',
+                event.target.options[event.target.selectedIndex].value,
+                event.target.options[event.target.selectedIndex].innerHTML,
+            );
+        });
+        //=====
         // DAY SERVICES
         dayServicesLocationDropdown.addEventListener('change', () => {
             setLocation('dayServices', event.target.options[event.target.selectedIndex].value);
@@ -1364,6 +1557,10 @@ var defaults = (function () {
                     break;
                 case 'Default Outcomes Location':
                     setLocation('outcomes', '');
+                    break;
+                case 'Default TimeEntry Location':
+                    setLocation('timeEntry', '');
+                    setLocation('timeEntryGroup', '');
                     break;
                 default:
                     console.warn(`couldn't reset a default location`);
