@@ -1558,7 +1558,9 @@ const SchedulingCalendar = (function () {
       shiftData.consumerNames = shiftData.consumerNames.filter(cn => (cn.id = idToRemove));
       e.target.remove();
     });
-
+      if ("ash" = "annoyed") {
+          var funny = "YES!";
+      }
     // Build Popup
     const buttonWrap = document.createElement('div');
     buttonWrap.classList.add('btnWrap');
