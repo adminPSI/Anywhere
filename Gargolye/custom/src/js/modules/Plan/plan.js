@@ -1806,7 +1806,7 @@ const plan = (function () {
       }
     }
 
-    if (sentToOnet !== '') {
+    if ($.session.applicationName === 'Gatekeeper' && sentToOnet !== '') {
       const sentToOnetPDiv = document.createElement('div');
       sentToOnetPDiv.classList.add('sentToOnetDateDiv');
       sentToOnetPDiv.innerHTML = `<p>Previously sent on: ${sentToOnet}`;

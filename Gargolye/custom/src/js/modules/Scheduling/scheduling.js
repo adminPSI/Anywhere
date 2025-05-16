@@ -98,14 +98,16 @@ const SchedulingCalendar = (function () {
 
     return aFirst.localeCompare(bFirst, undefined, { sensitivity: 'base' });
   }
-  function showSuccessFailPopup(success) {
+  function showSuccessFailPopup(success, message) {
     if (success) {
-      successfulSave.show('SAVED');
+      if (!message) message = 'SAVED';
+      successfulSave.show(message);
       setTimeout(function () {
         successfulSave.hide();
       }, 1000);
     } else {
-      failSave.show('ERROR SAVING');
+      if (!message) message = 'ERROR SAVING';
+      failSave.show(message);
       setTimeout(function () {
         failSave.hide();
       }, 1000);
@@ -434,7 +436,7 @@ const SchedulingCalendar = (function () {
 
     return { locationFilter: employeeOption };
   }
-  function buildHoursFilter(filterHours) {
+  function buildHoursFilter(filterHours, maxWeeklyHours) {
     // <div class="employeeOption">
     // ${hoursCheck.outerHTML}
     //   <div class="label nestedInput">
@@ -455,6 +457,7 @@ const SchedulingCalendar = (function () {
     const hoursInput = document.createElement('input');
     hoursInput.type = 'number';
     hoursInput.name = 'hours';
+    hoursInput.value = maxWeeklyHours && maxWeeklyHours !== -1 ? maxWeeklyHours : '';
 
     const label = document.createElement('div');
     label.className = 'label nestedInput';
@@ -476,7 +479,7 @@ const SchedulingCalendar = (function () {
       hoursInput,
     };
   }
-  function buildMinutesFilter(filterMinutes) {
+  function buildMinutesFilter(filterMinutes, minTimeBetweenShifts) {
     // <div class="employeeOption">
     // ${minutesCheck.outerHTML}
     //   <div class="label nestedInput">
@@ -497,6 +500,7 @@ const SchedulingCalendar = (function () {
     const minutesInput = document.createElement('input');
     minutesInput.type = 'number';
     minutesInput.name = 'minutes';
+    minutesInput.value = minTimeBetweenShifts && minTimeBetweenShifts !== -1 ? minTimeBetweenShifts : '';
 
     const label = document.createElement('div');
     label.className = 'label nestedInput';
@@ -586,8 +590,8 @@ const SchedulingCalendar = (function () {
     optionsContainer.className = 'employeeOptionsContainer';
 
     const { locationFilter } = buildLocationFilter(opts.includeTrainedOnly);
-    const { hoursFilter, hoursInput } = buildHoursFilter(opts.filterHours);
-    const { minutesFilter, minutesInput } = buildMinutesFilter(opts.filterMinutes);
+    const { hoursFilter, hoursInput } = buildHoursFilter(opts.filterHours, opts.maxWeeklyHours);
+    const { minutesFilter, minutesInput } = buildMinutesFilter(opts.filterMinutes, opts.minTimeBetweenShifts);
     const { overlapFilter } = buildOverlapFilter(opts.includeOverlaps);
     const { regionFilter } = buildRegionFilter(opts.filterRegion);
     const regionDropdown = dropdown.build({
@@ -1098,7 +1102,7 @@ const SchedulingCalendar = (function () {
           endTime: data.endTime,
           notifyEmployee: 'N',
           consumerNames: data.consumerNames === '' ? [] : data.consumerNames.split(','),
-          date: [data.serviceDate.split(' ')[0]],
+          date: [dates.formateToISO(data.serviceDate.split(' ')[0])],
         }
       : {
           shiftId: '',
@@ -1114,7 +1118,7 @@ const SchedulingCalendar = (function () {
 
     const shiftPopup = POPUP.build({
       id: 'shiftDetailPopup',
-      hideX: readOnly ? false : true,
+      hideX: !$.session.schedulingSecurity ? false : true,
       closeCallback: () => {
         if (onCloseCallback) onCloseCallback();
       },
@@ -1181,7 +1185,9 @@ const SchedulingCalendar = (function () {
           </div>
         </div>
       `;
+      shiftPopup.appendChild(wrap);
 
+      POPUP.show(shiftPopup);
       return;
     }
 
@@ -1213,7 +1219,7 @@ const SchedulingCalendar = (function () {
       shiftdate: shiftData.date,
       shiftStartTime: '00:00:00',
       shiftEndTime: '00:00:00',
-      region: '%',
+      region: '',
       // just for checkboxes
       filterHours: 0,
       filterMinutes: 0,
@@ -1332,7 +1338,13 @@ const SchedulingCalendar = (function () {
 
         POPUP.hide(shiftPopup);
 
-        showSuccessFailPopup(success);
+        if (success === 'conflict') {
+          showSuccessFailPopup(false, 'Unable To Save, Conflicting Shifts');
+        } else if (success === 'consumer') {
+          showSuccessFailPopup(false, 'Unable To Save, Invalid Consumer');
+        } else {
+          showSuccessFailPopup(success);
+        }
 
         if (onCloseCallback) onCloseCallback();
       },
@@ -1611,6 +1623,14 @@ const SchedulingCalendar = (function () {
     });
 
     let parsedRes = JSON.parse(res);
+
+    if (parsedRes[0] && parsedRes[0].type === 'CS') {
+      return 'conflict';
+    }
+    if (parsedRes[0] && parsedRes[0].type === 'IC') {
+      return 'consumer';
+    }
+
     parsedRes = parsedRes.map(item => item.ShiftID);
 
     calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
@@ -1624,6 +1644,8 @@ const SchedulingCalendar = (function () {
         ScheduleCalendar.addEvent({ ...event });
       }
     });
+
+    return true;
   }
 
   // Appointments: EVENT_TYPE 6
@@ -1875,7 +1897,7 @@ const SchedulingCalendar = (function () {
   }
   //
   function handleCalendarEventClick(eventTarget) {
-    if (eventTarget.classList.contains('day')) {
+    if (eventTarget.classList.contains('day') && document.body.classList.contains('mobileActive')) {
       const dateISO = eventTarget.dataset.date;
       const shiftIds = ScheduleCalendar.getShiftIdsByDay(dateISO);
 
@@ -1884,6 +1906,20 @@ const SchedulingCalendar = (function () {
       const targetEvents = [...appointments, ...schedules].filter(ev => shiftIds.includes(ev.shiftId));
       showShiftGroupPopup(targetEvents, dateISO);
 
+      return;
+    }
+
+    if (eventTarget.classList.contains('eventCellGroupEle')) {
+      const dayDiv = eventTarget.parentElement.parentElement;
+      if (dayDiv.classList.contains('day')) {
+        const dateISO = dayDiv.dataset.date;
+        const shiftIds = ScheduleCalendar.getShiftIdsByDay(dateISO);
+
+        if (!shiftIds || !shiftIds.length) return;
+
+        const targetEvents = [...appointments, ...schedules].filter(ev => shiftIds.includes(ev.shiftId));
+        showShiftGroupPopup(targetEvents, dateISO);
+      }
       return;
     }
 
@@ -1899,10 +1935,6 @@ const SchedulingCalendar = (function () {
         isCopy: false,
       });
 
-      return;
-    }
-
-    if (eventTarget.classList.contains('eventCellGroupEle')) {
       return;
     }
 
@@ -2548,7 +2580,7 @@ const Scheduling = (function () {
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
-      //text: 'View Calendar Web2Cal',
+      // text: 'View Calendar Web2Cal',
       text: 'View Calendar',
       style: 'secondary',
       type: 'contained',
@@ -2582,7 +2614,7 @@ const Scheduling = (function () {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
 
-    //btnWrap.appendChild(schedulingCalendarBtn);
+    // btnWrap.appendChild(schedulingCalendarBtn);
     btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === true && $.session.schedulingUpdate === false) {

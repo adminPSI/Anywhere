@@ -234,7 +234,7 @@ const schedulingAjax = (function () {
       data.maxWeeklyHours = -1;
       data.minTimeBetweenShifts = -1;
     } else {
-      data.shiftdate = data.shiftdate.map(date => dates.formatISO(new Date(date))).join(',');
+      data.shiftdate = data.shiftdate.join(',');
     }
 
     delete data.filterHours;

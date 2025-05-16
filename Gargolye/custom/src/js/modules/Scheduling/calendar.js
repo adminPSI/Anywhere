@@ -525,6 +525,9 @@ class Calendar {
       day.eventWrapEle.innerHTML = '';
       day.eventCountWrapEle.innerHTML = '';
       day.eventsCount = 0;
+
+      day.groups = {};
+      day.shiftIds = [];
     });
 
     this.monthEventGroupCache = {};
@@ -534,6 +537,9 @@ class Calendar {
     eventsWithinDate.map(event => {
       const eventDate = new Date(event.date);
       const dateISO = dates.formatISO(eventDate);
+
+      // Cache ID
+      this.monthDayCache[dateISO].shiftIds.push(event.eventId);
 
       const groupByKey = `${event[this.customGroupOptions.groupBy]}-${dateISO}`;
       const groupByName = event[this.customGroupOptions.groupName];
