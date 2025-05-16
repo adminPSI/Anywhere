@@ -585,7 +585,7 @@ function updateVendorDropdownWidth(popup) {
     };
 
     async function loadDropdownData() {
-      providerDropdownData = await consentAndSignAjax.getPlanInformedConsentVendors({
+      providerDropdownData = await consentAndSignAjax.getPlanInformedConsentVendors({//
         token: $.session.Token,
         peopleid: esignerData.peopleId,
       });
