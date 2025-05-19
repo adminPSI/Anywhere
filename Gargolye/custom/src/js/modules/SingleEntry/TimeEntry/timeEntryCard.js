@@ -2788,7 +2788,7 @@ var timeEntryCard = (function () {
             defaultTimeEntryLocation = '0';
         }
         defaultTimeEntryGroup = defaultTimeEntryGroup == null ? '' : defaultTimeEntryGroup;
-        roster2.miniRosterinit({
+        await roster2.miniRosterinit({
             locationId: defaultTimeEntryLocation,
             locationName: '',
             groupId: defaultTimeEntryGroup,
