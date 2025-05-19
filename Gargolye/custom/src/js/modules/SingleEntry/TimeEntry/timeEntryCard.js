@@ -2794,7 +2794,7 @@ var timeEntryCard = (function () {
             groupId: defaultTimeEntryGroup,
             groupName: defaultTimeEntryGroupName,
         });
-
+        roster2.toggleMiniRosterBtnVisible(false);         
         // options = {isEdit}
         saveUserId = null;
         personId = null;
