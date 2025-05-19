@@ -1186,311 +1186,338 @@ const SchedulingCalendar = (function () {
         </div>
       `;
       shiftPopup.appendChild(wrap);
+    } else {
+      if (isCopy) {
+        shiftData.shiftId = '';
 
-      POPUP.show(shiftPopup);
-      return;
-    }
-
-    if (isCopy) {
-      shiftData.shiftId = '';
-
-      const copyHeading = document.createElement('h2');
-      copyHeading.textContent = 'Copy Shift';
-      shiftPopup.appendChild(copyHeading);
-    }
-
-    // Shift Employees
-    const updateShiftEmployees = async () => {
-      shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling(filterShiftEmployeesOpts);
-
-      if (!shiftEmployees.find(empData => empData.Person_ID === shiftData.employeeId)) {
-        shiftData.employeeId = '';
-        employeeDropdown.classList.add('error');
+        const copyHeading = document.createElement('h2');
+        copyHeading.textContent = 'Copy Shift';
+        shiftPopup.appendChild(copyHeading);
       }
 
-      populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
-    };
-    filterShiftEmployeesOpts = {
-      locationId: shiftData.locationId,
-      includeTrainedOnly: 1,
-      includeOverlaps: 1,
-      maxWeeklyHours: -1,
-      minTimeBetweenShifts: -1,
-      shiftdate: shiftData.date,
-      shiftStartTime: '00:00:00',
-      shiftEndTime: '00:00:00',
-      region: '',
-      // just for checkboxes
-      filterHours: 0,
-      filterMinutes: 0,
-      filterRegion: 0,
-    };
-    shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling(filterShiftEmployeesOpts);
+      // Shift Employees
+      const updateShiftEmployees = async () => {
+        shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling(filterShiftEmployeesOpts);
 
-    const defaultDate = ScheduleCalendar.getCurrentDate();
-    const shiftDateSelect = new WeekViewDatePicker({
-      defaultDate: defaultDate,
-      selectedDates: [...shiftData.date],
-      onDateChange(newDateArray) {
-        shiftData.date = [...newDateArray];
-        filterShiftEmployeesOpts.shiftdate = shiftData.date;
-        updateShiftEmployees();
+        if (!shiftEmployees.find(empData => empData.Person_ID === shiftData.employeeId)) {
+          shiftData.employeeId = '';
+          employeeDropdown.classList.add('error');
+        }
+
+        populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
+      };
+      filterShiftEmployeesOpts = {
+        locationId: shiftData.locationId,
+        includeTrainedOnly: 1,
+        includeOverlaps: 1,
+        maxWeeklyHours: -1,
+        minTimeBetweenShifts: -1,
+        shiftdate: shiftData.date,
+        shiftStartTime: '00:00:00',
+        shiftEndTime: '00:00:00',
+        region: '',
+        // just for checkboxes
+        filterHours: 0,
+        filterMinutes: 0,
+        filterRegion: 0,
+      };
+      shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling(filterShiftEmployeesOpts);
+
+      const defaultDate = ScheduleCalendar.getCurrentDate();
+      const shiftDateSelect = new WeekViewDatePicker({
+        defaultDate: defaultDate,
+        selectedDates: [...shiftData.date],
+        onDateChange(newDateArray) {
+          shiftData.date = [...newDateArray];
+          filterShiftEmployeesOpts.shiftdate = shiftData.date;
+          updateShiftEmployees();
+
+          checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
+        },
+      });
+      const filterEmployeesBtn = button.build({
+        text: 'Filter Employee List',
+        style: 'secondary',
+        type: 'contained',
+        classNames: 'filterEmployeesBtn',
+      });
+      const locationDropdown = dropdown.build({
+        dropdownId: 'locationDropdown',
+        label: 'Location',
+        style: 'secondary',
+        required: true,
+      });
+      const employeeDropdown = dropdown.build({
+        dropdownId: 'employeeDropdown',
+        label: 'Employee',
+        style: 'secondary',
+      });
+      const colorDropdown = dropdown.build({
+        dropdownId: 'colorDropdown',
+        label: 'Color',
+        style: 'secondary',
+      });
+      const startTimeInput = input.build({
+        label: 'Start Time',
+        type: 'time',
+        style: 'secondary',
+        value: shiftData.startTime,
+      });
+      const endTimeInput = input.build({
+        label: 'End Time',
+        type: 'time',
+        style: 'secondary',
+        value: shiftData.endTime,
+      });
+      const notifyEmployee = input.buildCheckbox({
+        text: 'Notify Employee',
+        isChecked: false,
+      });
+
+      const addIndividualBtn = button.build({
+        text: '+ Add Individual',
+        style: 'secondary',
+        type: 'contained',
+        classNames: 'addIndividualBtn',
+      });
+      const individualCardWrap = document.createElement('div');
+      individualCardWrap.classList.add('individualCardWrap');
+
+      if (shiftData.consumerNames.length > 0) {
+        const consumerNames = shiftData.consumerNames;
+        consumerNames.forEach(cn => {
+          const [name, id] = cn[0].split('|');
+          const [first, last] = name.split(' ');
+
+          const rosterCard = new RosterCard({
+            consumerId: id,
+            firstName: first,
+            middleName: '',
+            lastName: last,
+          });
+
+          rosterCard.renderTo(individualCardWrap);
+        });
+      }
+
+      const savebtn = button.build({
+        text: 'Save',
+        style: 'secondary',
+        type: 'contained',
+        callback: async () => {
+          const success = await saveUpdateShift({
+            dateString: shiftData.date.join(','),
+            consumerIdString: shiftData.consumerNames.map(n => n.split('|')[1]).join(','),
+            startTime: shiftData.startTime,
+            endTime: shiftData.endTime,
+            color: shiftData.color,
+            locationId: shiftData.locationId,
+            notifyEmployee: shiftData.notifyEmployee,
+            personId: shiftData.employeeId,
+            saveUpdateFlag: isNew ? 'S' : 'U',
+          });
+
+          POPUP.hide(shiftPopup);
+
+          if (success === 'conflict') {
+            showSuccessFailPopup(false, 'Unable To Save, Conflicting Shifts');
+          } else if (success === 'consumer') {
+            showSuccessFailPopup(false, 'Unable To Save, Invalid Consumer');
+          } else {
+            showSuccessFailPopup(success);
+          }
+
+          if (onCloseCallback) onCloseCallback();
+        },
+      });
+
+      const cancelbtn = button.build({
+        text: 'Cancel',
+        style: 'secondary',
+        type: 'outlined',
+        callback: () => {
+          POPUP.hide(shiftPopup);
+
+          if (onCloseCallback) onCloseCallback();
+        },
+      });
+
+      // Required Fields
+      if (!shiftData.locationId) {
+        locationDropdown.classList.add('error');
+        employeeDropdown.classList.add('disabled');
+      }
+      if (!shiftData.startTime) startTimeInput.classList.add('error');
+      if (!shiftData.endTime) endTimeInput.classList.add('error');
+
+      // Event Listener
+      shiftPopup.addEventListener('change', e => {
+        if (e.target.parentElement === locationDropdown) {
+          const selectedOption = e.target.options[e.target.selectedIndex];
+          shiftData.locationId = selectedOption.value;
+          filterShiftEmployeesOpts.locationId = shiftData.locationId;
+
+          if (shiftData.locationId === '') {
+            locationDropdown.classList.add('error');
+            employeeDropdown.classList.add('disabled');
+          } else {
+            locationDropdown.classList.remove('error');
+            employeeDropdown.classList.remove('disabled');
+          }
+
+          // Clear employee & update dropdown
+          shiftData.employeeId = '';
+          employeeDropdown.classList.add('error');
+          updateShiftEmployees();
+
+          // Clear out consumers
+          shiftData.consumerNames = [];
+          individualCardWrap.innerHTML = '';
+        }
+        if (e.target.parentElement === employeeDropdown) {
+          const selectedOption = e.target.options[e.target.selectedIndex];
+          shiftData.employeeId = selectedOption.value === 'null' ? '' : selectedOption.value;
+
+          if (shiftData.employeeId === '') {
+            employeeDropdown.classList.add('error');
+          } else {
+            employeeDropdown.classList.remove('error');
+          }
+        }
+        if (e.target.parentElement === colorDropdown) {
+          const selectedOption = e.target.options[e.target.selectedIndex];
+          shiftData.color = selectedOption.value;
+
+          if (selectedOption.value === '%') shiftData.color = 'white';
+        }
+        if (e.target.parentElement === startTimeInput) {
+          shiftData.startTime = e.target.value;
+          filterShiftEmployeesOpts.shiftStartTime = shiftData.startTime;
+
+          if (!shiftData.startTime || (shiftData.endTime && shiftData.startTime > shiftData.endTime)) {
+            startTimeInput.classList.add('error');
+          } else {
+            startTimeInput.classList.remove('error');
+
+            if (shiftData.endTime) {
+              endTimeInput.classList.remove('error');
+            }
+
+            updateShiftEmployees();
+          }
+        }
+        if (e.target.parentElement === endTimeInput) {
+          shiftData.endTime = e.target.value;
+          filterShiftEmployeesOpts.shiftEndTime = shiftData.endTime;
+
+          if (!shiftData.endTime || (shiftData.startTime && shiftData.endTime < shiftData.startTime)) {
+            endTimeInput.classList.add('error');
+          } else {
+            endTimeInput.classList.remove('error');
+
+            if (shiftData.startTime) {
+              startTimeInput.classList.remove('error');
+            }
+
+            updateShiftEmployees();
+          }
+        }
+        if (e.target.parentElement === notifyEmployee) {
+          shiftData.notifyEmployee = e.target.checked ? 'Y' : 'N';
+        }
 
         checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
-      },
-    });
-    const filterEmployeesBtn = button.build({
-      text: 'Filter Employee List',
-      style: 'secondary',
-      type: 'contained',
-      classNames: 'filterEmployeesBtn',
-    });
-    const locationDropdown = dropdown.build({
-      dropdownId: 'locationDropdown',
-      label: 'Location',
-      style: 'secondary',
-      required: true,
-    });
-    const employeeDropdown = dropdown.build({
-      dropdownId: 'employeeDropdown',
-      label: 'Employee',
-      style: 'secondary',
-    });
-    const colorDropdown = dropdown.build({
-      dropdownId: 'colorDropdown',
-      label: 'Color',
-      style: 'secondary',
-    });
-    const startTimeInput = input.build({
-      label: 'Start Time',
-      type: 'time',
-      style: 'secondary',
-      value: shiftData.startTime,
-    });
-    const endTimeInput = input.build({
-      label: 'End Time',
-      type: 'time',
-      style: 'secondary',
-      value: shiftData.endTime,
-    });
-    const notifyEmployee = input.buildCheckbox({
-      text: 'Notify Employee',
-      isChecked: false,
-    });
+      });
+      shiftPopup.addEventListener('click', async e => {
+        if (e.target === filterEmployeesBtn) {
+          showFilterEmployeePopup(updateShiftEmployees);
+        }
+        if (e.target === addIndividualBtn) {
+          const datesSelectedCount = shiftData.date.length > 0 ? null : shiftData.date[0];
+          shiftPopup.style.opacity = 0.5;
+          shiftPopup.style.pointerEvents = 'none';
+          showAddIndividualPopup(
+            consumers => {
+              if (consumers) {
+                shiftData.consumerNames = [...consumers];
+                individualCardWrap.innerHTML = '';
+                if (shiftData.consumerNames.length > 0) {
+                  const consumerNames = shiftData.consumerNames;
+                  consumerNames.forEach(cn => {
+                    const [name, id] = cn.split('|');
+                    const [fName, lName] = name.split(' ');
+
+                    const gridAnimationWrapper = document.createElement('div');
+                    gridAnimationWrapper.classList.add('rosterCardWrap');
+
+                    const rosterCard = new RosterCard({
+                      consumerId: id,
+                      firstName: fName,
+                      middleName: '',
+                      lastName: lName,
+                    });
+
+                    rosterCard.renderTo(gridAnimationWrapper);
+                    individualCardWrap.appendChild(gridAnimationWrapper);
+                  });
+                }
+              }
+
+              shiftPopup.style.opacity = 1;
+              shiftPopup.style.pointerEvents = 'all';
+            },
+            shiftData.consumerNames,
+            datesSelectedCount,
+            shiftData.locationId,
+          );
+        }
+      });
+      individualCardWrap.addEventListener('click', e => {
+        if (!$.session.schedulingSecurity) return;
+
+        const idToRemove = e.target.id;
+        shiftData.consumerNames = shiftData.consumerNames.filter(cn => (cn.id = idToRemove));
+        e.target.remove();
+      });
+
+      // Build Popup
+      const buttonWrap = document.createElement('div');
+      buttonWrap.classList.add('btnWrap');
+      buttonWrap.appendChild(savebtn);
+      buttonWrap.appendChild(cancelbtn);
+      //
+      shiftPopup.appendChild(filterEmployeesBtn);
+      shiftPopup.appendChild(shiftDateSelect.rootEle);
+      shiftPopup.appendChild(locationDropdown);
+      shiftPopup.appendChild(employeeDropdown);
+      shiftPopup.appendChild(startTimeInput);
+      shiftPopup.appendChild(endTimeInput);
+      shiftPopup.appendChild(colorDropdown);
+      shiftPopup.appendChild(individualCardWrap);
+      shiftPopup.appendChild(addIndividualBtn);
+      shiftPopup.appendChild(notifyEmployee);
+      shiftPopup.appendChild(buttonWrap);
+
+      if (!$.session.schedulingSecurity) {
+        shiftPopup.remove(filterEmployeesBtn);
+        shiftPopup.remove(colorDropdown);
+        shiftPopup.remove(addIndividualBtn);
+        shiftPopup.remove(notifyEmployee);
+      }
+
+      // Populate Dropdowns
+      populateShiftLocationDropdown(locationDropdown, shiftData.locationId);
+      populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
+      populateShiftColorDropdown(colorDropdown, shiftData.color);
+
+      checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
+    }
+
     const callOffBtn = button.build({
       text: 'Call Off',
       style: 'secondary',
       type: 'contained',
-    });
-    const requestShiftBtn = button.build({
-      text: 'Request Shift',
-      style: 'secondary',
-      type: 'contained',
-    });
-    const cancelShiftBtn = button.build({
-      text: 'Cancel Request',
-      style: 'secondary',
-      type: 'contained',
-    });
-
-    const addIndividualBtn = button.build({
-      text: '+ Add Individual',
-      style: 'secondary',
-      type: 'contained',
-      classNames: 'addIndividualBtn',
-    });
-    const individualCardWrap = document.createElement('div');
-    individualCardWrap.classList.add('individualCardWrap');
-
-    if (shiftData.consumerNames.length > 0) {
-      const consumerNames = shiftData.consumerNames;
-      consumerNames.forEach(cn => {
-        const [name, id] = cn[0].split('|');
-        const [first, last] = name.split(' ');
-
-        const rosterCard = new RosterCard({
-          consumerId: id,
-          firstName: first,
-          middleName: '',
-          lastName: last,
-        });
-
-        rosterCard.renderTo(individualCardWrap);
-      });
-    }
-
-    const savebtn = button.build({
-      text: 'Save',
-      style: 'secondary',
-      type: 'contained',
-      callback: async () => {
-        const success = await saveUpdateShift({
-          dateString: shiftData.date.join(','),
-          consumerIdString: shiftData.consumerNames.map(n => n.split('|')[1]).join(','),
-          startTime: shiftData.startTime,
-          endTime: shiftData.endTime,
-          color: shiftData.color,
-          locationId: shiftData.locationId,
-          notifyEmployee: shiftData.notifyEmployee,
-          personId: shiftData.employeeId,
-          saveUpdateFlag: isNew ? 'S' : 'U',
-        });
-
-        POPUP.hide(shiftPopup);
-
-        if (success === 'conflict') {
-          showSuccessFailPopup(false, 'Unable To Save, Conflicting Shifts');
-        } else if (success === 'consumer') {
-          showSuccessFailPopup(false, 'Unable To Save, Invalid Consumer');
-        } else {
-          showSuccessFailPopup(success);
-        }
-
-        if (onCloseCallback) onCloseCallback();
-      },
-    });
-
-    const cancelbtn = button.build({
-      text: 'Cancel',
-      style: 'secondary',
-      type: 'outlined',
       callback: () => {
-        POPUP.hide(shiftPopup);
-
-        if (onCloseCallback) onCloseCallback();
-      },
-    });
-
-    // Required Fields
-    if (!shiftData.locationId) {
-      locationDropdown.classList.add('error');
-      employeeDropdown.classList.add('disabled');
-    }
-    if (!shiftData.startTime) startTimeInput.classList.add('error');
-    if (!shiftData.endTime) endTimeInput.classList.add('error');
-
-    // Event Listener
-    shiftPopup.addEventListener('change', e => {
-      if (e.target.parentElement === locationDropdown) {
-        const selectedOption = e.target.options[e.target.selectedIndex];
-        shiftData.locationId = selectedOption.value;
-        filterShiftEmployeesOpts.locationId = shiftData.locationId;
-
-        if (shiftData.locationId === '') {
-          locationDropdown.classList.add('error');
-          employeeDropdown.classList.add('disabled');
-        } else {
-          locationDropdown.classList.remove('error');
-          employeeDropdown.classList.remove('disabled');
-        }
-
-        // Clear employee & update dropdown
-        shiftData.employeeId = '';
-        employeeDropdown.classList.add('error');
-        updateShiftEmployees();
-
-        // Clear out consumers
-        shiftData.consumerNames = [];
-        individualCardWrap.innerHTML = '';
-      }
-      if (e.target.parentElement === employeeDropdown) {
-        const selectedOption = e.target.options[e.target.selectedIndex];
-        shiftData.employeeId = selectedOption.value === 'null' ? '' : selectedOption.value;
-
-        if (shiftData.employeeId === '') {
-          employeeDropdown.classList.add('error');
-        } else {
-          employeeDropdown.classList.remove('error');
-        }
-      }
-      if (e.target.parentElement === colorDropdown) {
-        const selectedOption = e.target.options[e.target.selectedIndex];
-        shiftData.color = selectedOption.value;
-
-        if (selectedOption.value === '%') shiftData.color = 'white';
-      }
-      if (e.target.parentElement === startTimeInput) {
-        shiftData.startTime = e.target.value;
-        filterShiftEmployeesOpts.shiftStartTime = shiftData.startTime;
-
-        if (!shiftData.startTime || (shiftData.endTime && shiftData.startTime > shiftData.endTime)) {
-          startTimeInput.classList.add('error');
-        } else {
-          startTimeInput.classList.remove('error');
-
-          if (shiftData.endTime) {
-            endTimeInput.classList.remove('error');
-          }
-
-          updateShiftEmployees();
-        }
-      }
-      if (e.target.parentElement === endTimeInput) {
-        shiftData.endTime = e.target.value;
-        filterShiftEmployeesOpts.shiftEndTime = shiftData.endTime;
-
-        if (!shiftData.endTime || (shiftData.startTime && shiftData.endTime < shiftData.startTime)) {
-          endTimeInput.classList.add('error');
-        } else {
-          endTimeInput.classList.remove('error');
-
-          if (shiftData.startTime) {
-            startTimeInput.classList.remove('error');
-          }
-
-          updateShiftEmployees();
-        }
-      }
-      if (e.target.parentElement === notifyEmployee) {
-        shiftData.notifyEmployee = e.target.checked ? 'Y' : 'N';
-      }
-
-      checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
-    });
-    shiftPopup.addEventListener('click', async e => {
-      if (e.target === filterEmployeesBtn) {
-        showFilterEmployeePopup(updateShiftEmployees);
-      }
-      if (e.target === addIndividualBtn) {
-        const datesSelectedCount = shiftData.date.length > 0 ? null : shiftData.date[0];
-        shiftPopup.style.opacity = 0.5;
-        shiftPopup.style.pointerEvents = 'none';
-        showAddIndividualPopup(
-          consumers => {
-            if (consumers) {
-              shiftData.consumerNames = [...consumers];
-              individualCardWrap.innerHTML = '';
-              if (shiftData.consumerNames.length > 0) {
-                const consumerNames = shiftData.consumerNames;
-                consumerNames.forEach(cn => {
-                  const [name, id] = cn.split('|');
-                  const [fName, lName] = name.split(' ');
-
-                  const gridAnimationWrapper = document.createElement('div');
-                  gridAnimationWrapper.classList.add('rosterCardWrap');
-
-                  const rosterCard = new RosterCard({
-                    consumerId: id,
-                    firstName: fName,
-                    middleName: '',
-                    lastName: lName,
-                  });
-
-                  rosterCard.renderTo(gridAnimationWrapper);
-                  individualCardWrap.appendChild(gridAnimationWrapper);
-                });
-              }
-            }
-
-            shiftPopup.style.opacity = 1;
-            shiftPopup.style.pointerEvents = 'all';
-          },
-          shiftData.consumerNames,
-          datesSelectedCount,
-          shiftData.locationId,
-        );
-      }
-      if (e.target === callOffBtn) {
         POPUP.hide(shiftPopup);
         renderRequestOffPopup(shiftData.shiftId, () => {
           const updatedShift = calendarEvents.find(event => event.eventId === shiftData.shiftId);
@@ -1503,8 +1530,13 @@ const SchedulingCalendar = (function () {
 
           ScheduleCalendar.updateEvent({ ...updatedShift });
         });
-      }
-      if (e.target === requestShiftBtn) {
+      },
+    });
+    const requestShiftBtn = button.build({
+      text: 'Request Shift',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
         POPUP.hide(shiftPopup);
 
         const { getOverlapStatusforSelectedShiftResult: overlapWithExistingShift } =
@@ -1535,8 +1567,13 @@ const SchedulingCalendar = (function () {
           displayOverlapPopup(overlapWithExistingShift);
           return;
         }
-      }
-      if (e.target === cancelShiftBtn) {
+      },
+    });
+    const cancelShiftBtn = button.build({
+      text: 'Cancel Request',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
         POPUP.hide(shiftPopup);
         schedulingAjax.cancelRequestOpenShiftSchedulingAjax(shiftData.shiftId);
 
@@ -1549,53 +1586,22 @@ const SchedulingCalendar = (function () {
         updatedShiftScheduleCache.typeId = 3;
 
         ScheduleCalendar.updateEvent({ ...updatedShift });
-      }
+      },
     });
-    individualCardWrap.addEventListener('click', e => {
-      if (!$.session.schedulingSecurity) return;
 
-      const idToRemove = e.target.id;
-      shiftData.consumerNames = shiftData.consumerNames.filter(cn => (cn.id = idToRemove));
-      e.target.remove();
-    });
-      
-    // Build Popup
-    const buttonWrap = document.createElement('div');
-    buttonWrap.classList.add('btnWrap');
-    buttonWrap.appendChild(savebtn);
-    buttonWrap.appendChild(cancelbtn);
-    //
-    shiftPopup.appendChild(filterEmployeesBtn);
-    shiftPopup.appendChild(shiftDateSelect.rootEle);
-    shiftPopup.appendChild(locationDropdown);
-    shiftPopup.appendChild(employeeDropdown);
-    shiftPopup.appendChild(startTimeInput);
-    shiftPopup.appendChild(endTimeInput);
-    shiftPopup.appendChild(colorDropdown);
-    shiftPopup.appendChild(individualCardWrap);
-    shiftPopup.appendChild(addIndividualBtn);
-    shiftPopup.appendChild(notifyEmployee);
-    shiftPopup.appendChild(buttonWrap);
-
-    if (!$.session.schedulingSecurity) {
-      shiftPopup.remove(filterEmployeesBtn);
-      shiftPopup.remove(colorDropdown);
-      shiftPopup.remove(addIndividualBtn);
-      shiftPopup.remove(notifyEmployee);
-    }
-
+    // CALL OFF SHIFT
     if (
-      eventTypeID === '1' &&
-      selectedEmployeeId === $.session.PeopleId &&
-      (currentCalView === 'week' || currentCalView === 'day') &&
+      eventTypeID === '1' && // eventType = 'My Shift'
+      selectedEmployeeId === $.session.PeopleId && // we may not need this here
       $.session.schedAllowCallOffRequests === 'Y' &&
       $.session.schedulingUpdate
     ) {
       shiftPopup.appendChild(callOffBtn);
     }
 
+    // REQUEST SHIFT
     if (
-      eventTypeID === '3' &&
+      eventTypeID === '3' && // open shifts only
       $.session.schedRequestOpenShifts === 'Y' &&
       !$.session.isPSI &&
       $.session.schedulingUpdate &&
@@ -1604,16 +1610,11 @@ const SchedulingCalendar = (function () {
       shiftPopup.appendChild(requestShiftBtn);
     }
 
+    // CANCEL PENDING SHIFT REQUEST
     if (eventTypeID === '4' && data && data.requestedById === $.session.PeopleId) {
+      // Pending Request Open Shifts Only (eventTypeID = 4)
       shiftPopup.appendChild(cancelShiftBtn);
     }
-
-    // Populate Dropdowns
-    populateShiftLocationDropdown(locationDropdown, shiftData.locationId);
-    populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
-    populateShiftColorDropdown(colorDropdown, shiftData.color);
-
-    checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
 
     POPUP.show(shiftPopup);
   }
