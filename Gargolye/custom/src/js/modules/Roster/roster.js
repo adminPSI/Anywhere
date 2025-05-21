@@ -952,6 +952,12 @@ const roster2 = (function () {
         if ($.loadedApp === 'timeEntry') {
             if (defaults.rememberLastLocation('timeEntry')) defaults.setLocation('timeEntry', selectedLocationId);
         }
+        if ($.loadedApp === 'forms') {
+            if (defaults.rememberLastLocation('forms')) defaults.setLocation('forms', selectedLocationId);
+        }
+        if ($.loadedApp === 'employment') {
+            if (defaults.rememberLastLocation('employment')) defaults.setLocation('employment', selectedLocationId);
+        }
     }
     async function filterApply() {
         customGroups.init(rosterGroups);

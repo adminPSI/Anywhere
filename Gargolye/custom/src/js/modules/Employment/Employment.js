@@ -997,9 +997,27 @@ const Employment = (() => {
         loadEmploymentLanding();
     }
 
-    function init() {
+    async function init() {
         setActiveModuleAttribute('Employment');
         DOM.clearActionCenter();
+
+        // default location code 
+        let defaultemploymentLocation = defaults.getLocation('employment');
+        let defaultemploymentGroup = defaults.getLocation('employmentGroup');
+        let defaultemploymentGroupName = defaults.getLocation('employmentGroupName');
+
+        if (defaultemploymentLocation === '' || defaultemploymentLocation == null) {
+            defaults.setLocation('employment', 0);
+            defaultemploymentLocation = '0';
+        }
+        defaultemploymentGroup = defaultemploymentGroup == null ? '' : defaultemploymentGroup;
+        await roster2.miniRosterinit({
+            locationId: defaultemploymentLocation,
+            locationName: '',
+            groupId: defaultemploymentGroup,
+            groupName: defaultemploymentGroupName,
+        }); 
+
         roster2.showMiniRoster();
     }
 

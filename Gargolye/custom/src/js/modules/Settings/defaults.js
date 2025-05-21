@@ -25,6 +25,12 @@ var defaults = (function () {
     var timeEntryLocationDropdown;
     var timeEntryGroupDropdown;
     var timeEntryRLLCheckBox;
+    var formsLocationDropdown;
+    var formsGroupDropdown;
+    var formsRLLCheckBox;
+    var employmentLocationDropdown;
+    var employmentGroupDropdown;
+    var employmentRLLCheckBox;
 
     // values
     var todaysDate = UTIL.getTodaysDate();
@@ -54,6 +60,14 @@ var defaults = (function () {
     var timeEntryGroup;
     var timeEntryGroupName;
     var defaultRosterLocationFixed;
+    var formsRLL;
+    var formsLocation;
+    var formsGroup;
+    var formsGroupName;
+    var employmentRLL;
+    var employmentLocation;
+    var employmentGroup;
+    var employmentGroupName;
     //dropdown data
     var dayServiceDropdownData;
     var workshopDropdownData;
@@ -67,6 +81,10 @@ var defaults = (function () {
     var planGroupDropdownData;
     var timeEntryLocDropdownData;
     var timeEntryGroupDropdownData;
+    var formsLocDropdownData;
+    var formsGroupDropdownData;
+    var employmentLocDropdownData;
+    var employmentGroupDropdownData;
     var communicationTypeDropdownData;
 
     function getLocation(module) {
@@ -135,6 +153,36 @@ var defaults = (function () {
             }
             case 'timeEntryGroupName': {
                 return $.session.defaultTimeEntryGroupName;
+                break;
+            }
+            case 'forms': {
+                return $.session.defaultFormsLocation === 'null' ||
+                    $.session.defaultFormsLocation === '0'
+                    ? ''
+                    : $.session.defaultFormsLocation;
+                break;
+            }
+            case 'formsGroup': {
+                return $.session.defaultFormsGroupValue;
+                break;
+            }
+            case 'formsGroupName': {
+                return $.session.defaultFormsGroupName;
+                break;
+            }
+            case 'employment': {
+                return $.session.defaultEmploymentLocation === 'null' ||
+                    $.session.defaultEmploymentLocation === '0'
+                    ? ''
+                    : $.session.defaultEmploymentLocation;
+                break;
+            }
+            case 'employmentGroup': {
+                return $.session.defaultEmploymentGroupValue;
+                break;
+            }
+            case 'employmentGroupName': {
+                return $.session.defaultEmploymentGroupName; 
                 break;
             }
             default: {
@@ -237,6 +285,40 @@ var defaults = (function () {
                 $.session.defaultTimeEntryGroupValue = timeEntryGroup;
                 break;
             }
+            case 'forms': {
+                formsLocation = value;
+                defaultsAjax.saveDefaultLocationValue('14', formsLocation);
+                //reset session var for the current session
+                $.session.defaultFormsLocation = formsLocation;
+                break;
+            }
+            case 'formsGroup': {
+                formsGroup = value;
+                formsGroupName = name;
+                defaultsAjax.saveDefaultLocationValue('15', formsGroup);
+                defaultsAjax.saveDefaultLocationName('15', formsGroupName);
+                //reset session var for the current session
+                $.session.defaultFormsGroupName = formsGroupName;
+                $.session.defaultFormsGroupValue = formsGroup;
+                break;
+            }
+            case 'employment': {
+                employmentLocation = value;
+                defaultsAjax.saveDefaultLocationValue('16', employmentLocation);
+                //reset session var for the current session
+                $.session.defaultEmploymentLocation = employmentLocation;
+                break;
+            }
+            case 'employmentGroup': {
+                employmentGroup = value;
+                employmentGroupName = name;
+                defaultsAjax.saveDefaultLocationValue('17', employmentGroup);
+                defaultsAjax.saveDefaultLocationName('17', employmentGroupName);
+                //reset session var for the current session
+                $.session.defaultEmploymentGroupName = employmentGroupName;
+                $.session.defaultEmploymentGroupValue = employmentGroup;
+                break;
+            }
             default: {
                 return null;
                 break;
@@ -336,6 +418,26 @@ var defaults = (function () {
                 } else {
                     defaultsAjax.saveDefaultLocationName('12', '');
                     $.session.defaultTimeEntryLocationName = '';
+                }
+                break;
+            }
+            case 'forms': {
+                if (formsRLL) {
+                    defaultsAjax.saveDefaultLocationName('14', 'Remember Last Location');
+                    $.session.defaultFormsLocationName = 'Remember Last Location';
+                } else {
+                    defaultsAjax.saveDefaultLocationName('14', '');
+                    $.session.defaultFormsLocationName = '';
+                }
+                break;
+            }
+            case 'employment': {
+                if (employmentRLL) {
+                    defaultsAjax.saveDefaultLocationName('16', 'Remember Last Location');
+                    $.session.defaultEmploymentLocationName = 'Remember Last Location';
+                } else {
+                    defaultsAjax.saveDefaultLocationName('16', '');
+                    $.session.defaultEmploymentLocationName = '';
                 }
                 break;
             }
@@ -616,6 +718,80 @@ var defaults = (function () {
             );
         });
 
+        var formsLocPromise = new Promise(function (resolve, reject) {
+            defaultsAjax.getRosterLocations(loc => {
+                formsLocDropdownData = loc.map(loc => {
+                    var id = `forms-${loc.ID}`;
+                    var value = loc.ID;
+                    var text = loc.Name;
+                    return {
+                        id,
+                        value,
+                        text,
+                    };
+                });
+                if (getLocation('forms') === '')
+                    formsLocDropdownData.unshift({ id: 'forms-0', value: null, text: 'ALL' });
+                resolve('success');
+            });
+        });
+
+        var formsGroupPromise = new Promise(function (resolve, reject) {
+            defaultsAjax.getConsumerGroups(
+                $.session.defaultFormsLocation === null || $.session.defaultFormsLocation === undefined ? '0' : $.session.defaultFormsLocation,
+                res => {
+                    formsGroupDropdownData = res.map(group => {
+                        var id = `formsGr-${group.GroupCode}-${group.RetrieveID}`;
+                        var value = `${group.GroupCode}-${group.RetrieveID}`;
+                        var text = group.GroupName;
+                        return {
+                            id,
+                            value,
+                            text,
+                        };
+                    });
+                    resolve('success');
+                },
+            );
+        });
+
+        var employmentLocPromise = new Promise(function (resolve, reject) {
+            defaultsAjax.getRosterLocations(loc => {
+                employmentLocDropdownData = loc.map(loc => {
+                    var id = `employment-${loc.ID}`;
+                    var value = loc.ID;
+                    var text = loc.Name;
+                    return {
+                        id,
+                        value,
+                        text,
+                    };
+                });
+                if (getLocation('employment') === '')
+                    employmentLocDropdownData.unshift({ id: 'employment-0', value: null, text: 'ALL' });
+                resolve('success');
+            });
+        });
+
+        var employmentGroupPromise = new Promise(function (resolve, reject) {
+            defaultsAjax.getConsumerGroups(
+                $.session.defaultEmploymentLocation === null || $.session.defaultEmploymentLocation === undefined ? '0' : $.session.defaultEmploymentLocation,
+                res => {
+                    employmentGroupDropdownData = res.map(group => {
+                        var id = `employmentGr-${group.GroupCode}-${group.RetrieveID}`; 
+                        var value = `${group.GroupCode}-${group.RetrieveID}`;
+                        var text = group.GroupName;
+                        return {
+                            id,
+                            value,
+                            text,
+                        };
+                    });
+                    resolve('success');
+                },
+            );
+        });
+
         communicationTypeDropdownData = ([
             { value: '1', text: 'Letter / Mail.' },
             { value: '2', text: 'Phone Call.' },
@@ -638,7 +814,11 @@ var defaults = (function () {
             planLocPromise,
             planGroupPromise,
             timeEntryLocPromise,
-            timeEntryGroupPromise
+            timeEntryGroupPromise,
+            formsLocPromise,
+            formsGroupPromise,
+            employmentLocPromise,
+            employmentGroupPromise
         ]).then(() => {
             buildPage();
         });
@@ -689,6 +869,16 @@ var defaults = (function () {
             }
             case 'timeEntry': {
                 if ($.session.defaultTimeEntryLocationName === 'Remember Last Location') return true;
+                else return false;
+                break;
+            }
+            case 'forms': {
+                if ($.session.defaultFormsLocationName === 'Remember Last Location') return true;
+                else return false;
+                break;
+            }
+            case 'employment': {
+                if ($.session.defaultEmploymentLocationName === 'Remember Last Location') return true;
                 else return false;
                 break;
             }
@@ -760,6 +950,46 @@ var defaults = (function () {
             setLocation('timeEntryGroup', `CAS-${loc}`, 'Caseload');
             dropdown.populate(timeEntryGroupDropdown, timeEntryGroupDropdownData, `CAS-${loc}`);
             timeEntryGroupDropdown.classList.remove('disabled');
+        });
+    }
+
+    function repopulateFormsGroupDropdown(loc) {
+        formsGroupDropdown.classList.add('disabled');
+        formsGroupDropdownData = null;
+        defaultsAjax.getConsumerGroups(loc, res => {
+            formsGroupDropdownData = res.map(group => {
+                var id = `formsGr-${group.GroupCode}-${group.RetrieveID}`;
+                var value = `${group.GroupCode}-${group.RetrieveID}`;
+                var text = group.GroupName;
+                return {
+                    id,
+                    value,
+                    text,
+                };
+            });
+            setLocation('formsGroup', `CAS-${loc}`, 'Caseload');
+            dropdown.populate(formsGroupDropdown, formsGroupDropdownData, `CAS-${loc}`);
+            formsGroupDropdown.classList.remove('disabled');
+        });
+    }
+
+    function repopulateEmploymentGroupDropdown(loc) {
+        employmentGroupDropdown.classList.add('disabled');
+        employmentGroupDropdownData = null;
+        defaultsAjax.getConsumerGroups(loc, res => {
+            employmentGroupDropdownData = res.map(group => {
+                var id = `employmentGr-${group.GroupCode}-${group.RetrieveID}`;
+                var value = `${group.GroupCode}-${group.RetrieveID}`;
+                var text = group.GroupName;
+                return {
+                    id,
+                    value,
+                    text,
+                };
+            });
+            setLocation('employmentGroup', `CAS-${loc}`, 'Caseload');
+            dropdown.populate(employmentGroupDropdown, employmentGroupDropdownData, `CAS-${loc}`);
+            employmentGroupDropdown.classList.remove('disabled');
         });
     }
     function buildPage() {
@@ -835,6 +1065,18 @@ var defaults = (function () {
         timeEntrySection.classList.add('settingMenuCard');
         timeEntrySectionHeader.classList.add('header');
         timeEntrySectionHeader.innerHTML = 'TimeEntry';
+
+        var formsSection = document.createElement('div');
+        var formsSectionHeader = document.createElement('h3');
+        formsSection.classList.add('settingMenuCard');
+        formsSectionHeader.classList.add('header');
+        formsSectionHeader.innerHTML = 'Forms';
+
+        var employmentSection = document.createElement('div');
+        var employmentSectionHeader = document.createElement('h3');
+        employmentSection.classList.add('settingMenuCard');
+        employmentSectionHeader.classList.add('header');
+        employmentSectionHeader.innerHTML = 'Employment';
 
         rosterLocationDropdown = dropdown.build({
             dropdownId: 'defaultRosterLocation',
@@ -1029,6 +1271,41 @@ var defaults = (function () {
             style: 'secondary',
         });
 
+        formsLocationDropdown = dropdown.build({
+            dropdownId: 'defaultFormsLocation',
+            label: 'Default Location',
+            style: 'secondary',
+        });
+        formsRLLCheckBox = input.buildCheckbox({
+            text: 'Remember Last Location',
+            className: 'rllCheckBox',
+            style: 'secondary',
+            isChecked: formsRLL,
+        });
+        formsGroupDropdown = dropdown.build({
+            dropdownId: 'defaultFormsGroup',
+            label: 'Default Group',
+            style: 'secondary',
+        });
+
+
+        employmentLocationDropdown = dropdown.build({
+            dropdownId: 'defaultEmploymentLocation',
+            label: 'Default Location',
+            style: 'secondary',
+        });
+        employmentRLLCheckBox = input.buildCheckbox({
+            text: 'Remember Last Location',
+            className: 'rllCheckBox',
+            style: 'secondary',
+            isChecked: employmentRLL,
+        });
+        employmentGroupDropdown = dropdown.build({
+            dropdownId: 'defaultEmploymentGroup',
+            label: 'Default Group',
+            style: 'secondary',
+        });
+
         //Display for current menu
         defaultsPage.appendChild(currMenu);
 
@@ -1046,6 +1323,11 @@ var defaults = (function () {
         if (timeEntryRLL) timeEntryLocationDropdown.classList.add('disabled');
         if (timeEntryRLL) timeEntryGroupDropdown.classList.add('disabled');
 
+        if (formsRLL) formsLocationDropdown.classList.add('disabled');
+        if (formsRLL) formsGroupDropdown.classList.add('disabled');
+        if (employmentRLL) employmentLocationDropdown.classList.add('disabled');
+        if (employmentRLL) employmentGroupDropdown.classList.add('disabled');
+
         //checkbox div and wraper for right justification
         rosterChecboxDiv = document.createElement('div');
         dayServicesChecboxDiv = document.createElement('div');
@@ -1056,6 +1338,8 @@ var defaults = (function () {
         outcomesChecboxDiv = document.createElement('div');
         planChecboxDiv = document.createElement('div');
         timeEntryChecboxDiv = document.createElement('div');
+        formsChecboxDiv = document.createElement('div');
+        employmentChecboxDiv = document.createElement('div');
         rosterChecboxDiv.classList.add('checkboxWrap');
         dayServicesChecboxDiv.classList.add('checkboxWrap');
         timeClockChecboxDiv.classList.add('checkboxWrap');
@@ -1065,6 +1349,8 @@ var defaults = (function () {
         outcomesChecboxDiv.classList.add('checkboxWrap');
         planChecboxDiv.classList.add('checkboxWrap');
         timeEntryChecboxDiv.classList.add('checkboxWrap');
+        formsChecboxDiv.classList.add('checkboxWrap');
+        employmentChecboxDiv.classList.add('checkboxWrap');
 
         rosterChecboxDiv.appendChild(rosterRLLCheckBox);
         dayServicesChecboxDiv.appendChild(dayServicesRLLCheckBox);
@@ -1075,6 +1361,8 @@ var defaults = (function () {
         OODChecboxDiv.appendChild(OODRLLCheckBox);
         planChecboxDiv.appendChild(planRLLCheckBox);
         timeEntryChecboxDiv.appendChild(timeEntryRLLCheckBox);
+        formsChecboxDiv.appendChild(formsRLLCheckBox);
+        employmentChecboxDiv.appendChild(employmentRLLCheckBox);
 
         //roster settigns
         rosterSection.appendChild(rosterSectionHeader);
@@ -1135,6 +1423,18 @@ var defaults = (function () {
         timeEntrySection.appendChild(timeEntryChecboxDiv);
         timeEntrySection.appendChild(timeEntryGroupDropdown);
 
+        //Forms
+        formsSection.appendChild(formsSectionHeader);
+        formsSection.appendChild(formsLocationDropdown);
+        formsSection.appendChild(formsChecboxDiv);
+        formsSection.appendChild(formsGroupDropdown);
+
+        //Employment settings
+        employmentSection.appendChild(employmentSectionHeader);
+        employmentSection.appendChild(employmentLocationDropdown);
+        employmentSection.appendChild(employmentChecboxDiv);
+        employmentSection.appendChild(employmentGroupDropdown);
+
         //plan settigns
         planSection.appendChild(planSectionHeader);
         planSection.appendChild(planLocationDropdown);
@@ -1147,14 +1447,24 @@ var defaults = (function () {
         defaultsPage.appendChild(dayServiceSection);
         defaultsPage.appendChild(outcomesSection);
         defaultsPage.appendChild(caseNotesSection);
-        defaultsPage.appendChild(timeEntrySection);
+        if ($.session.applicationName === 'Advisor') {
+            defaultsPage.appendChild(timeEntrySection);
+        }
         defaultsPage.appendChild(planSection);
+        if ($.session.applicationName === 'Gatekeeper')
+            defaultsPage.appendChild(formsSection);
+        if ($.session.applicationName === 'Gatekeeper')
+            defaultsPage.appendChild(employmentSection);
 
         if ($.session.dsCertified) defaultsPage.appendChild(timeClockSection);
         if ($.session.applicationName === 'Advisor')
             defaultsPage.appendChild(WorkshopSection);
         if ($.session.applicationName === 'Advisor')
             defaultsPage.appendChild(incidentTrackingSection);
+        if ($.session.applicationName === 'Advisor')
+            defaultsPage.appendChild(formsSection);
+        if ($.session.applicationName === 'Advisor')
+            defaultsPage.appendChild(employmentSection);
         if ($.session.applicationName === 'Advisor')
             defaultsPage.appendChild(OODSection);
         if ($.session.applicationName === 'Advisor')
@@ -1169,7 +1479,8 @@ var defaults = (function () {
         outcomesLocationDropdown.classList.add('defaultLocationDD');
         planLocationDropdown.classList.add('defaultLocationDD');
         timeEntryLocationDropdown.classList.add('defaultLocationDD');
-
+        formsLocationDropdown.classList.add('defaultLocationDD');
+        employmentLocationDropdown.classList.add('defaultLocationDD');
         //RESET roster group to all if they have roster remember last location enabled. this is incase they change location but their selected default group is not in that location
         if (rosterRLL && $.session.defaultRosterGroupValue !== 'ALL')
             setLocation('rosterGroup', 'ALL');
@@ -1240,6 +1551,30 @@ var defaults = (function () {
             timeEntryGroupDropdownData,
             $.session.defaultTimeEntryGroupValue,
         );
+ 
+        dropdown.populate(
+            formsLocationDropdown,
+            formsLocDropdownData,
+            $.session.defaultFormsLocation === 'null' ? '' : $.session.defaultFormsLocation,
+        );
+
+        dropdown.populate(
+            formsGroupDropdown,
+            formsGroupDropdownData,
+            $.session.defaultFormsGroupValue,
+        );
+
+        dropdown.populate(
+            employmentLocationDropdown,
+            employmentLocDropdownData,
+            $.session.defaultEmploymentLocation === 'null' ? '' : $.session.defaultEmploymentLocation,
+        );
+
+        dropdown.populate(
+            employmentGroupDropdown,
+            employmentGroupDropdownData,
+            $.session.defaultEmploymentGroupValue,
+        );
 
         if ($.session.defaultContact !== '')
             dropdown.populate(planConnectDropdown, communicationTypeDropdownData, $.session.defaultContact);
@@ -1265,6 +1600,8 @@ var defaults = (function () {
         outcomesRLL = rememberLastLocation('outcomes');
         planRLL = rememberLastLocation('plan');
         timeEntryRLL = rememberLastLocation('timeEntry');
+        formsRLL = rememberLastLocation('forms');
+        employmentRLL = rememberLastLocation('employment');
     }
 
     function addEventListeners() {
@@ -1431,6 +1768,68 @@ var defaults = (function () {
             );
         });
         //=====
+        // FORMS
+        formsLocationDropdown.addEventListener('change', () => {
+            setLocation('forms', event.target.options[event.target.selectedIndex].value);
+            repopulateFormsGroupDropdown(
+                event.target.options[event.target.selectedIndex].value,
+            );
+            setLocation('formsGroup', 'ALL', 'Everyone');
+        });
+        formsRLLCheckBox.addEventListener('change', () => {
+            formsRLL = !formsRLL;
+            setRememberLastLocation('forms');
+
+            if (formsRLL) {
+                groupDropdownOptions = document.getElementById('defaultFormsGroup');
+                formsLocationDropdown.classList.add('disabled');
+                formsGroupDropdown.classList.add('disabled');
+                groupDropdownOptions.selectedIndex = 'ALL';
+                setLocation('formsGroup', 'ALL', 'Everyone');
+            } else {
+                formsLocationDropdown.classList.remove('disabled');
+                formsGroupDropdown.classList.remove('disabled');
+            }
+        });
+        formsGroupDropdown.addEventListener('change', () => {
+            setLocation(
+                'formsGroup',
+                event.target.options[event.target.selectedIndex].value,
+                event.target.options[event.target.selectedIndex].innerHTML,
+            );
+        });
+        //=====
+        // EMPLOYMENT
+        employmentLocationDropdown.addEventListener('change', () => {
+            setLocation('employment', event.target.options[event.target.selectedIndex].value);
+            repopulateEmploymentGroupDropdown(
+                event.target.options[event.target.selectedIndex].value,
+            );
+            setLocation('employmentGroup', 'ALL', 'Everyone');
+        });
+        employmentRLLCheckBox.addEventListener('change', () => {
+            employmentRLL = !employmentRLL;
+            setRememberLastLocation('employment');
+
+            if (employmentRLL) {
+                groupDropdownOptions = document.getElementById('defaultEmploymentGroup');
+                employmentLocationDropdown.classList.add('disabled');
+                employmentGroupDropdown.classList.add('disabled');
+                groupDropdownOptions.selectedIndex = 'ALL';
+                setLocation('employmentGroup', 'ALL', 'Everyone');
+            } else {
+                employmentLocationDropdown.classList.remove('disabled');
+                employmentGroupDropdown.classList.remove('disabled');
+            }
+        });
+        employmentGroupDropdown.addEventListener('change', () => {
+            setLocation(
+                'employmentGroup',
+                event.target.options[event.target.selectedIndex].value,
+                event.target.options[event.target.selectedIndex].innerHTML,
+            );
+        });
+        //=====
         // DAY SERVICES
         dayServicesLocationDropdown.addEventListener('change', () => {
             setLocation('dayServices', event.target.options[event.target.selectedIndex].value);
@@ -1561,6 +1960,14 @@ var defaults = (function () {
                 case 'Default TimeEntry Location':
                     setLocation('timeEntry', '');
                     setLocation('timeEntryGroup', '');
+                    break;
+                case 'Default Forms Location':
+                    setLocation('forms', '');
+                    setLocation('formsGroup', '');
+                    break;
+                case 'Default Employment Location':
+                    setLocation('employment', '');
+                    setLocation('employmentGroup', '');
                     break;
                 default:
                     console.warn(`couldn't reset a default location`);

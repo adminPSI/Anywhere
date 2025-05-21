@@ -720,12 +720,29 @@
         );
     }
 
-    function init() {
+    async function init() {
         //DOM.clearActionCenter();
         // PROGRESS.SPINNER.show('Loading PDF Forms...');
         //loadPDFFormsLanding();
         setActiveModuleAttribute('forms');
         DOM.clearActionCenter();
+      
+        // default location code 
+        let defaultformsLocation = defaults.getLocation('forms');
+        let defaultformsGroup = defaults.getLocation('formsGroup');
+        let defaultformsGroupName = defaults.getLocation('formsGroupName');
+
+        if (defaultformsLocation === '' || defaultformsLocation == null) {
+            defaults.setLocation('forms', 0);
+            defaultformsLocation = '0';
+        }
+        defaultformsGroup = defaultformsGroup == null ? '' : defaultformsGroup;
+        await roster2.miniRosterinit({
+            locationId: defaultformsLocation,
+            locationName: '',
+            groupId: defaultformsGroup,
+            groupName: defaultformsGroupName,
+        });
         roster2.showMiniRoster();
     }
 

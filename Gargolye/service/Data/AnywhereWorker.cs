@@ -641,6 +641,14 @@ namespace Anywhere.service.Data
             public string defaultTimeEntrylocationname { get; set; }
             public string defaultTimeEntrygroup { get; set; }
             public string defaultTimeEntrygroupname { get; set; }
+            public string defaultFormslocation { get; set; }
+            public string defaultFormslocationname { get; set; }
+            public string defaultFormsgroup { get; set; }
+            public string defaultFormsgroupname { get; set; }
+            public string defaultEmploymentlocation { get; set; }
+            public string defaultEmploymentlocationname { get; set; }
+            public string defaultEmploymentgroup { get; set; }
+            public string defaultEmploymentgroupname { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)

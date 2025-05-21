@@ -162,6 +162,15 @@ $.session.defaultTimeEntryLocation;
 $.session.defaultTimeEntryLocationName;
 $.session.defaultTimeEntryGroupValue;
 $.session.defaultTimeEntryGroupName;
+$.session.defaultFormsLocation;
+$.session.defaultFormsLocationName;
+$.session.defaultFormsGroupValue;
+$.session.defaultFormsGroupName;
+$.session.defaultEmploymentLocation;
+$.session.defaultEmploymentLocationName;
+$.session.defaultEmploymentGroupValue;
+$.session.defaultEmploymentGroupName;
+
 //////////
 $.session.areInSalesForce = true;
 $.session.RosterDeleteAbsent = false;
@@ -1875,6 +1884,58 @@ function setDefaultValue(type, value, event, name) {
             } else {
                 createCookie('defaultTimeEntryGroupName', 'Everyone', 13);
                 saveDefaultLocationNameAjax('13', 'Everyone');
+            }
+            break;
+        case 14:
+            typeName = 'Default Forms Location';
+            $('#forms14').text(event.srcElement.text);
+            if (value != 0 && name != null) {
+                createCookie('defaultFormsLocationName', name, 14);
+                createCookie('defaultFormsLocationValue', value, 14);
+                saveDefaultLocationNameAjax('14', name);
+                saveDefaultLocationValueAjax('14', value);
+            } else {
+                createCookie('defaultFormsLocationName', 'Remember Last Location', 14);
+                saveDefaultLocationNameAjax('14', 'Remember Last Location');
+            }
+            break;
+        case 15:
+            typeName = 'Default Forms Group';
+            $('#formsgroup15').text(event.srcElement.text);
+            if (value != 0 && name != null) {
+                createCookie('defaultFormsGroupName', name, 15);
+                createCookie('defaultFormsGroupValue', value, 15);
+                saveDefaultLocationNameAjax('15', name);
+                saveDefaultLocationValueAjax('15', value);
+            } else {
+                createCookie('defaultFormsGroupName', 'Everyone', 15);
+                saveDefaultLocationNameAjax('15', 'Everyone');
+            }
+            break;
+        case 16:
+            typeName = 'Default Employment Location';
+            $('#employment16').text(event.srcElement.text);
+            if (value != 0 && name != null) {
+                createCookie('defaultEmploymentLocationName', name, 16);
+                createCookie('defaultEmploymentLocationValue', value, 16);
+                saveDefaultLocationNameAjax('16', name);
+                saveDefaultLocationValueAjax('16', value);
+            } else {
+                createCookie('defaultEmploymenttLocationName', 'Remember Last Location', 16);
+                saveDefaultLocationNameAjax('16', 'Remember Last Location');
+            }
+            break;
+        case 17:
+            typeName = 'Default Employment Group';
+            $('#Employmentgroup17').text(event.srcElement.text);
+            if (value != 0 && name != null) {
+                createCookie('defaultEmploymentGroupName', name, 17);
+                createCookie('defaultEmploymentGroupValue', value, 17);
+                saveDefaultLocationNameAjax('17', name);
+                saveDefaultLocationValueAjax('17', value);
+            } else {
+                createCookie('defaultEmploymentGroupName', 'Everyone', 17);
+                saveDefaultLocationNameAjax('17', 'Everyone');
             }
             break;
     }
