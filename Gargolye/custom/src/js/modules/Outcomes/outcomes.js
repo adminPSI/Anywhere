@@ -1505,8 +1505,11 @@ const outcomes = (function () {
         if (deleteBtn) btnWrap.appendChild(deleteBtn);
 
         var timeWrap = document.createElement('div');
+        timeWrap.classList.add('btnWrap');  
+        timeInputs.start.style.width = '49%';
         timeWrap.appendChild(timeInputs.start);
-        timeWrap.appendChild(timeInputs.end);
+        timeInputs.end.style.width = '49%';
+        timeWrap.appendChild(timeInputs.end); 
 
         detailsPopup.appendChild(primaryLocationDropdown);
         if (outcomesLocations.Secondary) detailsPopup.appendChild(secondaryLocationDropdown);
@@ -1517,8 +1520,9 @@ const outcomes = (function () {
         if ($.session.applicationName !== 'Gatekeeper') {
             detailsPopup.appendChild(cIDropdown);
             detailsPopup.appendChild(timeWrap);
-        }
-
+            noteInput.style.minHeight = '175px';  
+        }       
+        
         detailsPopup.appendChild(noteInput);
         detailsPopup.appendChild(reviewNoteInput);
         detailsPopup.appendChild(notifyEmployeeCheckbox);
