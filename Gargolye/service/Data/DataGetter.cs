@@ -5040,7 +5040,7 @@ namespace Anywhere.Data
             }
         }
 
-        public string saveOrUpdateShift(string token, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag)
+        public string saveOrUpdateShift(string token, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift)
         {
             //if (tokenValidator(token) == false) return null;
             logger.debug("saveOrUpdateShift ");
@@ -5056,7 +5056,7 @@ namespace Anywhere.Data
             list.Add(notifyEmployee);
             list.Add(consumerIdString);
             list.Add(saveUpdateFlag);
-
+            list.Add(publishShift);
             string text = "CALL DBA.ANYW_Scheduling_InsertOrUpdateShift(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
 
             try

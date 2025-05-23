@@ -41,9 +41,9 @@ namespace Anywhere.service.Data
             return locationsObj;
         }
 
-        public string saveOrUpdateShift(string token, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag)
+        public string saveOrUpdateShift(string token, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift)
         {
-            string saveUpdateString = dg.saveOrUpdateShift(token, dateString, locationId, personId, startTime, endTime, color, notifyEmployee, consumerIdString, saveUpdateFlag);
+            string saveUpdateString = dg.saveOrUpdateShift(token, dateString, locationId, personId, startTime, endTime, color, notifyEmployee, consumerIdString, saveUpdateFlag, publishShift);
             return saveUpdateString;
         }
 
