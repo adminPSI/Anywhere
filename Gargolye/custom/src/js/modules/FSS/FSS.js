@@ -594,8 +594,13 @@ const FSS = (() => {
                             subChildDataRow.appendChild(endIconSubChild);
                             subChildRowWrap.appendChild(subChildDataRow);
 
-                            endIconSubChild.addEventListener('click', e => {
-                                deleteAuthorizationData(subChild.authDetailId);
+                            endIconSubChild.addEventListener('click', e => {          
+                                const paidAmt = subChild.paidAmt == null ? parseFloat('0.00').toFixed(2) : parseFloat(subChild.encumbered).toFixed(2);
+                                if (paidAmt > 0) {
+                                    deleteWarningMessagePopup(subChild.authDetailId)
+                                } else {
+                                    deleteAuthorizationData(subChild.authDetailId);
+                                }
                             });
                         });
                     }
@@ -913,6 +918,32 @@ const FSS = (() => {
             authDetailId: authDetailId,
         });
         applyFilter();
+    }
+
+    function deleteWarningMessagePopup(authDetailId) {
+        const deleteConfPOPUP = POPUP.build({
+            hideX: true,
+        });
+        const okBtn = button.build({
+            text: 'OK',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                deleteAuthorizationData(authDetailId);
+                POPUP.hide(deleteConfPOPUP);
+            },
+        });
+        okBtn.style.width = '100%';
+        const message = document.createElement('p');
+
+        message.innerText = 'No changes have been made in Simple Billing. Make sure that you delete any existing Simple Billing entries.';
+
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        deleteConfPOPUP.appendChild(message);
+        deleteConfPOPUP.appendChild(okBtn);
+        okBtn.focus();
+        POPUP.show(deleteConfPOPUP);
     }
 
     function overlapMessagePopup() {
