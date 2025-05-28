@@ -114,7 +114,7 @@ namespace Anywhere
         PlanIntroductionWorker piw = new PlanIntroductionWorker();
         AssessmentReOrderRowsWorker arorw = new AssessmentReOrderRowsWorker();
         PlanDataGetter pdg = new PlanDataGetter();
-        DefaultsWorker dw = new DefaultsWorker();
+        PlanOutcomesDataGetter podg = new PlanOutcomesDataGetter();        DefaultsWorker dw = new DefaultsWorker();
         OneSpanWorker osw = new OneSpanWorker();
         CaseNoteReportBuilderWorker cnReportWorker = new CaseNoteReportBuilderWorker();
         SignInUser siu = new SignInUser();
@@ -2594,6 +2594,10 @@ namespace Anywhere
             return ssw.getServicesAndSupports(token, anywAssessmentId, consumerId);
         }
 
+        public string updateMonitoringContinuousReviewProcess(string planId, string reviewProcess)
+        {
+            return podg.updateMonitoringContinuousReviewProcess(planId, reviewProcess);
+        }
         public string deleteProfessionalReferral(string token, long professionalReferralId)
         {
             return ssw.deleteProfessionalReferral(token, professionalReferralId);

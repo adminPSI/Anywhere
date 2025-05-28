@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
+using System.Management.Automation.Language;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanOutcomes
@@ -94,6 +95,40 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
+        public string updateMonitoringContinuousReviewProcess(string planId, string reviewProcess)
+        {
+            logger.debug("updateMonitoringContinuousReviewProcess ");
+            List<string> list = new List<string>();
+            list.Add(planId);
+            list.Add(reviewProcess);
+            string text = "CALL DBA.ANYW_ISP_UpdateMonitoringContinuousReviewProcess(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1PODG", ex.Message + "ANYW_ISP_UpdateMonitoringContinuousReviewProcess(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1APODG: error ANYW_ISP_UpdateMonitoringContinuousReviewProcess";
+            }
+        }
+
+        public string getMonitoringContinuousReviewProcess(string planId)
+        {
+            logger.debug("getPlanSpecificOutcomes ");
+            List<string> list = new List<string>();
+            list.Add(planId);
+            string text = "CALL DBA.ANYW_ISP_GetMonitoringContinuousReviewProcess(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1PODG", ex.Message + "ANYW_ISP_GetMonitoringContinuousReviewProcess(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1APODG: error ANYW_ISP_GetMonitoringContinuousReviewProcess";
+            }
+        }
         public string getPlanOutcomeProgressSummary(string token, string planId)
         {
             if (tokenValidator(token) == false) return null;

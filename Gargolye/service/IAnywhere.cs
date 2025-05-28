@@ -3536,6 +3536,13 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/updateMonitoringContinuousReviewProcess/")]
+        string updateMonitoringContinuousReviewProcess(string planId, string reviewProcess);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/updatePlanOutcomesExperienceOrder/")]
         string updatePlanOutcomesExperienceOrder(string token, long outcomeId, long experienceId, int newPos, int oldPos);
 
