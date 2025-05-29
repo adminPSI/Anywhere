@@ -540,6 +540,12 @@ const FSS = (() => {
 
                     endIconSub.addEventListener('click', e => {
                         eventName = 'add';
+                        encumberedInputsVal = '0.00';
+                        familyMemberDropdownVal = '';
+                        serviceCodeDropdownVal = '';
+                        vendorDropdownVal = '';
+                        paidAmountInputsVal = '0.00';
+                        datePaidVal = '';
                         addFamilyUtilization(child.familyId, child.authId, fundingSourceID, '0');
                     });
 
@@ -673,6 +679,11 @@ const FSS = (() => {
 
             endIcon.addEventListener('click', e => {
                 eventName = 'add';
+                startDateVal = UTIL.getTodaysDate();
+                endDateVal = '';
+                coPayVal = '0';
+                allocationVal = '0.00';
+                fundingSourceVal = ''; 
                 addFamilyAuthorization(parent.familyId, '0')
             });
 
