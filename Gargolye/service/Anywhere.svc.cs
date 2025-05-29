@@ -4512,7 +4512,7 @@ namespace Anywhere
             return fssw.getFamilyInfoByID(token, familyId);
         }
 
-        public string updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID)
+        public FSSWorker.FamilyInformation[] updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID)
         {
             return fssw.updateFamilyInfo(token, familyName, address1, address2, city, state, zip, primaryPhone, secondaryPhone, email, notes, active, userId, familyID);
         }
@@ -4558,14 +4558,14 @@ namespace Anywhere
             return fssw.getVendors(token);
         }
 
-        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID)
+        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID, string authID)
         {
-            return fssw.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID);
+            return fssw.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID, authID);
         }
 
-        public UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling)
+        public UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling, string authDetailID)
         {
-            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID, isSimpleBilling);
+            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID, isSimpleBilling, authDetailID);
         }
 
         public void deleteAuthorization(string token, string authDetailId)

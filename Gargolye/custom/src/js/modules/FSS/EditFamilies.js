@@ -9,6 +9,7 @@ const EditFamilies = (function () {
     var userTable;
     var isChecked;
     let backBtn;
+    let addFamily;
 
     function init() {
         setActiveModuleAttribute('FSS');
@@ -94,11 +95,11 @@ const EditFamilies = (function () {
     function populateTable(results, IsFirstLoad) {
         familyTableData = results.map(td => {
             var familyId = td.familyId;
-            var primaryPhone = !td.primaryPhone ? '' : FSS.formatPhoneNumber(td.primaryPhone) ;
+            var primaryPhone = !td.primaryPhone ? '' : FSS.formatPhoneNumber(td.primaryPhone);
             var familyName = td.familyName;
             var address = td.address;
             var Active = td.active;
-             
+
             const additionalInformation = viewEditFamilyBtn();
             additionalInformation.innerHTML = 'View/Edit Family';
 
@@ -139,6 +140,7 @@ const EditFamilies = (function () {
         SEARCH_BTN = buildSearchBtn();
         INACTIVE_CHKBOX = buildInactiveChkBox();
         backBtn = backButton();
+        addFamily = addFamilyButton();
 
         // custom search stuff
         SEARCH_WRAP = document.createElement('div');
@@ -150,8 +152,10 @@ const EditFamilies = (function () {
 
         var wrap1 = document.createElement('div');
         wrap1.classList.add('headerWrap');
-        INACTIVE_CHKBOX.classList.add('width25Per');
+        INACTIVE_CHKBOX.classList.add('width25Per');  
         wrap1.appendChild(INACTIVE_CHKBOX);
+        addFamily.classList.add('width15Per');
+        wrap1.appendChild(addFamily);
         SEARCH_WRAP.classList.add('width75Per');
         wrap1.appendChild(SEARCH_WRAP);
         backBtn.classList.add('width13Per');
@@ -173,6 +177,18 @@ const EditFamilies = (function () {
             type: 'outlined',
             callback: async () => {
                 FSS.fSSLanding()
+            },
+        });
+    }
+
+    function addFamilyButton() {
+        return button.build({
+            text: 'ADD FAMILY',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'reportBtn',
+            callback: async () => {
+                EditFamilyHeader.refreshFamily(); 
             },
         });
     }

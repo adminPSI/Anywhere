@@ -63,6 +63,9 @@ namespace Anywhere.service.Data.FSS
             public string encumbered { get; set; }
             public string paidAmt { get; set; }
             public string paidDate { get; set; }
+            public string familyMemberId { get; set; }
+            public string serviceCodeId { get; set; }
+            public string vendorId { get; set; }
         }
 
         public class ActiveInactiveFamily
@@ -76,7 +79,7 @@ namespace Anywhere.service.Data.FSS
 
         public class FamilyInformation
         {
-            public string familyId { get; set; }
+            public string familyId { get; set; } 
             public string familyName { get; set; }
             public string address1 { get; set; }
             public string address2 { get; set; }
@@ -225,7 +228,7 @@ namespace Anywhere.service.Data.FSS
                 sb.Append("select ROW_NUMBER() OVER(ORDER BY fad.FSS_Authorization_Detail_ID) AS itemnum, fad.FSS_Authorization_Detail_ID as authDetailId, fad.FSS_Authorization_ID as authId, fad.encumbered_amount as encumbered, fad.paid_amount as paidAmt, fad.date_paid as paidDate, ");
                 sb.Append("(select people.last_name + ' ' + people.generation + ' ' + people.first_name + ' ' + people.middle_name   from dba.People as people where people.ID = fad.ID) as 'familyMember', ");
                 sb.Append("(select si.Service_Code + ' - ' + si.Description  from dba.service_info si where si.Service_ID = fad.Service_ID) as 'serviceCode', ");
-                sb.Append("(select v.Name from Vendor v where v.Vendor_ID = fad.Vendor_ID) as 'Vendor' ");
+                sb.Append("(select v.Name from Vendor v where v.Vendor_ID = fad.Vendor_ID) as 'Vendor' , fad.ID as familyMemberId , fad.Service_ID as serviceCodeId , fad.Vendor_ID as vendorId ");
                 sb.Append("from dba.fss_authorization_detail fad ");
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
@@ -253,10 +256,11 @@ namespace Anywhere.service.Data.FSS
             return seByDateObj;
         }
 
-        public string updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID)
+        public FamilyInformation[] updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID)
         {
             string objString = fdg.updateFamilyInfo(token, familyName, address1, address2, city, state, zip, primaryPhone, secondaryPhone, email, notes, active, userId, familyID);
-            return objString;
+            FamilyInformation[] seByDateObj = js.Deserialize<FamilyInformation[]>(objString);
+            return seByDateObj;
         }
 
         public Members[] getFamilyMembers(string token, string familyId)
@@ -317,13 +321,13 @@ namespace Anywhere.service.Data.FSS
             return JSONString;
         }
 
-        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID)
+        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID, string authID)
         {
-            string objString = fdg.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID);
+            string objString = fdg.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID, authID);
             return objString;
         }
 
-        public UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling)
+        public UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling, string authDetailID)
         {
             UtilizationBillable billable = new UtilizationBillable();
             billable.previousPaid = "";
@@ -378,7 +382,7 @@ namespace Anywhere.service.Data.FSS
                     }
                     billable.isSuccess = "Y";
                 }
-                fdg.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID);
+                fdg.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID, authDetailID);
                 return billable;
             }
             catch (Exception)

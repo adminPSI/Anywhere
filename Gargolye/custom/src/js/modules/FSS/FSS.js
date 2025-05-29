@@ -458,6 +458,13 @@ const FSS = (() => {
             mainDataRow.appendChild(endIcon);
             rowWrap.appendChild(mainDataRow);
 
+            mainDataRow.addEventListener('click', e => {
+                if (eventName != 'toggle' && eventName != 'add') {
+                    EditFamilyHeader.refreshFamily(parent.familyId, parent.familyName == null ? '' : parent.familyName, 0 , 1);
+                }
+                eventName = '';
+            });
+
             // SUB ROWS
             //---------------------------------
             const subRowWrap = document.createElement('div');
@@ -532,7 +539,20 @@ const FSS = (() => {
                     subRowWrap.appendChild(subDataRow);
 
                     endIconSub.addEventListener('click', e => {
-                        addFamilyUtilization(child.familyId, child.authId, fundingSourceID);
+                        eventName = 'add';
+                        addFamilyUtilization(child.familyId, child.authId, fundingSourceID, '0');
+                    });
+
+                    subDataRow.addEventListener('click', e => {
+                        if (eventName != 'toggle' && eventName != 'add') {
+                            startDateVal = child.startDate == null || '' ? '' : moment(child.startDate).format('YYYY-MM-DD');
+                            endDateVal = child.endDate == null || '' ? '' : moment(child.endDate).format('YYYY-MM-DD');
+                            coPayVal = !child.coPay ? '0' : child.coPay;
+                            allocationVal = !child.allocation ? '0.00' : parseFloat(child.allocation).toFixed(2);
+                            fundingSourceVal = child.fundingSourceID == null || '' ? '' : parseInt(child.fundingSourceID).toString();
+                            addFamilyAuthorization(parent.familyId, child.authId)
+                        }
+                        eventName = '';
                     });
 
                     // SUB CHILD ROWS
@@ -594,7 +614,8 @@ const FSS = (() => {
                             subChildDataRow.appendChild(endIconSubChild);
                             subChildRowWrap.appendChild(subChildDataRow);
 
-                            endIconSubChild.addEventListener('click', e => {          
+                            endIconSubChild.addEventListener('click', e => {
+                                eventName = 'add';
                                 const paidAmt = subChild.paidAmt == null ? parseFloat('0.00').toFixed(2) : parseFloat(subChild.encumbered).toFixed(2);
                                 if (paidAmt > 0) {
                                     deleteWarningMessagePopup(subChild.authDetailId)
@@ -602,6 +623,20 @@ const FSS = (() => {
                                     deleteAuthorizationData(subChild.authDetailId);
                                 }
                             });
+
+                            subChildDataRow.addEventListener('click', e => {
+                                if (eventName != 'toggle' && eventName != 'add') { 
+                                    encumberedInputsVal = subChild.encumbered == null ? '0.00' : parseFloat(subChild.encumbered).toFixed(2);
+                                    familyMemberDropdownVal = subChild.familyMember == null ? '' : parseInt(subChild.familyMemberId).toString();
+                                    serviceCodeDropdownVal = subChild.serviceCode == null ? '' : parseInt(subChild.serviceCodeId).toString();
+                                    vendorDropdownVal = subChild.Vendor == null ? '' : parseInt(subChild.vendorId).toString();
+                                    paidAmountInputsVal = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2);
+                                    datePaidVal = subChild.paidDate == null || '' ? '' : moment(subChild.paidDate).format('YYYY-MM-DD');
+                                    addFamilyUtilization(child.familyId, child.authId, fundingSourceID, subChild.authDetailId); 
+                                }
+                                eventName = '';
+                            });
+
                         });
                     }
                     toggleIconSub.addEventListener('click', e => {
@@ -637,7 +672,8 @@ const FSS = (() => {
             });
 
             endIcon.addEventListener('click', e => {
-                addFamilyAuthorization(parent.familyId)
+                eventName = 'add';
+                addFamilyAuthorization(parent.familyId, '0')
             });
 
             // ASSEMBLY
@@ -687,7 +723,7 @@ const FSS = (() => {
         fSSData.pageDataSubChild = { ...groupedChildren };
     }
 
-    function addFamilyAuthorization(familyId) {
+    function addFamilyAuthorization(familyId, authId) {
 
         authorizationPopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
@@ -695,7 +731,7 @@ const FSS = (() => {
         });
 
         const heading = document.createElement('h2');
-        heading.innerText = 'New Family Authorization';
+        heading.innerText = authId == '0' ? 'New Family Authorization' : 'Update Family Authorization';
 
         // inputs     
         newStartDate = input.build({
@@ -703,21 +739,23 @@ const FSS = (() => {
             type: 'date',
             label: 'Start Date',
             style: 'secondary',
-            value: UTIL.getTodaysDate(),
+            value: authId == '0' ? UTIL.getTodaysDate() : startDateVal,
         });
-        startDateVal = UTIL.getTodaysDate()
+        startDateVal = authId == '0' ? UTIL.getTodaysDate() : startDateVal;
 
         newEndDate = input.build({
             id: 'newEndDate',
             type: 'date',
             label: 'End Date',
             style: 'secondary',
+            value: authId == '0' ? '' : endDateVal,
         });
         coPay = input.build({
             id: 'coPay',
             type: 'number',
             label: 'Copay %',
             style: 'secondary',
+            value: authId == '0' ? '' : coPayVal,
             attributes: [
                 { key: 'min', value: '0' },
                 { key: 'max', value: '99' },
@@ -733,7 +771,7 @@ const FSS = (() => {
             type: 'text',
             label: 'Allocation',
             style: 'secondary',
-            value: '$',
+            value: authId == '0' ? '$' : '$' + allocationVal,
         });
 
         fundingSourceDropdown = dropdown.build({
@@ -748,7 +786,7 @@ const FSS = (() => {
             type: 'contained',
             callback: async () => {
                 if (!APPLY_BTN.classList.contains('disabled')) {
-                    await saveAuthorizationData(familyId);
+                    await saveAuthorizationData(familyId, authId);
                 }
             },
         });
@@ -772,7 +810,7 @@ const FSS = (() => {
         authorizationPopup.appendChild(popupbtnWrap);
 
         POPUP.show(authorizationPopup);
-        fundingDropdownPopulate();
+        fundingDropdownPopulate(authId);
         authorizationPopupEventListeners();
         authorizationRequiredFieldsOfPopup();
     }
@@ -862,7 +900,7 @@ const FSS = (() => {
         setAuthorizationBtnStatusOfPopup();
     }
 
-    async function fundingDropdownPopulate() {
+    async function fundingDropdownPopulate(authId) {
         const {
             getFundingResult: Fundings,
         } = await FSSAjax.getFunding();
@@ -873,7 +911,8 @@ const FSS = (() => {
             text: fundings.name
         }));
         data.unshift({ id: null, value: '', text: '' });
-        dropdown.populate("fundingSourceDropdown", data, '');
+        dropdown.populate("fundingSourceDropdown", data, authId == '0' ? '' : fundingSourceVal);
+        authorizationRequiredFieldsOfPopup();
     }
 
     function setAuthorizationBtnStatusOfPopup() {
@@ -886,7 +925,7 @@ const FSS = (() => {
         }
     }
 
-    async function saveAuthorizationData(familyId) {
+    async function saveAuthorizationData(familyId, authId) {
         const {
             insertAuthorizationResult: Authorizationresult,
         } = await FSSAjax.insertAuthorization({
@@ -898,6 +937,7 @@ const FSS = (() => {
             endDate: endDateVal,
             userId: $.session.UserId,
             familyID: familyId,
+            authID: authId,
         });
         const result = Authorizationresult.replace('@', '');
         const jsonObject = JSON.parse(result);
@@ -974,7 +1014,7 @@ const FSS = (() => {
 
 
 
-    function addFamilyUtilization(familyId, authId, fundingSourceID) {
+    function addFamilyUtilization(familyId, authId, fundingSourceID, authDetailId) {
 
         UtilizationPopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
@@ -982,7 +1022,7 @@ const FSS = (() => {
         });
 
         const heading = document.createElement('h2');
-        heading.innerText = 'New Family Utilization';
+        heading.innerText = authDetailId == '0' ? 'New Family Utilization' : 'Update Family Utilization';
 
         // inputs     
         familyMemberDropdown = dropdown.build({
@@ -1008,6 +1048,7 @@ const FSS = (() => {
             type: 'number',
             label: 'Encumbered',
             style: 'secondary',
+            value: authDetailId == '0' ? '' : encumberedInputsVal,
         });
 
         paidAmountInputs = input.build({
@@ -1015,6 +1056,7 @@ const FSS = (() => {
             type: 'number',
             label: 'Paid amount',
             style: 'secondary',
+            value: authDetailId == '0' ? '' : paidAmountInputsVal,
         });
 
         datePaid = input.build({
@@ -1022,6 +1064,7 @@ const FSS = (() => {
             type: 'date',
             label: 'Date Paid',
             style: 'secondary',
+            value: authDetailId == '0' ? '' : datePaidVal,
         });
 
         UAPPLY_BTN = button.build({
@@ -1031,7 +1074,7 @@ const FSS = (() => {
             callback: async () => {
                 if (!UAPPLY_BTN.classList.contains('disabled')) {
                     POPUP.hide(UtilizationPopup);
-                    await saveUtilizationData(familyId, authId);
+                    await saveUtilizationData(familyId, authId, authDetailId);
                 }
             },
         });
@@ -1066,7 +1109,7 @@ const FSS = (() => {
         UtilizationPopup.appendChild(popupbtnWrap);
 
         POPUP.show(UtilizationPopup);
-        UtilizationDropdownPopulate(familyId, fundingSourceID);
+        UtilizationDropdownPopulate(familyId, fundingSourceID, authDetailId);
         UtilizationPopupEventListeners();
         UtilizationRequiredFieldsOfPopup();
     }
@@ -1133,7 +1176,8 @@ const FSS = (() => {
         setUtilizationBtnStatusOfPopup();
     }
 
-    async function UtilizationDropdownPopulate(familyId, fundingSourceID) {
+    async function UtilizationDropdownPopulate(familyId, fundingSourceID, authDetailId) {
+
         const {
             getFamilyMembersDropDownResult: FamilyMembers,
         } = await FSSAjax.getFamilyMembersDropDown(familyId);
@@ -1144,7 +1188,7 @@ const FSS = (() => {
             text: familyMembers.name
         }));
         familyMembersData.unshift({ id: null, value: '', text: '' });
-        dropdown.populate("familyMemberDropdown", familyMembersData, '');
+        dropdown.populate("familyMemberDropdown", familyMembersData, authDetailId == '0' ? '' : familyMemberDropdownVal);
 
         const {
             getServiceCodesResult: ServiceCode,
@@ -1156,7 +1200,7 @@ const FSS = (() => {
             text: serviceCode.name
         }));
         serviceCodeData.unshift({ id: null, value: '', text: '' });
-        dropdown.populate("serviceCodeDropdown", serviceCodeData, '');
+        dropdown.populate("serviceCodeDropdown", serviceCodeData, authDetailId == '0' ? '' : serviceCodeDropdownVal);
 
         const {
             getVendorsResult: Vendors,
@@ -1168,7 +1212,8 @@ const FSS = (() => {
             text: vendors.name
         }));
         vendorsData.unshift({ id: null, value: '', text: '' });
-        dropdown.populate("vendorDropdown", vendorsData, '');
+        dropdown.populate("vendorDropdown", vendorsData, authDetailId == '0' ? '' : vendorDropdownVal);
+        UtilizationRequiredFieldsOfPopup(); 
     }
 
     function setUtilizationBtnStatusOfPopup() {
@@ -1181,7 +1226,7 @@ const FSS = (() => {
         }
     }
 
-    async function saveUtilizationData(familyId, authId) {
+    async function saveUtilizationData(familyId, authId, authDetailId) {   
         const {
             insertUtilizationResult: utilizationResult,
         } = await FSSAjax.insertUtilization({
@@ -1197,6 +1242,7 @@ const FSS = (() => {
             authID: authId,
             consumerID: selectedConsumersId,
             isSimpleBilling: $.session.automateSimpleBilling,
+            authDetailID: authDetailId,
         });
 
         if ($.session.automateSimpleBilling == 'Y' && utilizationResult.isSuccess != '') {

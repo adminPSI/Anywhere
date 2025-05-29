@@ -16,7 +16,7 @@ const EditMembers = (() => {
         familyID = familyId;
         headingName = name;
 
-        if (familyID != undefined) {
+        if (familyID != undefined) { 
             familyEntries = await FSSAjax.getFamilyMembers(familyID);
         }
     }
@@ -24,8 +24,10 @@ const EditMembers = (() => {
     function getMarkup() {
         const memberWrap = document.createElement('div');
         memberWrap.classList.add('planSummary');
-        const importantTables = buildNewMemberForm();
-        memberWrap.appendChild(importantTables);
+        if (familyID != undefined) {
+            const importantTables = buildNewMemberForm();
+            memberWrap.appendChild(importantTables);
+        }      
         return memberWrap;
     }
 
@@ -37,7 +39,7 @@ const EditMembers = (() => {
             text: '+ ADD FAMILY MEMBER',
             style: 'secondary',
             type: 'contained',
-            callback: () => addMemberPopup(0,0, 'Add')
+            callback: () => addMemberPopup(0, 0, 'Add')
         });
         memberEntriesTable = buildmemberEntriesTable();
 

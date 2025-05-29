@@ -87,6 +87,10 @@
             width: 100%;
         }
 
+        .width13Per {
+            width: 100%;
+        }
+
         @media screen and (min-width: 560px) {
             display: flex;
             justify-content: space-between;
@@ -96,11 +100,16 @@
             }
 
             .width25Per {
-                width: 24%;
+                width: 20%; 
             }
 
             .width75Per {
                 width: 74%;
+            }
+
+            .width15Per {
+                width: 15%;
+                margin-right: 1%;
             }
 
             .width13Per {
