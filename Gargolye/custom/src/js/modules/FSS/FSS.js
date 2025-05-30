@@ -460,7 +460,7 @@ const FSS = (() => {
 
             mainDataRow.addEventListener('click', e => {
                 if (eventName != 'toggle' && eventName != 'add') {
-                    EditFamilyHeader.refreshFamily(parent.familyId, parent.familyName == null ? '' : parent.familyName, 0 , 1);
+                    EditFamilyHeader.refreshFamily(parent.familyId, parent.familyName == null ? '' : parent.familyName, 0, 1);
                 }
                 eventName = '';
             });
@@ -631,14 +631,14 @@ const FSS = (() => {
                             });
 
                             subChildDataRow.addEventListener('click', e => {
-                                if (eventName != 'toggle' && eventName != 'add') { 
+                                if (eventName != 'toggle' && eventName != 'add') {
                                     encumberedInputsVal = subChild.encumbered == null ? '0.00' : parseFloat(subChild.encumbered).toFixed(2);
                                     familyMemberDropdownVal = subChild.familyMember == null ? '' : parseInt(subChild.familyMemberId).toString();
                                     serviceCodeDropdownVal = subChild.serviceCode == null ? '' : parseInt(subChild.serviceCodeId).toString();
                                     vendorDropdownVal = subChild.Vendor == null ? '' : parseInt(subChild.vendorId).toString();
                                     paidAmountInputsVal = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2);
                                     datePaidVal = subChild.paidDate == null || '' ? '' : moment(subChild.paidDate).format('YYYY-MM-DD');
-                                    addFamilyUtilization(child.familyId, child.authId, fundingSourceID, subChild.authDetailId); 
+                                    addFamilyUtilization(child.familyId, child.authId, fundingSourceID, subChild.authDetailId);
                                 }
                                 eventName = '';
                             });
@@ -683,7 +683,7 @@ const FSS = (() => {
                 endDateVal = '';
                 coPayVal = '0';
                 allocationVal = '0.00';
-                fundingSourceVal = ''; 
+                fundingSourceVal = '';
                 addFamilyAuthorization(parent.familyId, '0')
             });
 
@@ -1159,6 +1159,7 @@ const FSS = (() => {
         var serviceCodeVal = serviceCodeDropdown.querySelector('#serviceCodeDropdown');
         var paidAmountval = paidAmountInputs.querySelector('#paidAmountInputs');
         var datePaidVal = datePaid.querySelector('#datePaid');
+        paidAmountval.value = parseInt(paidAmountval.value) == 0 ? '' : paidAmountval.value;
 
         if (familyMemberVal.value === '') {
             familyMemberDropdown.classList.add('errorPopup');
@@ -1224,7 +1225,7 @@ const FSS = (() => {
         }));
         vendorsData.unshift({ id: null, value: '', text: '' });
         dropdown.populate("vendorDropdown", vendorsData, authDetailId == '0' ? '' : vendorDropdownVal);
-        UtilizationRequiredFieldsOfPopup(); 
+        UtilizationRequiredFieldsOfPopup();
     }
 
     function setUtilizationBtnStatusOfPopup() {
@@ -1237,7 +1238,7 @@ const FSS = (() => {
         }
     }
 
-    async function saveUtilizationData(familyId, authId, authDetailId) {   
+    async function saveUtilizationData(familyId, authId, authDetailId) {
         const {
             insertUtilizationResult: utilizationResult,
         } = await FSSAjax.insertUtilization({

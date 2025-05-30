@@ -63,7 +63,7 @@ const EditFamilyInformation = (() => {
             secondaryPhone = '';
             email = '';
             notes = '';
-            active = '';
+            active = 'Y'; 
         }
 
         familyNameInput = input.build({
@@ -287,7 +287,7 @@ const EditFamilyInformation = (() => {
     }
 
     function checkRequiredFieldsOfEmployeeInfo(familyName) {
-        if (familyName.trim() === '') {  
+        if (familyName.trim() === '') {
             familyNameInput.classList.add('error');
         } else {
             familyNameInput.classList.remove('error');
@@ -313,7 +313,7 @@ const EditFamilyInformation = (() => {
 
     function eventListeners() {
         familyNameInput.addEventListener('input', event => {
-            familyName = event.target.value.trim();  
+            familyName = event.target.value.trim();
             IsValueChanged = true;
             getRequiredFieldsOfEmployeeInfo();
         });
@@ -420,9 +420,9 @@ const EditFamilyInformation = (() => {
             notes: notes,
             active: active,
             userId: $.session.UserId,
-            familyID: familyID == undefined || null ? '0' : familyID,   
-        }); 
-        EditFamilyHeader.refreshFamily(result[0]?.familyId, familyName, tabPositionIndex = 0); 
+            familyID: familyID == undefined || null ? '0' : familyID,
+        });
+        EditFamilyHeader.refreshFamily(result[0]?.familyId, familyName, tabPositionIndex = 0);
 
     }
 

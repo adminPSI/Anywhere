@@ -97,7 +97,7 @@ const EditFamilies = (function () {
             var familyId = td.familyId;
             var primaryPhone = !td.primaryPhone ? '' : FSS.formatPhoneNumber(td.primaryPhone);
             var familyName = td.familyName;
-            var address = td.address;
+            var address = td.address == '  ,  ' ? '' : td.address;   
             var Active = td.active;
 
             const additionalInformation = viewEditFamilyBtn();
