@@ -259,6 +259,7 @@ namespace Anywhere.service.Data.Transportation
             public string integratedEmployment { get; set; }
             public string origination { get; set; }
             public string destination { get; set; }
+            public string otherRiderID { get; set; }
 
         }
 
@@ -298,9 +299,9 @@ namespace Anywhere.service.Data.Transportation
             public string zip { get; set; }
         }
 
-        public string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string integratedEmployment, string origination, string destination)
+        public string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string integratedEmployment, string origination, string destination, string otherRider)
         {
-            return tdg.updateTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, integratedEmployment, origination, destination);
+            return tdg.updateTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, integratedEmployment, origination, destination, otherRider);
         }
 
 

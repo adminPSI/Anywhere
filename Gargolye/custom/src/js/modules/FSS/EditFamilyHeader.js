@@ -16,12 +16,12 @@ const EditFamilyHeader = (function () {
             title: 'Members',
             id: 1,
             markup: () => EditMembers.getMarkup(),
-        },      
+        },
     ];
 
-    async function refreshFamily(FamilyId, Name, TabPosition = 0) {
+    async function refreshFamily(FamilyId, Name, TabPosition = 0, backPage = 0) {
         familyID = FamilyId;
-        name = Name;
+        name = Name == undefined ? '' : Name;
         tabPositionIndex = TabPosition;
 
         DOM.clearActionCenter();
@@ -39,7 +39,12 @@ const EditFamilyHeader = (function () {
             text: 'BACK',
             style: 'secondary',
             type: 'outlined',
-            callback: async () => { EditFamilies.init(); }, 
+            callback: async () => {
+                if (backPage == 0)
+                    EditFamilies.init();
+                else
+                    FSS.fSSLanding()
+            },
         });
 
         const newIspMarkup = await getMarkup();
@@ -71,7 +76,7 @@ const EditFamilyHeader = (function () {
         if (activeSection) {
             activeSection.classList.remove('active');
         }
-      
+
         targetSection.classList.add('active');
     }
 
@@ -93,9 +98,14 @@ const EditFamilyHeader = (function () {
             }
 
             navItem.addEventListener('click', e => {
-                toggleActiveNavItem(navItem);
-                toggleActiveSection(sectionId);
-                DOM.autosizeTextarea();
+                if (familyID == undefined && sectionId == 1) {
+                    return;
+                }
+                else {
+                    toggleActiveNavItem(navItem);
+                    toggleActiveSection(sectionId);
+                    DOM.autosizeTextarea();
+                }
             });
 
             nav.appendChild(navItem);

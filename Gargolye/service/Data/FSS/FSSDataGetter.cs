@@ -243,7 +243,7 @@ namespace Anywhere.service.Data.FSS
 
         }
 
-        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID)
+        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID, string authID)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertAuthorization");
@@ -255,6 +255,7 @@ namespace Anywhere.service.Data.FSS
             list.Add(endDate);
             list.Add(userId);
             list.Add(familyID);
+            list.Add(authID);
 
             string text = "CALL DBA.ANYW_FSS_insertAuthorization(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
@@ -268,7 +269,7 @@ namespace Anywhere.service.Data.FSS
             }
         }
 
-        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID)
+        public string insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string authDetailID)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertUtilization");
@@ -283,6 +284,7 @@ namespace Anywhere.service.Data.FSS
             list.Add(familyID);
             list.Add(authID);
             list.Add(consumerID);
+            list.Add(authDetailID);
 
             string text = "CALL DBA.ANYW_FSS_insertUtilization(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
