@@ -447,9 +447,9 @@ namespace Anywhere
                 billingCode, reviewStatus, location, service, need, contact, confidential, corrected, billed, attachments, overlaps, noteText, applicationName, outcomeServiceMonitoring);
         }
 
-        public AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token)
+        public AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token, string companyUrl)
         {
-            return anywhereWorker.getDefaultAnywhereSettingsJSON(token);
+            return anywhereWorker.getDefaultAnywhereSettingsJSON(token, companyUrl);
         }
 
         public AnywhereWorker.PeopleId[] getConsumerPeopleId(string consumerId)

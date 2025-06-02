@@ -535,9 +535,9 @@ namespace Anywhere.service.Data
             public string Residence { get; set; }
         }
 
-        public DefaultSettings[] getDefaultAnywhereSettingsJSON(string token)
+        public DefaultSettings[] getDefaultAnywhereSettingsJSON(string token, string url)
         {
-            string defaultSettingssString = dg.getDefaultAnywhereSettingsJSON(token);
+            string defaultSettingssString = dg.getDefaultAnywhereSettingsJSON(token, url);
             DefaultSettings[] defaultSettingsObj = js.Deserialize<DefaultSettings[]>(defaultSettingssString);
             return defaultSettingsObj;
         }

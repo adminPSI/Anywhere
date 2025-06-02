@@ -848,12 +848,13 @@ namespace Anywhere.Data
             }
         }
 
-        public string getDefaultAnywhereSettingsJSON(string token)
+        public string getDefaultAnywhereSettingsJSON(string token, string companyUrl)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getDefaultAnywhereSettingsJSON " + token);
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(companyUrl);
             string text = "CALL DBA.ANYW_GetDefaultAnywhereSettings(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

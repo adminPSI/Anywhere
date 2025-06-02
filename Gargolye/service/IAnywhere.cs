@@ -421,7 +421,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getDefaultAnywhereSettingsJSON/")]
-        AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token);
+        AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token, string companyUrl);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
