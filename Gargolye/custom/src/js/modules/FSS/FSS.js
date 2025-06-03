@@ -33,6 +33,7 @@ const FSS = (() => {
     let vendorDropdownVal;
     let datePaidVal;
     let selectedConsumersId;
+    let previousPaidAmountInputsVal;
     //--
 
     // get the Consumers selected from the Roster
@@ -545,6 +546,7 @@ const FSS = (() => {
                         serviceCodeDropdownVal = '';
                         vendorDropdownVal = '';
                         paidAmountInputsVal = '0.00';
+                        previousPaidAmountInputsVal = '0.00';
                         datePaidVal = '';
                         addFamilyUtilization(child.familyId, child.authId, fundingSourceID, '0');
                     });
@@ -632,11 +634,12 @@ const FSS = (() => {
 
                             subChildDataRow.addEventListener('click', e => {
                                 if (eventName != 'toggle' && eventName != 'add') {
-                                    encumberedInputsVal = subChild.encumbered == null ? '0.00' : parseFloat(subChild.encumbered).toFixed(2);
+                                    encumberedInputsVal = subChild.encumbered == null ? '0.00' : parseFloat(subChild.encumbered).toFixed(2);                                    
                                     familyMemberDropdownVal = subChild.familyMember == null ? '' : parseInt(subChild.familyMemberId).toString();
                                     serviceCodeDropdownVal = subChild.serviceCode == null ? '' : parseInt(subChild.serviceCodeId).toString();
                                     vendorDropdownVal = subChild.Vendor == null ? '' : parseInt(subChild.vendorId).toString();
                                     paidAmountInputsVal = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2);
+                                    previousPaidAmountInputsVal = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2);
                                     datePaidVal = subChild.paidDate == null || '' ? '' : moment(subChild.paidDate).format('YYYY-MM-DD');
                                     addFamilyUtilization(child.familyId, child.authId, fundingSourceID, subChild.authDetailId);
                                 }
@@ -1055,7 +1058,7 @@ const FSS = (() => {
         });
 
         encumberedInputs = input.build({
-            id: 'encumbered',
+            id: 'encumberedInputs',
             type: 'number',
             label: 'Encumbered',
             style: 'secondary',
@@ -1127,7 +1130,17 @@ const FSS = (() => {
 
     function UtilizationPopupEventListeners() {
         encumberedInputs.addEventListener('input', event => {
-            encumberedInputsVal = event.target.value;
+            encumberedInputsVal = event.target.value;            
+            paidAmt = parseFloat(paidAmountInputsVal == '' ? '0' : paidAmountInputsVal);
+            encumberedAmt = parseFloat(encumberedInputsVal == '' ? '0' : encumberedInputsVal);
+
+            if (encumberedAmt > 0 && paidAmt > encumberedAmt) {
+                document.getElementById('paidAmountInputs').value = 0;
+                paidAmountInputsVal = '0';
+                previousPaidAmountInputsVal = '0'; 
+                return;
+            } 
+
         });
         familyMemberDropdown.addEventListener('change', event => {
             familyMemberDropdownVal = event.target.options[event.target.selectedIndex].id;
@@ -1141,9 +1154,12 @@ const FSS = (() => {
             vendorDropdownVal = event.target.options[event.target.selectedIndex].id;
         });
         paidAmountInputs.addEventListener('input', event => {
-            paidAmountInputsVal = event.target.value;
+            paidAmountInputsVal = event.target.value;           
             UtilizationRequiredFieldsOfPopup();
+            encumberedCalculation();
+            previousPaidAmountInputsVal = paidAmountInputsVal;
         });
+      
         datePaid.addEventListener('input', event => {
             datePaidVal = event.target.value;
             UtilizationRequiredFieldsOfPopup();
@@ -1152,6 +1168,24 @@ const FSS = (() => {
         UCANCEL_BTN.addEventListener('click', () => {
             POPUP.hide(UtilizationPopup);
         });
+    }
+
+    function encumberedCalculation() { 
+        paidAmt = parseFloat(paidAmountInputsVal == '' ? '0' : paidAmountInputsVal);
+        encumberedAmt = parseFloat(encumberedInputsVal == '' ? '0' : encumberedInputsVal);
+        PrevPaidAmt = parseFloat(previousPaidAmountInputsVal == '' ? '0' : previousPaidAmountInputsVal);
+
+        let DifferentAmount = paidAmt - PrevPaidAmt;
+        let encumAmt = encumberedAmt - DifferentAmount; 
+
+        if (encumberedAmt > 0 && (paidAmt > encumberedAmt || paidAmt > encumAmt )) {   
+            document.getElementById('paidAmountInputs').value = paidAmountInputsVal.substring(0, paidAmountInputsVal.length - 1);
+            paidAmountInputsVal = paidAmountInputsVal.substring(0, paidAmountInputsVal.length - 1);
+            return;
+        } else {          
+            encumberedInputsVal = encumAmt.toString();   
+            document.getElementById('encumberedInputs').value = encumAmt;     
+        }
     }
 
     function UtilizationRequiredFieldsOfPopup() {
