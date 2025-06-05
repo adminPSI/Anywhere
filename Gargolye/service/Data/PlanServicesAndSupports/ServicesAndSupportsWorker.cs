@@ -1,6 +1,7 @@
 ﻿using Anywhere.service.Data.PlanOutcomes;
 using System;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
 
 namespace Anywhere.service.Data.PlanServicesAndSupports
 {
@@ -9,6 +10,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
         JavaScriptSerializer js = new JavaScriptSerializer();
         ServicesAndSupportsDataGetter dg = new ServicesAndSupportsDataGetter();
         PlanOutcomesDataGetter podg = new PlanOutcomesDataGetter();
+        PlanOutcomesDataGetter pdg = new PlanOutcomesDataGetter();
         public ServicesAndSupports getServicesAndSupports(string token, long anywAssessmentId, int consumerId)
         {
             //Paid Support
@@ -44,6 +46,9 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             //Total Outcomes
             string assessmentOutcomes = dg.getAssessmentOutcomes(token, anywAssessmentId, 0);
             AssessmentOutcomes[] assessmentOutcomesObj = js.Deserialize<AssessmentOutcomes[]>(assessmentOutcomes);
+            //Get Monitoring Continuing Review Process
+            string monitoringContinuousReviewProcess = pdg.getMonitoringContinuousReviewProcess(anywAssessmentId.ToString());
+            MonitoringContinuousReviewProcess[] monitoringContinuousReviewProcessObj = js.Deserialize<MonitoringContinuousReviewProcess[]>(monitoringContinuousReviewProcess);
 
 
             ServicesAndSupports totalServicesAndSupports = new ServicesAndSupports();
@@ -58,6 +63,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             totalServicesAndSupports.workingNotWorking = workingNotWorkingObj;
             totalServicesAndSupports.sectionsApplicable = sectionsAPplicalbeObj;
             totalServicesAndSupports.assessmentOutcomes = assessmentOutcomesObj;
+            totalServicesAndSupports.monitoringContinuousReviewProcess = monitoringContinuousReviewProcessObj;
 
             return totalServicesAndSupports;
         }
@@ -265,6 +271,12 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             public WorkingNotWorking[] workingNotWorking { get; set; }
             public SectionsApplicable[] sectionsApplicable { get; set; }
             public AssessmentOutcomes[] assessmentOutcomes { get; set; }
+            public MonitoringContinuousReviewProcess[] monitoringContinuousReviewProcess { get; set; }
+        }
+
+        public class MonitoringContinuousReviewProcess
+        {
+            public string monitoringContinuousReviewProcess { get; set; }
         }
 
         public class CommunicationsOptions
