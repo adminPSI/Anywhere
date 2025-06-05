@@ -64,6 +64,8 @@ using static Anywhere.service.Data.FSS.FSSWorker;
 using Anywhere.service.Data.FSS;
 using Microsoft.Expression.Interactivity.Media;
 using static Anywhere.service.Data.PlanInformedConsent.PlanInformedConsentWorker;
+using Irony.Parsing;
+using System.Web;
 
 namespace Anywhere
 {
@@ -3146,6 +3148,43 @@ namespace Anywhere
             return OODfw.generateForm4(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
         }
 
+        public string generateForm5(System.IO.Stream testInput)
+        {
+            string token;
+            string userId;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string loggedInUserPersonId;
+            string position;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
+            position = HttpUtility.UrlDecode(System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[8], "=")[1]);
+
+            if (serviceCodeId == "%25")
+            {
+                serviceCodeId = "%";
+            }
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "%";
+            }
+
+            return OODfw.generateForm5(token, userId, referenceNumber, peopleId,  startDate, endDate, loggedInUserPersonId, position);
+        }
+
         public string generateForm6(System.IO.Stream testInput)
         {
 
@@ -3206,6 +3245,38 @@ namespace Anywhere
             }
 
             return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId, loggedInUserPersonId);
+        }
+
+        public string generateForm9(System.IO.Stream testInput)
+        {
+
+            string token;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string userId;
+            string loggedInUserPersonId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "";
+            }
+
+            return OODfw.generateForm9(token, referenceNumber, 22, peopleId, startDate, endDate, userId, loggedInUserPersonId);
+
         }
 
         public string generateForm10(System.IO.Stream testInput)
@@ -3318,6 +3389,11 @@ namespace Anywhere
         public OODWorker.ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string formNumber)
         {
             return Ow.getConsumerReferenceNumbers(token, consumerIds, startDate, endDate, formNumber);
+        }
+
+        public OODWorker.Position[] getConsumerPositions(string token, string consumerIds, string startDate, string endDate)
+        {
+            return Ow.getConsumerPositions(token, consumerIds, startDate, endDate);
         }
 
         public OODWorker.ServiceCode[] getConsumerServiceCodes(string consumerId, string serviceDate, string token)
@@ -3951,7 +4027,7 @@ namespace Anywhere
             return emp.getEmployers(token);
         }
 
-        public Position[] getPositions(string token)
+        public EmploymentWorker.Position[] getPositions(string token)
         {
             return emp.getPositions(token);
         }
@@ -3990,7 +4066,7 @@ namespace Anywhere
             return emp.getEmployerDropDown(token);
         }
 
-        public Position[] getPositionDropDown(string token)
+        public EmploymentWorker.Position[] getPositionDropDown(string token)
         {
             return emp.getPositionDropDown(token);
         }
