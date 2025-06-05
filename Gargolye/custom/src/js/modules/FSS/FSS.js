@@ -642,8 +642,8 @@ const FSS = (() => {
                                     serviceCodeDropdownVal = subChild.serviceCode == null ? '' : parseInt(subChild.serviceCodeId).toString();
                                     vendorDropdownVal = subChild.Vendor == null ? '' : parseInt(subChild.vendorId).toString();
                                     paidAmountInputsVal = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2);
-                                    previousPaidAmountInputsVal = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2);
-                                    definedEncumberedAmt = subChild.encumbered == null ? '0.00' : parseFloat(subChild.encumbered).toFixed(2);
+                                    previousPaidAmountInputsVal = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2); 
+                                    definedEncumberedAmt = parseInt(encumberedInputsVal) + parseInt(paidAmountInputsVal); 
                                     datePaidVal = subChild.paidDate == null || '' ? '' : moment(subChild.paidDate).format('YYYY-MM-DD');
                                     allocationVal = !child.allocation ? '0.00' : parseFloat(child.allocation).toFixed(2);
                                     addFamilyUtilization(child.familyId, child.authId, fundingSourceID, subChild.authDetailId, allocationVal);
@@ -1166,7 +1166,7 @@ const FSS = (() => {
             allocationAmt = parseFloat(allocationVal == '' ? '0' : allocationVal);
             if (encumberedAmt > allocationAmt) {
                 utilizationWarningPopup(allocationVal);
-                encumberedInputs.classList.add('errorPopup');               
+                encumberedInputs.classList.add('errorPopup');
                 return;
             } else {
                 encumberedInputs.classList.remove('errorPopup');
@@ -1175,7 +1175,7 @@ const FSS = (() => {
                     paidAmountInputsVal = '0';
                     previousPaidAmountInputsVal = '0';
                 }
-            }                  
+            }
             UtilizationRequiredFieldsOfPopup();
         });
         familyMemberDropdown.addEventListener('change', event => {
@@ -1190,8 +1190,8 @@ const FSS = (() => {
             vendorDropdownVal = event.target.options[event.target.selectedIndex].id;
         });
         paidAmountInputs.addEventListener('input', event => {
-            paidAmountInputsVal = event.target.value;            
-            encumberedCalculation(); 
+            paidAmountInputsVal = event.target.value;
+            encumberedCalculation();
             previousPaidAmountInputsVal = paidAmountInputsVal;
             UtilizationRequiredFieldsOfPopup();
         });
@@ -1210,21 +1210,21 @@ const FSS = (() => {
         paidAmt = parseFloat(paidAmountInputsVal == '' ? '0' : paidAmountInputsVal);
         encumberedAmt = parseFloat(encumberedInputsVal == '' ? '0' : encumberedInputsVal);
         PrevPaidAmt = parseFloat(previousPaidAmountInputsVal == '' ? '0' : previousPaidAmountInputsVal);
-        defEncumberedAmt = parseFloat(definedEncumberedAmt == '' ? '0' : definedEncumberedAmt);   
-        
+        defEncumberedAmt = parseFloat(definedEncumberedAmt == '' ? '0' : definedEncumberedAmt); 
+
         if (paidAmt < 0) {
             document.getElementById('paidAmountInputs').value = '0';
-            paidAmountInputsVal = '0'; 
-            return; 
+            paidAmountInputsVal = '0';
+            return;
         }
 
-        if (defEncumberedAmt > 0 && paidAmt > defEncumberedAmt) {  
-            document.getElementById('paidAmountInputs').value = defEncumberedAmt;   
-            paidAmountInputsVal = defEncumberedAmt; 
+        if (defEncumberedAmt > 0 && paidAmt > defEncumberedAmt) {
+            document.getElementById('paidAmountInputs').value = defEncumberedAmt;
+            paidAmountInputsVal = defEncumberedAmt;
             return;
         } else {
             let DifferentAmount = paidAmt - PrevPaidAmt;
-            let encumAmt = encumberedAmt - DifferentAmount; 
+            let encumAmt = encumberedAmt - DifferentAmount;
             encumberedInputsVal = encumAmt.toString();
             document.getElementById('encumberedInputs').value = encumAmt;
         }
