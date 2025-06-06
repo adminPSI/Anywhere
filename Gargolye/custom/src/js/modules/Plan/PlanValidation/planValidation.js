@@ -92,7 +92,8 @@ const planValidation = (function () {
     let contactsValidation = {
         importantPeople: true,
         importantPlaces: true,
-        bestWayToConnect: true
+        bestWayToConnect: true,
+        moreDetail: true
     }
 
     const servicesAndSupportsQuestionIds = {
@@ -823,7 +824,8 @@ const planValidation = (function () {
         const contactData = await planValidationAjax.getContactValidationData(planId);
 
         const bestWayToConnect = contactData[0]?.bestWayToConnect || '';
-
+        const moreDetail = contactData[0]?.moreDetail || '';
+           
         const importantPeopleData = contactData.map(item => ({
             type: item.importantPeopleType,
             typeOther: item.importantPeopleTypeOther,
@@ -837,6 +839,7 @@ const planValidation = (function () {
         checkImportantPeople(importantPeopleData);
         checkImportantPlaces(importantPlacesData);
         checkBestWayToConnect(bestWayToConnect);
+        checkMoreDetail(bestWayToConnect, moreDetail)
 
         checkContactsValidation();
     }
@@ -938,6 +941,16 @@ const planValidation = (function () {
         contactsValidation.bestWayToConnect = true;
     }
 
+    function checkMoreDetail(bestWayToConnect, moreDetail) {
+        // #155257 - SH-ANY-PL: Add indicators if "More Detail" value is missing on Contacts tab          
+        if (bestWayToConnect === '7' && moreDetail.trim() === '') {
+            contactsValidation.moreDetail = false;
+            return;
+        }
+
+        contactsValidation.moreDetail = true;
+    }
+
     function getContactValidation() {
         return contactsValidation;
     }
@@ -948,7 +961,7 @@ const planValidation = (function () {
         const bestWayToConnectAlertDiv = document.querySelector('.bestWaytoConnectAlert')
 
         // Check if the alertDiv exists and if any validation condition is false
-        if (alertDiv && (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect)) {
+        if (alertDiv && (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect || !contactsValidation.moreDetail)) {
             alertDiv.style.display = 'flex';
         } else if (alertDiv) {
             alertDiv.style.display = 'none';
@@ -960,8 +973,8 @@ const planValidation = (function () {
             bestWayToConnectAlertDiv.style.display = 'none';
         }
 
-        if (ISPAlertDiv && (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect)) {
-            ISPAlertDiv.style.display = 'flex';
+        if (ISPAlertDiv && (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect || !contactsValidation.moreDetail)) {
+            ISPAlertDiv.style.display = 'flex'; 
         } else if (ISPAlertDiv) {
             ISPAlertDiv.style.display = 'none';
         }
@@ -971,7 +984,7 @@ const planValidation = (function () {
     }
 
     function ispValidationContactCheck() {
-        if (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect) {
+        if (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect || !contactsValidation.moreDetail) {
             IspValidationCheck.contactSectionComplete = false;
         } else {
             IspValidationCheck.contactSectionComplete = true;

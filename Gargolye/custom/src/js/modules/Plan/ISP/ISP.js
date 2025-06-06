@@ -249,7 +249,7 @@ const ISP = (function () {
 
         let contactValidationCheck = planValidation.getContactValidation();
 
-        if (!contactValidationCheck.importantPeople || !contactValidationCheck.importantPlaces || !contactValidationCheck.bestWayToConnect)
+          if (!contactValidationCheck.importantPeople || !contactValidationCheck.importantPlaces || !contactValidationCheck.bestWayToConnect || !contactValidationCheck.moreDetail) 
         {
           contactsAlertDiv.style.display = 'flex';
         } else {
