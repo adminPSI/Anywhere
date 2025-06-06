@@ -15,14 +15,14 @@ const Employment = (() => {
     let btnWrap;
     let employerBtnWrap;
     let positionBtnWrap;
-    let positionStartDateBtnWrap; 
+    let positionStartDateBtnWrap;
     let positionEndDateBtnWrap;
     let jobStandingBtnWrap;
     let reportValues;
     // update Path 
     let ConsumersId;
     var employmentPath;
-    let getEmployeepath = []; 
+    let getEmployeepath = [];
     let currentStatus;
     let pathToEmployment;
     let pathToStartDate;
@@ -680,7 +680,7 @@ const Employment = (() => {
 
         const heading = document.createElement('h2');
         heading.style.marginTop = '-20px';
-        heading.style.marginBottom = '20px';
+        heading.style.marginBottom = '12px';
         heading.innerText = 'Update Path to Employment';
 
         // dropdowns & inputs
@@ -731,8 +731,41 @@ const Employment = (() => {
             style: 'secondary',
             type: 'outlined',
         });
+            
+        const ExistPath = getEmployeepath.getEmployeementPathResult[0] == undefined ? '' : getEmployeepath.getEmployeementPathResult[0].employmentPath;
+        existingStartDate = getEmployeepath.getEmployeementPathResult[0] == undefined || getEmployeepath.getEmployeementPathResult[0].existingStartDate == '' ? '' : moment(getEmployeepath.getEmployeementPathResult[0].existingStartDate).format('YYYY-MM-DD');
+        existingEndDate = getEmployeepath.getEmployeementPathResult[0] == undefined || getEmployeepath.getEmployeementPathResult[0].existingEndDate == '' ? '' : moment(getEmployeepath.getEmployeementPathResult[0].existingEndDate).format('YYYY-MM-DD');
+
+        const message = document.createElement('b');
+        if (ExistPath == '1')
+            message.innerText = 'Current Path: 1 - I have a job but would like a better one or to move up.';  
+        else if (ExistPath == '2')
+            message.innerText = 'Current Path: 2 - I want a job! I need help to find one.';
+        else if (ExistPath == '3')
+            message.innerText = "Current Path: 3 - I'm not sure about work. I need help to learn more.";
+        else if (ExistPath == '4')
+            message.innerText = "Current Path: 4 - I don't think I want to work, but I may not know enough."; 
+        else
+            message.innerText = ''; 
+
+        message.style.marginTop = '1%';
+        message.style.fontSize = '13px';
+
+        const existingPathDate = document.createElement('b');
+        existingPathDate.style.marginTop = '1%';
+        existingPathDate.style.fontSize = '13px';
+        existingPathDate.innerText = moment(existingStartDate).format('MM/DD/YYYY') + ' - 00/00/0000';   
+         
+        var LineBr = document.createElement('br');
 
         updatePathPopup.appendChild(heading);
+        if (existingStartDate != '' && existingEndDate == '') { 
+            updatePathPopup.appendChild(message); 
+            updatePathPopup.appendChild(LineBr); 
+            updatePathPopup.appendChild(existingPathDate);
+            currentPathEndDate.style.marginTop = '12px';   
+        }
+
         updatePathPopup.appendChild(currentPathEndDate);
 
         updatePathPopup.appendChild(newPathEmploymentDropdown);
@@ -791,7 +824,7 @@ const Employment = (() => {
             newPathEmploymentDropdown.classList.remove('errorPopup');
         }
 
-        if (CurrentEndDate.value === '' || CurrentEndDate.value < existingStartDate) {
+        if (existingPathID != '' && CurrentEndDate.value < existingStartDate) {
             currentPathEndDate.classList.add('errorPopup');
         } else {
             currentPathEndDate.classList.remove('errorPopup');
@@ -834,7 +867,7 @@ const Employment = (() => {
         const result = await EmploymentAjax.insertEmploymentPathAsync(employmentPath, newStartDate, newEndDate, currentEndDate, ConsumersId, $.session.UserId, existingPathID);
         const { insertEmploymentPathResult } = result;
         var messagetext = document.getElementById('confirmMessage');
-        
+
         messagetext.innerHTML = ``;
         if (insertEmploymentPathResult.pathId == '-1') {
             messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot be saved.';
@@ -943,7 +976,6 @@ const Employment = (() => {
 
         CREATE_PATH_CANCEL_BTN.addEventListener('click', () => {
             POPUP.hide(createPathPopup);
-            loadEmploymentLanding();
         });
     }
 
@@ -1016,7 +1048,7 @@ const Employment = (() => {
             locationName: '',
             groupId: defaultemploymentGroup,
             groupName: defaultemploymentGroupName,
-        }); 
+        });
 
         roster2.showMiniRoster();
     }
