@@ -393,7 +393,7 @@ const TRANS_manageEditRoute = (function () {
         }
 
         const dif = endVal - startVal;
-        if (dif <= 0) {
+        if (dif < 0) {
             routeStartOdo.classList.add('error');
             routeEndOdo.classList.add('error')
         } else {
