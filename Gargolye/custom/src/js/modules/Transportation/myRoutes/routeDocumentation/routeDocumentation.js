@@ -16,7 +16,7 @@ const TRANS_routeDocumentation = (function () {
         Save and Cancel btns
     */
 
-    let routeStartInput, routeEndInput, routeStartOdo, routeEndOdo, tripIntegratedEmploymentCheckbox, ro, originationInput, destinationInput;
+    let routeStartInput, routeEndInput, routeStartOdo, routeEndOdo, tripIntegratedEmploymentCheckbox, ro, originationInput, destinationInput, otherRiderDropdown;
     let consumerDocCardBody, noConsumerWarning, tooManyConsumersWarning;
 
     // * Data storage
@@ -110,6 +110,11 @@ const TRANS_routeDocumentation = (function () {
             type: "textarea",
             value: tripInfo.destination 
         })
+        otherRiderDropdown = dropdown.build({
+            dropdownId: "otherRiderDropdown",
+            label: "Other Rider",
+            style: "secondary",
+        });
         /////////
 
         tripIntegratedEmploymentCheckbox.style = "padding-bottom: 15px;";   
@@ -122,6 +127,7 @@ const TRANS_routeDocumentation = (function () {
             tripIntegratedEmploymentCheckbox.classList.add('disabled');
             originationInput.classList.add('disabled');
             destinationInput.classList.add('disabled');
+            otherRiderDropdown.classList.add('disabled');
         }
         routeDocCardBody.appendChild(routeStartInput);
         routeDocCardBody.appendChild(tripIntegratedEmploymentCheckbox);
@@ -130,6 +136,7 @@ const TRANS_routeDocumentation = (function () {
         routeDocCardBody.appendChild(routeEndInput);
         routeDocCardBody.appendChild(routeEndOdo);
         routeDocCardBody.appendChild(destinationInput);
+        routeDocCardBody.appendChild(otherRiderDropdown);
         column1.appendChild(routeDocCard);
         // ! Consumer Section //
         const consumerDocCard = document.createElement("div");
@@ -194,7 +201,7 @@ const TRANS_routeDocumentation = (function () {
         DOM.ACTIONCENTER.appendChild(column2)
         buildConsumerCards()
         eventListeners()
-
+        otherRiderPopulation(tripInfo.otherRiderID);
         var TripIntegratedEmploymentCheckbox = document.getElementById("tripIntegratedEmploymentCheckbox");
         if (TripIntegratedEmploymentCheckbox.checked == true) {
             if (consumersOnRecord.size > 0) {
@@ -206,7 +213,7 @@ const TRANS_routeDocumentation = (function () {
             setBtnStatusOfRouteDocumentation();
 
         }
-    }
+    }  
 
     function odoCheck() {
 
@@ -283,7 +290,7 @@ const TRANS_routeDocumentation = (function () {
             routeStartInput.dispatchEvent(new Event('change'))
             }, {once: true})
 
-        routeEndInput.addEventListener('click', event => {
+        routeEndInput.addEventListener('click', event => { 
             event.target.value = UTIL.getCurrentTime();
             routeEndInput.dispatchEvent(new Event('change'))
             }, {once: true})
@@ -336,6 +343,21 @@ const TRANS_routeDocumentation = (function () {
     function checkRequiredFields() {
         odoCheck();
         setBtnStatusOfRouteDocumentation()
+    }
+
+    function otherRiderPopulation(otherRiderID) {
+        // * Other Rider
+        const drivers = TRANS_mainLanding.getAllDrivers(); 
+        let otherRiderDropdownData = []
+        drivers.forEach((val, key, map) => {
+            otherRiderDropdownData.push({
+                value: key,
+                text: `${val.Last_Name}, ${val.First_Name}`
+            });
+        });
+        otherRiderDropdownData.unshift({ value: '0', text: 'NONE' })
+        dropdown.populate(otherRiderDropdown, otherRiderDropdownData, otherRiderID); 
+        //*
     }
 
     function setBtnStatusOfRouteDocumentation() {
@@ -515,7 +537,8 @@ const TRANS_routeDocumentation = (function () {
             }
             const originationVal = originationInput.querySelector('textarea').value;
             const destinationVal = destinationInput.querySelector('textarea').value;
-
+            const otherRiderElement = document.getElementById('otherRiderDropdown');
+            const otherRiderVal = otherRiderElement.options[otherRiderElement.selectedIndex].value;
             
             const dbCallArr = []
             const tripDetailSubmit = {
@@ -527,7 +550,8 @@ const TRANS_routeDocumentation = (function () {
                 endTime: endTime,
                 integratedEmployment: tripIntegratedEmployment,
                 origination: originationVal,
-                destination: destinationVal 
+                destination: destinationVal,
+                otherRider: otherRiderVal
             }
             dbCallArr.push(TRANS_routeDocumentationAjax.updateTripDetails(tripDetailSubmit))
       consumersOnRecord.forEach((val,key,map) => {

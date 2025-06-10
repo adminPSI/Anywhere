@@ -23,6 +23,7 @@ using System.Security.Cryptography;
 using static log4net.Appender.RollingFileAppender;
 using System.Web.UI.MobileControls;
 using static Anywhere.service.Data.AnywhereWorker;
+using System.Runtime.InteropServices.ComTypes;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -62,9 +63,6 @@ namespace OODForms
         {
             sb.Clear();
             sb.AppendFormat("Select First_Name, Last_Name FROM DBA.Persons where Person_Id = {0}", loggedInUserPersonId);
-            //sb.AppendFormat("(select User_ID from ANYW_TOKENS where Token = '{0}' ) ", token);
-           // sb.AppendFormat("(select Person_id from People where ID = {0}", loggedInUserPersonId);
-            //sb.AppendFormat("(select people_id from users_groups where user_id = '{0}') ", userId);
             return di.SelectRowsDS(sb.ToString());
         }
 
@@ -254,21 +252,6 @@ namespace OODForms
             dsBusinessAddresses = di.SelectRowsDS(sb.ToString());
       
             return dsBusinessAddresses;
-
-            //sb.Clear();
-            //sb.Append("SELECT DISTINCT  dba.Employer.Name, dba.Employer.Address1, dba.Employer.City, dba.Employer.State, ");
-            //sb.Append("dba.Employer.Zip_Code, dba.Employer.Primary_Phone ");
-            //sb.Append("FROM dba.EM_Employee_Position ");
-            //sb.Append("LEFT OUTER JOIN dba.Employer ON dba.EM_Employee_Position.Employer_ID = dba.Employer.Employer_ID ");
-            //sb.Append("LEFT OUTER JOIN emp_ood ON emp_ood.position_id = dba.EM_Employee_Position.position_id ");
-            //sb.Append("LEFT OUTER JOIN people ON people.id = dba.EM_Employee_Position.People_ID ");
-            //sb.AppendFormat("WHERE people.consumer_id = {0} ", PeopleID);
-            //sb.AppendFormat("    AND dba.EM_Employee_Position.End_Date IS NULL ");
-            //sb.AppendFormat("    AND emp_ood.position_id IS NOT NULL;");
-            //return di.SelectRowsDS(sb.ToString());
-
-
-
         }
         public string OODForm8GetSupportAndTransistion(string AuthorizationNumber, string StartDate)
         {
@@ -492,6 +475,8 @@ namespace OODForms
                 return ds;
 
         }
+
+
         public DataSet OODForm8BackgroundChecks(string AuthorizationNumber, string StartDate)
         {
             sb.Clear();
@@ -836,6 +821,22 @@ namespace OODForms
 
         }
 
+        public DataSet GetNamesAndGoal(string consumerId)
+        {
+            sb.Clear();
+            sb.Append("SELECT People.First_Name + ' ' + People.Last_Name AS consumerName, ");
+            sb.Append("Vendors.Name As providerName, ");
+            sb.Append("em_employee_general.service_goals as IPEGoal ");
+            sb.Append("FROM people ");
+            sb.Append("LEFT OUTER JOIN DBA.EM_Employee_General ON People.ID = EM_Employee_General.People_ID ");
+            sb.Append("LEFT OUTER JOIN DBA.Consumers ON People.Consumer_Id = DBA.Consumers.Consumer_ID ");
+            sb.Append("LEFT OUTER JOIN DBA.Locations ON DBA.Consumers.Location_ID = DBA.Locations.Location_ID ");
+            sb.Append("LEFT OUTER JOIN DBA.Regions ON DBA.Locations.Region_ID = DBA.Regions.Region_ID ");
+            sb.Append("LEFT OUTER JOIN DBA.Vendors ON DBA.Regions.Vendor_ID = DBA.Vendors.Vendor_ID ");
+            sb.AppendFormat("WHERE people.consumer_id = '{0}' ", consumerId);
+            return di.SelectRowsDS(sb.ToString());
+        }
+
         public DataSet EmpGoal(string AuthorizationNumber, string StartDate, string EndDate)
         {
             sb.Clear();
@@ -869,6 +870,62 @@ namespace OODForms
             //{
             //    sb.AppendFormat("AND dba.Case_Notes.Service_ID = {0} ", ServiceCodeID);
             //}
+
+            return di.SelectRowsDS(sb.ToString());
+        }
+
+        public DataSet GetForm5PositionData(string position, string consumerId, string StartDate, string EndDate)
+        {
+            sb.Clear();
+            sb.Append("SELECT e.name AS employerName, ");
+            sb.Append("(COALESCE(e.address1, '') || " +
+                "CASE WHEN e.address2 IS NOT NULL AND TRIM(e.address2) <> '' THEN ' ' || e.address2 ELSE '' END || " +
+                "', ' || COALESCE(e.city, '') || ', ' || COALESCE(e.state, '') || ' ' || COALESCE(e.zip_code, '')) AS employerAddress, ");
+            sb.Append("e.county AS county, ");
+            sb.Append("'(' + SUBSTRING(e.primary_phone, 1, 3) + ') ' + SUBSTRING(e.primary_phone, 4, 3) + '-' + SUBSTRING(e.primary_phone, 7, 4) + ' ' + SUBSTRING(e.primary_phone, 11, 4) AS phoneNumber, ");
+            sb.Append("w.wages_per_hour AS wages, ");
+            sb.Append("SUM(CAST(DATEDIFF(MINUTE, ws.start_time, ws.end_time) AS FLOAT) / 60.0) AS hoursPerWeek, ");
+            sb.Append("ep.start_date AS firstDayOfWork, ");
+            sb.Append("ep.date_first_paycheck AS firstPaycheck, ");
+            sb.Append("ep.Supervisor_Name AS supervisorName ");
+            sb.Append("FROM dba.em_employee_position ep ");
+            sb.Append("LEFT OUTER JOIN dba.employer e ON ep.Employer_ID = e.employer_ID ");
+            sb.Append("LEFT OUTER JOIN dba.em_wages w ON w.Position_ID = ep.position_ID ");
+            sb.AppendFormat("AND w.start_date <= '{0}' ", StartDate);
+            sb.AppendFormat("AND (w.end_date >= '{0}' OR w.end_date IS NULL) ", EndDate);
+            sb.Append("LEFT OUTER JOIN dba.em_work_schedule ws ON ws.Position_ID = ep.position_ID ");
+            sb.Append("LEFT OUTER JOIN dba.people p ON ep.people_id = p.id ");
+            sb.Append("LEFT OUTER JOIN dba.Code_Table ct ON ct.code = ep.position_code ");
+            sb.Append("AND ct.Table_ID = 'Employment_Info' ");
+            sb.Append("AND ct.Field_ID = 'Position' ");
+            sb.AppendFormat("WHERE p.consumer_id = {0} ", consumerId);
+            sb.AppendFormat("AND ep.start_date <= '{0}' ", StartDate);
+            sb.AppendFormat("AND (ep.end_date >= '{0}' OR ep.end_date IS NULL) ", EndDate);
+            sb.AppendFormat("AND ct.caption = '{0}' ", position);
+            sb.Append("GROUP BY ");
+            sb.Append("e.name, e.address1, e.address2, e.city, e.state, e.zip_code, ");
+            sb.Append("e.county, e.primary_phone, ");
+            sb.Append("w.wages_per_hour, ");
+            sb.Append("ep.start_date, ep.date_first_paycheck, ep.supervisor_name;");
+
+            return di.SelectRowsDS(sb.ToString());
+        }
+
+        public DataSet getJobDutiesData(string position, string consumerId, string startDate, string endDate)
+        {
+            sb.Clear();
+            sb.Append("SELECT LIST(dba.EM_Job_Task.Task_Notes, ', ') AS CombinedTaskNotes ");
+            sb.Append("FROM EM_Job_Task ");
+            sb.Append("LEFT OUTER JOIN EM_Employee_Position on EM_Employee_Position.position_id = EM_Job_Task.position_id ");
+            sb.Append("LEFT OUTER JOIN people on people.id = EM_Employee_Position.people_id ");
+            sb.Append("LEFT OUTER JOIN dba.Code_Table ct ON ct.code = EM_Employee_Position.position_code ");
+            sb.Append("WHERE Task_Number > 7 ");
+            sb.AppendFormat("AND people.Consumer_id = {0} ", consumerId);
+            sb.AppendFormat("AND EM_Job_Task.start_date <= '{0}' ", startDate);
+            sb.AppendFormat("AND (EM_Job_Task.end_date >= '{0}' OR EM_Job_Task.end_date IS NULL) ", endDate);
+            sb.Append("AND ct.Table_ID = 'Employment_Info' ");
+            sb.Append("AND ct.Field_ID = 'Position' ");
+            sb.AppendFormat("AND ct.caption = '{0}' ", position);
 
             return di.SelectRowsDS(sb.ToString());
         }

@@ -445,7 +445,11 @@ namespace Anywhere.service.Data
             sb.Append("DBA.ANYW_ISP_Services_Paid_Support.End_Date, DBA.ANYW_ISP_Services_Paid_Support.Funding_Source_Text, ");
             sb.AppendFormat("DBA.ANYW_ISP_Services_Paid_Support.Row_Order, DBA.Service_Types.Description, DBA.{0}.{1} AS FundingSource, ", FundingSource, Description);
             sb.AppendFormat("DBA.{0}.Name AS Provider, DBA.anyw_isp_assessment_sections.section_title AS Area, DBA.ANYW_ISP_Services_Paid_Support.Funding_Source, ", Vendor);
-            sb.Append("DBA.ANYW_ISP_Services_Paid_Support.Additional_Service_Name ");
+            sb.Append("DBA.ANYW_ISP_Services_Paid_Support.Additional_Service_Name, ");
+            sb.Append("         (SELECT CP.Review_Process ");
+            sb.Append("            FROM DBA.ANYW_ISP_Consumer_Plans AS CP ");
+            sb.AppendFormat("           WHERE CP.ISP_Consumer_Plan_ID = {0} ", AssesmentID);
+            sb.Append("         ) AS Review_Process ");
             sb.Append("FROM DBA.anyw_isp_assessment_sections ");
             sb.Append("RIGHT OUTER JOIN DBA.ANYW_ISP_Services_Paid_Support ON DBA.anyw_isp_assessment_sections.isp_assessment_section_id = DBA.ANYW_ISP_Services_Paid_Support.Assessment_Area_ID ");
             sb.AppendFormat("LEFT OUTER JOIN DBA.{0} ON DBA.ANYW_ISP_Services_Paid_Support.Provider_ID = DBA.{0}.Vendor_ID ", Vendor);

@@ -253,9 +253,6 @@ namespace Anywhere.service.Data.PlanOutcomes
             ServicesAndSupportsDataGetter dataGetter = new ServicesAndSupportsDataGetter();
             string paidSupportString = dataGetter.getPaidSupports(token, anywAssessmentId, 0);
             PaidSupports[] paidSupportObj = js.Deserialize<PaidSupports[]>(paidSupportString);
-            //Get Monitoring Continuing Review Process
-            string monitoringContinuousReviewProcess = pdg.getMonitoringContinuousReviewProcess(assessmentId);
-            MonitoringContinuousReviewProcess[] monitoringContinuousReviewProcessObj = js.Deserialize<MonitoringContinuousReviewProcess[]>(monitoringContinuousReviewProcess);
 
             PlanTotalOutcome totalOutcome = new PlanTotalOutcome();
             totalOutcome.planOutcome = planOutcomesObj;
@@ -263,7 +260,6 @@ namespace Anywhere.service.Data.PlanOutcomes
             totalOutcome.planReviews = planOutcomesReviewObj;
             totalOutcome.planProgressSummary = planOutcomesProgressSummaryObj;
             totalOutcome.paidSupports = paidSupportObj;
-            totalOutcome.monitoringContinuousReviewProcess = monitoringContinuousReviewProcessObj;
 
             return totalOutcome;
         }
@@ -400,8 +396,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             public PlanOutcomesExperiences[] planOutcomeExperiences { get; set; }
             public PlanOutcomesReviews[] planReviews { get; set; }
             public PlanPorgressSummary[] planProgressSummary { get; set; }
-            public PaidSupports[] paidSupports { get; set; }
-            public MonitoringContinuousReviewProcess[] monitoringContinuousReviewProcess  { get; set;}
+            public PaidSupports[] paidSupports { get; set; }            
         }
 
         public class PlanPorgressSummary

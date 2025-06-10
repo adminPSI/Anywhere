@@ -64,6 +64,7 @@ using static Anywhere.service.Data.FSS.FSSWorker;
 using Anywhere.service.Data.FSS;
 using Microsoft.Expression.Interactivity.Media;
 using static Anywhere.service.Data.PlanInformedConsent.PlanInformedConsentWorker;
+using System.Web;
 
 namespace Anywhere
 {
@@ -447,9 +448,9 @@ namespace Anywhere
                 billingCode, reviewStatus, location, service, need, contact, confidential, corrected, billed, attachments, overlaps, noteText, applicationName, outcomeServiceMonitoring);
         }
 
-        public AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token)
+        public AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token, string companyUrl)
         {
-            return anywhereWorker.getDefaultAnywhereSettingsJSON(token);
+            return anywhereWorker.getDefaultAnywhereSettingsJSON(token, companyUrl);
         }
 
         public AnywhereWorker.PeopleId[] getConsumerPeopleId(string consumerId)
@@ -2442,9 +2443,9 @@ namespace Anywhere
         {
             return trW.getConsumerDetails(token, consumerId);
         }
-        public string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string integratedEmployment, string origination, string destination)
+        public string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string integratedEmployment, string origination, string destination, string otherRider)
         {
-            return trW.updateTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, integratedEmployment, origination, destination);
+            return trW.updateTripDetails(token, tripsCompletedId, odometerStart, odometerStop, startTime, endTime, integratedEmployment, origination, destination, otherRider);
         }
         public string updateManageTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string driverId, string otherRiderId, string vehicleId, string locationId, string billingType, string tripName, string integratedEmployment, string origination, string destination)
         {
@@ -3146,6 +3147,43 @@ namespace Anywhere
             return OODfw.generateForm4(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
         }
 
+        public string generateForm5(System.IO.Stream testInput)
+        {
+            string token;
+            string userId;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string loggedInUserPersonId;
+            string position;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
+            position = HttpUtility.UrlDecode(System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[8], "=")[1]);
+
+            if (serviceCodeId == "%25")
+            {
+                serviceCodeId = "%";
+            }
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "%";
+            }
+
+            return OODfw.generateForm5(token, userId, referenceNumber, peopleId,  startDate, endDate, loggedInUserPersonId, position);
+        }
+
         public string generateForm6(System.IO.Stream testInput)
         {
 
@@ -3206,6 +3244,38 @@ namespace Anywhere
             }
 
             return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId, loggedInUserPersonId);
+        }
+
+        public string generateForm9(System.IO.Stream testInput)
+        {
+
+            string token;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string userId;
+            string loggedInUserPersonId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            loggedInUserPersonId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "";
+            }
+
+            return OODfw.generateForm9(token, referenceNumber, 22, peopleId, startDate, endDate, userId, loggedInUserPersonId);
+
         }
 
         public string generateForm10(System.IO.Stream testInput)
@@ -3318,6 +3388,11 @@ namespace Anywhere
         public OODWorker.ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string formNumber)
         {
             return Ow.getConsumerReferenceNumbers(token, consumerIds, startDate, endDate, formNumber);
+        }
+
+        public OODWorker.Position[] getConsumerPositions(string token, string consumerIds, string startDate, string endDate)
+        {
+            return Ow.getConsumerPositions(token, consumerIds, startDate, endDate);
         }
 
         public OODWorker.ServiceCode[] getConsumerServiceCodes(string consumerId, string serviceDate, string token)
@@ -3951,7 +4026,7 @@ namespace Anywhere
             return emp.getEmployers(token);
         }
 
-        public Position[] getPositions(string token)
+        public EmploymentWorker.Position[] getPositions(string token)
         {
             return emp.getPositions(token);
         }
@@ -3990,7 +4065,7 @@ namespace Anywhere
             return emp.getEmployerDropDown(token);
         }
 
-        public Position[] getPositionDropDown(string token)
+        public EmploymentWorker.Position[] getPositionDropDown(string token)
         {
             return emp.getPositionDropDown(token);
         }
@@ -4512,7 +4587,7 @@ namespace Anywhere
             return fssw.getFamilyInfoByID(token, familyId);
         }
 
-        public string updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID)
+        public FSSWorker.FamilyInformation[] updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID)
         {
             return fssw.updateFamilyInfo(token, familyName, address1, address2, city, state, zip, primaryPhone, secondaryPhone, email, notes, active, userId, familyID);
         }
@@ -4558,14 +4633,14 @@ namespace Anywhere
             return fssw.getVendors(token);
         }
 
-        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID)
+        public string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID, string authID)
         {
-            return fssw.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID);
+            return fssw.insertAuthorization(token, coPay, allocation, fundingSource, startDate, endDate, userId, familyID, authID);
         }
 
-        public UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling)
+        public UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling, string authDetailID)
         {
-            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID, isSimpleBilling);
+            return fssw.insertUtilization(token, encumbered, familyMember, serviceCode, paidAmount, vendor, datePaid, userId, familyID, authID, consumerID, isSimpleBilling, authDetailID);
         }
 
         public void deleteAuthorization(string token, string authDetailId)

@@ -148,7 +148,7 @@ const contactInformation = (() => {
                 bestWayToConnectData.bestWayToConnect = selectedOption.value;
 
                 if (bestWayToConnectData.bestWayToConnect === '7') {
-                    if (bestWayToConnectData.moreDetail === '') {
+                    if (bestWayToConnectData.moreDetail.trim() === '') {
                         otherTextInput.classList.add('error');
                     }
                 } else {
@@ -181,7 +181,7 @@ const contactInformation = (() => {
                 bestWayToConnectData.moreDetail = e.target.value;
 
                 if (bestWayToConnectData.bestWayToConnect === '7') {
-                    if (bestWayToConnectData.moreDetail === '') {
+                    if (bestWayToConnectData.moreDetail.trim() === '') {
                         otherTextInput.classList.add('error');
                     } else {
                         otherTextInput.classList.remove('error');
@@ -192,6 +192,8 @@ const contactInformation = (() => {
                     anywAssessmentId: assessmentId,
                     detail: e.target.value,
                 });
+
+                await planValidation.contactsValidationCheck(); 
             },
         });
 
@@ -227,6 +229,13 @@ const contactInformation = (() => {
         inputSection.appendChild(bestWayToConnectBtnAlertDiv);
         inputSection.appendChild(otherTextInput);
         inputSection.appendChild(dateFundingSoureContainer);
+      
+        // 155257 - SH-ANY-PL: Add indicators if "More Detail" value is missing on Contacts tab   
+        if (contactsValidation.moreDetail === false) {
+            otherTextInput.classList.add('error');
+        } else {
+            otherTextInput.classList.remove('error');
+        }
 
         return inputSection;
     }

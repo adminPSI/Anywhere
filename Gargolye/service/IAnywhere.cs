@@ -421,7 +421,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getDefaultAnywhereSettingsJSON/")]
-        AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token);
+        AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token, string companyUrl);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -3350,7 +3350,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/updateTripDetails/")]
-        string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string integratedEmployment, string origination, string destination);
+        string updateTripDetails(string token, string tripsCompletedId, string odometerStart, string odometerStop, string startTime, string endTime, string integratedEmployment, string origination, string destination, string otherRider);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -4439,6 +4439,13 @@ namespace Anywhere
         string generateForm4(System.IO.Stream testInput);
         //string generateForm4(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber);
 
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/generateForm5/")]
+        string generateForm5(System.IO.Stream testInput);
+        //string generateForm4(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4466,6 +4473,15 @@ namespace Anywhere
            UriTemplate = "/generateForm8/")]
         //string generateForm8(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber);
         string generateForm8(System.IO.Stream testInput);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/generateForm9/")]
+        //string generateForm10(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber);
+        string generateForm9(System.IO.Stream testInput);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4564,6 +4580,14 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getConsumerReferenceNumbers/")]
         OODWorker.ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string formNumber);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getConsumerPositions/")]
+        OODWorker.Position[] getConsumerPositions(string token, string consumerIds, string startDate, string endDate);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5839,7 +5863,7 @@ namespace Anywhere
         ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/updateFamilyInfo/")]
-        string updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID);
+        FSSWorker.FamilyInformation[] updateFamilyInfo(string token, string familyName, string address1, string address2, string city, string state, string zip, string primaryPhone, string secondaryPhone, string email, string notes, string active, string userId, string familyID);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5919,7 +5943,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertAuthorization/")]
-        string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID);
+        string insertAuthorization(string token, string coPay, string allocation, string fundingSource, string startDate, string endDate, string userId, string familyID, string authID);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -5935,7 +5959,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/insertUtilization/")]
-        UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling);
+        UtilizationBillable insertUtilization(string token, string encumbered, string familyMember, string serviceCode, string paidAmount, string vendor, string datePaid, string userId, string familyID, string authID, string consumerID, string isSimpleBilling, string authDetailID);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

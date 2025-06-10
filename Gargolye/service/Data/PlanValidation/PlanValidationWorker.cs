@@ -22,6 +22,7 @@ namespace Anywhere.service.Data.PlanValidation
             public string importantPeopleTypeOther { get; set; }
             public string importantPlacesType { get; set; }
             public string importantPlacesTypeOther { get; set; }
+            public string moreDetail { get; set; }
         }
 
         public ContactValidationData[] getContactValidationData(string token, string planId)

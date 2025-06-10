@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Anywhere.service.Data.PlanOutcomes;
+using System;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
 
 namespace Anywhere.service.Data.PlanServicesAndSupports
 {
@@ -7,6 +9,8 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
     {
         JavaScriptSerializer js = new JavaScriptSerializer();
         ServicesAndSupportsDataGetter dg = new ServicesAndSupportsDataGetter();
+        PlanOutcomesDataGetter podg = new PlanOutcomesDataGetter();
+        PlanOutcomesDataGetter pdg = new PlanOutcomesDataGetter();
         public ServicesAndSupports getServicesAndSupports(string token, long anywAssessmentId, int consumerId)
         {
             //Paid Support
@@ -42,6 +46,9 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             //Total Outcomes
             string assessmentOutcomes = dg.getAssessmentOutcomes(token, anywAssessmentId, 0);
             AssessmentOutcomes[] assessmentOutcomesObj = js.Deserialize<AssessmentOutcomes[]>(assessmentOutcomes);
+            //Get Monitoring Continuing Review Process
+            string monitoringContinuousReviewProcess = pdg.getMonitoringContinuousReviewProcess(anywAssessmentId.ToString());
+            MonitoringContinuousReviewProcess[] monitoringContinuousReviewProcessObj = js.Deserialize<MonitoringContinuousReviewProcess[]>(monitoringContinuousReviewProcess);
 
 
             ServicesAndSupports totalServicesAndSupports = new ServicesAndSupports();
@@ -56,6 +63,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             totalServicesAndSupports.workingNotWorking = workingNotWorkingObj;
             totalServicesAndSupports.sectionsApplicable = sectionsAPplicalbeObj;
             totalServicesAndSupports.assessmentOutcomes = assessmentOutcomesObj;
+            totalServicesAndSupports.monitoringContinuousReviewProcess = monitoringContinuousReviewProcessObj;
 
             return totalServicesAndSupports;
         }
@@ -157,6 +165,11 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             string endDateT = "";
             string endDate = "";
             int result = 1;
+
+            //Monitoring Review Process
+            string reviewProcessString = podg.getMonitoringContinuousReviewProcess(priorPlanId.ToString());
+            MonitoringReviewProcess[] reviewProcessObj = js.Deserialize<MonitoringReviewProcess[]>(reviewProcessString);
+            string success = podg.updateMonitoringContinuousReviewProcess(newPlanId.ToString(), reviewProcessObj[0].monitoringContinuousReviewProcess);
             //Paid supports
             string paidSupportString = dg.getPaidSupports(token, priorPlanId, int.Parse(targetAssessmentVersionId));
             PaidSupports[] paidSupportObj = js.Deserialize<PaidSupports[]>(paidSupportString);
@@ -258,12 +271,23 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             public WorkingNotWorking[] workingNotWorking { get; set; }
             public SectionsApplicable[] sectionsApplicable { get; set; }
             public AssessmentOutcomes[] assessmentOutcomes { get; set; }
+            public MonitoringContinuousReviewProcess[] monitoringContinuousReviewProcess { get; set; }
+        }
+
+        public class MonitoringContinuousReviewProcess
+        {
+            public string monitoringContinuousReviewProcess { get; set; }
         }
 
         public class CommunicationsOptions
         {
             public string communicationsId { get; set; }
             public string communicationType { get; set; }
+        }
+
+        public class MonitoringReviewProcess
+        {
+            public string monitoringContinuousReviewProcess { get; set; }
         }
 
         public class EmploymentOptions

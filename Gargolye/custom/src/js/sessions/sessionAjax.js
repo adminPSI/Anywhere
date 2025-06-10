@@ -1002,6 +1002,13 @@ function featureLogging(appName) {
 }
 
 function getDefaultAnywhereSettings() {
+    const port = $.webServer.port;
+    const protocol = $.webServer.protocol;
+    const address = $.webServer.address;
+
+    // Determine whether to include the port
+    const includePort = port !== '80' && port !== '443';//
+    const url = `${protocol}://${address}${includePort ? ':' + port : ''}`; 
     $.ajax({
         type: 'POST',
         url:
@@ -1013,7 +1020,7 @@ function getDefaultAnywhereSettings() {
             '/' +
             $.webServer.serviceName +
             '/getDefaultAnywhereSettingsJSON/',
-        data: '{"token":"' + $.session.Token + '"}',
+        data: '{"token":"' + $.session.Token + '","companyUrl":"' + url + '"}',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         success: function (response, status, xhr) {

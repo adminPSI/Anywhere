@@ -9,6 +9,7 @@ const EditFamilies = (function () {
     var userTable;
     var isChecked;
     let backBtn;
+    let addFamily;
 
     function init() {
         setActiveModuleAttribute('FSS');
@@ -94,13 +95,16 @@ const EditFamilies = (function () {
     function populateTable(results, IsFirstLoad) {
         familyTableData = results.map(td => {
             var familyId = td.familyId;
-            var primaryPhone = !td.primaryPhone ? '' : FSS.formatPhoneNumber(td.primaryPhone) ;
+            var primaryPhone = !td.primaryPhone ? '' : FSS.formatPhoneNumber(td.primaryPhone);
             var familyName = td.familyName;
-            var address = td.address;
+            var address = td.address == '  ,  ' ? '' : td.address;
             var Active = td.active;
-             
+
             const additionalInformation = viewEditFamilyBtn();
-            additionalInformation.innerHTML = 'View/Edit Family';
+            if ($.session.FSSUpdate || $.session.FSSDelete || $.session.InsertFSS)
+                additionalInformation.innerHTML = 'View/Edit Family';
+            else
+                additionalInformation.innerHTML = 'View Family';
 
             additionalInformation.style = 'margin-top: -10px; width: 200px;';
             const activeCheckbox = buildActiveChkBox(Active);
@@ -139,6 +143,7 @@ const EditFamilies = (function () {
         SEARCH_BTN = buildSearchBtn();
         INACTIVE_CHKBOX = buildInactiveChkBox();
         backBtn = backButton();
+        addFamily = addFamilyButton();
 
         // custom search stuff
         SEARCH_WRAP = document.createElement('div');
@@ -152,10 +157,17 @@ const EditFamilies = (function () {
         wrap1.classList.add('headerWrap');
         INACTIVE_CHKBOX.classList.add('width25Per');
         wrap1.appendChild(INACTIVE_CHKBOX);
+        addFamily.classList.add('width15Per');
+        wrap1.appendChild(addFamily);
         SEARCH_WRAP.classList.add('width75Per');
         wrap1.appendChild(SEARCH_WRAP);
         backBtn.classList.add('width13Per');
         wrap1.appendChild(backBtn);
+
+        if ($.session.InsertFSS)
+            addFamily.classList.remove('disabled');
+        else
+            addFamily.classList.add('disabled');
 
         INACTIVE_CHKBOX.addEventListener('change', event => {
             isChecked = event.target.checked;
@@ -173,6 +185,20 @@ const EditFamilies = (function () {
             type: 'outlined',
             callback: async () => {
                 FSS.fSSLanding()
+            },
+        });
+    }
+
+    function addFamilyButton() {
+        return button.build({
+            text: 'ADD FAMILY',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'reportBtn',
+            callback: async () => {
+                if ($.session.InsertFSS) {
+                    EditFamilyHeader.refreshFamily();
+                }
             },
         });
     }

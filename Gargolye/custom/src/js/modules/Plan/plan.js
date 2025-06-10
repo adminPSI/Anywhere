@@ -1461,15 +1461,19 @@ const plan = (function () {
         // });
         // }
 
-        if (
-          sendSuccess &&
-          (sendSuccess[0] === 'Successfully sent Plan to DODD.' ||
-            sendSuccess[0] === 'Successfully sent Plan and selected Attachments to DODD.')
-        ) {
-          sendtoDODDSuccessMessage(sendSuccess);
-        } else {
-          sendtoDODDGeneralErrorMessage(sendSuccess);
-        }
+                if (
+                    sendSuccess &&
+                    (sendSuccess[0] === 'Successfully sent Plan to DODD.' ||
+                        sendSuccess[0] === 'Successfully sent Plan and selected Attachments to DODD.')
+                ) {
+                    const jsonString = sendSuccess[2].substring(sendSuccess[2].indexOf('{')).slice(0, -1);
+
+                    // Parse the JSON string
+                    const parsedData = JSON.parse(jsonString);
+                    sendtoDODDSuccessMessage(`Plan ${parsedData.ISPName} successfully sent to DODD.`);
+                } else {
+                    sendtoDODDGeneralErrorMessage(sendSuccess);
+                }
 
         DODDScreen.removeChild(spinner);
         DODDScreen.appendChild(screenInner);
@@ -1642,13 +1646,13 @@ const plan = (function () {
       },
     });
 
-    OKBtnWrap.appendChild(alertokBtn);
-    var sendtoDODDSuccessMesssage = document.createElement('p');
-    sendtoDODDSuccessMesssage.innerHTML = sendtoDODDResponse[0];
-    sendtoDODDSuccessPopup.appendChild(sendtoDODDSuccessMesssage);
-    sendtoDODDSuccessPopup.appendChild(OKBtnWrap);
-    POPUP.show(sendtoDODDSuccessPopup);
-  }
+        OKBtnWrap.appendChild(alertokBtn);
+        var sendtoDODDSuccessMesssage = document.createElement('p');
+        sendtoDODDSuccessMesssage.innerHTML = sendtoDODDResponse;
+        sendtoDODDSuccessPopup.appendChild(sendtoDODDSuccessMesssage);
+        sendtoDODDSuccessPopup.appendChild(OKBtnWrap);
+        POPUP.show(sendtoDODDSuccessPopup);
+    }
 
   function sendToPortalAlert(sendtoPortalResponse) {
     var alertPopup = POPUP.build({

@@ -40,18 +40,31 @@ const EditFamilyInformation = (() => {
         const employeeInfoDiv = document.createElement('div');
         employeeInfoDiv.classList.add('additionalQuestionWrap');
 
-        familyName = getFamilyInfoByID.getFamilyInfoByIDResult[0].familyName;
-        address1 = getFamilyInfoByID.getFamilyInfoByIDResult[0].address1;
-        address2 = getFamilyInfoByID.getFamilyInfoByIDResult[0].address2;
-        city = getFamilyInfoByID.getFamilyInfoByIDResult[0].city;
-        state = getFamilyInfoByID.getFamilyInfoByIDResult[0].state;
-        zip = getFamilyInfoByID.getFamilyInfoByIDResult[0].zip;
-        primaryPhone = getFamilyInfoByID.getFamilyInfoByIDResult[0].primaryPhone;
-        secondaryPhone = getFamilyInfoByID.getFamilyInfoByIDResult[0].secondaryPhone;
-        email = getFamilyInfoByID.getFamilyInfoByIDResult[0].email;
-        notes = getFamilyInfoByID.getFamilyInfoByIDResult[0].notes;
-        active = getFamilyInfoByID.getFamilyInfoByIDResult[0].active;
-
+        if (familyID != undefined) {
+            familyName = getFamilyInfoByID.getFamilyInfoByIDResult[0].familyName;
+            address1 = getFamilyInfoByID.getFamilyInfoByIDResult[0].address1;
+            address2 = getFamilyInfoByID.getFamilyInfoByIDResult[0].address2;
+            city = getFamilyInfoByID.getFamilyInfoByIDResult[0].city;
+            state = getFamilyInfoByID.getFamilyInfoByIDResult[0].state;
+            zip = getFamilyInfoByID.getFamilyInfoByIDResult[0].zip;
+            primaryPhone = getFamilyInfoByID.getFamilyInfoByIDResult[0].primaryPhone;
+            secondaryPhone = getFamilyInfoByID.getFamilyInfoByIDResult[0].secondaryPhone;
+            email = getFamilyInfoByID.getFamilyInfoByIDResult[0].email;
+            notes = getFamilyInfoByID.getFamilyInfoByIDResult[0].notes;
+            active = getFamilyInfoByID.getFamilyInfoByIDResult[0].active;
+        } else {
+            familyName = '';
+            address1 = '';
+            address2 = '';
+            city = '';
+            state = '';
+            zip = '';
+            primaryPhone = '';
+            secondaryPhone = '';
+            email = '';
+            notes = '';
+            active = 'Y';
+        }
 
         familyNameInput = input.build({
             id: 'familyNameInput',
@@ -261,6 +274,12 @@ const EditFamilyInformation = (() => {
         btnWrap.appendChild(CANCEL_BTN);
         addNewCardBody.appendChild(btnWrap);
 
+        if ($.session.FSSUpdate) {
+            activeChk.classList.remove('disabled');
+        } else {
+            activeChk.classList.add('disabled'); 
+        }
+
         eventListeners();
         employeeInfoDiv.appendChild(column1);
         checkRequiredFieldsOfEmployeeInfo(familyName);
@@ -274,7 +293,7 @@ const EditFamilyInformation = (() => {
     }
 
     function checkRequiredFieldsOfEmployeeInfo(familyName) {
-        if (familyName === '') {
+        if (familyName.trim() === '') {
             familyNameInput.classList.add('error');
         } else {
             familyNameInput.classList.remove('error');
@@ -300,7 +319,7 @@ const EditFamilyInformation = (() => {
 
     function eventListeners() {
         familyNameInput.addEventListener('input', event => {
-            familyName = event.target.value;
+            familyName = event.target.value.trim();
             IsValueChanged = true;
             getRequiredFieldsOfEmployeeInfo();
         });
@@ -333,16 +352,16 @@ const EditFamilyInformation = (() => {
             if (event.target.value !== '' && validatePhone(event.target.value)) {
                 const phnDisp = FSS.formatPhoneNumber(event.target.value);
                 event.target.value = phnDisp;
-                const allowDigitOnly = new RegExp(/^\d+$/);    
+                const allowDigitOnly = new RegExp(/^\d+$/);
                 primaryPhone = event.target.value.replace('-', '').replace('-', '').replace('(', '').replace(')', '').replace(' ', '');
                 if (allowDigitOnly.test(primaryPhone)) {
                     primaryPhoneInput.classList.remove('error');
                 } else {
                     primaryPhoneInput.classList.add('error');
-                }              
+                }
             } else {
                 if (event.target.value === '') {
-                    primaryPhone = '';  
+                    primaryPhone = '';
                     primaryPhoneInput.classList.remove('error');
                 }
                 else {
@@ -356,7 +375,7 @@ const EditFamilyInformation = (() => {
             if (event.target.value !== '' && validatePhone(event.target.value)) {
                 const phnDisp = FSS.formatPhoneNumber(event.target.value);
                 event.target.value = phnDisp;
-                const allowDigitOnly = new RegExp(/^\d+$/); 
+                const allowDigitOnly = new RegExp(/^\d+$/);
                 secondaryPhone = event.target.value.replace('-', '').replace('-', '').replace('(', '').replace(')', '').replace(' ', '');
                 if (allowDigitOnly.test(secondaryPhone)) {
                     secondaryPhoneInput.classList.remove('error');
@@ -376,9 +395,11 @@ const EditFamilyInformation = (() => {
             IsValueChanged = true;
         });
         activeChk.addEventListener('change', event => {
-            active = event.target.checked == true ? 'Y' : 'N';
-            IsValueChanged = true;
-            getRequiredFieldsOfEmployeeInfo();
+            if ($.session.FSSUpdate) {
+                active = event.target.checked == true ? 'Y' : 'N';
+                IsValueChanged = true;
+                getRequiredFieldsOfEmployeeInfo();
+            } 
         });
         emailInput.addEventListener('input', event => {
             email = event.target.value;
@@ -393,8 +414,7 @@ const EditFamilyInformation = (() => {
     }
 
     async function saveEmployeeInfo() {
-
-        await FSSAjax.updateFamilyInfo({
+        const result = await FSSAjax.updateFamilyInfo({
             token: $.session.Token,
             familyName: familyName,
             address1: address1,
@@ -408,10 +428,9 @@ const EditFamilyInformation = (() => {
             notes: notes,
             active: active,
             userId: $.session.UserId,
-            familyID: familyID
+            familyID: familyID == undefined || null ? '0' : familyID,
         });
-
-        EditFamilyHeader.refreshFamily(familyID, familyName, tabPositionIndex = 0);
+        EditFamilyHeader.refreshFamily(result[0]?.familyId, familyName, tabPositionIndex = 0);
 
     }
 
@@ -420,7 +439,7 @@ const EditFamilyInformation = (() => {
 
         const genTelRegEx = new RegExp(/^\d{3}[- ]?\d{3}[- ]?\d{4}( x\d{4})?|x\d{4}$/im);
         return genTelRegEx.test(val);
-    } 
+    }
 
     return {
         init,

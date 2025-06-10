@@ -131,7 +131,7 @@ const SPEECH = (function () {
       speechConfig = SpeechSDK.SpeechConfig.fromSubscription($.session.azureSTTApi, 'eastus');
       speechConfig.speechRecognitionLanguage = 'en-US';
       speechConfig.enableDictation();
-      speechConfig.setServiceProperty('punctuation', 'explicit', SpeechSDK.ServicePropertyChannel.UriQueryParameter);
+      speechConfig.setServiceProperty('punctuation', 'explicit', SpeechSDK.ServicePropertyChannel.UriQueryParameter);//
       audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
       return true;
     } catch (error) {
