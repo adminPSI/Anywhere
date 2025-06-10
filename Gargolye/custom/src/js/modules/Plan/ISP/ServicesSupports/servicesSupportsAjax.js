@@ -406,6 +406,31 @@ const servicesSupportsAjax = (() => {
       console.log(error);
     }
   }
+  async function updateContinuousMonitoring(retrieveData) {
+    // planId, value
+
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/updateMonitoringContinuousReviewProcess/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.updateMonitoringContinuousReviewProcessResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   // row re-order
   //------------------
   async function updatePaidSupportsRowOrder(retrieveData) {
@@ -607,6 +632,7 @@ const servicesSupportsAjax = (() => {
     updateServiceReferralRowOrder,
     updateAdditionalSupportsRowOrder,
     updateMultiPaidSupports,
+    updateContinuousMonitoring,
     deleteProfessionalReferral,
     deleteAdditionalSupports,
     deleteSSModifications,

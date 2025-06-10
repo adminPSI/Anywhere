@@ -5040,13 +5040,14 @@ namespace Anywhere.Data
             }
         }
 
-        public string saveOrUpdateShift(string token, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift)
+        public string saveOrUpdateShift(string token, string shiftId, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift)
         {
             //if (tokenValidator(token) == false) return null;
             logger.debug("saveOrUpdateShift ");
 
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(shiftId);
             list.Add(dateString);
             list.Add(locationId);
             list.Add(personId);

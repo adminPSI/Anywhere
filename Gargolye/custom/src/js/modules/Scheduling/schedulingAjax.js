@@ -104,6 +104,7 @@ const schedulingAjax = (function () {
     }
   }
   async function saveOrUpdateShift(retrieveData) {
+    // shiftId
     // date: '01/01/2015, 01/02/2025'
     // consumerId: '123, 123, 123'
     // startTime
@@ -112,6 +113,8 @@ const schedulingAjax = (function () {
     // employeeId
     // notifyEmployee
     // color
+    const rd = { ...retrieveData };
+    rd.shiftId = rd.shiftId ? parseInt(rd.shiftId) : 0;
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -219,7 +222,7 @@ const schedulingAjax = (function () {
   async function getFilteredEmployeesForScheduling(retrieveData) {
     // locationId: '0', // '0' for null '%' for all
     // includeTrainedOnly: 0,
-    // region: 'ALL', // '0' for null '%' for all
+    // region: 'ALL', //
     // maxWeeklyHours: -1, // -1 for null
     // shiftStartTime: '00:00:00',
     // shiftEndTime: '00:00:00',
@@ -233,8 +236,18 @@ const schedulingAjax = (function () {
       data.includeOverlaps = 0;
       data.maxWeeklyHours = -1;
       data.minTimeBetweenShifts = -1;
+      data.shiftdate = '';
     } else {
       data.shiftdate = data.shiftdate.join(',');
+    }
+
+    if (data.shiftStartTime === '00:00:00' || data.shiftEndTime === '00:00:00') {
+      data.maxWeeklyHours = -1;
+      data.minTimeBetweenShifts = -1;
+    }
+
+    if (data.region === '') {
+      data.region = '%';
     }
 
     delete data.filterHours;

@@ -175,14 +175,14 @@
 .calendarTitleEle {
   font-size: 32px;
   font-weight: 500;
-  flex-grow: 1;
+  width: 50%;
 }
 .calendarNav {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   justify-content: space-between;
-  flex-grow: 1;
+  width: 50%;
 
   .viewToggle {
     display: flex;
@@ -699,7 +699,6 @@
 }
 #shiftDetailPopup {
   max-width: 450px;
-  max-height: 660px;
 
   h2 {
     margin: 0 0 10px 0;
@@ -715,6 +714,14 @@
     flex-flow: column nowrap;
     overflow-y: scroll;
     padding: 0;
+  }
+
+  label.checkbox {
+    margin: 0 12px 0 0;
+  }
+
+  .btnWrap {
+    margin: 20px 0 10px;
   }
 }
 #shiftGroupDetailPopup {

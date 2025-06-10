@@ -2089,7 +2089,9 @@ const planSummary = (function () {
     risksWrap.classList.add('risksWrap');
 
     const heading = document.createElement('h3');
-    heading.innerHTML = `Known & Likely Risks: <span>Include any MUI trends and preventative measures</span>`;
+    heading.innerHTML = `
+      Known & Likely Risks: <span>Consider communication needs, medical needs, substance use, or behaviors that create a risk for the person in terms of immediate health/safety, risk of harm to self/others, or potential legal sanction that would need addressed in the person's plan.</span>
+    `;
     risksWrap.appendChild(heading);
 
     const dropdownLegend = buildDropdownLegend();
