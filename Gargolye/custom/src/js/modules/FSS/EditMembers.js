@@ -16,7 +16,7 @@ const EditMembers = (() => {
         familyID = familyId;
         headingName = name;
 
-        if (familyID != undefined) { 
+        if (familyID != undefined) {
             familyEntries = await FSSAjax.getFamilyMembers(familyID);
         }
     }
@@ -27,7 +27,7 @@ const EditMembers = (() => {
         if (familyID != undefined) {
             const importantTables = buildNewMemberForm();
             memberWrap.appendChild(importantTables);
-        }      
+        }
         return memberWrap;
     }
 
@@ -39,7 +39,11 @@ const EditMembers = (() => {
             text: '+ ADD FAMILY MEMBER',
             style: 'secondary',
             type: 'contained',
-            callback: () => addMemberPopup(0, 0, 'Add')
+            callback: () => {
+                if ($.session.InsertFSS) {
+                    addMemberPopup(0, 0, 'Add')
+                }
+            }
         });
         memberEntriesTable = buildmemberEntriesTable();
 
@@ -53,9 +57,13 @@ const EditMembers = (() => {
         addNewCard.innerHTML = `<div class="card__header">Family Members</div>`;
         addNewCard.appendChild(addNewCardBody)
         column1.appendChild(addNewCard)
-        if ($.session.EmploymentUpdate) {
-            addNewCardBody.appendChild(newMemberBtn);
-        }
+        addNewCardBody.appendChild(newMemberBtn);
+
+        if ($.session.InsertFSS)
+            newMemberBtn.classList.remove('disabled');
+        else
+            newMemberBtn.classList.add('disabled');
+
         addNewCardBody.appendChild(memberEntriesTable);
         workScheduleDiv.appendChild(column1);
         return workScheduleDiv;
@@ -74,9 +82,10 @@ const EditMembers = (() => {
             values: [entry.memberName, entry.active == 'Y' ? 'Yes' : 'No'],
             attributes: [{ key: 'familyId', value: entry.familyId }],
             onClick: (e) => {
-                addMemberPopup(entry.familyId, entry.memberId, 'Edit')
+                if ($.session.FSSUpdate)
+                    addMemberPopup(entry.familyId, entry.memberId, 'Edit')
             },
-            endIcon: `${icons['delete']}`,
+            endIcon: $.session.FSSDelete == true ? `${icons['delete']}` : '',
             endIconCallback: (e) => {
                 deleteMemberPOPUP(entry.familyId, entry.memberId);
             },

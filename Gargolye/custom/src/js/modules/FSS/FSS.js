@@ -82,7 +82,9 @@ const FSS = (() => {
         filteredByData = buildFilteredByData();
         editFamily = editFamiliesButton();
         backBtn = backButton();
-        addInsertServicesBtnWrap.appendChild(editFamily);
+        if ($.session.FSSUpdate || $.session.FSSView) {
+            addInsertServicesBtnWrap.appendChild(editFamily);
+        }
 
         backbtnWrap.appendChild(backBtn);
 
@@ -91,11 +93,6 @@ const FSS = (() => {
         pageWrap.appendChild(filteredByData);
         DOM.ACTIONCENTER.appendChild(pageWrap);
 
-        if ($.session.FSSUpdate == true) {
-            editFamily.classList.remove('disabled');
-        } else {
-            editFamily.classList.add('disabled');
-        }
 
         const spinner = PROGRESS.SPINNER.get('Gathering Data...');
         pageWrap.appendChild(spinner);
@@ -564,18 +561,20 @@ const FSS = (() => {
 
                     subDataRow.addEventListener('click', e => {
                         if (eventName != 'toggle' && eventName != 'add') {
-                            let TotalEncumberedPaidAmt = 0;
-                            if (fSSData.pageDataSubChild[child.authId]) {
-                                fSSData.pageDataSubChild[child.authId].forEach(number => {
-                                    TotalEncumberedPaidAmt += (isNaN(parseFloat(number.paidAmt)) ? 0 : parseFloat(number.paidAmt)) + (isNaN(parseFloat(number.encumbered)) ? 0 : parseFloat(number.encumbered));
-                                });
+                            if ($.session.FSSUpdate == true) {
+                                let TotalEncumberedPaidAmt = 0;
+                                if (fSSData.pageDataSubChild[child.authId]) {
+                                    fSSData.pageDataSubChild[child.authId].forEach(number => {
+                                        TotalEncumberedPaidAmt += (isNaN(parseFloat(number.paidAmt)) ? 0 : parseFloat(number.paidAmt)) + (isNaN(parseFloat(number.encumbered)) ? 0 : parseFloat(number.encumbered));
+                                    });
+                                }
+                                startDateVal = child.startDate == null || '' ? '' : moment(child.startDate).format('YYYY-MM-DD');
+                                endDateVal = child.endDate == null || '' ? '' : moment(child.endDate).format('YYYY-MM-DD');
+                                coPayVal = !child.coPay ? '0' : child.coPay;
+                                allocationVal = !child.allocation ? '0.00' : parseFloat(child.allocation).toFixed(2);
+                                fundingSourceVal = child.fundingSourceID == null || '' ? '' : parseInt(child.fundingSourceID).toString();
+                                addFamilyAuthorization(parent.familyId, child.authId, TotalEncumberedPaidAmt)
                             }
-                            startDateVal = child.startDate == null || '' ? '' : moment(child.startDate).format('YYYY-MM-DD');
-                            endDateVal = child.endDate == null || '' ? '' : moment(child.endDate).format('YYYY-MM-DD');
-                            coPayVal = !child.coPay ? '0' : child.coPay;
-                            allocationVal = !child.allocation ? '0.00' : parseFloat(child.allocation).toFixed(2);
-                            fundingSourceVal = child.fundingSourceID == null || '' ? '' : parseInt(child.fundingSourceID).toString();
-                            addFamilyAuthorization(parent.familyId, child.authId, TotalEncumberedPaidAmt)
                         }
                         eventName = '';
                     });
@@ -651,23 +650,25 @@ const FSS = (() => {
 
                             subChildDataRow.addEventListener('click', e => {
                                 if (eventName != 'toggle' && eventName != 'add') {
-                                    let TotalEncumberedPaidAmt = 0;
-                                    if (fSSData.pageDataSubChild[authId]) {
-                                        fSSData.pageDataSubChild[authId].forEach(number => {
-                                            TotalEncumberedPaidAmt += (isNaN(parseFloat(number.paidAmt)) ? 0 : parseFloat(number.paidAmt)) + (isNaN(parseFloat(number.encumbered)) ? 0 : parseFloat(number.encumbered));
-                                        });
+                                    if ($.session.FSSUpdate == true) {
+                                        let TotalEncumberedPaidAmt = 0;
+                                        if (fSSData.pageDataSubChild[authId]) {
+                                            fSSData.pageDataSubChild[authId].forEach(number => {
+                                                TotalEncumberedPaidAmt += (isNaN(parseFloat(number.paidAmt)) ? 0 : parseFloat(number.paidAmt)) + (isNaN(parseFloat(number.encumbered)) ? 0 : parseFloat(number.encumbered));
+                                            });
+                                        }
+                                        encumberedInputsVal = subChild.encumbered == null ? '0.00' : parseFloat(subChild.encumbered).toFixed(2);
+                                        familyMemberDropdownVal = subChild.familyMember == null ? '' : parseInt(subChild.familyMemberId).toString();
+                                        serviceCodeDropdownVal = subChild.serviceCode == null ? '' : parseInt(subChild.serviceCodeId).toString();
+                                        vendorDropdownVal = subChild.Vendor == null ? '' : parseInt(subChild.vendorId).toString();
+                                        paidAmountInputsVal = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2);
+                                        previousPaidAmountInputsVal = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2);
+                                        definedEncumberedAmt = (isNaN(parseFloat(subChild.paidAmt)) ? 0 : parseFloat(subChild.paidAmt)) + (isNaN(parseFloat(subChild.encumbered)) ? 0 : parseFloat(subChild.encumbered));
+                                        datePaidVal = subChild.paidDate == null || '' ? '' : moment(subChild.paidDate).format('YYYY-MM-DD');
+                                        allocationVal = !child.allocation ? '0.00' : parseFloat(child.allocation).toFixed(2);
+                                        selectedEncumberedPaidAmt = (isNaN(parseFloat(subChild.paidAmt)) ? 0 : parseFloat(subChild.paidAmt)) + (isNaN(parseFloat(subChild.encumbered)) ? 0 : parseFloat(subChild.encumbered));
+                                        addFamilyUtilization(child.familyId, child.authId, fundingSourceID, subChild.authDetailId, allocationVal, TotalEncumberedPaidAmt);
                                     }
-                                    encumberedInputsVal = subChild.encumbered == null ? '0.00' : parseFloat(subChild.encumbered).toFixed(2);
-                                    familyMemberDropdownVal = subChild.familyMember == null ? '' : parseInt(subChild.familyMemberId).toString();
-                                    serviceCodeDropdownVal = subChild.serviceCode == null ? '' : parseInt(subChild.serviceCodeId).toString();
-                                    vendorDropdownVal = subChild.Vendor == null ? '' : parseInt(subChild.vendorId).toString();
-                                    paidAmountInputsVal = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2);
-                                    previousPaidAmountInputsVal = subChild.paidAmt == null ? '0.00' : parseFloat(subChild.paidAmt).toFixed(2);
-                                    definedEncumberedAmt = (isNaN(parseFloat(subChild.paidAmt)) ? 0 : parseFloat(subChild.paidAmt)) + (isNaN(parseFloat(subChild.encumbered)) ? 0 : parseFloat(subChild.encumbered));
-                                    datePaidVal = subChild.paidDate == null || '' ? '' : moment(subChild.paidDate).format('YYYY-MM-DD');
-                                    allocationVal = !child.allocation ? '0.00' : parseFloat(child.allocation).toFixed(2);
-                                    selectedEncumberedPaidAmt = (isNaN(parseFloat(subChild.paidAmt)) ? 0 : parseFloat(subChild.paidAmt)) + (isNaN(parseFloat(subChild.encumbered)) ? 0 : parseFloat(subChild.encumbered));
-                                    addFamilyUtilization(child.familyId, child.authId, fundingSourceID, subChild.authDetailId, allocationVal, TotalEncumberedPaidAmt);
                                 }
                                 eventName = '';
                             });
@@ -877,16 +878,16 @@ const FSS = (() => {
                 document.getElementById('allocation').value = '$';
             }
             allocationVal = allocationVal.replace('$', '');
-            
-           
+
+
             let allocationAmt = parseFloat(allocationVal);
-            if (TotalEncumberedPaidAmt > allocationAmt) {               
-                allocation.classList.add('errorPopup');                            
-                utilizationWarningPopup(TotalEncumberedPaidAmt, 2);               
+            if (TotalEncumberedPaidAmt > allocationAmt) {
+                allocation.classList.add('errorPopup');
+                utilizationWarningPopup(TotalEncumberedPaidAmt, 2);
             } else {
                 allocation.classList.remove('errorPopup');
                 authorizationRequiredFieldsOfPopup();
-            }                      
+            }
         });
 
         fundingSourceDropdown.addEventListener('change', event => {
@@ -928,7 +929,7 @@ const FSS = (() => {
             coPay.classList.remove('errorPopup');
         }
 
-        if (allocate.value === '' || allocate.value === '$' || allocate.value.includes('-') || !reg.test(allocate.value) || alocationValidation) { 
+        if (allocate.value === '' || allocate.value === '$' || allocate.value.includes('-') || !reg.test(allocate.value) || alocationValidation) {
             allocation.classList.add('errorPopup');
         } else {
             allocation.classList.remove('errorPopup');
@@ -965,7 +966,7 @@ const FSS = (() => {
     }
 
     function setAuthorizationBtnStatusOfPopup() {
-        var hasErrors = [].slice.call(document.querySelectorAll('.errorPopup')); 
+        var hasErrors = [].slice.call(document.querySelectorAll('.errorPopup'));
         if (hasErrors.length !== 0) {
             APPLY_BTN.classList.add('disabled');
             return;
@@ -1073,13 +1074,13 @@ const FSS = (() => {
                 POPUP.hide(UtilizationWarningConfPOPUP);
                 if (type == 1) {
                     POPUP.show(UtilizationPopup);
-                    UtilizationRequiredFieldsOfPopup(true); 
-                }                  
+                    UtilizationRequiredFieldsOfPopup(true);
+                }
                 else {
                     POPUP.show(authorizationPopup);
-                    authorizationRequiredFieldsOfPopup(true); 
+                    authorizationRequiredFieldsOfPopup(true);
                 }
-                   
+
             },
         });
         okBtn.style.width = '100%';
@@ -1214,14 +1215,14 @@ const FSS = (() => {
             let TotalEnteredAmt = TotalEncumberedPaidAmt - selectedEncumberedPaidAmt + (encumberedAmt + paidAmt);
             if (TotalEnteredAmt > allocationAmt) {
                 utilizationWarningPopup(allocationVal, 1);
-            } else {               
+            } else {
                 if (encumberedAmt > 0 && paidAmt > encumberedAmt) {
                     document.getElementById('paidAmountInputs').value = 0;
                     paidAmountInputsVal = '0';
                     previousPaidAmountInputsVal = '0';
                 }
                 UtilizationRequiredFieldsOfPopup();
-            }          
+            }
         });
         familyMemberDropdown.addEventListener('change', event => {
             familyMemberDropdownVal = event.target.options[event.target.selectedIndex].id;
@@ -1243,12 +1244,12 @@ const FSS = (() => {
             encumberedAmt = parseFloat(encumberedInputsVal == '' ? '0' : encumberedInputsVal);
             allocationAmt = parseFloat(allocationVal == '' ? '0' : allocationVal);
 
-            let TotalEnteredAmt = TotalEncumberedPaidAmt - selectedEncumberedPaidAmt + (encumberedAmt + paidAmt); 
+            let TotalEnteredAmt = TotalEncumberedPaidAmt - selectedEncumberedPaidAmt + (encumberedAmt + paidAmt);
             if (TotalEnteredAmt > allocationAmt) {
                 utilizationWarningPopup(allocationVal, 1);
-            } else {             
-                UtilizationRequiredFieldsOfPopup();   
-            }                   
+            } else {
+                UtilizationRequiredFieldsOfPopup();
+            }
         });
 
         datePaid.addEventListener('input', event => {
@@ -1272,12 +1273,12 @@ const FSS = (() => {
             paidAmountInputsVal = '0';
             return;
         }
-      
+
         if (defEncumberedAmt > 0 && paidAmt > defEncumberedAmt) {
             document.getElementById('paidAmountInputs').value = defEncumberedAmt;
             paidAmountInputsVal = defEncumberedAmt;
             encumberedInputsVal = 0;
-            document.getElementById('encumberedInputs').value = parseFloat(0).toFixed(2); 
+            document.getElementById('encumberedInputs').value = parseFloat(0).toFixed(2);
             return;
         } else {
             let DifferentAmount = paidAmt - PrevPaidAmt;
@@ -1292,8 +1293,8 @@ const FSS = (() => {
         var serviceCodeVal = serviceCodeDropdown.querySelector('#serviceCodeDropdown');
         var paidAmountval = paidAmountInputs.querySelector('#paidAmountInputs');
         var datePaidVal = datePaid.querySelector('#datePaid');
-        var paidAmtVal = parseFloat(paidAmountval.value) == 0 ? '' : paidAmountval.value; 
-         
+        var paidAmtVal = parseFloat(paidAmountval.value) == 0 ? '' : paidAmountval.value;
+
         if (familyMemberVal.value === '') {
             familyMemberDropdown.classList.add('errorPopup');
         } else {
