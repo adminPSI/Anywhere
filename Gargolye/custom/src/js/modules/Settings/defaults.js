@@ -1879,7 +1879,7 @@ var defaults = (function () {
     async function getInvalidDefaultLocations() {
         const invalidDefaults = await defaultsAjax.getInvalidDefaults();
 
-        if (invalidDefaults.length === 0) return;
+        if (invalidDefaults == undefined || invalidDefaults.length === 0) return; 
 
         // BUILD POPUP
         const invalidDefaultNotificationPopup = POPUP.build({
