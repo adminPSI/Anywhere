@@ -883,10 +883,37 @@ const FSS = (() => {
             let allocationAmt = parseFloat(allocationVal);
             if (TotalEncumberedPaidAmt > allocationAmt) {
                 allocation.classList.add('errorPopup');
-                utilizationWarningPopup(TotalEncumberedPaidAmt, 2);
+               // utilizationWarningPopup(TotalEncumberedPaidAmt, 2);
             } else {
                 allocation.classList.remove('errorPopup');
                 authorizationRequiredFieldsOfPopup();
+            }
+        });
+
+        allocation.addEventListener('focusout', event => {
+            allocationVal = event.target.value;
+            var reg = new RegExp('^[0-9 . $ -]+$');
+            if (!reg.test(allocationVal)) {
+                document.getElementById('allocation').value = '$';
+            }
+            else if (allocationVal.includes('.') && (allocationVal.match(/\./g).length > 1 || allocationVal.toString().split('.')[1].length > 2)) {
+                document.getElementById('allocation').value = '$';
+            }
+            if (allocationVal.includes('-') || allocationVal.includes(' ')) {
+                document.getElementById('allocation').value = '$';
+            }
+            if (allocationVal.includes('$') && allocationVal.match(/\$/g).length > 1) {
+                document.getElementById('allocation').value = '$';
+            }
+            allocationVal = allocationVal.replace('$', '');
+
+            let allocationAmt = parseFloat(allocationVal);
+            if (TotalEncumberedPaidAmt > allocationAmt) {
+                allocation.classList.add('errorPopup');
+                utilizationWarningPopup(TotalEncumberedPaidAmt, 2);
+            } else {
+                allocation.classList.remove('errorPopup');
+                authorizationRequiredFieldsOfPopup(); 
             }
         });
 
@@ -1214,6 +1241,25 @@ const FSS = (() => {
 
             let TotalEnteredAmt = TotalEncumberedPaidAmt - selectedEncumberedPaidAmt + (encumberedAmt + paidAmt);
             if (TotalEnteredAmt > allocationAmt) {
+               // utilizationWarningPopup(allocationVal, 1);
+            } else {
+                if (encumberedAmt > 0 && paidAmt > encumberedAmt) {
+                    document.getElementById('paidAmountInputs').value = 0;
+                    paidAmountInputsVal = '0';
+                    previousPaidAmountInputsVal = '0';
+                }
+                UtilizationRequiredFieldsOfPopup();
+            }
+        });
+        encumberedInputs.addEventListener('focusout', event => {
+            encumberedInputsVal = event.target.value;
+            definedEncumberedAmt = event.target.value;
+            paidAmt = parseFloat(paidAmountInputsVal == '' ? '0' : paidAmountInputsVal);
+            encumberedAmt = parseFloat(encumberedInputsVal == '' ? '0' : encumberedInputsVal);
+            allocationAmt = parseFloat(allocationVal == '' ? '0' : allocationVal);
+
+            let TotalEnteredAmt = TotalEncumberedPaidAmt - selectedEncumberedPaidAmt + (encumberedAmt + paidAmt);
+            if (TotalEnteredAmt > allocationAmt) {
                 utilizationWarningPopup(allocationVal, 1);
             } else {
                 if (encumberedAmt > 0 && paidAmt > encumberedAmt) {
@@ -1236,6 +1282,23 @@ const FSS = (() => {
             vendorDropdownVal = event.target.options[event.target.selectedIndex].id;
         });
         paidAmountInputs.addEventListener('input', event => {
+            paidAmountInputsVal = event.target.value;
+            encumberedCalculation();
+            previousPaidAmountInputsVal = paidAmountInputsVal;
+
+            paidAmt = parseFloat(paidAmountInputsVal == '' ? '0' : paidAmountInputsVal);
+            encumberedAmt = parseFloat(encumberedInputsVal == '' ? '0' : encumberedInputsVal);
+            allocationAmt = parseFloat(allocationVal == '' ? '0' : allocationVal);
+
+            let TotalEnteredAmt = TotalEncumberedPaidAmt - selectedEncumberedPaidAmt + (encumberedAmt + paidAmt);
+            if (TotalEnteredAmt > allocationAmt) {
+               // utilizationWarningPopup(allocationVal, 1);
+            } else {
+                UtilizationRequiredFieldsOfPopup();
+            }
+        });
+
+        paidAmountInputs.addEventListener('focusout', event => {
             paidAmountInputsVal = event.target.value;
             encumberedCalculation();
             previousPaidAmountInputsVal = paidAmountInputsVal;
