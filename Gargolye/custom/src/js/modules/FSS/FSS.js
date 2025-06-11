@@ -450,7 +450,7 @@ const FSS = (() => {
         <div>${notes}</div>               
       `;
             mainDataRow.prepend(toggleIcon);
-            if ($.session.FSSUpdate == true) {
+            if ($.session.InsertFSS == true) {
                 endIcon.innerHTML = icons['add'];
             } else {
                 endIcon.innerHTML = `<div></div>`;
@@ -530,7 +530,7 @@ const FSS = (() => {
 
           `;
                     subDataRow.prepend(toggleIconSub);
-                    if ($.session.FSSUpdate == true) {
+                    if ($.session.InsertFSS == true) {
                         endIconSub.innerHTML = icons['add'];
                     } else {
                         endIconSub.innerHTML = `<div></div>`;
