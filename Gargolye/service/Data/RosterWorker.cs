@@ -134,6 +134,11 @@ namespace Anywhere.service.Data
             return sucess;
         }
 
+        public void deleteAttachment(string token, string attachmentId)
+        {
+            dg.deleteAttachment(token, attachmentId);
+        }
+
         public ConsumerPlanYearInfo getConsumerPlanYearInfo(string token, string consumerId)
         {
             string consumerPlanYearInfoString = dg.getConsumerPlanYearInfo(token, consumerId);

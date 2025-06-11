@@ -494,6 +494,29 @@ const rosterAjax = (function () {
         }
     }
 
+    async function deleteAttachment(retrieveData) {
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/deleteAttachment/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.deleteAttachmentResult;
+        } catch (error) {
+            console.log(error.responseText);
+        }
+    }
+
     return {
         getRosterLocations,
         getConsumersByGroup,
@@ -513,6 +536,7 @@ const rosterAjax = (function () {
         getRelationshipsType,
         getRelationshipsName,
         insertEditRelationship,
-        getRelationshipsNameByID
+        getRelationshipsNameByID,
+        deleteAttachment
     };
 })();

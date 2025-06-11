@@ -640,6 +640,11 @@ namespace Anywhere
             return rosterWorker.insertEditRelationship(token, userId, consumerRelationshipsNewList, consumerRelationshipsList, consumerId);
         }
 
+        public void deleteAttachment(string token, string attachmentId)
+        {
+            rosterWorker.deleteAttachment(token, attachmentId);
+        }
+
         public string updateDemographicInformation(string token, string addressOne, string addressTwo, string city, string state, string zipCode, string mobilePhone, string email, string carrier)
         {
             return dg.updateDemographicInformation(token, addressOne, addressTwo, city, state, zipCode, mobilePhone, email, carrier);
