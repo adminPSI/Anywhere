@@ -626,10 +626,12 @@ const planData = (() => {
     
   }
 
-  async function init(planID) {
+  async function init(planID, planVersionNumber) {
     planId = planID;
-    await setDropdownData();
-    await planValidation.init(planId);
+      await setDropdownData();
+      //$.session.planVersionNumber = planVersionNumber;
+    await planValidation.init(planId, planVersionNumber);//
+    
   }
 
   return {

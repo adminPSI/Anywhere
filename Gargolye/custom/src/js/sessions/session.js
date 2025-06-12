@@ -103,6 +103,7 @@ $.session.batchedNoteEdit = false;
 $.session.groupNoteAttemptWithDocTime = false;
 $.session.sendToDODD = false;
 $.session.sendToPortal = false;
+$.session.planVersionNumber = '0';
 
 $.session.dobString = '';
 //remove section when ready for testing.  Forcing all features on.

@@ -84,6 +84,7 @@ namespace Anywhere.service.Data
                 public string userSentDODD { get; set; }
                 public string dateSentDODD { get; set; }
                 public string downloadDate { get; set; }
+                public string versionNumber { get; set; }
 
             }
 
@@ -103,6 +104,7 @@ namespace Anywhere.service.Data
                 public string reviewDate { get; set; }
                 public string existingAssesmentVersionId { get; set; }
                 public string latestAssessmentVersionId { get; set; }
+                public string versionNumber { get; set; }
             }
 
             #endregion
