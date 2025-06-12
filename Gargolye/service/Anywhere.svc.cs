@@ -640,6 +640,11 @@ namespace Anywhere
             return rosterWorker.insertEditRelationship(token, userId, consumerRelationshipsNewList, consumerRelationshipsList, consumerId);
         }
 
+        public void deleteAttachment(string token, string attachmentId)
+        {
+            rosterWorker.deleteAttachment(token, attachmentId);
+        }
+
         public string updateDemographicInformation(string token, string addressOne, string addressTwo, string city, string state, string zipCode, string mobilePhone, string email, string carrier)
         {
             return dg.updateDemographicInformation(token, addressOne, addressTwo, city, state, zipCode, mobilePhone, email, carrier);
@@ -1537,9 +1542,9 @@ namespace Anywhere
             return anywhereScheduleWorker.getLocationDropdownForSchedulingNew(token, showOpenShifts);
         }
 
-        public string saveOrUpdateShift(string token, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift)
+        public string saveOrUpdateShift(string token, string shiftId, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift)
         {
-            return anywhereScheduleWorker.saveOrUpdateShift(token, dateString, locationId, personId, startTime, endTime, color, notifyEmployee, consumerIdString, saveUpdateFlag, publishShift);
+            return anywhereScheduleWorker.saveOrUpdateShift(token, shiftId, dateString, locationId, personId, startTime, endTime, color, notifyEmployee, consumerIdString, saveUpdateFlag, publishShift);
         }
 
         public string publishShift(string token, string locationId, string employeeId, string fromDate, string toDate, string notifyEmployee, string publish)

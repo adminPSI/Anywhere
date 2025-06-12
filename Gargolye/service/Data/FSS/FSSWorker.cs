@@ -226,7 +226,7 @@ namespace Anywhere.service.Data.FSS
                 sb.Clear();
 
                 sb.Append("select ROW_NUMBER() OVER(ORDER BY fad.FSS_Authorization_Detail_ID) AS itemnum, fad.FSS_Authorization_Detail_ID as authDetailId, fad.FSS_Authorization_ID as authId, fad.encumbered_amount as encumbered, fad.paid_amount as paidAmt, fad.date_paid as paidDate, ");
-                sb.Append("(select people.last_name + ' ' + people.generation + ' ' + people.first_name + ' ' + people.middle_name   from dba.People as people where people.ID = fad.ID) as 'familyMember', ");
+                sb.Append("(select people.last_name + ', ' + people.generation + ' ' + people.first_name + ' ' + people.middle_name   from dba.People as people where people.ID = fad.ID) as 'familyMember', ");
                 sb.Append("(select si.Service_Code + ' - ' + si.Description  from dba.service_info si where si.Service_ID = fad.Service_ID) as 'serviceCode', ");
                 sb.Append("(select v.Name from Vendor v where v.Vendor_ID = fad.Vendor_ID) as 'Vendor' , fad.ID as familyMemberId , fad.Service_ID as serviceCodeId , fad.Vendor_ID as vendorId ");
                 sb.Append("from dba.fss_authorization_detail fad ");

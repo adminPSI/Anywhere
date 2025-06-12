@@ -63,7 +63,7 @@ const EditFamilyInformation = (() => {
             secondaryPhone = '';
             email = '';
             notes = '';
-            active = 'Y'; 
+            active = 'Y';
         }
 
         familyNameInput = input.build({
@@ -274,6 +274,12 @@ const EditFamilyInformation = (() => {
         btnWrap.appendChild(CANCEL_BTN);
         addNewCardBody.appendChild(btnWrap);
 
+        if ($.session.FSSUpdate) {
+            activeChk.classList.remove('disabled');
+        } else {
+            activeChk.classList.add('disabled'); 
+        }
+
         eventListeners();
         employeeInfoDiv.appendChild(column1);
         checkRequiredFieldsOfEmployeeInfo(familyName);
@@ -389,9 +395,11 @@ const EditFamilyInformation = (() => {
             IsValueChanged = true;
         });
         activeChk.addEventListener('change', event => {
-            active = event.target.checked == true ? 'Y' : 'N';
-            IsValueChanged = true;
-            getRequiredFieldsOfEmployeeInfo();
+            if ($.session.FSSUpdate) {
+                active = event.target.checked == true ? 'Y' : 'N';
+                IsValueChanged = true;
+                getRequiredFieldsOfEmployeeInfo();
+            } 
         });
         emailInput.addEventListener('input', event => {
             email = event.target.value;

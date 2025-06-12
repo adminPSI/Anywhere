@@ -114,9 +114,9 @@ const SchedulingCalendar = (function () {
     }
   }
 
-  // Shift Call Off Request
+  // Shift Request & Call Off Request
   //-----------------------------------------------------------------------
-  function populateCallOffReasonsDropdown(results) {
+  function populateCallOffReasonsDropdown(results, reasonDropdown) {
     results.sort((a, b) => (a.reasonName < b.reasonName ? -1 : 1));
     results = [{ reasonId: '%', reasonName: '' }, ...results];
     var dropdownData = results.map(r => {
@@ -129,13 +129,13 @@ const SchedulingCalendar = (function () {
         text,
       };
     });
-    dropdown.populate('reasonDropdown', dropdownData);
+    dropdown.populate(reasonDropdown, dropdownData);
     // reasonDropdown.addEventListener('change', () => {
     //   var selectedOption = event.target.options[event.target.selectedIndex];
     //   reasonId = selectedOption.id;
     // })
   }
-  function populateCallOffEmployeesDropdown(results) {
+  function populateCallOffEmployeesDropdown(results, employeeDropdown) {
     results = [{ employeeId: '%', employeeName: '' }, ...results];
     var employeeData = results.map(r => {
       var id = r.employeeId;
@@ -148,7 +148,7 @@ const SchedulingCalendar = (function () {
       };
     });
 
-    dropdown.populate('employeeDropdown', employeeData);
+    dropdown.populate(employeeDropdown, employeeData);
     // employeeDropdown.addEventListener('change', () => {
     //   var sendRequestBtn = document.getElementById('sendReqBtn')
     //   var selectedOption = event.target.options[event.target.selectedIndex];
@@ -156,12 +156,12 @@ const SchedulingCalendar = (function () {
     //   employeeId !== '%' ? sendRequestBtn.classList.remove('disabled'): sendRequestBtn.classList.add('disabled');
     // });
   }
-  function renderRequestOffPopup(eventId, cb) {
+  function renderRequestOffPopup({ shiftId, shiftDate, shiftLocation }, cb) {
     let reasonId, note, employeeId;
 
     const popup = POPUP.build({
       classNames: 'request-off-popup',
-      attributes: [{ key: 'shiftId', value: eventId }],
+      attributes: [{ key: 'shiftId', value: shiftId }],
     });
 
     const reasonDropdown = dropdown.build({
@@ -204,7 +204,7 @@ const SchedulingCalendar = (function () {
       callback: function () {
         schedulingAjax.saveSchedulingCallOffRequestAjax({
           token: $.session.Token,
-          shiftId: eventId,
+          shiftId: shiftId,
           personId: $.session.PeopleId,
           reasonId: reasonId,
           note: note,
@@ -276,16 +276,13 @@ const SchedulingCalendar = (function () {
 
     POPUP.show(popup);
 
-    schedulingAjax.getCallOffDropdownEmployeesAjax(
-      shiftDateForCall,
-      detailsLocationId,
-      populateCallOffEmployeesDropdown,
-    );
-    schedulingAjax.getCallOffDropdownReasonsAjax(populateCallOffReasonsDropdown);
+    schedulingAjax.getCallOffDropdownEmployeesAjax(shiftDate, shiftLocation, res => {
+      populateCallOffEmployeesDropdown(res, employeeDropdown);
+    });
+    schedulingAjax.getCallOffDropdownReasonsAjax(res => {
+      populateCallOffReasonsDropdown(res, reasonDropdown);
+    });
   }
-
-  // Shifts
-  //-----------------------------------------------------------------------
   function displayOverlapPopup(existingShiftLocationName) {
     const overlapPopup = POPUP.build({
       classNames: 'sendRequestShiftPopup',
@@ -314,7 +311,7 @@ const SchedulingCalendar = (function () {
 
     POPUP.show(overlapPopup);
   }
-  function renderSendShiftRequestPopup(data, cb) {
+  function renderSendShiftRequestPopup({ shiftDate, shiftLocation, ...data }, cb) {
     let employeeId;
 
     const popup = POPUP.build({
@@ -372,18 +369,18 @@ const SchedulingCalendar = (function () {
       icon: 'send',
       callback: async function () {
         data.notifiedEmployeeId = employeeId;
-        await schedulingAjax.saveOpenShiftRequestSchedulingAjax(data);
+        await schedulingAjax.saveOpenShiftRequestSchedulingAjax({
+          ...data,
+        });
         POPUP.hide(popup);
 
         cb();
       },
     });
 
-    schedulingAjax.getCallOffDropdownEmployeesAjax(
-      shiftDateForCall,
-      detailsLocationId,
-      populateCallOffEmployeesDropdown,
-    );
+    schedulingAjax.getCallOffDropdownEmployeesAjax(shiftDate, shiftLocation, res => {
+      populateCallOffEmployeesDropdown(res, employeeDropdown);
+    });
 
     popup.appendChild(employeeDropdown);
 
@@ -395,8 +392,10 @@ const SchedulingCalendar = (function () {
 
     POPUP.show(popup);
   }
-  //
-  function populateRegionDropdown(regionDropdown) {
+
+  //Shifts
+  //-----------------------------------------------------------------------
+  function populateRegionDropdown(regionDropdown, selectedRegion) {
     const dropdownData = regions
       .map(r => ({
         value: r.regionId,
@@ -409,7 +408,7 @@ const SchedulingCalendar = (function () {
       text: '',
     });
 
-    dropdown.populate(regionDropdown, dropdownData);
+    dropdown.populate(regionDropdown, dropdownData, selectedRegion);
   }
   function buildLocationFilter(includeTrainedOnly) {
     // <div class="employeeOption">
@@ -643,9 +642,9 @@ const SchedulingCalendar = (function () {
         opts.includeTrainedOnly = e.target.checked ? 1 : 0;
       }
       if (e.target.name === 'hour') {
-        if (e.target.checked) {
-          opts.filterHours = e.target.checked ? 1 : 0;
+        opts.filterHours = e.target.checked ? 1 : 0;
 
+        if (e.target.checked) {
           input.enableInputField(hoursInput);
         } else {
           input.disableInputField(hoursInput);
@@ -692,7 +691,7 @@ const SchedulingCalendar = (function () {
     employeePopup.appendChild(optionsContainer);
     employeePopup.appendChild(buttonWrap);
 
-    populateRegionDropdown(regionDropdown);
+    populateRegionDropdown(regionDropdown, opts.region);
 
     POPUP.show(employeePopup);
   }
@@ -976,7 +975,8 @@ const SchedulingCalendar = (function () {
         const day = this.daysToRender[index].getDate();
         const year = this.daysToRender[index].getFullYear();
 
-        if (this.selectedDates.includes(dateString)) {
+        const dateStringISO = UTIL.getFormattedDateFromDate(new Date(dateString), { format: 'iso' });
+        if (this.selectedDates.includes(dateStringISO)) {
           dateWrapEle.classList.add('selected');
         }
 
@@ -1029,7 +1029,7 @@ const SchedulingCalendar = (function () {
 
     dropdown.populate(locationDropdown, dropdownData, defaultValue);
   }
-  function populateShiftEmployeeDropdown(employeeDropdown, defaultValue = '') {
+  function populateShiftEmployeeDropdown(employeeDropdown, defaultValue = '', shiftEmployee) {
     let dropdownData = [];
 
     shiftEmployees.forEach(d =>
@@ -1047,6 +1047,13 @@ const SchedulingCalendar = (function () {
     //   });
     // }
 
+    if (shiftEmployee) {
+      const hasShiftEmployeeAlready = dropdownData.find(d => d.value === shiftEmployee.value);
+      if (!hasShiftEmployeeAlready) {
+        dropdownData.push(shiftEmployee);
+      }
+    }
+
     dropdownData.sort(sortEmployeeString);
 
     dropdownData.unshift({
@@ -1062,6 +1069,7 @@ const SchedulingCalendar = (function () {
     if (defaultValue === '') {
       defaultValue = 'null';
     }
+
     dropdown.populate(employeeDropdown, dropdownData, defaultValue);
   }
   function populateShiftColorDropdown(colorDropdown, defaultValue = '') {
@@ -1079,7 +1087,7 @@ const SchedulingCalendar = (function () {
   }
 
   async function showShiftPopup(data, eventTypeID, isCopy, onCloseCallback) {
-    const checkRequiredFieldsShiftPopup = () => {
+    const checkRequiredFieldsShiftPopup = savebtn => {
       let errors = [...shiftPopup.querySelectorAll('.error')];
 
       if (errors.length > 0 || shiftData.date.length === 0) {
@@ -1088,19 +1096,32 @@ const SchedulingCalendar = (function () {
         savebtn.classList.remove('disabled');
       }
     };
+    const checkForChangedFields = () => {
+      // compare data to shiftData
+      // The Notify Employee checkbox should be unchecked and disabled when the form is opened.
+      // If the user makes any change to the values displayed on the form AND the date on the form is after today, then the checkbox should automatically get checked and enabled.
+      // If the user makes no change to the form OR the date on the form is null or before today, the box should be unchecked and disabled
+    };
 
     const isNew = data && !isCopy ? false : true;
     const readOnly = !isNew && !$.session.schedulingUpdate;
+    const shiftEmployee = data
+      ? {
+          value: data.personID,
+          text: `${data.lastName}, ${data.firstName}`,
+        }
+      : null;
 
     const shiftData = data
       ? {
           shiftId: data.shiftId,
           locationId: data.locationId,
-          employeeId: data.personId,
+          employeeId: data.personID,
           color: data.color,
           startTime: data.startTime,
           endTime: data.endTime,
           notifyEmployee: 'N',
+          publishShift: 'F',
           consumerNames: data.consumerNames === '' ? [] : data.consumerNames.split(','),
           date: [dates.formateToISO(data.serviceDate.split(' ')[0])],
         }
@@ -1112,6 +1133,7 @@ const SchedulingCalendar = (function () {
           startTime: '',
           endTime: '',
           notifyEmployee: 'N',
+          publishShift: 'F',
           consumerNames: [],
           date: [],
         };
@@ -1200,11 +1222,24 @@ const SchedulingCalendar = (function () {
         shiftEmployees = await schedulingAjax.getFilteredEmployeesForScheduling(filterShiftEmployeesOpts);
 
         if (!shiftEmployees.find(empData => empData.Person_ID === shiftData.employeeId)) {
-          shiftData.employeeId = '';
-          employeeDropdown.classList.add('error');
+          // shiftData.employeeId = '';
+          // employeeDropdown.classList.add('error');
+
+          if (isNew) {
+            shiftData.employeeId = '';
+            employeeDropdown.classList.add('error');
+          } else {
+            // if edit we check to see if dropdown still has original shift employee selected
+            // if so we leave it alone, if not we can go ahead and clear it out
+            if (data.personID !== shiftData.employeeId) {
+              shiftData.employeeId = '';
+              employeeDropdown.classList.add('error');
+            }
+          }
         }
 
-        populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
+        // populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
+        populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId, isNew ? null : shiftEmployee);
       };
       filterShiftEmployeesOpts = {
         locationId: shiftData.locationId,
@@ -1232,7 +1267,7 @@ const SchedulingCalendar = (function () {
           filterShiftEmployeesOpts.shiftdate = shiftData.date;
           updateShiftEmployees();
 
-          checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
+          checkRequiredFieldsShiftPopup(savebtn);
         },
       });
       const filterEmployeesBtn = button.build({
@@ -1273,6 +1308,10 @@ const SchedulingCalendar = (function () {
         text: 'Notify Employee',
         isChecked: false,
       });
+      const publishShift = input.buildCheckbox({
+        text: 'Publish Shift',
+        isChecked: false,
+      });
 
       const addIndividualBtn = button.build({
         text: '+ Add Individual',
@@ -1306,6 +1345,7 @@ const SchedulingCalendar = (function () {
         type: 'contained',
         callback: async () => {
           const success = await saveUpdateShift({
+            shiftId: shiftData.shiftId,
             dateString: shiftData.date.join(','),
             consumerIdString: shiftData.consumerNames.map(n => n.split('|')[1]).join(','),
             startTime: shiftData.startTime,
@@ -1313,6 +1353,7 @@ const SchedulingCalendar = (function () {
             color: shiftData.color,
             locationId: shiftData.locationId,
             notifyEmployee: shiftData.notifyEmployee,
+            publishShift: shiftData.publishShift,
             personId: shiftData.employeeId,
             saveUpdateFlag: isNew ? 'S' : 'U',
           });
@@ -1425,8 +1466,12 @@ const SchedulingCalendar = (function () {
         if (e.target.parentElement === notifyEmployee) {
           shiftData.notifyEmployee = e.target.checked ? 'Y' : 'N';
         }
+        if (e.target.parentElement === publishShift) {
+          shiftData.publishShift = e.target.checked ? 'T' : 'F';
+        }
 
-        checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
+        checkRequiredFieldsShiftPopup(savebtn);
+        checkForChangedFields();
       });
       shiftPopup.addEventListener('click', async e => {
         if (e.target === filterEmployeesBtn) {
@@ -1496,6 +1541,7 @@ const SchedulingCalendar = (function () {
       shiftPopup.appendChild(individualCardWrap);
       shiftPopup.appendChild(addIndividualBtn);
       shiftPopup.appendChild(notifyEmployee);
+      shiftPopup.appendChild(publishShift);
       shiftPopup.appendChild(buttonWrap);
 
       if (!$.session.schedulingSecurity) {
@@ -1507,35 +1553,43 @@ const SchedulingCalendar = (function () {
 
       // Populate Dropdowns
       populateShiftLocationDropdown(locationDropdown, shiftData.locationId);
-      populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
+      // populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId);
+      populateShiftEmployeeDropdown(employeeDropdown, shiftData.employeeId, isNew ? null : shiftEmployee);
       populateShiftColorDropdown(colorDropdown, shiftData.color);
 
-      checkRequiredFieldsShiftPopup(shiftPopup, savebtn);
+      checkRequiredFieldsShiftPopup(savebtn);
     }
 
     const callOffBtn = button.build({
       text: 'Call Off',
       style: 'secondary',
-      type: 'contained',
+      type: 'outlined',
       callback: () => {
         POPUP.hide(shiftPopup);
-        renderRequestOffPopup(shiftData.shiftId, () => {
-          const updatedShift = calendarEvents.find(event => event.eventId === shiftData.shiftId);
-          updatedShift.typeName = EVENT_TYPES[5];
-          updatedShift.typeId = 5;
+        renderRequestOffPopup(
+          {
+            shiftId: shiftData.shiftId,
+            shiftDate: shiftData.date[0],
+            shiftLocation: shiftData.locationId,
+          },
+          () => {
+            const updatedShift = calendarEvents.find(event => event.eventId === shiftData.shiftId);
+            updatedShift.typeName = EVENT_TYPES[5];
+            updatedShift.typeId = 5;
 
-          const updatedShiftScheduleCache = schedules.find(event => event.shiftId === shiftData.shiftId);
-          updatedShiftScheduleCache.typeName = EVENT_TYPES[5];
-          updatedShiftScheduleCache.typeId = 5;
+            const updatedShiftScheduleCache = schedules.find(event => event.shiftId === shiftData.shiftId);
+            updatedShiftScheduleCache.typeName = EVENT_TYPES[5];
+            updatedShiftScheduleCache.typeId = 5;
 
-          ScheduleCalendar.updateEvent({ ...updatedShift });
-        });
+            ScheduleCalendar.updateEvent({ ...updatedShift });
+          },
+        );
       },
     });
     const requestShiftBtn = button.build({
       text: 'Request Shift',
       style: 'secondary',
-      type: 'contained',
+      type: 'outlined',
       callback: async () => {
         POPUP.hide(shiftPopup);
 
@@ -1550,6 +1604,8 @@ const SchedulingCalendar = (function () {
               personId: $.session.PeopleId,
               status: 'P',
               notifiedEmployeeId: null,
+              shiftDate: shiftData.date[0],
+              shiftLocation: shiftData.locationId,
             },
             () => {
               const updatedShift = calendarEvents.find(event => event.eventId === shiftData.shiftId);
@@ -1572,7 +1628,7 @@ const SchedulingCalendar = (function () {
     const cancelShiftBtn = button.build({
       text: 'Cancel Request',
       style: 'secondary',
-      type: 'contained',
+      type: 'outlined',
       callback: () => {
         POPUP.hide(shiftPopup);
         schedulingAjax.cancelRequestOpenShiftSchedulingAjax(shiftData.shiftId);
@@ -1635,9 +1691,10 @@ const SchedulingCalendar = (function () {
     parsedRes = parsedRes.map(item => item.ShiftID);
 
     calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
+    renderCalendarEvents();
+    return true;
 
     const newEvents = calendarEvents.filter(calEvent => parsedRes.includes(calEvent.eventId));
-
     newEvents.forEach(event => {
       if (data.saveUpdateFlag === 'U') {
         ScheduleCalendar.updateEvent({ ...event });
@@ -1645,7 +1702,6 @@ const SchedulingCalendar = (function () {
         ScheduleCalendar.addEvent({ ...event });
       }
     });
-
     return true;
   }
 
@@ -1784,51 +1840,61 @@ const SchedulingCalendar = (function () {
   async function getCalendarEvents(locationID = '%', peopleID = '%') {
     schedules = await schedulingAjax.getSchedulesForSchedulingModuleNew(locationID, peopleID);
 
-    const eventsArray = schedules.map(sch => {
-      const timeRegEx = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/;
-      const isStartTimeValid = timeRegEx.test(sch.startTime);
-      const isEndTimeValid = timeRegEx.test(sch.endTime);
+    const schIds = new Set();
+    const eventsArray = schedules
+      .filter(sched => {
+        if (schIds.has(sched.shiftId)) {
+          return false;
+        } else {
+          schIds.add(sched.shiftId);
+          return true;
+        }
+      })
+      .map(sch => {
+        const timeRegEx = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/;
+        const isStartTimeValid = timeRegEx.test(sch.startTime);
+        const isEndTimeValid = timeRegEx.test(sch.endTime);
 
-      if (!isStartTimeValid || !isEndTimeValid || sch.serviceDate === '') {
-        return;
-      }
+        if (!isStartTimeValid || !isEndTimeValid || sch.serviceDate === '') {
+          return;
+        }
 
-      const { type, id } = getEventType(sch.personID, sch.callOffStatus, sch.requestShiftStatus);
+        const { type, id } = getEventType(sch.personID, sch.callOffStatus, sch.requestShiftStatus);
 
-      if (!type || (id === '2' && !$.session.schedulingSecurity)) {
-        return;
-      }
+        if (!type || (id === '2' && !$.session.schedulingSecurity)) {
+          return;
+        }
 
-      const serviceDate = formatServiceDate(sch.serviceDate, sch.dateScheduled);
-      const startTime = `${serviceDate} ${sch.startTime}`;
-      const endTime = `${serviceDate} ${sch.endTime}`;
-      const length = getEventTotalTime(sch.startTime, sch.endTime);
-      const description = formatDescription(sch.firstName, sch.lastName);
-      const color = getEventColor(id, sch.color);
+        const serviceDate = formatServiceDate(sch.serviceDate, sch.dateScheduled);
+        const startTime = `${serviceDate} ${sch.startTime}`;
+        const endTime = `${serviceDate} ${sch.endTime}`;
+        const length = getEventTotalTime(sch.startTime, sch.endTime);
+        const description = formatDescription(sch.firstName, sch.lastName);
+        const color = getEventColor(id, sch.color);
 
-      // store on cache obj
-      sch.typeId = id;
-      sch.colorCode = color;
-      sch.length = length;
+        // store on cache obj
+        sch.typeId = id;
+        sch.colorCode = color;
+        sch.length = length;
 
-      return {
-        eventId: sch.shiftId,
-        date: serviceDate,
-        startTime: startTime,
-        endTime: endTime,
-        length: length,
-        description: description,
-        name: id === '3' ? 'Open Shift' : description,
-        typeId: id,
-        typeName: type,
-        locationId: sch.locationId,
-        locationName: sch.locationName,
-        publishedDate: sch.publishDate,
-        color: color,
-        consumers: sch.consumerNames,
-        personId: sch.personID,
-      };
-    });
+        return {
+          eventId: sch.shiftId,
+          date: serviceDate,
+          startTime: startTime,
+          endTime: endTime,
+          length: length,
+          description: description,
+          name: id === '3' ? 'Open Shift' : description,
+          typeId: id,
+          typeName: type,
+          locationId: sch.locationId,
+          locationName: sch.locationName,
+          publishedDate: sch.publishDate,
+          color: color,
+          consumers: sch.consumerNames,
+          personId: sch.personID,
+        };
+      });
 
     if (selectedLocationId === '%') {
       return eventsArray.filter(event => {

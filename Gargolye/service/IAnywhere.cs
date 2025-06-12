@@ -735,6 +735,13 @@ namespace Anywhere
        UriTemplate = "/insertEditRelationship/")]
         string insertEditRelationship(string token, string userId, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsNewList, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsList, string consumerId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/deleteAttachment/")]
+        void deleteAttachment(string token, string attachmentId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -2210,7 +2217,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/saveOrUpdateShift/")]
-        string saveOrUpdateShift(string token, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift);
+        string saveOrUpdateShift(string token, string shiftId, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

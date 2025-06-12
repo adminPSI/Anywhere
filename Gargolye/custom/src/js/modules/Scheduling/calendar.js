@@ -587,14 +587,17 @@ class Calendar {
         this.eventGroupDOMCache[groupByKey].appendChild(eventCellEle);
 
         // custom row logic
-        if (!dayRowMap[event.date]) {
-          dayRowMap[event.date] = {
+        if (!dayRowMap[groupByKey]) {
+          dayRowMap[groupByKey] = {};
+        }
+        if (!dayRowMap[groupByKey][event.date]) {
+          dayRowMap[groupByKey][event.date] = {
             rowStart: 0,
             rowEnd: 1,
           };
         }
-        const gridRowStart = ++dayRowMap[event.date].rowStart;
-        const gridRowEnd = ++dayRowMap[event.date].rowStart;
+        const gridRowStart = ++dayRowMap[groupByKey][event.date].rowStart;
+        const gridRowEnd = ++dayRowMap[groupByKey][event.date].rowEnd;
         eventCellEle.style.gridRow = `${gridRowStart} / ${gridRowEnd}`;
       });
 
