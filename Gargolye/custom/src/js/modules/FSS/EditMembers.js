@@ -73,9 +73,9 @@ const EditMembers = (() => {
     function buildmemberEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'employmentWorkScheduleTable',
-            columnHeadings: ['Family Member', 'Active?'],
-            endIcon: $.session.FSSUpdate == true ? true : false,
+            tableId: 'fssCommonTable', 
+            columnHeadings: ['Family Member', 'Active?'],  
+            endIcon: $.session.FSSDelete == true ? true : false,
         };
 
         let tableData = familyEntries.getFamilyMembersResult.map((entry) => ({

@@ -735,6 +735,13 @@ namespace Anywhere
        UriTemplate = "/insertEditRelationship/")]
         string insertEditRelationship(string token, string userId, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsNewList, RosterWorker.ConsumerEditRelationship[] consumerRelationshipsList, string consumerId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/deleteAttachment/")]
+        void deleteAttachment(string token, string attachmentId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

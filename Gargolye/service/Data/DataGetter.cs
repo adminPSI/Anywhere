@@ -1450,6 +1450,25 @@ namespace Anywhere.Data
             }
         }
 
+        public void deleteAttachment(string token, string attachmentId)
+        {
+            logger.debug("deleteAttachment");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(attachmentId);
+
+
+            string text = "CALL DBA.ANYW_Roster_deleteAttachment(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("677", ex.Message + "ANYW_Roster_deleteAttachment(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+            }
+        }
+
         public string deleteRelationship(string token, string consumerId)
         {
             if (tokenValidator(token) == false) return null;

@@ -13,7 +13,7 @@ const consumerInfo = (function () {
     let nextScreen = '';
     let backwordBtn;
     let forwardBtn;
-    let rosterList;     
+    let rosterList;
 
     // Edit relationship 
     let editRelationshipPopup;
@@ -23,7 +23,7 @@ const consumerInfo = (function () {
     let startDateInputN = [];
     let whoIsDropdownN = [];
     let endDateInputN = [];
-    let deleteBtnN = []; 
+    let deleteBtnN = [];
     let showInactive;
     let tempConsumer;
     let consumerRelationships = [];
@@ -474,9 +474,17 @@ const consumerInfo = (function () {
             var fileType = file.pop();
             var fileName = file.join('.');
 
+            var btnWrap = document.createElement('div');
+            btnWrap.classList.add('btnWrap');
+
             var attachment = document.createElement('div');
             attachment.classList.add('attachment');
             attachment.setAttribute('data-attachments-id', d.attachmentid);
+            if ($.session.DemographicsDeleteAttachments) {
+                attachment.style.width = '86%';   
+            } else {
+                attachment.style.width = '100%';
+            }
             attachment.innerHTML = `
         <p class="attachment__name">${fileName}</p>
         <p class="attachment__type">${fileType}</p>
@@ -486,11 +494,90 @@ const consumerInfo = (function () {
             attachment.addEventListener('click', () => {
                 downloadAttachment(d.attachmentid);
             });
+         
+            var attachmentDelete = document.createElement('div');
+            attachmentDelete.classList.add('attachment');
+            attachmentDelete.setAttribute('data-attachments-id', d.attachmentid);
+            attachmentDelete.innerHTML = `<p class="attachment__icon">${icons.remove}</p>`; 
+                 
+            attachmentDelete.addEventListener('click', () => {
+                closeCard();
+                deleteWagesBenefitsPOPUP(d.attachmentid); 
+            });
 
-            attachmentsList.appendChild(attachment);
+            btnWrap.appendChild(attachment);
+            if ($.session.DemographicsDeleteAttachments) {
+                attachmentDelete.style.width = '14%'; 
+                btnWrap.appendChild(attachmentDelete)
+            }            
+
+            attachmentsList.appendChild(btnWrap); 
         });
 
         sectionInner.appendChild(attachmentsList);
+    }
+
+    function deleteWagesBenefitsPOPUP(attachmentid) {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: async () => {
+                await deleteAttachment(attachmentid); 
+                POPUP.hide(confirmPopup); 
+                showCard(tempConsumer);
+                setupCard('View Attachments'); 
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => {
+                POPUP.hide(confirmPopup);  
+                showCard(tempConsumer);
+                setupCard('View Attachments');
+            },
+        });
+
+        const message = document.createElement('p');
+
+        message.innerText = 'Are you sure you want to delete this attachment?';
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
+    }
+
+
+    async function deleteAttachment(attachmentId) {
+        await rosterAjax.deleteAttachment({
+            token: $.session.Token,
+            attachmentId: attachmentId,
+        });  
+        targetSection = consumerInfoCard.querySelector('.attachmentsSection');       
+        rosterAjax.getAllAttachments(
+            {
+                token: $.session.Token,
+                locationId: locationId,
+                consumerId: consumerId,
+                checkDate: selectedDate,
+            },
+            function (results) {
+                populateAttachmentsSection(targetSection, results);
+            },
+        ); 
     }
     function showRelationshipDetails(section, sectionInner, data) {
         // set sectionInner to display none
@@ -921,7 +1008,7 @@ const consumerInfo = (function () {
         dataType = RelationshipsType.map((relationshipsType) => ({
             id: relationshipsType.typeID,
             value: relationshipsType.typeID,
-            text: relationshipsType.description          
+            text: relationshipsType.description
         }));
         dataType.unshift({ id: null, value: '', text: '' });
         for (let i = 0; i < numberOfRows; i++) {
@@ -1368,7 +1455,7 @@ const consumerInfo = (function () {
                 break;
             }
             case 'View Attachments': {
-                targetSection = consumerInfoCard.querySelector('.attachmentsSection');
+                targetSection = consumerInfoCard.querySelector('.attachmentsSection'); 
                 rosterAjax.getAllAttachments(
                     {
                         token: $.session.Token,

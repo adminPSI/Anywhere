@@ -1,78 +1,106 @@
 const planValidation = (function () {
     let planId;
+    let assessmentValidationCheck;
+    //let assessmentValidationCheck = {
+    //    sectionsApplicable: [],
+    //    servicesAndSupports: {},
+    //    servicesAndSupportsChecked: {
+    //        34: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+    //        35: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+    //        36: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+    //        37: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+    //        38: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+    //        39: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+    //        40: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+    //    },
+    //    hasASectionApplicable: true,
+    //    servicesAndSupportsError: false,
+    //    complete: false
+    //};
 
-    let assessmentValidationCheck = {
-        sectionsApplicable: [],
-        servicesAndSupports: {},
-        servicesAndSupportsChecked: {
-            34: {
-                noSupport: false,
-                paidSupport: false,
-                naturalSupport: false,
-                technology: false,
-                communitResource: false,
-                professionalReferral: false,
-                potentialOutcome: false,
-            },
-            35: {
-                noSupport: false,
-                paidSupport: false,
-                naturalSupport: false,
-                technology: false,
-                communitResource: false,
-                professionalReferral: false,
-                potentialOutcome: false,
-            },
-            36: {
-                noSupport: false,
-                paidSupport: false,
-                naturalSupport: false,
-                technology: false,
-                communitResource: false,
-                professionalReferral: false,
-                potentialOutcome: false,
-            },
-            37: {
-                noSupport: false,
-                paidSupport: false,
-                naturalSupport: false,
-                technology: false,
-                communitResource: false,
-                professionalReferral: false,
-                potentialOutcome: false,
-            },
-            38: {
-                noSupport: false,
-                paidSupport: false,
-                naturalSupport: false,
-                technology: false,
-                communitResource: false,
-                professionalReferral: false,
-                potentialOutcome: false,
-            },
-            39: {
-                noSupport: false,
-                paidSupport: false,
-                naturalSupport: false,
-                technology: false,
-                communitResource: false,
-                professionalReferral: false,
-                potentialOutcome: false,
-            },
-            40: {
-                noSupport: false,
-                paidSupport: false,
-                naturalSupport: false,
-                technology: false,
-                communitResource: false,
-                professionalReferral: false,
-                potentialOutcome: false,
-            },
+    const servicesAndSupportsQuestionIds = {
+        //noSupportQuestionIds: ['509', '526', '84', '95', '162', '500', '575'],
+        noSupportQuestionIds: ['509', '526', '540', '557', '575', '588', '772', '84', '95', '162', '195', '241', '266', '335', '500', '781', '798', '812', '829', '847', '860'],
+        //paidSupportQuestionIds: ['631', '612', '637', '648', '663', '674', '689', '376', '395', '401', '412', '427', '438', '453'],
+        paidSupportQuestionIds: ['612', '631', '637', '648', '663', '674', '689', '376', '395', '401', '412', '427', '438', '453', '884', '903', '909', '920', '935', '946', '961'],
+        //professionalReferralQuestionIds: ['693', '678', '667', '652', '641', '627', '616', '457', '442', '431', '416', '405', '391', '380'],
+        professionalReferralQuestionIds: ['616', '627', '641', '652', '667', '678', '693', '380', '391', '405', '416', '431', '442', '457', '888', '899', '913', '924', '939', '950', '965'],
+        //potentialOutcomeQuestionIds: ['510', '527', '541', '558', '576', '589', '85', '96', '163', '196', '242', '267', '336', '501'],
+        potentialOutcomeQuestionIds: ['510', '527', '541', '558', '576', '589', '773', '85', '96', '163', '196', '242', '267', '336', '501', '782', '799', '813', '830', '848', '861'],
+        additionalSupportQuestionIds: {
+            //naturalSupportQuestionIds: ['624', '613', '638', '649', '664', '675', '690', '377', '388', '402', '413', '428', '439', '454'],
+            naturalSupportQuestionIds: ['613', '624', '638', '649', '664', '675', '690', '377', '388', '402', '413', '428', '439', '454', '885', '896', '910', '921', '936', '947', '962'],
+            //technologyQuestionIds: ['614', '625', '639', '650', '665', '676', '691', '378', '389', '403', '414', '429', '440', '455'],
+            technologyQuestionIds: ['614', '625', '639', '650', '665', '676', '691', '378', '389', '403', '414', '429', '440', '455', '886', '897', '911', '922', '937', '948', '963'],
+            //communityQuestionIds: ['615', '626', '640', '651', '666', '677', '692', '379', '390', '404', '415', '430', '441', '456'],
+            communityQuestionIds: ['615', '626', '640', '651', '666', '677', '692', '379', '390', '404', '415', '430', '441', '456', '887', '898', '912', '923', '938', '949', '964'],
         },
-        hasASectionApplicable: true,
-        servicesAndSupportsError: false,
-        complete: false
     };
+
+    async function getAssessmentValidation(planId, planVersionNumber) {
+        // reset the values of the validation for each consumer
+        if ($.session.planVersionNumber === '3') {
+            assessmentValidationCheck = {
+                sectionsApplicable: [],
+                servicesAndSupports: {},
+                servicesAndSupportsChecked: {
+                    42: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    43: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    44: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    45: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    46: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    47: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    48: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                },
+                hasASectionApplicable: true,
+                servicesAndSupportsError: false,
+                complete: false,
+            };
+        } else {
+            assessmentValidationCheck = {
+                sectionsApplicable: [],
+                servicesAndSupports: {},
+                servicesAndSupportsChecked: {
+                    34: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    35: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    36: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    37: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    38: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    39: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                    40: { noSupport: false, paidSupport: false, naturalSupport: false, technology: false, communitResource: false, professionalReferral: false, potentialOutcome: false },
+                },
+                hasASectionApplicable: true,
+                servicesAndSupportsError: false,
+                complete: false,
+            };
+        }
+        
+
+        // Gathers the data from the database
+        servicesAndSupportsData = await planValidationAjax.getAssessmentValidationData(planId);
+
+        // SECTIONS APPLICABLE
+        // check each section for the plan and see if any are selected
+        const { sectionsApplicable } = servicesAndSupportsData;
+        assessmentValidationCheck.sectionsApplicable = sectionsApplicable;
+        let hasASectionApplicable = sectionsApplicable.some(obj => obj.applicable === 'Y');
+
+        // In the case the table is missing the planId
+        if (!sectionsApplicable.length) hasASectionApplicable = true;
+
+        // if no section is checked, set value to false
+        assessmentValidationCheck.hasASectionApplicable = hasASectionApplicable;
+
+        // SERVICES AND SUPPORTS
+        const { additionalSupport, paidSupport, professionalReferral, assessmentOutcomes } = servicesAndSupportsData;
+        assessmentValidationCheck.servicesAndSupports.additionalSupportCounts = countOccurrences(additionalSupport);
+        assessmentValidationCheck.servicesAndSupports.paidSupportCounts = countOccurrences(paidSupport);
+        assessmentValidationCheck.servicesAndSupports.professionalReferralCounts = countOccurrences(professionalReferral);
+        assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts = countOccurrences(assessmentOutcomes);
+
+        // check if all sections are complete
+        allAssessmentAreasComplete(assessmentValidationCheck);
+    }
 
     let IspValidationCheck = {
         complete: true,
@@ -83,7 +111,7 @@ const planValidation = (function () {
         outcome: [],
         selectedProviders: [],
         paidSupportsProviders: [],
-      paidSupportsValidDates: true,
+        paidSupportsValidDates: true,
         invalidProviders: [],
         contactSectionComplete: true,
         summaryRisksValidation: true
@@ -96,107 +124,7 @@ const planValidation = (function () {
         moreDetail: true
     }
 
-    const servicesAndSupportsQuestionIds = {
-        noSupportQuestionIds: ['509', '526', '84', '95', '162', '500', '575'],
-        paidSupportQuestionIds: [
-            '631',
-            '612',
-            '637',
-            '648',
-            '663',
-            '674',
-            '689',
-            '376',
-            '395',
-            '401',
-            '412',
-            '427',
-            '438',
-            '453',
-        ],
-        professionalReferralQuestionIds: [
-            '693',
-            '678',
-            '667',
-            '652',
-            '641',
-            '627',
-            '616',
-            '457',
-            '442',
-            '431',
-            '416',
-            '405',
-            '391',
-            '380',
-        ],
-        potentialOutcomeQuestionIds: [
-            '510',
-            '527',
-            '541',
-            '558',
-            '576',
-            '589',
-            '85',
-            '96',
-            '163',
-            '196',
-            '242',
-            '267',
-            '336',
-            '501',
-        ],
-        additionalSupportQuestionIds: {
-            naturalSupportQuestionIds: [
-                '624',
-                '613',
-                '638',
-                '649',
-                '664',
-                '675',
-                '690',
-                '377',
-                '388',
-                '402',
-                '413',
-                '428',
-                '439',
-                '454',
-            ],
-            technologyQuestionIds: [
-                '614',
-                '625',
-                '639',
-                '650',
-                '665',
-                '676',
-                '691',
-                '378',
-                '389',
-                '403',
-                '414',
-                '429',
-                '440',
-                '455',
-            ],
-            communityQuestionIds: [
-                '615',
-                '626',
-                '640',
-                '651',
-                '666',
-                '677',
-                '692',
-                '379',
-                '390',
-                '404',
-                '415',
-                '430',
-                '441',
-                '456',
-            ],
-        },
-    };
+   
 
     function setPlanId(newPlanId) {
         planId = newPlanId;
@@ -226,110 +154,6 @@ const planValidation = (function () {
         return assessmentValidationCheck;
     }
 
-    async function getAssessmentValidation(planId) {
-        // reset the values of the validation for each consumer
-        assessmentValidationCheck = {
-            sectionsApplicable: [],
-            servicesAndSupports: {},
-            servicesAndSupportsChecked: {
-                34: {
-                    noSupport: false,
-                    paidSupport: false,
-                    naturalSupport: false,
-                    technology: false,
-                    communitResource: false,
-                    professionalReferral: false,
-                    potentialOutcome: false,
-                },
-                35: {
-                    noSupport: false,
-                    paidSupport: false,
-                    naturalSupport: false,
-                    technology: false,
-                    communitResource: false,
-                    professionalReferral: false,
-                    potentialOutcome: false,
-                },
-                36: {
-                    noSupport: false,
-                    paidSupport: false,
-                    naturalSupport: false,
-                    technology: false,
-                    communitResource: false,
-                    professionalReferral: false,
-                    potentialOutcome: false,
-                },
-                37: {
-                    noSupport: false,
-                    paidSupport: false,
-                    naturalSupport: false,
-                    technology: false,
-                    communitResource: false,
-                    professionalReferral: false,
-                    potentialOutcome: false,
-                },
-                38: {
-                    noSupport: false,
-                    paidSupport: false,
-                    naturalSupport: false,
-                    technology: false,
-                    communitResource: false,
-                    professionalReferral: false,
-                    potentialOutcome: false,
-                },
-                39: {
-                    noSupport: false,
-                    paidSupport: false,
-                    naturalSupport: false,
-                    technology: false,
-                    communitResource: false,
-                    professionalReferral: false,
-                    potentialOutcome: false,
-                },
-                40: {
-                    noSupport: false,
-                    paidSupport: false,
-                    naturalSupport: false,
-                    technology: false,
-                    communitResource: false,
-                    professionalReferral: false,
-                    potentialOutcome: false,
-                },
-            },
-            hasASectionApplicable: true,
-            servicesAndSupportsError: false,
-            complete: false
-        };
-        // Gathers the data from the database
-        servicesAndSupportsData = await planValidationAjax.getAssessmentValidationData(planId);
-
-        // SECTIONS APPLICABLE
-        // check each section fo rthe plan and see if any are selected, if at least one is selected, return true
-        assessmentValidationCheck.sectionsApplicable = servicesAndSupportsData.sectionsApplicable;
-        let hasASectionApplicable = assessmentValidationCheck.sectionsApplicable.some(
-            obj => obj.applicable === 'Y',
-        );
-
-        // In the case the ANYW_ISP_Sections_Applicable table is missing the planId
-        if (assessmentValidationCheck.sectionsApplicable.length === 0) {
-            hasASectionApplicable = true;
-        }
-
-        // if no section is checked, set value to false
-        if (!hasASectionApplicable) {
-            assessmentValidationCheck.hasASectionApplicable = false;
-        }
-
-        // SERVICES AND SUPPORTS
-        // Count occurrences of assessmentAreaId in each service and supports category
-        assessmentValidationCheck.servicesAndSupports.additionalSupportCounts = countOccurrences(servicesAndSupportsData.additionalSupport);
-        assessmentValidationCheck.servicesAndSupports.paidSupportCounts = countOccurrences(servicesAndSupportsData.paidSupport);
-        assessmentValidationCheck.servicesAndSupports.professionalReferralCounts = countOccurrences(servicesAndSupportsData.professionalReferral);
-        assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts = countOccurrences(servicesAndSupportsData.assessmentOutcomes);
-
-        // check if all sections are complete
-        allAssessmentAreasComplete(assessmentValidationCheck);
-    }
 
     function allAssessmentAreasComplete() {
       if (assessmentValidationCheck.hasASectionApplicable === true && assessmentValidationCheck.servicesAndSupportsError === false) {
@@ -399,28 +223,54 @@ const planValidation = (function () {
     }
 
     function updateTocSectionHeaders() {
-        for (let id = 34; id <= 40; id++) {
-            let tocSectionHeader = document.getElementById(`${id}alert`);
-            let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
-            let additionalSupportCount = assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
-            let professionalReferralCounts = assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
-            let potentialOutcomeCount = assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
+        if ($.session.planVersionNumber === '3') {
+            for (let id = 42; id <= 48; id++) {
+                let tocSectionHeader = document.getElementById(`${id}alert`);
+                let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
+                let additionalSupportCount = assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
+                let professionalReferralCounts = assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
+                let potentialOutcomeCount = assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
 
-            if (
-                (assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport && paidSupportCount === 0) ||
-                ((assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport || assessmentValidationCheck.servicesAndSupportsChecked[id].technology || assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource) && additionalSupportCount === 0) ||
-                (assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral && professionalReferralCounts === 0) ||
-                (assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome && potentialOutcomeCount === 0)
-            ) {
-                if (tocSectionHeader) {
-                    tocSectionHeader.style.display = 'inline-block';
+                if (
+                    (assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport && paidSupportCount === 0) ||
+                    ((assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport || assessmentValidationCheck.servicesAndSupportsChecked[id].technology || assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource) && additionalSupportCount === 0) ||
+                    (assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral && professionalReferralCounts === 0) ||
+                    (assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome && potentialOutcomeCount === 0)
+                ) {
+                    if (tocSectionHeader) {
+                        tocSectionHeader.style.display = 'inline-block';
+                    }
+                } else {
+                    if (tocSectionHeader) {
+                        tocSectionHeader.style.display = 'none';
+                    }
                 }
-            } else {
-                if (tocSectionHeader) {
-                    tocSectionHeader.style.display = 'none';
+            }
+        } else {
+            for (let id = 34; id <= 40; id++) {
+                let tocSectionHeader = document.getElementById(`${id}alert`);
+                let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
+                let additionalSupportCount = assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
+                let professionalReferralCounts = assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
+                let potentialOutcomeCount = assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
+
+                if (
+                    (assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport && paidSupportCount === 0) ||
+                    ((assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport || assessmentValidationCheck.servicesAndSupportsChecked[id].technology || assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource) && additionalSupportCount === 0) ||
+                    (assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral && professionalReferralCounts === 0) ||
+                    (assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome && potentialOutcomeCount === 0)
+                ) {
+                    if (tocSectionHeader) {
+                        tocSectionHeader.style.display = 'inline-block';
+                    }
+                } else {
+                    if (tocSectionHeader) {
+                        tocSectionHeader.style.display = 'none';
+                    }
                 }
             }
         }
+        
     }
 
     // ASSESSMENT SERVICES AND SUPPORTS
@@ -1094,14 +944,14 @@ const planValidation = (function () {
         }
     }
 
-    async function init(newPlanId) {
+    async function init(newPlanId, planVersionNumber) {
         planId = newPlanId;
 
-        await contactsValidationCheck(planId);
+        await contactsValidationCheck(planId, planVersionNumber);
 
-        await ISPValidation(planId);
+        await ISPValidation(planId, planVersionNumber);
 
-        await getAssessmentValidation(planId);
+        await getAssessmentValidation(planId, planVersionNumber);
     }
 
     return {

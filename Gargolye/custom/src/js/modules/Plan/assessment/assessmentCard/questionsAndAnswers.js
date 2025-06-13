@@ -696,19 +696,19 @@
     //number of paid supports attached to this section
     let assessmentValidationCheck = planValidation.returnAssessmentValidationData();
 
-    let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
-    let additionalSupportCount = assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
-    let professionalReferralCounts = assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
-    let potentialOutcomeCount = assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
+    //let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
+    //let additionalSupportCount = assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
+    //let professionalReferralCounts = assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
+    //let potentialOutcomeCount = assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
 
     // returns true if the section has been checked
-    let paidSupportChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport;
-    let additionalSupportChecked =
-      assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport ||
-      assessmentValidationCheck.servicesAndSupportsChecked[id].technology ||
-      assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource;
-    let professionalReferralChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral;
-    let potentialOutcomeChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome;
+    //let paidSupportChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport;
+    //let additionalSupportChecked =
+    //  assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport ||
+    //  assessmentValidationCheck.servicesAndSupportsChecked[id].technology ||
+    //  assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource;
+    //let professionalReferralChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral;
+    //let potentialOutcomeChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome;
 
     const outcomesBtn = button.build({
       //text: `Add Outcome (${potentialOutcomeCount})`,
@@ -774,25 +774,25 @@
     }
 
     //Add error class to buttons that are checked and have 0 outcomes attached to them
-    if (paidSupportChecked && paidSupportCount === 0) {
-      paidSupportBtn.classList.add('error');
-      planValidation.updateAssessmentValidationSection('complete', false);
-    }
+    //if (paidSupportChecked && paidSupportCount === 0) {
+    //  paidSupportBtn.classList.add('error');
+    //  planValidation.updateAssessmentValidationSection('complete', false);
+    //}
 
-    if (additionalSupportChecked && additionalSupportCount === 0) {
-      additionalSupportBtn.classList.add('error');
-      planValidation.updateAssessmentValidationSection('complete', false);
-    }
+    //if (additionalSupportChecked && additionalSupportCount === 0) {
+    //  additionalSupportBtn.classList.add('error');
+    //  planValidation.updateAssessmentValidationSection('complete', false);
+    //}
 
-    if (professionalReferralChecked && professionalReferralCounts === 0) {
-      profRefBtn.classList.add('error');
-      planValidation.updateAssessmentValidationSection('complete', false);
-    }
+    //if (professionalReferralChecked && professionalReferralCounts === 0) {
+    //  profRefBtn.classList.add('error');
+    //  planValidation.updateAssessmentValidationSection('complete', false);
+    //}
 
-    if (potentialOutcomeChecked && potentialOutcomeCount === 0) {
-      outcomesBtn.classList.add('error');
-      planValidation.updateAssessmentValidationSection('complete', false);
-    }
+    //if (potentialOutcomeChecked && potentialOutcomeCount === 0) {
+    //  outcomesBtn.classList.add('error');
+    //  planValidation.updateAssessmentValidationSection('complete', false);
+    //}
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
@@ -2007,7 +2007,7 @@
     return assessmentWrap;
   }
 
-  async function init(planId, readOnly) {
+  async function init(planId, readOnly, planVersionNumber) {
     assessmentId = planId;
     sections = {};
     subSections = {};
@@ -2017,7 +2017,7 @@
     subSectionsWithAttachments = [];
     charLimits = planData.getAllISPcharacterLimts();
     readonly = readOnly;
-    assessmentValidationCheck = await planValidation.returnAssessmentValidationData();
+    assessmentValidationCheck = await planValidation.returnAssessmentValidationData(planVersionNumber);
 
     if (!$.session.planUpdate) {
       isSortable = false;

@@ -177,14 +177,14 @@ const assessmentCard = (function () {
   async function build(assessmentData, generalInfo) {
     ({ sectionData, subsectionData, questionSetData } = assessmentData);
 
-    ({ planId, planStatus, isActive } = generalInfo);
+    ({ planId, planStatus, isActive, planVersionNumber } = generalInfo);
 
     readOnly = planStatus === 'C' || !isActive ? true : false;
 
     setActiveModuleSectionAttribute('plan-questionsAndAnswers');
 
     // init markup for toc and assessment
-    await mainAssessment.init(planId, readOnly);
+    await mainAssessment.init(planId, readOnly, planVersionNumber);
     tableOfContents.init();
 
     // add/sort data to assessment & toc

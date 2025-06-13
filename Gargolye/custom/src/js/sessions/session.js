@@ -20,6 +20,7 @@ $.session.DemographicsPictureUpdate = false;
 $.session.DemographicsPictureDelete = false;
 $.session.DemographicsNotesView = false;
 $.session.DemographicsViewAttachments = false;
+$.session.DemographicsDeleteAttachments = false;
 $.session.viewLocationSchedulesKey = false;
 $.session.DemographicsViewDOB = false;
 $.session.DemographicsViewMedicaid = false;
@@ -103,6 +104,7 @@ $.session.batchedNoteEdit = false;
 $.session.groupNoteAttemptWithDocTime = false;
 $.session.sendToDODD = false;
 $.session.sendToPortal = false;
+$.session.planVersionNumber = '0';
 
 $.session.dobString = '';
 //remove section when ready for testing.  Forcing all features on.
@@ -680,6 +682,10 @@ function setSessionVariables() {
             if (tmpPerm == 'View Attachments' || $.session.isPSI == true) {
                 $.session.DemographicsViewAttachments = true;
             }
+
+            if (tmpPerm == 'Delete Attachments' || $.session.isPSI == true) {
+                $.session.DemographicsDeleteAttachments = true; 
+            }          
 
             if (tmpPerm == 'View Location Schedule' || $.session.isPSI == true) {
                 $.session.viewLocationSchedulesKey = true;

@@ -47,6 +47,7 @@ const plan = (function () {
   let revisionNumber;
   let sentToOnet;
   let downloadedFromSalesforce;
+  let planVersionNumber;
   // prior plan data
   let hasPreviousPlans;
   let priorConsumerPlanId;
@@ -2602,7 +2603,7 @@ const plan = (function () {
     DOM.ACTIONCENTER.appendChild(planHeading);
     DOM.ACTIONCENTER.appendChild(loadingBar);
     // init data for tab sections
-    await planData.init(planId);
+    await planData.init(planId, planVersionNumber);
     await planAttachment.getAttachments(planId);
 
     // build tab section wraps
@@ -2681,6 +2682,7 @@ const plan = (function () {
           planStatus,
           planId,
           isActive: planActiveStatus,
+          planVersionNumber: planVersionNumber,
         });
         assessmentWrap.appendChild(assessmentMarkup);
 
@@ -3340,6 +3342,7 @@ const plan = (function () {
       const endDate = pd.planYearEnd.split(' ')[0];
       const effectiveStart = pd.effectiveStart.split(' ')[0];
       const effectiveEnd = pd.effectiveEnd.split(' ')[0];
+      planVersionNumber = pd.versionNumber;
       let isActive = pd.active === 'True' ? true : false;
       const reviewDate = pd.reviewDate ? pd.reviewDate.split(' ')[0] : 'n/a';
       let sentToDODD = pd.dateSentDODD ? pd.dateSentDODD : '';
@@ -3347,7 +3350,7 @@ const plan = (function () {
       if (downloadedDate !== '') {
         downloadPlanBtn.classList.add('disabled');
       }
-
+      
       return {
         values: [type, revisionNum, downloadedDate, startDate, effectiveStart, reviewDate, sentToDODD],
         attributes: [
@@ -3361,7 +3364,7 @@ const plan = (function () {
           planActiveStatus = isActive;
           revisionNumber = pd.revisionNumber;
           downloadedFromSalesforce = downloadedDate ? true : false;
-
+          $.session.planVersionNumber = pd.versionNumber;
           planDates.setReviewPlanDates({
             startDate: new Date(startDate),
             endDate: new Date(endDate),
