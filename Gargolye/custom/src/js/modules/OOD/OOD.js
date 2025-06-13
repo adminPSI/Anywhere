@@ -1436,36 +1436,70 @@ const OOD = (() => {
         dropdown.populate('summaryServicesDropdown', data);
     }
 
+    function isStarDateBeforeEndDate(startDate, endDate) {
+      if (!startDate || !endDate) {
+        return true;
+      }
+
+      if (startDate > endDate) {
+        return false;
+      }
+
+      return true;
+    }
+
     function eventListeners() {
-        serviceDateStartInput.addEventListener('change', event => { 
-            if (event.target.value !== '') {
-                filterValues.serviceDateStart = event.target.value;
-            } else {
-                event.target.value = filterValues.serviceDateStart;
-            } 
-        });
-        serviceDateEndInput.addEventListener('change', event => {          
-            if (event.target.value !== '') { 
-                filterValues.serviceDateEnd = event.target.value;
-            } else {
-                event.target.value = filterValues.serviceDateEnd;
-            }
-        });
-        employeeDropdown.addEventListener('change', event => {
-            filterValues.userId = event.target.value;
-            filterValues.userName = event.target.options[event.target.selectedIndex].text;
-        });
-        servicesDropdown.addEventListener('change', event => {
-            filterValues.serviceId = event.target.value;
-            filterValues.serviceName = event.target.options[event.target.selectedIndex].text;
-        });
-        referenceNumbersDropdown.addEventListener('change', event => {
-            filterValues.referenceNumber = event.target.value;
-           // createFilterValues.referenceNumber = event.target.value;
-        });
-        //routeStatusDropdown.addEventListener('change', event => {
-        //  filterOpts.routeStatus = event.target.value;
-        // });
+      serviceDateStartInput.addEventListener('change', event => {
+        if (event.target.value !== '') {
+          const isValid = isStarDateBeforeEndDate(event.target.value, filterValues.serviceDateEnd);
+          if (!isValid) {
+            serviceDateStartInput.classList.add('error');
+            serviceDateEndInput.classList.add('error');
+            APPLY_BTN.classList.add('disabled');
+          } else {
+            serviceDateStartInput.classList.remove('error');
+            serviceDateEndInput.classList.remove('error');
+            APPLY_BTN.classList.remove('disabled');
+          }
+
+          filterValues.serviceDateStart = event.target.value;
+        } else {
+          event.target.value = filterValues.serviceDateStart;
+        }
+      });
+      serviceDateEndInput.addEventListener('change', event => {
+        if (event.target.value !== '') {
+          const isValid = isStarDateBeforeEndDate(filterValues.serviceDateStart, event.target.value);
+          if (!isValid) {
+            serviceDateStartInput.classList.add('error');
+            serviceDateEndInput.classList.add('error');
+            APPLY_BTN.classList.add('disabled');
+          } else {
+            serviceDateStartInput.classList.remove('error');
+            serviceDateEndInput.classList.remove('error');
+            APPLY_BTN.classList.remove('disabled');
+          }
+
+          filterValues.serviceDateEnd = event.target.value;
+        } else {
+          event.target.value = filterValues.serviceDateEnd;
+        }
+      });
+      employeeDropdown.addEventListener('change', event => {
+        filterValues.userId = event.target.value;
+        filterValues.userName = event.target.options[event.target.selectedIndex].text;
+      });
+      servicesDropdown.addEventListener('change', event => {
+        filterValues.serviceId = event.target.value;
+        filterValues.serviceName = event.target.options[event.target.selectedIndex].text;
+      });
+      referenceNumbersDropdown.addEventListener('change', event => {
+        filterValues.referenceNumber = event.target.value;
+        // createFilterValues.referenceNumber = event.target.value;
+      });
+      //routeStatusDropdown.addEventListener('change', event => {
+      //  filterOpts.routeStatus = event.target.value;
+      // });
     }
 
     async function filterPopupDoneBtn() {
