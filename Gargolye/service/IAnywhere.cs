@@ -2217,7 +2217,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/saveOrUpdateShift/")]
-        string saveOrUpdateShift(string token, string shiftId, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift);
+        string saveOrUpdateShift(string token, string shiftId, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift, string serviceDate, string consumerDelete);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

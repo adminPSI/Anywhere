@@ -1542,9 +1542,9 @@ namespace Anywhere
             return anywhereScheduleWorker.getLocationDropdownForSchedulingNew(token, showOpenShifts);
         }
 
-        public string saveOrUpdateShift(string token, string shiftId, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift)
+        public string saveOrUpdateShift(string token, string shiftId, string dateString, string locationId, string personId, string startTime, string endTime, string color, string notifyEmployee, string consumerIdString, string saveUpdateFlag, string publishShift, string serviceDate, string consumerDelete)
         {
-            return anywhereScheduleWorker.saveOrUpdateShift(token, shiftId, dateString, locationId, personId, startTime, endTime, color, notifyEmployee, consumerIdString, saveUpdateFlag, publishShift);
+            return anywhereScheduleWorker.saveOrUpdateShift(token, shiftId, dateString, locationId, personId, startTime, endTime, color, notifyEmployee, consumerIdString, saveUpdateFlag, publishShift, serviceDate, consumerDelete);
         }
 
         public string publishShift(string token, string locationId, string employeeId, string fromDate, string toDate, string notifyEmployee, string publish)
