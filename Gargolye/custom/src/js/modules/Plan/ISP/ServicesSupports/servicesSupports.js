@@ -3245,6 +3245,7 @@ const servicesSupports = (() => {
     const textInput = input.build({
       type: 'textarea',
       value: servicesSupportsData.monitoringContinuousReviewProcess[0].monitoringContinuousReviewProcess,
+      charLimit: 10000,
       callback: e => {
         if (!e.target.value) {
           textInput.classList.add('error');
