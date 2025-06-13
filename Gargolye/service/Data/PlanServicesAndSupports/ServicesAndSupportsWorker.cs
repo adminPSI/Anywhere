@@ -175,7 +175,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             }
             else
             {
-                string success = podg.updateMonitoringContinuousReviewProcess(newPlanId.ToString(), reviewProcessObj[1].monitoringContinuousReviewProcess);
+                string success = podg.updateMonitoringContinuousReviewProcess(newPlanId.ToString(), reviewProcessObj[0].monitoringContinuousReviewProcess);
             }
             
             //Paid supports
