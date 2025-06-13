@@ -801,10 +801,10 @@ const SchedulingCalendar = (function () {
 
       gridAnimationWrapper.addEventListener('click', () => {
         if (gridAnimationWrapper.classList.contains('selected')) {
-          newSelectedConsumers = newSelectedConsumers.filter(c => c === consumerString);
+          newSelectedConsumers = newSelectedConsumers.filter(c => c.consumerString === consumerString);
           gridAnimationWrapper.classList.remove('selected');
         } else {
-          newSelectedConsumers.push(consumerString);
+          newSelectedConsumers.push({ consumerString, delete: false });
           gridAnimationWrapper.classList.add('selected');
         }
       });
@@ -1122,7 +1122,10 @@ const SchedulingCalendar = (function () {
           endTime: data.endTime,
           notifyEmployee: 'N',
           publishShift: 'F',
-          consumerNames: data.consumerNames === '' ? [] : data.consumerNames.split(','),
+          consumerNames:
+            data.consumerNames === ''
+              ? []
+              : data.consumerNames.split(',').map(c => ({ consumerString: c, delete: false })),
           date: [dates.formateToISO(data.serviceDate.split(' ')[0])],
         }
       : {
@@ -1325,7 +1328,7 @@ const SchedulingCalendar = (function () {
       if (shiftData.consumerNames.length > 0) {
         const consumerNames = shiftData.consumerNames;
         consumerNames.forEach(cn => {
-          const [name, id] = cn[0].split('|');
+          const [name, id] = cn.consumerString.split('|');
           const [first, last] = name.split(' ');
 
           const rosterCard = new RosterCard({
@@ -1347,7 +1350,9 @@ const SchedulingCalendar = (function () {
           const success = await saveUpdateShift({
             shiftId: shiftData.shiftId,
             dateString: shiftData.date.join(','),
-            consumerIdString: shiftData.consumerNames.map(n => n.split('|')[1]).join(','),
+            consumerIdString: shiftData.consumerNames
+              .map(n => (n.delete ? `${n.consumerString.split('|')[1]}DEL` : n.consumerString.split('|')[1]))
+              .join(','),
             startTime: shiftData.startTime,
             endTime: shiftData.endTime,
             color: shiftData.color,
@@ -1486,10 +1491,11 @@ const SchedulingCalendar = (function () {
               if (consumers) {
                 shiftData.consumerNames = [...consumers];
                 individualCardWrap.innerHTML = '';
+
                 if (shiftData.consumerNames.length > 0) {
                   const consumerNames = shiftData.consumerNames;
                   consumerNames.forEach(cn => {
-                    const [name, id] = cn.split('|');
+                    const [name, id] = cn.consumerString.split('|');
                     const [fName, lName] = name.split(' ');
 
                     const gridAnimationWrapper = document.createElement('div');
@@ -1520,8 +1526,9 @@ const SchedulingCalendar = (function () {
       individualCardWrap.addEventListener('click', e => {
         if (!$.session.schedulingSecurity) return;
 
-        const idToRemove = e.target.id;
-        shiftData.consumerNames = shiftData.consumerNames.filter(cn => (cn.id = idToRemove));
+        const idToRemove = e.target.dataset.id;
+        const toDelete = shiftData.consumerNames.find(cn => cn.consumerString.split('|')[1] === idToRemove);
+        toDelete.delete = true;
         e.target.remove();
       });
 
@@ -1692,16 +1699,6 @@ const SchedulingCalendar = (function () {
 
     calendarEvents = await getCalendarEvents(selectedLocationId, selectedEmployeeId);
     renderCalendarEvents();
-    return true;
-
-    const newEvents = calendarEvents.filter(calEvent => parsedRes.includes(calEvent.eventId));
-    newEvents.forEach(event => {
-      if (data.saveUpdateFlag === 'U') {
-        ScheduleCalendar.updateEvent({ ...event });
-      } else {
-        ScheduleCalendar.addEvent({ ...event });
-      }
-    });
     return true;
   }
 
@@ -2647,7 +2644,7 @@ const Scheduling = (function () {
       },
     });
     const schedulingCalendarWeb2CalBtn = button.build({
-      // text: 'View Calendar Web2Cal',
+      //text: 'View Calendar Web2Cal',
       text: 'View Calendar',
       style: 'secondary',
       type: 'contained',
@@ -2681,7 +2678,7 @@ const Scheduling = (function () {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
 
-    // btnWrap.appendChild(schedulingCalendarBtn);
+    //btnWrap.appendChild(schedulingCalendarBtn);
     btnWrap.appendChild(schedulingCalendarWeb2CalBtn);
 
     if ($.session.schedulingView === true && $.session.schedulingUpdate === false) {
