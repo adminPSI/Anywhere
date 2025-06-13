@@ -167,16 +167,16 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             int result = 1;
 
             //Monitoring Review Process
-            string reviewProcessString = podg.getMonitoringContinuousReviewProcess(priorPlanId.ToString());
-            MonitoringReviewProcess[] reviewProcessObj = js.Deserialize<MonitoringReviewProcess[]>(reviewProcessString);
-            if (string.IsNullOrEmpty(reviewProcessObj[0].monitoringContinuousReviewProcess))
-            {
-                //do nothing
-            }
-            else
-            {
-                string success = podg.updateMonitoringContinuousReviewProcess(newPlanId.ToString(), reviewProcessObj[0].monitoringContinuousReviewProcess);
-            }
+            //string reviewProcessString = podg.getMonitoringContinuousReviewProcess(priorPlanId.ToString());
+            //MonitoringReviewProcess[] reviewProcessObj = js.Deserialize<MonitoringReviewProcess[]>(reviewProcessString);
+            //if (string.IsNullOrEmpty(reviewProcessObj[0].monitoringContinuousReviewProcess))
+            //{
+            //    //do nothing
+            //}
+            //else
+            //{
+            //    string success = podg.updateMonitoringContinuousReviewProcess(newPlanId.ToString(), reviewProcessObj[0].monitoringContinuousReviewProcess);
+            //}
             
             //Paid supports
             string paidSupportString = dg.getPaidSupports(token, priorPlanId, int.Parse(targetAssessmentVersionId));
