@@ -3255,12 +3255,12 @@ const servicesSupports = (() => {
         } else {
           textInput.classList.remove('error');
           ISPValidation.continuousMonitoring = true;
-
-          servicesSupportsAjax.updateContinuousMonitoring({
-            planId: planID,
-            reviewProcess: e.target.value,
-          });
         }
+
+        servicesSupportsAjax.updateContinuousMonitoring({
+          planId: planID,
+          reviewProcess: e.target.value,
+        });
 
         planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
       },

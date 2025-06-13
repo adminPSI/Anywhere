@@ -54,11 +54,16 @@ const ISP = (function () {
       token: $.session.Token,
       anywAssessmentId: planId,
     });
+
+    if (ispData.servicesSupports?.monitoringContinuousReviewProcess[0]?.monitoringContinuousReviewProcess) {
+      validationCheck.continuousMonitoring = true;
+    }
   }
   async function refreshISP(planID) {
     planId = planID;
 
     validationCheck = await planValidation.ISPValidation(planId);
+    await getInitialData();
 
     const ispWrap = document.getElementById('planISP');
 
@@ -167,16 +172,12 @@ const ISP = (function () {
         summaryAlertDiv.style.display = 'none';
 
         // creates and shows a tip when hovering over the visible alert div
-        planValidation.createTooltip(
-          'There is data missing on this tab that is required by DODD',
-          summaryAlertDiv,
-        );
+        planValidation.createTooltip('There is data missing on this tab that is required by DODD', summaryAlertDiv);
 
         let summaryRisksValidation = planValidation.returnSummaryRisksValidation();
 
         // If a plan returns an error on the validation check, show the alert div
-        if (!summaryRisksValidation)
-        {
+        if (!summaryRisksValidation) {
           summaryAlertDiv.style.display = 'flex';
         } else {
           summaryAlertDiv.style.display = 'none';
@@ -193,18 +194,14 @@ const ISP = (function () {
         outcomesAlertDiv.style.display = 'none';
 
         // creates and shows a tip when hovering over the visible alert div
-        planValidation.createTooltip(
-          'There is data missing on this tab that is required by DODD',
-          outcomesAlertDiv,
-        );
+        planValidation.createTooltip('There is data missing on this tab that is required by DODD', outcomesAlertDiv);
 
         // If a plan returns an error on the validation check, show the alert div
-        if (validationCheck.missingExperiences.length === 0 && validationCheck.missingReviews.length === 0) 
-        {
+        if (validationCheck.missingExperiences.length === 0 && validationCheck.missingReviews.length === 0) {
           outcomesAlertDiv.style.display = 'none';
-       } else {
+        } else {
           outcomesAlertDiv.style.display = 'flex';
-       }
+        }
       }
 
       if (section.title === 'Services') {
@@ -216,16 +213,12 @@ const ISP = (function () {
         serviceAlertDiv.style.display = 'none';
 
         // creates and shows a tip when hovering over the visible alert div
-        planValidation.createTooltip(
-          'There is data missing on this tab that is required by DODD',
-          serviceAlertDiv,
-        );
+        planValidation.createTooltip('There is data missing on this tab that is required by DODD', serviceAlertDiv);
 
         let ISPValidation = planValidation.returnIspValidation();
 
         // If a plan returns an error on the validation check, show the alert div
-        if (ISPValidation.paidSupportsValidDates === false)
-        {
+        if (ISPValidation.paidSupportsValidDates === false || !validationCheck.continuousMonitoring) {
           serviceAlertDiv.style.display = 'flex';
         } else {
           serviceAlertDiv.style.display = 'none';
@@ -242,15 +235,16 @@ const ISP = (function () {
         contactsAlertDiv.style.display = 'none';
 
         // creates and shows a tip when hovering over the visible alert div
-        planValidation.createTooltip(
-          'There is data missing on this tab that is required by DODD',
-          contactsAlertDiv,
-        );
+        planValidation.createTooltip('There is data missing on this tab that is required by DODD', contactsAlertDiv);
 
         let contactValidationCheck = planValidation.getContactValidation();
 
-          if (!contactValidationCheck.importantPeople || !contactValidationCheck.importantPlaces || !contactValidationCheck.bestWayToConnect || !contactValidationCheck.moreDetail) 
-        {
+        if (
+          !contactValidationCheck.importantPeople ||
+          !contactValidationCheck.importantPlaces ||
+          !contactValidationCheck.bestWayToConnect ||
+          !contactValidationCheck.moreDetail
+        ) {
           contactsAlertDiv.style.display = 'flex';
         } else {
           contactsAlertDiv.style.display = 'none';
@@ -278,8 +272,6 @@ const ISP = (function () {
 
     // refresh data for relationships in dropdown data
     planData.refreshDropdownData();
-
-    await getInitialData();
 
     servicesSupports.init({ planId, readOnly, data: ispData.servicesSupports });
 
@@ -322,10 +314,10 @@ const ISP = (function () {
       readOnly = false;
     }
 
+    ispBody = await buildBody(); // must build body before navigation
     ispNav = buildNavigation();
-    ispDiv.appendChild(ispNav);
 
-    ispBody = await buildBody();
+    ispDiv.appendChild(ispNav);
     ispDiv.appendChild(ispBody);
 
     return ispDiv;

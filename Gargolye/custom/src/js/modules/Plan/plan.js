@@ -2604,6 +2604,7 @@ const plan = (function () {
     DOM.ACTIONCENTER.appendChild(loadingBar);
     // init data for tab sections
     await planData.init(planId, planVersionNumber);
+    await planValidation.init(planId, planVersionNumber);
     await planAttachment.getAttachments(planId);
 
     // build tab section wraps
