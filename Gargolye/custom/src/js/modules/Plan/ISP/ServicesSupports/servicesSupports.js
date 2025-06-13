@@ -3246,17 +3246,23 @@ const servicesSupports = (() => {
       type: 'textarea',
       value: servicesSupportsData.monitoringContinuousReviewProcess[0].monitoringContinuousReviewProcess,
       charLimit: 10000,
-      callback: e => {
+      callback: async e => {
+        let ISPValidation = await planValidation.ISPValidation(planID);
+
         if (!e.target.value) {
           textInput.classList.add('error');
+          ISPValidation.continuousMonitoring = false;
         } else {
           textInput.classList.remove('error');
+          ISPValidation.continuousMonitoring = true;
 
           servicesSupportsAjax.updateContinuousMonitoring({
             planId: planID,
             reviewProcess: e.target.value,
           });
         }
+
+        planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
       },
     });
 
@@ -3289,7 +3295,7 @@ const servicesSupports = (() => {
     const profRefSec = getProfessionalReferralsMarkup();
     const modsSec = getSSModificationsMarkup();
 
-    // servicesSupportsDiv.appendChild(monitoringSec);
+    servicesSupportsDiv.appendChild(monitoringSec);
     servicesSupportsDiv.appendChild(paidSec);
     servicesSupportsDiv.appendChild(modsSec);
     servicesSupportsDiv.appendChild(additionalSec);
