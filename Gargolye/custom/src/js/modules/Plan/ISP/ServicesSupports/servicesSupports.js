@@ -3267,6 +3267,12 @@ const servicesSupports = (() => {
       },
     });
 
+    if (isReadOnly) {
+      input.disableInputField(textInput);
+    } else {
+      input.enableInputField(textInput);
+    }
+
     if (!servicesSupportsData.monitoringContinuousReviewProcess[0].monitoringContinuousReviewProcess) {
       textInput.classList.add('error');
     }
