@@ -113,8 +113,6 @@ const schedulingAjax = (function () {
     // employeeId
     // notifyEmployee
     // color
-    const rd = { ...retrieveData };
-    rd.shiftId = rd.shiftId ? parseInt(rd.shiftId) : 0;
     try {
       const result = await $.ajax({
         type: 'POST',

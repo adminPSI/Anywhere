@@ -3246,6 +3246,7 @@ const servicesSupports = (() => {
       type: 'textarea',
       value: servicesSupportsData.monitoringContinuousReviewProcess[0].monitoringContinuousReviewProcess,
       charLimit: 10000,
+      forceCharLimit: true,
       callback: async e => {
         let ISPValidation = await planValidation.ISPValidation(planID);
 
