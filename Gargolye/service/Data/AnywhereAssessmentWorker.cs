@@ -225,7 +225,7 @@ namespace Anywhere.service.Data
         {
             planId = planId.TrimEnd(',');
             //get assessment areas
-            string assessmentAreas = adg.getAssessmentAreas(token);
+            string assessmentAreas = adg.getAssessmentAreas(token, planId);
             AssessmentAreas[] assessmentAreasObj = js.Deserialize<AssessmentAreas[]>(assessmentAreas);
             //get vendors
             string vendorString = adg.getServiceVendors(token);

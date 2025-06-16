@@ -463,12 +463,13 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string getAssessmentAreas(string token)
+        public string getAssessmentAreas(string token, string planId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getServiceTypes ");
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(planId);
             string text = "CALL DBA.ANYW_ISP_GetAssessmentAreas(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
