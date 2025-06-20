@@ -3431,6 +3431,21 @@ namespace Anywhere
             UriTemplate = "/getVehicleInspectionDetails/")]
         TransportationWorker.VehicleInspection[] getVehicleInspectionDetails(string token, string vehicleInspectionId);
 
+        [WebInvoke(Method = "POST",
+     BodyStyle = WebMessageBodyStyle.Wrapped,
+     ResponseFormat = WebMessageFormat.Json,
+     RequestFormat = WebMessageFormat.Json,
+     UriTemplate = "/getRouteLocations/")]
+        TransportationWorker.LocationDropdown[] getRouteLocations(string token);
+
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getImportValue/")]
+        TransportationWorker.importValue[] getImportValue(string token, string selectedLocationId);
+
+
         //Plan Outcomes
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,

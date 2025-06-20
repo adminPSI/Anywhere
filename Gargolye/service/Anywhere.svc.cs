@@ -4702,5 +4702,13 @@ namespace Anywhere
         {
             return rosterWorker.getConsumerIntake(ConsumerId);
         }
+        public TransportationWorker.importValue[] getImportValue(string token, string selectedLocationId)
+        {
+            return trW.getImportValue(token, selectedLocationId);
+        }
+        public TransportationWorker.LocationDropdown[] getRouteLocations(string token)
+        {
+            return trW.getRouteLocations(token);
+        }
     }
 }

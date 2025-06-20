@@ -57,6 +57,23 @@ namespace Anywhere.service.Data.Transportation
             public string Active { get; set; }
         }
 
+        public class LocationDropdown
+        {
+            public string locationsId { get; set; }
+            public string description { get; set; }
+            public string Address1 { get; set; }
+            public string Address2 { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+        }
+
+        public class importValue
+        {
+            public string locationsId { get; set; }
+            public string fullAddress { get; set; }
+            public string zipCode { get; set; }
+        }
+
         public string deleteVehicleInspection(string token, string vehicleInspectionId)
         {
             return tdg.deleteVehicleInspection(token, vehicleInspectionId);
@@ -324,6 +341,19 @@ namespace Anywhere.service.Data.Transportation
         public string deleteTrip(string token, string tripsCompletedId)
         {
             return tdg.deleteTrip(token, tripsCompletedId);
+        }
+
+        public LocationDropdown[] getRouteLocations(string token)
+        {
+            string informationString = tdg.getRouteLocations(token);
+            LocationDropdown[] informationObj = js.Deserialize<LocationDropdown[]>(informationString);
+            return informationObj;
+        }
+        public importValue[] getImportValue(string token, string selectedLocationId)
+        {
+            string informationString = tdg.getImportValue(token, selectedLocationId);
+            importValue[] informationObj = js.Deserialize<importValue[]>(informationString);
+            return informationObj;
         }
 
     }
