@@ -526,6 +526,41 @@ namespace Anywhere.service.Data.Transportation
             }
         }
 
+        public string getRouteLocations(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getRouteLocations " + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_Transportation_getActiveLocation()";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("getRouteLocations", ex.Message + "ANYW_Transportation_getActiveLocation()");
+                return "error ANYW_Transportation_getActiveLocation";
+            }
+        }
+        public string getImportValue(string token, string selectedLocationId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("selectedLocationId " + token);
+            List<string> list = new List<string>();
+            list.Add(selectedLocationId);
+            string text = "CALL DBA.ANYW_Transportation_getFormattedLocationAddress(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("selectedLocationId", ex.Message + "ANYW_Transportation_getFormattedLocationAddress()");
+                return "error ANYW_Transportation_getFormattedLocationAddress";
+            }
+        }
+
         public bool tokenValidator(string token)
         {
             if (token.Contains(" "))

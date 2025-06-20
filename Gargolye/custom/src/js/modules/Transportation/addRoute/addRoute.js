@@ -21,6 +21,10 @@ const TRANS_addRoute = (function () {
     let consumerSectionBody, noConsumerWarning;
     let consumersOnRecord = new Map();
     let saveBtn;
+    let importOrigBtn;
+    let importDestBtn;
+    let selectedLocationId = null;
+    let targetInput = null;
 
     function buildPage() {
         const column1 = document.createElement('div')
@@ -92,10 +96,30 @@ const TRANS_addRoute = (function () {
             type: "textarea",
         })
 
+        importOrigBtn = button.build({
+            id: "importOriginationBtn",
+            text: "IMPORT ORIGINATION ADDRESS",
+            style: "secondary",
+            callback: () => {
+                targetInput = originationInput;
+                importPopup('origination');
+            }
+        })
+
         destinationInput = input.build({
             id: "destinationInput",
             label: "Destination",
             type: "textarea",
+        })
+
+        importDestBtn = button.build({
+            id: "importDestinationBtn",
+            text: "IMPORT DESTINATION ADDRESS",
+            style: "secondary",
+            callback: () => {
+                targetInput = destinationInput;
+                importPopup('destination');
+            }
         })
         /////////
 
@@ -157,7 +181,9 @@ const TRANS_addRoute = (function () {
         routeInfoCardBody.appendChild(vehicleDropdown);
         routeInfoCardBody.appendChild(locationDropdown);
         routeInfoCardBody.appendChild(originationInput);
+        routeInfoCardBody.appendChild(importOrigBtn);
         routeInfoCardBody.appendChild(destinationInput);
+        routeInfoCardBody.appendChild(importDestBtn);
         routeInfoCardBody.appendChild(radioDiv);
         ////////////////////
         // Consumer Section //
@@ -328,7 +354,7 @@ const TRANS_addRoute = (function () {
         dropdown.populate(locationDropdown, locationDropdownData);
     }
 
-    function eventListeners() {
+    function eventListeners() { 
         vehicleDropdown.addEventListener('change', event => {
             const selectedOption = event.target.options[event.target.selectedIndex];
             checkRequiredFieldsOfAddRoute();
@@ -696,6 +722,92 @@ const TRANS_addRoute = (function () {
         popup.appendChild(vehicleInspectionBtn)
         popup.appendChild(docLaterBtn)
         POPUP.show(popup)
+    }
+    function formatZipCode(zipCode) {
+        const zip = zipCode.replace(/[^\w\s]/gi, '').replaceAll(' ', '');
+        if (zip.length <= 5) {
+            return zip;
+        } else {
+            return zip.slice(0, 5) + '-' + zip.slice(5);
+        }
+    }
+    function importPopup() {
+        const importAddressPopup = POPUP.build({
+            classNames: ['importAddressPopup'],
+            hideX: true
+        });
+
+        locationInput = dropdown.build({
+            id: 'locationInput',
+            dropdownId: 'locationInput',
+            type: 'text',
+            label: 'Locations',
+            style: 'secondary',
+        });
+
+        applyButton = button.build({
+            text: 'Apply',
+            type: 'contained',
+            style: 'secondary',
+            callback: async () => {
+                const dropdownElement = document.getElementById('locationInput');
+                selectedLocationId =
+                    dropdownElement?.getAttribute('data-value') ||
+                    dropdownElement?.value ||
+                    locationInput.value ||
+                    locationInput.selectedValue;
+                const {
+                    getImportValueResult: Address,
+                } = await TRANS_routeDocumentationAjax.getImportValue(selectedLocationId);
+
+                if (targetInput) {
+                    let textArea = targetInput.querySelector('textarea');
+
+                    if (!textArea && targetInput.tagName === 'TEXTAREA') {
+                        textArea = targetInput;
+                    }
+
+                    if (textArea) {
+                        textArea.value = Address[0].fullAddress +
+                            (Address[0].zipCode ? ' ' + formatZipCode(Address[0].zipCode) : '');
+                    }
+                }
+
+                POPUP.hide(importAddressPopup);
+            }
+        });
+
+        cancelButton = button.build({
+            text: 'CANCEL',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => POPUP.hide(importAddressPopup)
+        });
+
+        importAddressPopup.appendChild(locationInput);
+        const btnWrap = document.createElement('div');
+        btnWrap.classList.add('btnWrap');
+        btnWrap.appendChild(applyButton);
+        btnWrap.appendChild(cancelButton);
+        importAddressPopup.appendChild(btnWrap);
+        populatelocationDropdown(); 
+        POPUP.show(importAddressPopup);
+    }
+
+    async function populatelocationDropdown() {
+        const result = await TRANS_routeDocumentationAjax.getRouteLocations();
+        const locationArray = Array.isArray(result.getRouteLocationsResult)
+            ? result.getRouteLocationsResult
+            : []; 
+        const locationData = locationArray
+            .filter(svc => svc.locationsId)
+            .map(svc => ({
+                id: svc.locationsId,
+                value: svc.locationsId,
+                text: svc.description
+            }));
+
+        dropdown.populate('locationInput', locationData, null); 
     }
     function init() {
         consumersOnRecord.clear();
