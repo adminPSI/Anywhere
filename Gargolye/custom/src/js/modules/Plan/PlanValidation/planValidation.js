@@ -845,7 +845,8 @@ const planValidation = (function () {
     if (
       validationCheck.missingExperiences.length > 0 ||
       validationCheck.missingReviews.length > 0 ||
-      validationCheck.paidSupportsValidDates === false
+      validationCheck.paidSupportsValidDates === false ||
+      !validationCheck.continuousMonitoring
     ) {
       ISPAlertDiv.style.display = 'flex';
     } else {

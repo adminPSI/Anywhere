@@ -77,6 +77,8 @@ const ISP = (function () {
     ispWrap.appendChild(newIspMarkup);
 
     DOM.autosizeTextarea();
+
+    planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   function toggleActiveNavItem(selectedNavItem) {
     const activeNavItem = ispNav.querySelector('.active');
